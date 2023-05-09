@@ -1,50 +1,42 @@
 #pragma once
 
-#include "../module/configstorage.h"
 #include "iec104private.h"
 #include "modbusprivate.h"
 #include "protocomprivate.h"
 
 #include <QMetaEnum>
-#include <utility>
 
-// Thanx to https://stackoverflow.com/questions/34672441
-template <template <typename...> class base, typename derived> struct is_base_of_template_impl
+///< /brief Базовая группа сигналов для абстрактного протокола: код функции, тип данных, начальный адрес сигнала и
+///< количество сигналов
+
+struct parseXChangeStruct
 {
-    template <typename... Ts> static constexpr std::true_type test(const base<Ts...> *);
-    static constexpr std::false_type test(...);
-    using type = decltype(test(std::declval<derived *>()));
+    QVariant interfaceType;
+    quint32 sigId;
+    QVariant par2;
+    QVariant par3;
+    QVariant par4;
 };
 
-template <template <typename...> class base, typename derived>
-using is_base_of_template = typename is_base_of_template_impl<base, derived>::type;
-
-template <typename FuncCode, typename TypeId> struct BaseGroup
+struct BaseGroup
 {
-    FuncCode function;
-    TypeId dataType;
+    QVariant function;
+    QVariant dataType;
     quint32 startAddr;
     quint32 count;
 
     BaseGroup() = default;
-    BaseGroup(const quint32 &sigId) : startAddr(0), count(0)
+    BaseGroup(const quint32 &sigAddr, const quint32 &sigCount) : startAddr(sigAddr), count(sigCount)
     {
-        auto &sigMap = ConfigStorage::GetInstance().getModuleSettings().getSignals();
-        if (sigMap.contains(sigId))
-        {
-            auto &signal = sigMap.value(sigId);
-            startAddr = signal.startAddr;
-            count = signal.count;
-        }
     }
 };
 
-// Class have to derived from BaseGroup due to dependent types
-template <typename Group, typename = typename std::enable_if<is_base_of_template<BaseGroup, Group>::value>::type>
-class InterfaceInfo
+// Набор групп сигналов для выбранного протокола
+
+class ProtocolDescription
 {
 public:
-    void addGroup(const Group &gr)
+    void addGroup(const BaseGroup &gr)
     {
         m_dictionary.insert(gr.startAddr, gr);
     }
@@ -54,42 +46,43 @@ public:
         m_dictionary.clear();
     }
 
-    const auto &dictionary() const
+    auto &dictionary() const
     {
         return m_dictionary;
     }
 
-    void merge(const InterfaceInfo<Group> &rhs)
+    void merge(const ProtocolDescription &rhs)
     {
         for (auto it = rhs.m_dictionary.cbegin(); it != rhs.m_dictionary.cend(); it++)
             m_dictionary.insert(it.key(), it.value());
     }
 
 private:
-    QMultiMap<quint32, Group> m_dictionary;
+    QMultiMap<quint32, BaseGroup> m_dictionary;
 };
 
-struct ProtocomGroup : BaseGroup<Proto::Commands, Proto::TypeId>
+struct ProtocomGroup : BaseGroup
 {
-    quint8 block;
+    //    quint8 block;
 
     ProtocomGroup() = default;
-    ProtocomGroup(const quint32 &sigId, const quint16 &blk)
-        : BaseGroup<Proto::Commands, Proto::TypeId>(sigId), block(blk)
+    ProtocomGroup(const quint32 &sigAddr, const quint32 &sigCount, const quint16 &blk)
+        : BaseGroup(sigAddr, sigCount) //, block(blk)
     {
+        dataType = blk;
     }
 };
 
-struct ModbusGroup : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>
+struct ModbusGroup : BaseGroup
 {
     ModbusGroup() = default;
-    ModbusGroup(const quint32 &sigId, const quint16 &regType, const QString &type)
-        : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>(sigId)
+    ModbusGroup(const quint32 &sigAddr, const quint32 &sigCount, const quint16 &regType, const QString &type)
+        : BaseGroup(sigAddr, sigCount)
     {
         count = count * 2;
         // Decimal to hex
         auto hexRegType = QString("%1").arg(regType).toUInt(nullptr, 16);
-        function = static_cast<CommandsMBS::Commands>(hexRegType);
+        function = hexRegType;
         // Getting TypeId from QString
         auto buffer(type);
         auto types = QMetaEnum::fromType<CommandsMBS::TypeId>;
@@ -99,7 +92,7 @@ struct ModbusGroup : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>
             bool state = false;
             auto typeId = types().keyToValue(buffer.toStdString().c_str(), &state);
             if (typeId != -1 && state)
-                dataType = static_cast<CommandsMBS::TypeId>(typeId);
+                dataType = typeId;
             else
                 qWarning("Undefined modbus type");
         }
@@ -116,20 +109,21 @@ struct ModbusGroup : BaseGroup<CommandsMBS::Commands, CommandsMBS::TypeId>
     }
 };
 
-struct Iec104Group : BaseGroup<Commands104::Commands, Commands104::TypeId>
+struct Iec104Group : BaseGroup
 {
     Iec104Group() = default;
-    Iec104Group(const quint32 &sigId, const quint16 &sigType, const quint16 &transType, const quint16 &sigGroup)
-        : BaseGroup<Commands104::Commands, Commands104::TypeId>(sigId)
+    Iec104Group(const quint32 &sigAddr, const quint32 &sigCount, const quint16 &sigType, const quint16 &transType,
+        const quint16 &sigGroup)
+        : BaseGroup(sigAddr, sigCount)
     {
         if (sigType > 0 && sigType < 129)
-            dataType = static_cast<Commands104::TypeId>(sigType);
+            dataType = sigType;
         // TODO: Any fields?
         Q_UNUSED(transType);
         Q_UNUSED(sigGroup);
     }
 };
 
-Q_DECLARE_METATYPE(InterfaceInfo<ProtocomGroup>)
-Q_DECLARE_METATYPE(InterfaceInfo<ModbusGroup>)
-Q_DECLARE_METATYPE(InterfaceInfo<Iec104Group>)
+Q_DECLARE_METATYPE(ProtocomGroup)
+Q_DECLARE_METATYPE(ModbusGroup)
+Q_DECLARE_METATYPE(Iec104Group)

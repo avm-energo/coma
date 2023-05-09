@@ -81,7 +81,7 @@ void OscDialog::getOsc(const QModelIndex &idx)
     }
     if (!loadIfExist(size))
         BaseInterface::iface()->reqFile(
-            reqOscNum, Queries::FileFormat::CustomS2, size + sizeof(S2DataTypes::DataRecHeader));
+            reqOscNum, Datatypes::FileFormat::CustomS2, size + sizeof(S2DataTypes::DataRecHeader));
 }
 
 void OscDialog::eraseOsc()

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "interfacesettings.h"
 #include "protocom.h"
 
 class ProtocomPrivate
@@ -12,7 +11,7 @@ public:
     auto blockByReg(const quint32 regAddr)
     {
         Q_Q(Protocom);
-        return q->settings<InterfaceInfo<ProtocomGroup>>().dictionary().value(regAddr).block;
+        return q->settings<ProtocolDescription<ProtocomGroup>>().dictionary().value(regAddr).block;
     }
 
     void handleBlk(const Proto::Commands cmd, const quint32 blk, QByteArray data = {}, const quint32 count = 0);

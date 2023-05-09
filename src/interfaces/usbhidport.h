@@ -50,7 +50,7 @@ signals:
     void finished();
     void started();
     void clearQueries();
-    void stateChanged(BaseInterface::State);
+    void stateChanged(Interface::State);
 public slots:
     void poll();
 

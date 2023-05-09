@@ -27,8 +27,9 @@ signals:
     void alarmDataSending(const Modules::AlarmType &aType, const quint32 &addr, //
         const QString &desc, const QList<quint32> highlights);
     void jourDataSending(const Modules::JournalType &jType, const quint32 &addr, const QString &desc);
-    void interfaceSettingsSending(const QVariant &iSettings, const Board::InterfaceType &iType);
+    void interfaceSettingsSending(const ProtocolDescription &iSettings, const Board::InterfaceType &iType);
     void configDataSending(const quint16 &id, const QString &defVal, const bool &visib, const quint16 &count);
+    void protocolGroupSending(const parseXChangeStruct &str);
 
 private:
     bool isCorrectModule(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM);
@@ -46,9 +47,9 @@ private:
     void parseJournals(const QDomNode &joursNode);
     void parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType);
     void parseInterface(const QDomNode &root);
-    void parseModbus(const QDomNode &modbusNode, InterfaceInfo<ModbusGroup> &settings);
-    void parseProtocom(const QDomNode &protocomNode, InterfaceInfo<ProtocomGroup> &settings);
-    void parseIec(const QDomNode &iecNode, InterfaceInfo<Iec104Group> &settings);
+    void parseModbus(const QDomNode &modbusNode, ProtocolDescription &settings);
+    void parseProtocom(const QDomNode &protocomNode, ProtocolDescription &settings);
+    void parseIec(const QDomNode &iecNode, ProtocolDescription &settings);
     void parseConfig(const QDomNode &configNode);
 };
 

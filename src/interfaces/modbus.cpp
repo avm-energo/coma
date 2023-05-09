@@ -89,7 +89,7 @@ void ModBus::sendReconnectSignal()
 
 bool ModBus::isValidRegs(CommandsMBS::CommandStruct &cmd) const
 {
-    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
+    const auto &st = settings<ProtocolDescription<ModbusGroup>>();
     // Q_ASSERT(st.dictionary().contains(cmd.adr));
     if (st.dictionary().contains(cmd.adr))
     {
@@ -106,7 +106,7 @@ bool ModBus::isValidRegs(CommandsMBS::CommandStruct &cmd) const
 /// \brief Проверка регистров на наличие описания таковых в конфигурации модуля
 bool ModBus::isValidRegs(const quint32 sigAdr, const quint32 sigCount) const
 {
-    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
+    const auto &st = settings<ProtocolDescription<ModbusGroup>>();
     if (!st.dictionary().contains(sigAdr))
         return false;
     const auto values = st.dictionary().values(sigAdr);
@@ -120,13 +120,13 @@ bool ModBus::isValidRegs(const quint32 sigAdr, const quint32 sigCount) const
 
 CommandsMBS::TypeId ModBus::type(const quint32 addr) const
 {
-    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
+    const auto &st = settings<ProtocolDescription<ModbusGroup>>();
     return st.dictionary().value(addr).dataType;
 }
 
 TypeId ModBus::type(const quint32 addr, const quint32 count, const CommandsMBS::Commands cmd) const
 {
-    const auto &st = settings<InterfaceInfo<ModbusGroup>>();
+    const auto &st = settings<ProtocolDescription<ModbusGroup>>();
     const auto values = st.dictionary().values(addr);
     for (const auto &val : values)
     {
@@ -349,7 +349,7 @@ void ModBus::writeCommand(Queries::Commands cmd, const QVariantList &list)
     case Queries::QC_WriteUserValues:
     {
         Q_ASSERT(list.first().canConvert<DataTypes::FloatStruct>());
-        const auto &st = settings<InterfaceInfo<ModbusGroup>>();
+        const auto &st = settings<ProtocolDescription<ModbusGroup>>();
         quint16 some_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
         if (!st.dictionary().contains(some_addr))
             qDebug() << "Описание регистров ModBus не содержит адрес " + QString::number(some_addr);

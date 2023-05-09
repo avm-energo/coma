@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../interfaces/interfacesettings.h"
 #include "../s2/datarecv.h"
 #include "modules.h"
 
@@ -64,7 +65,7 @@ struct Journal
 /// \brief Структура для хранения информации о протоколах protocom, modbus и iec104
 struct InterfaceSettings
 {
-    QVariant settings;
+    ProtocolDescription settings;
 };
 
 using SignalMap = QHash<quint32, Signal>;        ///< Хранит узлы <signal> секции <signals>.

@@ -9,10 +9,8 @@
 
 constexpr int MAXSIZE = 200000;
 
-class BaseInterface;
 class S2
 {
-    friend BaseInterface;
 
 public:
     S2();
@@ -21,6 +19,7 @@ public:
 
     static void StoreDataMem(QByteArray &mem, const QList<DataTypes::DataRecV> &dr, int fname);
     static void StoreDataMem(QByteArray &mem, std::vector<DataTypes::FileStruct> &dr, int fname);
+    static void StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, int fname);
     // restore IDs and contents in ConfParameters list
     static bool RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist);
     static bool RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist);
@@ -36,7 +35,6 @@ public:
     static QMap<QString, quint16> NameIdMap;
 
 private:
-    static void StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, int fname);
     // S2: Поиск элемента в массиве описаний
     static bool RestoreDataMem(void *mem, quint32 memsize, const QVector<S2DataTypes::DataRec> &dr);
     static void findElemAndWriteIt(QVector<S2DataTypes::DataRec> *s2config, const DataTypes::S2Record &cfp);

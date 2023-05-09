@@ -26,6 +26,8 @@
 using Proto::CommandStruct;
 using Proto::Direction;
 using Proto::Starters;
+using namespace Interface;
+
 UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent)
     : QObject(parent), log(logh), m_deviceInfo(dev)
 {
@@ -77,12 +79,12 @@ void UsbHidPort::poll()
     int bytes;
     m_waitForReply = false;
     const auto &iface = BaseInterface::iface();
-    while (iface->state() != BaseInterface::State::Stop)
+    while (iface->state() != State::Stop)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
 
         // check if there's any data in input buffer
-        if (iface->state() == BaseInterface::State::Wait)
+        if (iface->state() == State::Wait)
         {
             StdFunc::Wait(500);
             continue;
@@ -150,7 +152,7 @@ void UsbHidPort::deviceConnected(const UsbHidSettings &st)
         return;
     qDebug() << timer.elapsed();
     qInfo() << deviceInfo() << "connected";
-    emit stateChanged(BaseInterface::State::Run);
+    emit stateChanged(State::Run);
     qDebug() << timer.elapsed();
 }
 
@@ -160,7 +162,7 @@ void UsbHidPort::deviceDisconnected(const UsbHidSettings &st)
     if (st != deviceInfo())
         return;
     // Отключено наше устройство
-    emit stateChanged(BaseInterface::State::Wait);
+    emit stateChanged(State::Wait);
     qInfo() << deviceInfo() << "disconnected";
 }
 
@@ -169,13 +171,13 @@ void UsbHidPort::deviceConnected()
     if (!setupConnection())
         return;
     qInfo() << deviceInfo() << "connected";
-    emit stateChanged(BaseInterface::State::Run);
+    emit stateChanged(State::Run);
 }
 
 void UsbHidPort::deviceDisconnected()
 {
     // Отключено наше устройство
-    emit stateChanged(BaseInterface::State::Wait);
+    emit stateChanged(State::Wait);
     qInfo() << deviceInfo() << "disconnected";
     emit clearQueries();
 }

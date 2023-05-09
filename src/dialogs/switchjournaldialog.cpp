@@ -172,7 +172,7 @@ void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
 
     if (!loadIfExist(size))
         BaseInterface::iface()->reqFile(
-            fileNum, Queries::FileFormat::CustomS2, size + 2 * sizeof(S2DataTypes::DataRecHeader));
+            fileNum, Datatypes::FileFormat::CustomS2, size + 2 * sizeof(S2DataTypes::DataRecHeader));
 }
 
 void SwitchJournalDialog::exportSwJ(uint32_t swjNum)

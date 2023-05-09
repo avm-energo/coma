@@ -1,14 +1,15 @@
 ﻿#pragma once
 
 #include "baseinterface.h"
-#include "protocomprivate.h"
+#include "interfacesettings.h"
 
 struct UsbHidSettings;
-class ProtocomPrivate;
+
+using namespace Interface;
+
 class Protocom final : public BaseInterface
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(Protocom);
 
 public:
     explicit Protocom(QObject *parent = nullptr);
@@ -29,12 +30,7 @@ public:
     //    void writeCommand(Queries::Commands cmd, const QVariantList &list) override;
     //    void reqFloats(quint32 sigAdr, quint32 sigCount) override;
 
-protected:
-    ProtocomPrivate *const d_ptr;
-    Protocom(ProtocomPrivate &dd, QObject *parent);
-
 private:
-    bool isValidRegs(const quint32 sigAdr, const quint32 sigCount);
     Proto::Commands getProtoCommand(Queries::Commands cmd);
     [[deprecated("Use getWSCommand")]] Proto::WCommands getWCommand(Queries::Commands cmd);
     Proto::WSCommands getWSCommand(Queries::Commands cmd);

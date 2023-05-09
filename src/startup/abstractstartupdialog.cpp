@@ -80,7 +80,7 @@ void AbstractStartupDialog::WriteCor()
         DataTypes::FloatStruct value { it.key(), *it.value(), DataTypes::Quality::Good };
         values.push_back(QVariant::fromValue(value));
     }
-    BaseInterface::iface()->writeCommand(Queries::QC_WriteUserValues, values);
+    BaseInterface::iface()->writeCommand(Commands::C_WriteUserValues, values);
     m_corNeedsToCheck = CheckForRegMap; // we should check regs for equality at the next sigs receive
     GetCorBd();
 }
@@ -96,7 +96,7 @@ void AbstractStartupDialog::ResetCor()
 {
     if (checkPassword())
     {
-        BaseInterface::iface()->writeCommand(Queries::QC_ClearStartupValues);
+        BaseInterface::iface()->writeCommand(Commands::C_ClearStartupValues);
         m_corNeedsToCheck = CheckForZeroes; // we should check regs for equality at the next sigs receive
         GetCorBd();
     }
@@ -166,7 +166,7 @@ void AbstractStartupDialog::SetupCor()
 {
     if (checkPassword())
     {
-        BaseInterface::iface()->writeCommand(Queries::QC_SetStartupValues);
+        BaseInterface::iface()->writeCommand(Commands::C_SetStartupValues);
         GetCorBd();
     }
 }

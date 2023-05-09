@@ -34,6 +34,8 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
+using namespace Interface;
+
 DataBlock::DataBlock(QObject *parent) : QObject(parent)
 {
     m_widgetIsSet = false;

@@ -11,6 +11,10 @@
 #include <gen/error.h>
 
 class LogClass;
+
+namespace Interface
+{
+
 class ProtocomThread : public BaseInterfaceThread
 {
     typedef QQueue<QByteArray> ByteQueue;
@@ -19,18 +23,14 @@ public:
     explicit ProtocomThread(QObject *parent = nullptr);
     ~ProtocomThread();
 
-    void appendReadDataChunk(const QByteArray &readDataChunk);
-    void run();
-    void clear();
-
 private:
-    QByteArray m_readData;
     bool isFirstBlock;
+    Proto::Commands m_commandSent;
+    Proto::Commands m_responseReceived;
 
-    void parseRequest(const BaseInterface::BI_CommandStruct &cmdStr);
+    void parseRequest(const CommandStruct &cmdStr);
 
-    void parseResponse(QByteArray ba);
-    void handleResponse(const Proto::Commands cmd);
+    void parseResponse() override;
 
     void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
     void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)
@@ -38,8 +38,7 @@ private:
         writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }
 
-    QByteArray m_buffer;
-    void fileHelper(DataTypes::FilesEnum fileNum);
+    void processFileFromDisk(DataTypes::FilesEnum fileNum);
 
     quint16 extractLength(const QByteArray &ba);
     void appendInt16(QByteArray &ba, quint16 size);
@@ -52,10 +51,10 @@ private:
     // TODO вынести в отдельный класс как static методы?
     QByteArray prepareOk(bool isStart, byte cmd);
     QByteArray prepareError();
-    QByteArray prepareBlock(Proto::CommandStruct &cmdStr, Proto::Starters startByte = Proto::Starters::Request);
-    QByteArray prepareBlock(
-        Proto::Commands cmd, QByteArray &data, Proto::Starters startByte = Proto::Starters::Request);
-    ByteQueue prepareLongBlk(Proto::CommandStruct &cmdStr);
+    //    QByteArray prepareBlock(Proto::CommandStruct &cmdStr, Proto::Starters startByte = Proto::Starters::Request);
+    QByteArray prepareBlock(Proto::Commands cmd, const QByteArray &data = QByteArray(),
+        Proto::Starters startByte = Proto::Starters::Request);
+    ByteQueue prepareLongBlk(Proto::Commands cmd, quint8 arg1, const QByteArray &arg2);
 
     void handleBitString(const QByteArray &ba, quint16 sigAddr);
 #ifdef Q_OS_LINUX
@@ -66,16 +65,46 @@ private:
     void handleFloat(const QByteArray &ba, quint32 sigAddr);
     void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
     void handleSinglePoint(const QByteArray &ba, const quint16 addr);
-    void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format);
+    void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format);
     void handleInt(const byte num);
-    void handleBool(int errorCode = 0);
+    void handleOk();
+    void handleError(int errorCode = 0);
     void handleProgress(const quint64 count);
     void handleMaxProgress(const quint64 count);
     void handleRawBlock(const QByteArray &ba, quint32 blkNum);
     inline void handleCommand(const QByteArray &ba);
     void handleTechBlock(const QByteArray &ba, quint32 blkNum);
+
+    const QMap<Interface::Commands, Proto::Commands> protoCommandMap {
+        { C_ReqTime, Proto::ReadTime }, { C_ReqBSI, Proto::ReadBlkStartInfo }, //
+        { C_ReqBSIExt, Proto::ReadBlkStartInfoExt },                           //
+        { C_StartFirmwareUpgrade, Proto::WriteUpgrade },                       //
+        { C_SetNewConfiguration, Proto::WriteBlkTech },                        //
+        { C_WriteUserValues, Proto::WriteBlkData },                            // 1
+        { C_EraseJournals, Proto::EraseTech },                                 // 1
+        { C_ReqBitStrings, Proto::ReadProgress },                              //
+        { C_EraseTechBlock, Proto::EraseTech },                                // 1
+        { C_Test, Proto::Test },                                               //
+        { C_WriteSingleCommand, Proto::WriteSingleCommand },                   // 1
+        { C_ReqTuningCoef, Proto::ReadBlkAC },                                 //
+        { C_WriteTuningCoef, Proto::WriteBlkAC },                              //
+        { C_ReqBlkData, Proto::ReadBlkData },                                  //
+        { C_ReqBlkDataA, Proto::ReadBlkDataA },                                //
+        { C_ReqBlkDataTech, Proto::ReadBlkTech },                              //
+        { C_ReqOscInfo, Proto::ReadBlkTech },                                  //
+        { C_WriteBlkDataTech, Proto::WriteBlkTech },                           //
+        { C_Reboot, Proto::WriteBlkCmd },                                      //
+        { C_ReqAlarms, Proto::FakeReadAlarms },                                //
+        { C_GetMode, Proto::ReadMode },                                        //
+        { C_SetMode, Proto::WriteMode },                                       // 1
+        { C_WriteHardware, Proto::WriteHardware }                              // 1
+    };
+
 signals:
     void writeDataAttempt(const QByteArray);
-    /// Like a QIODevice::readyRead()
-    void readyRead();
+
+public slots:
+    void processReadBytes(QByteArray &ba) override;
 };
+
+}

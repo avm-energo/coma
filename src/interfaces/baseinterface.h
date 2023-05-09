@@ -4,6 +4,7 @@
 #include "../module/modulesettings.h"
 #include "../s2/configv.h"
 #include "../s2/datarecv.h"
+#include "interfacesettings.h"
 
 #include <QTimer>
 #include <gen/datamanager/typesproxy.h>
@@ -24,13 +25,79 @@ enum INTERVAL
 
 struct ConnectStruct;
 
+namespace Interface
+{
+
+enum State
+{
+    Run,
+    Stop,
+    Wait,
+    None
+};
+
+enum Commands
+{
+    C_ReqStartup,
+    C_ReqBSI,
+    C_ReqBSIExt,
+    C_ReqAlarms,
+    C_ReqFile,
+    C_WriteFile,
+    C_ReqTime,
+    C_WriteTime,
+    C_ReqFloats,
+    C_ReqBitStrings,
+    C_SetNewConfiguration,
+    C_StartFirmwareUpgrade,
+    C_StartWorkingChannel,
+    C_EraseJournals,
+    C_SetStartupValues,
+    C_SetStartupPhaseA,
+    C_SetStartupPhaseB,
+    C_SetStartupPhaseC,
+    C_SetStartupUnbounced,
+    C_SetTransOff,
+    C_ClearStartupValues,
+    //    C_ClearStartupPhaseA,
+    //    C_ClearStartupPhaseB,
+    //    C_ClearStartupPhaseC,
+    C_ClearStartupUnbounced,
+    C_ClearStartupError,
+    C_Command50,
+    C_Test,
+    C_EraseTechBlock,
+    C_WriteHiddenBlock,
+    C_WriteUserValues,
+    C_WriteSingleCommand,
+    C_ReqTuningCoef,
+    C_WriteTuningCoef,
+    C_WriteBlkData,
+    C_ReqBlkData,
+    C_ReqBlkDataA,
+    C_ReqBlkDataTech,
+    C_WriteBlkDataTech,
+    C_Reboot,
+    C_ReqOscInfo,
+    C_SetMode,
+    C_GetMode,
+    C_WriteHardware
+};
+
+struct CommandStruct
+{
+    Commands command;
+    QVariant arg1; // reqFile, writeFile: id, reqStartup: sigAddr, WriteTime: time, WriteCommand: command
+    QVariant arg2; // reqFile: format, reqStartup: sigCount, WriteFile: &bytearray, WriteCommand: value
+};
+
 class BaseInterface : public QObject
 {
     Q_OBJECT
 
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
 protected:
-    using FileFormat = Queries::FileFormat;
+    using FileFormat = DataTypes::FileFormat;
 
 public:
     /// BaseInterface has its own memory manager
@@ -38,49 +105,40 @@ public:
     /// multiple times in runtime
     using InterfacePointer = UniquePointer<BaseInterface>;
 
-    enum State
-    {
-        Run,
-        Stop,
-        Wait,
-        None
-    };
-
-    enum BI_Commands
-    {
-        C_ReqStartup,
-        C_ReqBSI,
-        C_ReqBSIExt,
-        C_ReqAlarms,
-        C_ReqFile,
-        C_WriteFile,
-        C_ReqTime,
-        C_WriteTime,
-        C_WriteCommand,
-        C_ReqFloats,
-        C_ReqBitStrings
-    };
-
-    struct BI_CommandStruct
-    {
-        BI_Commands command;
-        QVariant arg1; // reqFile, writeFile: id, reqStartup: sigAddr, WriteTime: time, WriteCommand: command
-        QVariant arg2; // reqFile: format, reqStartup: sigCount, WriteFile: &bytearray, WriteCommand: value
-    };
-
     UniquePointer<LogClass> Log;
 
     explicit BaseInterface(QObject *parent = nullptr);
-    ~BaseInterface();
+    ~BaseInterface() {};
+
     /// Pointer to current interface
-    static BaseInterface *iface();
+    static BaseInterface *iface()
+    {
+        return m_iface.get();
+    }
+
     /// Creator for interface
-    static void setIface(InterfacePointer iface);
+    static void setIface(InterfacePointer iface)
+    {
+        m_iface = std::move(iface);
+    }
 
     virtual bool start(const ConnectStruct &) = 0;
-    virtual void pause();
-    virtual void resume();
-    virtual void stop();
+    virtual void pause()
+    {
+        setState(State::Wait);
+    }
+    virtual void resume()
+    {
+        // Only for case Wait to Run
+        Q_ASSERT(state() == State::Wait);
+        setState(State::Run);
+    }
+    virtual void stop()
+    {
+        Log->info("Stop()");
+        setState(State::Stop);
+        qInfo() << metaObject()->className() << "disconnected";
+    }
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
@@ -91,18 +149,13 @@ public:
     void writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
     void reqTime();
     void writeTime(quint32 time);
-    void writeCommand(Queries::Commands cmd, QVariant value = 0);
-    void writeCommand(Queries::Commands cmd, const QVariantList &list)
-    {
-        // for each signal in list form the command and set it into the input queue
-        for (const auto &item : list)
-            writeCommand(cmd, item);
-    }
+    void writeCommand(Commands cmd, QVariant value = 0);
+    void writeCommand(Commands cmd, const QVariantList &list);
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
     void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0);
     void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
 
-    // Bac & Bda blocks only supported for now
+    // Synchronized requests for Bac & Bda blocks are only supported for now
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeConfFileSync(const QList<DataTypes::DataRecV> &config);
@@ -114,29 +167,59 @@ public:
     Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
 
-    ModuleTypes::InterfaceSettings settings() const;
-
-    template <class T> T settings() const
+    bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0)
     {
-        Q_ASSERT(m_settings.settings.canConvert<T>());
-        return m_settings.settings.value<T>();
+        const auto &st = settings();
+        if (!st.dictionary().contains(sigAdr))
+            return false;
+        const auto val = st.dictionary().value(sigAdr);
+        if (command != 0)
+        {
+            if (command != val.function)
+                return false;
+        }
+        return val.count == sigCount;
     }
 
-    void setSettings(const InterfaceSettings &settings);
-    template <class T> void setSettings(const T &settings)
+    ModuleTypes::InterfaceSettings interfaceSettings() const
+    {
+        return m_settings;
+    }
+
+    ProtocolDescription settings() const
+    {
+        return m_settings.settings;
+    }
+
+    void setInterfaceSettings(const InterfaceSettings &settings)
+    {
+        m_settings = settings;
+    }
+
+    void setSettings(const ProtocolDescription &settings)
     {
         m_settings.settings = settings;
     }
 
-    State state();
-    void setState(const State &state);
+    State state()
+    {
+        QMutexLocker locker(&_stateMutex);
+        return m_state;
+    }
+    void setState(const State &state)
+    {
+        QMutexLocker locker(&_stateMutex);
+        m_state = state;
+        emit stateChanged(m_state);
+    }
+
     bool virtual supportBSIExt();
 
 signals:
     void reconnect();
     void finish();
     void nativeEvent(void *const message);
-    void stateChanged(BaseInterface::State m_state);
+    void stateChanged(State m_state);
 
 private:
     bool m_busy, m_timeout;
@@ -157,10 +240,22 @@ private slots:
     void resultReady(const QVariant &msg);
     void responseReceived(const QVariant &msg);
     void fileReceived(const QVariant &msg);
-    void timeout();
+    void timeout()
+    {
+        m_busy = false;
+    }
 };
 
-Q_DECLARE_METATYPE(BaseInterface::State)
-Q_DECLARE_METATYPE(BaseInterface::BI_CommandStruct)
+inline void BaseInterface::writeCommand(Commands cmd, const QVariantList &list)
+{
+    // for each signal in list form the command and set it into the input queue
+    for (const auto &item : list)
+        writeCommand(cmd, item);
+}
+
+}
+
+Q_DECLARE_METATYPE(Interface::State)
+Q_DECLARE_METATYPE(Interface::CommandStruct)
 
 #endif // BASEINTERFACE_H

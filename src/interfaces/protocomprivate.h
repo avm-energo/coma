@@ -10,31 +10,6 @@ namespace Proto
 {
 Q_NAMESPACE
 
-namespace Limits
-{
-    // 64-4 ('<',cmd,L,L)
-    constexpr unsigned MaxSegmenthLength = 60;
-    constexpr unsigned MaxMemoryFileSize = 65535;
-    // максимальный размер выходного файла
-    constexpr unsigned MaxFileSize = 300000;
-    constexpr unsigned MaxGetFileSize = 16777215;
-
-    // максимальный ИД осциллограмм
-    constexpr unsigned MaxOscillogramId = 2999;
-    // минимальный ИД осциллограмм, нужно, т.к. файлы осциллограмм обрабатываются по-своему
-    constexpr unsigned MinOscillogramId = 1000;
-
-    //    // максимальный ИД журналов
-    //    constexpr byte MaxJournalId = 6;
-    //    // минимальный ИД журналов
-    //    constexpr byte MinJournalId = 4;
-
-    //    constexpr byte ConfigFileId = 1;
-    //    constexpr byte FirmwareFileId = 3;
-    //    constexpr byte SwjFileId = 17;
-    //    constexpr byte EventFileId = 18;
-}
-
 // Канал связи с модулем
 // таймаут по USB в мс
 constexpr unsigned Timeout = 1000;
@@ -44,6 +19,8 @@ constexpr unsigned TimeoutOscillogram = 1000;
 constexpr unsigned MainLoopDelay = 100;
 //'\x00'
 constexpr byte NullByte = 0x00;
+// максимальный размер одного сегмента по USB
+constexpr unsigned MaxSegmenthLength = 60;
 
 enum Starters : byte
 {
@@ -107,7 +84,7 @@ enum Commands : byte
     // запись файла
     WriteFile = 0x32,
     // задание варианта использования
-    WriteVariant = 0x44,
+    //    WriteVariant = 0x44,
     // задание текущего режима работы
     WriteMode = 0x43,
     // запись времени в МНК в формате UNIX

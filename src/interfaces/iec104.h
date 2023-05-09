@@ -46,7 +46,7 @@ public slots:
     void reqBSI() override;
     void reqBSIExt() override;
     // void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
-    void reqFile(quint32 filenum, Queries::FileFormat format) override;
+    void reqFile(quint32 filenum, Datatypes::FileFormat format) override;
     void writeFile(quint32 filenum, const QByteArray &file) override;
     // void writeConfigFile(S2DataTypes::S2ConfigType *s2config) override;
     void reqTime() override;

@@ -133,7 +133,7 @@ void IEC104::reqBSIExt()
     // No request, bsiExt is in the same group with bsi, so request bsi also requests bsi ext
 }
 
-void IEC104::reqFile(quint32 filenum, Queries::FileFormat format)
+void IEC104::reqFile(quint32 filenum, Datatypes::FileFormat format)
 {
     auto cmd104 = (format) ? Commands104::CM104_REQCONFIGFILE : Commands104::CM104_REQFILE;
     Commands104::CommandStruct inp { cmd104, filenum, 0, {} };

@@ -4,15 +4,19 @@
 
 #include <gen/datamanager/typesproxy.h>
 
+using namespace Interface;
+
 BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent), m_currentCommand({})
 {
 }
 
 void BaseInterfaceThread::clear()
 {
+    QMutexLocker locker(&_mutex);
+    m_readData.clear();
     m_isCommandRequested = false;
     m_progress = 0;
-    m_currentCommand = BaseInterface::BI_CommandStruct();
+    m_currentCommand = CommandStruct();
 }
 
 void BaseInterfaceThread::wakeUp()
@@ -20,7 +24,7 @@ void BaseInterfaceThread::wakeUp()
     _waiter.wakeOne();
 }
 
-void BaseInterfaceThread::FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format)
+void BaseInterfaceThread::FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, Datatypes::FileFormat format)
 {
     switch (format)
     {
@@ -75,7 +79,7 @@ void BaseInterfaceThread::FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr
 
 void BaseInterfaceThread::checkQueue()
 {
-    BaseInterface::BI_CommandStruct inp;
+    CommandStruct inp;
     if (DataManager::GetInstance().deQueue(inp) != Error::Msg::NoError)
         return;
 
@@ -83,4 +87,20 @@ void BaseInterfaceThread::checkQueue()
     m_progress = 0;
     m_currentCommand = inp;
     parseRequest(inp);
+}
+
+void BaseInterfaceThread::run()
+{
+    while (BaseInterface::iface()->state() != State::Stop)
+    {
+        QMutexLocker locker(&_mutex);
+        if (!m_isCommandRequested)
+            checkQueue();
+        _waiter.wait(&_mutex);
+        if (!m_readData.isEmpty())
+        {
+            parseResponse();
+            m_readData.clear();
+        }
+    }
 }

@@ -8,13 +8,16 @@
 #include <gen/stdfunc.h>
 #include <memory>
 
+namespace Interface
+{
+
 // Static members
 BaseInterface::InterfacePointer BaseInterface::m_iface;
 
 BaseInterface::BaseInterface(QObject *parent) : QObject(parent), /* m_working(false),*/ Log(new LogClass(this))
 {
     ProxyInit();
-    qRegisterMetaType<BaseInterface::State>();
+    qRegisterMetaType<State>();
     timeoutTimer = new QTimer(this);
     timeoutTimer->setInterval(MAINTIMEOUT);
     connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
@@ -41,49 +44,31 @@ void BaseInterface::ProxyInit()
 #endif
 }
 
-BaseInterface::~BaseInterface()
-{
-}
-
-BaseInterface *BaseInterface::iface()
-{
-    return m_iface.get();
-}
-
-void BaseInterface::setIface(InterfacePointer iface)
-{
-    m_iface = std::move(iface);
-}
-
-void BaseInterface::pause()
-{
-    setState(State::Wait);
-}
-
-void BaseInterface::resume()
-{
-    // Only for case Wait to Run
-    Q_ASSERT(state() == State::Wait);
-    setState(State::Run);
-}
-
 void BaseInterface::reqAlarms(quint32 sigAdr, quint32 sigCount)
 {
-    // NOTE Избежать сужающих кастов
-    DataTypes::Signal signal { static_cast<quint16>(sigAdr), static_cast<quint16>(sigCount) };
-    writeCommand(Queries::QC_ReqAlarms, QVariant::fromValue(signal));
+    if (isValidRegs(sigAdr, sigCount))
+    {
+        CommandStruct bi { C_ReqAlarms, sigAdr, sigCount };
+        DataManager::GetInstance().addToInQueue(bi);
+    }
 }
 
 void BaseInterface::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
-    BI_CommandStruct bi { C_ReqFloats, sigAdr, sigCount };
-    DataManager::GetInstance().addToInQueue(bi);
+    if (isValidRegs(sigAdr, sigCount))
+    {
+        CommandStruct bi { C_ReqFloats, sigAdr, sigCount };
+        DataManager::GetInstance().addToInQueue(bi);
+    }
 }
 
 void BaseInterface::reqBitStrings(quint32 sigAdr, quint32 sigCount)
 {
-    BI_CommandStruct bi { C_ReqBitStrings, sigAdr, sigCount };
-    DataManager::GetInstance().addToInQueue(bi);
+    if (isValidRegs(sigAdr, sigCount))
+    {
+        CommandStruct bi { C_ReqBitStrings, sigAdr, sigCount };
+        DataManager::GetInstance().addToInQueue(bi);
+    }
 }
 
 Error::Msg BaseInterface::reqBlockSync(
@@ -92,10 +77,10 @@ Error::Msg BaseInterface::reqBlockSync(
     m_busy = true;
     m_timeout = false;
     connect(proxyBS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::resultReady);
-    QMap<DataTypes::DataBlockTypes, Queries::Commands> blockmap;
-    blockmap[DataTypes::DataBlockTypes::BacBlock] = Queries::QUSB_ReqTuningCoef;
-    blockmap[DataTypes::DataBlockTypes::BdaBlock] = Queries::QUSB_ReqBlkDataA;
-    blockmap[DataTypes::DataBlockTypes::BdBlock] = Queries::QUSB_ReqBlkData;
+    QMap<DataTypes::DataBlockTypes, Commands> blockmap;
+    blockmap[DataTypes::DataBlockTypes::BacBlock] = C_ReqTuningCoef;
+    blockmap[DataTypes::DataBlockTypes::BdaBlock] = C_ReqBlkDataA;
+    blockmap[DataTypes::DataBlockTypes::BdBlock] = C_ReqBlkData;
 
     Q_ASSERT(blockmap.contains(blocktype));
     writeCommand(blockmap.value(blocktype), blocknum);
@@ -126,7 +111,7 @@ Error::Msg BaseInterface::writeBlockSync(
     connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::responseReceived);
     if (blocktype == DataTypes::DataBlockTypes::BacBlock)
     {
-        writeCommand(Queries::QUSB_WriteTuningCoef, QVariant::fromValue(bs));
+        writeCommand(C_WriteTuningCoef, QVariant::fromValue(bs));
         timeoutTimer->start();
         while (m_busy)
         {
@@ -278,29 +263,6 @@ Error::Msg BaseInterface::reqTimeSync(void *block, quint32 blocksize)
     return Error::Msg::NoError;
 }
 
-InterfaceSettings BaseInterface::settings() const
-{
-    return m_settings;
-}
-
-void BaseInterface::setSettings(const InterfaceSettings &settings)
-{
-    m_settings = settings;
-}
-
-BaseInterface::State BaseInterface::state()
-{
-    QMutexLocker locker(&_stateMutex);
-    return m_state;
-}
-
-void BaseInterface::setState(const State &state)
-{
-    QMutexLocker locker(&_stateMutex);
-    m_state = state;
-    emit stateChanged(m_state);
-}
-
 bool BaseInterface::supportBSIExt()
 {
     m_busy = true;
@@ -346,28 +308,21 @@ bool BaseInterface::supportBSIExt()
     return status;
 }
 
-void BaseInterface::stop()
-{
-    Log->info("Stop()");
-    setState(BaseInterface::State::Stop);
-    qInfo() << metaObject()->className() << "disconnected";
-}
-
 void BaseInterface::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
-    BI_CommandStruct bi { C_ReqStartup, sigAdr, sigCount };
+    CommandStruct bi { C_ReqStartup, sigAdr, sigCount };
     DataManager::GetInstance().addToInQueue(bi);
 }
 
 void BaseInterface::reqBSI()
 {
-    BI_CommandStruct bi { C_ReqBSI, 0, 0 };
+    CommandStruct bi { C_ReqBSI, 0, 0 };
     DataManager::GetInstance().addToInQueue(bi);
 }
 
 void BaseInterface::reqBSIExt()
 {
-    BI_CommandStruct bi { C_ReqBSIExt, 0, 0 };
+    CommandStruct bi { C_ReqBSIExt, 0, 0 };
     DataManager::GetInstance().addToInQueue(bi);
 }
 
@@ -378,13 +333,13 @@ void BaseInterface::reqFile(quint32 id, FileFormat format, quint32 expectedSize)
         DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, expectedSize };
         (&DataManager::GetInstance())->addSignalToOutList(resp);
     }
-    BI_CommandStruct bi { C_ReqFile, id, format };
+    CommandStruct bi { C_ReqFile, id, format };
     DataManager::GetInstance().addToInQueue(bi);
 }
 
 void BaseInterface::writeFile(quint32 id, const QByteArray &ba)
 {
-    BI_CommandStruct bi { C_WriteFile, id, ba };
+    CommandStruct bi { C_WriteFile, id, ba };
     DataManager::GetInstance().addToInQueue(bi);
 }
 
@@ -397,19 +352,19 @@ void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2Conf
 
 void BaseInterface::reqTime()
 {
-    BI_CommandStruct bi { C_ReqTime, 0, 0 };
+    CommandStruct bi { C_ReqTime, 0, 0 };
     DataManager::GetInstance().addToInQueue(bi);
 }
 
 void BaseInterface::writeTime(quint32 time)
 {
-    BI_CommandStruct bi { C_WriteTime, time, 0 };
+    CommandStruct bi { C_WriteTime, time, 0 };
     DataManager::GetInstance().addToInQueue(bi);
 }
 
-void BaseInterface::writeCommand(Queries::Commands cmd, QVariant value)
+void BaseInterface::writeCommand(Commands cmd, QVariant value)
 {
-    BI_CommandStruct bi { C_WriteCommand, cmd, value };
+    CommandStruct bi { cmd, value };
     DataManager::GetInstance().addToInQueue(bi);
 }
 
@@ -440,7 +395,4 @@ void BaseInterface::fileReceived(const QVariant &msg)
     m_busy = false;
 }
 
-void BaseInterface::timeout()
-{
-    m_busy = false;
 }

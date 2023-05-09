@@ -8,6 +8,9 @@
 #include <QWaitCondition>
 #include <gen/datatypes.h>
 
+namespace Interface
+{
+
 class BaseInterfaceThread : public QObject
 {
     Q_OBJECT
@@ -17,21 +20,34 @@ public:
     virtual void clear();
     void wakeUp();
 
-    void FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format);
+    quint16 blockByReg(const quint32 regAddr)
+    {
+        return BaseInterface::iface()->settings().dictionary().value(regAddr).dataType.value<quint16>();
+    }
+
+    void FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format);
     void checkQueue();
-    virtual void parseRequest(const BaseInterface::BI_CommandStruct &cmdStr) = 0;
+    virtual void parseRequest(const CommandStruct &cmdStr) = 0;
+    virtual void parseResponse() = 0;
 
     bool m_isCommandRequested = false;
     quint64 m_progress = 0;
-    BaseInterface::BI_CommandStruct m_currentCommand;
+    CommandStruct m_currentCommand;
     QMutex _mutex;
+    QByteArray m_readData;
 
     QWaitCondition _waiter;
 
 protected:
-    using FileFormat = Queries::FileFormat;
+    using FileFormat = DataTypes::FileFormat;
 
 signals:
+
+public slots:
+    void run();
+    virtual void processReadBytes(QByteArray &ba) = 0;
 };
+
+}
 
 #endif // BASEINTERFACETHREAD_H

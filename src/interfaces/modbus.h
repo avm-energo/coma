@@ -29,6 +29,8 @@ const QMap<Queries::Commands, CommandStruct> CommandsTranslateMap {
 }
 */
 
+using namespace Interface;
+
 class ModBus final : public BaseInterface
 {
     Q_OBJECT
