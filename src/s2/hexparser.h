@@ -49,7 +49,6 @@ class HexParser : public QObject
 private:
     std::vector<HexRecord> records;
 
-    QByteArray stringToByteArray(const QString &string);
     bool verifyChecksum(const quint8 *data, int size);
     bool parseASCII(const QString &strRecord, HexRecord &record);
     quint16 getIdByAddress(const QByteArray &binAddr);

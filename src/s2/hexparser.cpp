@@ -12,12 +12,6 @@ HexParser::HexParser(QObject *parent) : QObject(parent)
 {
 }
 
-QByteArray HexParser::stringToByteArray(const QString &string)
-{
-    auto bytes = QByteArray::fromHex(string.toUtf8());
-    return bytes;
-}
-
 bool HexParser::verifyChecksum(const quint8 *data, int size)
 {
     auto sum = static_cast<quint8>(std::accumulate(data, data + size - 1, 0u) & 0xff);
@@ -36,7 +30,7 @@ bool HexParser::parseASCII(const QString &strRecord, HexRecord &record)
     }
 
     // Verifying the size of the given HEX record.
-    auto byteRecord = stringToByteArray(strRecord);
+    auto byteRecord = QByteArray::fromHex(strRecord.toUtf8()); // str to byte array
     auto recordSize = byteRecord.size();
     if (recordSize < minRecordSize || recordSize > maxRecordSize)
     {
@@ -86,6 +80,7 @@ quint16 HexParser::getIdByAddress(const QByteArray &binAddr)
     Q_ASSERT(binAddr.size() == 2);
     auto dataPtr = reinterpret_cast<const quint8 *>(binAddr.data());
     quint16 address = dataPtr[0] << 8 | dataPtr[1];
+    // Looks like a kostyl, mah fren
     if (address == 0x0800)
         return 8000;
     else if (address >= 0x0801)
@@ -101,9 +96,7 @@ std::vector<DataTypes::FileStruct> HexParser::getS2Format()
     quint16 prevBlockId = idNotFound, currBlockId = idNotFound;
 
     for (auto &record : records)
-    //    for (auto i = 0; i < records.size(); i++)
     {
-        // const auto &record = records[i];
         if (record.recordType == RecordType::LinearAddr)
         {
             currBlockId = getIdByAddress(record.data);
