@@ -74,5 +74,5 @@ void FWUploadDialog::RunSoft()
     if (!checkPassword())
         return;
     setSuccessMsg("Переход на новое ПО выполнен успешно");
-    BaseInterface::iface()->writeCommand(Queries::QC_StartFirmwareUpgrade);
+    BaseInterface::iface()->writeCommand(Commands::C_StartFirmwareUpgrade);
 }

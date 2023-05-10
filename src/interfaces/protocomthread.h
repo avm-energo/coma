@@ -54,7 +54,7 @@ private:
     //    QByteArray prepareBlock(Proto::CommandStruct &cmdStr, Proto::Starters startByte = Proto::Starters::Request);
     QByteArray prepareBlock(Proto::Commands cmd, const QByteArray &data = QByteArray(),
         Proto::Starters startByte = Proto::Starters::Request);
-    ByteQueue prepareLongBlk(Proto::Commands cmd, quint8 arg1, const QByteArray &arg2);
+    void writeBlock(Proto::Commands cmd, quint8 arg1, const QByteArray &arg2);
 
     void handleBitString(const QByteArray &ba, quint16 sigAddr);
 #ifdef Q_OS_LINUX
@@ -79,7 +79,7 @@ private:
         { C_ReqTime, Proto::ReadTime }, { C_ReqBSI, Proto::ReadBlkStartInfo }, //
         { C_ReqBSIExt, Proto::ReadBlkStartInfoExt },                           //
         { C_StartFirmwareUpgrade, Proto::WriteUpgrade },                       //
-        { C_SetNewConfiguration, Proto::WriteBlkTech },                        //
+        { C_SetNewConfiguration, Proto::WriteBlkTech },                        // 1
         { C_WriteUserValues, Proto::WriteBlkData },                            // 1
         { C_EraseJournals, Proto::EraseTech },                                 // 1
         { C_ReqBitStrings, Proto::ReadProgress },                              //
@@ -92,12 +92,12 @@ private:
         { C_ReqBlkDataA, Proto::ReadBlkDataA },                                //
         { C_ReqBlkDataTech, Proto::ReadBlkTech },                              //
         { C_ReqOscInfo, Proto::ReadBlkTech },                                  //
-        { C_WriteBlkDataTech, Proto::WriteBlkTech },                           //
-        { C_Reboot, Proto::WriteBlkCmd },                                      //
-        { C_ReqAlarms, Proto::FakeReadAlarms },                                //
-        { C_GetMode, Proto::ReadMode },                                        //
-        { C_SetMode, Proto::WriteMode },                                       // 1
-        { C_WriteHardware, Proto::WriteHardware }                              // 1
+        { C_WriteBlkDataTech, Proto::WriteBlkTech },                           // 1
+        { C_Reboot, Proto::WriteBlkCmd },                                      // 1
+        //        { C_ReqAlarms, Proto::FakeReadAlarms },                                //
+        { C_GetMode, Proto::ReadMode },           //
+        { C_SetMode, Proto::WriteMode },          // 1
+        { C_WriteHardware, Proto::WriteHardware } // 1
     };
 
 signals:

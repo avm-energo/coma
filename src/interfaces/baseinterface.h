@@ -246,13 +246,6 @@ private slots:
     }
 };
 
-inline void BaseInterface::writeCommand(Commands cmd, const QVariantList &list)
-{
-    // for each signal in list form the command and set it into the input queue
-    for (const auto &item : list)
-        writeCommand(cmd, item);
-}
-
 }
 
 Q_DECLARE_METATYPE(Interface::State)

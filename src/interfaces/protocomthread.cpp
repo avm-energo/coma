@@ -99,6 +99,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 
     switch (cmdStr.command)
     {
+        // commands requesting regs with addresses ("fake" read regs commands)
     case Commands::C_ReqAlarms:
     case Commands::C_ReqStartup:
     case Commands::C_ReqFloats:
@@ -113,6 +114,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_ReqBSI:
     case Commands::C_ReqBSIExt:
     case Commands::C_ReqTime:
+    case Commands::C_StartFirmwareUpgrade:
     {
         if (protoCommandMap.contains(cmdStr.command))
         {
@@ -121,9 +123,11 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         }
         break;
     }
+        // commands with only one uint8 parameter (blocknum or smth similar)
     case Commands::C_EraseTechBlock:
     case Commands::C_EraseJournals:
     case Commands::C_SetMode:
+    case Commands::C_Reboot:
     {
         if (protoCommandMap.contains(cmdStr.command))
         {
@@ -132,6 +136,9 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
             emit writeDataAttempt(ba);
         }
     }
+
+        // file request: known file types should be download from disk and others must be taken from module by Protocom,
+        // arg1 - file number
     case Commands::C_ReqFile:
     {
         DataTypes::FilesEnum filetype = cmdStr.arg1.value<DataTypes::FilesEnum>();
@@ -150,56 +157,71 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
+        // commands with one bytearray argument arg2
     case Commands::C_WriteFile:
     {
-        ba = prepareBlock(Proto::Commands::WriteFile, cmdStr.arg2.value<QByteArray>());
-        emit writeDataAttempt(ba);
+        if (cmdStr.arg2.canConvert<QByteArray>())
+        {
+            ba = prepareBlock(Proto::Commands::WriteFile, cmdStr.arg2.value<QByteArray>());
+            emit writeDataAttempt(ba);
+        }
         break;
     }
 
+        // write time command with different behaviour under different OS's
     case Commands::C_WriteTime:
     {
+        QByteArray tba;
 #ifdef Q_OS_LINUX
         if (cmdStr.arg1.canConvert<timespec>())
         {
             timespec time = cmdStr.arg1.value<timespec>();
-            ba.push_back(StdFunc::ArrayFromNumber(quint32(time.tv_sec)));
-            ba.push_back(StdFunc::ArrayFromNumber(quint32(time.tv_nsec)));
-            ba = prepareBlock(Proto::Commands::WriteTime, ba);
+            tba.push_back(StdFunc::ArrayFromNumber(quint32(time.tv_sec)));
+            tba.push_back(StdFunc::ArrayFromNumber(quint32(time.tv_nsec)));
         }
         else
 #endif
         {
-            ba = StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint32>());
+            tba = StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint32>());
         }
-        QByteArray ba = prepareBlock(Proto::Commands::WriteTime, ba);
+        QByteArray ba = prepareBlock(Proto::Commands::WriteTime, tba);
         emit writeDataAttempt(ba);
         break;
     }
 
+        // block write, arg1 is BlockStruct of one quint32 (block ID) and one QByteArray (block contents)
     case Commands::C_WriteHardware:
-    case Commands::C_WriteUserValues:
+    case Commands::C_WriteBlkDataTech:
+    case Commands::C_SetNewConfiguration:
     {
-        ba = cmdStr.arg2.value<QByteArray>();
-        if (isSplitted(ba.size()))
+        if (cmdStr.arg1.canConvert<DataTypes::BlockStruct>())
         {
-            auto query = prepareLongBlk(protoCommandMap.value(cmdStr.command), cmdStr.arg1.value<quint8>(), ba);
-            while (!query.isEmpty())
-                emit writeDataAttempt(
-                    query.dequeue()); // неправильно это - не дожидаясь ответа от модуля пихать в него подряд данные
-        }
-        else
-        {
-            if (cmdStr.arg1.isValid())
-            {
-                ba.prepend(StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>()));
-                ba = prepareBlock(protoCommandMap.value(cmdStr.command), ba);
-                emit writeDataAttempt(ba);
-            }
+            DataTypes::BlockStruct bs = cmdStr.arg1.value<DataTypes::BlockStruct>();
+            writeBlock(protoCommandMap.value(cmdStr.command), bs.ID, bs.data);
         }
         break;
     }
 
+        // QVariantList write
+    case Commands::C_WriteUserValues:
+    {
+        if (cmdStr.arg1.canConvert<QVariantList>())
+        {
+            QVariantList vl = cmdStr.arg1.value<QVariantList>();
+            const quint16 start_addr = vl.first().value<DataTypes::FloatStruct>().sigAdr;
+            const auto blockNum = blockByReg(start_addr);
+            ba.clear();
+            for (const auto &i : vl)
+            {
+                const float value = i.value<DataTypes::FloatStruct>().sigVal;
+                ba.append(StdFunc::ArrayFromNumber(value));
+            }
+            writeBlock(protoCommandMap.value(cmdStr.command), blockNum, ba);
+        }
+        break;
+    }
+
+        // WS Commands
     case Commands::C_WriteSingleCommand:
     {
         if (cmdStr.arg1.canConvert<DataTypes::SingleCommand>())
@@ -409,30 +431,43 @@ QByteArray ProtocomThread::prepareBlock(Proto::Commands cmd, const QByteArray &d
     return ba;
 }
 
-ByteQueue ProtocomThread::prepareLongBlk(Proto::Commands cmd, quint8 arg1, const QByteArray &arg2)
+void ProtocomThread::writeBlock(Proto::Commands cmd, quint8 arg1, const QByteArray &arg2)
 {
     QByteArray ba;
     ByteQueue bq;
     using Proto::MaxSegmenthLength;
     ba = arg2;
-    // Количество сегментов
-    quint64 segCount = (ba.size() + 1) // +1 Т.к. некоторые команды имеют в значимой части один дополнительный байт
-            / MaxSegmenthLength        // Максимальная длинна сегмента
-        + 1; // Добавляем еще один сегмент в него попадет последняя часть
-    bq.reserve(segCount);
 
-    QByteArray tba;
-    tba = StdFunc::ArrayFromNumber(arg1);
-    tba.append(ba.left(MaxSegmenthLength - 1));
-
-    bq << prepareBlock(cmd, tba);
-
-    for (int pos = MaxSegmenthLength - 1; pos < ba.size(); pos += MaxSegmenthLength)
+    if (isSplitted(ba.size()))
     {
-        tba = ba.mid(pos, MaxSegmenthLength);
-        bq << prepareBlock(cmd, tba, Proto::Starters::Continue);
+        // prepareLongBlk
+        // Количество сегментов
+        quint64 segCount = (ba.size() + 1) // +1 Т.к. некоторые команды имеют в значимой части один дополнительный байт
+                / MaxSegmenthLength        // Максимальная длинна сегмента
+            + 1; // Добавляем еще один сегмент в него попадет последняя часть
+        bq.reserve(segCount);
+
+        QByteArray tba;
+        tba = StdFunc::ArrayFromNumber(arg1);
+        tba.append(ba.left(MaxSegmenthLength - 1));
+
+        bq << prepareBlock(cmd, tba);
+
+        for (int pos = MaxSegmenthLength - 1; pos < ba.size(); pos += MaxSegmenthLength)
+        {
+            tba = ba.mid(pos, MaxSegmenthLength);
+            bq << prepareBlock(cmd, tba, Proto::Starters::Continue);
+        }
+        while (!bq.isEmpty())
+            emit writeDataAttempt(
+                bq.dequeue()); // неправильно это - не дожидаясь ответа от модуля пихать в него подряд данные
     }
-    return bq;
+    else
+    {
+        ba.prepend(StdFunc::ArrayFromNumber(arg1));
+        ba = prepareBlock(cmd, ba);
+        emit writeDataAttempt(ba);
+    }
 }
 
 void ProtocomThread::handleBitString(const QByteArray &ba, quint16 sigAddr)

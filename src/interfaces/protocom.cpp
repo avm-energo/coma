@@ -162,21 +162,6 @@ bool Protocom::start(const UsbHidSettings &usbhid)
 //        d->handleBlk(protoCmd, item.toUInt());
 //        break;
 
-//    case Commands::WriteBlkAC:
-//        Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
-//        d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
-//        break;
-
-//    case Commands::WriteBlkTech:
-//        Q_ASSERT(item.canConvert<DataTypes::BlockStruct>());
-//        d->handleBlk(protoCmd, item.value<DataTypes::BlockStruct>());
-//        break;
-
-//    case Commands::WriteBlkCmd:
-//        Q_ASSERT(item.canConvert<quint32>());
-//        d->handleBlk(protoCmd, item.toUInt());
-//        break;
-
 //    // default case as case for Proto WCommand
 //    default:
 //    {

@@ -364,8 +364,18 @@ void BaseInterface::writeTime(quint32 time)
 
 void BaseInterface::writeCommand(Commands cmd, QVariant value)
 {
-    CommandStruct bi { cmd, value };
+    CommandStruct bi { cmd, value, QVariant() };
     DataManager::GetInstance().addToInQueue(bi);
+}
+
+void Interface::BaseInterface::writeCommand(Commands cmd, const QVariantList &list)
+{
+    const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
+    if (isValidRegs(start_addr, list.size()))
+    {
+        CommandStruct bi { cmd, list, QVariant() };
+        DataManager::GetInstance().addToInQueue(bi);
+    }
 }
 
 void BaseInterface::resultReady(const QVariant &msg)
