@@ -76,22 +76,22 @@ private:
     void handleTechBlock(const QByteArray &ba, quint32 blkNum);
 
     const QMap<Interface::Commands, Proto::Commands> protoCommandMap {
-        { C_ReqTime, Proto::ReadTime }, { C_ReqBSI, Proto::ReadBlkStartInfo }, //
-        { C_ReqBSIExt, Proto::ReadBlkStartInfoExt },                           //
-        { C_StartFirmwareUpgrade, Proto::WriteUpgrade },                       //
+        { C_ReqTime, Proto::ReadTime }, { C_ReqBSI, Proto::ReadBlkStartInfo }, // 1
+        { C_ReqBSIExt, Proto::ReadBlkStartInfoExt },                           // 1
+        { C_StartFirmwareUpgrade, Proto::WriteUpgrade },                       // 1
         { C_SetNewConfiguration, Proto::WriteBlkTech },                        // 1
         { C_WriteUserValues, Proto::WriteBlkData },                            // 1
         { C_EraseJournals, Proto::EraseTech },                                 // 1
-        { C_ReqBitStrings, Proto::ReadProgress },                              //
+        { C_ReqProgress, Proto::ReadProgress },                                // 1
         { C_EraseTechBlock, Proto::EraseTech },                                // 1
         { C_Test, Proto::Test },                                               //
         { C_WriteSingleCommand, Proto::WriteSingleCommand },                   // 1
-        { C_ReqTuningCoef, Proto::ReadBlkAC },                                 //
+        { C_ReqTuningCoef, Proto::ReadBlkAC },                                 // 1
         { C_WriteTuningCoef, Proto::WriteBlkAC },                              //
-        { C_ReqBlkData, Proto::ReadBlkData },                                  //
-        { C_ReqBlkDataA, Proto::ReadBlkDataA },                                //
-        { C_ReqBlkDataTech, Proto::ReadBlkTech },                              //
-        { C_ReqOscInfo, Proto::ReadBlkTech },                                  //
+        { C_ReqBlkData, Proto::ReadBlkData },                                  // 1
+        { C_ReqBlkDataA, Proto::ReadBlkDataA },                                // 1
+        { C_ReqBlkDataTech, Proto::ReadBlkTech },                              // 1
+        { C_ReqOscInfo, Proto::ReadBlkTech },                                  // 1
         { C_WriteBlkDataTech, Proto::WriteBlkTech },                           // 1
         { C_Reboot, Proto::WriteBlkCmd },                                      // 1
         //        { C_ReqAlarms, Proto::FakeReadAlarms },                                //

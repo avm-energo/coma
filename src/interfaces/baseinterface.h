@@ -48,6 +48,7 @@ enum Commands
     C_WriteTime,
     C_ReqFloats,
     C_ReqBitStrings,
+    C_ReqProgress,
     C_SetNewConfiguration,
     C_StartFirmwareUpgrade,
     C_StartWorkingChannel,

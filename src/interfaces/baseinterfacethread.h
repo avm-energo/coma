@@ -32,7 +32,7 @@ public:
 
     bool m_isCommandRequested = false;
     quint64 m_progress = 0;
-    CommandStruct m_currentCommand;
+    Commands m_currentCommand;
     QMutex _mutex;
     QByteArray m_readData;
 

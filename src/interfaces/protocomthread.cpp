@@ -115,6 +115,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_ReqBSIExt:
     case Commands::C_ReqTime:
     case Commands::C_StartFirmwareUpgrade:
+    case Commands::C_ReqProgress:
     {
         if (protoCommandMap.contains(cmdStr.command))
         {
@@ -128,6 +129,11 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_EraseJournals:
     case Commands::C_SetMode:
     case Commands::C_Reboot:
+    case Commands::C_ReqTuningCoef:
+    case Commands::C_ReqBlkData:
+    case Commands::C_ReqBlkDataA:
+    case Commands::C_ReqBlkDataTech:
+    case Commands::C_ReqOscInfo:
     {
         if (protoCommandMap.contains(cmdStr.command))
         {

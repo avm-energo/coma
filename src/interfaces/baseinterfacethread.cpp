@@ -6,7 +6,7 @@
 
 using namespace Interface;
 
-BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent), m_currentCommand({})
+BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent)
 {
 }
 
@@ -16,7 +16,7 @@ void BaseInterfaceThread::clear()
     m_readData.clear();
     m_isCommandRequested = false;
     m_progress = 0;
-    m_currentCommand = CommandStruct();
+    m_currentCommand = Commands();
 }
 
 void BaseInterfaceThread::wakeUp()
@@ -24,7 +24,7 @@ void BaseInterfaceThread::wakeUp()
     _waiter.wakeOne();
 }
 
-void BaseInterfaceThread::FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, Datatypes::FileFormat format)
+void BaseInterfaceThread::FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format)
 {
     switch (format)
     {
@@ -85,7 +85,7 @@ void BaseInterfaceThread::checkQueue()
 
     m_isCommandRequested = true;
     m_progress = 0;
-    m_currentCommand = inp;
+    m_currentCommand = inp.command;
     parseRequest(inp);
 }
 
