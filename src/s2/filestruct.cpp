@@ -9,7 +9,7 @@ FileStruct::FileStruct(const FilesEnum num, const QByteArray &file) : ID(num), d
 {
 }
 
-FileStruct::FileStruct(const quint16 num, const QByteArray &file) : ID(num), data(file)
+FileStruct::FileStruct(const quint32 num, const QByteArray &file) : ID(num), data(file)
 {
 }
 

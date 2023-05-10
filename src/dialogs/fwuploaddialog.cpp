@@ -2,6 +2,7 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../module/board.h"
+#include "../s2/crc32.h"
 #include "../s2/s2.h"
 #include "../widgets/epopup.h"
 #include "../widgets/etableview.h"
@@ -44,6 +45,41 @@ void FWUploadDialog::SetupUI()
     setLayout(lyout);
 }
 
+bool compare(const S2DataTypes::DataRec &lhs, const DataTypes::FileStruct &rhs)
+{
+    if (lhs.header.numByte == rhs.data.size())
+    {
+        auto lhsPtr = reinterpret_cast<const char *>(lhs.thedata);
+        for (auto i = 0; i < lhs.header.numByte; i++)
+        {
+            if (rhs.data.data()[i] != lhsPtr[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+bool compare(const QByteArray &lhs, const QByteArray &rhs)
+{
+    if (lhs.size() == rhs.size())
+    {
+        auto lhsPtr = lhs.data();
+        auto rhsPtr = rhs.data();
+        for (auto i = 0; i < lhs.size(); i++)
+        {
+            if (lhsPtr[i] != rhsPtr[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 void FWUploadDialog::LoadFW()
 {
     if (!checkPassword())
@@ -74,10 +110,51 @@ void FWUploadDialog::LoadFW()
         EMessageBox::error(this, errorMsg());
         return;
     }
+    QByteArray record1;
+    S2::StoreDataMem(record1, value, DataTypes::Firmware);
+
+    //    S2Dev::CRC32 crc1;
+    //    for (auto &rec : value)
+    //    {
+    //        auto transform = rec.serialize();
+    //        // crc1.update(reinterpret_cast<const quint8 *>(&transform.header.id), sizeof(transform.header.id));
+    //        crc1.update(reinterpret_cast<const quint8 *>(transform.thedata), transform.header.numByte);
+    //    }
 
     auto firmwareS2 = S2::ParseHexToS2(ba);
     if (firmwareS2.isEmpty())
         qCritical() << Error::SizeError;
+    QByteArray record2;
+    S2::StoreDataMem(record2, firmwareS2, DataTypes::Firmware);
+
+    //    S2Dev::CRC32 crc2;
+    //    for (auto &rec : firmwareS2)
+    //    {
+    //        // crc1.update(reinterpret_cast<const quint8 *>(&rec.header.id), sizeof(rec.header.id));
+    //        crc2.update(reinterpret_cast<const quint8 *>(rec.thedata), rec.header.numByte);
+    //    }
+
+    //    bool status = (crc1 == crc2);
+    //    if (status)
+    //    {
+    //        QByteArray record2;
+    //        S2::StoreDataMem(record2, firmwareS2, DataTypes::Firmware);
+    //    }
+    //    else
+    //    {
+    //        QByteArray record1;
+    //        S2::StoreDataMem(record1, value, DataTypes::Firmware);
+    //    }
+
+    //    auto status = false;
+    //    for (auto i = 0; i < 3; i++)
+    //    {
+    //        status = compare(firmwareS2[i], value[i]);
+    //    }
+
+    auto status = (record1 == record2);
+    status = compare(record1, record2);
+
     setSuccessMsg("ПО записано успешно");
     BaseInterface::iface()->writeS2File(DataTypes::Firmware, &firmwareS2);
 }

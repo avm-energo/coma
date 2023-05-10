@@ -1,5 +1,7 @@
 #include "hexparser.h"
 
+#include "s2datatypes.h"
+
 #include <QDebug>
 #include <algorithm>
 
@@ -86,7 +88,7 @@ quint16 HexParser::getIdByAddress(const QByteArray &binAddr)
     quint16 address = dataPtr[0] << 8 | dataPtr[1];
     if (address == 0x0800)
         return 8000;
-    else if (address == 0x0801)
+    else if (address >= 0x0801)
         return 8001;
     else
         return idNotFound;
@@ -96,10 +98,12 @@ std::vector<DataTypes::FileStruct> HexParser::getS2Format()
 {
     std::vector<DataTypes::FileStruct> retVal;
     QByteArray data;
-    quint16 prevBlockId, currBlockId;
+    quint16 prevBlockId = idNotFound, currBlockId = idNotFound;
 
     for (auto &record : records)
+    //    for (auto i = 0; i < records.size(); i++)
     {
+        // const auto &record = records[i];
         if (record.recordType == RecordType::LinearAddr)
         {
             currBlockId = getIdByAddress(record.data);
@@ -109,10 +113,12 @@ std::vector<DataTypes::FileStruct> HexParser::getS2Format()
                 data.clear();
                 break;
             }
+            else if (currBlockId == prevBlockId)
+                continue;
 
             if (!data.isEmpty())
             {
-                retVal.push_back({ prevBlockId, data });
+                retVal.push_back(DataTypes::FileStruct { prevBlockId, data });
                 data.clear();
             }
             prevBlockId = currBlockId;
@@ -121,17 +127,19 @@ std::vector<DataTypes::FileStruct> HexParser::getS2Format()
         {
             data.append(record.data);
         }
+        else if (record.recordType == RecordType::EndOfFile)
+        {
+            retVal.push_back(DataTypes::FileStruct { prevBlockId, data });
+            data.clear();
+            break;
+        }
         else
         {
             // TODO: Handle other record types?
         }
     }
 
-    if (!data.isEmpty())
-    {
-        retVal.push_back({ prevBlockId, data });
-    }
-
+    retVal.push_back(DataTypes::FileStruct { S2DataTypes::dummyElement, QByteArray() });
     return retVal;
 }
 
