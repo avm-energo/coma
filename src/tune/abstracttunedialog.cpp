@@ -418,7 +418,6 @@ void AbstractTuneDialog::writeTuneCoefsSlot()
 {
     for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
     {
-        it.value()->updateFromWidget();
         if (it.value()->writeBlockToModule() != Error::Msg::NoError)
         {
             CancelTune();
