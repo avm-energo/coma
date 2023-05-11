@@ -87,7 +87,7 @@ void ProtocomThread::processFileFromDisk(DataTypes::FilesEnum fileNum)
         return;
     }
     QByteArray ba = file.readAll();
-    handleFile(ba, fileNum, DataTypes::FileFormat::Binary);
+    FilePostpone(ba, fileNum, DataTypes::FileFormat::Binary);
 }
 
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
@@ -116,6 +116,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_ReqTime:
     case Commands::C_StartFirmwareUpgrade:
     case Commands::C_ReqProgress:
+    case Commands::C_GetMode:
     {
         if (protoCommandMap.contains(cmdStr.command))
         {
@@ -134,6 +135,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_ReqBlkDataA:
     case Commands::C_ReqBlkDataTech:
     case Commands::C_ReqOscInfo:
+    case Commands::C_Test:
     {
         if (protoCommandMap.contains(cmdStr.command))
         {
@@ -199,6 +201,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_WriteHardware:
     case Commands::C_WriteBlkDataTech:
     case Commands::C_SetNewConfiguration:
+    case Commands::C_WriteTuningCoef:
     {
         if (cmdStr.arg1.canConvert<DataTypes::BlockStruct>())
         {
@@ -227,7 +230,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // WS Commands
+    // WS Commands
     case Commands::C_WriteSingleCommand:
     {
         if (cmdStr.arg1.canConvert<DataTypes::SingleCommand>())
@@ -239,6 +242,19 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         }
         break;
     }
+
+        // "WS" commands
+    case Commands::C_ClearStartupError:
+    case Commands::C_ClearStartupUnbounced:
+    case Commands::C_ClearStartupValues:
+    case Commands::C_SetStartupValues:
+    case Commands::C_SetStartupPhaseA:
+    case Commands::C_SetStartupPhaseB:
+    case Commands::C_SetStartupPhaseC:
+    case Commands::C_SetStartupUnbounced:
+    case Commands::C_StartWorkingChannel:
+    case Commands::C_SetTransOff:
+    case Commands::C_Command50:
 
     default:
     {
@@ -256,85 +272,76 @@ void ProtocomThread::parseResponse()
     switch (m_responseReceived)
     {
     case ResultOk:
-        //  GVar MS GMode MS
-        if (!m_readData.isEmpty())
-            handleInt(m_readData.front());
-        else
-            handleOk();
+        processOk();
         break;
 
     case ResultError:
     {
         const quint8 errorCode = m_readData.front();
-        handleError(errorCode);
+        processError(errorCode);
         break;
     }
-    case ReadTime:
 
+    case ReadTime:
 #ifdef Q_OS_LINUX
         if (m_readData.size() == sizeof(quint64))
         {
-            handleUnixTime(m_readData, addr);
+            processUnixTime(m_readData);
             break;
         }
 #endif
-        handleBitString(m_readData, addr);
-        break;
-
-    case ReadBlkStartInfoExt:
-        handleBitStringArray(m_readData, Regs::bsiExtStartReg);
+        processU32(m_readData, addr);
         break;
 
     case ReadBlkStartInfo:
-        handleBitStringArray(m_readData, Regs::bsiReg);
+    case ReadBlkStartInfoExt:
+        processU32(m_readData, addr);
         break;
 
     case ReadBlkAC:
-        // Ожидается что в addr хранится номер блока
-        handleRawBlock(m_readData, addr);
-        break;
-
     case ReadBlkDataA:
         // Ожидается что в addr хранится номер блока
-        handleRawBlock(m_readData, addr);
+        processBlock(m_readData, addr);
         break;
 
     case ReadBlkData:
         switch (m_commandSent)
         {
         case FakeReadRegData:
-            handleFloatArray(m_readData, addr, count);
+            processFloat(m_readData, addr);
             break;
         case FakeReadAlarms:
-            handleSinglePoint(m_readData, addr);
+            processSinglePoint(m_readData, addr);
             break;
         case FakeReadBitString:
-            handleBitStringArray(m_readData, addr);
+            processU32(m_readData, addr);
             break;
         default:
-            handleRawBlock(m_readData, addr);
+            processBlock(m_readData, addr);
             break;
         }
         break;
 
     case ReadBlkTech:
-
-        handleTechBlock(m_readData, addr);
+        processTechBlock(m_readData, addr);
         break;
 
     case ReadProgress:
-
-        handleBitString(m_readData, addr);
+        processU32(m_readData, addr);
         break;
 
     case ReadFile:
+        FilePostpone(m_readData, FilesEnum(addr), FileFormat(count));
+        break;
 
-        handleFile(m_readData, FilesEnum(addr), FileFormat(count));
+    case ReadMode:
+        processInt(m_readData.toInt());
         break;
 
     default:
 
-        handleCommand(m_readData);
+        qCritical("We shouldn't be here, something went wrong");
+        qDebug() << m_readData.toHex();
         break;
     }
     m_isCommandRequested = false;
@@ -366,27 +373,10 @@ void ProtocomThread::writeLog(QByteArray ba, Direction dir)
 #endif
 }
 
-quint16 ProtocomThread::extractLength(const QByteArray &ba)
+void ProtocomThread::appendInt16(QByteArray &ba, quint16 data)
 {
-    quint16 len = static_cast<quint8>(ba.at(2));
-    len += static_cast<quint8>(ba.at(3)) * 256;
-    return len;
-}
-
-void ProtocomThread::appendInt16(QByteArray &ba, quint16 size)
-{
-    ba.append(static_cast<char>(size % 0x100));
-    ba.append(static_cast<char>(size / 0x100));
-}
-
-bool ProtocomThread::isCommandExist(int cmd)
-{
-    if (cmd == -1)
-    {
-        qCritical() << Error::WrongCommandError;
-        return false;
-    }
-    return true;
+    ba.append(static_cast<char>(data % 0x100));
+    ba.append(static_cast<char>(data / 0x100));
 }
 
 bool ProtocomThread::isOneSegment(unsigned len)
@@ -410,7 +400,7 @@ QByteArray ProtocomThread::prepareOk(bool isStart, byte cmd)
     // NOTE Михалыч не следует документации поэтому пока так
     // tmpba.append(Proto::Commands::ResultOk);
     tmpba.append(cmd);
-    appendInt16(tmpba, 0);
+    appendInt16(tmpba, 0x0000);
     return tmpba;
 }
 
@@ -419,7 +409,7 @@ QByteArray ProtocomThread::prepareError()
     QByteArray tmpba;
     tmpba.append(Proto::Starters::Request);
     tmpba.append(Proto::Commands::ResultError);
-    appendInt16(tmpba, 1);
+    appendInt16(tmpba, 0x0001);
     // модулю не нужны коды ошибок
     tmpba.append(static_cast<char>(Proto::NullByte));
     return tmpba;
@@ -476,17 +466,8 @@ void ProtocomThread::writeBlock(Proto::Commands cmd, quint8 arg1, const QByteArr
     }
 }
 
-void ProtocomThread::handleBitString(const QByteArray &ba, quint16 sigAddr)
-{
-    Q_ASSERT(ba.size() == sizeof(quint32));
-
-    quint32 value = *reinterpret_cast<const quint32 *>(ba.data());
-    DataTypes::BitStringStruct resp { sigAddr, value, DataTypes::Quality::Good };
-    DataManager::GetInstance().addSignalToOutList(resp);
-}
-
 #ifdef Q_OS_LINUX
-void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint16 sigAddr)
+void ProtocomThread::processUnixTime(const QByteArray &ba)
 {
     Q_ASSERT(ba.size() == sizeof(quint64));
 
@@ -499,75 +480,58 @@ void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint
 }
 #endif
 
-template <std::size_t N>
-void ProtocomThread::handleBitStringArray(const QByteArray &ba, std::array<quint16, N> arr_addr)
-{
-    Q_ASSERT(ba.size() / 4 == arr_addr.size());
-    for (int i = 0; i != arr_addr.size(); i++)
-    {
-        QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
-        handleBitString(temp, arr_addr.at(i));
-    }
-}
-
-void ProtocomThread::handleBitStringArray(const QByteArray &ba, quint16 start_addr)
+void ProtocomThread::processU32(const QByteArray &ba, quint16 startAddr)
 {
     Q_ASSERT(ba.size() % sizeof(quint32) == 0);
+    Q_ASSERT(ba.size() >= 4);
     for (int i = 0; i != (ba.size() / sizeof(quint32)); i++)
     {
-        QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
-        handleBitString(temp, start_addr + i);
+        QByteArray tba = ba.mid(sizeof(qint32) * i, sizeof(qint32));
+        quint32 value = *reinterpret_cast<const quint32 *>(tba.data());
+        DataTypes::BitStringStruct resp { startAddr, value, DataTypes::Quality::Good };
+        DataManager::GetInstance().addSignalToOutList(resp);
     }
 }
 
-void ProtocomThread::handleFloat(const QByteArray &ba, quint32 sigAddr)
+void ProtocomThread::processFloat(const QByteArray &ba, quint32 startAddr)
 {
-    Q_ASSERT(ba.size() == 4);
-    float blk = *reinterpret_cast<const float *>(ba.data());
-    DataTypes::FloatStruct resp { sigAddr, blk, DataTypes::Quality::Good };
-    DataManager::GetInstance().addSignalToOutList(resp);
-}
-
-void ProtocomThread::handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
-{
-    if (!sigCount)
-        handleFloat(ba, sigAddr);
     // NOTE Проблема со стартовыми регистрами, получим на один регистр больше чем по другим протоколам
-    Q_ASSERT(ba.size() >= int(sigCount * 4));
-    for (quint32 i = 0; i != sigCount; i++)
+    Q_ASSERT(ba.size() >= 4); // должен быть хотя бы один флоат
+    int bapos = 0;
+    const int baendpos = ba.size() - 3; // 3 = sizeof(float) - 1
+    while (bapos < baendpos)
     {
-        QByteArray temp = ba.mid(sizeof(float) * i, sizeof(float));
-        handleFloat(temp, sigAddr + i);
+        QByteArray tba = ba.mid(sizeof(float) * bapos, sizeof(float));
+        float blk = *reinterpret_cast<const float *>(tba.data());
+        DataTypes::FloatStruct resp { startAddr, blk, DataTypes::Quality::Good };
+        DataManager::GetInstance().addSignalToOutList(resp);
+        bapos += 4;
     }
 }
 
-void ProtocomThread::handleSinglePoint(const QByteArray &ba, const quint16 addr)
+void ProtocomThread::processSinglePoint(const QByteArray &ba, const quint16 startAddr)
 {
     for (quint32 i = 0; i != quint32(ba.size()); ++i)
     {
         quint8 value = ba.at(i);
-        DataTypes::SinglePointWithTimeStruct data { (addr + i), value, 0, DataTypes::Quality::Good };
+        DataTypes::SinglePointWithTimeStruct data { (startAddr + i), value, 0, DataTypes::Quality::Good };
         DataManager::GetInstance().addSignalToOutList(data);
     }
 }
 
-void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format)
-{
-}
-
-void ProtocomThread::handleInt(const byte num)
+void ProtocomThread::processInt(const byte num)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, num };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 
-void ProtocomThread::handleOk()
+void ProtocomThread::processOk()
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, 0 };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 
-void ProtocomThread::handleError(int errorCode)
+void ProtocomThread::processError(int errorCode)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, static_cast<quint64>(errorCode) };
     DataManager::GetInstance().addSignalToOutList(resp);
@@ -575,36 +539,30 @@ void ProtocomThread::handleError(int errorCode)
     qCritical() << "Error code: " << QString::number(errorCode, 16);
 }
 
-void ProtocomThread::handleProgress(const quint64 count)
+void ProtocomThread::setProgressCount(const quint64 count)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, count };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 
-void ProtocomThread::handleMaxProgress(const quint64 count)
+void ProtocomThread::setProgressRange(const quint64 count)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, count };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 
-void ProtocomThread::handleRawBlock(const QByteArray &ba, quint32 blkNum)
+void ProtocomThread::processBlock(const QByteArray &ba, quint32 blkNum)
 {
     DataTypes::BlockStruct resp { blkNum, ba };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 
-void ProtocomThread::handleCommand(const QByteArray &ba)
-{
-    qCritical("We shouldn't be here, something went wrong");
-    qDebug() << ba.toHex();
-}
-
-void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
+void ProtocomThread::processTechBlock(const QByteArray &ba, quint32 blkNum)
 {
     switch (blkNum)
     {
         //  Блок наличия осциллограмм Bo
-    case 0x01:
+    case T_Oscillogram:
     {
         Q_ASSERT(ba.size() % sizeof(S2DataTypes::OscInfo) == 0);
         for (int i = 0; i != ba.size(); i += sizeof(S2DataTypes::OscInfo))
@@ -619,18 +577,18 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
         break;
     }
         //  Блок текущих событий Be
-    case 0x02:
+    case T_GeneralEvent:
     {
         qDebug("Блок текущих событий Be");
         break;
     }
         // Блок технологических событий BTe
-    case 0x03:
+    case T_TechEvent:
     {
         qDebug("Блок технологических событий BTe");
         break;
     }
-    case 0x04:
+    case T_SwitchJournal:
     {
         qDebug("Блок наличия журналов переключения");
         Q_ASSERT(ba.size() % sizeof(S2DataTypes::SwitchJourInfo) == 0);
@@ -646,7 +604,7 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
     }
 
         // Блок рабочего архива (Bra)
-    case 0x05:
+    case T_WorkArchive:
     {
         qDebug("Блок рабочего архива (Bra)");
         break;
@@ -694,9 +652,9 @@ void ProtocomThread::processReadBytes(QByteArray &ba)
             if (m_currentCommand.command == Commands::C_ReqFile)
             {
                 if (isFirstBlock)
-                    handleMaxProgress(S2::GetFileSize(ba)); // set progressbar max size
+                    setProgressRange(S2::GetFileSize(ba)); // set progressbar max size
                 m_progress += size;
-                handleProgress(m_progress); // set current progressbar position
+                setProgressCount(m_progress); // set current progressbar position
             }
             isFirstBlock = true; // prepare bool for the next receive iteration
             return;
@@ -709,9 +667,9 @@ void ProtocomThread::processReadBytes(QByteArray &ba)
             if (m_currentCommand.command == Commands::C_ReqFile)
             {
                 if (isFirstBlock)
-                    handleMaxProgress(S2::GetFileSize(ba)); // set progressbar max size
+                    setProgressRange(S2::GetFileSize(ba)); // set progressbar max size
                 m_progress += Proto::MaxSegmenthLength;
-                handleProgress(m_progress); // set current progressbar position
+                setProgressCount(m_progress); // set current progressbar position
             }
             emit writeDataAttempt(tba); // write "Ok" to the device
         }

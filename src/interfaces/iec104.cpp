@@ -11,6 +11,9 @@
 #include <gen/files.h>
 #include <gen/timefunc.h>
 
+namespace Interface
+{
+
 IEC104::IEC104(QObject *parent)
     : BaseInterface(parent), EthThreadWorking(false), ParseThreadWorking(false), sock(new QTcpSocket(this))
 {
@@ -191,21 +194,20 @@ void IEC104::writeCommand(Queries::Commands cmd, QVariant item)
 
 Commands104::CommandRegisters IEC104::get104Command(Queries::Commands cmd)
 {
-    using namespace Queries;
     using namespace Commands104;
-    static const QMap<Queries::Commands, Commands104::CommandRegisters> iec104CommandMap {
-        { QC_SetNewConfiguration, SetNewConfigurationReg },   //
-        { QC_SetStartupValues, SetStartupValuesReg },         //
-        { QC_SetStartupPhaseA, SetStartupPhaseA },            //
-        { QC_SetStartupPhaseB, SetStartupPhaseB },            //
-        { QC_SetStartupPhaseC, SetStartupPhaseC },            //
-        { QC_SetStartupUnbounced, SetStartupUnbounced },      //
-        { QC_ClearStartupUnbounced, ClearStartupUnbounced },  //
-        { QC_SetTransOff, SetTransOff },                      //
-        { QC_ClearStartupValues, ClearStartupValuesReg },     //
-        { QC_ClearStartupError, ClearStartupSetError },       //
-        { QC_StartFirmwareUpgrade, StartFirmwareUpgradeReg }, //
-        { QC_StartWorkingChannel, StartWorkingChannelReg }    //
+    static const QMap<Commands, Commands104::CommandRegisters> iec104CommandMap {
+        { C_SetNewConfiguration, SetNewConfigurationReg },   //
+        { C_SetStartupValues, SetStartupValuesReg },         //
+        { C_SetStartupPhaseA, SetStartupPhaseA },            //
+        { C_SetStartupPhaseB, SetStartupPhaseB },            //
+        { C_SetStartupPhaseC, SetStartupPhaseC },            //
+        { C_SetStartupUnbounced, SetStartupUnbounced },      //
+        { C_ClearStartupUnbounced, ClearStartupUnbounced },  //
+        { C_SetTransOff, SetTransOff },                      //
+        { C_ClearStartupValues, ClearStartupValuesReg },     //
+        { C_ClearStartupError, ClearStartupSetError },       //
+        { C_StartFirmwareUpgrade, StartFirmwareUpgradeReg }, //
+        { C_StartWorkingChannel, StartWorkingChannelReg }    //
     };
     return iec104CommandMap.value(cmd);
 }
@@ -288,4 +290,6 @@ void IEC104::stop()
 {
     setState(BaseInterface::State::Wait);
     emit StopAll();
+}
+
 }

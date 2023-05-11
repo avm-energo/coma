@@ -32,10 +32,9 @@ public:
 
     bool m_isCommandRequested = false;
     quint64 m_progress = 0;
-    Commands m_currentCommand;
+    CommandStruct m_currentCommand;
     QMutex _mutex;
     QByteArray m_readData;
-
     QWaitCondition _waiter;
 
 protected:

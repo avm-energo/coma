@@ -28,7 +28,7 @@ private:
     Proto::Commands m_commandSent;
     Proto::Commands m_responseReceived;
 
-    void parseRequest(const CommandStruct &cmdStr);
+    void parseRequest(const CommandStruct &cmdStr) override;
 
     void parseResponse() override;
 
@@ -40,10 +40,8 @@ private:
 
     void processFileFromDisk(DataTypes::FilesEnum fileNum);
 
-    quint16 extractLength(const QByteArray &ba);
-    void appendInt16(QByteArray &ba, quint16 size);
+    void appendInt16(QByteArray &ba, quint16 data);
 
-    bool isCommandExist(int cmd);
     // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
     inline bool isOneSegment(unsigned len);
     inline bool isSplitted(unsigned len);
@@ -56,48 +54,44 @@ private:
         Proto::Starters startByte = Proto::Starters::Request);
     void writeBlock(Proto::Commands cmd, quint8 arg1, const QByteArray &arg2);
 
-    void handleBitString(const QByteArray &ba, quint16 sigAddr);
 #ifdef Q_OS_LINUX
-    void handleUnixTime(const QByteArray &ba, quint16 sigAddr);
+    void processUnixTime(const QByteArray &ba);
 #endif
-    template <std::size_t N> void handleBitStringArray(const QByteArray &ba, std::array<quint16, N> arr_addr);
-    void handleBitStringArray(const QByteArray &ba, quint16 start_addr);
-    void handleFloat(const QByteArray &ba, quint32 sigAddr);
-    void handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount);
-    void handleSinglePoint(const QByteArray &ba, const quint16 addr);
-    void handleFile(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format);
-    void handleInt(const byte num);
-    void handleOk();
-    void handleError(int errorCode = 0);
-    void handleProgress(const quint64 count);
-    void handleMaxProgress(const quint64 count);
-    void handleRawBlock(const QByteArray &ba, quint32 blkNum);
-    inline void handleCommand(const QByteArray &ba);
-    void handleTechBlock(const QByteArray &ba, quint32 blkNum);
+    void processU32(const QByteArray &ba, quint16 startAddr);
+    void processFloat(const QByteArray &ba, quint32 startAddr);
+    void processInt(const byte num);
+    void processSinglePoint(const QByteArray &ba, const quint16 startAddr);
+    void processOk();
+    void processError(int errorCode = 0);
+    void setProgressCount(const quint64 count);
+    void setProgressRange(const quint64 count);
+    void processBlock(const QByteArray &ba, quint32 blkNum);
+    void processTechBlock(const QByteArray &ba, quint32 blkNum);
 
     const QMap<Interface::Commands, Proto::Commands> protoCommandMap {
-        { C_ReqTime, Proto::ReadTime }, { C_ReqBSI, Proto::ReadBlkStartInfo }, // 1
-        { C_ReqBSIExt, Proto::ReadBlkStartInfoExt },                           // 1
-        { C_StartFirmwareUpgrade, Proto::WriteUpgrade },                       // 1
-        { C_SetNewConfiguration, Proto::WriteBlkTech },                        // 1
-        { C_WriteUserValues, Proto::WriteBlkData },                            // 1
-        { C_EraseJournals, Proto::EraseTech },                                 // 1
-        { C_ReqProgress, Proto::ReadProgress },                                // 1
-        { C_EraseTechBlock, Proto::EraseTech },                                // 1
-        { C_Test, Proto::Test },                                               //
-        { C_WriteSingleCommand, Proto::WriteSingleCommand },                   // 1
-        { C_ReqTuningCoef, Proto::ReadBlkAC },                                 // 1
-        { C_WriteTuningCoef, Proto::WriteBlkAC },                              //
-        { C_ReqBlkData, Proto::ReadBlkData },                                  // 1
-        { C_ReqBlkDataA, Proto::ReadBlkDataA },                                // 1
-        { C_ReqBlkDataTech, Proto::ReadBlkTech },                              // 1
-        { C_ReqOscInfo, Proto::ReadBlkTech },                                  // 1
-        { C_WriteBlkDataTech, Proto::WriteBlkTech },                           // 1
-        { C_Reboot, Proto::WriteBlkCmd },                                      // 1
+        { C_ReqTime, Proto::ReadTime },                      // 12
+        { C_ReqBSI, Proto::ReadBlkStartInfo },               // 12
+        { C_ReqBSIExt, Proto::ReadBlkStartInfoExt },         // 12
+        { C_StartFirmwareUpgrade, Proto::WriteUpgrade },     // 12
+        { C_SetNewConfiguration, Proto::WriteBlkTech },      // 12
+        { C_WriteUserValues, Proto::WriteBlkData },          // 12
+        { C_EraseJournals, Proto::EraseTech },               // 12
+        { C_ReqProgress, Proto::ReadProgress },              // 12
+        { C_EraseTechBlock, Proto::EraseTech },              // 12
+        { C_Test, Proto::Test },                             // 12
+        { C_WriteSingleCommand, Proto::WriteSingleCommand }, // 12
+        { C_ReqTuningCoef, Proto::ReadBlkAC },               // 12
+        { C_WriteTuningCoef, Proto::WriteBlkAC },            // 12
+        { C_ReqBlkData, Proto::ReadBlkData },                // 12
+        { C_ReqBlkDataA, Proto::ReadBlkDataA },              // 12
+        { C_ReqBlkDataTech, Proto::ReadBlkTech },            // 12
+        { C_ReqOscInfo, Proto::ReadBlkTech },                // 12
+        { C_WriteBlkDataTech, Proto::WriteBlkTech },         // 12
+        { C_Reboot, Proto::WriteBlkCmd },                    // 12
         //        { C_ReqAlarms, Proto::FakeReadAlarms },                                //
-        { C_GetMode, Proto::ReadMode },           //
-        { C_SetMode, Proto::WriteMode },          // 1
-        { C_WriteHardware, Proto::WriteHardware } // 1
+        { C_GetMode, Proto::ReadMode },           // 1
+        { C_SetMode, Proto::WriteMode },          // 12
+        { C_WriteHardware, Proto::WriteHardware } // 12
     };
 
 signals:

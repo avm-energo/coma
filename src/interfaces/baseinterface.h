@@ -28,6 +28,17 @@ struct ConnectStruct;
 namespace Interface
 {
 
+namespace Regs
+{
+    constexpr quint16 bsiExtStartReg = 40;
+    constexpr quint16 timeReg = 4600;
+    constexpr quint16 timeCountRegs = 1;
+    constexpr quint16 setInitReg = 900;
+    constexpr quint16 clearReg = 905;
+    constexpr quint16 bsiStartReg = 1;
+    constexpr quint16 bsiEndReg = 15;
+}
+
 enum State
 {
     Run,
@@ -51,21 +62,23 @@ enum Commands
     C_ReqProgress,
     C_SetNewConfiguration,
     C_StartFirmwareUpgrade,
-    C_StartWorkingChannel,
     C_EraseJournals,
-    C_SetStartupValues,
-    C_SetStartupPhaseA,
-    C_SetStartupPhaseB,
-    C_SetStartupPhaseC,
-    C_SetStartupUnbounced,
-    C_SetTransOff,
-    C_ClearStartupValues,
+
+    C_StartWorkingChannel, //
+    C_SetStartupValues,    //
+    C_SetStartupPhaseA,    //
+    C_SetStartupPhaseB,    //
+    C_SetStartupPhaseC,    //
+    C_SetStartupUnbounced, //
+    C_SetTransOff,         //
+    C_ClearStartupValues,  //
     //    C_ClearStartupPhaseA,
     //    C_ClearStartupPhaseB,
     //    C_ClearStartupPhaseC,
-    C_ClearStartupUnbounced,
-    C_ClearStartupError,
+    C_ClearStartupUnbounced, //
+    C_ClearStartupError,     //
     C_Command50,
+
     C_Test,
     C_EraseTechBlock,
     C_WriteHiddenBlock,
@@ -83,6 +96,15 @@ enum Commands
     C_SetMode,
     C_GetMode,
     C_WriteHardware
+};
+
+enum TechBlocks
+{
+    T_Oscillogram = 0x01,
+    T_GeneralEvent = 0x02,
+    T_TechEvent = 0x03,
+    T_SwitchJournal = 0x04,
+    T_WorkArchive = 0x05
 };
 
 struct CommandStruct

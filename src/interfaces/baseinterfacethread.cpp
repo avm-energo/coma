@@ -16,7 +16,7 @@ void BaseInterfaceThread::clear()
     m_readData.clear();
     m_isCommandRequested = false;
     m_progress = 0;
-    m_currentCommand = Commands();
+    m_currentCommand = CommandStruct();
 }
 
 void BaseInterfaceThread::wakeUp()
@@ -85,7 +85,7 @@ void BaseInterfaceThread::checkQueue()
 
     m_isCommandRequested = true;
     m_progress = 0;
-    m_currentCommand = inp.command;
+    m_currentCommand = inp;
     parseRequest(inp);
 }
 

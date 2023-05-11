@@ -66,7 +66,7 @@ void RelayDialog::changeRelay(int number, bool state)
     DataTypes::SingleCommand cmd;
     cmd.addr = quint32(number);
     cmd.value = state;
-    interface->writeCommand(Queries::QC_WriteSingleCommand, QVariant::fromValue(cmd));
+    interface->writeCommand(C_WriteSingleCommand, QVariant::fromValue(cmd));
     relays.at(number) = state;
     QString text = "Разомкнуто";
     if (state)

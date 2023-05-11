@@ -316,13 +316,13 @@ void BaseInterface::reqStartup(quint32 sigAdr, quint32 sigCount)
 
 void BaseInterface::reqBSI()
 {
-    CommandStruct bi { C_ReqBSI, 0, 0 };
+    CommandStruct bi { C_ReqBSI, Regs::bsiStartReg, 0 };
     DataManager::GetInstance().addToInQueue(bi);
 }
 
 void BaseInterface::reqBSIExt()
 {
-    CommandStruct bi { C_ReqBSIExt, 0, 0 };
+    CommandStruct bi { C_ReqBSIExt, Regs::bsiExtStartReg, 0 };
     DataManager::GetInstance().addToInQueue(bi);
 }
 

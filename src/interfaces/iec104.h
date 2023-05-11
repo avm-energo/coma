@@ -26,6 +26,9 @@
 //};
 //}
 
+namespace Interface
+{
+
 class IEC104 final : public BaseInterface
 {
     Q_OBJECT
@@ -82,4 +85,5 @@ private slots:
     void EthStateChanged(QAbstractSocket::SocketState state);
 };
 
+}
 #endif // IEC104_H
