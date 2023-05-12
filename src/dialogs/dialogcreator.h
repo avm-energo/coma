@@ -35,8 +35,9 @@ private:
     void addDialogToList(UDialog *dlg, const QString &caption, const QString &name);
     void createConfigDialogs();
     void createCheckDialogs();
-    void createBoxTuneDialogs(const Modules::Model &boxModel);
-    void createJournalAndStartupDialogs(const Modules::Model &boxModel);
+    void createBoxTuneDialogs(const Modules::Model boxModel);
+    void createJournalDialog();
+    void createStartupDialog(const Modules::Model boxModel);
     void createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem);
     void createOscAndSwJourDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem);
     void createSpecificDialogs(const AppConfiguration appCfg);

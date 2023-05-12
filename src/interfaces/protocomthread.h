@@ -21,9 +21,7 @@ public:
     void setReadDataChunk(const QByteArray &readDataChunk);
     void appendReadDataChunk(const QByteArray &readDataChunk);
     void wakeUp();
-
     void parse();
-
     void clear();
 
 private:
@@ -31,29 +29,25 @@ private:
     bool isCommandRequested = false;
     quint64 progress = 0;
     bool isFirstBlock;
-    void finish(Error::Msg msg);
+    QMutex _mutex;
+    QWaitCondition _waiter;
+    Proto::CommandStruct m_currentCommand;
+    QByteArray m_buffer;
 
+    void finish(Error::Msg msg);
     void parseResponse(QByteArray ba);
     void parseRequest(const Proto::CommandStruct &cmdStr);
     void handleResponse(const Proto::Commands cmd);
-
-    QMutex _mutex;
-
-    QWaitCondition _waiter;
     void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
     void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)
     {
         writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }
 
-    Proto::CommandStruct m_currentCommand;
-    QByteArray m_buffer;
     void checkQueue();
     void fileHelper(DataTypes::FilesEnum fileNum);
-
     quint16 extractLength(const QByteArray &ba);
     void appendInt16(QByteArray &ba, quint16 size);
-
     bool isCommandExist(int cmd);
     // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
     inline bool isOneSegment(unsigned len);
@@ -84,6 +78,7 @@ private:
     void handleRawBlock(const QByteArray &ba, quint32 blkNum);
     inline void handleCommand(const QByteArray &ba);
     void handleTechBlock(const QByteArray &ba, quint32 blkNum);
+
 signals:
     void writeDataAttempt(const QByteArray);
     void errorOccurred(Error::Msg);

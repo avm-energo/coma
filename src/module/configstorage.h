@@ -37,15 +37,17 @@ public slots:
 
     // Module data slots
     void startNewConfig();
-    void signalDataReceive(const quint32 &id, const quint32 &addr, //
-        const quint16 &count, const ModuleTypes::SignalType &sigType);
-    void tabDataReceive(const quint32 &id, const QString &name);
+    void signalDataReceive(const quint32 id, const quint32 addr, //
+        const quint16 count, const ModuleTypes::SignalType sigType);
+    void tabDataReceive(const quint32 id, const QString &name);
     void sectionDataReceive(const ModuleTypes::SGMap &sgmap, const QString &secHead);
-    void alarmDataReceive(const Modules::AlarmType &aType, const quint32 &addr, //
-        const QString &desc, const QList<quint32> highlights);
-    void jourDataReceive(const Modules::JournalType &jType, const quint32 &addr, const QString &desc);
-    void interfaceSettingsReceive(const QVariant &iSettings, const Board::InterfaceType &iType);
-    void configDataReceive(const quint16 &id, const QString &defVal, const bool &visib, const quint16 &count);
+    void alarmDataReceive(const Modules::AlarmType aType, const quint32 addr, //
+        const QString &desc, const QList<quint32> &highlights);
+    void workJourDataReceive(const quint32 id, const QString &desc);
+    void measJourDataReceive(const quint32 index, const QString &header, //
+        const ModuleTypes::BinaryType type, bool visib);
+    void interfaceSettingsReceive(const QVariant &iSettings, const Board::InterfaceType iType);
+    void configDataReceive(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
 };
 
 #endif // CONFIGSTORAGE_H

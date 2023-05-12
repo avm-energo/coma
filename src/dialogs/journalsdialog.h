@@ -1,44 +1,46 @@
-#ifndef JOURNALDIALOG_H
-#define JOURNALDIALOG_H
+#pragma once
 
-#include "../journals/basejournalmodel.h"
-#include "../journals/journals.h"
+//#include "../journals/basejournalmodel.h"
+//#include "../journals/journals.h"
+#include "../journals/basejournal.h"
 #include "../widgets/udialog.h"
 
 #include <QMessageBox>
 #include <QProgressDialog>
+#include <QSortFilterProxyModel>
 #include <QTableView>
 
 //#define MAXSWJNUM 262144
+
+using Journal = journals::BaseJournal;
 
 class JournalDialog : public UDialog
 {
     Q_OBJECT
 public:
-    JournalDialog(UniquePointer<Journals> jour, QWidget *parent = nullptr);
-    ~JournalDialog();
+    JournalDialog(const ModuleSettings &settings, QWidget *parent = nullptr);
 
 signals:
-    void StartSaveJour(DataTypes::FilesEnum, QString);
+    void startSaveJour(QString);
 
 private:
-    void SetupUI();
-    QWidget *JourTab(DataTypes::FilesEnum jourtype);
-    int GetJourNum(const QString &objname);
+    void createJournals(const ModuleSettings &settings);
+    void setupUI();
+    QWidget *jourTab(const Journal *journal);
+    int getJourNum(const QString &objname);
 
 private slots:
-    void JourFileChoosed(QString &file);
-    void EraseJour();
-    void SaveJour(DataTypes::FilesEnum jourType);
-    void Done(QString msg);
-    void Error(QString msg);
+    void tabChanged(const int index);
+    void jourFileChoosed(QString &file);
+    void eraseJour();
+    void saveJour(DataTypes::FilesEnum jourType);
+    void done(const QString &msg);
+    void error(const QString &msg);
 
 private:
+    int currentTab;
+    QList<Journal *> journals;
     QString JourFile;
-    UniquePointer<Journals> m_jour;
-    QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
     QProgressDialog *progress;
-    QMap<DataTypes::FilesEnum, QTableView *> views;
+    DataTypesProxy proxy;
 };
-
-#endif // JOURNALDIALOG_H

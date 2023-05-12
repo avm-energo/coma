@@ -35,7 +35,7 @@ const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::AlarmsInfo, { "Адрес", "Описание" } },                                              //
     { ModelType::Journals, { "XML", "Описание" } },                                                  //
     { ModelType::WorkJours, { "Адрес", "Описание" } },                                               //
-    { ModelType::MeasJours, { "Название" } },                                                        //
+    { ModelType::MeasJours, { "Индекс", "Заголовок", "Тип", "Видимость" } },                         //
     { ModelType::Modbus, { "ID сигнала", "Тип регистра", "Возвращаемый тип", "Описание" } },         //
     { ModelType::Protocom, { "Блок", "ID сигнала" } },                                               //
     { ModelType::IEC60870, { "ID сигнала", "Тип сигнала", "Тип передачи", "Группа" } },              //
@@ -86,14 +86,14 @@ void XmlModel::create(const QStringList &saved, int *row)
 }
 
 /// \brief Slot for updating an item's data in the model.
-void XmlModel::update(const QStringList &saved, const int &row)
+void XmlModel::update(const QStringList &saved, const int row)
 {
     BaseEditorModel::update(saved, row);
     emit modelChanged();
 }
 
 /// \brief Slot for deleting an exisiting item in the model.
-void XmlModel::remove(const int &row)
+void XmlModel::remove(const int row)
 {
     BaseEditorModel::remove(row);
     emit modelChanged();
@@ -146,19 +146,41 @@ void XmlModel::parseDataNode(QDomNode &child, int &row)
  *  \details Frequently called by implementations of parseNode virtual function.
  *  \see parseAttribute, parseNode
  */
-void XmlModel::parseTag(QDomNode &node, const QString &tagName, int row, int col, const QString &defValue)
+void XmlModel::parseTag(QDomNode &node, const QString &tagName, int row, int col, const QString &defValue, bool isInt)
 {
     auto namedNode = node.firstChildElement(tagName);
     auto tagIndex = index(row, col);
     if (!namedNode.isNull())
     {
         auto tag = namedNode.firstChild().toText().data();
-        setData(tagIndex, tag);
+        if (isInt)
+        {
+            auto status = true;
+            auto intValue = tag.toInt(&status);
+            if (status)
+                setData(tagIndex, intValue);
+            else
+                setData(tagIndex, tag);
+        }
+        else
+            setData(tagIndex, tag);
     }
     else
     {
         if (!defValue.isEmpty())
-            setData(tagIndex, defValue);
+        {
+            if (isInt)
+            {
+                auto status = true;
+                auto intValue = defValue.toInt(&status);
+                if (status)
+                    setData(tagIndex, intValue);
+                else
+                    setData(tagIndex, defValue);
+            }
+            else
+                setData(tagIndex, defValue);
+        }
     }
 }
 

@@ -1,7 +1,41 @@
 #include "xmlbaseparser.h"
 
+#include <gen/error.h>
+#include <gen/stdfunc.h>
+
 Xml::BaseParser::BaseParser(QObject *parent) : QObject(parent)
 {
+}
+
+/// \brief Returns QDomDocument for a file with the specified filename from user's local folder.
+QDomDocument Xml::BaseParser::getFileContent(const QString &filename)
+{
+    QDomDocument doc;
+    auto dir = QDir(StdFunc::GetSystemHomeDir());
+    auto file = new QFile(dir.filePath(filename));
+    if (file->exists())
+    {
+        if (file->open(QIODevice::ReadOnly))
+        {
+            QString errMsg = "";
+            auto line = 0, column = 0;
+            if (!doc.setContent(file, &errMsg, &line, &column))
+            {
+                errMsg = "File: " + file->fileName() + " Error: " + errMsg + " Line: " + line + " Column: " + column;
+                emit parseError(errMsg);
+            }
+            else if (doc.isNull())
+                emit parseError("File is empty: " + file->fileName());
+            file->close();
+        }
+        else
+            emit parseError("File open error: " + file->fileName());
+    }
+    else
+        emit parseError("File not found: " + file->fileName());
+
+    file->deleteLater();
+    return doc;
 }
 
 /// \brief Парсим ноду с дочерними элементами в QStringList.

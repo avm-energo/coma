@@ -27,7 +27,7 @@ public:
     virtual QDomElement toNode(QDomDocument &doc) override;
 
 public slots:
-    virtual void getDialogRequest(const int &row) override;
-    void update(const QStringList &saved, const int &row) override;
+    virtual void getDialogRequest(const int row) override;
+    void update(const QStringList &saved, const int row) override;
     virtual void create(const QStringList &saved, int *row) override;
 };

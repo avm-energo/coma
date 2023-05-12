@@ -86,7 +86,7 @@ private:
 
     template <typename T> void helper(unsigned int numByte, const char *rawdata, valueType &data)
     {
-        constexpr auto hash = ctti::unnamed_type_id<T>().hash();
+        // constexpr auto hash = ctti::unnamed_type_id<T>().hash();
         assert(sizeof(T) == numByte);
         data = *reinterpret_cast<const T *>(rawdata);
     }

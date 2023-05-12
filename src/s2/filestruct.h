@@ -21,7 +21,6 @@ enum FilesEnum : quint16
     JourEv = 18,       ///< Events journal (12->62)
     FileOscMin = 1000, ///< Oscillogramm ID min
     FileOscMax = 2999  ///< Oscillogram ID max
-
 };
 
 struct FileStruct

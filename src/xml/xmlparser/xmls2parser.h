@@ -14,10 +14,11 @@ class S2Parser : public BaseParser
     Q_OBJECT
 private:
     static const QHash<QString, std::uint64_t> nameTypeMap;
+    QDomElement content;
 
 public:
     explicit S2Parser(QObject *parent = nullptr);
-    void parse(const QDomNode &content);
+    void parse();
 
 signals:
     void typeDataSending(const quint16 &id, const std::uint64_t &type);
@@ -26,7 +27,6 @@ signals:
 
 private:
     std::uint64_t parseType(const QDomElement &typeNode);
-
     void parseConfigTab(const QDomNode &tabNode);
     void parseConfigTabs(const QDomElement &s2node);
     void dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode);

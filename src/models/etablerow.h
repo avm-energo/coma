@@ -34,7 +34,7 @@ using ETableItemCollection = std::vector<ETableItem>;
 class ETableRow : public AbstractTableRow<ETableItemCollection>
 {
 public:
-    explicit ETableRow(QObject *parent = 0);
+    explicit ETableRow(QObject *parent = nullptr);
     void setData(int column, const QVariant &value, int role) override;
     QVariant data(int column, int role) const override;
 };

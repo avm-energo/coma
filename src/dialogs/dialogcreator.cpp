@@ -1,8 +1,12 @@
 #include "dialogcreator.h"
 
-#include "../journals/journkdv.h"
-#include "../journals/journkiv.h"
-#include "../journals/journktf.h"
+//#include "../journals/journkdv.h"
+//#include "../journals/journkiv.h"
+//#include "../journals/journktf.h"
+//
+#include "../journals/sysjournal.h"
+#include "../journals/workjournal.h"
+//
 #include "../module/board.h"
 #include "../oscillograms/oscdialog.h"
 #include "../startup/startupkdvdialog.h"
@@ -98,7 +102,7 @@ void DialogCreator::createCheckDialogs()
 }
 
 /// \brief Creating tune dialogs for KIV, KTF and KDV.
-void DialogCreator::createBoxTuneDialogs(const Modules::Model &boxModel)
+void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
 {
     if (boxModel == Modules::Model::KIV)
     {
@@ -111,30 +115,23 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model &boxModel)
     }
 }
 
-/// \brief Creating journal and startup dialogs for KIV, KTF and KDV.
-void DialogCreator::createJournalAndStartupDialogs(const Modules::Model &boxModel)
+/// \brief Creating journal dialog.
+void DialogCreator::createJournalDialog()
 {
-    Journals *journals;
-
-    UniquePointer<Journals> jours;
-    if (boxModel == Modules::Model::KIV)
-    {
-        jours = UniquePointer<Journals>(new JournKIV(settings.getJours(), this));
-        addDialogToList(new StartupKIVDialog(mParent), "Начальные\nзначения", "startup");
-    }
-    else if (boxModel == Modules::Model::KTF)
-    {
-        jours = UniquePointer<Journals>(new JournKTF(settings.getJours(), this));
-        addDialogToList(new StartupKTFDialog(mParent), "Начальные\nзначения", "startup");
-    }
-    else if (boxModel == Modules::Model::KDV)
-    {
-        jours = UniquePointer<Journals>(new JournKDV(settings.getJours(), this));
-        addDialogToList(new StartupKDVDialog(mParent), "Начальные\nзначения", "startup");
-    }
     // Делаем проверку и создаём диалог для журналов
-    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485 && jours != nullptr)
-        addDialogToList(new JournalDialog(std::move(jours), mParent), "Журналы", "jours");
+    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
+        addDialogToList(new JournalDialog(settings, mParent), "Журналы", "jours");
+}
+
+/// \brief Creating startup dialog for KIV, KTF and KDV.
+void DialogCreator::createStartupDialog(const Modules::Model boxModel)
+{
+    if (boxModel == Modules::Model::KIV)
+        addDialogToList(new StartupKIVDialog(mParent), "Начальные\nзначения", "startup");
+    else if (boxModel == Modules::Model::KTF)
+        addDialogToList(new StartupKTFDialog(mParent), "Начальные\nзначения", "startup");
+    else if (boxModel == Modules::Model::KDV)
+        addDialogToList(new StartupKDVDialog(mParent), "Начальные\nзначения", "startup");
 }
 
 /// \brief Creating tune dialogs for two-part modules.
@@ -189,8 +186,10 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
             createBoxTuneDialogs(moduleModel);
         // TODO: Временно выключено для модбаса, надо допилить журналы
         if (board.interfaceType() == Board::InterfaceType::USB)
-            // Добавляем диалоги журналов и начальных значений
-            createJournalAndStartupDialogs(moduleModel);
+        {
+            createJournalDialog();            // Добавляем диалог журналов
+            createStartupDialog(moduleModel); // Добавляем диалог начальных значений
+        }
         // TODO: Fix it
         //        addDialogToList(new PlotDialog(mParent), "Диаграммы", "plot"); // векторные диаграммы нужны для
         //        АВ-ТУК-82 и АВМ-КТФ, а не для всех коробочных модулей

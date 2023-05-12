@@ -85,8 +85,8 @@ void ConfigStorage::startNewConfig()
 }
 
 /// \brief Slot for saving module's signal record.
-void ConfigStorage::signalDataReceive(const quint32 &id, const quint32 &addr, //
-    const quint16 &count, const ModuleTypes::SignalType &sigType)
+void ConfigStorage::signalDataReceive(const quint32 id, const quint32 addr, //
+    const quint16 count, const ModuleTypes::SignalType sigType)
 {
     if (id == 0)
         qWarning() << "Invalid signal id: " << id;
@@ -99,7 +99,7 @@ void ConfigStorage::signalDataReceive(const quint32 &id, const quint32 &addr, //
 }
 
 /// \brief Slot for saving check's tab record.
-void ConfigStorage::tabDataReceive(const quint32 &id, const QString &name)
+void ConfigStorage::tabDataReceive(const quint32 id, const QString &name)
 {
     if (id == 0)
         qWarning() << "Invalid tab id: " << id;
@@ -116,21 +116,28 @@ void ConfigStorage::sectionDataReceive(const ModuleTypes::SGMap &sgmap, const QS
 }
 
 /// \brief Slot for saving module's alarm record.
-void ConfigStorage::alarmDataReceive(const Modules::AlarmType &aType, const quint32 &addr, //
-    const QString &desc, const QList<quint32> highlights)
+void ConfigStorage::alarmDataReceive(const Modules::AlarmType aType, const quint32 addr, //
+    const QString &desc, const QList<quint32> &highlights)
 {
     mSettings->appendAlarm(aType, addr, desc);
     mSettings->appendHighlight(aType, addr, highlights);
 }
 
-/// \brief Slot for saving module's journal record.
-void ConfigStorage::jourDataReceive(const Modules::JournalType &jType, const quint32 &addr, const QString &desc)
+/// \brief Slot for saving module a work journal's record.
+void ConfigStorage::workJourDataReceive(const quint32 id, const QString &desc)
 {
-    mSettings->appendJournal(jType, { addr, desc });
+    mSettings->appendWorkJournal(id, desc);
+}
+
+/// \brief Slot for saving module a measurement journal's record.
+void ConfigStorage::measJourDataReceive(const quint32 index, const QString &header, //
+    const ModuleTypes::BinaryType type, bool visib)
+{
+    mSettings->appendMeasJournal(index, header, type, visib);
 }
 
 /// \brief Slot for saving module's interface settings.
-void ConfigStorage::interfaceSettingsReceive(const QVariant &iSettings, const Board::InterfaceType &iType)
+void ConfigStorage::interfaceSettingsReceive(const QVariant &iSettings, const Board::InterfaceType iType)
 {
     if (iSettings.isValid())
     {
@@ -180,8 +187,7 @@ void ConfigStorage::interfaceSettingsReceive(const QVariant &iSettings, const Bo
 }
 
 /// \brief Slot for saving module's config record.
-void ConfigStorage::configDataReceive(const quint16 &id, //
-    const QString &defVal, const bool &visib, const quint16 &count)
+void ConfigStorage::configDataReceive(const quint16 id, const QString &defVal, const bool visib, const quint16 count)
 {
     if (id == 0)
         qWarning() << "Invalid config id: " << id;

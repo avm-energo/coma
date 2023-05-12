@@ -58,6 +58,10 @@ const QHash<QString, std::uint64_t> Xml::S2Parser::nameTypeMap = {
 
 Xml::S2Parser::S2Parser(QObject *parent) : BaseParser(parent)
 {
+    constexpr auto filename = "s2files.xml";
+    auto document = getFileContent(filename);
+    if (!document.isNull())
+        content = document.firstChildElement(tags::s2files);
 }
 
 /// \brief Возвращаем хэш типа для его идентификации
@@ -207,26 +211,28 @@ config::itemVariant Xml::S2Parser::parseWidget(const QDomElement &widgetNode)
 }
 
 /// \brief Парсинг всех нод <record> файла s2files.xml
-void Xml::S2Parser::parse(const QDomNode &content)
+void Xml::S2Parser::parse()
 {
-    auto s2filesNode = content.firstChildElement(tags::s2files);
-    parseConfigTabs(s2filesNode);
-    auto recordNode = s2filesNode.firstChildElement(tags::record);
-    while (!recordNode.isNull() && (recordNode.tagName() == tags::record))
+    if (!content.isNull())
     {
-        auto id = quint16(0);
-        auto idNode = recordNode.firstChildElement(tags::id);
-        if (!idNode.isNull())
-            id = static_cast<quint16>(parseNum<uint>(idNode));
+        parseConfigTabs(content);
+        auto recordNode = content.firstChildElement(tags::record);
+        while (!recordNode.isNull() && (recordNode.tagName() == tags::record))
+        {
+            auto id = quint16(0);
+            auto idNode = recordNode.firstChildElement(tags::id);
+            if (!idNode.isNull())
+                id = static_cast<quint16>(parseNum<uint>(idNode));
 
-        auto typeNode = recordNode.firstChildElement(tags::type);
-        if (!typeNode.isNull())
-            emit typeDataSending(id, parseType(typeNode));
+            auto typeNode = recordNode.firstChildElement(tags::type);
+            if (!typeNode.isNull())
+                emit typeDataSending(id, parseType(typeNode));
 
-        auto widgetNode = recordNode.firstChildElement(tags::widget);
-        if (!widgetNode.isNull())
-            emit widgetDataSending(id, parseWidget(widgetNode));
+            auto widgetNode = recordNode.firstChildElement(tags::widget);
+            if (!widgetNode.isNull())
+                emit widgetDataSending(id, parseWidget(widgetNode));
 
-        recordNode = recordNode.nextSibling().toElement();
+            recordNode = recordNode.nextSibling().toElement();
+        }
     }
 }

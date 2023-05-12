@@ -8,8 +8,26 @@ find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Widgets
   REQUIRED)
 
-file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
-file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+#file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
+#file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+
+set(files_h
+    basejournal.h
+    eventparser.h
+    sysjournal.h
+    workjournal.h
+    measjournal.h
+    measparser.h
+)
+
+set(files_cpp
+    basejournal.cpp
+    eventparser.cpp
+    sysjournal.cpp
+    workjournal.cpp
+    measjournal.cpp
+    measparser.cpp
+)
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 

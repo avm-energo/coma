@@ -6,7 +6,7 @@ XmlHideDataModel::XmlHideDataModel(int rows, int cols, ModelType type, QObject *
 }
 
 /// \brief Slot for receiveing data request from dialog window and sending response.
-void XmlHideDataModel::getDialogRequest(const int &row)
+void XmlHideDataModel::getDialogRequest(const int row)
 {
     if (row >= 0 && row < rowCount())
     {
@@ -55,7 +55,7 @@ void XmlHideDataModel::create(const QStringList &saved, int *row)
 }
 
 /// \brief Slot for updating an item's data in the model (including hiding data).
-void XmlHideDataModel::update(const QStringList &saved, const int &row)
+void XmlHideDataModel::update(const QStringList &saved, const int row)
 {
     BaseEditorModel::update({ saved[0], saved[1] }, row);
     if (row >= 0 && row < rowCount())

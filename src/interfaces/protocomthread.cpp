@@ -102,7 +102,6 @@ void ProtocomThread::handleResponse(const Proto::Commands cmd)
     switch (cmd)
     {
     case Commands::ResultOk:
-
         // Ignore good replies to splitted packet
         // Не прибавляем никаких 1 или 2, надо будет проверить
         if (isSplitted(m_currentCommand.ba.size()))
@@ -140,7 +139,6 @@ void ProtocomThread::handleResponse(const Proto::Commands cmd)
         break;
     }
     case Commands::ReadTime:
-
 #ifdef Q_OS_LINUX
         if (m_buffer.size() == sizeof(quint64))
         {
@@ -243,7 +241,6 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
         fileToFind = "workj.dat";
         break;
     }
-
     default:
     {
         m_currentCommand.ba = StdFunc::ArrayFromNumber(fileNum);
@@ -306,7 +303,6 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::FakeReadBitString:
     case Commands::FakeReadRegData:
     {
-
         QByteArray ba = prepareBlock(Commands::ReadBlkData, m_currentCommand.ba);
         emit writeDataAttempt(ba);
         break;
@@ -344,9 +340,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     {
         assert(m_currentCommand.arg1.canConvert<uint24>());
         uint24 addr = m_currentCommand.arg1.value<uint24>();
-
         QByteArray buffer = StdFunc::ArrayFromNumber((addr)) + m_currentCommand.ba;
-
         QByteArray ba = prepareBlock(Commands::WriteSingleCommand, buffer);
         emit writeDataAttempt(ba);
         break;
@@ -354,7 +348,6 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::WriteFile:
     {
     }
-
     default:
     {
         if (isSplitted(m_currentCommand.ba.size()))
@@ -753,7 +746,7 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
 {
     switch (blkNum)
     {
-        //  Блок наличия осциллограмм Bo
+    // Блок наличия осциллограмм Bo
     case 0x01:
     {
         Q_ASSERT(ba.size() % sizeof(S2DataTypes::OscInfo) == 0);
@@ -768,13 +761,13 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
 
         break;
     }
-        //  Блок текущих событий Be
+    // Блок текущих событий Be
     case 0x02:
     {
         qDebug("Блок текущих событий Be");
         break;
     }
-        // Блок технологических событий BTe
+    // Блок технологических событий BTe
     case 0x03:
     {
         qDebug("Блок технологических событий BTe");
@@ -794,8 +787,7 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
         }
         break;
     }
-
-        // Блок рабочего архива (Bra)
+    // Блок рабочего архива (Bra)
     case 0x05:
     {
         qDebug("Блок рабочего архива (Bra)");

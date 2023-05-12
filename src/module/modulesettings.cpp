@@ -13,7 +13,8 @@ void ModuleSettings::clear()
     mTabs.clear();
     mSections.clear();
     mAlarms.clear();
-    mJournals.clear();
+    workJournals.clear();
+    measJournals.clear();
     mIfaceSettings.settings.clear();
     critHighlight.clear();
     warnHighlight.clear();
@@ -35,19 +36,19 @@ void ModuleSettings::appendToCurrentConfig(const DataTypes::RecordPair &pair)
 }
 
 /// \brief Добавление уточнённого числа элементов для виджета в разделе конфигурирования.
-void ModuleSettings::appendDetailCount(const quint16 &id, const quint16 &count)
+void ModuleSettings::appendDetailCount(const quint16 id, const quint16 count)
 {
     mCountMap.insert(id, count);
 }
 
 /// \brief Добавление нового сигнала в список сигналов.
-void ModuleSettings::appendSignal(const quint32 &id, const ModuleTypes::Signal &sig)
+void ModuleSettings::appendSignal(const quint32 id, const ModuleTypes::Signal sig)
 {
     mSignals.insert(id, sig);
 }
 
 /// \brief Добавление новой вкладки в список вкладок.
-void ModuleSettings::appendTab(const quint32 &id, const QString &tabName)
+void ModuleSettings::appendTab(const quint32 id, const QString &tabName)
 {
     mTabs.insert(id, tabName);
 }
@@ -79,10 +80,17 @@ void ModuleSettings::appendHighlight(const Modules::AlarmType &type, const quint
     }
 }
 
-/// \brief Добавление жрунала в список журанлов по заданному типу журнала (key).
-void ModuleSettings::appendJournal(const Modules::JournalType &key, const ModuleTypes::Journal &journal)
+/// \brief Добавление записи в список описаний рабочего журналов.
+void ModuleSettings::appendWorkJournal(const quint32 id, const QString &desc)
 {
-    mJournals[key].push_back(journal);
+    workJournals.insert(id, desc);
+}
+
+/// \brief Добавление записи в список о формате журнала измерений.
+void ModuleSettings::appendMeasJournal(const quint32 index, const QString &header, //
+    const ModuleTypes::BinaryType type, bool visib)
+{
+    measJournals.append({ index, header, type, visib });
 }
 
 /// \brief Сохранение настроек интерфейса, по которому подключен модуль.
@@ -142,10 +150,16 @@ const ModuleTypes::HighlightMap &ModuleSettings::getHighlights(const Modules::Al
         return warnHighlight;
 }
 
-/// \brief Constant getter for journals hashmap.
-const ModuleTypes::JourMap &ModuleSettings::getJours() const
+/// \brief Constant getter for work journals.
+const ModuleTypes::WorkJourMap &ModuleSettings::getWorkJours() const
 {
-    return mJournals;
+    return workJournals;
+}
+
+/// \brief Constant getter for measurement journals.
+const ModuleTypes::MeasJourList &ModuleSettings::getMeasJours() const
+{
+    return measJournals;
 }
 
 /// \brief Constant getter for interface settings of current module connection.

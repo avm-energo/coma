@@ -96,13 +96,6 @@ enum AlarmType
     Critical
 };
 
-enum JournalType
-{
-    Work,
-    Meas,
-    System
-};
-
 struct StartupInfoBlock
 {
     quint32 MTypeB;
@@ -155,61 +148,6 @@ constexpr int HTH_TUPP = 0x00000004;    // перегрев модуля
 
 namespace AVM
 {
-const QStringList sysJourDescription {
-    "Рестарт модуля",                                                        //
-    "Произошла запись и переход на новую конфигурацию",                      //
-    "Произошла запись и переход на новую версию ВПО",                        //
-    "Произошла запись в блок Bhb (hidden block)(базовая)",                   //
-    "Произошла запись в блок Bhbm (hidden block)(мезонин)",                  //
-    "Произошёл отказ внешней Flash-памяти 4 Мбайт на базовой плате",         //
-    "Произошёл отказ внешней Flash-памяти 512 байт на мезонинной плате",     //
-    "Ошибка работы внешней FRAM памяти",                                     //
-    "Произошёл отказ при обновлении конфигурации",                           //
-    "Ошибка загрузки конфигурации из flash памяти",                          //
-    "Ошибка регулировочных коэффициентов (базовая)",                         //
-    "Ошибка регулировочных коэффициентов (мезонин)",                         //
-    "Ошибка перегрев модуля",                                                //
-    "Напряжение батарейки низкое (< 2,5 В)",                                 //
-    "Ошибка связи с NTP сервером",                                           //
-    "Ошибка связи с 1PPS от антенны",                                        //
-    "Ошибка АЦП (мезонин)",                                                  //
-    "Ошибка АЦП (базовая)",                                                  //
-    "Произошла запись регулировочных коэффициентов (базовая)",               //
-    "Произошла запись регулировочных коэффициентов (мезонин)",               //
-    "Произошло стирание системного журнала",                                 //
-    "Произошло стирание рабочего журнала",                                   //
-    "Произошло стирание осциллограмм",                                       //
-    "Произошло стирание журнала измерений",                                  //
-    "Ошибка ВПО",                                                            //
-    "Ошибка встроенного АЦП 1",                                              //
-    "Произошла запись в блок Bhb (hidden block)(базовая)",                   //
-    "Произошла запись в блок Bhbm (hidden block)(мезонин)"                   //
-    "Ошибка встроенного АЦП 2",                                              //
-    "Ошибка RTC",                                                            //
-    "Закрытие сокета 104"                                                    //
-    "Произошла запись в блок Bhbd (hidden block)(доп)",                      //
-    "Произошёл отказ внешней Flash-памяти 512 байт на дополнительной плате", //
-    "Ошибка регулировочных коэффициентов (доп)"                              //
-    "Ошибка АЦП (доп)",                                                      //
-    "Произошла запись регулировочные коэффициенты (доп)",                    //
-    "Произошла запись в блок Bhbd (hidden block)(доп)"                       //
-};
-
-const QStringList eventJourHeaders { " № ", //
-    "Дата/Время UTC",                       //
-    "Описание события",                     //
-    "Тип события",                          //
-    "Доп поле" };
-
-constexpr quint32 sysJourId = 1;
-struct EventStruct
-{
-    EventStruct() = default;
-    quint64 Time;
-    quint8 EvType;
-    quint8 EvNum[3];
-    quint32 Reserv;
-};
 
 const QStringList Health {
     "ADCI", //
@@ -250,226 +188,81 @@ const QStringList HthToolTip {
 
 }
 
-namespace AVM_KTF
-{
-
-struct MeasureStruct
-{
-    quint32 NUM;
-    quint32 Time;
-    float Ueff[3];
-    float Ieff[3];
-    float Frequency;
-    float U0;
-    float U1;
-    float U2;
-    float I0;
-    float I1;
-    float I2;
-    float Pf[4];
-    float Qf[4];
-    float Sf[4];
-    float Cosphi;
-    float Twin;
-    float Tmk;
-    float Tamb;
-    quint32 res;
-};
-
-}
-
-namespace AVM_KDV
-{
-
-struct MeasureStruct
-{
-    quint32 NUM;
-    quint32 Time;
-    float Ueff[3];
-    float Ieff[3];
-    float Frequency;
-    float U1;
-    float U2;
-    float I1;
-    float I2;
-    float Pf_sum;
-    float Qf_sum;
-    float Sf_sum;
-    float CosPhi;
-    float Tmk;
-    float Tamb;
-    float Twin;
-    float VibrSCZ_V[6];
-    float VibrSCZ_D[6];
-};
-
-}
-
-namespace AVM_KIV
-{
-struct MeasureStruct
-{
-    quint32 NUM;
-    quint32 Time;
-    float Ueff[3];
-    float Ieff[3];
-    float Frequency;
-    float U0;
-    float U1;
-    float U2;
-    float I0;
-    float I1;
-    float I2;
-    float Cbush[3];
-    float Tg_d[3];
-    float dCbush[3];
-    float dTg_d[3];
-    float Iunb;
-    float Phy_unb;
-    float Tmk;
-    float Tamb;
-    quint32 res;
-};
-
-enum Registers : quint16
-{
-    MTypeB = 1,
-    MTypeM = 2,
-    Hwver = 3,
-    Fwver = 4,
-    Rst = 5,
-    RstCount = 6,
-    UID_Low = 7,
-    UID_Mid = 8,
-    UID_High = 9,
-    SerialNumB = 10,
-    SerialNumM = 11,
-    HwverM = 12,
-    SerialNum = 13,
-    Cfcrc = 14,
-    Hth = 15,
-    Tmk = 101,
-    Vbat = 102,
-    Ccf = 801,
-    Cfw = 802,
-    Csmc = 803,
-    SetStrtup = 900,
-    ClrStrtup = 905,
-    WbgCA = 910,
-    WbgCB = 911,
-    WbgCC = 912,
-    WbgTgA = 913,
-    WbgTgB = 914,
-    WbgTgC = 915,
-    WcorTgA = 916,
-    WcorTgB = 917,
-    WcorTgC = 918,
-    WInb = 919,
-    WPhyunb = 920,
-    UA = 1000,
-    UB = 1001,
-    UC = 1002,
-    Ucp = 1003,
-    UhA = 1004,
-    UhB = 1005,
-    UhC = 1006,
-    Uhcp = 1007,
-    KrF_U_A = 1008,
-    KrF_U_B = 1009,
-    KrF_U_C = 1010,
-    U0 = 1011,
-    U1 = 1012,
-    U2 = 1013,
-    KuU2 = 1014,
-    KuU0 = 1015,
-    IA = 1100,
-    IB = 1101,
-    IC = 1102,
-    Icp = 1103,
-    IhA = 1104,
-    IhB = 1105,
-    IhC = 1106,
-    Ihcp = 1107,
-    KrF_U_A1 = 1108,
-    KrF_I_B = 1109,
-    KrF_I_C = 1110,
-    I0 = 1111,
-    I1 = 1112,
-    I2 = 1113,
-    KuI2 = 1114,
-    KuI0 = 1115,
-    F = 2400,
-    Phi_next0 = 2401,
-    Phi_next1 = 2402,
-    Phi_next2 = 2403,
-    Phi_next3 = 2404,
-    Phi_next4 = 2405,
-    Phi_next5 = 2406,
-    C_A = 2420,
-    C_B = 2421,
-    C_C = 2422,
-    Tg_d_A = 2423,
-    Tg_d_B = 2424,
-    Tg_d_C = 2425,
-    dC_A = 2426,
-    dC_B = 2427,
-    dC_C = 2428,
-    dTg_d_A = 2429,
-    dTg_d_B = 2430,
-    dTg_d_C = 2431,
-    Iunb = 2432,
-    Phy_unb = 2433,
-    BgCA = 4000,
-    BgCB = 4001,
-    BgCC = 4002,
-    BgTgA = 4003,
-    BgTgB = 4004,
-    BgTgC = 4005,
-    BgcorTgA = 4006,
-    BgcorTgB = 4007,
-    BgcorTgC = 4008,
-    BgIunb = 4009,
-    BgPhyunb = 4010,
-    Tamb = 4501,
-    Ramb = 4502,
-    dC_pred = 7000,
-    dC_alarm = 7001,
-    dTg_pred = 7002,
-    dTg_alarm = 7003,
-    dIunb_pred = 7004,
-    dIunb_alarm = 7005,
-    AlarmDt = 201,
-    SignVbat = 202,
-    SignDpps = 203,
-    NotUA = 3011,
-    NotUB = 3012,
-    NotUC = 3013,
-    NotIA = 3014,
-    NotIB = 3015,
-    NotIC = 3016,
-    BegDat = 3017,
-    LowUA = 3018,
-    LowUB = 3019,
-    LowUC = 3020,
-    SignTA = 3021,
-    SignTB = 3022,
-    SignTC = 3023,
-    AlarmTA = 3024,
-    AlarmTB = 3025,
-    AlarmTC = 3026,
-    SignCA = 3027,
-    SignCB = 3028,
-    SignCC = 3029,
-    AlarmCA = 3030,
-    AlarmCB = 3031,
-    AlarmCC = 3032,
-    PaspDat = 3033,
-    SignInb = 3034,
-    AlarmInb = 3035
-
-};
-
-}
+// namespace AVM_KTF
+//{
+// struct MeasureStruct
+//{
+//    quint32 NUM;
+//    quint32 Time;
+//    float Ueff[3];
+//    float Ieff[3];
+//    float Frequency;
+//    float U0;
+//    float U1;
+//    float U2;
+//    float I0;
+//    float I1;
+//    float I2;
+//    float Pf[4];
+//    float Qf[4];
+//    float Sf[4];
+//    float Cosphi;
+//    float Twin;
+//    float Tmk;
+//    float Tamb;
+//    quint32 res;
+//};
+//}
+// namespace AVM_KDV
+//{
+// struct MeasureStruct
+//{
+//    quint32 NUM;
+//    quint32 Time;
+//    float Ueff[3];
+//    float Ieff[3];
+//    float Frequency;
+//    float U1;
+//    float U2;
+//    float I1;
+//    float I2;
+//    float Pf_sum;
+//    float Qf_sum;
+//    float Sf_sum;
+//    float CosPhi;
+//    float Tmk;
+//    float Tamb;
+//    float Twin;
+//    float VibrSCZ_V[6];
+//    float VibrSCZ_D[6];
+//};
+//}
+// namespace AVM_KIV
+//{
+// struct MeasureStruct
+//{
+//    quint32 NUM;
+//    quint32 Time;
+//    float Ueff[3];
+//    float Ieff[3];
+//    float Frequency;
+//    float U0;
+//    float U1;
+//    float U2;
+//    float I0;
+//    float I1;
+//    float I2;
+//    float Cbush[3];
+//    float Tg_d[3];
+//    float dCbush[3];
+//    float dTg_d[3];
+//    float Iunb;
+//    float Phy_unb;
+//    float Tmk;
+//    float Tamb;
+//    quint32 res;
+//};
+//}
 
 // Oscillogram / SwitchJournal Part
 

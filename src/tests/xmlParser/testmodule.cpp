@@ -93,9 +93,9 @@ void TestModule::checkA284()
     QVERIFY(module->loadSettings());
     auto &settings = ConfigStorage::GetInstance().getModuleSettings();
     // Journals comparing
-    auto workJourSize = settings.getJours().value(Modules::JournalType::Work).size();
+    auto workJourSize = settings.getWorkJours().size();
     QCOMPARE(workJourSize, a284::workJours);
-    auto measJourSize = settings.getJours().value(Modules::JournalType::Meas).size();
+    auto measJourSize = settings.getMeasJours().size();
     QCOMPARE(measJourSize, a284::measJours);
     // Alarms comparing
     auto alarmsCount = getAlarmsCount(settings.getAlarms());

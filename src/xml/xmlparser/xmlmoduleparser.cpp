@@ -2,8 +2,31 @@
 
 #include <gen/stdfunc.h>
 
-Xml::ModuleParser::ModuleParser(QObject *parent) : BaseParser(parent), isBase(true)
+Xml::ModuleParser::ModuleParser(const quint16 typeB, const quint16 typeM, const bool check, QObject *parent)
+    : BaseParser(parent)
 {
+    auto xmlFilename = getFileName(typeB, typeM);
+    auto document = getFileContent(xmlFilename);
+    auto moduleNode = document.firstChildElement(tags::module);
+    if (!moduleNode.isNull())
+    {
+        auto checkResult = true;
+        if (check)
+            checkResult = isCorrectModule(moduleNode, typeB, typeM);
+        if (checkResult)
+            resources = moduleNode.firstChildElement(tags::res);
+    }
+}
+
+/// \brief Получаем имя файла по типам базовой и мезонинной плат.
+QString Xml::ModuleParser::getFileName(const quint16 typeB, const quint16 typeM)
+{
+    if (typeM == 0)
+        return QString::number(typeB, 16) + "00.xml";
+    else if (typeB == 0)
+        return "00" + QString::number(typeM, 16) + ".xml";
+    else
+        return QString::number(typeB, 16) + QString::number(typeM, 16) + ".xml";
 }
 
 /// \brief Проверка на то, совпадает ли тип модуля с указанным в файле конфигурации.
@@ -44,6 +67,7 @@ bool Xml::ModuleParser::isCorrectModule(const QDomElement &moduleNode, const qui
     if (isCorrectModuleType(moduleNode, typeB, typeM))
     {
         // Проверяем корректность версии только для базы
+        auto isBase = (typeB == 0) ? false : true;
         if (isBase)
         {
             if (isCorrectModuleVersion(moduleNode))
@@ -157,25 +181,39 @@ void Xml::ModuleParser::parseAlarm(const QDomNode &alarmNode, const Modules::Ala
 /// \brief Функция для парсинга узла <journals>.
 void Xml::ModuleParser::parseJournals(const QDomNode &joursNode)
 {
-    if (!(joursNode.firstChildElement(tags::system).isNull()))
-        emit jourDataSending(Modules::JournalType::System, 0, "");
-    parseNode(joursNode, tags::work, [this](const QDomNode &jourNode) { //
-        parseJournal(jourNode, Modules::JournalType::Work);
-    });
-    parseNode(joursNode, tags::meas, [this](const QDomNode &jourNode) { //
-        parseJournal(jourNode, Modules::JournalType::Meas);
-    });
+    parseNode(joursNode, tags::work, [this](const QDomNode &jourNode) { parseWorkJournal(jourNode); });
+    parseNode(joursNode, tags::meas, [this](const QDomNode &jourNode) { parseMeasJournal(jourNode); });
 }
 
-/// \brief Функция для парсинга узлов <work> и <meas> внутри <journals>.
-void Xml::ModuleParser::parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType)
+/// \brief Функция для парсинга узла <work> внутри <journals>.
+void Xml::ModuleParser::parseWorkJournal(const QDomNode &jourNode)
 {
-    quint32 addr = 0;
-    if (jType == Modules::JournalType::Work)
-        addr = parseNumFromNode<quint32>(jourNode, tags::addr);
-    auto tag = (jType == Modules::JournalType::Meas) ? tags::header : tags::desc;
-    auto desc = parseString(jourNode, tag);
-    emit jourDataSending(jType, addr, desc);
+    auto id = parseNumFromNode<quint32>(jourNode, tags::addr);
+    auto desc = parseString(jourNode, tags::desc);
+    emit workJourDataSending(id, desc);
+}
+
+/// \brief Функция для парсинга узла <meas> внутри <journals>.
+void Xml::ModuleParser::parseMeasJournal(const QDomNode &jourNode)
+{
+    auto index = parseNumFromNode<quint32>(jourNode, tags::index);
+    auto header = parseString(jourNode, tags::header);
+
+    auto strType = parseString(jourNode, tags::type);
+    ModuleTypes::BinaryType type;
+    if (strType == "uint32")
+        type = ModuleTypes::BinaryType::uint32;
+    else if (strType == "time32")
+        type = ModuleTypes::BinaryType::time32;
+    else if (strType == "time64")
+        type = ModuleTypes::BinaryType::time64;
+    else
+        type = ModuleTypes::BinaryType::float32;
+
+    auto visibility = true;
+    if (parseString(jourNode, tags::visibility) == "false")
+        visibility = false;
+    emit measJourDataSending(index, header, type, visibility);
 }
 
 /// \brief Функция для парсинга конфигурации интерфейса, по которому подключен модуль.
@@ -252,30 +290,46 @@ void Xml::ModuleParser::parseConfig(const QDomNode &configNode)
 }
 
 /// \brief Функция для парсинга узла <resources>.
-void Xml::ModuleParser::parseResources(const QDomElement &resNode)
+void Xml::ModuleParser::parseDetector(const QDomNode &node)
 {
-    parseNode(resNode, tags::sigs, [this](const QDomNode &sigNode) { parseSignal(sigNode); });
-    parseNode(resNode, tags::tabs, [this](const QDomNode &sTabNode) { parseSTab(sTabNode); });
-    parseNode(resNode, tags::sections, [this](const QDomNode &sectionNode) { parseSection(sectionNode); });
-    callIfNodeExist(resNode, tags::alarms, [this](const QDomNode &alarmsNode) { parseAlarms(alarmsNode); });
-    callIfNodeExist(resNode, tags::journals, [this](const QDomNode &joursNode) { parseJournals(joursNode); });
-    parseInterface(resNode);
-    parseNode(resNode, tags::config, [this](const QDomNode &configNode) { parseConfig(configNode); });
+    const auto tag = node.toElement().tagName();
+    if (tag == tags::sigs)
+        callForEachChild(node, [this](const QDomNode &sigNode) { parseSignal(sigNode); });
+    else if (tag == tags::tabs)
+        callForEachChild(node, [this](const QDomNode &sTabNode) { parseSTab(sTabNode); });
+    else if (tag == tags::sections)
+        callForEachChild(node, [this](const QDomNode &sectionNode) { parseSection(sectionNode); });
+    else if (tag == tags::config)
+        callForEachChild(node, [this](const QDomNode &configNode) { parseConfig(configNode); });
+    else if (tag == tags::alarms)
+        parseAlarms(node);
+    else if (tag == tags::journals)
+        parseJournals(node);
+    else
+    {
+        if (tag != tags::iec && tag != tags::modbus && tag != tags::protocom)
+            qWarning() << "Undefined XML tag: " << tag;
+    }
 }
 
 /// \brief Функция для парсинга файла конфигурации модуля.
-void Xml::ModuleParser::parse(const QDomNode &content, const quint16 &typeB, const quint16 &typeM, const bool checks)
+void Xml::ModuleParser::parse(const QStringList &nodes)
 {
-    emit startNewConfig();
-    isBase = (typeB == 0) ? false : true;
-    auto moduleNode = content.firstChildElement(tags::module);
-    if (!moduleNode.isNull())
+    if (!resources.isNull())
     {
-        if (isCorrectModule(moduleNode, typeB, typeM) || !checks)
+        auto parseAction = [this](const QDomNode &node) { parseDetector(node); };
+        // Парсим весь файл, если узлы не указаны требуемые узлы
+        if (nodes.empty())
         {
-            auto resNode = moduleNode.firstChildElement(tags::res);
-            if (!resNode.isNull())
-                parseResources(resNode);
+            emit startNewConfig();
+            callForEachChild(resources, parseAction);
+            // Настройки интерфейсов всегда парсим отдельно после парсинга сигналов
+            parseInterface(resources);
+        }
+        else
+        {
+            for (auto &node : nodes)
+                callIfNodeExist(resources, node, parseAction);
         }
     }
 }

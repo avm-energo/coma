@@ -157,7 +157,7 @@ void MasterModel::create(const QStringList &saved, int *row)
 }
 
 /// \brief Slot for updating an item's data in the model.
-void MasterModel::update(const QStringList &saved, const int &row)
+void MasterModel::update(const QStringList &saved, const int row)
 {
     auto newSaved = getNewList(saved);
     BaseEditorModel::update(newSaved, row);
@@ -165,7 +165,7 @@ void MasterModel::update(const QStringList &saved, const int &row)
 }
 
 /// \brief Slot for deleting an exisiting item in the model.
-void MasterModel::remove(const int &row)
+void MasterModel::remove(const int row)
 {
     auto filename = data(index(row, 0), FilenameDataRole).value<QString>();
     BaseEditorModel::remove(row);

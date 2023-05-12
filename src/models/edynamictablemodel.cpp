@@ -134,7 +134,7 @@ bool EDynamicTableModel::insertRows(int row, int count, const QModelIndex &index
     beginInsertRows(QModelIndex(), row, row + count - 1);
     for (int i = 0; i < count; i++)
     {
-        ETableRow *item = new ETableRow();
+        ETableRow *item = new ETableRow(this);
 
         if (i >= rowCount() && i <= rowCount())
         {
@@ -187,7 +187,7 @@ void EDynamicTableModel::fillModel(const QVector<QVector<QVariant>> &lsl)
         int lastEntry = int(maindata.size());
         int count = 1;
         int row = lastEntry;
-        ETableRow *item = new ETableRow();
+        ETableRow *item = new ETableRow(this);
         for (int j = 0; j < rowVector.size(); ++j)
             item->setData(j, rowVector.at(j), Qt::EditRole);
         if (count >= rowCount() && count <= rowCount())

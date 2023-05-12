@@ -45,7 +45,7 @@ struct SGroup
     QList<MWidget> widgets; ///< узлы <mwidget>
 };
 
-using SGMap = QMultiMap<quint32, SGroup>; ///< quint32 - id вкладки, SGroup - группы для вкладки
+using SGMap = QMultiMap<quint32, SGroup>; ///< quint32 - id вкладки, SGroup - группы для вкладки.
 
 /// \brief Структура для хранения информации узла <section> из XML.
 struct Section
@@ -54,14 +54,25 @@ struct Section
     SGMap sgMap;  ///< узлы <sgroup>
 };
 
-/// \brief Структура для хранения информации узла <item> в <journals>
-struct Journal
+/// \brief Перечисление для хранение типа, читаемого из бинарного файла.
+enum BinaryType : quint8
 {
-    quint32 addr; ///< узел <addr>
-    QString desc; ///< узел <desc>
+    uint32 = 0,
+    float32,
+    time32,
+    time64
 };
 
-/// \brief Структура для хранения информации о протоколах protocom, modbus и iec104
+/// \brief Структура для хранения информации узла <item> в <meas>.
+struct MeasJournal
+{
+    quint32 index;   ///< атрибут "index"
+    QString header;  ///< атрибут "header"
+    BinaryType type; ///< атрибут "type"
+    bool visibility; ///< атрибут "visibility"
+};
+
+/// \brief Структура для хранения информации о протоколах protocom, modbus и iec104.
 struct InterfaceSettings
 {
     QVariant settings;
@@ -75,10 +86,11 @@ using HighlightMap = QMultiMap<quint32, quint32>; ///< Для подсветки
 using SectionList = QList<Section>;               ///< Хранит узлы <section> секции <sections>.
 using AlarmKey = Modules::AlarmType;              ///< Modules::AlarmType - тип сигнализации.
 using AlarmValue = QMap<quint32, QString>; ///< quint32 - адрес сигнализации, QString - нода <desc> (описание).
-using AlarmMap = QHash<AlarmKey, AlarmValue>;                ///< Хранит узлы <item> секции <alarms>.
-using JourMap = QHash<Modules::JournalType, QList<Journal>>; ///< Хранит узлы <item> секции <journals>.
+using AlarmMap = QHash<AlarmKey, AlarmValue>; ///< Хранит узлы <item> секции <alarms>.
+using WorkJourMap = QMap<quint32, QString>;   ///< Хранит узлы <item> секции <work> из <journals>.
+using MeasJourList = QList<MeasJournal>;      ///< Хранит узлы <item> секции <meas> из <journals>.
 using DetailCountMap
-    = QHash<quint16, quint16>; ///< Хранит количество элементов для конфигурационных параметров, имеющих одинаковые id
+    = QHash<quint16, quint16>; ///< Хранит количество элементов для конфигурационных параметров, имеющих одинаковые id.
 
 }
 
@@ -90,13 +102,15 @@ public:
     void clear();
     void startNewConfig();
     void appendToCurrentConfig(const DataTypes::RecordPair &pair);
-    void appendDetailCount(const quint16 &id, const quint16 &count);
-    void appendSignal(const quint32 &id, const ModuleTypes::Signal &sig);
-    void appendTab(const quint32 &id, const QString &tabName);
+    void appendDetailCount(const quint16 id, const quint16 count);
+    void appendSignal(const quint32 id, const ModuleTypes::Signal sig);
+    void appendTab(const quint32 id, const QString &tabName);
     void appendSection(const ModuleTypes::Section &section);
     void appendAlarm(const ModuleTypes::AlarmKey &key, const quint32 &addr, const QString &desc);
     void appendHighlight(const Modules::AlarmType &type, const quint32 &key, const QList<quint32> &values);
-    void appendJournal(const Modules::JournalType &key, const ModuleTypes::Journal &journal);
+    void appendWorkJournal(const quint32 id, const QString &desc);
+    void appendMeasJournal(const quint32 index, const QString &header, //
+        const ModuleTypes::BinaryType type, bool visib);
     void setInterfaceSettings(const ModuleTypes::InterfaceSettings &settings);
 
     const ModuleTypes::ConfigMap &getConfigMap() const;
@@ -107,7 +121,8 @@ public:
     const ModuleTypes::SectionList &getSections() const;
     const ModuleTypes::AlarmMap &getAlarms() const;
     const ModuleTypes::HighlightMap &getHighlights(const Modules::AlarmType &type) const;
-    const ModuleTypes::JourMap &getJours() const;
+    const ModuleTypes::WorkJourMap &getWorkJours() const;
+    const ModuleTypes::MeasJourList &getMeasJours() const;
     const ModuleTypes::InterfaceSettings &getInterfaceSettings() const;
 
 private:
@@ -119,6 +134,7 @@ private:
     ModuleTypes::SectionList mSections;
     ModuleTypes::AlarmMap mAlarms;
     ModuleTypes::HighlightMap critHighlight, warnHighlight;
-    ModuleTypes::JourMap mJournals;
+    ModuleTypes::WorkJourMap workJournals;
+    ModuleTypes::MeasJourList measJournals;
     ModuleTypes::InterfaceSettings mIfaceSettings;
 };
