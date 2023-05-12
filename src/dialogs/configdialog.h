@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../module/errconfstate.h"
 #include "../module/modules.h"
 #include "../widgets/udialog.h"
 #include "../widgets/widgetfactory.h"
@@ -32,9 +33,12 @@ private:
     void checkForDiff(const QList<DataTypes::DataRecV> &list);
     void configReceived(const QVariant &msg);
 
+    void showConfigErrState();
+
     bool m_prereadConf;
     QStringList CheckConfErrors;
     const QList<DataTypes::RecordPair> m_defaultValues;
     ConfigV *configV;
     UniquePointer<DataTypesProxy> proxyDRL;
+    ErrConfState *errConfState;
 };

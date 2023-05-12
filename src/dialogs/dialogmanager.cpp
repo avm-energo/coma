@@ -49,7 +49,7 @@ void DialogManager::dialogChanged(int newIndex)
         auto newDialog = dialogs[newIndex];
         newDialog->engine()->setUpdatesEnabled(true);
         newDialog->setEnabled(true);
-        newDialog->reqUpdate();
+        // newDialog->reqUpdate();
         curDialogIndex = newIndex;
     }
     // Индекс -1 норма, когда удаляются диалоги

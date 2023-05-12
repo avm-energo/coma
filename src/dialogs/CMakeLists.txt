@@ -19,6 +19,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   interfaces
   oscillograms
   models
+  module
   tune
   startup
   journals

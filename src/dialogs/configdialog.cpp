@@ -35,6 +35,7 @@ ConfigDialog::ConfigDialog(
     , m_defaultValues(defaultConfig)
     , configV(config)
     , proxyDRL(new DataTypesProxy)
+    , errConfState(nullptr)
 {
     proxyDRL->RegisterType<QList<DataTypes::DataRecV>>();
     connect(proxyDRL.get(), &DataTypesProxy::DataStorable, this, &ConfigDialog::configReceived);
@@ -203,9 +204,15 @@ QWidget *ConfigDialog::ConfButtons()
     button = new QPushButton("Записать в файл");
     connect(button, &QPushButton::clicked, this, &ConfigDialog::saveConfigToFile);
     wdgtlyout->addWidget(button, 1, 1, 1, 1);
+
     button = new QPushButton("Взять конфигурацию по умолчанию");
-    connect(button, &QPushButton::clicked, this, [this] { setDefaultConfig(); });
+    connect(button, &QPushButton::clicked, this, &ConfigDialog::setDefaultConfig);
     wdgtlyout->addWidget(button, 2, 0, 1, 2);
+
+    button = new QPushButton("Показать статус конфигурирования");
+    connect(button, &QPushButton::clicked, this, [this] { showConfigErrState(); });
+    wdgtlyout->addWidget(button, 3, 0, 1, 2);
+
     wdgt->setLayout(wdgtlyout);
     return wdgt;
 }
@@ -357,6 +364,19 @@ void ConfigDialog::setDefaultConfig()
     for (const auto &record : m_defaultValues)
         configV->setRecordValue(record.record);
     fill();
+}
+
+void ConfigDialog::showConfigErrState()
+{
+    if (errConfState == nullptr)
+    {
+        errConfState = new ErrConfState();
+        errConfState->show();
+    }
+    else
+    {
+        errConfState->show();
+    }
 }
 
 bool ConfigDialog::prepareConfigToWrite()
