@@ -487,17 +487,17 @@ bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unn
         }
         case config::Item::ModbusColumns::BaudRate:
         {
-            master.parport.baud = CommandsMBS::BaudRate(status ? data : 0);
+            master.parport.baud = MBS::BaudRate(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::Parity:
         {
-            master.parport.parity = CommandsMBS::Parity(status ? data : 0);
+            master.parport.parity = MBS::Parity(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::StopBits:
         {
-            master.parport.stop = CommandsMBS::StopBits(status ? data : 0);
+            master.parport.stop = MBS::StopBits(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::Timeout:
@@ -512,12 +512,12 @@ bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unn
         }
         case config::Item::ModbusColumns::FuncCode:
         {
-            master.type.reg = CommandsMBS::Commands(status ? data : 0);
+            master.type.reg = MBS::Commands(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::DataType:
         {
-            master.type.dat = CommandsMBS::TypeId(status ? data : 0);
+            master.type.dat = MBS::TypeId(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::Register:

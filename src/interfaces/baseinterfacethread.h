@@ -25,6 +25,7 @@ public:
         return BaseInterface::iface()->settings().dictionary().value(regAddr).dataType.value<quint16>();
     }
 
+    void processFileFromDisk(DataTypes::FilesEnum fileNum);
     void FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format);
     void checkQueue();
     virtual void parseRequest(const CommandStruct &cmdStr) = 0;
@@ -36,11 +37,25 @@ public:
     QMutex _mutex;
     QByteArray m_readData;
     QWaitCondition _waiter;
+    UniquePointer<LogClass> log;
+    const QMap<Interface::Commands, CommandRegisters> WSCommandMap {
+        { C_StartWorkingChannel, StartWorkingChannel },
+        { C_SetStartupValues, SetStartupValues },
+        { C_SetStartupPhaseA, SetStartupPhaseA },
+        { C_SetStartupPhaseB, SetStartupPhaseB },
+        { C_SetStartupPhaseC, SetStartupPhaseC },
+        { C_SetStartupUnbounced, SetStartupUnbounced },
+        { C_SetTransOff, SetTransOff },
+        { C_ClearStartupValues, ClearStartupValues },
+        { C_ClearStartupUnbounced, ClearStartupUnbounced },
+        { C_ClearStartupError, ClearStartupSetError },
+    };
 
 protected:
     using FileFormat = DataTypes::FileFormat;
 
 signals:
+    void finished();
 
 public slots:
     void run();

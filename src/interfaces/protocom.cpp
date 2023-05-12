@@ -55,7 +55,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     connect(portThread, &QThread::started, port, &UsbHidPort::poll);
     connect(parseThread, &QThread::started, parser, &ProtocomThread::run);
     // Рабочий режим
-    connections << connect(this, &Protocom::wakeUpParser, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
+    connections << connect(this, &BaseInterface::wakeUpParser, parser, &ProtocomThread::wakeUp, Qt::DirectConnection);
     connect(port, &UsbHidPort::dataReceived, parser, &ProtocomThread::processReadBytes, Qt::DirectConnection);
     connect(parser, &ProtocomThread::writeDataAttempt, port, &UsbHidPort::writeDataAttempt, Qt::DirectConnection);
     // Прерывание
@@ -111,28 +111,3 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     parseThread->start();
     return true;
 }
-
-// Proto::WCommands Protocom::getWCommand(Queries::Commands cmd)
-//{
-//    static const QMap<Queries::Commands, Proto::WCommands> protoWCommandMap {
-//        { Queries::QC_SetStartupValues, Proto::InitStartupValues },    //
-//        { Queries::QC_ClearStartupValues, Proto::EraseStartupValues }, //
-//    };
-//    return protoWCommandMap.value(cmd);
-//}
-
-// Proto::WSCommands Protocom::getWSCommand(Queries::Commands cmd)
-//{
-//    static const QMap<Queries::Commands, Proto::WSCommands> protoWSCommandMap {
-//        { Queries::QC_SetStartupValues, Proto::InitStartupAll },             //
-//        { Queries::QC_SetStartupPhaseA, Proto::InitStartupPhaseA },          //
-//        { Queries::QC_SetStartupPhaseB, Proto::InitStartupPhaseB },          //
-//        { Queries::QC_SetStartupPhaseC, Proto::InitStartupPhaseC },          //
-//        { Queries::QC_SetStartupUnbounced, Proto::InitStartupUnbounced },    //
-//        { Queries::QC_SetTransOff, Proto::SetTransOff },                     //
-//        { Queries::QC_ClearStartupValues, Proto::EraseStartupAll },          //
-//        { Queries::QC_ClearStartupError, Proto::EraseStartupInitError },     //
-//        { Queries::QC_ClearStartupUnbounced, Proto::ClearStartupUnbounced }, //
-//    };
-//    return protoWSCommandMap.value(cmd);
-//}

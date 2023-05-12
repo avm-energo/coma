@@ -1,19 +1,9 @@
 #include "protocomthread.h"
 
 #include "../s2/s2.h"
-#include "baseinterface.h"
 
 #include <QDebug>
 #include <QQueue>
-#include <QStorageInfo>
-#include <QThread>
-#include <QtEndian>
-#include <gen/datamanager/datamanager.h>
-#include <gen/files.h>
-#include <gen/helper.h>
-#include <gen/logclass.h>
-#include <gen/registers.h>
-#include <gen/stdfunc.h>
 
 #ifdef Q_OS_LINUX
 #include <time.h>
@@ -33,61 +23,6 @@ ProtocomThread::ProtocomThread(QObject *parent) : BaseInterfaceThread(parent)
 
 ProtocomThread::~ProtocomThread()
 {
-}
-
-void ProtocomThread::processFileFromDisk(DataTypes::FilesEnum fileNum)
-{
-    QString fileToFind;
-    switch (fileNum)
-    {
-    case DataTypes::JourSys:
-    {
-        fileToFind = "system.dat";
-        break;
-    }
-    case DataTypes::JourMeas:
-    {
-        fileToFind = "measj.dat";
-        break;
-    }
-    case DataTypes::JourWork:
-    {
-        fileToFind = "workj.dat";
-        break;
-    }
-    default:
-        qDebug() << "Wrong file type!"; // we should not be here
-        return;
-    }
-
-    m_isCommandRequested = false;
-
-    QStringList drives = Files::Drives();
-    if (drives.isEmpty())
-    {
-        qCritical() << Error::NoDeviceError;
-        return;
-    }
-    QStringList files = Files::SearchForFile(drives, fileToFind);
-    if (files.isEmpty())
-    {
-        qCritical() << Error::FileNameError;
-        return;
-    }
-    QString JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
-    if (JourFile.isEmpty())
-    {
-        qCritical() << Error::FileNameError;
-        return;
-    }
-    QFile file(JourFile);
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qCritical() << Error::FileOpenError;
-        return;
-    }
-    QByteArray ba = file.readAll();
-    FilePostpone(ba, fileNum, DataTypes::FileFormat::Binary);
 }
 
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
@@ -254,7 +189,13 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_SetStartupUnbounced:
     case Commands::C_StartWorkingChannel:
     case Commands::C_SetTransOff:
-    case Commands::C_Command50:
+    {
+        ba = StdFunc::ArrayFromNumber(WSCommandMap[cmdStr.command]);
+        ba.append(StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>()));
+        ba = prepareBlock(Proto::WriteSingleCommand, ba);
+        emit writeDataAttempt(ba);
+        break;
+    }
 
     default:
     {
@@ -381,6 +322,7 @@ void ProtocomThread::appendInt16(QByteArray &ba, quint16 data)
 
 bool ProtocomThread::isOneSegment(unsigned len)
 {
+    // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
     Q_ASSERT(len <= Proto::MaxSegmenthLength);
     return (len != Proto::MaxSegmenthLength);
 }

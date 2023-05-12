@@ -18,9 +18,9 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), /* m_working(fa
 {
     ProxyInit();
     qRegisterMetaType<State>();
-    timeoutTimer = new QTimer(this);
-    timeoutTimer->setInterval(MAINTIMEOUT);
-    connect(timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
+    m_timeoutTimer = new QTimer(this);
+    m_timeoutTimer->setInterval(MAINTIMEOUT);
+    connect(m_timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
     m_state = State::None;
 }
 
@@ -49,7 +49,7 @@ void BaseInterface::reqAlarms(quint32 sigAdr, quint32 sigCount)
     if (isValidRegs(sigAdr, sigCount))
     {
         CommandStruct bi { C_ReqAlarms, sigAdr, sigCount };
-        DataManager::GetInstance().addToInQueue(bi);
+        setToQueue(bi);
     }
 }
 
@@ -58,7 +58,7 @@ void BaseInterface::reqFloats(quint32 sigAdr, quint32 sigCount)
     if (isValidRegs(sigAdr, sigCount))
     {
         CommandStruct bi { C_ReqFloats, sigAdr, sigCount };
-        DataManager::GetInstance().addToInQueue(bi);
+        setToQueue(bi);
     }
 }
 
@@ -67,9 +67,216 @@ void BaseInterface::reqBitStrings(quint32 sigAdr, quint32 sigCount)
     if (isValidRegs(sigAdr, sigCount))
     {
         CommandStruct bi { C_ReqBitStrings, sigAdr, sigCount };
-        DataManager::GetInstance().addToInQueue(bi);
+        setToQueue(bi);
     }
 }
+
+bool BaseInterface::supportBSIExt()
+{
+    m_busy = true;
+    m_timeout = false;
+    bool status = false;
+    auto connBitString = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+    auto connError = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+
+    *connBitString = connect(
+        proxyBStr.get(), &DataTypesProxy::DataStorable, this, [=, &busy = m_busy, &status](const QVariant &data) {
+            auto bs = data.value<DataTypes::BitStringStruct>();
+            if (bs.sigAdr != Regs::bsiExtStartReg)
+                return;
+            if (connBitString)
+                QObject::disconnect(*connBitString);
+            if (connError)
+                QObject::disconnect(*connError);
+            busy = false;
+            status = true;
+        });
+
+    *connError = connect(
+        proxyGRS.get(), &DataTypesProxy::DataStorable, this, [=, &busy = m_busy, &status](const QVariant &data) {
+            auto resp = data.value<DataTypes::GeneralResponseStruct>();
+            if (resp.type == DataTypes::Error)
+            {
+                if (connBitString)
+                    QObject::disconnect(*connBitString);
+                if (connError)
+                    QObject::disconnect(*connError);
+                busy = false;
+                status = false;
+            }
+        });
+
+    m_timeoutTimer->start();
+    reqBSIExt();
+    while (m_busy)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        StdFunc::Wait(100);
+    }
+    return status;
+}
+
+void BaseInterface::reqStartup(quint32 sigAdr, quint32 sigCount)
+{
+    CommandStruct bi { C_ReqStartup, sigAdr, sigCount };
+    setToQueue(bi);
+}
+
+void BaseInterface::reqBSI()
+{
+    CommandStruct bi { C_ReqBSI, Regs::bsiStartReg, Regs::bsiCountRegs };
+    setToQueue(bi);
+}
+
+void BaseInterface::reqBSIExt()
+{
+    quint32 regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
+    CommandStruct bi { C_ReqBSIExt, Regs::bsiExtStartReg, regCount };
+    setToQueue(bi);
+}
+
+void BaseInterface::reqFile(quint32 id, FileFormat format, quint32 expectedSize)
+{
+    if (expectedSize != 0)
+    {
+        DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, expectedSize };
+        (&DataManager::GetInstance())->addSignalToOutList(resp);
+    }
+    CommandStruct bi { C_ReqFile, id, format };
+    setToQueue(bi);
+}
+
+void BaseInterface::writeFile(quint32 id, const QByteArray &ba)
+{
+    CommandStruct bi { C_WriteFile, id, ba };
+    setToQueue(bi);
+}
+
+void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)
+{
+    QByteArray ba;
+    S2::StoreDataMem(ba, *file, number);
+    writeFile(number, ba);
+}
+
+void BaseInterface::reqTime()
+{
+    CommandStruct bi { C_ReqTime, 0, 0 };
+    setToQueue(bi);
+}
+
+void BaseInterface::writeTime(quint32 time)
+{
+    CommandStruct bi { C_WriteTime, time, 0 };
+    setToQueue(bi);
+}
+
+void BaseInterface::writeCommand(Commands cmd, QVariant value)
+{
+    CommandStruct bi { cmd, value, QVariant() };
+    setToQueue(bi);
+}
+
+void Interface::BaseInterface::writeCommand(Commands cmd, const QVariantList &list)
+{
+    const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
+    if (isValidRegs(start_addr, list.size()))
+    {
+        CommandStruct bi { cmd, list, QVariant() };
+        setToQueue(bi);
+    }
+}
+
+void BaseInterface::resultReady(const QVariant &msg)
+{
+    auto result = msg.value<DataTypes::BlockStruct>();
+    disconnect(proxyBS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::resultReady);
+    m_byteArrayResult = result.data;
+    m_busy = false;
+}
+
+void BaseInterface::responseReceived(const QVariant &msg)
+{
+    auto response = msg.value<DataTypes::GeneralResponseStruct>();
+    if ((response.type == DataTypes::GeneralResponseTypes::DataSize)
+        || (response.type == DataTypes::GeneralResponseTypes::DataCount))
+        return;
+    disconnect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::responseReceived);
+    m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);
+    m_busy = false;
+}
+
+void BaseInterface::fileReceived(const QVariant &msg)
+{
+    auto file = msg.value<DataTypes::FileStruct>();
+    disconnect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::fileReceived);
+    m_byteArrayResult = file.data;
+    m_busy = false;
+}
+
+void BaseInterface::timeout()
+{
+    m_busy = false;
+}
+
+void BaseInterface::setToQueue(CommandStruct &cmd)
+{
+    DataManager::GetInstance().addToInQueue(cmd);
+    emit wakeUpParser();
+}
+
+// helper methods
+
+bool BaseInterface::isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command)
+{
+    const auto &st = settings();
+    if (!st.dictionary().contains(sigAdr))
+        return false;
+    const auto val = st.dictionary().value(sigAdr);
+    if (command != 0)
+    {
+        if (command != val.function)
+            return false;
+    }
+    return val.count == sigCount;
+}
+
+ModuleTypes::InterfaceSettings BaseInterface::interfaceSettings() const
+{
+    return m_settings;
+}
+
+ProtocolDescription BaseInterface::settings() const
+{
+    return m_settings.settings;
+}
+
+void BaseInterface::setInterfaceSettings(const InterfaceSettings &settings)
+{
+    m_settings = settings;
+}
+
+void BaseInterface::setSettings(const ProtocolDescription &settings)
+{
+    m_settings.settings = settings;
+}
+
+State BaseInterface::state()
+{
+    QMutexLocker locker(&_stateMutex);
+    return m_state;
+}
+
+void BaseInterface::setState(const State &state)
+{
+    QMutexLocker locker(&_stateMutex);
+    m_state = state;
+    emit stateChanged(m_state);
+}
+
+// ===============================================================================
+// =============================== SYNC METHODS ==================================
+// ===============================================================================
 
 Error::Msg BaseInterface::reqBlockSync(
     quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize)
@@ -85,11 +292,10 @@ Error::Msg BaseInterface::reqBlockSync(
     Q_ASSERT(blockmap.contains(blocktype));
     writeCommand(blockmap.value(blocktype), blocknum);
 
-    timeoutTimer->start();
+    m_timeoutTimer->start();
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-        // StdFunc::Wait();
     }
 
     quint32 resultsize = m_byteArrayResult.size();
@@ -112,7 +318,7 @@ Error::Msg BaseInterface::writeBlockSync(
     if (blocktype == DataTypes::DataBlockTypes::BacBlock)
     {
         writeCommand(C_WriteTuningCoef, QVariant::fromValue(bs));
-        timeoutTimer->start();
+        m_timeoutTimer->start();
         while (m_busy)
         {
             QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -161,7 +367,7 @@ Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)
     m_timeout = false;
     connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::responseReceived);
     writeFile(filenum, ba);
-    timeoutTimer->start();
+    m_timeoutTimer->start();
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -194,7 +400,7 @@ Error::Msg BaseInterface::readS2FileSync(quint32 filenum)
         m_busy = false;
     });
     reqFile(filenum, FileFormat::DefaultS2);
-    timeoutTimer->start();
+    m_timeoutTimer->start();
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -212,7 +418,7 @@ Error::Msg BaseInterface::readFileSync(quint32 filenum, QByteArray &ba)
     m_timeout = false;
     connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::fileReceived);
     reqFile(filenum, FileFormat::Binary);
-    timeoutTimer->start();
+    m_timeoutTimer->start();
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -250,7 +456,7 @@ Error::Msg BaseInterface::reqTimeSync(void *block, quint32 blocksize)
         });
     }
 #endif
-    timeoutTimer->start();
+    m_timeoutTimer->start();
     reqTime();
     while (m_busy)
     {
@@ -263,146 +469,22 @@ Error::Msg BaseInterface::reqTimeSync(void *block, quint32 blocksize)
     return Error::Msg::NoError;
 }
 
-bool BaseInterface::supportBSIExt()
+void BaseInterface::pause()
 {
-    m_busy = true;
-    m_timeout = false;
-    bool status = false;
-    auto connBitString = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    auto connError = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-
-    *connBitString = connect(
-        proxyBStr.get(), &DataTypesProxy::DataStorable, this, [=, &busy = m_busy, &status](const QVariant &data) {
-            auto bs = data.value<DataTypes::BitStringStruct>();
-            if (bs.sigAdr != Regs::bsiExtStartReg)
-                return;
-            if (connBitString)
-                QObject::disconnect(*connBitString);
-            if (connError)
-                QObject::disconnect(*connError);
-            busy = false;
-            status = true;
-        });
-
-    *connError = connect(
-        proxyGRS.get(), &DataTypesProxy::DataStorable, this, [=, &busy = m_busy, &status](const QVariant &data) {
-            auto resp = data.value<DataTypes::GeneralResponseStruct>();
-            if (resp.type == DataTypes::Error)
-            {
-                if (connBitString)
-                    QObject::disconnect(*connBitString);
-                if (connError)
-                    QObject::disconnect(*connError);
-                busy = false;
-                status = false;
-            }
-        });
-
-    timeoutTimer->start();
-    reqBSIExt();
-    while (m_busy)
-    {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-        StdFunc::Wait(100);
-    }
-    return status;
+    setState(State::Wait);
 }
 
-void BaseInterface::reqStartup(quint32 sigAdr, quint32 sigCount)
+void BaseInterface::resume()
 {
-    CommandStruct bi { C_ReqStartup, sigAdr, sigCount };
-    DataManager::GetInstance().addToInQueue(bi);
+    Q_ASSERT(state() == State::Wait);
+    setState(State::Run);
 }
 
-void BaseInterface::reqBSI()
+void BaseInterface::stop()
 {
-    CommandStruct bi { C_ReqBSI, Regs::bsiStartReg, 0 };
-    DataManager::GetInstance().addToInQueue(bi);
-}
-
-void BaseInterface::reqBSIExt()
-{
-    CommandStruct bi { C_ReqBSIExt, Regs::bsiExtStartReg, 0 };
-    DataManager::GetInstance().addToInQueue(bi);
-}
-
-void BaseInterface::reqFile(quint32 id, FileFormat format, quint32 expectedSize)
-{
-    if (expectedSize != 0)
-    {
-        DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, expectedSize };
-        (&DataManager::GetInstance())->addSignalToOutList(resp);
-    }
-    CommandStruct bi { C_ReqFile, id, format };
-    DataManager::GetInstance().addToInQueue(bi);
-}
-
-void BaseInterface::writeFile(quint32 id, const QByteArray &ba)
-{
-    CommandStruct bi { C_WriteFile, id, ba };
-    DataManager::GetInstance().addToInQueue(bi);
-}
-
-void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)
-{
-    QByteArray ba;
-    S2::StoreDataMem(ba, *file, number);
-    writeFile(number, ba);
-}
-
-void BaseInterface::reqTime()
-{
-    CommandStruct bi { C_ReqTime, 0, 0 };
-    DataManager::GetInstance().addToInQueue(bi);
-}
-
-void BaseInterface::writeTime(quint32 time)
-{
-    CommandStruct bi { C_WriteTime, time, 0 };
-    DataManager::GetInstance().addToInQueue(bi);
-}
-
-void BaseInterface::writeCommand(Commands cmd, QVariant value)
-{
-    CommandStruct bi { cmd, value, QVariant() };
-    DataManager::GetInstance().addToInQueue(bi);
-}
-
-void Interface::BaseInterface::writeCommand(Commands cmd, const QVariantList &list)
-{
-    const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
-    if (isValidRegs(start_addr, list.size()))
-    {
-        CommandStruct bi { cmd, list, QVariant() };
-        DataManager::GetInstance().addToInQueue(bi);
-    }
-}
-
-void BaseInterface::resultReady(const QVariant &msg)
-{
-    auto result = msg.value<DataTypes::BlockStruct>();
-    disconnect(proxyBS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::resultReady);
-    m_byteArrayResult = result.data;
-    m_busy = false;
-}
-
-void BaseInterface::responseReceived(const QVariant &msg)
-{
-    auto response = msg.value<DataTypes::GeneralResponseStruct>();
-    if ((response.type == DataTypes::GeneralResponseTypes::DataSize)
-        || (response.type == DataTypes::GeneralResponseTypes::DataCount))
-        return;
-    disconnect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::responseReceived);
-    m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);
-    m_busy = false;
-}
-
-void BaseInterface::fileReceived(const QVariant &msg)
-{
-    auto file = msg.value<DataTypes::FileStruct>();
-    disconnect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::fileReceived);
-    m_byteArrayResult = file.data;
-    m_busy = false;
+    Log->info("Stop()");
+    setState(State::Stop);
+    qInfo() << metaObject()->className() << "disconnected";
 }
 
 }

@@ -114,19 +114,6 @@ enum WCommands
     InitStartupValues = 0x01
 };
 
-enum WSCommands
-{
-    InitStartupAll = 900,
-    InitStartupPhaseA,
-    InitStartupPhaseB,
-    InitStartupPhaseC,
-    InitStartupUnbounced,
-    EraseStartupAll,
-    EraseStartupInitError,
-    SetTransOff,
-    ClearStartupUnbounced
-};
-
 enum HiddenBlockModule : byte
 {
     Base = 0x01,
@@ -161,10 +148,6 @@ enum TypeId : int
     // Smth else
 };
 Q_ENUM_NS(TypeId)
-
-// GBsi,ErPg - bitstring,
-// GBac, GBda, GBd,GBt - float,
-// GF - file
 
 }
 Q_DECLARE_METATYPE(Proto::CommandStruct)

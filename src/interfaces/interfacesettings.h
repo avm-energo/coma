@@ -85,7 +85,7 @@ struct ModbusGroup : BaseGroup
         function = hexRegType;
         // Getting TypeId from QString
         auto buffer(type);
-        auto types = QMetaEnum::fromType<CommandsMBS::TypeId>;
+        auto types = QMetaEnum::fromType<MBS::TypeId>;
         if (!buffer.isEmpty() && types().isValid())
         {
             buffer[0] = buffer[0].toUpper();

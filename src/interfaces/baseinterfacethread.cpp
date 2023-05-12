@@ -3,10 +3,11 @@
 #include "../s2/s2.h"
 
 #include <gen/datamanager/typesproxy.h>
+#include <gen/files.h>
 
 using namespace Interface;
 
-BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent)
+BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent), log(new LogClass(this))
 {
 }
 
@@ -22,6 +23,61 @@ void BaseInterfaceThread::clear()
 void BaseInterfaceThread::wakeUp()
 {
     _waiter.wakeOne();
+}
+
+void BaseInterfaceThread::processFileFromDisk(DataTypes::FilesEnum fileNum)
+{
+    QString fileToFind;
+    switch (fileNum)
+    {
+    case DataTypes::JourSys:
+    {
+        fileToFind = "system.dat";
+        break;
+    }
+    case DataTypes::JourMeas:
+    {
+        fileToFind = "measj.dat";
+        break;
+    }
+    case DataTypes::JourWork:
+    {
+        fileToFind = "workj.dat";
+        break;
+    }
+    default:
+        qDebug() << "Wrong file type!"; // we should not be here
+        return;
+    }
+
+    m_isCommandRequested = false;
+
+    QStringList drives = Files::Drives();
+    if (drives.isEmpty())
+    {
+        qCritical() << Error::NoDeviceError;
+        return;
+    }
+    QStringList files = Files::SearchForFile(drives, fileToFind);
+    if (files.isEmpty())
+    {
+        qCritical() << Error::FileNameError;
+        return;
+    }
+    QString JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
+    if (JourFile.isEmpty())
+    {
+        qCritical() << Error::FileNameError;
+        return;
+    }
+    QFile file(JourFile);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qCritical() << Error::FileOpenError;
+        return;
+    }
+    QByteArray ba = file.readAll();
+    FilePostpone(ba, fileNum, DataTypes::FileFormat::Binary);
 }
 
 void BaseInterfaceThread::FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format)
@@ -91,6 +147,8 @@ void BaseInterfaceThread::checkQueue()
 
 void BaseInterfaceThread::run()
 {
+    log->Init(QString(metaObject()->className()) + ".log");
+    log->info(logStart);
     while (BaseInterface::iface()->state() != State::Stop)
     {
         QMutexLocker locker(&_mutex);
@@ -103,4 +161,5 @@ void BaseInterfaceThread::run()
             m_readData.clear();
         }
     }
+    emit finished();
 }

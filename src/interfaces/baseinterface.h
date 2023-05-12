@@ -12,8 +12,6 @@
 #include <gen/error.h>
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
-#include <memory>
-#include <typeinfo>
 
 using InterfaceSettings = ModuleTypes::InterfaceSettings;
 
@@ -32,11 +30,8 @@ namespace Regs
 {
     constexpr quint16 bsiExtStartReg = 40;
     constexpr quint16 timeReg = 4600;
-    constexpr quint16 timeCountRegs = 1;
-    constexpr quint16 setInitReg = 900;
-    constexpr quint16 clearReg = 905;
     constexpr quint16 bsiStartReg = 1;
-    constexpr quint16 bsiEndReg = 15;
+    constexpr quint16 bsiCountRegs = 15;
 }
 
 enum State
@@ -64,20 +59,16 @@ enum Commands
     C_StartFirmwareUpgrade,
     C_EraseJournals,
 
-    C_StartWorkingChannel, //
-    C_SetStartupValues,    //
-    C_SetStartupPhaseA,    //
-    C_SetStartupPhaseB,    //
-    C_SetStartupPhaseC,    //
-    C_SetStartupUnbounced, //
-    C_SetTransOff,         //
-    C_ClearStartupValues,  //
-    //    C_ClearStartupPhaseA,
-    //    C_ClearStartupPhaseB,
-    //    C_ClearStartupPhaseC,
-    C_ClearStartupUnbounced, //
-    C_ClearStartupError,     //
-    C_Command50,
+    C_StartWorkingChannel,
+    C_SetStartupValues,
+    C_SetStartupPhaseA,
+    C_SetStartupPhaseB,
+    C_SetStartupPhaseC,
+    C_SetStartupUnbounced,
+    C_SetTransOff,
+    C_ClearStartupValues,
+    C_ClearStartupUnbounced,
+    C_ClearStartupError,
 
     C_Test,
     C_EraseTechBlock,
@@ -96,6 +87,20 @@ enum Commands
     C_SetMode,
     C_GetMode,
     C_WriteHardware
+};
+
+enum CommandRegisters
+{
+    StartWorkingChannel = 803,  ///< Старт рабочего канала
+    SetStartupValues = 900,     ///< Задать начальные значения по всем фазам
+    SetStartupPhaseA = 901,     ///< Задать начальные значения по фазе A
+    SetStartupPhaseB = 902,     ///< Задать начальные значения по фазе B
+    SetStartupPhaseC = 903,     ///< Задать начальные значения по фазе C
+    SetStartupUnbounced = 904,  ///< Задать начальные значения по току небаланса
+    ClearStartupValues = 905,   ///< Сбросить начальные значения по всем фазам
+    ClearStartupSetError = 906, ///< Сбросить ошибку задания начальных значений
+    SetTransOff = 907,          ///< Послать команду "Трансфоратор отключён"
+    ClearStartupUnbounced = 908 ///< Сбросить начальное значение тока небаланса
 };
 
 enum TechBlocks
@@ -119,6 +124,7 @@ class BaseInterface : public QObject
     Q_OBJECT
 
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
+
 protected:
     using FileFormat = DataTypes::FileFormat;
 
@@ -146,22 +152,19 @@ public:
     }
 
     virtual bool start(const ConnectStruct &) = 0;
-    virtual void pause()
-    {
-        setState(State::Wait);
-    }
-    virtual void resume()
-    {
-        // Only for case Wait to Run
-        Q_ASSERT(state() == State::Wait);
-        setState(State::Run);
-    }
-    virtual void stop()
-    {
-        Log->info("Stop()");
-        setState(State::Stop);
-        qInfo() << metaObject()->className() << "disconnected";
-    }
+    virtual void pause();
+    virtual void resume();
+    virtual void stop();
+    virtual bool supportBSIExt();
+
+    // helper methods
+    bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0);
+    ModuleTypes::InterfaceSettings interfaceSettings() const;
+    ProtocolDescription settings() const;
+    void setInterfaceSettings(const InterfaceSettings &settings);
+    void setSettings(const ProtocolDescription &settings);
+    State state();
+    void setState(const State &state);
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
@@ -177,8 +180,12 @@ public:
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
     void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0);
     void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
+    void setToQueue(CommandStruct &cmd);
 
-    // Synchronized requests for Bac & Bda blocks are only supported for now
+    // ===============================================================================
+    // =============================== SYNC METHODS ==================================
+    // ===============================================================================
+
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeConfFileSync(const QList<DataTypes::DataRecV> &config);
@@ -190,65 +197,17 @@ public:
     Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
 
-    bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0)
-    {
-        const auto &st = settings();
-        if (!st.dictionary().contains(sigAdr))
-            return false;
-        const auto val = st.dictionary().value(sigAdr);
-        if (command != 0)
-        {
-            if (command != val.function)
-                return false;
-        }
-        return val.count == sigCount;
-    }
-
-    ModuleTypes::InterfaceSettings interfaceSettings() const
-    {
-        return m_settings;
-    }
-
-    ProtocolDescription settings() const
-    {
-        return m_settings.settings;
-    }
-
-    void setInterfaceSettings(const InterfaceSettings &settings)
-    {
-        m_settings = settings;
-    }
-
-    void setSettings(const ProtocolDescription &settings)
-    {
-        m_settings.settings = settings;
-    }
-
-    State state()
-    {
-        QMutexLocker locker(&_stateMutex);
-        return m_state;
-    }
-    void setState(const State &state)
-    {
-        QMutexLocker locker(&_stateMutex);
-        m_state = state;
-        emit stateChanged(m_state);
-    }
-
-    bool virtual supportBSIExt();
-
 signals:
     void reconnect();
-    void finish();
     void nativeEvent(void *const message);
     void stateChanged(State m_state);
+    void wakeUpParser() const;
 
 private:
     bool m_busy, m_timeout;
     QByteArray m_byteArrayResult;
     bool m_responseResult;
-    QTimer *timeoutTimer;
+    QTimer *m_timeoutTimer;
     static InterfacePointer m_iface;
     State m_state;
     InterfaceSettings m_settings;
@@ -263,10 +222,7 @@ private slots:
     void resultReady(const QVariant &msg);
     void responseReceived(const QVariant &msg);
     void fileReceived(const QVariant &msg);
-    void timeout()
-    {
-        m_busy = false;
-    }
+    void timeout();
 };
 
 }

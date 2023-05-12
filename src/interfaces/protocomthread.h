@@ -1,16 +1,7 @@
 #pragma once
 
-#include "../s2/s2datatypes.h"
 #include "baseinterfacethread.h"
 #include "protocomprivate.h"
-
-#include <QMutex>
-#include <QReadWriteLock>
-#include <QWaitCondition>
-#include <gen/datatypes.h>
-#include <gen/error.h>
-
-class LogClass;
 
 namespace Interface
 {
@@ -38,18 +29,13 @@ private:
         writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }
 
-    void processFileFromDisk(DataTypes::FilesEnum fileNum);
-
     void appendInt16(QByteArray &ba, quint16 data);
 
-    // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
     inline bool isOneSegment(unsigned len);
     inline bool isSplitted(unsigned len);
 
-    // TODO вынести в отдельный класс как static методы?
     QByteArray prepareOk(bool isStart, byte cmd);
     QByteArray prepareError();
-    //    QByteArray prepareBlock(Proto::CommandStruct &cmdStr, Proto::Starters startByte = Proto::Starters::Request);
     QByteArray prepareBlock(Proto::Commands cmd, const QByteArray &data = QByteArray(),
         Proto::Starters startByte = Proto::Starters::Request);
     void writeBlock(Proto::Commands cmd, quint8 arg1, const QByteArray &arg2);
@@ -88,10 +74,9 @@ private:
         { C_ReqOscInfo, Proto::ReadBlkTech },                // 12
         { C_WriteBlkDataTech, Proto::WriteBlkTech },         // 12
         { C_Reboot, Proto::WriteBlkCmd },                    // 12
-        //        { C_ReqAlarms, Proto::FakeReadAlarms },                                //
-        { C_GetMode, Proto::ReadMode },           // 1
-        { C_SetMode, Proto::WriteMode },          // 12
-        { C_WriteHardware, Proto::WriteHardware } // 12
+        { C_GetMode, Proto::ReadMode },                      // 1
+        { C_SetMode, Proto::WriteMode },                     // 12
+        { C_WriteHardware, Proto::WriteHardware }            // 12
     };
 
 signals:
@@ -100,5 +85,4 @@ signals:
 public slots:
     void processReadBytes(QByteArray &ba) override;
 };
-
 }

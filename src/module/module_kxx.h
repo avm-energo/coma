@@ -18,13 +18,13 @@ enum DataType : quint8
 struct INICOM
 {
     // Скорость порта
-    CommandsMBS::BaudRate baud : 4;
+    MBS::BaudRate baud : 4;
     // Биты данных
     quint8 bits : 1;
     // Четность
-    CommandsMBS::Parity parity : 2;
+    MBS::Parity parity : 2;
     // Стоп биты
-    CommandsMBS::StopBits stop : 1;
+    MBS::StopBits stop : 1;
     friend bool operator==(const INICOM &lhs, const INICOM &rhs);
     friend bool operator!=(const INICOM &lhs, const INICOM &rhs);
 };
@@ -42,9 +42,9 @@ bool inline operator!=(const INICOM &lhs, const INICOM &rhs)
 struct TypeR
 {
     // Функция
-    CommandsMBS::Commands reg : 4;
+    MBS::Commands reg : 4;
     // Тип данных
-    CommandsMBS::TypeId dat : 4;
+    MBS::TypeId dat : 4;
     friend bool operator==(const TypeR &lhs, const TypeR &rhs);
     friend bool operator!=(const TypeR &lhs, const TypeR &rhs);
 };
