@@ -10,7 +10,7 @@ namespace DataTypes
 {
 
 /*! Приложение 3. Номера файлов */
-enum FilesEnum : quint32
+enum FilesEnum : quint16
 {
     Config = 1,        ///< Конфигурация
     Firmware = 3,      ///< Встроенное ПО (Firmware)
@@ -25,13 +25,12 @@ enum FilesEnum : quint32
 
 struct FileStruct
 {
-    std::underlying_type_t<FilesEnum> ID;
+    quint32 ID;
     QByteArray data;
 
     FileStruct() = default;
     FileStruct(const FilesEnum num, const QByteArray &file);
     FileStruct(const quint32 num, const QByteArray &file);
-    // FileStruct(const quint16 num);
     S2DataTypes::DataRec serialize() const;
 
     friend QDataStream &operator<<(QDataStream &stream, const FileStruct &str);

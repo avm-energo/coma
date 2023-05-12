@@ -13,10 +13,6 @@ FileStruct::FileStruct(const quint32 num, const QByteArray &file) : ID(num), dat
 {
 }
 
-// FileStruct::FileStruct(const quint16 num) : ID(num)
-//{
-//}
-
 S2DataTypes::DataRec FileStruct::serialize() const
 {
     auto constDataPtr = static_cast<const void *>(data.data());
