@@ -12,7 +12,7 @@ public:
     TuneDialogFabric();
 
     static void setConfigV(ConfigV *config);
-    static GeneralTuneDialog *GetTuneDialogForType(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
+    static UDialog *GetTuneDialogForType(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM);
 
 private:
     static ConfigV *s_Config;

@@ -237,7 +237,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
             size = DR.header.numByte;
             auto &s2map = ConfigStorage::GetInstance().getS2Map();
             auto search = s2map.find(DR.header.id);
-//            Q_ASSERT(search != s2map.end());
+            //            Q_ASSERT(search != s2map.end());
             if (search != s2map.end())
             {
                 DataTypes::DataRecV DRV(DR, bain.left(size));
@@ -556,6 +556,14 @@ quint32 S2::updateCRC32(unsigned char ch, quint32 crc)
 quint16 S2::GetIdByName(QString name)
 {
     return NameIdMap.value(name, 0);
+}
+
+quint64 S2::GetFileSize(const QByteArray &bain)
+{
+    // копируем FileHeader
+    S2DataTypes::FileHeader fh;
+    memcpy(&fh, &bain.data()[0], sizeof(S2DataTypes::FileHeader));
+    return fh.size + sizeof(S2DataTypes::FileHeader);
 }
 
 quint32 S2::crc32buf(const QByteArray &data)

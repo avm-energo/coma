@@ -19,14 +19,6 @@
 #include <time.h>
 #endif
 
-#ifdef Q_OS_WINDOWS
-#define BUFFERSIZE 5
-
-#include <Windows.h>
-#include <fileapi.h>
-#include <memoryapi.h>
-#endif
-
 typedef QQueue<QByteArray> ByteQueue;
 using Proto::CommandStruct;
 using Proto::Direction;
@@ -35,6 +27,7 @@ using Queries::FileFormat;
 
 ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent), m_currentCommand({})
 {
+    isFirstBlock = true;
 }
 
 void ProtocomThread::setReadDataChunk(const QByteArray &readDataChunk)
@@ -82,8 +75,7 @@ void ProtocomThread::clear()
     m_readData.clear();
     progress = 0;
     m_currentCommand = Proto::CommandStruct();
-    m_buffer.first = 0;
-    m_buffer.second.clear();
+    m_buffer.clear();
 }
 
 void ProtocomThread::finish(Error::Msg msg)
@@ -101,7 +93,7 @@ ProtocomThread::~ProtocomThread()
 {
 }
 
-void ProtocomThread::handle(const Proto::Commands cmd)
+void ProtocomThread::handleResponse(const Proto::Commands cmd)
 {
     using namespace Proto;
     using namespace DataTypes;
@@ -120,7 +112,7 @@ void ProtocomThread::handle(const Proto::Commands cmd)
                 handleMaxProgress(m_currentCommand.ba.size());
 
             progress += Proto::Limits::MaxSegmenthLength;
-            if (progress > m_currentCommand.ba.size())
+            if (progress > static_cast<quint64>(m_currentCommand.ba.size()))
             {
                 // For last segment
                 progress = m_currentCommand.ba.size();
@@ -134,90 +126,89 @@ void ProtocomThread::handle(const Proto::Commands cmd)
         }
 
         //  GVar MS GMode MS
-        if (!m_buffer.second.isEmpty())
-            handleInt(m_buffer.second.front());
+        if (!m_buffer.isEmpty())
+            handleInt(m_buffer.front());
         else
             handleBool();
         break;
 
     case Commands::ResultError:
     {
-        const quint8 errorCode = m_buffer.second.front();
-        handleBool(false, m_buffer.first, errorCode);
+        const quint8 errorCode = m_buffer.front();
+        handleBool(errorCode);
         emit errorOccurred(static_cast<Error::Msg>(errorCode));
         break;
     }
     case Commands::ReadTime:
 
 #ifdef Q_OS_LINUX
-        if (m_buffer.second.size() == sizeof(quint64))
+        if (m_buffer.size() == sizeof(quint64))
         {
-            handleUnixTime(m_buffer.second, addr);
+            handleUnixTime(m_buffer, addr);
             break;
         }
 #endif
-        handleBitString(m_buffer.second, addr);
+        handleBitString(m_buffer, addr);
         break;
 
     case Commands::ReadBlkStartInfoExt:
-        handleBitStringArray(m_buffer.second, Regs::bsiExtStartReg);
+        handleBitStringArray(m_buffer, Regs::bsiExtStartReg);
         break;
 
     case Commands::ReadBlkStartInfo:
-        handleBitStringArray(m_buffer.second, Regs::bsiReg);
+        handleBitStringArray(m_buffer, Regs::bsiReg);
         break;
 
     case Commands::ReadBlkAC:
         // Ожидается что в addr хранится номер блока
-        handleRawBlock(m_buffer.second, addr);
+        handleRawBlock(m_buffer, addr);
         break;
 
     case Commands::ReadBlkDataA:
         // Ожидается что в addr хранится номер блока
-        handleRawBlock(m_buffer.second, addr);
+        handleRawBlock(m_buffer, addr);
         break;
 
     case Commands::ReadBlkData:
         switch (m_currentCommand.cmd)
         {
         case Commands::FakeReadRegData:
-            handleFloatArray(m_buffer.second, addr, count);
+            handleFloatArray(m_buffer, addr, count);
             break;
         case Commands::FakeReadAlarms:
-            handleSinglePoint(m_buffer.second, addr);
+            handleSinglePoint(m_buffer, addr);
             break;
         case Commands::FakeReadBitString:
-            handleBitStringArray(m_buffer.second, addr);
+            handleBitStringArray(m_buffer, addr);
             break;
         default:
-            handleRawBlock(m_buffer.second, addr);
+            handleRawBlock(m_buffer, addr);
             break;
         }
         break;
 
     case Commands::ReadBlkTech:
 
-        handleTechBlock(m_buffer.second, addr);
+        handleTechBlock(m_buffer, addr);
         break;
 
     case Commands::ReadProgress:
 
-        handleBitString(m_buffer.second, addr);
+        handleBitString(m_buffer, addr);
         break;
 
     case Commands::ReadFile:
 
-        handleFile(m_buffer.second, FilesEnum(addr), FileFormat(count));
+        handleFile(m_buffer, FilesEnum(addr), FileFormat(count));
         break;
 
     default:
 
-        handleCommand(m_buffer.second);
+        handleCommand(m_buffer);
         break;
     }
     isCommandRequested = false;
-    m_buffer.first = 0;
-    m_buffer.second.clear();
+    m_buffer.clear();
 }
 
 void ProtocomThread::checkQueue()
@@ -231,104 +222,6 @@ void ProtocomThread::checkQueue()
     m_currentCommand = inp;
     parseRequest(inp);
 }
-#if defined(Q_OS_WINDOWS)
-void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
-{
-    std::wstring fileToFind;
-    switch (fileNum)
-    {
-    case DataTypes::JourSys:
-    {
-
-        fileToFind = L"system.dat";
-        break;
-    }
-    case DataTypes::JourMeas:
-    {
-        fileToFind = L"measj.dat";
-        break;
-    }
-    case DataTypes::JourWork:
-    {
-        fileToFind = L"workj.dat";
-        break;
-    }
-    default:
-    {
-        m_currentCommand.ba = StdFunc::ArrayFromNumber(fileNum);
-        QByteArray ba = prepareBlock(m_currentCommand);
-        emit writeDataAttempt(ba);
-        return;
-    }
-    }
-    isCommandRequested = false;
-
-    QStringList drives = Files::Drives();
-    if (drives.isEmpty())
-    {
-        qCritical() << Error::NoDeviceError;
-        return;
-    }
-    QStringList files = Files::SearchForFile(drives, QString::fromStdWString(fileToFind));
-    if (files.isEmpty())
-    {
-        qCritical() << Error::FileNameError;
-        return;
-    }
-    QString JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
-    if (JourFile.isEmpty())
-    {
-        qCritical() << Error::FileNameError;
-        return;
-    }
-    QFile file(JourFile);
-    QStorageInfo storageInfo(JourFile);
-    QString nativePath = storageInfo.rootPath().replace(('/'), ('\\'));
-    std::wstring nativePathW(nativePath.toStdWString().c_str());
-    nativePathW += fileToFind;
-    HANDLE hFile;
-    OVERLAPPED ol = { 0 };
-    hFile = CreateFile(nativePathW.c_str(),                                        // file to open
-        GENERIC_READ,                                                              // open for reading
-        FILE_SHARE_READ,                                                           // share for reading
-        NULL,                                                                      // default security
-        OPEN_EXISTING,                                                             // existing file only
-        FILE_ATTRIBUTE_NORMAL /*| FILE_FLAG_OVERLAPPED*/ | FILE_FLAG_NO_BUFFERING, // normal file
-        NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
-    {
-        qCritical() << Error::FileNameError;
-        return;
-    }
-
-    QByteArray buffer;
-    buffer.resize(file.size());
-    DWORD lpNumberOfBytesRead;
-    if (FALSE == ReadFile(hFile, buffer.data(), buffer.size(), &lpNumberOfBytesRead, &ol))
-    {
-        DWORD dwLastError = GetLastError();
-
-        if (dwLastError != 0)
-        { // Don't want to see a "operation done successfully" error
-            TCHAR lpBuffer[256] = L"?";
-            FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,      // It´s a system error
-                NULL,                                      // No string to be formatted needed
-                dwLastError,                               // Hey Windows: Please explain this error!
-                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Do it in the standard language
-                lpBuffer,                                  // Put the message here
-                255,                                       // Number of bytes to store the message
-                NULL);
-            qCritical() << Error::FileOpenError << std::wstring(lpBuffer);
-        }
-        qDebug() << "Fail to read";
-        CloseHandle(hFile);
-        return;
-    }
-    CloseHandle(hFile);
-    QByteArray ba = buffer;
-    handleFile(ba, fileNum, FileFormat::Binary);
-}
-#else
 
 void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
 {
@@ -389,7 +282,6 @@ void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
     handleFile(ba, fileNum, Queries::FileFormat::Binary);
 }
 
-#endif
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 {
 #ifdef PROTOCOM_DEBUG
@@ -505,44 +397,47 @@ void ProtocomThread::parseResponse(QByteArray ba)
     case Proto::Response:
     {
         ba.remove(0, 4);
-        // TODO Проверять размер
         ba.resize(size);
-        // Q_ASSERT(size == ba.size());
-        m_buffer.first += size;
-        m_buffer.second.append(ba);
+        m_buffer.append(ba);
 
-        quint32 filenum = m_currentCommand.arg1.value<quint32>();
+        //        quint32 filenum = m_currentCommand.arg1.value<quint32>();
 
         // Потому что на эту команду модуль не отдает пустой ответ
         if (isOneSegment(size) || (cmd == Proto::ReadBlkStartInfo))
         {
-            handle(Proto::Commands(cmd));
+            handleResponse(Proto::Commands(cmd));
             // Progress for big files
             if (m_currentCommand.cmd == Proto::Commands::ReadFile)
             {
-                if (filenum != DataTypes::Config)
-                {
-                    progress += size;
-                    handleProgress(progress);
-                }
+                if (isFirstBlock)
+                    handleMaxProgress(S2::GetFileSize(ba));
+                //                if (filenum != DataTypes::Config)
+                //                {
+                progress += size;
+                handleProgress(progress);
+                //                }
             }
+            isFirstBlock = true; // there was a last (or the only) segment
+            return;
         }
         else
         {
-
             auto tba = prepareOk(false, cmd);
             Q_ASSERT(tba.size() == 4);
             emit writeDataAttempt(tba);
             // Progress for big files
             if (m_currentCommand.cmd == Proto::Commands::ReadFile)
             {
-                if (filenum != DataTypes::Config)
-                {
-                    progress += Proto::Limits::MaxSegmenthLength;
-                    handleProgress(progress);
-                }
+                if (isFirstBlock)
+                    handleMaxProgress(S2::GetFileSize(ba));
+                //                if (filenum != DataTypes::Config)
+                //                {
+                progress += Proto::Limits::MaxSegmenthLength;
+                handleProgress(progress);
+                //                }
             }
         }
+        isFirstBlock = false; // there'll be another segment
         break;
     }
     default:
@@ -687,7 +582,8 @@ void ProtocomThread::handleBitString(const QByteArray &ba, quint16 sigAddr)
     DataTypes::BitStringStruct resp { sigAddr, value, DataTypes::Quality::Good };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
-#ifdef __linux
+
+#ifdef Q_OS_LINUX
 void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint16 sigAddr)
 {
     Q_ASSERT(ba.size() == sizeof(quint64));
@@ -700,6 +596,7 @@ void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 #endif
+
 template <std::size_t N>
 void ProtocomThread::handleBitStringArray(const QByteArray &ba, std::array<quint16, N> arr_addr)
 {
@@ -811,20 +708,20 @@ void ProtocomThread::handleInt(const byte num)
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 
-void ProtocomThread::handleBool(const bool status, int errorSize, int errorCode)
+void ProtocomThread::handleBool(int errorCode)
 {
-    if (status)
+    if (errorCode == 0)
     {
         DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, 0 };
         DataManager::GetInstance().addSignalToOutList(resp);
     }
     else
     {
-        quint64 buffer = errorCode;
-        DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, buffer };
+        DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
+            static_cast<quint64>(errorCode) };
         DataManager::GetInstance().addSignalToOutList(resp);
         // Module error code
-        qCritical() << "Error size: " << errorSize << "Error code: " << QString::number(errorCode, 16);
+        qCritical() << "Error code: " << QString::number(errorCode, 16);
     }
 }
 

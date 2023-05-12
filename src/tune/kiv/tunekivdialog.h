@@ -26,7 +26,7 @@ private:
     TuneKIVCheck *TKIVCheckDialog;
     TuneKIVADC *TKIVADCUDialog, *TKIVADCIDialog;
     TuneKIVR *TKIVRDialog;
-    void prepareReport() override;
+    void prepareReport();
 
     //    LimeReport::ReportEngine *m_Report;
 

@@ -66,7 +66,7 @@ QWidget *AbstractTuneDialog::tuneUI()
     setTuneFunctions();
     int i;
     // CP1 - НАСТРОЙКА ПРИБОРА/МОДУЛЯ
-    QWidget *w = new QWidget;
+    QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewPB(
@@ -418,7 +418,6 @@ void AbstractTuneDialog::writeTuneCoefsSlot()
 {
     for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
     {
-        it.value()->updateFromWidget();
         if (it.value()->writeBlockToModule() != Error::Msg::NoError)
         {
             CancelTune();

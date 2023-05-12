@@ -103,10 +103,6 @@ void TuneKIVR::setR(int r)
 {
     if (!EMessageBox::next(this, "Установите сопротивление " + QString::number(r, 'f', 1) + " Ом"))
         CancelTune();
-    //    if (QMessageBox::question(this, "Подтверждение", "Установите сопротивление " + QString::number(r, 'f', 1) + "
-    //    Ом")
-    //        == QMessageBox::No)
-    //        CancelTune();
 }
 
 double TuneKIVR::processR()

@@ -15,11 +15,9 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-GeneralTuneDialog::GeneralTuneDialog(ConfigV *config, QWidget *parent)
-    : UDialog(parent), configV(config), m_BacWidget(new QScrollArea(this))
+GeneralTuneDialog::GeneralTuneDialog(ConfigV *config, QWidget *parent) : UDialog(parent), configV(config)
 {
-    tuneTabWidget = new TuneTabWidget;
-    m_BacWidget->setWidgetResizable(true);
+    m_tuneTabWidget = new TuneTabWidget;
     TuneSequenceFile::init();
     m_calibrSteps = 0;
 }
@@ -28,7 +26,6 @@ void GeneralTuneDialog::SetupUI()
 {
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *lyout = new QVBoxLayout;
-
     lyout->addStretch(100);
     int count = 1;
     m_calibrSteps = m_dialogList.size() + 1;
@@ -43,7 +40,7 @@ void GeneralTuneDialog::SetupUI()
         "Генерация протокола регулировки"));
     lyout->addStretch(100);
     hlyout->addLayout(lyout);
-    hlyout->addWidget(tuneTabWidget->set(), 100);
+    hlyout->addWidget(m_tuneTabWidget->set(), 100);
     setLayout(hlyout);
     setCalibrButtons();
     disableSuccessMessage();
@@ -55,7 +52,7 @@ void GeneralTuneDialog::prepareReport()
 
 int GeneralTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
 {
-    return tuneTabWidget->addTabWidget(w, caption);
+    return m_tuneTabWidget->addTabWidget(w, caption);
 }
 
 void GeneralTuneDialog::setCalibrButtons()
@@ -72,23 +69,23 @@ void GeneralTuneDialog::setCalibrButtons()
 
 void GeneralTuneDialog::generateReport()
 {
-    m_Report = new LimeReport::ReportEngine;
-    prepareReport();
-    if (EMessageBox::question("Сохранить протокол поверки?"))
-    {
-        QString filename = WDFunc::ChooseFileForSave(this, "*.pdf", "pdf");
-        if (!filename.isEmpty())
+    /*    m_Report = new LimeReport::ReportEngine;
+        prepareReport();
+        if (EMessageBox::question("Сохранить протокол поверки?"))
         {
-            m_Report->designReport();
-            m_Report->printToPDF(filename);
-            //        report->previewReport();
-            //  report->designReport();
-            EMessageBox::information(this, "Записано успешно!");
+            QString filename = WDFunc::ChooseFileForSave(this, "*.pdf", "pdf");
+            if (!filename.isEmpty())
+            {
+                m_Report->designReport();
+                m_Report->printToPDF(filename);
+                //        report->previewReport();
+                //  report->designReport();
+                EMessageBox::information(this, "Записано успешно!");
+            }
+            else
+                EMessageBox::information(this, "Действие отменено");
         }
-        else
-            EMessageBox::information(this, "Действие отменено");
-    }
-    delete m_Report;
+        delete m_Report; */
 }
 
 void GeneralTuneDialog::setIconProcessed(const QString &name)

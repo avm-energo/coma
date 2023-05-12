@@ -30,8 +30,6 @@ void TuneKIVCheck::setTuneFunctions()
 
 Error::Msg TuneKIVCheck::showScheme()
 {
-    //    auto dialog = new QDialog(this);
-    //    dialog->setFixedSize(800, 600);
     auto widget = new QWidget(this);
     auto layout = new QVBoxLayout;
     layout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
@@ -71,15 +69,6 @@ Error::Msg TuneKIVCheck::showScheme()
         return Error::Msg::GeneralError;
     }
     return Error::Msg::NoError;
-
-    //    layout->addWidget(WDFunc::NewPB(this, "", "Готово", [dialog] { dialog->close(); }));
-    //    layout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dialog] { dialog->close(); }));
-    //    // widget->setLayout(hLayout);
-    //    // if (!EMessageBox::next(this, widget))
-    //    //    CancelTune();
-    //    dialog->setLayout(layout);
-    //    WDFunc::PBConnect(dialog, "cancelpb", static_cast<AbstractTuneDialog *>(this),
-    //    &AbstractTuneDialog::CancelTune); dialog->exec(); return Error::Msg::NoError;
 }
 
 Error::Msg TuneKIVCheck::check()
@@ -109,6 +98,7 @@ Error::Msg TuneKIVCheck::check()
     if (!WDFunc::floatIsWithinLimits("частоты", bda->data()->Frequency, 51.0, 0.05))
         goto FaultLabel;
 #endif
+    BaseInterface::iface()->popAndWriteConfFileSync(configV);
     return Error::Msg::NoError;
 FaultLabel:
     BaseInterface::iface()->popAndWriteConfFileSync(configV);
