@@ -295,7 +295,6 @@ Error::Msg DataBlock::readFromFile()
 
 Error::Msg DataBlock::saveToFile()
 {
-    readBlockFromModule();
     QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
     QString filestr = StdFunc::GetSystemHomeDir() + cpuIDFilenameStr();
     return Files::SaveToFile(filestr, ba);

@@ -56,3 +56,13 @@ void ConfigV::setConfig(const QList<DataTypes::DataRecV> &newConfig)
 {
     config = newConfig;
 }
+
+void ConfigV::pushConfig()
+{
+    savedConfig = config;
+}
+
+void ConfigV::popConfig()
+{
+    config = savedConfig;
+}

@@ -13,6 +13,9 @@ public:
     UDialog(const QString hash, const QString key, QWidget *parent = nullptr);
     virtual void updateGeneralResponse(const QVariant &msg);
 
+    void disableSuccessMessage();
+    void enableSuccessMessage();
+
 public slots:
 
 protected:
@@ -27,6 +30,7 @@ protected:
 private:
     QString m_successMsg;
     QString m_errorMsg;
+    bool showSuccessMessageFlag;
 };
 
 #endif // UDIALOG_H

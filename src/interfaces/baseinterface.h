@@ -2,6 +2,7 @@
 #define BASEINTERFACE_H
 
 #include "../module/modulesettings.h"
+#include "../s2/configv.h"
 #include "../s2/datarecv.h"
 
 #include <QTimer>
@@ -88,6 +89,8 @@ public:
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeConfFileSync(const QList<DataTypes::DataRecV> &config);
+    Error::Msg pushAndWriteConfFileSync(ConfigV *config, const QList<DataTypes::DataRecV> recordList);
+    Error::Msg popAndWriteConfFileSync(ConfigV *config);
     Error::Msg writeFileSync(int filenum, QByteArray &ba);
     Error::Msg writeS2FileSync(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
     Error::Msg readS2FileSync(quint32 filenum);

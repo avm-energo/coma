@@ -152,8 +152,22 @@ Error::Msg BaseInterface::writeConfFileSync(const QList<DataTypes::DataRecV> &co
         [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
     S2::tester(buffer);
 
-    buffer.push_back({ S2DataTypes::dummyElement, 0, nullptr });
+    buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
     return writeS2FileSync(DataTypes::Config, &buffer);
+}
+
+Error::Msg BaseInterface::pushAndWriteConfFileSync(ConfigV *config, const QList<DataTypes::DataRecV> recordList)
+{
+    config->pushConfig();
+    for (auto record : recordList)
+        config->setRecordValue(record.getId(), record.getData());
+    return writeConfFileSync(config->getConfig());
+}
+
+Error::Msg BaseInterface::popAndWriteConfFileSync(ConfigV *config)
+{
+    config->popConfig();
+    return writeConfFileSync(config->getConfig());
 }
 
 Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)

@@ -52,8 +52,8 @@ void AbstractTuneDialog::setupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     hlyout->addWidget(tuneUI());
-//    if (!m_mainWidgetList.isEmpty())
-        hlyout->addWidget(mainUI());
+    //    if (!m_mainWidgetList.isEmpty())
+    hlyout->addWidget(mainUI());
     vlyout->addLayout(hlyout);
     vlyout->addWidget(bottomUI());
     setLayout(vlyout);
@@ -128,11 +128,11 @@ QWidget *AbstractTuneDialog::mainUI()
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(tuneTabWidget->set());
-//    QTabWidget *tw = new QTabWidget;
-//    tw->setObjectName("tunetw");
-//    for (int i = 0; i < m_mainWidgetList.size(); ++i)
-//        tw->addTab(m_mainWidgetList.at(i).widget, m_mainWidgetList.at(i).caption);
-//    lyout->addWidget(tw);
+    //    QTabWidget *tw = new QTabWidget;
+    //    tw->setObjectName("tunetw");
+    //    for (int i = 0; i < m_mainWidgetList.size(); ++i)
+    //        tw->addTab(m_mainWidgetList.at(i).widget, m_mainWidgetList.at(i).caption);
+    //    lyout->addWidget(tw);
     w->setLayout(lyout);
     return w;
 }
@@ -195,19 +195,19 @@ void AbstractTuneDialog::stopWait()
 Error::Msg AbstractTuneDialog::CheckPassword()
 {
     return (EMessageBox::password(this, crypto::hash) ? Error::Msg::NoError : Error::Msg::GeneralError);
-//    auto dlg = new KeyPressDialog(this);
-//    return (dlg->CheckPassword(crypto::hash)) ? Error::Msg::NoError : Error::Msg::GeneralError;
+    //    auto dlg = new KeyPressDialog(this);
+    //    return (dlg->CheckPassword(crypto::hash)) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
 int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
 {
     return tuneTabWidget->addTabWidget(w, caption);
-//    MainWidgetStruct str;
-//    str.widget = w;
-//    str.caption = caption;
-//    int widgetindex = m_mainWidgetList.size();
-//    m_mainWidgetList.append(str);
-//    return widgetindex;
+    //    MainWidgetStruct str;
+    //    str.widget = w;
+    //    str.caption = caption;
+    //    int widgetindex = m_mainWidgetList.size();
+    //    m_mainWidgetList.append(str);
+    //    return widgetindex;
 }
 
 void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int msg, bool Visible)
@@ -267,6 +267,8 @@ void AbstractTuneDialog::startTune()
         res = (this->*m_tuneFunctions.at(bStep).func)();
         if ((res == Error::Msg::GeneralError) || (StdFunc::IsCancelled()))
         {
+            if (StdFunc::IsCancelled())
+                res = Error::Cancelled;
             MsgSetVisible(ErMsg, bStep);
 #ifndef DEBUGISON
             WDFunc::SetEnabled(this, "starttune", true);

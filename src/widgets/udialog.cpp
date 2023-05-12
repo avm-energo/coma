@@ -9,6 +9,7 @@
 
 UDialog::UDialog(QWidget *parent) : UWidget(parent), proxyGRS(new DataTypesProxy())
 {
+    showSuccessMessageFlag = true;
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
@@ -71,9 +72,19 @@ void UDialog::updateGeneralResponse(const QVariant &msg)
     }
 }
 
+void UDialog::disableSuccessMessage()
+{
+    showSuccessMessageFlag = false;
+}
+
+void UDialog::enableSuccessMessage()
+{
+    showSuccessMessageFlag = true;
+}
+
 QString UDialog::successMsg() const
 {
-    return m_successMsg;
+    return showSuccessMessageFlag ? m_successMsg : ""; // while empty string message will not appear
 }
 
 void UDialog::setSuccessMsg(const QString successMsg)
