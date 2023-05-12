@@ -9,17 +9,15 @@ FileStruct::FileStruct(const FilesEnum num, const QByteArray &file) : ID(num), d
 {
 }
 
-FileStruct::FileStruct(const quint8 num, const QByteArray &file) : ID(num), data(file)
+FileStruct::FileStruct(const quint32 num, const QByteArray &file) : ID(num), data(file)
 {
 }
 
-FileStruct::FileStruct(const quint8 num) : ID(num)
+S2DataTypes::DataRec FileStruct::serialize() const
 {
-}
-
-S2DataTypes::DataRec FileStruct::serialize()
-{
-    return { { ID, quint32(data.size()) }, static_cast<void *>(data.data()) };
+    auto constDataPtr = static_cast<const void *>(data.data());
+    auto dataPtr = const_cast<void *>(constDataPtr);
+    return { { ID, quint32(data.size()) }, dataPtr };
 }
 
 QDataStream &operator<<(QDataStream &stream, const FileStruct &str)

@@ -20,6 +20,7 @@ public:
 
     void update(const QByteArray &data);
     void update(const quint8 *data, const quint32 size);
+    void reset() noexcept;
 
     operator quint32() const;
     friend bool operator==(const CRC32 lhs, const CRC32 rhs);

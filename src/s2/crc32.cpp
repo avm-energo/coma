@@ -71,6 +71,11 @@ void CRC32::update(const quint8 *data, const quint32 size)
         updateChecksum(data[i]);
 }
 
+void CRC32::reset() noexcept
+{
+    checksum = initialValue;
+}
+
 CRC32::operator quint32() const
 {
     return checksum;
