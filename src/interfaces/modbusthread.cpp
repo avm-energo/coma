@@ -66,36 +66,6 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
         readRegisters(inp);
         break;
     }
-        //    case Commands::C_StartFirmwareUpgrade:
-        //    case Commands::C_ReqProgress:
-        //    case Commands::C_GetMode:
-        //    {
-        //        CommandsMBS::CommandStruct inp { CommandsMBS::Commands::WriteMultipleRegisters, //
-        //            ,                                                            //
-        //            2,                                                                        //
-        //            {} };
-        //        readRegisters(inp);
-        //        break;
-        //    }
-        // commands with only one uint8 parameter (blocknum or smth similar)
-        //    case Commands::C_EraseTechBlock:
-        //    case Commands::C_EraseJournals:
-        //    case Commands::C_SetMode:
-        //    case Commands::C_Reboot:
-        //    case Commands::C_ReqTuningCoef:
-        //    case Commands::C_ReqBlkData:
-        //    case Commands::C_ReqBlkDataA:
-        //    case Commands::C_ReqBlkDataTech:
-        //    case Commands::C_ReqOscInfo:
-        //    case Commands::C_Test:
-        //    {
-        //        if (protoCommandMap.contains(cmdStr.command))
-        //        {
-        //            ba = prepareBlock(
-        //                protoCommandMap.value(cmdStr.command), StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>()));
-        //            emit writeDataAttempt(ba);
-        //        }
-        //    }
 
         // file request: known file types should be download from disk and others must be taken from module by Protocom,
         // arg1 - file number
@@ -146,20 +116,6 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // block write, arg1 is BlockStruct of one quint32 (block ID) and one QByteArray (block contents)
-    case Commands::C_WriteHardware:
-    case Commands::C_WriteBlkDataTech:
-    case Commands::C_SetNewConfiguration:
-    case Commands::C_WriteTuningCoef:
-    {
-        if (cmdStr.arg1.canConvert<DataTypes::BlockStruct>())
-        {
-            DataTypes::BlockStruct bs = cmdStr.arg1.value<DataTypes::BlockStruct>();
-            writeBlock(protoCommandMap.value(cmdStr.command), bs.ID, bs.data);
-        }
-        break;
-    }
-
         // QVariantList write
     case Commands::C_WriteUserValues:
     {
@@ -198,9 +154,13 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
         if (cmdStr.arg1.canConvert<DataTypes::SingleCommand>())
         {
             DataTypes::SingleCommand scmd = cmdStr.arg1.value<DataTypes::SingleCommand>();
-            ba = StdFunc::ArrayFromNumber((scmd.addr)) + StdFunc::ArrayFromNumber(scmd.value);
-            ba = prepareBlock(Proto::WriteSingleCommand, ba);
-            emit writeDataAttempt(ba);
+            MBS::CommandStruct inp {
+                MBS::Commands::WriteMultipleRegisters, //
+                quint16(scmd.addr),                    //
+                1,                                     // количество регистров типа int16
+                StdFunc::ArrayFromNumber(scmd.value)   //
+            };
+            writeMultipleRegisters(inp);
         }
         break;
     }

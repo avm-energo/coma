@@ -56,7 +56,7 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     connect(port, &SerialPort::error, this, &ModBus::sendReconnectSignal);
     connect(this, &BaseInterface::reconnect, port, &SerialPort::reconnect);
     connect(port, &SerialPort::connected, port, [=] {
-        setState(BaseInterface::Run);
+        setState(State::Run);
         parser->moveToThread(thr);
         thr->start();
         StdFunc::Wait(1000);
@@ -75,64 +75,15 @@ void ModBus::sendReconnectSignal()
 {
     switch (state())
     {
-    case BaseInterface::State::Run:
-        setState(BaseInterface::State::Wait);
+    case State::Run:
+        setState(State::Wait);
         break;
-    case BaseInterface::State::Wait:
+    case State::Wait:
         emit reconnect();
         break;
     default:
         break;
     }
-}
-
-MBS::TypeId ModBus::type(const quint32 addr) const
-{
-    const auto &st = settings<ProtocolDescription<ModbusGroup>>();
-    return st.dictionary().value(addr).dataType;
-}
-
-TypeId ModBus::type(const quint32 addr, const quint32 count, const MBS::Commands cmd) const
-{
-    const auto &st = settings<ProtocolDescription<ModbusGroup>>();
-    const auto values = st.dictionary().values(addr);
-    for (const auto &val : values)
-    {
-        if (val.function == cmd && val.count == count)
-            return val.dataType;
-    }
-    return TypeId::None;
-}
-
-void ModBus::writeFloat(const DataTypes::FloatStruct &flstr)
-{
-    //    Q_ASSERT(false && "Dont use this before test");
-    // now write floats to the out sigArray
-    QByteArray sigArray = packReg(flstr.sigVal);
-    MBS::CommandStruct inp {
-        MBS::Commands::WriteMultipleRegisters, //
-        static_cast<quint16>(flstr.sigAdr),    //
-        static_cast<quint16>(sigArray.size()), //
-        sigArray,                              //
-        TypeId::None,                          //
-        __PRETTY_FUNCTION__                    //
-    };
-    Q_ASSERT(isValidRegs(inp));
-    DataManager::GetInstance().addToInQueue(inp);
-}
-
-void ModBus::writeInt16(const quint32 addr, const quint16 value)
-{
-    MBS::CommandStruct inp {
-        MBS::Commands::WriteMultipleRegisters, //
-        static_cast<quint16>(addr),            //
-        1,                                     //
-        packReg(value),                        //
-        TypeId::None,                          //
-        __PRETTY_FUNCTION__                    //
-    };
-    // Q_ASSERT(isValidRegs(inp));
-    DataManager::GetInstance().addToInQueue(inp);
 }
 
 const quint8 ModBus::obtainDelay(const quint32 baudRate) const
@@ -149,20 +100,5 @@ const quint8 ModBus::obtainDelay(const quint32 baudRate) const
         return 3;
     default:
         return 2;
-    }
-}
-
-void ModBus::writeCommand(Queries::Commands cmd, QVariant item)
-{
-    switch (cmd)
-    {
-    case Queries::QC_WriteUserValues:
-    {
-        Q_ASSERT(item.canConvert<DataTypes::FloatStruct>());
-        if (!item.canConvert<DataTypes::FloatStruct>())
-            return;
-        writeFloat(item.value<DataTypes::FloatStruct>());
-        break;
-    }
     }
 }
