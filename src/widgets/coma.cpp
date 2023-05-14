@@ -613,8 +613,7 @@ void Coma::setupConnection()
     XmlConfigParser::ParseS2ConfigToMap(S2::NameIdMap);
     auto const &board = Board::GetInstance();
 
-    connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const BaseInterface::State state) {
-        using State = BaseInterface::State;
+    connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const State state) {
         switch (state)
         {
         case State::Run:

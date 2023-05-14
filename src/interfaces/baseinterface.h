@@ -4,6 +4,7 @@
 #include "../module/modulesettings.h"
 #include "../s2/configv.h"
 #include "../s2/datarecv.h"
+#include "../s2/filestruct.h"
 #include "interfacesettings.h"
 
 #include <QTimer>

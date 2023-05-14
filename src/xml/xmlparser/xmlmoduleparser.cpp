@@ -180,21 +180,21 @@ void Xml::ModuleParser::parseJournal(const QDomNode &jourNode, const Modules::Jo
 void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 {
     Board::InterfaceType ifaceType = Board::GetInstance().interfaceType();
-    ProtocolDescription ifaceSettings;
+    //    ProtocolDescription ifaceSettings;
     switch (ifaceType)
     {
     case Board::USB:
     case Board::Emulator:
-        parseNode(resNode, tags::protocom, //
-            [&](const QDomNode &protocolNode) { parseProtocom(protocolNode, ifaceSettings); });
+        parseNode(resNode, tags::protocom,                                       //
+            [&](const QDomNode &protocolNode) { parseProtocom(protocolNode); }); // , ifaceSettings); });
         break;
     case Board::RS485:
-        parseNode(resNode, tags::modbus, //
-            [&](const QDomNode &protocolNode) { parseModbus(protocolNode, ifaceSettings); });
+        parseNode(resNode, tags::modbus,                                       //
+            [&](const QDomNode &protocolNode) { parseModbus(protocolNode); }); // , ifaceSettings); });
         break;
     case Board::Ethernet:
-        parseNode(resNode, tags::iec, //
-            [&](const QDomNode &protocolNode) { parseIec(protocolNode, ifaceSettings); });
+        parseNode(resNode, tags::iec,                                       //
+            [&](const QDomNode &protocolNode) { parseIec(protocolNode); }); // , ifaceSettings); });
         break;
     default:
         qCritical() << "Undefined interface type";
@@ -230,20 +230,19 @@ void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 }
 
 /// \brief Функция для парсинга узла <modbus>.
-void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode, ProtocolDescription &settings)
+void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode) //, ProtocolDescription &settings)
 {
     auto signalId = parseNumFromNode<quint32>(modbusNode, tags::sig_id);
     auto regType = parseNumFromNode<quint16>(modbusNode, tags::reg_type);
-    auto type = parseString(modbusNode, tags::type);
     if (signalId != 0)
     {
-        ModbusGroup gr({ signalId, regType, type });
-        settings.addGroup(gr);
+        parseXChangeStruct str { Board::RS485, signalId, regType };
+        emit protocolGroupSending(str);
     }
 }
 
 /// \brief Функция для парсинга узла <protocom>.
-void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode, ProtocolDescription &settings)
+void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode) //, ProtocolDescription &settings)
 {
     auto signalId = parseNumFromNode<quint32>(protocomNode, tags::sig_id);
     auto block = parseNumFromNode<quint16>(protocomNode, tags::block);
@@ -255,16 +254,15 @@ void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode, ProtocolDesc
 }
 
 /// \brief Функция для парсинга узла <iec60870>.
-void Xml::ModuleParser::parseIec(const QDomNode &iecNode, ProtocolDescription &settings)
+void Xml::ModuleParser::parseIec(const QDomNode &iecNode) //, ProtocolDescription &settings)
 {
     auto signalId = parseNumFromNode<quint32>(iecNode, tags::sig_id);
-    auto sigType = parseNumFromNode<quint16>(iecNode, tags::sig_type);
     auto transType = parseNumFromNode<quint16>(iecNode, tags::trans_type);
     auto sigGroup = parseNumFromNode<quint16>(iecNode, tags::sig_group);
     if (signalId != 0)
     {
-        Iec104Group gr({ signalId, sigType, transType, sigGroup });
-        settings.addGroup(gr);
+        parseXChangeStruct str { Board::Ethernet, signalId, transType, sigGroup };
+        emit protocolGroupSending(str);
     }
 }
 

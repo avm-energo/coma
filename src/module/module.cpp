@@ -81,10 +81,12 @@ bool Module::loadModuleSettings(const QString &filename, const quint16 &typeB, c
         QObject::connect(moduleParser, &Xml::ModuleParser::alarmDataSending, //
             mStorage, &ConfigStorage::alarmDataReceive);
         QObject::connect(moduleParser, &Xml::ModuleParser::jourDataSending, mStorage, &ConfigStorage::jourDataReceive);
-        QObject::connect(moduleParser, &Xml::ModuleParser::interfaceSettingsSending, //
-            mStorage, &ConfigStorage::interfaceSettingsReceive);
+        //        QObject::connect(moduleParser, &Xml::ModuleParser::interfaceSettingsSending, //
+        //            mStorage, &ConfigStorage::interfaceSettingsReceive);
         QObject::connect(moduleParser, &Xml::ModuleParser::configDataSending, //
             mStorage, &ConfigStorage::configDataReceive);
+        QObject::connect(moduleParser, &Xml::ModuleParser::protocolGroupSending, mStorage,
+            &ConfigStorage::protocolDescriptionReceived);
         moduleParser->parse(content, typeB, typeM, checks);
         moduleParser->deleteLater();
         return true;

@@ -70,7 +70,7 @@ private:
     int m_signalCounter, m_noAnswer;
     bool m_isFileSending;
     // flag indicates how file should be restored
-    Datatypes::FileFormat m_fileIsConfigFile;
+    DataTypes::FileFormat m_fileIsConfigFile;
     QByteArray m_file;
     QList<QByteArray> m_parseData;
     //    quint32 ReadDataSize;
@@ -123,7 +123,7 @@ private:
     void Com51WriteTime(quint32 time);
     //    void convert(IEC104Thread::SponSignals *signal);
     void setGeneralResponse(DataTypes::GeneralResponseTypes type, quint64 data = 0);
-    bool handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Datatypes::FileFormat format);
+    bool handleFile(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format);
 private slots:
     void SendTestAct();
 

@@ -87,17 +87,17 @@ void IEC104Thread::Run()
                     break;
                 case Commands104::CM104_WRITEFILE:
                 {
-                    m_fileIsConfigFile = Datatypes::FileFormat::Binary;
+                    m_fileIsConfigFile = DataTypes::FileFormat::Binary;
                     m_file = inp.ba;
                     FileReady(inp.address);
                     break;
                 }
                 case Commands104::CM104_REQCONFIGFILE:
-                    m_fileIsConfigFile = Datatypes::FileFormat::DefaultS2;
+                    m_fileIsConfigFile = DataTypes::FileFormat::DefaultS2;
                     SelectFile(inp.address);
                     break;
                 case Commands104::CM104_REQFILE:
-                    m_fileIsConfigFile = Datatypes::FileFormat::Binary;
+                    m_fileIsConfigFile = DataTypes::FileFormat::Binary;
                     SelectFile(inp.address);
                     break;
                 case Commands104::CM104_COM51:
@@ -247,9 +247,9 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
     }
 }
 
-bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Datatypes::FileFormat format)
+bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format)
 {
-    using Datatypes::FileFormat;
+    using DataTypes::FileFormat;
     switch (format)
     {
     case FileFormat::DefaultS2:

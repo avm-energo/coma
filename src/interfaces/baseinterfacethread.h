@@ -22,7 +22,7 @@ public:
 
     quint16 blockByReg(const quint32 regAddr)
     {
-        return BaseInterface::iface()->settings().dictionary().value(regAddr).dataType.value<quint16>();
+        return BaseInterface::iface()->settings().dictionary().value(regAddr).block.value<quint16>();
     }
 
     void processFileFromDisk(DataTypes::FilesEnum fileNum);
@@ -59,7 +59,7 @@ signals:
 
 public slots:
     void run();
-    virtual void processReadBytes(QByteArray &ba) = 0;
+    virtual void processReadBytes(QByteArray ba) = 0;
 };
 
 }

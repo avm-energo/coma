@@ -344,8 +344,6 @@ QList<QStandardItem *> WidgetFactory::createItem(
                                (new QStandardItem(QString::number(master->parport.stop))),   //
                                (new QStandardItem(QString::number(master->per))),            //
                                (new QStandardItem(QString::number(master->adr))),            //
-                               (new QStandardItem(QString::number(master->type.reg))),       //
-                               (new QStandardItem(QString::number(master->type.dat))),       //
                                (new QStandardItem(QString::number(master->reg)))             //
                            };
                        }

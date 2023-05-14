@@ -39,26 +39,6 @@ bool inline operator!=(const INICOM &lhs, const INICOM &rhs)
     return !(lhs == rhs);
 }
 
-struct TypeR
-{
-    // Функция
-    MBS::Commands reg : 4;
-    // Тип данных
-    MBS::TypeId dat : 4;
-    friend bool operator==(const TypeR &lhs, const TypeR &rhs);
-    friend bool operator!=(const TypeR &lhs, const TypeR &rhs);
-};
-
-bool inline operator==(const TypeR &lhs, const TypeR &rhs)
-{
-    return (lhs.reg == rhs.reg) && (lhs.dat == rhs.dat);
-}
-
-bool inline operator!=(const TypeR &lhs, const TypeR &rhs)
-{
-    return !(lhs == rhs);
-}
-
 enum SensorType : quint8
 {
     SEN_None,
@@ -72,9 +52,8 @@ struct ModbusItem
     INICOM parport;     ///< Параметры порта
     quint8 per;         ///< Период опроса
     quint8 adr;         ///< Адрес
-    TypeR type;
-    quint16 reg; ///< Начальный адрес регистра
-    quint8 cnt;  ///< Количество регистров
+    quint16 reg;        ///< Начальный адрес регистра
+    quint8 cnt;         ///< Количество регистров
 
     friend bool operator==(const ModbusItem &lhs, const ModbusItem &rhs);
     friend bool operator!=(const ModbusItem &lhs, const ModbusItem &rhs);
@@ -84,7 +63,7 @@ struct ModbusItem
 bool inline operator==(const ModbusItem &lhs, const ModbusItem &rhs)
 {
     return (lhs.typedat == rhs.typedat) && (lhs.parport == rhs.parport) && (lhs.per == rhs.per) && (lhs.adr == rhs.adr)
-        && (lhs.type == rhs.type) && (lhs.reg == rhs.reg) && (lhs.cnt == rhs.cnt);
+        && (lhs.reg == rhs.reg) && (lhs.cnt == rhs.cnt);
 }
 
 bool inline operator!=(const ModbusItem &lhs, const ModbusItem &rhs)

@@ -106,10 +106,10 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
     auto layout = new QVBoxLayout(widget);
 
     // Create UI commands for phases
-    const QList<std::tuple<Queries::Commands, QString>> phaseSettings {
-        { Queries::QC_SetStartupPhaseA, "A" }, //
-        { Queries::QC_SetStartupPhaseB, "B" }, //
-        { Queries::QC_SetStartupPhaseC, "C" }  //
+    const QList<std::tuple<Commands, QString>> phaseSettings {
+        { Commands::C_SetStartupPhaseA, "A" }, //
+        { Commands::C_SetStartupPhaseB, "B" }, //
+        { Commands::C_SetStartupPhaseC, "C" }  //
     };
     for (auto &step : phaseSettings)
     {
@@ -128,27 +128,27 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
                 auto assocFields = findChildren<QDoubleSpinBox *>(QString::number(KIVSTARTUPINITREGR + 9));
                 assocFields.append(findChildren<QDoubleSpinBox *>(QString::number(KIVSTARTUPINITREGR + 10)));
                 if (checkSpinBoxes(assocFields))
-                    sendCommand(Queries::QC_SetStartupUnbounced);
+                    sendCommand(Commands::C_SetStartupUnbounced);
             });
         layout->addWidget(setupValues);
 
         auto clearValues = new QPushButton("Сбросить начальные значения небаланса токов", widget);
-        connect(clearValues, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_ClearStartupUnbounced); });
+        connect(clearValues, &QPushButton::clicked, this, [this]() { sendCommand(Commands::C_ClearStartupUnbounced); });
         layout->addWidget(clearValues);
     }
 
     // Create UI commands trans off and reset starup init error
     {
         auto resetStartupErr = new QPushButton("Сброс ошибки задания начальных значений", widget);
-        connect(resetStartupErr, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_ClearStartupError); });
+        connect(resetStartupErr, &QPushButton::clicked, this, [this]() { sendCommand(Commands::C_ClearStartupError); });
         layout->addWidget(resetStartupErr);
 
         auto setTransOff = new QPushButton("Послать команду \"Трансформатор включён\"", widget);
-        connect(setTransOff, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetTransOff, false); });
+        connect(setTransOff, &QPushButton::clicked, this, [this]() { sendCommand(Commands::C_SetTransOff, false); });
         layout->addWidget(setTransOff);
 
         auto setTransOn = new QPushButton("Послать команду \"Трансформатор отключён\"", widget);
-        connect(setTransOn, &QPushButton::clicked, this, [this]() { sendCommand(Queries::QC_SetTransOff); });
+        connect(setTransOn, &QPushButton::clicked, this, [this]() { sendCommand(Commands::C_SetTransOff); });
         layout->addWidget(setTransOn);
     }
 
@@ -157,7 +157,7 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
     return widget;
 }
 
-void StartupKIVDialog::sendCommand(Queries::Commands cmd, bool value)
+void StartupKIVDialog::sendCommand(Commands cmd, bool value)
 {
     if (checkPassword())
     {

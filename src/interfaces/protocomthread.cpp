@@ -127,7 +127,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         {
             tba = StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint32>());
         }
-        QByteArray ba = prepareBlock(Proto::Commands::WriteTime, tba);
+        ba = prepareBlock(Proto::Commands::WriteTime, tba);
         emit writeDataAttempt(ba);
         break;
     }
@@ -557,7 +557,7 @@ void ProtocomThread::processTechBlock(const QByteArray &ba, quint32 blkNum)
     }
 }
 
-void ProtocomThread::processReadBytes(QByteArray &ba)
+void ProtocomThread::processReadBytes(QByteArray ba)
 {
     QMutexLocker locker(&_mutex);
 #ifdef PROTOCOM_DEBUG

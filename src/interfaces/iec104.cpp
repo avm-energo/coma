@@ -116,7 +116,7 @@ bool IEC104::start(const ConnectStruct &st)
     return ethconnected;
 }
 
-void IEC104::reqStartup(quint32 sigAdr, quint32 sigCount)
+/*void IEC104::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
     // adr & count are used in modbus only, 104 has special group STARTUPGROUP for these parameters
     Q_UNUSED(sigAdr)
@@ -192,7 +192,7 @@ void IEC104::writeCommand(Queries::Commands cmd, QVariant item)
     }
 }
 
-Commands104::CommandRegisters IEC104::get104Command(Queries::Commands cmd)
+Commands104::CommandRegisters IEC104::get104Command(Commands cmd)
 {
     using namespace Commands104;
     static const QMap<Commands, Commands104::CommandRegisters> iec104CommandMap {
@@ -228,6 +228,7 @@ void IEC104::reqBitStrings(quint32 sigAdr, quint32 sigCount)
     DataManager::GetInstance().addToInQueue(inp);
 }
 
+*/
 void IEC104::EthThreadFinished()
 {
     EthThreadWorking = false;
@@ -288,7 +289,7 @@ void IEC104::EthStateChanged(QAbstractSocket::SocketState state)
 
 void IEC104::stop()
 {
-    setState(BaseInterface::State::Wait);
+    setState(State::Wait);
     emit StopAll();
 }
 

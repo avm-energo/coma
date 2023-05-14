@@ -4,7 +4,6 @@
 
 #include <QCoreApplication>
 #include <QMutexLocker>
-#include <gen/registers.h>
 #include <gen/stdfunc.h>
 #include <memory>
 

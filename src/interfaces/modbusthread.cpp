@@ -156,7 +156,7 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
             DataTypes::SingleCommand scmd = cmdStr.arg1.value<DataTypes::SingleCommand>();
             MBS::CommandStruct inp {
                 MBS::Commands::WriteMultipleRegisters, //
-                quint16(scmd.addr),                    //
+                scmd.addr.toU16(),                     //
                 1,                                     // количество регистров типа int16
                 StdFunc::ArrayFromNumber(scmd.value)   //
             };
@@ -257,7 +257,7 @@ void ModbusThread::setDeviceAddress(quint8 adr)
     m_deviceAddress = adr;
 }
 
-void ModbusThread::processReadBytes(QByteArray &ba)
+void ModbusThread::processReadBytes(QByteArray ba)
 {
     m_readData.append(ba);
     if (m_readData.size() >= 2)

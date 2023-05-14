@@ -33,7 +33,7 @@ private:
     QWidget *uiValuesTab(QWidget *parent = nullptr);
     QWidget *uiCommandsTab(QWidget *parent = nullptr);
     bool checkSpinBoxes(QList<QDoubleSpinBox *> spinBoxes);
-    void sendCommand(Queries::Commands cmd, bool value = true);
+    void sendCommand(Commands cmd, bool value = true);
     void SetupUI() override;
 
 public slots:

@@ -129,61 +129,61 @@ void ConfigStorage::jourDataReceive(const Modules::JournalType &jType, const qui
     mSettings->appendJournal(jType, { addr, desc });
 }
 
-/// \brief Slot for saving module's interface settings.
-void ConfigStorage::interfaceSettingsReceive(const ProtocolDescription &iSettings, const Board::InterfaceType &iType)
-{
-    //    if (iSettings.isValid())
-    //    {
-    // A L E R T! Говнокод, но по-другому сделать с двумя файлами будет сложнее :/
-    //    auto ifSettings = mSettings->getInterfaceSettings().settings;
+///// \brief Slot for saving module's interface settings.
+// void ConfigStorage::interfaceSettingsReceive(const ProtocolDescription &iSettings, const Board::InterfaceType &iType)
+//{
+//    if (iSettings.isValid())
+//    {
+// A L E R T! Говнокод, но по-другому сделать с двумя файлами будет сложнее :/
+//    auto ifSettings = mSettings->getInterfaceSettings().settings;
 
-    //    for (const auto &val : iSettings.dictionary())
-    //    {
-    //        ifSettings.addGroup(val);
-    //    }
+//    for (const auto &val : iSettings.dictionary())
+//    {
+//        ifSettings.addGroup(val);
+//    }
 
-    //        if (!ifSettings.isNull() && ifSettings.isValid())
-    //        {
-    //            if (iType == Board::USB || iType == Board::Emulator)
-    //            {
-    //                auto ifOld = ifSettings.value<ProtocolDescription<ProtocomGroup>>();
-    //                auto ifNew = iSettings.value<ProtocolDescription<ProtocomGroup>>();
-    //                for (const auto &val : iSettings.dictionary())
-    //                {
-    //                    ifOld.addGroup(val);
-    //                }
-    //                ifSettings.setValue(ifOld);
-    //            }
-    //            else if (iType == Board::RS485)
-    //            {
-    //                auto ifOld = ifSettings.value<ProtocolDescription<ModbusGroup>>();
-    //                auto ifNew = iSettings.value<ProtocolDescription<ModbusGroup>>();
-    //                for (const auto &val : ifNew.dictionary())
-    //                {
-    //                    ifOld.addGroup(val);
-    //                }
-    //                ifSettings.setValue(ifOld);
-    //            }
-    //            else if (iType == Board::Ethernet)
-    //            {
-    //                auto ifOld = ifSettings.value<ProtocolDescription<Iec104Group>>();
-    //                auto ifNew = iSettings.value<ProtocolDescription<Iec104Group>>();
-    //                for (const auto &val : ifNew.dictionary())
-    //                {
-    //                    ifOld.addGroup(val);
-    //                }
-    //                ifSettings.setValue(ifOld);
-    //            }
-    mSettings->setInterfaceSettings({ iSettings });
-    Interface::BaseInterface::iface()->setSettings(iSettings);
-    //}
-    // else
-    //{
-    //    mSettings->setInterfaceSettings({ iSettings });
-    //    Interface::BaseInterface::iface()->setSettings(mSettings->getInterfaceSettings());
-    //}
-    //}
-}
+//        if (!ifSettings.isNull() && ifSettings.isValid())
+//        {
+//            if (iType == Board::USB || iType == Board::Emulator)
+//            {
+//                auto ifOld = ifSettings.value<ProtocolDescription<ProtocomGroup>>();
+//                auto ifNew = iSettings.value<ProtocolDescription<ProtocomGroup>>();
+//                for (const auto &val : iSettings.dictionary())
+//                {
+//                    ifOld.addGroup(val);
+//                }
+//                ifSettings.setValue(ifOld);
+//            }
+//            else if (iType == Board::RS485)
+//            {
+//                auto ifOld = ifSettings.value<ProtocolDescription<ModbusGroup>>();
+//                auto ifNew = iSettings.value<ProtocolDescription<ModbusGroup>>();
+//                for (const auto &val : ifNew.dictionary())
+//                {
+//                    ifOld.addGroup(val);
+//                }
+//                ifSettings.setValue(ifOld);
+//            }
+//            else if (iType == Board::Ethernet)
+//            {
+//                auto ifOld = ifSettings.value<ProtocolDescription<Iec104Group>>();
+//                auto ifNew = iSettings.value<ProtocolDescription<Iec104Group>>();
+//                for (const auto &val : ifNew.dictionary())
+//                {
+//                    ifOld.addGroup(val);
+//                }
+//                ifSettings.setValue(ifOld);
+//            }
+//    mSettings->setInterfaceSettings({ iSettings });
+//    Interface::BaseInterface::iface()->setSettings(iSettings);
+//}
+// else
+//{
+//    mSettings->setInterfaceSettings({ iSettings });
+//    Interface::BaseInterface::iface()->setSettings(mSettings->getInterfaceSettings());
+//}
+//}
+//}
 
 /// \brief Slot for saving module's config record.
 void ConfigStorage::configDataReceive(const quint16 &id, //
@@ -215,15 +215,13 @@ void ConfigStorage::protocolDescriptionReceived(const parseXChangeStruct &str)
         switch (ifaceType)
         {
         case Board::USB:
-            descr.addGroup(ProtocomGroup({ signal.startAddr, signal.sigType, str.par2.value<quint16>() }));
+            descr.addGroup(ProtocomGroup({ signal.startAddr, str.par2.value<quint16>() }));
             break;
         case Board::RS485:
-            descr.addGroup(ModbusGroup(
-                { signal.startAddr, signal.sigType, str.par2.value<quint16>(), str.par3.value<QString>() }));
+            descr.addGroup(ModbusGroup({ signal.startAddr, str.par2.value<quint16>() }));
             break;
         case Board::Ethernet:
-            descr.addGroup(Iec104Group({ signal.startAddr, signal.sigType, str.par2.value<quint16>(),
-                str.par3.value<quint16>(), str.par4.value<quint16>() }));
+            descr.addGroup(Iec104Group({ signal.startAddr, str.par2.value<quint16>(), str.par3.value<quint16>() }));
             break;
         default:
             break;

@@ -21,12 +21,12 @@ struct parseXChangeStruct
 struct BaseGroup
 {
     QVariant function;
-    QVariant dataType;
+    QVariant block;
     quint32 startAddr;
     quint32 count;
 
     BaseGroup() = default;
-    BaseGroup(const quint32 &sigAddr, const quint32 &sigCount) : startAddr(sigAddr), count(sigCount)
+    BaseGroup(const quint32 &sigAddr, const quint32 &sigCount = 0) : startAddr(sigAddr), count(sigCount)
     {
     }
 };
@@ -66,41 +66,25 @@ struct ProtocomGroup : BaseGroup
     //    quint8 block;
 
     ProtocomGroup() = default;
-    ProtocomGroup(const quint32 &sigAddr, const quint32 &sigCount, const quint16 &blk)
-        : BaseGroup(sigAddr, sigCount) //, block(blk)
+    ProtocomGroup(const quint32 &sigAddr, const quint16 &blk) : BaseGroup(sigAddr) //, block(blk)
     {
-        dataType = blk;
+        block = blk;
     }
 };
 
 struct ModbusGroup : BaseGroup
 {
     ModbusGroup() = default;
-    ModbusGroup(const quint32 &sigAddr, const quint32 &sigCount, const quint16 &regType, const QString &type)
-        : BaseGroup(sigAddr, sigCount)
+    ModbusGroup(const quint32 &sigAddr, const quint16 &regType) : BaseGroup(sigAddr)
     {
-        count = count * 2;
         // Decimal to hex
         auto hexRegType = QString("%1").arg(regType).toUInt(nullptr, 16);
         function = hexRegType;
-        // Getting TypeId from QString
-        auto buffer(type);
-        auto types = QMetaEnum::fromType<MBS::TypeId>;
-        if (!buffer.isEmpty() && types().isValid())
-        {
-            buffer[0] = buffer[0].toUpper();
-            bool state = false;
-            auto typeId = types().keyToValue(buffer.toStdString().c_str(), &state);
-            if (typeId != -1 && state)
-                dataType = typeId;
-            else
-                qWarning("Undefined modbus type");
-        }
     }
 
     bool operator==(const ModbusGroup &rhs) const
     {
-        return ((function == rhs.function) && (dataType == rhs.dataType) && (startAddr == rhs.startAddr));
+        return ((function == rhs.function) && (startAddr == rhs.startAddr));
     }
 
     bool operator!=(const ModbusGroup &rhs) const
@@ -112,12 +96,8 @@ struct ModbusGroup : BaseGroup
 struct Iec104Group : BaseGroup
 {
     Iec104Group() = default;
-    Iec104Group(const quint32 &sigAddr, const quint32 &sigCount, const quint16 &sigType, const quint16 &transType,
-        const quint16 &sigGroup)
-        : BaseGroup(sigAddr, sigCount)
+    Iec104Group(const quint32 &sigAddr, const quint16 &transType, const quint16 &sigGroup) : BaseGroup(sigAddr)
     {
-        if (sigType > 0 && sigType < 129)
-            dataType = sigType;
         // TODO: Any fields?
         Q_UNUSED(transType);
         Q_UNUSED(sigGroup);

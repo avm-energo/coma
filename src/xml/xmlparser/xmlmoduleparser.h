@@ -47,9 +47,9 @@ private:
     void parseJournals(const QDomNode &joursNode);
     void parseJournal(const QDomNode &jourNode, const Modules::JournalType &jType);
     void parseInterface(const QDomNode &root);
-    void parseModbus(const QDomNode &modbusNode, ProtocolDescription &settings);
-    void parseProtocom(const QDomNode &protocomNode, ProtocolDescription &settings);
-    void parseIec(const QDomNode &iecNode, ProtocolDescription &settings);
+    void parseModbus(const QDomNode &modbusNode);     //, ProtocolDescription &settings);
+    void parseProtocom(const QDomNode &protocomNode); //, ProtocolDescription &settings);
+    void parseIec(const QDomNode &iecNode);           //, ProtocolDescription &settings);
     void parseConfig(const QDomNode &configNode);
 };
 

@@ -1,5 +1,6 @@
 #include "tune85adc.h"
 
+#include "../../interfaces/baseinterface.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -11,6 +12,8 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
+
+using namespace Interface;
 
 Tune85ADC::Tune85ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
@@ -108,7 +111,7 @@ Error::Msg Tune85ADC::checkTuneCoefs()
 
 Error::Msg Tune85ADC::setSMode2()
 {
-    BaseInterface::iface()->writeCommand(Queries::QUSB_SetMode, 0x02);
+    BaseInterface::iface()->writeCommand(Commands::C_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 

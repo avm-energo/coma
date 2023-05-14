@@ -25,7 +25,7 @@ public:
     void setDelay(quint8 newDelay);
 
 public slots:
-    void processReadBytes(QByteArray &ba) override;
+    void processReadBytes(QByteArray ba) override;
 
 signals:
     void clearBuffer();

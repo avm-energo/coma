@@ -12,7 +12,6 @@
 #include <QWaitCondition>
 #include <algorithm>
 #include <gen/error.h>
-#include <gen/registers.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 

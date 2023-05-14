@@ -112,7 +112,7 @@ Error::Msg Tune84ADC::checkTuneCoefs()
 
 Error::Msg Tune84ADC::setSMode2()
 {
-    BaseInterface::iface()->writeCommand(Queries::QUSB_SetMode, 0x02);
+    BaseInterface::iface()->writeCommand(Commands::C_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 
