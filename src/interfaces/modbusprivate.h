@@ -20,32 +20,6 @@ enum Commands : quint8
 };
 Q_ENUM_NS(Commands)
 
-enum BaudRate : quint8
-{
-    Baud1200 = 0,
-    Baud2400 = 1,
-    Baud4800 = 2,
-    Baud9600 = 3,
-    Baud19200 = 4,
-    Baud38400 = 5,
-    Baud57600 = 6,
-    Baud115200 = 7
-};
-Q_ENUM_NS(BaudRate)
-
-enum Parity : quint8
-{
-    NoParity = 0,
-    EvenParity = 1,
-    OddParity = 2
-};
-
-enum StopBits : quint8
-{
-    OneStop = 0,
-    TwoStop = 1
-};
-
 struct CommandStruct
 {
     Commands cmd;
