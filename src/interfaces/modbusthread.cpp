@@ -543,6 +543,7 @@ bool ModbusThread::writeFile(quint16 fileNum)
     ba.prepend(MBS::Commands::WriteFileSection);
     m_bytesToReceive = 8; // address, function code, last section, numFile (2), numSection (2), secLength
     calcCRCAndSend(ba);
+    return true;
 }
 
 void ModbusThread::setQueryStartBytes(MBS::CommandStruct &cms, QByteArray &ba)

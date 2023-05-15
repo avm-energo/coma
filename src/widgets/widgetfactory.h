@@ -25,7 +25,7 @@ public:
     bool fillBack(quint16 key, const QWidget *parent);
     static QString hashedName(ctti::unnamed_type_id_t type, quint16 key);
     static const QString widgetName(int group, int item);
-    static const quint16 getRealCount(const quint16 key);
+    static quint16 getRealCount(const quint16 key);
 
 private:
     // Default template like a dummy function for sfinae
