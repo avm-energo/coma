@@ -1,15 +1,10 @@
 #include "errconfstate.h"
 
-#include "../widgets/wd_func.h"
-
 #include <QBoxLayout>
 #include <QCloseEvent>
 #include <QDebug>
 #include <QLabel>
 #include <vector>
-
-constexpr quint32 errConfAddr = 13000;
-constexpr quint32 errConfSize = 8;
 
 ErrConfState::ErrConfState(QWidget *parent) : UWidget(parent), requestTimer(new QTimer(this))
 {
@@ -32,7 +27,7 @@ void ErrConfState::setupUI()
     };
 
     auto mainLayout = new QVBoxLayout(this);
-    auto index = 0;
+    quint32 index = errConfAddr;
     for (auto &label : labels)
     {
         auto layout = new QHBoxLayout;
@@ -65,11 +60,10 @@ void ErrConfState::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
     if (bs.sigAdr >= errConfAddr && bs.sigAdr < (errConfAddr + errConfSize))
     {
-        auto index = bs.sigAdr - errConfAddr;
-        auto dataLabel = this->findChild<QLabel *>(QString::number(index));
+        auto dataLabel = this->findChild<QLabel *>(QString::number(bs.sigAdr));
         if (dataLabel != nullptr)
         {
-            auto param = static_cast<ErrConfParam>(index);
+            auto param = static_cast<ErrConfParam>(bs.sigAdr);
             switch (param)
             {
             case ErrConfParam::InvalidConfId:

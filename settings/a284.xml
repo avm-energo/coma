@@ -1319,9 +1319,9 @@
             </signal>
             <signal>
                 <start-addr>13000</start-addr>
-                <count>7</count>
+                <count>8</count>
                 <id>16</id>
-                <type>Float</type>
+                <type>BitString</type>
             </signal>
         </signals>
     </resources>

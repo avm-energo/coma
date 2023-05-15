@@ -21,7 +21,7 @@ BEGIN
             VALUE "FileDescription", "@PROJECT_NAME@"
             VALUE "FileVersion","@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@.0"
             VALUE "InternalName", "@PROJECT_NAME@"
-            VALUE "LegalCopyright", "Copyright (c) 2021 @SOFTDEVELOPER@"
+            VALUE "LegalCopyright", "Copyright (c) 2023 @SOFTDEVELOPER@"
             VALUE "OriginalFilename", "@PROJECT_NAME@.exe"
             VALUE "ProductName", "@PROJECT_NAME@"
             VALUE "ProductVersion","@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@.0"

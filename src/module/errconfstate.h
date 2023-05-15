@@ -5,9 +5,12 @@
 #include <QTimer>
 #include <gen/stdfunc.h>
 
+constexpr quint32 errConfAddr = 13000;
+constexpr quint32 errConfSize = 8;
+
 enum ErrConfParam : quint32
 {
-    ConfParseCode = 0,
+    ConfParseCode = errConfAddr,
     InvalidConfId,
     SendedLength,
     RequiredLength,
