@@ -370,7 +370,7 @@ void Protocom::writeCommand(Queries::Commands cmd, const QVariantList &list)
         const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
         if (!isValidRegs(start_addr, list.size()))
         {
-            qCritical() << Error::UnknownBlock;
+            qCritical() << Error::  UnknownBlock;
             return;
         }
         const auto blockNum = d->blockByReg(start_addr);

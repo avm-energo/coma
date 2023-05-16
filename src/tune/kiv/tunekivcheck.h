@@ -16,6 +16,8 @@ private:
     void setTuneFunctions() override;
     Error::Msg showScheme();
     Error::Msg check();
+    Error::Msg setSMode2();
+
 private slots:
 
 protected:
