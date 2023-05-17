@@ -19,6 +19,7 @@ using namespace Interface;
 ProtocomThread::ProtocomThread(QObject *parent) : BaseInterfaceThread(parent)
 {
     isFirstBlock = true;
+    m_longBlockChunks.clear();
 }
 
 ProtocomThread::~ProtocomThread()
@@ -93,7 +94,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
             processFileFromDisk(filetype);
             break;
         default:
-            ba = prepareBlock(Proto::Commands::ReadFile, StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint32>()));
+            ba = prepareBlock(Proto::Commands::ReadFile, StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint16>()));
             emit writeDataAttempt(ba);
             break;
         }
@@ -105,8 +106,8 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     {
         if (cmdStr.arg2.canConvert<QByteArray>())
         {
-            ba = prepareBlock(Proto::Commands::WriteFile, cmdStr.arg2.value<QByteArray>());
-            emit writeDataAttempt(ba);
+            ba = cmdStr.arg2.value<QByteArray>();
+            writeBlock(Proto::Commands::WriteFile, ba);
         }
         break;
     }
@@ -141,7 +142,9 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         if (cmdStr.arg1.canConvert<DataTypes::BlockStruct>())
         {
             DataTypes::BlockStruct bs = cmdStr.arg1.value<DataTypes::BlockStruct>();
-            writeBlock(protoCommandMap.value(cmdStr.command), bs.ID, bs.data);
+            ba = StdFunc::ArrayFromNumber(bs.ID);
+            ba.append(bs.data);
+            writeBlock(protoCommandMap.value(cmdStr.command), bs.data);
         }
         break;
     }
@@ -154,13 +157,13 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
             QVariantList vl = cmdStr.arg1.value<QVariantList>();
             const quint16 start_addr = vl.first().value<DataTypes::FloatStruct>().sigAdr;
             const auto blockNum = blockByReg(start_addr);
-            ba.clear();
+            ba = StdFunc::ArrayFromNumber(blockNum);
             for (const auto &i : vl)
             {
                 const float value = i.value<DataTypes::FloatStruct>().sigVal;
                 ba.append(StdFunc::ArrayFromNumber(value));
             }
-            writeBlock(protoCommandMap.value(cmdStr.command), blockNum, ba);
+            writeBlock(protoCommandMap.value(cmdStr.command), ba);
         }
         break;
     }
@@ -213,9 +216,15 @@ void ProtocomThread::parseResponse()
     switch (m_responseReceived)
     {
     case ResultOk:
+    {
+        if (!m_longBlockChunks.isEmpty())
+        {
+            emit writeDataAttempt(m_longBlockChunks.takeFirst());
+            return;
+        }
         processOk();
         break;
-
+    }
     case ResultError:
     {
         const quint8 errorCode = m_readData.front();
@@ -285,9 +294,7 @@ void ProtocomThread::parseResponse()
         qDebug() << m_readData.toHex();
         break;
     }
-    m_isCommandRequested = false;
-    m_readData.clear();
-    _waiter.wakeOne();
+    finishCommand();
 }
 
 void ProtocomThread::writeLog(QByteArray ba, Direction dir)
@@ -369,40 +376,36 @@ QByteArray ProtocomThread::prepareBlock(Proto::Commands cmd, const QByteArray &d
     return ba;
 }
 
-void ProtocomThread::writeBlock(Proto::Commands cmd, quint8 arg1, const QByteArray &arg2)
+void ProtocomThread::writeBlock(Proto::Commands cmd, const QByteArray &arg2)
 {
     QByteArray ba;
-    ByteQueue bq;
     using Proto::MaxSegmenthLength;
     ba = arg2;
 
     if (isSplitted(ba.size()))
     {
         // prepareLongBlk
+        m_longBlockChunks.clear();
         // Количество сегментов
         quint64 segCount = (ba.size() + 1) // +1 Т.к. некоторые команды имеют в значимой части один дополнительный байт
                 / MaxSegmenthLength        // Максимальная длинна сегмента
             + 1; // Добавляем еще один сегмент в него попадет последняя часть
-        bq.reserve(segCount);
+        m_longBlockChunks.reserve(segCount);
 
         QByteArray tba;
-        tba = StdFunc::ArrayFromNumber(arg1);
         tba.append(ba.left(MaxSegmenthLength - 1));
 
-        bq << prepareBlock(cmd, tba);
+        m_longBlockChunks.append(prepareBlock(cmd, tba));
 
         for (int pos = MaxSegmenthLength - 1; pos < ba.size(); pos += MaxSegmenthLength)
         {
             tba = ba.mid(pos, MaxSegmenthLength);
-            bq << prepareBlock(cmd, tba, Proto::Starters::Continue);
+            m_longBlockChunks.append(prepareBlock(cmd, tba, Proto::Starters::Continue));
         }
-        while (!bq.isEmpty())
-            emit writeDataAttempt(
-                bq.dequeue()); // неправильно это - не дожидаясь ответа от модуля пихать в него подряд данные
+        emit writeDataAttempt(m_longBlockChunks.takeFirst()); // send first chunk
     }
     else
     {
-        ba.prepend(StdFunc::ArrayFromNumber(arg1));
         ba = prepareBlock(cmd, ba);
         emit writeDataAttempt(ba);
     }
@@ -430,7 +433,7 @@ void ProtocomThread::processU32(const QByteArray &ba, quint16 startAddr)
     {
         QByteArray tba = ba.mid(sizeof(qint32) * i, sizeof(qint32));
         quint32 value = *reinterpret_cast<const quint32 *>(tba.data());
-        DataTypes::BitStringStruct resp { startAddr, value, DataTypes::Quality::Good };
+        DataTypes::BitStringStruct resp { startAddr++, value, DataTypes::Quality::Good };
         DataManager::GetInstance().addSignalToOutList(resp);
     }
 }
@@ -479,18 +482,6 @@ void ProtocomThread::processError(int errorCode)
     DataManager::GetInstance().addSignalToOutList(resp);
     // Module error code
     qCritical() << "Error code: " << QString::number(errorCode, 16);
-}
-
-void ProtocomThread::setProgressCount(const quint64 count)
-{
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, count };
-    DataManager::GetInstance().addSignalToOutList(resp);
-}
-
-void ProtocomThread::setProgressRange(const quint64 count)
-{
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, count };
-    DataManager::GetInstance().addSignalToOutList(resp);
 }
 
 void ProtocomThread::processBlock(const QByteArray &ba, quint32 blkNum)

@@ -36,11 +36,11 @@ private:
     quint8 m_deviceAddress; ///< Deivce address
     quint8 m_delay;         ///< Delay in ms
 
-    QByteArray m_readData, m_fileData;
     quint16 m_fileSectionNum; // текущая считываемая / передаваемая секция файла
 
     MBS::CommandStruct m_commandSent;
     int m_bytesToReceive;
+    QByteArray m_fileData;
 
     // commands to send
     void readRegisters(MBS::CommandStruct &cms);

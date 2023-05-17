@@ -28,6 +28,7 @@ public:
     void processFileFromDisk(DataTypes::FilesEnum fileNum);
     void FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format);
     void checkQueue();
+    void finishCommand();
     virtual void parseRequest(const CommandStruct &cmdStr) = 0;
     virtual void parseResponse() = 0;
 
@@ -50,6 +51,9 @@ public:
         { C_ClearStartupUnbounced, ClearStartupUnbounced },
         { C_ClearStartupError, ClearStartupSetError },
     };
+
+    void setProgressCount(const quint64 count);
+    void setProgressRange(const quint64 count);
 
 protected:
     using FileFormat = DataTypes::FileFormat;

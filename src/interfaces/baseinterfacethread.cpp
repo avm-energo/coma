@@ -14,10 +14,9 @@ BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent), log
 void BaseInterfaceThread::clear()
 {
     QMutexLocker locker(&_mutex);
-    m_readData.clear();
-    m_isCommandRequested = false;
     m_progress = 0;
     m_currentCommand = CommandStruct();
+    finishCommand();
 }
 
 void BaseInterfaceThread::wakeUp()
@@ -145,6 +144,13 @@ void BaseInterfaceThread::checkQueue()
     parseRequest(inp);
 }
 
+void BaseInterfaceThread::finishCommand()
+{
+    m_isCommandRequested = false;
+    m_readData.clear();
+    _waiter.wakeOne();
+}
+
 void BaseInterfaceThread::run()
 {
     log->Init(QString(metaObject()->className()) + ".log");
@@ -162,4 +168,16 @@ void BaseInterfaceThread::run()
         }
     }
     emit finished();
+}
+
+void BaseInterfaceThread::setProgressCount(const quint64 count)
+{
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, count };
+    DataManager::GetInstance().addSignalToOutList(resp);
+}
+
+void BaseInterfaceThread::setProgressRange(const quint64 count)
+{
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, count };
+    DataManager::GetInstance().addSignalToOutList(resp);
 }

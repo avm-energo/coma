@@ -8,7 +8,7 @@ namespace Interface
 
 class ProtocomThread : public BaseInterfaceThread
 {
-    typedef QQueue<QByteArray> ByteQueue;
+    //    typedef QQueue<QByteArray> ByteQueue;
     Q_OBJECT
 public:
     explicit ProtocomThread(QObject *parent = nullptr);
@@ -18,6 +18,7 @@ private:
     bool isFirstBlock;
     Proto::Commands m_commandSent;
     Proto::Commands m_responseReceived;
+    QList<QByteArray> m_longBlockChunks;
 
     void parseRequest(const CommandStruct &cmdStr) override;
 
@@ -38,7 +39,7 @@ private:
     QByteArray prepareError();
     QByteArray prepareBlock(Proto::Commands cmd, const QByteArray &data = QByteArray(),
         Proto::Starters startByte = Proto::Starters::Request);
-    void writeBlock(Proto::Commands cmd, quint8 arg1, const QByteArray &arg2);
+    void writeBlock(Proto::Commands cmd, const QByteArray &arg2);
 
 #ifdef Q_OS_LINUX
     void processUnixTime(const QByteArray &ba);
@@ -49,8 +50,6 @@ private:
     void processSinglePoint(const QByteArray &ba, const quint16 startAddr);
     void processOk();
     void processError(int errorCode = 0);
-    void setProgressCount(const quint64 count);
-    void setProgressRange(const quint64 count);
     void processBlock(const QByteArray &ba, quint32 blkNum);
     void processTechBlock(const QByteArray &ba, quint32 blkNum);
 
