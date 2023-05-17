@@ -205,28 +205,25 @@ void ConfigStorage::configDataReceive(const quint16 &id, //
 ///
 void ConfigStorage::protocolDescriptionReceived(const parseXChangeStruct &str)
 {
-    ProtocolDescription descr;
     auto &sigMap = getModuleSettings().getSignals();
     if (sigMap.contains(str.sigId))
     {
         auto signal = sigMap.value(str.sigId);
         Board::InterfaceType ifaceType = str.interfaceType.value<Board::InterfaceType>();
-        InterfaceSettings st = mSettings->getInterfaceSettings();
+        ProtocolDescription *descr = Interface::BaseInterface::iface()->settings();
         switch (ifaceType)
         {
         case Board::USB:
-            descr.addGroup(ProtocomGroup({ signal.startAddr, str.par2.value<quint16>() }));
+            descr->addGroup(ProtocomGroup({ signal.startAddr, str.par2.value<quint16>() }));
             break;
         case Board::RS485:
-            descr.addGroup(ModbusGroup({ signal.startAddr, str.par2.value<quint16>() }));
+            descr->addGroup(ModbusGroup({ signal.startAddr, str.par2.value<quint16>() }));
             break;
         case Board::Ethernet:
-            descr.addGroup(Iec104Group({ signal.startAddr, str.par2.value<quint16>(), str.par3.value<quint16>() }));
+            descr->addGroup(Iec104Group({ signal.startAddr, str.par2.value<quint16>(), str.par3.value<quint16>() }));
             break;
         default:
             break;
         }
     }
-    mSettings->setInterfaceSettings({ descr });
-    Interface::BaseInterface::iface()->setSettings(descr);
 }

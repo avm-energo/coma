@@ -62,12 +62,6 @@ struct Journal
     QString desc; ///< узел <desc>
 };
 
-/// \brief Структура для хранения информации о протоколах protocom, modbus и iec104
-struct InterfaceSettings
-{
-    ProtocolDescription settings;
-};
-
 using SignalMap = QHash<quint32, Signal>;        ///< Хранит узлы <signal> секции <signals>.
 using TabsMap = QHash<quint32, QString>;         ///< Хранит узлы <tab> секции <section-tabs>.
 using ConfigList = QList<DataTypes::RecordPair>; ///< Хранит узлы <record> секции <config>.
@@ -96,7 +90,6 @@ public:
     void appendAlarm(const ModuleTypes::AlarmKey &key, const quint32 &addr, const QString &desc);
     void appendHighlight(const Modules::AlarmType &type, const quint32 &key, const QList<quint32> &values);
     void appendJournal(const Modules::JournalType &key, const ModuleTypes::Journal &journal);
-    void setInterfaceSettings(const ModuleTypes::InterfaceSettings &settings);
 
     const ModuleTypes::ConfigMap &getConfigMap() const;
     const ModuleTypes::ConfigList getConfigs() const;
@@ -107,7 +100,6 @@ public:
     const ModuleTypes::AlarmMap &getAlarms() const;
     const ModuleTypes::HighlightMap &getHighlights(const Modules::AlarmType &type) const;
     const ModuleTypes::JourMap &getJours() const;
-    const ModuleTypes::InterfaceSettings &getInterfaceSettings() const;
 
 private:
     int curConfigIndex;
@@ -119,5 +111,4 @@ private:
     ModuleTypes::AlarmMap mAlarms;
     ModuleTypes::HighlightMap critHighlight, warnHighlight;
     ModuleTypes::JourMap mJournals;
-    ModuleTypes::InterfaceSettings mIfaceSettings;
 };

@@ -21,6 +21,7 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent), /* m_working(fa
     m_timeoutTimer->setInterval(MAINTIMEOUT);
     connect(m_timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
     m_state = State::None;
+    m_settings = std::unique_ptr<ProtocolDescription>(new ProtocolDescription());
 }
 
 void BaseInterface::ProxyInit()
@@ -229,9 +230,9 @@ void BaseInterface::setToQueue(CommandStruct &cmd)
 bool BaseInterface::isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command)
 {
     const auto &st = settings();
-    if (!st.dictionary().contains(sigAdr))
+    if (!st->dictionary().contains(sigAdr))
         return false;
-    const auto val = st.dictionary().value(sigAdr);
+    const auto val = st->dictionary().value(sigAdr);
     if (command != 0)
     {
         if (command != val.function)
@@ -240,24 +241,9 @@ bool BaseInterface::isValidRegs(const quint32 sigAdr, const quint32 sigCount, co
     return val.count == sigCount;
 }
 
-ModuleTypes::InterfaceSettings BaseInterface::interfaceSettings() const
+ProtocolDescription *BaseInterface::settings()
 {
-    return m_settings;
-}
-
-ProtocolDescription BaseInterface::settings() const
-{
-    return m_settings.settings;
-}
-
-void BaseInterface::setInterfaceSettings(const InterfaceSettings &settings)
-{
-    m_settings = settings;
-}
-
-void BaseInterface::setSettings(const ProtocolDescription &settings)
-{
-    m_settings.settings = settings;
+    return m_settings.get();
 }
 
 State BaseInterface::state()

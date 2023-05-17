@@ -22,7 +22,7 @@ public:
 
     quint16 blockByReg(const quint32 regAddr)
     {
-        return BaseInterface::iface()->settings().dictionary().value(regAddr).block.value<quint16>();
+        return BaseInterface::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
     }
 
     void processFileFromDisk(DataTypes::FilesEnum fileNum);

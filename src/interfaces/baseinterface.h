@@ -14,8 +14,6 @@
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
 
-using InterfaceSettings = ModuleTypes::InterfaceSettings;
-
 enum INTERVAL
 {
     RECONNECT = 3000,
@@ -135,6 +133,9 @@ public:
     /// multiple times in runtime
     using InterfacePointer = UniquePointer<BaseInterface>;
 
+    // protocol settings
+    std::unique_ptr<ProtocolDescription> m_settings;
+
     UniquePointer<LogClass> Log;
 
     explicit BaseInterface(QObject *parent = nullptr);
@@ -160,10 +161,7 @@ public:
 
     // helper methods
     bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0);
-    ModuleTypes::InterfaceSettings interfaceSettings() const;
-    ProtocolDescription settings() const;
-    void setInterfaceSettings(const InterfaceSettings &settings);
-    void setSettings(const ProtocolDescription &settings);
+    ProtocolDescription *settings();
     State state();
     void setState(const State &state);
 
@@ -211,7 +209,6 @@ private:
     QTimer *m_timeoutTimer;
     static InterfacePointer m_iface;
     State m_state;
-    InterfaceSettings m_settings;
     QMutex _stateMutex;
     UniquePointer<DataTypesProxy> proxyBS, proxyGRS, proxyFS, proxyDRL, proxyBStr;
 #ifdef __linux__

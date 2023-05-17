@@ -14,7 +14,6 @@ void ModuleSettings::clear()
     mSections.clear();
     mAlarms.clear();
     mJournals.clear();
-    mIfaceSettings.settings.clear();
     critHighlight.clear();
     warnHighlight.clear();
     curConfigIndex = 0;
@@ -85,12 +84,6 @@ void ModuleSettings::appendJournal(const Modules::JournalType &key, const Module
     mJournals[key].push_back(journal);
 }
 
-/// \brief Сохранение настроек интерфейса, по которому подключен модуль.
-void ModuleSettings::setInterfaceSettings(const ModuleTypes::InterfaceSettings &settings)
-{
-    mIfaceSettings = settings;
-}
-
 /// \brief Constant getter for configs hashmap.
 const ModuleTypes::ConfigMap &ModuleSettings::getConfigMap() const
 {
@@ -146,10 +139,4 @@ const ModuleTypes::HighlightMap &ModuleSettings::getHighlights(const Modules::Al
 const ModuleTypes::JourMap &ModuleSettings::getJours() const
 {
     return mJournals;
-}
-
-/// \brief Constant getter for interface settings of current module connection.
-const ModuleTypes::InterfaceSettings &ModuleSettings::getInterfaceSettings() const
-{
-    return mIfaceSettings;
 }
