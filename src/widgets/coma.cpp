@@ -58,6 +58,7 @@
 #include <gen/logger.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
+#include <iostream>
 #include <memory>
 
 #ifdef Q_OS_WINDOWS

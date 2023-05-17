@@ -262,15 +262,15 @@ void ProtocomThread::parseResponse()
         break;
 
     case ReadBlkData:
-        switch (m_commandSent)
+        switch (m_currentCommand.command)
         {
-        case FakeReadRegData:
+        case C_ReqFloats:
             processFloat(m_readData, addr);
             break;
-        case FakeReadAlarms:
+        case C_ReqAlarms:
             processSinglePoint(m_readData, addr);
             break;
-        case FakeReadBitString:
+        case C_ReqBitStrings:
             processU32(m_readData, addr);
             break;
         default:
@@ -455,11 +455,11 @@ void ProtocomThread::processFloat(const QByteArray &ba, quint32 startAddr)
     const int baendpos = ba.size() - 3; // 3 = sizeof(float) - 1
     while (bapos < baendpos)
     {
-        QByteArray tba = ba.mid(sizeof(float) * bapos, sizeof(float));
+        QByteArray tba = ba.mid(bapos, sizeof(float));
         float blk = *reinterpret_cast<const float *>(tba.data());
-        DataTypes::FloatStruct resp { startAddr, blk, DataTypes::Quality::Good };
+        DataTypes::FloatStruct resp { startAddr++, blk, DataTypes::Quality::Good };
         DataManager::GetInstance().addSignalToOutList(resp);
-        bapos += 4;
+        bapos += sizeof(float);
     }
 }
 

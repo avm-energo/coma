@@ -1,7 +1,6 @@
 #include "datarecv.h"
 
 #include "../module/configstorage.h"
-#include "s2helper.h"
 
 #include <type_traits>
 
@@ -9,7 +8,6 @@ namespace DataTypes
 {
 DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id(record.header.id)
 {
-    using namespace detail;
     auto &s2map = ConfigStorage::GetInstance().getS2Map();
     auto search = s2map.find(id);
     assert(search != s2map.end());
@@ -108,11 +106,6 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
         helper<FLOAT_2t>(record.header.numByte, rawdata, data);
         break;
     }
-        //    case ctti::unnamed_type_id<FLOAT_2t_2t>().hash():
-        //    {
-        //        helper<FLOAT_2t_2t>(record.numByte, rawdata, data);
-        //        break;
-        //    }
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
     {
         helper<FLOAT_3t>(record.header.numByte, rawdata, data);
@@ -140,12 +133,10 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
 
 DataRecV::DataRecV(quint16 _id, const QString &str) : id(_id)
 {
-    using namespace detail;
     auto &s2map = ConfigStorage::GetInstance().getS2Map();
     auto search = s2map.find(_id);
     assert(search != s2map.end());
 
-    // return;
     // Exception inside ctor https://www.stroustrup.com/bs_faq2.html#ctor-exceptions
     auto value = s2map.at(_id);
     switch (value.hash())
@@ -250,20 +241,12 @@ bool operator!=(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
     return !(lhs == rhs);
 }
 
-void DataRecV::printer() const
-{
-    std::cout << id << " : ";
-    valueType w = data;
-    std::visit([](auto arg) { detail::print(arg); }, w);
-    std::cout << std::endl;
-}
-
 S2DataTypes::DataRec DataRecV::serialize() const
 {
     return std::visit(
         [=](auto &arg) -> S2DataTypes::DataRec {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            S2DataTypes::DataRec record { id, sizeof(internalType), (void *)(&arg) };
+            S2DataTypes::DataRec record { { id, sizeof(internalType) }, (void *)(&arg) };
             return record;
         },
         data);

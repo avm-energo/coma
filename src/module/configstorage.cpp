@@ -214,13 +214,14 @@ void ConfigStorage::protocolDescriptionReceived(const parseXChangeStruct &str)
         switch (ifaceType)
         {
         case Board::USB:
-            descr->addGroup(ProtocomGroup({ signal.startAddr, str.par2.value<quint16>() }));
+            descr->addGroup(ProtocomGroup({ signal.startAddr, signal.count, str.par2.value<quint16>() }));
             break;
         case Board::RS485:
-            descr->addGroup(ModbusGroup({ signal.startAddr, str.par2.value<quint16>() }));
+            descr->addGroup(ModbusGroup({ signal.startAddr, signal.count, str.par2.value<quint16>() }));
             break;
         case Board::Ethernet:
-            descr->addGroup(Iec104Group({ signal.startAddr, str.par2.value<quint16>(), str.par3.value<quint16>() }));
+            descr->addGroup(
+                Iec104Group({ signal.startAddr, signal.count, str.par2.value<quint16>(), str.par3.value<quint16>() }));
             break;
         default:
             break;
