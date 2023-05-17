@@ -180,7 +180,6 @@ void Xml::ModuleParser::parseJournal(const QDomNode &jourNode, const Modules::Jo
 void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 {
     Board::InterfaceType ifaceType = Board::GetInstance().interfaceType();
-    //    ProtocolDescription ifaceSettings;
     switch (ifaceType)
     {
     case Board::USB:
@@ -200,33 +199,6 @@ void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
         qCritical() << "Undefined interface type";
         return;
     }
-
-    //    QVariant ifaceConfig;
-    //    ifaceConfig.setValue(ifaceSettings);
-    //    if (ifaceType == Board::USB || ifaceType == Board::Emulator)
-    //    {
-    //        ProtocolDescription ifaceSettings;
-    //        parseNode(resNode, tags::protocom, //
-    //            [&](const QDomNode &protocomNode) { parseProtocom(protocomNode, ifaceSettings); });
-    //        ifaceConfig.setValue(ifaceSettings);
-    //    }
-    //    else if (ifaceType == Board::RS485)
-    //    {
-    //        ProtocolDescription ifaceSettings;
-    //        parseNode(resNode, tags::modbus, //
-    //            [&](const QDomNode &modbusNode) { parseModbus(modbusNode, ifaceSettings); });
-    //        ifaceConfig.setValue(ifaceSettings);
-    //    }
-    //    else if (ifaceType == Board::Ethernet)
-    //    {
-    //        ProtocolDescription ifaceSettings;
-    //        parseNode(resNode, tags::iec, //
-    //            [&](const QDomNode &iecNode) { parseIec(iecNode, ifaceSettings); });
-    //        ifaceConfig.setValue(ifaceSettings);
-    //    }
-    //    else
-    //        qCritical() << "Undefined interface type";
-    //    emit interfaceSettingsSending(ifaceSettings, ifaceType);
 }
 
 /// \brief Функция для парсинга узла <modbus>.
@@ -236,7 +208,7 @@ void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode) //, ProtocolDesc
     auto regType = parseNumFromNode<quint16>(modbusNode, tags::reg_type);
     if (signalId != 0)
     {
-        parseXChangeStruct str { Board::RS485, signalId, regType };
+        parseXChangeStruct str { Board::RS485, signalId, regType, QVariant() };
         emit protocolGroupSending(str);
     }
 }
@@ -248,7 +220,7 @@ void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode) //, Protocol
     auto block = parseNumFromNode<quint16>(protocomNode, tags::block);
     if (signalId != 0)
     {
-        parseXChangeStruct str { Board::USB, signalId, block };
+        parseXChangeStruct str { Board::USB, signalId, block, QVariant() };
         emit protocolGroupSending(str);
     }
 }

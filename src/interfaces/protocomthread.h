@@ -19,6 +19,7 @@ private:
     Proto::Commands m_commandSent;
     Proto::Commands m_responseReceived;
     QList<QByteArray> m_longBlockChunks;
+    int m_sentBytesCount;
 
     void parseRequest(const CommandStruct &cmdStr) override;
 

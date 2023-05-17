@@ -217,10 +217,17 @@ void ProtocomThread::parseResponse()
     {
     case ResultOk:
     {
-        if (!m_longBlockChunks.isEmpty())
+        if (m_currentCommand.command == C_WriteFile)
         {
-            emit writeDataAttempt(m_longBlockChunks.takeFirst());
-            return;
+            setProgressCount(m_sentBytesCount);
+            if (!m_longBlockChunks.isEmpty())
+            {
+                QByteArray ba = m_longBlockChunks.takeFirst();
+                m_sentBytesCount += ba.size();
+                emit writeDataAttempt(ba);
+                _waiter.wakeOne();
+                return;
+            }
         }
         processOk();
         break;
@@ -402,6 +409,8 @@ void ProtocomThread::writeBlock(Proto::Commands cmd, const QByteArray &arg2)
             tba = ba.mid(pos, MaxSegmenthLength);
             m_longBlockChunks.append(prepareBlock(cmd, tba, Proto::Starters::Continue));
         }
+        setProgressRange(ba.size() + segCount * 4);
+        m_sentBytesCount = m_longBlockChunks.at(0).size();
         emit writeDataAttempt(m_longBlockChunks.takeFirst()); // send first chunk
     }
     else

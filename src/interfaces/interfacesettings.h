@@ -15,7 +15,6 @@ struct parseXChangeStruct
     quint32 sigId;
     QVariant par2;
     QVariant par3;
-    QVariant par4;
 };
 
 struct BaseGroup
