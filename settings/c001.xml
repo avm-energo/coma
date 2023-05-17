@@ -151,7 +151,7 @@
             </signal>
             <signal>
                 <start-addr>300</start-addr>
-                <count>1</count>
+                <count>2</count>
                 <id>6</id>
                 <type>BitString</type>
             </signal>

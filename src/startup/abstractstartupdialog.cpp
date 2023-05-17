@@ -40,7 +40,7 @@ QWidget *AbstractStartupDialog::buttonWidget()
 
     const QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     using VoidFunction = std::function<void()>;
-    static const QList<std::tuple<QString, QString, VoidFunction>> funcs {
+    const QList<std::tuple<QString, QString, VoidFunction>> funcs {
         { "Задать все начальные значения", ":/icons/tnapprove.svg", [this]() { SetupCor(); } }, //
         { "Сбросить все начальные значения", ":/icons/tnreset.svg", [this]() { ResetCor(); } }, //
         { "Получить из " + tmps, ":/icons/tnread.svg", [this]() { GetCorBd(); } },              //
