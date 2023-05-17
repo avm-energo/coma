@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module mtypeb="c0" mtypem="01">
+    <name>АВМ-МПЭ</name>
+    <version>0.0-0000</version>
+    <resources>
+        <alarms desc="Сигнализация">
+            <critical desc="Критичные">
+                <item>
+                    <addr>301</addr>
+                    <string>Аварийная сигнализация по давлению</string>
+                    <highlights>
+                        <item>100</item>
+                    </highlights>
+                </item>
+            </critical>
+            <info desc="Информационные"/>
+            <warning desc="Предупреждения">
+                <item>
+                    <addr>300</addr>
+                    <string>Предупредительная сигнализация по давлению</string>
+                    <highlights>
+                        <item>100</item>
+                    </highlights>
+                </item>
+            </warning>
+        </alarms>
+        <config desc="Конфигурация">
+            <record>
+                <id>25</id>
+                <defaultValue>9600</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>26</id>
+                <defaultValue>1</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>28</id>
+                <defaultValue>1</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+        </config>
+        <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104"/>
+        <journals desc="Журналы">
+            <work desc="Рабочий журнал"/>
+            <meas desc="Журнал измерений"/>
+        </journals>
+        <modbus desc="Протокол Modbus">
+            <group>
+                <signal-id>1</signal-id>
+                <reg-type>4</reg-type>
+                <type>uint32</type>
+                <desc>BSI</desc>
+            </group>
+            <group>
+                <signal-id>2</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc></desc>
+            </group>
+            <group>
+                <signal-id>3</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc></desc>
+            </group>
+            <group>
+                <signal-id>4</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc></desc>
+            </group>
+            <group>
+                <signal-id>5</signal-id>
+                <reg-type>4</reg-type>
+                <type>uint32</type>
+                <desc></desc>
+            </group>
+            <group>
+                <signal-id>6</signal-id>
+                <reg-type>1</reg-type>
+                <type>bool</type>
+                <desc>alarms</desc>
+            </group>
+        </modbus>
+        <protocom desc="Протокол Protocom"/>
+        <section-tabs desc="Вкладки">
+            <tab>
+                <id>1</id>
+                <name>Основные</name>
+            </tab>
+        </section-tabs>
+        <sections desc="Разделы">
+            <section header="Текущие данные">
+                <sgroup header="Датчик HDC1080" tab="1">
+                    <mwidget view="float" desc="Температура от датчика HDC1080">
+                        <start-addr>120</start-addr>
+                        <toolTip>Температура от датчика HDC1080</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="Влажность от датчика HDC1080">
+                        <start-addr>121</start-addr>
+                        <toolTip>Влажность от датчика HDC1080</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Датчик MS5803" tab="1">
+                    <mwidget view="float" desc="Температура от датчика MS5803">
+                        <start-addr>140</start-addr>
+                        <toolTip>Температура от датчика MS5803</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="Давление от датчика MS5803">
+                        <start-addr>141</start-addr>
+                        <toolTip>Давление от датчика MS5803</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Общие" tab="1">
+                    <mwidget view="float" desc="Плотность газа">
+                        <start-addr>100</start-addr>
+                        <toolTip>Плотность газа</toolTip>
+                    </mwidget>
+                </sgroup>
+            </section>
+        </sections>
+        <signals desc="Сигналы">
+            <signal>
+                <start-addr>1</start-addr>
+                <count>15</count>
+                <id>1</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>100</start-addr>
+                <count>1</count>
+                <id>2</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>120</start-addr>
+                <count>2</count>
+                <id>3</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>140</start-addr>
+                <count>2</count>
+                <id>4</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>300</start-addr>
+                <count>1</count>
+                <id>6</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>13000</start-addr>
+                <count>8</count>
+                <id>5</id>
+                <type>BitString</type>
+            </signal>
+        </signals>
+    </resources>
+</module>

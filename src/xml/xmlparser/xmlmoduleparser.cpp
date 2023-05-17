@@ -21,12 +21,11 @@ Xml::ModuleParser::ModuleParser(const quint16 typeB, const quint16 typeM, const 
 /// \brief Получаем имя файла по типам базовой и мезонинной плат.
 QString Xml::ModuleParser::getFileName(const quint16 typeB, const quint16 typeM)
 {
-    if (typeM == 0)
-        return QString::number(typeB, 16) + "00.xml";
-    else if (typeB == 0)
-        return "00" + QString::number(typeM, 16) + ".xml";
-    else
-        return QString::number(typeB, 16) + QString::number(typeM, 16) + ".xml";
+    auto typeBStr = QString::number(typeB, 16);
+    typeBStr = (typeBStr.length() < 2) ? "0" + typeBStr : typeBStr;
+    auto typeMStr = QString::number(typeM, 16);
+    typeMStr = (typeMStr.length() < 2) ? "0" + typeMStr : typeMStr;
+    return typeBStr + typeMStr + ".xml";
 }
 
 /// \brief Проверка на то, совпадает ли тип модуля с указанным в файле конфигурации.

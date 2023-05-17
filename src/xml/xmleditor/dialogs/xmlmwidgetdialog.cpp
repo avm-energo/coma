@@ -18,7 +18,7 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     mTitle += "описания мульти-виджета";
 
     // Виджеты для начального адреса
-    auto addrLabel = new QLabel("Адрес сигнализации: ", this);
+    auto addrLabel = new QLabel("Адрес сигнала: ", this);
     auto addrInput = new QSpinBox(this);
     addrInput->setMinimum(addrMin);
     addrInput->setMaximum(addrMax);
