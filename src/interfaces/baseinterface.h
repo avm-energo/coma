@@ -136,8 +136,6 @@ public:
     // protocol settings
     std::unique_ptr<ProtocolDescription> m_settings;
 
-    UniquePointer<LogClass> Log;
-
     explicit BaseInterface(QObject *parent = nullptr);
     ~BaseInterface() {};
 

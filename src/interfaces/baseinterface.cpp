@@ -13,7 +13,7 @@ namespace Interface
 // Static members
 BaseInterface::InterfacePointer BaseInterface::m_iface;
 
-BaseInterface::BaseInterface(QObject *parent) : QObject(parent), /* m_working(false),*/ Log(new LogClass(this))
+BaseInterface::BaseInterface(QObject *parent) : QObject(parent) /* m_working(false),*/
 {
     ProxyInit();
     qRegisterMetaType<State>();
@@ -467,7 +467,6 @@ void BaseInterface::resume()
 
 void BaseInterface::stop()
 {
-    Log->info("Stop()");
     setState(State::Stop);
     qInfo() << metaObject()->className() << "disconnected";
 }

@@ -28,8 +28,6 @@ ModBus::~ModBus()
 
 bool ModBus::start(const ConnectStruct &connectStruct)
 {
-    Log->Init(QString(metaObject()->className()) + ".log");
-    Log->info(logStart);
     Q_ASSERT(std::holds_alternative<SerialPortSettings>(connectStruct.settings));
     qInfo() << metaObject()->className() << "is connecting...";
     if (!std::holds_alternative<SerialPortSettings>(connectStruct.settings))
@@ -45,16 +43,16 @@ bool ModBus::start(const ConnectStruct &connectStruct)
 
     connect(thr, &QThread::started, parser, &ModbusThread::run);
     connect(parser, &ModbusThread::finished, thr, &QThread::quit);
-    connect(thr, &QThread::finished, port, &SerialPort::disconnect);
+    connect(thr, &QThread::finished, port, &BasePort::disconnect);
     connect(thr, &QThread::finished, port, &QObject::deleteLater);
     connect(thr, &QThread::finished, thr, &QObject::deleteLater);
     connect(thr, &QThread::finished, parser, &QObject::deleteLater);
-    connect(port, &SerialPort::read, parser, &ModbusThread::processReadBytes);
-    connect(parser, &ModbusThread::write, port, &SerialPort::writeBytes);
+    connect(port, &BasePort::dataReceived, parser, &ModbusThread::processReadBytes);
+    connect(parser, &ModbusThread::sendDataToPort, port, &BasePort::writeData);
     connect(parser, &ModbusThread::clearBuffer, port, &SerialPort::clear);
     connect(port, &SerialPort::error, this, &ModBus::sendReconnectSignal);
-    connect(this, &BaseInterface::reconnect, port, &SerialPort::reconnect);
-    connect(port, &SerialPort::connected, port, [=] {
+    connect(this, &BaseInterface::reconnect, port, &BasePort::reconnect);
+    connect(port, &SerialPort::started, port, [=] {
         setState(State::Run);
         parser->moveToThread(thr);
         thr->start();

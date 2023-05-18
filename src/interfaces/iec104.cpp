@@ -17,6 +17,8 @@ namespace Interface
 IEC104::IEC104(QObject *parent)
     : BaseInterface(parent), EthThreadWorking(false), ParseThreadWorking(false), sock(new QTcpSocket(this))
 {
+    Log = new LogClass;
+    Log->Init("ethernet.log");
 }
 
 IEC104::~IEC104()
@@ -25,8 +27,6 @@ IEC104::~IEC104()
 
 bool IEC104::start(const ConnectStruct &st)
 {
-    Log->Init(st.name + ".log");
-    Log->info("=== Log started ===");
     Q_ASSERT(std::holds_alternative<IEC104Settings>(st.settings));
     qInfo() << metaObject()->className() << "connect";
     if (!std::holds_alternative<IEC104Settings>(st.settings))
@@ -36,7 +36,7 @@ bool IEC104::start(const ConnectStruct &st)
     EthThreadWorking = false;
     ParseThreadWorking = false;
 
-    auto parser = new IEC104Thread(Log.get());
+    auto parser = new IEC104Thread();
     auto parserThread = new QThread;
     parserThread->setObjectName("parserThread");
 
@@ -50,18 +50,10 @@ bool IEC104::start(const ConnectStruct &st)
             sock->deleteLater();
         }
     });
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    connect(sock, qOverload<QAbstractSocket::SocketError>(&QAbstractSocket::error), this,
-        [=](QAbstractSocket::SocketError error) {
-            Log->info("Error: " + QVariant::fromValue(error).toString());
-            sock->disconnectFromHost();
-        });
-#else
     connect(sock, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError error) {
         Log->info("Error: " + QVariant::fromValue(error).toString());
         sock->disconnectFromHost();
     });
-#endif
     connect(sock, &QAbstractSocket::stateChanged, this, &IEC104::EthStateChanged);
     connect(parserThread, &QThread::finished, parser, &QObject::deleteLater);
     connect(parserThread, &QThread::finished, parserThread, &QObject::deleteLater);
@@ -80,7 +72,7 @@ bool IEC104::start(const ConnectStruct &st)
         sock, &QIODevice::readyRead, parser,
         [=] {
             QByteArray ba = sock->readAll();
-            QMetaObject::invokeMethod(parser, [=] { parser->GetSomeData(ba); });
+            QMetaObject::invokeMethod(parser, [=] { parser->processReadBytes(ba); });
         },
         Qt::QueuedConnection);
     connect(parser, &IEC104Thread::ReconnectSignal, this, &IEC104::EmitReconnectSignal);

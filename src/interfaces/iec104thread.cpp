@@ -10,12 +10,14 @@
 #include <gen/datamanager/datamanager.h>
 #include <gen/pch.h>
 
+using namespace Interface;
+
 QMutex IEC104Thread::s_ParseReadMutex;
 QMutex IEC104Thread::s_ParseWriteMutex;
 
 using namespace Commands104;
 
-IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent), m_log(log)
+IEC104Thread::IEC104Thread(QObject *parent) : BaseInterfaceThread(parent)
 {
     m_writingToPortBlocked = true;
     m_isFirstParse = true;
@@ -26,6 +28,8 @@ IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent), m_
     m_APDUFormat = I104_WRONG;
     m_isFileSending = false;
     m_noAnswer = 0;
+    m_log = new LogClass;
+    m_log->Init("ethernetThread.log");
 }
 
 IEC104Thread::~IEC104Thread()
@@ -118,7 +122,7 @@ void IEC104Thread::Run()
     emit finished();
 }
 
-void IEC104Thread::GetSomeData(QByteArray ba)
+void IEC104Thread::processReadBytes(QByteArray ba)
 {
     if (m_isFirstParse)
         m_log->info("<-- " + ba.toHex());
@@ -153,7 +157,7 @@ void IEC104Thread::GetSomeData(QByteArray ba)
     }
     m_cutPckt = ba.left(2);
     ba = ba.mid(2);
-    GetSomeData(ba);
+    processReadBytes(ba);
     m_isFirstParse = true;
 }
 

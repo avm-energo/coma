@@ -8,14 +8,14 @@
 #include <QTimer>
 
 #define TIMEOUT 3000
-SerialPort::SerialPort(QObject *parent) : QObject(parent)
+SerialPort::SerialPort(QObject *parent) : BasePort("ModbusPort", parent)
 {
 }
 
 SerialPort::~SerialPort()
 {
-    if (port->isOpen())
-        port->close();
+    disconnect();
+    emit finished();
 }
 
 bool SerialPort::init(SerialPortSettings settings)
@@ -51,18 +51,20 @@ bool SerialPort::clear()
     return port->clear();
 }
 
-void SerialPort::writeBytes(QByteArray ba)
+bool SerialPort::writeData(const QByteArray &ba)
 {
     if (!port->isOpen())
-        return;
+        return false;
     port->write(ba.data(), ba.size());
     QCoreApplication::processEvents();
+    return true;
 }
 
 void SerialPort::disconnect()
 {
     if (port->isOpen())
         port->close();
+    setState(Interface::State::Stop);
 }
 
 bool SerialPort::reconnect()
@@ -73,7 +75,8 @@ bool SerialPort::reconnect()
         qCritical() << port->metaObject()->className() << port->portName() << Error::OpenError;
         return false;
     }
-    emit connected();
+    emit started();
+    setState(Interface::State::Run);
     return true;
 }
 
@@ -81,8 +84,6 @@ void SerialPort::errorOccurred(QSerialPort::SerialPortError err)
 {
     if (!err)
         return;
-    if (port->isOpen())
-        port->close();
     if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError || err == QSerialPort::TimeoutError)
     {
         qCritical() << QVariant::fromValue(err).toString();
@@ -90,6 +91,7 @@ void SerialPort::errorOccurred(QSerialPort::SerialPortError err)
     }
     else
         qDebug() << QVariant::fromValue(err).toString();
+    reconnect();
 }
 
 void SerialPort::readBytes()
@@ -101,5 +103,5 @@ void SerialPort::readBytes()
         QThread::msleep(2);
     }
     if (ba.size())
-        emit read(ba);
+        emit dataReceived(ba);
 }

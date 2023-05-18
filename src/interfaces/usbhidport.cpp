@@ -28,14 +28,9 @@ using Proto::Direction;
 using Proto::Starters;
 using namespace Interface;
 
-UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent)
-    : QObject(parent), log(logh), m_deviceInfo(dev)
+UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent) : BasePort("UsbHidPort", parent), m_deviceInfo(dev)
 {
     using namespace settings;
-    QString filename("UsbHidPort");
-    filename.append(".").append(::logExt);
-    log->Init(filename);
-    log->WriteRaw(::logStart);
     m_hidDevice = nullptr;
     m_shouldBeStopped = false;
     connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
@@ -202,13 +197,14 @@ void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
     m_deviceInfo = deviceInfo;
 }
 
-void UsbHidPort::writeDataAttempt(const QByteArray &ba)
+bool UsbHidPort::writeData(const QByteArray &ba)
 {
     QMutexLocker locker(&_mutex);
     m_writeQueue.append(ba);
+    return true;
 }
 
-void UsbHidPort::closeConnection()
+void UsbHidPort::disconnect()
 {
     if (m_hidDevice)
         hid_close(m_hidDevice);
@@ -218,7 +214,7 @@ void UsbHidPort::closeConnection()
 
 void UsbHidPort::finish()
 {
-    closeConnection();
+    disconnect();
     qInfo() << metaObject()->className() << "finished";
     emit finished();
     QCoreApplication::processEvents();
@@ -230,6 +226,12 @@ void UsbHidPort::clear()
     m_waitForReply = false;
     m_writeQueue.clear();
     m_hidDevice = nullptr;
+}
+
+bool UsbHidPort::reconnect()
+{
+    disconnect();
+    return setupConnection();
 }
 
 void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
@@ -310,6 +312,9 @@ void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
     default:
         qInfo() << "Unhadled case" << QString::number(type, 16);
     }
+#else
+    Q_UNUSED(message)
+    Q_UNUSED(type)
 #endif
 }
 
@@ -330,11 +335,11 @@ void UsbHidPort::writeLog(QByteArray ba, Direction dir)
         break;
     }
     tmpba.append(ba).append("\n");
-    log->WriteRaw(tmpba);
+    Log->WriteRaw(tmpba);
 #endif
 }
 
-bool UsbHidPort::writeData(QByteArray &ba)
+bool UsbHidPort::writeDataToPort(QByteArray &ba)
 {
     if (!m_hidDevice)
     {
@@ -382,7 +387,7 @@ bool UsbHidPort::checkQueue()
         return false;
     QByteArray ba = m_writeQueue.takeFirst();
     locker.unlock();
-    if (writeData(ba))
+    if (writeDataToPort(ba))
         return m_waitForReply = true;
     else
         emit clearQueries();

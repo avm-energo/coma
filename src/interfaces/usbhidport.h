@@ -1,6 +1,7 @@
 #pragma once
 
 #include "baseinterface.h"
+#include "baseport.h"
 #include "protocomprivate.h"
 #include "settingstypes.h"
 
@@ -27,16 +28,14 @@ constexpr char headerValidator[] = "[a-zA-Z]{3}(?=#)";
 
 } // namespace HID
 
-class UsbHidPort : public QObject
+class UsbHidPort : public BasePort
 {
     Q_OBJECT
 public:
-    explicit UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent = 0);
+    explicit UsbHidPort(const UsbHidSettings &dev, QObject *parent = 0);
     ~UsbHidPort();
 
     bool setupConnection();
-    void closeConnection();
-    void writeDataAttempt(const QByteArray &ba);
 
     UsbHidSettings deviceInfo() const;
     void setDeviceInfo(const UsbHidSettings &deviceInfo);
@@ -46,13 +45,13 @@ public:
     void shouldBeStopped(bool isShouldBeStopped);
 
 signals:
-    void dataReceived(QByteArray ba);
-    void finished();
-    void started();
     void clearQueries();
-    void stateChanged(Interface::State);
+
 public slots:
-    void poll();
+    bool reconnect() override;
+    void disconnect() override;
+    bool writeData(const QByteArray &ba) override;
+    void poll() override;
 
 private:
     void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
@@ -61,7 +60,7 @@ private:
         writeLog(QVariant::fromValue(msg).toByteArray(), dir);
     }
 
-    bool writeData(QByteArray &ba);
+    bool writeDataToPort(QByteArray &ba);
 
     bool checkQueue();
     void finish();
@@ -74,7 +73,6 @@ private:
 
     hid_device *m_hidDevice;
     bool m_shouldBeStopped;
-    LogClass *log;
     QMutex _mutex;
     QList<QByteArray> m_writeQueue;
     UsbHidSettings m_deviceInfo;

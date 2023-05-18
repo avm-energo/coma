@@ -60,6 +60,7 @@ protected:
 
 signals:
     void finished();
+    void sendDataToPort(const QByteArray &ba);
 
 public slots:
     void run();

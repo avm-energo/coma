@@ -325,7 +325,7 @@ void ModbusThread::send(const QByteArray &ba)
     m_readData.clear();
     m_busy = true;
     log->info("-> " + ba.toHex());
-    emit write(ba);
+    emit sendDataToPort(ba);
     waitReply();
 }
 

@@ -2,6 +2,7 @@
 
 #include "../s2/s2.h"
 
+#include <QCoreApplication>
 #include <gen/datamanager/typesproxy.h>
 #include <gen/files.h>
 
@@ -166,6 +167,7 @@ void BaseInterfaceThread::run()
             parseResponse();
             m_readData.clear();
         }
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
     emit finished();
 }

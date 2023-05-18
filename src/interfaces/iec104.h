@@ -36,6 +36,7 @@ class IEC104 final : public BaseInterface
 private:
     bool EthThreadWorking, ParseThreadWorking, AboutToFinish;
     QTcpSocket *sock;
+    LogClass *Log;
 
     Commands104::CommandRegisters get104Command(Commands cmd);
 

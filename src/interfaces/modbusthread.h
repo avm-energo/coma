@@ -29,7 +29,6 @@ public slots:
 
 signals:
     void clearBuffer();
-    void write(QByteArray);
 
 private:
     bool m_busy;            ///< Port is busy with write/read operation

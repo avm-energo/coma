@@ -80,7 +80,6 @@ private:
     };
 
 signals:
-    void writeDataAttempt(const QByteArray);
 
 public slots:
     void processReadBytes(QByteArray ba) override;

@@ -43,7 +43,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     {
         quint8 block = blockByReg(cmdStr.arg1.toUInt());
         ba = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::ArrayFromNumber(block));
-        emit writeDataAttempt(ba);
+        emit sendDataToPort(ba);
         break;
     }
         // commands without any arguments
@@ -57,7 +57,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         if (protoCommandMap.contains(cmdStr.command))
         {
             ba = prepareBlock(protoCommandMap.value(cmdStr.command));
-            emit writeDataAttempt(ba);
+            emit sendDataToPort(ba);
         }
         break;
     }
@@ -77,7 +77,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         {
             ba = prepareBlock(
                 protoCommandMap.value(cmdStr.command), StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>()));
-            emit writeDataAttempt(ba);
+            emit sendDataToPort(ba);
         }
     }
 
@@ -95,7 +95,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
             break;
         default:
             ba = prepareBlock(Proto::Commands::ReadFile, StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint16>()));
-            emit writeDataAttempt(ba);
+            emit sendDataToPort(ba);
             break;
         }
         break;
@@ -129,7 +129,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
             tba = StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint32>());
         }
         ba = prepareBlock(Proto::Commands::WriteTime, tba);
-        emit writeDataAttempt(ba);
+        emit sendDataToPort(ba);
         break;
     }
 
@@ -176,7 +176,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
             DataTypes::SingleCommand scmd = cmdStr.arg1.value<DataTypes::SingleCommand>();
             ba = StdFunc::ArrayFromNumber((scmd.addr)) + StdFunc::ArrayFromNumber(scmd.value);
             ba = prepareBlock(Proto::WriteSingleCommand, ba);
-            emit writeDataAttempt(ba);
+            emit sendDataToPort(ba);
         }
         break;
     }
@@ -196,7 +196,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         ba = StdFunc::ArrayFromNumber(WSCommandMap[cmdStr.command]);
         ba.append(StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>()));
         ba = prepareBlock(Proto::WriteSingleCommand, ba);
-        emit writeDataAttempt(ba);
+        emit sendDataToPort(ba);
         break;
     }
 
@@ -224,7 +224,7 @@ void ProtocomThread::parseResponse()
             {
                 QByteArray ba = m_longBlockChunks.takeFirst();
                 m_sentBytesCount += ba.size();
-                emit writeDataAttempt(ba);
+                emit sendDataToPort(ba);
                 _waiter.wakeOne();
                 return;
             }
@@ -411,12 +411,12 @@ void ProtocomThread::writeBlock(Proto::Commands cmd, const QByteArray &arg2)
         }
         setProgressRange(ba.size() + segCount * 4);
         m_sentBytesCount = m_longBlockChunks.at(0).size();
-        emit writeDataAttempt(m_longBlockChunks.takeFirst()); // send first chunk
+        emit sendDataToPort(m_longBlockChunks.takeFirst()); // send first chunk
     }
     else
     {
         ba = prepareBlock(cmd, ba);
-        emit writeDataAttempt(ba);
+        emit sendDataToPort(ba);
     }
 }
 
@@ -613,7 +613,7 @@ void ProtocomThread::processReadBytes(QByteArray ba)
                 m_progress += Proto::MaxSegmenthLength;
                 setProgressCount(m_progress); // set current progressbar position
             }
-            emit writeDataAttempt(tba); // write "Ok" to the device
+            emit sendDataToPort(tba); // write "Ok" to the device
         }
         isFirstBlock = false; // there'll be another segment
         break;
