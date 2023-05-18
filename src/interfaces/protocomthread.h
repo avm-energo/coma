@@ -1,5 +1,7 @@
 #pragma once
 
+#define PROTOCOM_DEBUG
+
 #include "baseinterfacethread.h"
 #include "protocomprivate.h"
 

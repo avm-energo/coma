@@ -117,12 +117,12 @@ bool Ethernet::reconnect()
 
     sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     QEventLoop loop;
-    QObject::connect(sock, &QAbstractSocket::connected, [&]() {
+    QObject::connect(sock, &QAbstractSocket::connected, this, [&]() {
         setState(Interface::State::Run);
         loop.quit();
         result = true;
     });
-    QObject::connect(sock, &QAbstractSocket::errorOccurred, [&]() {
+    QObject::connect(sock, &QAbstractSocket::errorOccurred, this, [&]() {
         setState(Interface::State::Stop);
         loop.quit();
         result = false;

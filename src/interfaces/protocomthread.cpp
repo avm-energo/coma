@@ -307,7 +307,7 @@ void ProtocomThread::parseResponse()
 
 void ProtocomThread::writeLog(QByteArray ba, Direction dir)
 {
-#if PROTOCOM_DEBUG
+#ifdef PROTOCOM_DEBUG
     QByteArray tmpba = QByteArray(metaObject()->className());
     switch (dir)
     {
@@ -322,7 +322,7 @@ void ProtocomThread::writeLog(QByteArray ba, Direction dir)
         break;
     }
     tmpba.append(ba).append("\n");
-    // log->WriteRaw(tmpba);
+    log->WriteRaw(tmpba);
 #else
     Q_UNUSED(ba);
     Q_UNUSED(dir);
@@ -578,6 +578,7 @@ void ProtocomThread::processReadBytes(QByteArray ba)
     // copy size from bytearray
     quint16 size;
     std::copy(&ba.constData()[2], &ba.constData()[3], &size);
+    QByteArray tempba = ba;
     switch (ba.front())
     {
     // only Response we should receive from device
@@ -604,6 +605,7 @@ void ProtocomThread::processReadBytes(QByteArray ba)
         }
         else
         {
+            writeLog(tempba);
             auto tba = prepareOk(false, m_responseReceived); // prepare "Ok" answer to the device
             Q_ASSERT(tba.size() == 4);
             // Progress for big files

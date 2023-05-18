@@ -154,7 +154,11 @@ void BaseInterfaceThread::finishCommand()
 
 void BaseInterfaceThread::run()
 {
-    log->Init(QString(metaObject()->className()) + ".log");
+
+    auto classname = QString(metaObject()->className()) + ".log";
+    if (classname.contains("::"))
+        classname = classname.split("::").last();
+    log->Init(classname);
     log->info(logStart);
     while (BaseInterface::iface()->state() != State::Stop)
     {
@@ -162,6 +166,7 @@ void BaseInterfaceThread::run()
         if (!m_isCommandRequested)
             checkQueue();
         _waiter.wait(&_mutex);
+        /// Дублирование parseResponse для протокома
         if (!m_readData.isEmpty())
         {
             parseResponse();
