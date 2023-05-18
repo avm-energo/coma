@@ -15,7 +15,8 @@ enum Model
 {
     KTF = 0xA282,
     KIV = 0xA284,
-    KDV = 0xA387
+    KDV = 0xA387,
+    MPE = 0xC001
 };
 Q_ENUM_NS(Model);
 

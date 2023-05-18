@@ -1,10 +1,11 @@
 #include "startupkivdialog.h"
 
+#include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QMessageBox>
+//#include <QMessageBox>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <tuple>
@@ -41,7 +42,8 @@ bool StartupKIVDialog::checkSpinBoxes(QList<QDoubleSpinBox *> spinBoxes)
         {
             QString message(tr("Сбросьте начальные значения и подождите 30 секунд\n"
                                "После чего повторите операцию задания начальных значений"));
-            QMessageBox::warning(this, tr("Начальные значения"), message);
+            EMessageBox::warning(this, message);
+            // QMessageBox::warning(this, tr("Начальные значения"), message);
             return false;
         }
     }
@@ -185,16 +187,20 @@ void StartupKIVDialog::SaveToFile()
     switch (res)
     {
     case Error::Msg::NoError:
-        QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
+        EMessageBox::information(this, "Файл коэффициентов коррекции записан успешно!");
+        // QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
         break;
     case Error::Msg::FileWriteError:
-        QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
-        break;
-    case Error::Msg::FileNameError:
-        QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
+        EMessageBox::error(this, "Ошибка при записи файла!");
+        // QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
     case Error::Msg::FileOpenError:
-        QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
+        EMessageBox::error(this, "Ошибка открытия файла!");
+        // QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
+        break;
+    case Error::Msg::FileNameError:
+        EMessageBox::warning(this, "Задано пустое имя файла!");
+        // QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
     default:
         break;
@@ -209,18 +215,20 @@ void StartupKIVDialog::ReadFromFile()
     Error::Msg res = Files::LoadFromFile(WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
     if (res != Error::Msg::NoError)
     {
-        QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
-        ERMSG("Ошибка при загрузке файла");
+        EMessageBox::error(this, "Ошибка при загрузке файла!");
+        // QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла!");
+        qCritical("Ошибка при загрузке файла");
         return;
     }
     // CorBlock = reinterpret_cast<CorData *>(ba.data());
     memcpy(CorBlock, &(ba.data()[0]), sizeof(CorData));
 
     FillCor();
-    QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
+    EMessageBox::information(this, "Загрузка прошла успешно!");
+    // QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-void StartupKIVDialog::ErrorRead()
-{
-    QMessageBox::information(this, "Ошибка", "Ошибка чтения");
-}
+// void StartupKIVDialog::ErrorRead()
+//{
+//    QMessageBox::information(this, "Ошибка", "Ошибка чтения");
+//}

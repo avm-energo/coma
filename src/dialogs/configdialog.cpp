@@ -149,7 +149,6 @@ void ConfigDialog::saveConfigToFile()
     switch (res)
     {
     case Error::Msg::NoError:
-        //        QMessageBox::information(this, "Внимание", "Записано успешно!");
         EMessageBox::information(this, "Записано успешно!");
         break;
     case Error::Msg::FileWriteError:
@@ -181,7 +180,6 @@ void ConfigDialog::loadConfigFromFile()
     outlist.setValue(outlistV);
 
     configReceived(outlist);
-    //    QMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
     EMessageBox::information(this, "Загрузка прошла успешно!");
 }
 

@@ -39,7 +39,7 @@ private:
 public slots:
     void SaveToFile() override;
     void ReadFromFile() override;
-    void ErrorRead();
+    // void ErrorRead();
 };
 
 #endif // CORDIALOG_H
