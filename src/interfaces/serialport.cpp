@@ -32,18 +32,18 @@ bool SerialPort::init(SerialPortSettings settings)
     port->setStopBits(settings.Stop == "1" ? QSerialPort::OneStop : QSerialPort::TwoStop);
     port->setFlowControl(QSerialPort::NoFlowControl);
     port->setReadBufferSize(1024);
-    connect(port.data(), &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
-    connect(port, &QIODevice::readyRead, this, &SerialPort::readBytes);
+    QObject::connect(port.data(), &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
+    QObject::connect(port, &QIODevice::readyRead, this, &SerialPort::readBytes);
 
     m_connectionTimer = new QTimer(this);
     m_connectionTimer->setInterval(TIMEOUT);
-    connect(port, &QIODevice::bytesWritten, this, [&] { m_connectionTimer->start(); });
-    connect(port, &QIODevice::readyRead, m_connectionTimer, &QTimer::stop);
-    connect(m_connectionTimer, &QTimer::timeout, this, [this] {
+    QObject::connect(port, &QIODevice::bytesWritten, this, [&] { m_connectionTimer->start(); });
+    QObject::connect(port, &QIODevice::readyRead, m_connectionTimer, &QTimer::stop);
+    QObject::connect(m_connectionTimer, &QTimer::timeout, this, [this] {
         qInfo() << this->metaObject()->className() << Error::Timeout;
         reconnect();
     });
-    return reconnect();
+    return connect();
 }
 
 bool SerialPort::clear()
@@ -60,16 +60,8 @@ bool SerialPort::writeData(const QByteArray &ba)
     return true;
 }
 
-void SerialPort::disconnect()
+bool SerialPort::connect()
 {
-    if (port->isOpen())
-        port->close();
-    setState(Interface::State::Stop);
-}
-
-bool SerialPort::reconnect()
-{
-    disconnect();
     if (!port->open(QIODevice::ReadWrite))
     {
         qCritical() << port->metaObject()->className() << port->portName() << Error::OpenError;
@@ -78,6 +70,13 @@ bool SerialPort::reconnect()
     emit started();
     setState(Interface::State::Run);
     return true;
+}
+
+void SerialPort::disconnect()
+{
+    if (port->isOpen())
+        port->close();
+    setState(Interface::State::Stop);
 }
 
 void SerialPort::errorOccurred(QSerialPort::SerialPortError err)

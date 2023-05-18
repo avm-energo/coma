@@ -7,6 +7,8 @@
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
 
+constexpr int RECONNECTINTERVAL = 2000;
+
 class BasePort : public QObject
 {
     Q_OBJECT
@@ -26,11 +28,13 @@ signals:
     void finished();
     void started();
     void stateChanged(Interface::State);
+    void tryToReconnect();
 
 public slots:
     virtual void poll() = 0;
     void setState(Interface::State state);
-    virtual bool reconnect() = 0;
+    virtual bool connect() = 0;
+    virtual bool reconnect();
     virtual void disconnect() = 0;
     virtual bool writeData(const QByteArray &ba) = 0;
 };

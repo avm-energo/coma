@@ -27,8 +27,8 @@ private:
 
 public slots:
     bool writeData(const QByteArray &ba) override;
+    bool connect() override;
     void disconnect() override;
-    bool reconnect() override;
     void poll() override {};
 
 private slots:

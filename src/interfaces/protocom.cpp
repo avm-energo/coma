@@ -76,7 +76,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     connect(portThread, &QThread::finished, &QObject::deleteLater);
     connect(parseThread, &QThread::finished, &QObject::deleteLater);
 
-    if (!port->reconnect())
+    if (!port->connect())
     {
         port->deleteLater();
         parser->deleteLater();

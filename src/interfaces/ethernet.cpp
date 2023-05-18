@@ -25,16 +25,16 @@ bool Ethernet::init(IEC104Settings settings)
     m_baseadr = settings.baseadr;
     m_ip = settings.ip;
     sock = new QTcpSocket(this);
-    connect(sock, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError error) {
+    QObject::connect(sock, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError error) {
         Log->info("Error: " + QVariant::fromValue(error).toString());
         sock->disconnectFromHost();
     });
-    connect(sock, &QAbstractSocket::stateChanged, this, &Ethernet::EthStateChanged, Qt::DirectConnection);
-    connect(sock, &QAbstractSocket::connected, this, &Ethernet::Connected, Qt::DirectConnection);
-    connect(sock, &QAbstractSocket::connected, this, &Ethernet::EthSetConnected, Qt::DirectConnection);
-    connect(sock, &QAbstractSocket::disconnected, this, &Ethernet::Disconnected, Qt::DirectConnection);
+    QObject::connect(sock, &QAbstractSocket::stateChanged, this, &Ethernet::EthStateChanged, Qt::DirectConnection);
+    QObject::connect(sock, &QAbstractSocket::connected, this, &Ethernet::Connected, Qt::DirectConnection);
+    QObject::connect(sock, &QAbstractSocket::connected, this, &Ethernet::EthSetConnected, Qt::DirectConnection);
+    QObject::connect(sock, &QAbstractSocket::disconnected, this, &Ethernet::Disconnected, Qt::DirectConnection);
     sock->setProxy(QNetworkProxy::NoProxy);
-    connect(
+    QObject::connect(
         sock, &QIODevice::readyRead, this,
         [=] {
             qDebug() << __PRETTY_FUNCTION__;
@@ -117,12 +117,12 @@ bool Ethernet::reconnect()
 
     sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     QEventLoop loop;
-    connect(sock, &QAbstractSocket::connected, [&]() {
+    QObject::connect(sock, &QAbstractSocket::connected, [&]() {
         setState(Interface::State::Run);
         loop.quit();
         result = true;
     });
-    connect(sock, &QAbstractSocket::errorOccurred, [&]() {
+    QObject::connect(sock, &QAbstractSocket::errorOccurred, [&]() {
         setState(Interface::State::Stop);
         loop.quit();
         result = false;

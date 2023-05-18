@@ -35,8 +35,6 @@ public:
     explicit UsbHidPort(const UsbHidSettings &dev, QObject *parent = 0);
     ~UsbHidPort();
 
-    bool setupConnection();
-
     UsbHidSettings deviceInfo() const;
     void setDeviceInfo(const UsbHidSettings &deviceInfo);
 
@@ -48,7 +46,7 @@ signals:
     void clearQueries();
 
 public slots:
-    bool reconnect() override;
+    bool connect() override;
     void disconnect() override;
     bool writeData(const QByteArray &ba) override;
     void poll() override;

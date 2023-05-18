@@ -193,7 +193,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_StartWorkingChannel:
     case Commands::C_SetTransOff:
     {
-        ba = StdFunc::ArrayFromNumber(WSCommandMap[cmdStr.command]);
+        ba = StdFunc::ArrayFromNumber(static_cast<uint24>(WSCommandMap[cmdStr.command]));
         ba.append(StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>()));
         ba = prepareBlock(Proto::WriteSingleCommand, ba);
         emit sendDataToPort(ba);
@@ -264,6 +264,7 @@ void ProtocomThread::parseResponse()
     case ReadBlkData:
         switch (m_currentCommand.command)
         {
+        case C_ReqStartup:
         case C_ReqFloats:
             processFloat(m_readData, addr);
             break;

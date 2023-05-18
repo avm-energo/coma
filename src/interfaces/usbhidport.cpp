@@ -33,7 +33,7 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent) : BasePort("U
     using namespace settings;
     m_hidDevice = nullptr;
     m_shouldBeStopped = false;
-    connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
+    QObject::connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
     QSettings sets;
     missingCounterMax = sets.value(regMap[hidTimeout].name, "50").toInt();
 }
@@ -47,7 +47,7 @@ inline hid_device *openDevice(const UsbHidSettings &dev)
     return hid_open(dev.vendor_id, dev.product_id, dev.serial.toStdWString().c_str());
 }
 
-bool UsbHidPort::setupConnection()
+bool UsbHidPort::connect()
 {
     if ((deviceInfo().vendor_id == 0) || (deviceInfo().product_id == 0))
     {
@@ -85,7 +85,10 @@ void UsbHidPort::poll()
             continue;
         }
         if (!m_hidDevice)
+        {
+            tryToReconnect();
             continue;
+        }
         std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
         bytes = hid_read_timeout(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1, 100);
         // Write
@@ -93,6 +96,7 @@ void UsbHidPort::poll()
         {
             // -1 is the only error value according to hidapi documentation.
             Q_ASSERT(bytes == -1);
+            tryToReconnect();
             continue;
         }
         // Read
@@ -143,7 +147,7 @@ void UsbHidPort::deviceConnected(const UsbHidSettings &st)
     StdFunc::Wait(100);
     emit clearQueries();
     qDebug() << timer.elapsed();
-    if (!setupConnection())
+    if (!connect())
         return;
     qDebug() << timer.elapsed();
     qInfo() << deviceInfo() << "connected";
@@ -163,7 +167,7 @@ void UsbHidPort::deviceDisconnected(const UsbHidSettings &st)
 
 void UsbHidPort::deviceConnected()
 {
-    if (!setupConnection())
+    if (!connect())
         return;
     qInfo() << deviceInfo() << "connected";
     emit stateChanged(State::Run);
@@ -208,8 +212,7 @@ void UsbHidPort::disconnect()
 {
     if (m_hidDevice)
         hid_close(m_hidDevice);
-
-    clear();
+    emit clearQueries();
 }
 
 void UsbHidPort::finish()
@@ -226,12 +229,6 @@ void UsbHidPort::clear()
     m_waitForReply = false;
     m_writeQueue.clear();
     m_hidDevice = nullptr;
-}
-
-bool UsbHidPort::reconnect()
-{
-    disconnect();
-    return setupConnection();
 }
 
 void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
