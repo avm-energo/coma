@@ -166,12 +166,6 @@ void BaseInterfaceThread::run()
         if (!m_isCommandRequested)
             checkQueue();
         _waiter.wait(&_mutex);
-        /// Дублирование parseResponse для протокома
-        if (!m_readData.isEmpty())
-        {
-            parseResponse();
-            m_readData.clear();
-        }
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
     emit finished();
