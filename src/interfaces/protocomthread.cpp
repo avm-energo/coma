@@ -42,7 +42,8 @@ void ProtocomThread::processReadBytes(QByteArray ba)
     // Если ответе меньше 60 байт или пришёл BSI
     if (isOneSegment(size) || (m_responseReceived == Proto::ReadBlkStartInfo))
     {
-        m_parsingDataReady = true;
+        //        m_parsingDataReady = true;
+        emit itsTimeToResponse();
         progressFile(ba);    // Progress for big files
         isFirstBlock = true; // prepare bool for the next receive iteration
     }
@@ -55,6 +56,7 @@ void ProtocomThread::processReadBytes(QByteArray ba)
         isFirstBlock = false;     // there'll be another segment
         emit sendDataToPort(tba); // write "Ok" to the device
     }
+    wakeUp();
 }
 
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)

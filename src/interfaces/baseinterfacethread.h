@@ -30,7 +30,6 @@ public:
     void checkQueue();
     void finishCommand();
     virtual void parseRequest(const CommandStruct &cmdStr) = 0;
-    virtual void parseResponse() = 0;
 
     bool m_isCommandRequested = false;
     bool m_parsingDataReady = false;
@@ -62,10 +61,12 @@ protected:
 signals:
     void finished();
     void sendDataToPort(const QByteArray &ba);
+    void itsTimeToResponse();
 
 public slots:
     void run();
     virtual void processReadBytes(QByteArray ba) = 0;
+    virtual void parseResponse() = 0;
 };
 
 }

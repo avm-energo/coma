@@ -11,6 +11,7 @@ using namespace Interface;
 
 BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent), m_log(new LogClass(this))
 {
+    connect(this, &BaseInterfaceThread::itsTimeToResponse, this, &BaseInterfaceThread::parseResponse);
 }
 
 void BaseInterfaceThread::clear()
@@ -150,7 +151,7 @@ void BaseInterfaceThread::finishCommand()
 {
     m_isCommandRequested = false;
     m_readData.clear();
-    _waiter.wakeOne();
+    wakeUp();
 }
 
 void BaseInterfaceThread::run()
@@ -165,14 +166,13 @@ void BaseInterfaceThread::run()
         QMutexLocker locker(&_mutex);
         if (!m_isCommandRequested)
             checkQueue();
-        // _waiter.wait(&_mutex);
-        if (m_parsingDataReady)
-        {
-            parseResponse();
-            m_readData.clear();
-            m_parsingDataReady = false;
-        }
-        // std::this_thread::yield();
+        _waiter.wait(&_mutex, 100);
+        //        if (m_parsingDataReady)
+        //        {
+        //            parseResponse();
+        //            m_readData.clear();
+        //            m_parsingDataReady = false;
+        //        }
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
     emit finished();

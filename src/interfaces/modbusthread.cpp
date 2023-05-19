@@ -13,7 +13,7 @@
 #include <gen/pch.h>
 #include <gen/stdfunc.h>
 
-constexpr auto RECONNECTTIME = 1000;
+constexpr auto RECONNECTTIME = 10000;
 
 using namespace Interface;
 
@@ -250,6 +250,7 @@ void ModbusThread::parseResponse()
         break;
     }
     m_busy = false;
+    finishCommand();
 }
 
 void ModbusThread::setDeviceAddress(quint8 adr)
@@ -295,8 +296,9 @@ void ModbusThread::processReadBytes(QByteArray ba)
             m_readData.clear();
         }
         // add to out list
-        m_parsingDataReady = true;
-        return;
+        //        m_parsingDataReady = true;
+        emit itsTimeToResponse();
+        wakeUp();
     }
 #ifdef MODBUS_DEBUG
     qDebug() << Error::SizeError << "Wait for:" << m_bytesToReceive << "Received: " << ba.size();
