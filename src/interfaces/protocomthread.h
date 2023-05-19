@@ -10,11 +10,13 @@ namespace Interface
 
 class ProtocomThread : public BaseInterfaceThread
 {
-    //    typedef QQueue<QByteArray> ByteQueue;
     Q_OBJECT
 public:
     explicit ProtocomThread(QObject *parent = nullptr);
     ~ProtocomThread();
+
+public slots:
+    void processReadBytes(QByteArray ba) override;
 
 private:
     bool isFirstBlock;
@@ -24,19 +26,16 @@ private:
     int m_sentBytesCount;
 
     void parseRequest(const CommandStruct &cmdStr) override;
-
     void parseResponse() override;
 
-    void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
-    void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)
-    {
-        writeLog(QVariant::fromValue(msg).toByteArray(), dir);
-    }
+    void writeLog(const QByteArray &ba, Proto::Direction dir = Proto::NoDirection);
+    void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection);
 
     void appendInt16(QByteArray &ba, quint16 data);
-
-    inline bool isOneSegment(unsigned len);
-    inline bool isSplitted(unsigned len);
+    bool isOneSegment(quint16 length);
+    bool isSplitted(quint16 length);
+    bool isValidIncomingData(const QByteArray &data);
+    void progressFile(const QByteArray &data);
 
     QByteArray prepareOk(bool isStart, byte cmd);
     QByteArray prepareError();
@@ -80,10 +79,6 @@ private:
         { C_SetMode, Proto::WriteMode },                     // 12
         { C_WriteHardware, Proto::WriteHardware }            // 12
     };
-
-signals:
-
-public slots:
-    void processReadBytes(QByteArray ba) override;
 };
+
 }

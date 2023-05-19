@@ -86,7 +86,7 @@ void UsbHidPort::poll()
         }
         if (!m_hidDevice)
         {
-            tryToReconnect();
+            reconnect();
             continue;
         }
         std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
@@ -96,7 +96,7 @@ void UsbHidPort::poll()
         {
             // -1 is the only error value according to hidapi documentation.
             Q_ASSERT(bytes == -1);
-            tryToReconnect();
+            reconnect();
             continue;
         }
         // Read
@@ -127,7 +127,7 @@ void UsbHidPort::poll()
             continue;
         }
         // write data to port if there's something delayed in out queue
-        if (checkQueue())
+        if (checkCurrentCommand())
         {
             missingCounter = 0;
         }
@@ -204,7 +204,8 @@ void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
 bool UsbHidPort::writeData(const QByteArray &ba)
 {
     QMutexLocker locker(&_mutex);
-    m_writeQueue.append(ba);
+    // m_writeQueue.append(ba);
+    m_currCommand = ba;
     return true;
 }
 
@@ -227,7 +228,8 @@ void UsbHidPort::clear()
 {
     QMutexLocker locker(&_mutex);
     m_waitForReply = false;
-    m_writeQueue.clear();
+    m_currCommand.clear();
+    // m_writeQueue.clear();
     m_hidDevice = nullptr;
 }
 
@@ -377,16 +379,31 @@ bool UsbHidPort::writeDataToPort(QByteArray &ba)
     return true;
 }
 
-bool UsbHidPort::checkQueue()
+// bool UsbHidPort::checkQueue()
+//{
+//    QMutexLocker locker(&_mutex);
+//    if (m_writeQueue.isEmpty())
+//        return false;
+//    QByteArray ba = m_writeQueue.takeFirst();
+//    locker.unlock();
+//    if (writeDataToPort(ba))
+//        return m_waitForReply = true;
+//    else
+//        emit clearQueries();
+//    return false;
+//}
+
+bool UsbHidPort::checkCurrentCommand()
 {
     QMutexLocker locker(&_mutex);
-    if (m_writeQueue.isEmpty())
-        return false;
-    QByteArray ba = m_writeQueue.takeFirst();
-    locker.unlock();
-    if (writeDataToPort(ba))
-        return m_waitForReply = true;
-    else
-        emit clearQueries();
+    if (!m_currCommand.isEmpty())
+    {
+        auto status = writeDataToPort(m_currCommand);
+        m_currCommand.clear();
+        if (status)
+            return m_waitForReply = true;
+        else
+            emit clearQueries();
+    }
     return false;
 }

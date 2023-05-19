@@ -41,7 +41,7 @@ public:
 
     void SetBaseAdr(quint16 adr);
     void clear() override {};
-    void parseRequest(const CommandStruct &cmdStr) override {};
+    void parseRequest([[maybe_unused]] const CommandStruct &cmdStr) override {};
     void parseResponse() override {};
 
 public slots:
