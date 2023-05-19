@@ -28,7 +28,7 @@ signals:
     void finished();
     void started();
     void stateChanged(Interface::State);
-    void tryToReconnect();
+    // void tryToReconnect();
 
 public slots:
     virtual void poll() = 0;

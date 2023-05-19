@@ -60,7 +60,8 @@ private:
 
     bool writeDataToPort(QByteArray &ba);
 
-    bool checkQueue();
+    bool checkCurrentCommand();
+    // bool checkQueue();
     void finish();
     void clear();
     void deviceConnected(const UsbHidSettings &st);
@@ -72,7 +73,8 @@ private:
     hid_device *m_hidDevice;
     bool m_shouldBeStopped;
     QMutex _mutex;
-    QList<QByteArray> m_writeQueue;
+    // QList<QByteArray> m_writeQueue;
+    QByteArray m_currCommand;
     UsbHidSettings m_deviceInfo;
     int missingCounter = 0;
     int missingCounterMax;

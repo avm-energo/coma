@@ -9,7 +9,7 @@
 #include <time.h>
 #endif
 
-typedef QQueue<QByteArray> ByteQueue;
+// typedef QQueue<QByteArray> ByteQueue;
 using DataTypes::FileFormat;
 using Proto::CommandStruct;
 using Proto::Direction;
@@ -24,6 +24,37 @@ ProtocomThread::ProtocomThread(QObject *parent) : BaseInterfaceThread(parent)
 
 ProtocomThread::~ProtocomThread()
 {
+}
+
+void ProtocomThread::processReadBytes(QByteArray ba)
+{
+    QMutexLocker locker(&_mutex);
+    if (!isValidIncomingData(ba))
+        return;
+
+    m_responseReceived = Proto::Commands(ba.at(1)); // received from device "command"
+    auto size = quint16(ba.at(2));
+    writeLog(ba);
+    ba.remove(0, 4);
+    ba.resize(size);
+    m_readData.append(ba);
+
+    // Если ответе меньше 60 байт или пришёл BSI
+    if (isOneSegment(size) || (m_responseReceived == Proto::ReadBlkStartInfo))
+    {
+        m_parsingDataReady = true;
+        progressFile(ba);    // Progress for big files
+        isFirstBlock = true; // prepare bool for the next receive iteration
+    }
+    // Пришло 60 байт
+    else
+    {
+        auto tba = prepareOk(false, m_responseReceived); // prepare "Ok" answer to the device
+        Q_ASSERT(tba.size() == 4);
+        progressFile(ba);         // Progress for big files
+        isFirstBlock = false;     // there'll be another segment
+        emit sendDataToPort(tba); // write "Ok" to the device
+    }
 }
 
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
@@ -201,9 +232,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     }
 
     default:
-    {
         qDebug() << "There's no such command";
-    }
     }
 }
 
@@ -297,7 +326,6 @@ void ProtocomThread::parseResponse()
         break;
 
     default:
-
         qCritical("We shouldn't be here, something went wrong");
         qDebug() << m_readData.toHex();
         break;
@@ -305,7 +333,7 @@ void ProtocomThread::parseResponse()
     finishCommand();
 }
 
-void ProtocomThread::writeLog(QByteArray ba, Direction dir)
+void ProtocomThread::writeLog(const QByteArray &ba, Proto::Direction dir)
 {
 #ifdef PROTOCOM_DEBUG
     QByteArray tmpba = QByteArray(metaObject()->className());
@@ -329,22 +357,65 @@ void ProtocomThread::writeLog(QByteArray ba, Direction dir)
 #endif
 }
 
+void ProtocomThread::writeLog(Error::Msg msg, Proto::Direction dir)
+{
+    writeLog(QVariant::fromValue(msg).toByteArray(), dir);
+}
+
 void ProtocomThread::appendInt16(QByteArray &ba, quint16 data)
 {
     ba.append(static_cast<char>(data % 0x100));
     ba.append(static_cast<char>(data / 0x100));
 }
 
-bool ProtocomThread::isOneSegment(unsigned len)
+bool ProtocomThread::isOneSegment(quint16 length)
 {
     // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
-    Q_ASSERT(len <= Proto::MaxSegmenthLength);
-    return (len != Proto::MaxSegmenthLength);
+    Q_ASSERT(length <= Proto::MaxSegmenthLength);
+    return (length != Proto::MaxSegmenthLength);
 }
 
-bool ProtocomThread::isSplitted(unsigned len)
+bool ProtocomThread::isSplitted(quint16 length)
 {
-    return !(len < Proto::MaxSegmenthLength);
+    return !(length < Proto::MaxSegmenthLength);
+}
+
+bool ProtocomThread::isValidIncomingData(const QByteArray &data)
+{
+    // if there's no standard header
+    if (data.size() >= 4)
+    {
+        // parsing protocom header
+        auto startByte = Proto::Starters(data.at(0)); // start byte
+        auto size = quint16(data.at(2));              // size of data
+        // only response should be received from device
+        if (startByte == Proto::Starters::Response)
+        {
+            // checking size limits
+            if (size <= Proto::MaxSegmenthLength)
+                return true;
+            else
+                qCritical() << Error::SizeError << size;
+        }
+        else
+            qCritical() << Error::WrongCommandError << startByte;
+    }
+    else
+        qCritical() << Error::HeaderSizeError << data.toHex();
+
+    return false;
+}
+
+void ProtocomThread::progressFile(const QByteArray &data)
+{
+    // Progress for big files
+    if (m_currentCommand.command == Commands::C_ReqFile)
+    {
+        if (isFirstBlock)
+            setProgressRange(S2::GetFileSize(data)); // set progressbar max size
+        m_progress += data.size();
+        setProgressCount(m_progress); // set current progressbar position
+    }
 }
 
 QByteArray ProtocomThread::prepareOk(bool isStart, byte cmd)
@@ -386,9 +457,8 @@ QByteArray ProtocomThread::prepareBlock(Proto::Commands cmd, const QByteArray &d
 
 void ProtocomThread::writeBlock(Proto::Commands cmd, const QByteArray &arg2)
 {
-    QByteArray ba;
     using Proto::MaxSegmenthLength;
-    ba = arg2;
+    QByteArray ba = arg2;
 
     if (isSplitted(ba.size()))
     {
@@ -554,75 +624,6 @@ void ProtocomThread::processTechBlock(const QByteArray &ba, quint32 blkNum)
     }
     default:
         qDebug() << ba;
-        break;
-    }
-}
-
-void ProtocomThread::processReadBytes(QByteArray ba)
-{
-    QMutexLocker locker(&_mutex);
-#ifdef PROTOCOM_DEBUG
-    qDebug("Start parse response");
-#endif
-
-    // if there's no standard header
-    if (ba.size() < 4)
-    {
-        qCritical() << Error::HeaderSizeError << ba.toHex();
-        return;
-    }
-
-    // "command" that is received from device
-    m_responseReceived = Proto::Commands(ba.at(1));
-
-    // copy size from bytearray
-    quint16 size;
-    std::copy(&ba.constData()[2], &ba.constData()[3], &size);
-    QByteArray tempba = ba;
-    switch (ba.front())
-    {
-    // only Response we should receive from device
-    case Proto::Response:
-    {
-        ba.remove(0, 4);
-        ba.resize(size);
-        m_readData.append(ba);
-
-        // На команду ReadBSI модуль не отдает пустой ответ
-        if (isOneSegment(size) || (m_responseReceived == Proto::ReadBlkStartInfo))
-        {
-            parseResponse(); // all data has been received, parse it
-            // Progress for big files
-            if (m_currentCommand.command == Commands::C_ReqFile)
-            {
-                if (isFirstBlock)
-                    setProgressRange(S2::GetFileSize(ba)); // set progressbar max size
-                m_progress += size;
-                setProgressCount(m_progress); // set current progressbar position
-            }
-            isFirstBlock = true; // prepare bool for the next receive iteration
-            return;
-        }
-        else
-        {
-            writeLog(tempba);
-            auto tba = prepareOk(false, m_responseReceived); // prepare "Ok" answer to the device
-            Q_ASSERT(tba.size() == 4);
-            // Progress for big files
-            if (m_currentCommand.command == Commands::C_ReqFile)
-            {
-                if (isFirstBlock)
-                    setProgressRange(S2::GetFileSize(ba)); // set progressbar max size
-                m_progress += Proto::MaxSegmenthLength;
-                setProgressCount(m_progress); // set current progressbar position
-            }
-            emit sendDataToPort(tba); // write "Ok" to the device
-        }
-        isFirstBlock = false; // there'll be another segment
-        break;
-    }
-    default:
-        qCritical() << Error::WrongCommandError;
         break;
     }
 }

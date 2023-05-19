@@ -295,7 +295,7 @@ void ModbusThread::processReadBytes(QByteArray ba)
             m_readData.clear();
         }
         // add to out list
-        parseResponse();
+        m_parsingDataReady = true;
         return;
     }
 #ifdef MODBUS_DEBUG

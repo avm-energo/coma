@@ -33,6 +33,7 @@ public:
     virtual void parseResponse() = 0;
 
     bool m_isCommandRequested = false;
+    bool m_parsingDataReady = false;
     quint64 m_progress = 0;
     CommandStruct m_currentCommand;
     QMutex _mutex;

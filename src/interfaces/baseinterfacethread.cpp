@@ -5,6 +5,7 @@
 #include <QCoreApplication>
 #include <gen/datamanager/typesproxy.h>
 #include <gen/files.h>
+#include <thread>
 
 using namespace Interface;
 
@@ -154,7 +155,6 @@ void BaseInterfaceThread::finishCommand()
 
 void BaseInterfaceThread::run()
 {
-
     auto classname = QString(metaObject()->className()) + ".log";
     if (classname.contains("::"))
         classname = classname.split("::").last();
@@ -165,7 +165,14 @@ void BaseInterfaceThread::run()
         QMutexLocker locker(&_mutex);
         if (!m_isCommandRequested)
             checkQueue();
-        _waiter.wait(&_mutex);
+        // _waiter.wait(&_mutex);
+        if (m_parsingDataReady)
+        {
+            parseResponse();
+            m_readData.clear();
+            m_parsingDataReady = false;
+        }
+        // std::this_thread::yield();
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
     emit finished();
