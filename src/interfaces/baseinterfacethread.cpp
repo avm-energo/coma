@@ -11,7 +11,7 @@ using namespace Interface;
 
 BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent), m_log(new LogClass(this))
 {
-    connect(this, &BaseInterfaceThread::itsTimeToResponse, this, &BaseInterfaceThread::parseResponse);
+    // connect(this, &BaseInterfaceThread::itsTimeToResponse, this, &BaseInterfaceThread::parseResponse);
 }
 
 void BaseInterfaceThread::clear()
@@ -167,12 +167,12 @@ void BaseInterfaceThread::run()
         if (!m_isCommandRequested)
             checkQueue();
         _waiter.wait(&_mutex, 100);
-        //        if (m_parsingDataReady)
-        //        {
-        //            parseResponse();
-        //            m_readData.clear();
-        //            m_parsingDataReady = false;
-        //        }
+        if (m_parsingDataReady)
+        {
+            parseResponse();
+            m_readData.clear();
+            m_parsingDataReady = false;
+        }
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
     emit finished();

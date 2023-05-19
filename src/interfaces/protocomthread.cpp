@@ -30,11 +30,14 @@ void ProtocomThread::processReadBytes(QByteArray ba)
 {
     QMutexLocker locker(&_mutex);
     if (!isValidIncomingData(ba))
+    {
+        finishCommand();
         return;
+    }
 
     m_responseReceived = Proto::Commands(ba.at(1)); // received from device "command"
     auto size = quint16(ba.at(2));
-    writeLog(ba);
+    writeLog(ba, Proto::FromDevice);
     ba.remove(0, 4);
     ba.resize(size);
     m_readData.append(ba);
@@ -42,10 +45,10 @@ void ProtocomThread::processReadBytes(QByteArray ba)
     // Если ответе меньше 60 байт или пришёл BSI
     if (isOneSegment(size) || (m_responseReceived == Proto::ReadBlkStartInfo))
     {
-        //        m_parsingDataReady = true;
-        emit itsTimeToResponse();
+        m_parsingDataReady = true;
         progressFile(ba);    // Progress for big files
         isFirstBlock = true; // prepare bool for the next receive iteration
+        wakeUp();
     }
     // Пришло 60 байт
     else
@@ -56,7 +59,6 @@ void ProtocomThread::processReadBytes(QByteArray ba)
         isFirstBlock = false;     // there'll be another segment
         emit sendDataToPort(tba); // write "Ok" to the device
     }
-    wakeUp();
 }
 
 void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
@@ -338,30 +340,25 @@ void ProtocomThread::parseResponse()
 void ProtocomThread::writeLog(const QByteArray &ba, Proto::Direction dir)
 {
 #ifdef PROTOCOM_DEBUG
-    QByteArray tmpba = QByteArray(metaObject()->className());
+    QString msg = metaObject()->className();
     switch (dir)
     {
     case Proto::FromDevice:
-        tmpba.append(": <-");
+        msg += ": <- ";
         break;
     case Proto::ToDevice:
-        tmpba.append(": ->");
+        msg += ": -> ";
         break;
     default:
-        tmpba.append(":  ");
+        msg += ": ";
         break;
     }
-    tmpba.append(ba).append("\n");
-    m_log->WriteRaw(tmpba);
+    msg += ba.toHex();
+    m_log->info(msg);
 #else
     Q_UNUSED(ba);
     Q_UNUSED(dir);
 #endif
-}
-
-void ProtocomThread::writeLog(Error::Msg msg, Proto::Direction dir)
-{
-    writeLog(QVariant::fromValue(msg).toByteArray(), dir);
 }
 
 void ProtocomThread::appendInt16(QByteArray &ba, quint16 data)

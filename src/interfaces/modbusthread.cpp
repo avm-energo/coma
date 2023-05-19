@@ -204,8 +204,8 @@ void ModbusThread::parseResponse()
     using namespace MBS;
     switch (m_currentCommand.command)
     {
-    case C_ReqFloats:
-    case C_ReqStartup:
+    case Commands::C_ReqFloats:
+    case Commands::C_ReqStartup:
         processFloatSignals();
         break;
     case Commands::C_ReqBitStrings:
@@ -249,7 +249,7 @@ void ModbusThread::parseResponse()
         processCommandResponse();
         break;
     }
-    m_busy = false;
+    // m_busy = false;
     finishCommand();
 }
 
@@ -260,6 +260,7 @@ void ModbusThread::setDeviceAddress(quint8 adr)
 
 void ModbusThread::processReadBytes(QByteArray ba)
 {
+    // QMutexLocker locker(&_mutex);
     m_readData.append(ba);
     if (m_readData.size() >= 2)
     {
@@ -268,7 +269,8 @@ void ModbusThread::processReadBytes(QByteArray ba)
         {
             m_log->error("Modbus error response: " + m_readData.toHex());
             qCritical() << Error::ReadError << metaObject()->className();
-            m_busy = false;
+            // m_busy = false;
+            finishCommand();
             return;
         }
     }
@@ -295,18 +297,9 @@ void ModbusThread::processReadBytes(QByteArray ba)
             qCritical() << Error::CrcError << metaObject()->className();
             m_readData.clear();
         }
-        // add to out list
-        //        m_parsingDataReady = true;
-        emit itsTimeToResponse();
+        m_parsingDataReady = true;
         wakeUp();
     }
-#ifdef MODBUS_DEBUG
-    qDebug() << Error::SizeError << "Wait for:" << m_bytesToReceive << "Received: " << ba.size();
-    qDebug() << m_commandSent /* << ba*/;
-    QDebug deb = qDebug();
-    for (const quint8 byte : ba)
-        deb << QString::number(byte, 16);
-#endif
 }
 
 void ModbusThread::setDelay(quint8 newDelay)
@@ -325,30 +318,30 @@ void ModbusThread::calcCRCAndSend(QByteArray &ba)
 void ModbusThread::send(const QByteArray &ba)
 {
     m_readData.clear();
-    m_busy = true;
+    // m_busy = true;
     m_log->info("-> " + ba.toHex());
     emit sendDataToPort(ba);
-    waitReply();
+    // waitReply();
 }
 
-void ModbusThread::waitReply()
-{
-    QElapsedTimer timer;
-    timer.start();
-    while ((m_busy) && (timer.elapsed() < RECONNECTTIME))
-    {
-        // ждём, пока либо сервер не отработает,
-        // либо не наступит таймаут
-        QCoreApplication::processEvents();
-    }
-    if (m_busy)
-    {
-        m_busy = false;
-        emit clearBuffer();
-        qWarning() << Error::Timeout;
-        m_log->error("Timeout");
-    }
-}
+// void ModbusThread::waitReply()
+//{
+//    QElapsedTimer timer;
+//    timer.start();
+//    while ((m_busy) && (timer.elapsed() < RECONNECTTIME))
+//    {
+//        // ждём, пока либо сервер не отработает,
+//        // либо не наступит таймаут
+//        QCoreApplication::processEvents();
+//    }
+//    if (m_busy)
+//    {
+//        m_busy = false;
+//        emit clearBuffer();
+//        qWarning() << Error::Timeout << m_currentCommand.command;
+//        m_log->error("Timeout");
+//    }
+//}
 
 void ModbusThread::processFloatSignals()
 {
@@ -429,7 +422,6 @@ void ModbusThread::processSinglePointSignals()
     if (m_readData.size() < 3)
     {
         qCritical() << Error::SizeError << metaObject()->className();
-        //  Log->error("Wrong inbuf size");
         return;
     }
     int byteSize = m_readData.data()[2];
@@ -437,7 +429,6 @@ void ModbusThread::processSinglePointSignals()
     if (byteSize > ba.size())
     {
         qCritical() << Error::SizeError << metaObject()->className();
-        // ERMSG("Wrong byte size in response");
         return;
     }
     for (int i = 0; i < byteSize; ++i)
@@ -530,7 +521,6 @@ void ModbusThread::writeMultipleRegisters(MBS::CommandStruct &cms)
 
 bool ModbusThread::writeFile(quint16 fileNum)
 {
-    QByteArray tba;
     quint8 lastSection = 0; // не последняя секция
     QByteArray ba = m_fileData.mid(0, MBS::FileSectionLength);
     if (ba.isEmpty())

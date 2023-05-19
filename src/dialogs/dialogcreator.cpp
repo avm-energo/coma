@@ -31,9 +31,9 @@ DialogCreator::DialogCreator(const ModuleSettings &settings, QWidget *parent)
 void DialogCreator::createDialogs(const AppConfiguration appCfg)
 {
     deleteDialogs();
-    const auto &board = Board::GetInstance();
-    if (board.interfaceType() == Board::InterfaceType::USB)
-        createConfigDialogs();
+    // const auto &board = Board::GetInstance();
+    // if (board.interfaceType() == Board::InterfaceType::USB)
+    createConfigDialogs();
     createCheckDialogs();
     createSpecificDialogs(appCfg);
     createCommonDialogs(appCfg);

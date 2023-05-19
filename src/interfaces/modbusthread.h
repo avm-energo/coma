@@ -31,7 +31,7 @@ signals:
     void clearBuffer();
 
 private:
-    bool m_busy;            ///< Port is busy with write/read operation
+    // bool m_busy;            ///< Port is busy with write/read operation
     quint8 m_deviceAddress; ///< Deivce address
     quint8 m_delay;         ///< Delay in ms
 
@@ -54,7 +54,7 @@ private:
     QByteArray createADU(const QByteArray &pdu) const;
     void calcCRCAndSend(QByteArray &ba);
     void send(const QByteArray &ba);
-    void waitReply();
+    // void waitReply();
     void processFloatSignals();
     void processIntegerSignals();
     void processCommandResponse();
@@ -74,7 +74,8 @@ private:
     {
         QByteArray ba;
         std::array<char, sizeof(T)> valueBytes;
-        memcpy(&valueBytes, &value, sizeof(T));
+        std::copy(&value, &value + sizeof(T), valueBytes.begin());
+        // memcpy(&valueBytes, &value, sizeof(T));
         for (auto it = valueBytes.begin(); it != valueBytes.end(); it = it + 2)
         {
             ba.push_back(*(it + 1));
