@@ -47,6 +47,7 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     connect(thr, &QThread::finished, port, &QObject::deleteLater);
     connect(thr, &QThread::finished, thr, &QObject::deleteLater);
     connect(thr, &QThread::finished, parser, &QObject::deleteLater);
+    connect(this, &BaseInterface::wakeUpParser, parser, &BaseInterfaceThread::wakeUp, Qt::DirectConnection);
     connect(port, &BasePort::dataReceived, parser, &ModbusThread::processReadBytes);
     connect(parser, &ModbusThread::sendDataToPort, port, &BasePort::writeData);
     connect(parser, &ModbusThread::clearBuffer, port, &SerialPort::clear);
@@ -65,6 +66,7 @@ bool ModBus::start(const ConnectStruct &connectStruct)
         thr->deleteLater();
         return false;
     }
+    emit connected();
     return true;
 }
 
@@ -83,7 +85,7 @@ void ModBus::sendReconnectSignal()
     }
 }
 
-const quint8 ModBus::obtainDelay(const quint32 baudRate) const
+quint8 ModBus::obtainDelay(const quint32 baudRate)
 {
     switch (baudRate)
     {

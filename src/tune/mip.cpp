@@ -118,7 +118,7 @@ void Mip::stop()
     m_updateTimer->stop();
     m_updateTimer->deleteLater();
     m_updater->setUpdatesEnabled(false);
-    m_device->stop();
+    m_device->disconnect();
     emit finished();
 }
 

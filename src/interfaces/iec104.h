@@ -45,6 +45,7 @@ public:
     ~IEC104();
     bool start(const ConnectStruct &st) override;
 
+    void disconnect();
 public slots:
     //    void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) override;
     //    void reqBSI() override;
@@ -60,7 +61,6 @@ public slots:
     //    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) override;
 
     //    static void SelectFile(char);
-    void stop() override;
 
     //    static void Com45(quint32 com);
     //    static void Com50(quint32 adr, float param);

@@ -600,7 +600,7 @@ void Coma::disconnect()
     qInfo(__PRETTY_FUNCTION__);
     BdaTimer->stop();
     AlarmW->clear();
-    BaseInterface::iface()->stop();
+    BaseInterface::iface()->disconnect();
 
     //     emit StopCommunications();
     // while (ActiveThreads) // wait for all threads to finish
@@ -631,10 +631,9 @@ void Coma::setupConnection()
         }
     });
 
-    auto ww = new WaitWidget;
     auto connectionReady = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     auto connectionTimeout = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    *connectionTimeout = connect(ww, &WaitWidget::destroyed, this, [=] {
+    *connectionTimeout = connect(BaseInterface::iface(), &BaseInterface::disconnected, this, [=] {
         QObject::disconnect(*connectionReady);
         QObject::disconnect(*connectionTimeout);
         if (Board::GetInstance().type() != 0)
@@ -648,26 +647,15 @@ void Coma::setupConnection()
     *connectionReady = connect(&board, &Board::readyRead, this, [=]() {
         QObject::disconnect(*connectionTimeout);
         QObject::disconnect(*connectionReady);
-        //        ww->Stop();
 
         QApplication::restoreOverrideCursor();
         prepare();
     });
 
-    //    ww->setObjectName("ww");
-    //    WaitWidget::ww_struct wws = { true, false, WaitWidget::WW_TIME,
-    //        15 }; // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
-    //    ww->Init(wws);
-    //    ww->SetMessage("Пожалуйста, подождите");
-    // QEventLoop loop;
-    //  connect(ww, &WaitWidget::finished, &loop, &QEventLoop::quit);
-    //    ww->Start();
-    // loop.exec();
     if (!BaseInterface::iface()->start(ConnectSettings))
     {
         QObject::disconnect(*connectionReady);
         QObject::disconnect(*connectionTimeout);
-        //        ww->Stop();
         EMessageBox::error(this, "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
         qCritical() << "Cannot connect" << Error::GeneralError;

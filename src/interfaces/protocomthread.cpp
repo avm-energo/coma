@@ -322,7 +322,7 @@ void ProtocomThread::writeLog(QByteArray ba, Direction dir)
         break;
     }
     tmpba.append(ba).append("\n");
-    log->WriteRaw(tmpba);
+    m_log->WriteRaw(tmpba);
 #else
     Q_UNUSED(ba);
     Q_UNUSED(dir);

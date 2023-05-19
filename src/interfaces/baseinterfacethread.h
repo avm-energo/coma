@@ -38,7 +38,7 @@ public:
     QMutex _mutex;
     QByteArray m_readData;
     QWaitCondition _waiter;
-    UniquePointer<LogClass> log;
+    UniquePointer<LogClass> m_log;
     const QMap<Interface::Commands, CommandRegisters> WSCommandMap {
         { C_StartWorkingChannel, StartWorkingChannel },
         { C_SetStartupValues, SetStartupValues },

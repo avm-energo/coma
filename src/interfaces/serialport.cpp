@@ -32,7 +32,7 @@ bool SerialPort::init(SerialPortSettings settings)
     port->setStopBits(settings.Stop == "1" ? QSerialPort::OneStop : QSerialPort::TwoStop);
     port->setFlowControl(QSerialPort::NoFlowControl);
     port->setReadBufferSize(1024);
-    QObject::connect(port.data(), &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
+    QObject::connect(port, &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
     QObject::connect(port, &QIODevice::readyRead, this, &SerialPort::readBytes);
 
     m_connectionTimer = new QTimer(this);

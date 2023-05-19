@@ -152,9 +152,6 @@ public:
     }
 
     virtual bool start(const ConnectStruct &) = 0;
-    virtual void pause();
-    virtual void resume();
-    virtual void stop();
     virtual bool supportBSIExt();
 
     // helper methods
@@ -195,6 +192,8 @@ public:
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
 
 signals:
+    void connected();
+    void disconnected();
     void reconnect();
     void nativeEvent(void *const message);
     void stateChanged(State m_state);

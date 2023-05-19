@@ -454,21 +454,4 @@ Error::Msg BaseInterface::reqTimeSync(void *block, quint32 blocksize)
     return Error::Msg::NoError;
 }
 
-void BaseInterface::pause()
-{
-    setState(State::Wait);
-}
-
-void BaseInterface::resume()
-{
-    Q_ASSERT(state() == State::Wait);
-    setState(State::Run);
-}
-
-void BaseInterface::stop()
-{
-    setState(State::Stop);
-    qInfo() << metaObject()->className() << "disconnected";
-}
-
 }

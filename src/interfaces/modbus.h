@@ -20,14 +20,12 @@ public:
     ~ModBus();
 
     bool start(const ConnectStruct &connectStruct) override;
-    void pause() override {};
-    void resume() override {};
 
 signals:
     void clearBuffer();
 
 private:
-    const quint8 obtainDelay(const quint32 baudRate) const;
+    quint8 obtainDelay(const quint32 baudRate);
 
 private slots:
     void sendReconnectSignal();

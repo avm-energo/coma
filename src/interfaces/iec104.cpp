@@ -279,7 +279,7 @@ void IEC104::EthStateChanged(QAbstractSocket::SocketState state)
     }
 }
 
-void IEC104::stop()
+void IEC104::disconnect()
 {
     setState(State::Wait);
     emit StopAll();

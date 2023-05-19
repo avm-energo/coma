@@ -8,7 +8,7 @@
 
 using namespace Interface;
 
-BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent), log(new LogClass(this))
+BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent), m_log(new LogClass(this))
 {
 }
 
@@ -158,8 +158,8 @@ void BaseInterfaceThread::run()
     auto classname = QString(metaObject()->className()) + ".log";
     if (classname.contains("::"))
         classname = classname.split("::").last();
-    log->Init(classname);
-    log->info(logStart);
+    m_log->Init(classname);
+    m_log->info(logStart);
     while (BaseInterface::iface()->state() != State::Stop)
     {
         QMutexLocker locker(&_mutex);
