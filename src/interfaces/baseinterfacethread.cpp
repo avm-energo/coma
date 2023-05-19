@@ -11,7 +11,6 @@ using namespace Interface;
 
 BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent), m_log(new LogClass(this))
 {
-    // connect(this, &BaseInterfaceThread::itsTimeToResponse, this, &BaseInterfaceThread::parseResponse);
 }
 
 void BaseInterfaceThread::clear()

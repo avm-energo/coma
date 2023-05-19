@@ -61,7 +61,6 @@ protected:
 signals:
     void finished();
     void sendDataToPort(const QByteArray &ba);
-    // void itsTimeToResponse();
 
 public slots:
     void run();

@@ -249,7 +249,6 @@ void ModbusThread::parseResponse()
         processCommandResponse();
         break;
     }
-    // m_busy = false;
     finishCommand();
 }
 
@@ -260,7 +259,6 @@ void ModbusThread::setDeviceAddress(quint8 adr)
 
 void ModbusThread::processReadBytes(QByteArray ba)
 {
-    // QMutexLocker locker(&_mutex);
     m_readData.append(ba);
     if (m_readData.size() >= 2)
     {
@@ -269,7 +267,6 @@ void ModbusThread::processReadBytes(QByteArray ba)
         {
             m_log->error("Modbus error response: " + m_readData.toHex());
             qCritical() << Error::ReadError << metaObject()->className();
-            // m_busy = false;
             finishCommand();
             return;
         }
@@ -318,30 +315,9 @@ void ModbusThread::calcCRCAndSend(QByteArray &ba)
 void ModbusThread::send(const QByteArray &ba)
 {
     m_readData.clear();
-    // m_busy = true;
     m_log->info("-> " + ba.toHex());
     emit sendDataToPort(ba);
-    // waitReply();
 }
-
-// void ModbusThread::waitReply()
-//{
-//    QElapsedTimer timer;
-//    timer.start();
-//    while ((m_busy) && (timer.elapsed() < RECONNECTTIME))
-//    {
-//        // ждём, пока либо сервер не отработает,
-//        // либо не наступит таймаут
-//        QCoreApplication::processEvents();
-//    }
-//    if (m_busy)
-//    {
-//        m_busy = false;
-//        emit clearBuffer();
-//        qWarning() << Error::Timeout << m_currentCommand.command;
-//        m_log->error("Timeout");
-//    }
-//}
 
 void ModbusThread::processFloatSignals()
 {
@@ -491,7 +467,6 @@ void ModbusThread::readRegisters(MBS::CommandStruct &cms)
     ba = createADU(ba);
     if (cms.data.size())
         ba.append(cms.data);
-    // log->info("Send bytes: " + ba.toHex());
     m_bytesToReceive = cms.quantity * 2 + 5; // address, function code, bytes count, crc (2)
     send(ba);
 }
@@ -501,7 +476,6 @@ void ModbusThread::readCoils(MBS::CommandStruct &cms)
     m_commandSent = cms;
     QByteArray ba(createReadPDU(cms));
     ba = createADU(ba);
-    // log->info("Send bytes: " + ba.toHex());
     auto temp = cms.quantity / 8 + ((cms.quantity % 8) != 0);
     m_bytesToReceive = temp + 5; // address, function code, bytes count, crc (2)
     send(ba);
@@ -514,7 +488,6 @@ void ModbusThread::writeMultipleRegisters(MBS::CommandStruct &cms)
     ba.append(cms.quantity * 2); // количество байт
     if (cms.data.size())
         ba.append(cms.data);
-    // log->info("Send bytes: " + ba.toHex());
     m_bytesToReceive = 8; // address, function code, address (2), quantity (2), crc (2)
     calcCRCAndSend(ba);
 }
