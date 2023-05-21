@@ -8,6 +8,7 @@
 #include "../widgets/wd_func.h"
 
 #include <gen/datamanager/typesproxy.h>
+#include <gen/datatypes.h>
 #include <gen/files.h>
 #include <gen/timefunc.h>
 
@@ -47,7 +48,7 @@ void OscDialog::setupUI()
         tableModel->setHorizontalHeaderLabels({ "#", "Дата/Время", "ИД", "Длина", "Скачать" });
 
         tv->setModel(tableModel.get());
-        BaseInterface::iface()->writeCommand(Queries::QUSB_ReqOscInfo, 1);
+        BaseInterface::iface()->writeCommand(Commands::C_ReqOscInfo, 1);
     });
 
     hlyout->addWidget(getButton);
@@ -81,13 +82,13 @@ void OscDialog::getOsc(const QModelIndex &idx)
     }
     if (!loadIfExist(size))
         BaseInterface::iface()->reqFile(
-            reqOscNum, Queries::FileFormat::CustomS2, size + sizeof(S2DataTypes::DataRecHeader));
+            reqOscNum, DataTypes::FileFormat::CustomS2, size + sizeof(S2DataTypes::DataRecHeader));
 }
 
 void OscDialog::eraseOsc()
 {
     if (checkPassword())
-        BaseInterface::iface()->writeCommand(Queries::QC_EraseTechBlock, 1);
+        BaseInterface::iface()->writeCommand(Commands::C_EraseTechBlock, 1);
 }
 
 QString OscDialog::filename(quint64 time, quint32 oscNum) const

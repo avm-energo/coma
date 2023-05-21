@@ -44,7 +44,7 @@ ConfigDialog::ConfigDialog(
 void ConfigDialog::readConfig()
 {
     setSuccessMsg(tr("Конфигурация прочитана успешно"));
-    BaseInterface::iface()->reqFile(DataTypes::Config, Queries::FileFormat::DefaultS2);
+    BaseInterface::iface()->reqFile(DataTypes::Config, DataTypes::FileFormat::DefaultS2);
 }
 
 void ConfigDialog::writeConfig()

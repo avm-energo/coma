@@ -284,7 +284,7 @@ void HiddenDialog::sendBhb()
 
     auto buffer = QByteArray::fromRawData(static_cast<char *>(ptr), size);
     DataTypes::HardwareStruct block { static_cast<quint32>(m_type), buffer };
-    BaseInterface::iface()->writeCommand(Queries::QUSB_WriteHardware, QVariant::fromValue(block));
+    BaseInterface::iface()->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(block));
 }
 
 void HiddenDialog::updateMode(bool status)

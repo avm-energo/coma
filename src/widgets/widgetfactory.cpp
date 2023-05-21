@@ -1,12 +1,12 @@
 #include "widgetfactory.h"
 
 #include "../models/comboboxdelegate.h"
-#include "../module/module_kxx.h"
 #include "../s2/configv.h"
 #include "../s2/s2.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"
 #include "../widgets/ipctrl.h"
+#include "modbusitem.h"
 
 #include <QHeaderView>
 #include <QStandardItem>
@@ -14,6 +14,8 @@
 // forward declarations
 // helpers for create widget
 static QWidget *createModbusView(QWidget *parent);
+
+using namespace ModbusItem;
 
 template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key)
 {
@@ -336,7 +338,7 @@ QList<QStandardItem *> WidgetFactory::createItem(
                        {
                        case delegate::ItemType::ModbusItem:
                        {
-                           const auto *master = reinterpret_cast<const Bci::ModbusItem *>(&value);
+                           const auto *master = reinterpret_cast<const Item *>(&value);
                            items = {
                                (new QStandardItem(QString::number(master->typedat))),        //
                                (new QStandardItem(QString::number(master->parport.baud))),   //
@@ -344,8 +346,6 @@ QList<QStandardItem *> WidgetFactory::createItem(
                                (new QStandardItem(QString::number(master->parport.stop))),   //
                                (new QStandardItem(QString::number(master->per))),            //
                                (new QStandardItem(QString::number(master->adr))),            //
-                               (new QStandardItem(QString::number(master->type.reg))),       //
-                               (new QStandardItem(QString::number(master->type.dat))),       //
                                (new QStandardItem(QString::number(master->reg)))             //
                            };
                        }
@@ -380,10 +380,10 @@ static QWidget *createModbusView(QWidget *parent)
     tableView->setItemDelegateForColumn(3, comboBoxdelegate);
 
     SpinBoxDelegate *spinBoxDelegate
-        = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::per)>::max(), tableView);
+        = new SpinBoxDelegate(0, std::numeric_limits<decltype(Item::per)>::max(), tableView);
     tableView->setItemDelegateForColumn(4, spinBoxDelegate);
 
-    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::adr)>::max(), tableView);
+    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Item::adr)>::max(), tableView);
     tableView->setItemDelegateForColumn(5, spinBoxDelegate);
 
     const QStringList funcs { "Coils", "Status", "Holding", "Input" };
@@ -396,7 +396,7 @@ static QWidget *createModbusView(QWidget *parent)
     comboBoxdelegate = new ComboBoxDelegate(types, tableView);
     tableView->setItemDelegateForColumn(7, comboBoxdelegate);
 
-    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Bci::ModbusItem::reg)>::max(), tableView);
+    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Item::reg)>::max(), tableView);
     tableView->setItemDelegateForColumn(8, spinBoxDelegate);
 
     QStandardItemModel *model = new QStandardItemModel(tableView);
@@ -426,7 +426,7 @@ const QString WidgetFactory::widgetName(int group, int item)
 }
 
 /// TODO: ОЧЕНЬ ПЛОХОЕ РЕШЕНИЕ, МАКСИМАЛЬНЫЙ КОСТЫЛЬ
-const quint16 WidgetFactory::getRealCount(const quint16 key)
+quint16 WidgetFactory::getRealCount(const quint16 key)
 {
     const auto &cfgStorage = ConfigStorage::GetInstance();
     auto &widgetMap = cfgStorage.getWidgetMap();
@@ -468,7 +468,7 @@ bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unn
     // -1 hardcoded as diff between parent element and first child element
     int row = key - parentKey - 1;
 
-    Bci::ModbusItem master;
+    Item master;
 
     for (int c = 0; c < model->columnCount(); ++c)
     {
@@ -482,22 +482,22 @@ bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unn
         {
         case config::Item::ModbusColumns::SensorType:
         {
-            master.typedat = Bci::SensorType(status ? data : 0);
+            master.typedat = SensorType(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::BaudRate:
         {
-            master.parport.baud = CommandsMBS::BaudRate(status ? data : 0);
+            master.parport.baud = status ? data : 0;
             break;
         }
         case config::Item::ModbusColumns::Parity:
         {
-            master.parport.parity = CommandsMBS::Parity(status ? data : 0);
+            master.parport.parity = Parity(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::StopBits:
         {
-            master.parport.stop = CommandsMBS::StopBits(status ? data : 0);
+            master.parport.stop = StopBits(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::Timeout:
@@ -512,12 +512,12 @@ bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unn
         }
         case config::Item::ModbusColumns::FuncCode:
         {
-            master.type.reg = CommandsMBS::Commands(status ? data : 0);
+            master.func = MBS::Commands(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::DataType:
         {
-            master.type.dat = CommandsMBS::TypeId(status ? data : 0);
+            master.typedata = TypeId(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::Register:

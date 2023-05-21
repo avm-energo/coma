@@ -1,502 +1,421 @@
 #include "protocomthread.h"
 
 #include "../s2/s2.h"
-#include "baseinterface.h"
 
 #include <QDebug>
 #include <QQueue>
-#include <QStorageInfo>
-#include <QThread>
-#include <QtEndian>
-#include <gen/datamanager/datamanager.h>
-#include <gen/files.h>
-#include <gen/helper.h>
-#include <gen/logclass.h>
-#include <gen/registers.h>
-#include <gen/stdfunc.h>
 
 #ifdef Q_OS_LINUX
 #include <time.h>
 #endif
 
-typedef QQueue<QByteArray> ByteQueue;
+// typedef QQueue<QByteArray> ByteQueue;
+using DataTypes::FileFormat;
 using Proto::CommandStruct;
 using Proto::Direction;
 using Proto::Starters;
-using Queries::FileFormat;
+using namespace Interface;
 
-ProtocomThread::ProtocomThread(QObject *parent) : QObject(parent), m_currentCommand({})
+ProtocomThread::ProtocomThread(QObject *parent) : BaseInterfaceThread(parent)
 {
     isFirstBlock = true;
-}
-
-void ProtocomThread::setReadDataChunk(const QByteArray &readDataChunk)
-{
-    QMutexLocker locker(&_mutex);
-    m_readData = readDataChunk;
-    _waiter.wakeOne();
-    emit readyRead();
-}
-
-void ProtocomThread::appendReadDataChunk(const QByteArray &readDataChunk)
-{
-    QMutexLocker locker(&_mutex);
-    m_readData.append(readDataChunk);
-    _waiter.wakeOne();
-    emit readyRead();
-}
-
-void ProtocomThread::wakeUp()
-{
-    _waiter.wakeOne();
-}
-
-void ProtocomThread::parse()
-{
-    while (BaseInterface::iface()->state() != BaseInterface::State::Stop)
-    {
-        QMutexLocker locker(&_mutex);
-        if (!isCommandRequested)
-            checkQueue();
-        if (m_readData.isEmpty())
-            _waiter.wait(&_mutex);
-        else
-        {
-            parseResponse(m_readData);
-            m_readData.clear();
-        }
-    }
-}
-
-void ProtocomThread::clear()
-{
-    QMutexLocker locker(&_mutex);
-    isCommandRequested = false;
-    m_readData.clear();
-    progress = 0;
-    m_currentCommand = Proto::CommandStruct();
-    m_buffer.clear();
-}
-
-void ProtocomThread::finish(Error::Msg msg)
-{
-    if (msg != Error::Msg::NoError)
-    {
-        // writeLog("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###");
-        qWarning("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
-        qCritical() << msg;
-        emit errorOccurred(msg);
-    }
+    m_longBlockChunks.clear();
 }
 
 ProtocomThread::~ProtocomThread()
 {
 }
 
-void ProtocomThread::handleResponse(const Proto::Commands cmd)
+void ProtocomThread::processReadBytes(QByteArray ba)
+{
+    QMutexLocker locker(&_mutex);
+    if (!isValidIncomingData(ba))
+    {
+        finishCommand();
+        return;
+    }
+
+    m_responseReceived = Proto::Commands(ba.at(1)); // received from device "command"
+    auto size = quint16(ba.at(2));
+    writeLog(ba, Proto::FromDevice);
+    ba.remove(0, 4);
+    ba.resize(size);
+    m_readData.append(ba);
+
+    // Если ответе меньше 60 байт или пришёл BSI
+    if (isOneSegment(size) || (m_responseReceived == Proto::ReadBlkStartInfo))
+    {
+        m_parsingDataReady = true;
+        progressFile(ba);    // Progress for big files
+        isFirstBlock = true; // prepare bool for the next receive iteration
+        wakeUp();
+    }
+    // Пришло 60 байт
+    else
+    {
+        auto tba = prepareOk(false, m_responseReceived); // prepare "Ok" answer to the device
+        Q_ASSERT(tba.size() == 4);
+        progressFile(ba);         // Progress for big files
+        isFirstBlock = false;     // there'll be another segment
+        emit sendDataToPort(tba); // write "Ok" to the device
+    }
+}
+
+void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
+{
+    QByteArray ba;
+#ifdef PROTOCOM_DEBUG
+    qDebug("Start parse request");
+#endif
+
+    switch (cmdStr.command)
+    {
+        // commands requesting regs with addresses ("fake" read regs commands)
+    case Commands::C_ReqAlarms:
+    case Commands::C_ReqStartup:
+    case Commands::C_ReqFloats:
+    case Commands::C_ReqBitStrings:
+    {
+        quint8 block = blockByReg(cmdStr.arg1.toUInt());
+        ba = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::ArrayFromNumber(block));
+        emit sendDataToPort(ba);
+        break;
+    }
+        // commands without any arguments
+    case Commands::C_ReqBSI:
+    case Commands::C_ReqBSIExt:
+    case Commands::C_ReqTime:
+    case Commands::C_StartFirmwareUpgrade:
+    case Commands::C_ReqProgress:
+    case Commands::C_GetMode:
+    {
+        if (protoCommandMap.contains(cmdStr.command))
+        {
+            ba = prepareBlock(protoCommandMap.value(cmdStr.command));
+            emit sendDataToPort(ba);
+        }
+        break;
+    }
+        // commands with only one uint8 parameter (blocknum or smth similar)
+    case Commands::C_EraseTechBlock:
+    case Commands::C_EraseJournals:
+    case Commands::C_SetMode:
+    case Commands::C_Reboot:
+    case Commands::C_ReqTuningCoef:
+    case Commands::C_ReqBlkData:
+    case Commands::C_ReqBlkDataA:
+    case Commands::C_ReqBlkDataTech:
+    case Commands::C_ReqOscInfo:
+    case Commands::C_Test:
+    {
+        if (protoCommandMap.contains(cmdStr.command))
+        {
+            ba = prepareBlock(
+                protoCommandMap.value(cmdStr.command), StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>()));
+            emit sendDataToPort(ba);
+        }
+    }
+
+        // file request: known file types should be download from disk and others must be taken from module by Protocom,
+        // arg1 - file number
+    case Commands::C_ReqFile:
+    {
+        DataTypes::FilesEnum filetype = cmdStr.arg1.value<DataTypes::FilesEnum>();
+        switch (filetype)
+        {
+        case DataTypes::JourSys:
+        case DataTypes::JourWork:
+        case DataTypes::JourMeas:
+            processFileFromDisk(filetype);
+            break;
+        default:
+            ba = prepareBlock(Proto::Commands::ReadFile, StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint16>()));
+            emit sendDataToPort(ba);
+            break;
+        }
+        break;
+    }
+
+        // commands with one bytearray argument arg2
+    case Commands::C_WriteFile:
+    {
+        if (cmdStr.arg2.canConvert<QByteArray>())
+        {
+            ba = cmdStr.arg2.value<QByteArray>();
+            writeBlock(Proto::Commands::WriteFile, ba);
+        }
+        break;
+    }
+
+        // write time command with different behaviour under different OS's
+    case Commands::C_WriteTime:
+    {
+        QByteArray tba;
+#ifdef Q_OS_LINUX
+        if (cmdStr.arg1.canConvert<timespec>())
+        {
+            timespec time = cmdStr.arg1.value<timespec>();
+            tba.push_back(StdFunc::ArrayFromNumber(quint32(time.tv_sec)));
+            tba.push_back(StdFunc::ArrayFromNumber(quint32(time.tv_nsec)));
+        }
+        else
+#endif
+        {
+            tba = StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint32>());
+        }
+        ba = prepareBlock(Proto::Commands::WriteTime, tba);
+        emit sendDataToPort(ba);
+        break;
+    }
+
+        // block write, arg1 is BlockStruct of one quint32 (block ID) and one QByteArray (block contents)
+    case Commands::C_WriteHardware:
+    case Commands::C_WriteBlkDataTech:
+    case Commands::C_SetNewConfiguration:
+    case Commands::C_WriteTuningCoef:
+    {
+        if (cmdStr.arg1.canConvert<DataTypes::BlockStruct>())
+        {
+            DataTypes::BlockStruct bs = cmdStr.arg1.value<DataTypes::BlockStruct>();
+            ba = StdFunc::ArrayFromNumber(bs.ID);
+            ba.append(bs.data);
+            writeBlock(protoCommandMap.value(cmdStr.command), bs.data);
+        }
+        break;
+    }
+
+        // QVariantList write
+    case Commands::C_WriteUserValues:
+    {
+        if (cmdStr.arg1.canConvert<QVariantList>())
+        {
+            QVariantList vl = cmdStr.arg1.value<QVariantList>();
+            const quint16 start_addr = vl.first().value<DataTypes::FloatStruct>().sigAdr;
+            const auto blockNum = blockByReg(start_addr);
+            ba = StdFunc::ArrayFromNumber(blockNum);
+            for (const auto &i : vl)
+            {
+                const float value = i.value<DataTypes::FloatStruct>().sigVal;
+                ba.append(StdFunc::ArrayFromNumber(value));
+            }
+            writeBlock(protoCommandMap.value(cmdStr.command), ba);
+        }
+        break;
+    }
+
+    // WS Commands
+    case Commands::C_WriteSingleCommand:
+    {
+        if (cmdStr.arg1.canConvert<DataTypes::SingleCommand>())
+        {
+            DataTypes::SingleCommand scmd = cmdStr.arg1.value<DataTypes::SingleCommand>();
+            ba = StdFunc::ArrayFromNumber((scmd.addr)) + StdFunc::ArrayFromNumber(scmd.value);
+            ba = prepareBlock(Proto::WriteSingleCommand, ba);
+            emit sendDataToPort(ba);
+        }
+        break;
+    }
+
+        // "WS" commands
+    case Commands::C_ClearStartupError:
+    case Commands::C_ClearStartupUnbounced:
+    case Commands::C_ClearStartupValues:
+    case Commands::C_SetStartupValues:
+    case Commands::C_SetStartupPhaseA:
+    case Commands::C_SetStartupPhaseB:
+    case Commands::C_SetStartupPhaseC:
+    case Commands::C_SetStartupUnbounced:
+    case Commands::C_StartWorkingChannel:
+    case Commands::C_SetTransOff:
+    {
+        ba = StdFunc::ArrayFromNumber(static_cast<uint24>(WSCommandMap[cmdStr.command]));
+        ba.append(StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>()));
+        ba = prepareBlock(Proto::WriteSingleCommand, ba);
+        emit sendDataToPort(ba);
+        break;
+    }
+
+    default:
+        qDebug() << "There's no such command";
+    }
+}
+
+void ProtocomThread::parseResponse()
 {
     using namespace Proto;
     using namespace DataTypes;
     quint32 addr = m_currentCommand.arg1.toUInt();
     quint32 count = m_currentCommand.arg2.toUInt();
-    switch (cmd)
+    switch (m_responseReceived)
     {
-    case Commands::ResultOk:
-        // Ignore good replies to splitted packet
-        // Не прибавляем никаких 1 или 2, надо будет проверить
-        if (isSplitted(m_currentCommand.ba.size()))
+    case ResultOk:
+    {
+        if (m_currentCommand.command == C_WriteFile)
         {
-            // For first segment
-            if (!progress)
-                handleMaxProgress(m_currentCommand.ba.size());
-
-            progress += Proto::Limits::MaxSegmenthLength;
-            if (progress > static_cast<quint64>(m_currentCommand.ba.size()))
+            setProgressCount(m_sentBytesCount);
+            if (!m_longBlockChunks.isEmpty())
             {
-                // For last segment
-                progress = m_currentCommand.ba.size();
-                handleProgress(progress);
-            }
-            else
-            {
-                handleProgress(progress);
+                QByteArray ba = m_longBlockChunks.takeFirst();
+                m_sentBytesCount += ba.size();
+                emit sendDataToPort(ba);
+                _waiter.wakeOne();
                 return;
             }
         }
-
-        //  GVar MS GMode MS
-        if (!m_buffer.isEmpty())
-            handleInt(m_buffer.front());
-        else
-            handleBool();
-        break;
-
-    case Commands::ResultError:
-    {
-        const quint8 errorCode = m_buffer.front();
-        handleBool(errorCode);
-        emit errorOccurred(static_cast<Error::Msg>(errorCode));
+        processOk();
         break;
     }
-    case Commands::ReadTime:
+    
+    case ResultError:
+    {
+        const quint8 errorCode = m_readData.front();
+        processError(errorCode);
+        break;
+    }
+    
+    case ReadTime:
 #ifdef Q_OS_LINUX
-        if (m_buffer.size() == sizeof(quint64))
+        if (m_readData.size() == sizeof(quint64))
         {
-            handleUnixTime(m_buffer, addr);
+            processUnixTime(m_readData);
             break;
         }
 #endif
-        handleBitString(m_buffer, addr);
+        processU32(m_readData, addr);
         break;
 
-    case Commands::ReadBlkStartInfoExt:
-        handleBitStringArray(m_buffer, Regs::bsiExtStartReg);
+    case ReadBlkStartInfo:
+    case ReadBlkStartInfoExt:
+        processU32(m_readData, addr);
         break;
 
-    case Commands::ReadBlkStartInfo:
-        handleBitStringArray(m_buffer, Regs::bsiReg);
-        break;
-
-    case Commands::ReadBlkAC:
+    case ReadBlkAC:
+    case ReadBlkDataA:
         // Ожидается что в addr хранится номер блока
-        handleRawBlock(m_buffer, addr);
+        processBlock(m_readData, addr);
         break;
 
-    case Commands::ReadBlkDataA:
-        // Ожидается что в addr хранится номер блока
-        handleRawBlock(m_buffer, addr);
-        break;
-
-    case Commands::ReadBlkData:
-        switch (m_currentCommand.cmd)
+    case ReadBlkData:
+        switch (m_currentCommand.command)
         {
-        case Commands::FakeReadRegData:
-            handleFloatArray(m_buffer, addr, count);
+        case C_ReqStartup:
+        case C_ReqFloats:
+            processFloat(m_readData, addr);
             break;
-        case Commands::FakeReadAlarms:
-            handleSinglePoint(m_buffer, addr);
+        case C_ReqAlarms:
+            processSinglePoint(m_readData, addr);
             break;
-        case Commands::FakeReadBitString:
-            handleBitStringArray(m_buffer, addr);
+        case C_ReqBitStrings:
+            processU32(m_readData, addr);
             break;
         default:
-            handleRawBlock(m_buffer, addr);
+            processBlock(m_readData, addr);
             break;
         }
         break;
 
-    case Commands::ReadBlkTech:
-
-        handleTechBlock(m_buffer, addr);
+    case ReadBlkTech:
+        processTechBlock(m_readData, addr);
         break;
 
-    case Commands::ReadProgress:
-
-        handleBitString(m_buffer, addr);
+    case ReadProgress:
+        processU32(m_readData, addr);
         break;
 
-    case Commands::ReadFile:
+    case ReadFile:
+        FilePostpone(m_readData, FilesEnum(addr), FileFormat(count));
+        break;
 
-        handleFile(m_buffer, FilesEnum(addr), FileFormat(count));
+    case ReadMode:
+        processInt(m_readData.toInt());
         break;
 
     default:
-
-        handleCommand(m_buffer);
+        qCritical("We shouldn't be here, something went wrong");
+        qDebug() << m_readData.toHex();
         break;
     }
-    isCommandRequested = false;
-    m_buffer.clear();
+    finishCommand();
 }
 
-void ProtocomThread::checkQueue()
-{
-    CommandStruct inp;
-    if (DataManager::GetInstance().deQueue(inp) != Error::Msg::NoError)
-        return;
-
-    isCommandRequested = true;
-    progress = 0;
-    m_currentCommand = inp;
-    parseRequest(inp);
-}
-
-void ProtocomThread::fileHelper(DataTypes::FilesEnum fileNum)
-{
-    QString fileToFind;
-    switch (fileNum)
-    {
-    case DataTypes::JourSys:
-    {
-        fileToFind = "system.dat";
-        break;
-    }
-    case DataTypes::JourMeas:
-    {
-        fileToFind = "measj.dat";
-        break;
-    }
-    case DataTypes::JourWork:
-    {
-        fileToFind = "workj.dat";
-        break;
-    }
-    default:
-    {
-        m_currentCommand.ba = StdFunc::ArrayFromNumber(fileNum);
-        QByteArray ba = prepareBlock(m_currentCommand);
-        emit writeDataAttempt(ba);
-        return;
-    }
-    }
-    isCommandRequested = false;
-
-    QStringList drives = Files::Drives();
-    if (drives.isEmpty())
-    {
-        qCritical() << Error::NoDeviceError;
-        return;
-    }
-    QStringList files = Files::SearchForFile(drives, fileToFind);
-    if (files.isEmpty())
-    {
-        qCritical() << Error::FileNameError;
-        return;
-    }
-    QString JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
-    if (JourFile.isEmpty())
-    {
-        qCritical() << Error::FileNameError;
-        return;
-    }
-    QFile file(JourFile);
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qCritical() << Error::FileOpenError;
-        return;
-    }
-    QByteArray ba = file.readAll();
-    handleFile(ba, fileNum, Queries::FileFormat::Binary);
-}
-
-void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
+void ProtocomThread::writeLog(const QByteArray &ba, Proto::Direction dir)
 {
 #ifdef PROTOCOM_DEBUG
-    qDebug("Start parse request");
-#endif
-    Q_ASSERT(cmdStr.cmd != 0x00);
-    // Предполагается не хранить текущую команду
-    Q_UNUSED(cmdStr)
-    using namespace Proto;
-
-    switch (m_currentCommand.cmd)
-    {
-    case Commands::ReadBlkData:
-    {
-        const quint16 blk = m_currentCommand.arg1.value<quint16>();
-        m_currentCommand.ba = StdFunc::ArrayFromNumber(quint8(blk));
-        QByteArray ba = prepareBlock(m_currentCommand);
-        emit writeDataAttempt(ba);
-        break;
-    }
-    case Commands::FakeReadAlarms:
-    case Commands::FakeReadBitString:
-    case Commands::FakeReadRegData:
-    {
-        QByteArray ba = prepareBlock(Commands::ReadBlkData, m_currentCommand.ba);
-        emit writeDataAttempt(ba);
-        break;
-    }
-
-    case Commands::ReadFile:
-    {
-        fileHelper(m_currentCommand.arg1.value<DataTypes::FilesEnum>());
-        break;
-    }
-    case Commands::WriteTime:
-    {
-#ifdef Q_OS_LINUX
-        if (m_currentCommand.arg1.canConvert<timespec>())
-        {
-            timespec time = m_currentCommand.arg1.value<timespec>();
-            m_currentCommand.ba.push_back(StdFunc::ArrayFromNumber(quint32(time.tv_sec)));
-            m_currentCommand.ba.push_back(StdFunc::ArrayFromNumber(quint32(time.tv_nsec)));
-        }
-        else
-#endif
-        {
-            m_currentCommand.ba = StdFunc::ArrayFromNumber(m_currentCommand.arg1.value<quint32>());
-        }
-        QByteArray ba = prepareBlock(m_currentCommand);
-        emit writeDataAttempt(ba);
-        break;
-    }
-    case Commands::RawCommand:
-    {
-        emit writeDataAttempt(m_currentCommand.ba);
-        break;
-    }
-    case Commands::WriteSingleCommand:
-    {
-        assert(m_currentCommand.arg1.canConvert<uint24>());
-        uint24 addr = m_currentCommand.arg1.value<uint24>();
-        QByteArray buffer = StdFunc::ArrayFromNumber((addr)) + m_currentCommand.ba;
-        QByteArray ba = prepareBlock(Commands::WriteSingleCommand, buffer);
-        emit writeDataAttempt(ba);
-        break;
-    }
-    case Commands::WriteFile:
-    {
-    }
-    default:
-    {
-        if (isSplitted(m_currentCommand.ba.size()))
-        {
-            auto query = prepareLongBlk(m_currentCommand);
-            while (!query.isEmpty())
-                emit writeDataAttempt(query.dequeue());
-        }
-        else
-        {
-            if (m_currentCommand.arg1.isValid())
-                m_currentCommand.ba.prepend(StdFunc::ArrayFromNumber(m_currentCommand.arg1.value<quint8>()));
-            QByteArray ba = prepareBlock(m_currentCommand);
-            emit writeDataAttempt(ba);
-        }
-        break;
-    }
-    }
-}
-
-void ProtocomThread::parseResponse(QByteArray ba)
-{
-#ifdef PROTOCOM_DEBUG
-    qDebug("Start parse response");
-#endif
-
-    // Нет шапки
-    if (ba.size() < 4)
-    {
-        qCritical() << Error::HeaderSizeError << ba.toHex();
-        return;
-    }
-    byte cmd = ba.at(1);
-
-    quint16 size;
-    std::copy(&ba.constData()[2], &ba.constData()[3], &size);
-    switch (ba.front())
-    {
-
-    case Proto::Response:
-    {
-        ba.remove(0, 4);
-        ba.resize(size);
-        m_buffer.append(ba);
-
-        //        quint32 filenum = m_currentCommand.arg1.value<quint32>();
-
-        // Потому что на эту команду модуль не отдает пустой ответ
-        if (isOneSegment(size) || (cmd == Proto::ReadBlkStartInfo))
-        {
-            handleResponse(Proto::Commands(cmd));
-            // Progress for big files
-            if (m_currentCommand.cmd == Proto::Commands::ReadFile)
-            {
-                if (isFirstBlock)
-                    handleMaxProgress(S2::GetFileSize(ba));
-                //                if (filenum != DataTypes::Config)
-                //                {
-                progress += size;
-                handleProgress(progress);
-                //                }
-            }
-            isFirstBlock = true; // there was a last (or the only) segment
-            return;
-        }
-        else
-        {
-            auto tba = prepareOk(false, cmd);
-            Q_ASSERT(tba.size() == 4);
-            emit writeDataAttempt(tba);
-            // Progress for big files
-            if (m_currentCommand.cmd == Proto::Commands::ReadFile)
-            {
-                if (isFirstBlock)
-                    handleMaxProgress(S2::GetFileSize(ba));
-                //                if (filenum != DataTypes::Config)
-                //                {
-                progress += Proto::Limits::MaxSegmenthLength;
-                handleProgress(progress);
-                //                }
-            }
-        }
-        isFirstBlock = false; // there'll be another segment
-        break;
-    }
-    default:
-        qCritical() << Error::WrongCommandError;
-        break;
-    }
-}
-
-void ProtocomThread::writeLog(QByteArray ba, Direction dir)
-{
-#if PROTOCOM_DEBUG
-    QByteArray tmpba = QByteArray(metaObject()->className());
+    QString msg = metaObject()->className();
     switch (dir)
     {
     case Proto::FromDevice:
-        tmpba.append(": <-");
+        msg += ": <- ";
         break;
     case Proto::ToDevice:
-        tmpba.append(": ->");
+        msg += ": -> ";
         break;
     default:
-        tmpba.append(":  ");
+        msg += ": ";
         break;
     }
-    tmpba.append(ba).append("\n");
-    // log->WriteRaw(tmpba);
+    msg += ba.toHex();
+    m_log->info(msg);
 #else
     Q_UNUSED(ba);
     Q_UNUSED(dir);
 #endif
 }
 
-quint16 ProtocomThread::extractLength(const QByteArray &ba)
+void ProtocomThread::appendInt16(QByteArray &ba, quint16 data)
 {
-    quint16 len = static_cast<quint8>(ba.at(2));
-    len += static_cast<quint8>(ba.at(3)) * 256;
-    return len;
+    ba.append(static_cast<char>(data % 0x100));
+    ba.append(static_cast<char>(data / 0x100));
 }
 
-void ProtocomThread::appendInt16(QByteArray &ba, quint16 size)
+bool ProtocomThread::isOneSegment(quint16 length)
 {
-    ba.append(static_cast<char>(size % 0x100));
-    ba.append(static_cast<char>(size / 0x100));
+    // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
+    Q_ASSERT(length <= Proto::MaxSegmenthLength);
+    return (length != Proto::MaxSegmenthLength);
 }
 
-bool ProtocomThread::isCommandExist(int cmd)
+bool ProtocomThread::isSplitted(quint16 length)
 {
-    if (cmd == -1)
+    return !(length < Proto::MaxSegmenthLength);
+}
+
+bool ProtocomThread::isValidIncomingData(const QByteArray &data)
+{
+    // if there's no standard header
+    if (data.size() >= 4)
     {
-        qCritical() << Error::WrongCommandError;
-        return false;
+        // parsing protocom header
+        auto startByte = Proto::Starters(data.at(0)); // start byte
+        auto size = quint16(data.at(2));              // size of data
+        // only response should be received from device
+        if (startByte == Proto::Starters::Response)
+        {
+            // checking size limits
+            if (size <= Proto::MaxSegmenthLength)
+                return true;
+            else
+                qCritical() << Error::SizeError << size;
+        }
+        else
+            qCritical() << Error::WrongCommandError << startByte;
     }
-    return true;
+    else
+        qCritical() << Error::HeaderSizeError << data.toHex();
+
+    return false;
 }
 
-bool ProtocomThread::isOneSegment(unsigned len)
+void ProtocomThread::progressFile(const QByteArray &data)
 {
-    using Proto::Limits::MaxSegmenthLength;
-    Q_ASSERT(len <= MaxSegmenthLength);
-    return (len != MaxSegmenthLength);
-}
-
-bool ProtocomThread::isSplitted(unsigned len)
-{
-    using Proto::Limits::MaxSegmenthLength;
-    return !(len < MaxSegmenthLength);
+    // Progress for big files
+    if (m_currentCommand.command == Commands::C_ReqFile)
+    {
+        if (isFirstBlock)
+            setProgressRange(S2::GetFileSize(data)); // set progressbar max size
+        m_progress += data.size();
+        setProgressCount(m_progress); // set current progressbar position
+    }
 }
 
 QByteArray ProtocomThread::prepareOk(bool isStart, byte cmd)
@@ -509,7 +428,7 @@ QByteArray ProtocomThread::prepareOk(bool isStart, byte cmd)
     // NOTE Михалыч не следует документации поэтому пока так
     // tmpba.append(Proto::Commands::ResultOk);
     tmpba.append(cmd);
-    appendInt16(tmpba, 0);
+    appendInt16(tmpba, 0x0000);
     return tmpba;
 }
 
@@ -518,18 +437,13 @@ QByteArray ProtocomThread::prepareError()
     QByteArray tmpba;
     tmpba.append(Proto::Starters::Request);
     tmpba.append(Proto::Commands::ResultError);
-    appendInt16(tmpba, 1);
+    appendInt16(tmpba, 0x0001);
     // модулю не нужны коды ошибок
     tmpba.append(static_cast<char>(Proto::NullByte));
     return tmpba;
 }
 
-QByteArray ProtocomThread::prepareBlock(CommandStruct &cmdStr, Proto::Starters startByte)
-{
-    return prepareBlock(cmdStr.cmd, cmdStr.ba, startByte);
-}
-
-QByteArray ProtocomThread::prepareBlock(Proto::Commands cmd, QByteArray &data, Proto::Starters startByte)
+QByteArray ProtocomThread::prepareBlock(Proto::Commands cmd, const QByteArray &data, Proto::Starters startByte)
 {
     QByteArray ba;
     ba.append(startByte);
@@ -541,43 +455,44 @@ QByteArray ProtocomThread::prepareBlock(Proto::Commands cmd, QByteArray &data, P
     return ba;
 }
 
-ByteQueue ProtocomThread::prepareLongBlk(CommandStruct &cmdStr)
+void ProtocomThread::writeBlock(Proto::Commands cmd, const QByteArray &arg2)
 {
-    ByteQueue bq;
-    using Proto::Limits::MaxSegmenthLength;
-    // Количество сегментов
-    quint64 segCount
-        = (cmdStr.ba.size() + 1) // +1 Т.к. некоторые команды имеют в значимой части один дополнительный байт
-            / MaxSegmenthLength  // Максимальная длинна сегмента
-        + 1; // Добавляем еще один сегмент в него попадет последняя часть
-    bq.reserve(segCount);
+    using Proto::MaxSegmenthLength;
+    QByteArray ba = arg2;
 
-    QByteArray tba;
-    if (cmdStr.arg1.isValid())
-        tba = StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>());
-    tba.append(cmdStr.ba.left(MaxSegmenthLength - 1));
-
-    bq << prepareBlock(cmdStr.cmd, tba);
-
-    for (int pos = MaxSegmenthLength - 1; pos < cmdStr.ba.size(); pos += MaxSegmenthLength)
+    if (isSplitted(ba.size()))
     {
-        tba = cmdStr.ba.mid(pos, MaxSegmenthLength);
-        bq << prepareBlock(cmdStr.cmd, tba, Proto::Starters::Continue);
+        // prepareLongBlk
+        m_longBlockChunks.clear();
+        // Количество сегментов
+        quint64 segCount = (ba.size() + 1) // +1 Т.к. некоторые команды имеют в значимой части один дополнительный байт
+                / MaxSegmenthLength        // Максимальная длинна сегмента
+            + 1; // Добавляем еще один сегмент в него попадет последняя часть
+        m_longBlockChunks.reserve(segCount);
+
+        QByteArray tba;
+        tba.append(ba.left(MaxSegmenthLength - 1));
+
+        m_longBlockChunks.append(prepareBlock(cmd, tba));
+
+        for (int pos = MaxSegmenthLength - 1; pos < ba.size(); pos += MaxSegmenthLength)
+        {
+            tba = ba.mid(pos, MaxSegmenthLength);
+            m_longBlockChunks.append(prepareBlock(cmd, tba, Proto::Starters::Continue));
+        }
+        setProgressRange(ba.size() + segCount * 4);
+        m_sentBytesCount = m_longBlockChunks.at(0).size();
+        emit sendDataToPort(m_longBlockChunks.takeFirst()); // send first chunk
     }
-    return bq;
-}
-
-void ProtocomThread::handleBitString(const QByteArray &ba, quint16 sigAddr)
-{
-    Q_ASSERT(ba.size() == sizeof(quint32));
-
-    quint32 value = *reinterpret_cast<const quint32 *>(ba.data());
-    DataTypes::BitStringStruct resp { sigAddr, value, DataTypes::Quality::Good };
-    DataManager::GetInstance().addSignalToOutList(resp);
+    else
+    {
+        ba = prepareBlock(cmd, ba);
+        emit sendDataToPort(ba);
+    }
 }
 
 #ifdef Q_OS_LINUX
-void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint16 sigAddr)
+void ProtocomThread::processUnixTime(const QByteArray &ba)
 {
     Q_ASSERT(ba.size() == sizeof(quint64));
 
@@ -590,164 +505,77 @@ void ProtocomThread::handleUnixTime(const QByteArray &ba, [[maybe_unused]] quint
 }
 #endif
 
-template <std::size_t N>
-void ProtocomThread::handleBitStringArray(const QByteArray &ba, std::array<quint16, N> arr_addr)
-{
-    Q_ASSERT(ba.size() / 4 == arr_addr.size());
-    for (int i = 0; i != arr_addr.size(); i++)
-    {
-        QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
-        handleBitString(temp, arr_addr.at(i));
-    }
-}
-
-void ProtocomThread::handleBitStringArray(const QByteArray &ba, quint16 start_addr)
+void ProtocomThread::processU32(const QByteArray &ba, quint16 startAddr)
 {
     Q_ASSERT(ba.size() % sizeof(quint32) == 0);
+    Q_ASSERT(ba.size() >= 4);
     for (int i = 0; i != (ba.size() / sizeof(quint32)); i++)
     {
-        QByteArray temp = ba.mid(sizeof(qint32) * i, sizeof(qint32));
-        handleBitString(temp, start_addr + i);
+        QByteArray tba = ba.mid(sizeof(qint32) * i, sizeof(qint32));
+        quint32 value = *reinterpret_cast<const quint32 *>(tba.data());
+        DataTypes::BitStringStruct resp { startAddr++, value, DataTypes::Quality::Good };
+        DataManager::GetInstance().addSignalToOutList(resp);
     }
 }
 
-void ProtocomThread::handleFloat(const QByteArray &ba, quint32 sigAddr)
+void ProtocomThread::processFloat(const QByteArray &ba, quint32 startAddr)
 {
-    Q_ASSERT(ba.size() == 4);
-    float blk = *reinterpret_cast<const float *>(ba.data());
-    DataTypes::FloatStruct resp { sigAddr, blk, DataTypes::Quality::Good };
-    DataManager::GetInstance().addSignalToOutList(resp);
-}
-
-void ProtocomThread::handleFloatArray(const QByteArray &ba, quint32 sigAddr, quint32 sigCount)
-{
-    if (!sigCount)
-        handleFloat(ba, sigAddr);
     // NOTE Проблема со стартовыми регистрами, получим на один регистр больше чем по другим протоколам
-    Q_ASSERT(ba.size() >= int(sigCount * 4));
-    for (quint32 i = 0; i != sigCount; i++)
+    Q_ASSERT(ba.size() >= 4); // должен быть хотя бы один флоат
+    int bapos = 0;
+    const int baendpos = ba.size() - 3; // 3 = sizeof(float) - 1
+    while (bapos < baendpos)
     {
-        QByteArray temp = ba.mid(sizeof(float) * i, sizeof(float));
-        handleFloat(temp, sigAddr + i);
+        QByteArray tba = ba.mid(bapos, sizeof(float));
+        float blk = *reinterpret_cast<const float *>(tba.data());
+        DataTypes::FloatStruct resp { startAddr++, blk, DataTypes::Quality::Good };
+        DataManager::GetInstance().addSignalToOutList(resp);
+        bapos += sizeof(float);
     }
 }
 
-void ProtocomThread::handleSinglePoint(const QByteArray &ba, const quint16 addr)
+void ProtocomThread::processSinglePoint(const QByteArray &ba, const quint16 startAddr)
 {
     for (quint32 i = 0; i != quint32(ba.size()); ++i)
     {
         quint8 value = ba.at(i);
-        DataTypes::SinglePointWithTimeStruct data { (addr + i), value, 0, DataTypes::Quality::Good };
+        DataTypes::SinglePointWithTimeStruct data { (startAddr + i), value, 0, DataTypes::Quality::Good };
         DataManager::GetInstance().addSignalToOutList(data);
     }
 }
 
-void ProtocomThread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format)
-{
-    switch (format)
-    {
-    case FileFormat::Binary:
-    {
-        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
-            static_cast<quint64>(ba.size()) };
-        DataManager::GetInstance().addSignalToOutList(genResp);
-        DataTypes::FileStruct resp { addr, ba };
-        DataManager::GetInstance().addSignalToOutList(resp);
-        break;
-    }
-    case FileFormat::DefaultS2:
-    {
-        QList<DataTypes::DataRecV> outlistV;
-
-        if (!S2::RestoreData(ba, outlistV))
-        {
-            DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
-                static_cast<quint64>(ba.size()) };
-            DataManager::GetInstance().addSignalToOutList(resp);
-            return;
-        }
-        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
-            static_cast<quint64>(ba.size()) };
-        DataManager::GetInstance().addSignalToOutList(genResp);
-        DataManager::GetInstance().addSignalToOutList(outlistV);
-        break;
-    }
-    case FileFormat::CustomS2:
-    {
-        DataTypes::S2FilePack outlist;
-        if (!S2::RestoreData(ba, outlist))
-        {
-            DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
-                static_cast<quint64>(ba.size()) };
-            DataManager::GetInstance().addSignalToOutList(resp);
-            return;
-        }
-        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
-            static_cast<quint64>(ba.size()) };
-        DataManager::GetInstance().addSignalToOutList(genResp);
-        for (auto &&file : outlist)
-        {
-            DataTypes::FileStruct resp { DataTypes::FilesEnum(file.ID), file.data };
-            DataManager::GetInstance().addSignalToOutList(resp);
-        }
-        break;
-    }
-    }
-}
-
-void ProtocomThread::handleInt(const byte num)
+void ProtocomThread::processInt(const byte num)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, num };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 
-void ProtocomThread::handleBool(int errorCode)
+void ProtocomThread::processOk()
 {
-    if (errorCode == 0)
-    {
-        DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, 0 };
-        DataManager::GetInstance().addSignalToOutList(resp);
-    }
-    else
-    {
-        DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
-            static_cast<quint64>(errorCode) };
-        DataManager::GetInstance().addSignalToOutList(resp);
-        // Module error code
-        qCritical() << "Error code: " << QString::number(errorCode, 16);
-    }
-}
-
-void ProtocomThread::handleProgress(const quint64 count)
-{
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, count };
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, 0 };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 
-void ProtocomThread::handleMaxProgress(const quint64 count)
+void ProtocomThread::processError(int errorCode)
 {
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, count };
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, static_cast<quint64>(errorCode) };
     DataManager::GetInstance().addSignalToOutList(resp);
+    // Module error code
+    qCritical() << "Error code: " << QString::number(errorCode, 16);
 }
 
-void ProtocomThread::handleRawBlock(const QByteArray &ba, quint32 blkNum)
+void ProtocomThread::processBlock(const QByteArray &ba, quint32 blkNum)
 {
     DataTypes::BlockStruct resp { blkNum, ba };
     DataManager::GetInstance().addSignalToOutList(resp);
 }
 
-void ProtocomThread::handleCommand(const QByteArray &ba)
-{
-    qCritical("We shouldn't be here, something went wrong");
-    qDebug() << ba.toHex();
-}
-
-void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
+void ProtocomThread::processTechBlock(const QByteArray &ba, quint32 blkNum)
 {
     switch (blkNum)
     {
-    // Блок наличия осциллограмм Bo
-    case 0x01:
+        //  Блок наличия осциллограмм Bo
+    case T_Oscillogram:
     {
         Q_ASSERT(ba.size() % sizeof(S2DataTypes::OscInfo) == 0);
         for (int i = 0; i != ba.size(); i += sizeof(S2DataTypes::OscInfo))
@@ -761,19 +589,19 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
 
         break;
     }
-    // Блок текущих событий Be
-    case 0x02:
+        //  Блок текущих событий Be
+    case T_GeneralEvent:
     {
         qDebug("Блок текущих событий Be");
         break;
     }
-    // Блок технологических событий BTe
-    case 0x03:
+        // Блок технологических событий BTe
+    case T_TechEvent:
     {
         qDebug("Блок технологических событий BTe");
         break;
     }
-    case 0x04:
+    case T_SwitchJournal:
     {
         qDebug("Блок наличия журналов переключения");
         Q_ASSERT(ba.size() % sizeof(S2DataTypes::SwitchJourInfo) == 0);
@@ -787,8 +615,8 @@ void ProtocomThread::handleTechBlock(const QByteArray &ba, quint32 blkNum)
         }
         break;
     }
-    // Блок рабочего архива (Bra)
-    case 0x05:
+        // Блок рабочего архива (Bra)
+    case T_WorkArchive:
     {
         qDebug("Блок рабочего архива (Bra)");
         break;

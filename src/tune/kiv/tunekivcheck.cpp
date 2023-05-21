@@ -4,17 +4,17 @@
 #include "../../interfaces/protocom.h"
 #include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
 #include "../../widgets/waitwidget.h"
+#include "../../widgets/wd_func.h"
 #include "../s2/s2.h"
 
 #include <QCoreApplication>
-#include <QElapsedTimer>
 #include <QDialog>
+#include <QElapsedTimer>
+#include <QEventLoop>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <QEventLoop>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
@@ -35,7 +35,7 @@ void TuneKIVCheck::setTuneFunctions()
 
 Error::Msg TuneKIVCheck::setSMode2()
 {
-    BaseInterface::iface()->writeCommand(Queries::QUSB_SetMode, 0x02);
+    BaseInterface::iface()->writeCommand(Interface::C_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 
@@ -100,7 +100,7 @@ Error::Msg TuneKIVCheck::check()
     ww->Start();
     QElapsedTimer *tmr = new QElapsedTimer;
     tmr->start();
-    while(tmr->elapsed() < TIMEFORBDATOSETINMS)
+    while (tmr->elapsed() < TIMEFORBDATOSETINMS)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     ww->Stop();
     BdaA284 *bda = new BdaA284;

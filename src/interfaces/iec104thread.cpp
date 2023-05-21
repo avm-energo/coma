@@ -10,12 +10,14 @@
 #include <gen/datamanager/datamanager.h>
 #include <gen/pch.h>
 
+using namespace Interface;
+
 QMutex IEC104Thread::s_ParseReadMutex;
 QMutex IEC104Thread::s_ParseWriteMutex;
 
 using namespace Commands104;
 
-IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent), m_log(log)
+IEC104Thread::IEC104Thread(QObject *parent) : BaseInterfaceThread(parent)
 {
     m_writingToPortBlocked = true;
     m_isFirstParse = true;
@@ -26,6 +28,8 @@ IEC104Thread::IEC104Thread(LogClass *log, QObject *parent) : QObject(parent), m_
     m_APDUFormat = I104_WRONG;
     m_isFileSending = false;
     m_noAnswer = 0;
+    m_log = new LogClass;
+    m_log->Init("ethernetThread.log");
 }
 
 IEC104Thread::~IEC104Thread()
@@ -87,17 +91,17 @@ void IEC104Thread::Run()
                     break;
                 case Commands104::CM104_WRITEFILE:
                 {
-                    m_fileIsConfigFile = Queries::FileFormat::Binary;
+                    m_fileIsConfigFile = DataTypes::FileFormat::Binary;
                     m_file = inp.ba;
                     FileReady(inp.address);
                     break;
                 }
                 case Commands104::CM104_REQCONFIGFILE:
-                    m_fileIsConfigFile = Queries::FileFormat::DefaultS2;
+                    m_fileIsConfigFile = DataTypes::FileFormat::DefaultS2;
                     SelectFile(inp.address);
                     break;
                 case Commands104::CM104_REQFILE:
-                    m_fileIsConfigFile = Queries::FileFormat::Binary;
+                    m_fileIsConfigFile = DataTypes::FileFormat::Binary;
                     SelectFile(inp.address);
                     break;
                 case Commands104::CM104_COM51:
@@ -118,7 +122,7 @@ void IEC104Thread::Run()
     emit finished();
 }
 
-void IEC104Thread::GetSomeData(QByteArray ba)
+void IEC104Thread::processReadBytes(QByteArray ba)
 {
     if (m_isFirstParse)
         m_log->info("<-- " + ba.toHex());
@@ -153,7 +157,7 @@ void IEC104Thread::GetSomeData(QByteArray ba)
     }
     m_cutPckt = ba.left(2);
     ba = ba.mid(2);
-    GetSomeData(ba);
+    processReadBytes(ba);
     m_isFirstParse = true;
 }
 
@@ -247,9 +251,9 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
     }
 }
 
-bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format)
+bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format)
 {
-    using Queries::FileFormat;
+    using DataTypes::FileFormat;
     switch (format)
     {
     case FileFormat::DefaultS2:

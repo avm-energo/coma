@@ -161,3 +161,5 @@ signals:
     /// \brief This signal is emitted when all StartupInfoBlockExt members are updated.
     void readyReadExt();
 };
+
+// Q_DECLARE_METATYPE(Board::InterfaceType)

@@ -2,7 +2,6 @@
 
 #include "../module/board.h"
 #include "../module/configstorage.h"
-#include "../s2/s2helper.h"
 #include "../widgets/wd_func.h"
 
 #include <QGroupBox>

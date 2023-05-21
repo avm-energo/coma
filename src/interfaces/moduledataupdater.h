@@ -6,6 +6,7 @@
 #include <QObject>
 #include <gen/datatypes.h>
 
+using namespace Interface;
 class ModuleDataUpdater : public QObject
 {
     Q_OBJECT

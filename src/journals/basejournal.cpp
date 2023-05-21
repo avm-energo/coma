@@ -1,6 +1,7 @@
 #include "basejournal.h"
 
 #include "../module/board.h"
+#include "../s2/filestruct.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>

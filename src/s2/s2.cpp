@@ -134,7 +134,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
     while ((DR.header.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
     {
         auto size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
-        if (size > bain.size())
+        if (size > static_cast<quint64>(bain.size()))
         {
             qCritical() << Error::Msg::SizeError << "S2: out of memory"; // выход за границу принятых байт
             return false;
@@ -305,10 +305,20 @@ S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
     PV_file->void_recHeader.id = 0xFFFFFFFF;
     PV_file->void_recHeader.numByte = 0;
 
-    S2DR.append({ PV_file->type.typeHeader.id, PV_file->type.typeHeader.numByte, &PV_file->type.typeTheData });
-    S2DR.append(
-        { PV_file->file.fileDataHeader.id, PV_file->file.fileDataHeader.numByte, &PV_file->file.data.data()[0] });
-    S2DR.append({ PV_file->void_recHeader.id, PV_file->void_recHeader.numByte, nullptr });
+    S2DR.append({ { PV_file->type.typeHeader.id, PV_file->type.typeHeader.numByte }, &PV_file->type.typeTheData });
+    S2DR.append({ { PV_file->file.fileDataHeader.id, PV_file->file.fileDataHeader.numByte },
+        &PV_file->file.data.data()[0] }); // BaForSend->data_ptr()
+    S2DR.append({ { PV_file->void_recHeader.id, PV_file->void_recHeader.numByte }, nullptr });
+
+    /*ForProcess->clear();
+    ForProcess->resize(MAXSIZE);
+
+    memcpy(&ForProcess->data()[0], &PV_file.Type.TypeHeader.id, 24);
+    memcpy(&ForProcess->data()[24], &BaForSend->data()[8], (BaForSend->size()-8));
+    ForProcess->resize((BaForSend->size()+16));
+    //BaForSend->resize(ForProcess->size());
+    memcpy(&BaForSend->data()[0], &ForProcess->data()[0],
+        (BaForSend->size()+16));*/
     if (!ok)
         return S2ConfigType();
     return S2DR;

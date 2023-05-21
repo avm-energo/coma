@@ -1,6 +1,9 @@
 #ifndef ETHERNET_H
 #define ETHERNET_H
 
+#include "baseport.h"
+#include "settingstypes.h"
+
 #include <QByteArray>
 #include <QMutex>
 #include <QTcpSocket>
@@ -9,7 +12,7 @@
 
 #define PORT104 2404 // порт связи по протоколу МЭК 60870-5-104
 
-class Ethernet : public QObject
+class Ethernet : public BasePort
 {
     Q_OBJECT
 
@@ -20,25 +23,27 @@ public:
     QString IP;
     LogClass *Log;
 
+    bool init(IEC104Settings settings);
+
 signals:
     void error(QAbstractSocket::SocketError);
     void Connected();
     void Disconnected();
-    void finished();
-    void NewDataArrived(QByteArray);
 
 public slots:
-    void Run();
-    void Stop();
-    void InitiateWriteDataToPort(QByteArray);
+    bool reconnect() override;
+    void disconnect() override;
+    bool writeData(const QByteArray &ba) override;
+    void poll() override;
 
 private slots:
     void CheckForData();
-    void seterr(QAbstractSocket::SocketError error);
     void EthSetConnected();
     void EthStateChanged(QAbstractSocket::SocketState state);
 
 private:
+    quint16 m_baseadr;
+    QString m_ip;
     QTcpSocket *sock;
     QMutex OutDataBufMtx;
     QByteArray *DataToSend;

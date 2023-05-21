@@ -1,11 +1,13 @@
 #include "board.h"
 
+#include "../interfaces/baseinterface.h"
 #include "modules.h"
 
 #include <QDebug>
 #include <gen/error.h>
-#include <gen/registers.h>
 #include <gen/stdfunc.h>
+
+using namespace Interface;
 
 bool isKnownModule(quint16 mtypeb, quint16 mtypem)
 {

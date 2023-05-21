@@ -26,17 +26,14 @@
 using Proto::CommandStruct;
 using Proto::Direction;
 using Proto::Starters;
-UsbHidPort::UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent)
-    : QObject(parent), log(logh), m_deviceInfo(dev)
+using namespace Interface;
+
+UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent) : BasePort("UsbHidPort", parent), m_deviceInfo(dev)
 {
     using namespace settings;
-    QString filename("UsbHidPort");
-    filename.append(".").append(::logExt);
-    log->Init(filename);
-    log->WriteRaw(::logStart);
     m_hidDevice = nullptr;
     m_shouldBeStopped = false;
-    connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
+    QObject::connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
     QSettings sets;
     missingCounterMax = sets.value(regMap[hidTimeout].name, "50").toInt();
 }
@@ -50,7 +47,7 @@ inline hid_device *openDevice(const UsbHidSettings &dev)
     return hid_open(dev.vendor_id, dev.product_id, dev.serial.toStdWString().c_str());
 }
 
-bool UsbHidPort::setupConnection()
+bool UsbHidPort::connect()
 {
     if ((deviceInfo().vendor_id == 0) || (deviceInfo().product_id == 0))
     {
@@ -77,18 +74,21 @@ void UsbHidPort::poll()
     int bytes;
     m_waitForReply = false;
     const auto &iface = BaseInterface::iface();
-    while (iface->state() != BaseInterface::State::Stop)
+    while (iface->state() != State::Stop)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
 
         // check if there's any data in input buffer
-        if (iface->state() == BaseInterface::State::Wait)
+        if (iface->state() == State::Wait)
         {
             StdFunc::Wait(500);
             continue;
         }
         if (!m_hidDevice)
+        {
+            reconnect();
             continue;
+        }
         std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
         bytes = hid_read_timeout(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1, 100);
         // Write
@@ -96,6 +96,7 @@ void UsbHidPort::poll()
         {
             // -1 is the only error value according to hidapi documentation.
             Q_ASSERT(bytes == -1);
+            reconnect();
             continue;
         }
         // Read
@@ -126,7 +127,7 @@ void UsbHidPort::poll()
             continue;
         }
         // write data to port if there's something delayed in out queue
-        if (checkQueue())
+        if (checkCurrentCommand())
         {
             missingCounter = 0;
         }
@@ -146,11 +147,11 @@ void UsbHidPort::deviceConnected(const UsbHidSettings &st)
     StdFunc::Wait(100);
     emit clearQueries();
     qDebug() << timer.elapsed();
-    if (!setupConnection())
+    if (!connect())
         return;
     qDebug() << timer.elapsed();
     qInfo() << deviceInfo() << "connected";
-    emit stateChanged(BaseInterface::State::Run);
+    emit stateChanged(State::Run);
     qDebug() << timer.elapsed();
 }
 
@@ -160,22 +161,22 @@ void UsbHidPort::deviceDisconnected(const UsbHidSettings &st)
     if (st != deviceInfo())
         return;
     // Отключено наше устройство
-    emit stateChanged(BaseInterface::State::Wait);
+    emit stateChanged(State::Wait);
     qInfo() << deviceInfo() << "disconnected";
 }
 
 void UsbHidPort::deviceConnected()
 {
-    if (!setupConnection())
+    if (!connect())
         return;
     qInfo() << deviceInfo() << "connected";
-    emit stateChanged(BaseInterface::State::Run);
+    emit stateChanged(State::Run);
 }
 
 void UsbHidPort::deviceDisconnected()
 {
     // Отключено наше устройство
-    emit stateChanged(BaseInterface::State::Wait);
+    emit stateChanged(State::Wait);
     qInfo() << deviceInfo() << "disconnected";
     emit clearQueries();
 }
@@ -200,23 +201,24 @@ void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
     m_deviceInfo = deviceInfo;
 }
 
-void UsbHidPort::writeDataAttempt(const QByteArray &ba)
+bool UsbHidPort::writeData(const QByteArray &ba)
 {
     QMutexLocker locker(&_mutex);
-    m_writeQueue.append(ba);
+    // m_writeQueue.append(ba);
+    m_currCommand = ba;
+    return true;
 }
 
-void UsbHidPort::closeConnection()
+void UsbHidPort::disconnect()
 {
     if (m_hidDevice)
         hid_close(m_hidDevice);
-
-    clear();
+    emit clearQueries();
 }
 
 void UsbHidPort::finish()
 {
-    closeConnection();
+    disconnect();
     qInfo() << metaObject()->className() << "finished";
     emit finished();
     QCoreApplication::processEvents();
@@ -226,7 +228,8 @@ void UsbHidPort::clear()
 {
     QMutexLocker locker(&_mutex);
     m_waitForReply = false;
-    m_writeQueue.clear();
+    m_currCommand.clear();
+    // m_writeQueue.clear();
     m_hidDevice = nullptr;
 }
 
@@ -308,6 +311,9 @@ void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
     default:
         qInfo() << "Unhadled case" << QString::number(type, 16);
     }
+#else
+    Q_UNUSED(message)
+    Q_UNUSED(type)
 #endif
 }
 
@@ -328,11 +334,11 @@ void UsbHidPort::writeLog(QByteArray ba, Direction dir)
         break;
     }
     tmpba.append(ba).append("\n");
-    log->WriteRaw(tmpba);
+    Log->WriteRaw(tmpba);
 #endif
 }
 
-bool UsbHidPort::writeData(QByteArray &ba)
+bool UsbHidPort::writeDataToPort(QByteArray &ba)
 {
     if (!m_hidDevice)
     {
@@ -373,16 +379,31 @@ bool UsbHidPort::writeData(QByteArray &ba)
     return true;
 }
 
-bool UsbHidPort::checkQueue()
+// bool UsbHidPort::checkQueue()
+//{
+//    QMutexLocker locker(&_mutex);
+//    if (m_writeQueue.isEmpty())
+//        return false;
+//    QByteArray ba = m_writeQueue.takeFirst();
+//    locker.unlock();
+//    if (writeDataToPort(ba))
+//        return m_waitForReply = true;
+//    else
+//        emit clearQueries();
+//    return false;
+//}
+
+bool UsbHidPort::checkCurrentCommand()
 {
     QMutexLocker locker(&_mutex);
-    if (m_writeQueue.isEmpty())
-        return false;
-    QByteArray ba = m_writeQueue.takeFirst();
-    locker.unlock();
-    if (writeData(ba))
-        return m_waitForReply = true;
-    else
-        emit clearQueries();
+    if (!m_currCommand.isEmpty())
+    {
+        auto status = writeDataToPort(m_currCommand);
+        m_currCommand.clear();
+        if (status)
+            return m_waitForReply = true;
+        else
+            emit clearQueries();
+    }
     return false;
 }

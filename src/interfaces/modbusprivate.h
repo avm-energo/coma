@@ -4,21 +4,9 @@
 #include <QObject>
 #include <QVariant>
 
-namespace CommandsMBS
+namespace MBS
 {
 Q_NAMESPACE
-enum CommandRegisters
-{
-    SetStartupValues = 900,     ///< Задать начальные значения по всем фазам
-    SetStartupPhaseA = 901,     ///< Задать начальные значения по фазе A
-    SetStartupPhaseB = 902,     ///< Задать начальные значения по фазе B
-    SetStartupPhaseC = 903,     ///< Задать начальные значения по фазе C
-    SetStartupUnbounced = 904,  ///< Задать начальные значения по току небаланса
-    ClearStartupValues = 905,   ///< Сбросить начальные значения по всем фазам
-    ClearStartupSetError = 906, ///< Сбросить ошибку задания начальных значений
-    SetTransOff = 907,          ///< Послать команду "Трансфоратор отключён"
-    ClearStartupUnbounced = 908 ///< Сбросить начальное значение тока небаланса
-};
 
 enum Commands : quint8
 {
@@ -26,69 +14,11 @@ enum Commands : quint8
     ReadDiscreteInputs = 0x02,
     ReadHoldingRegisters = 0x03,
     ReadInputRegister = 0x04,
-    WriteMultipleRegisters = 0x10
+    WriteMultipleRegisters = 0x10,
+    ReadFileSection = 0x41,
+    WriteFileSection = 0x42
 };
 Q_ENUM_NS(Commands)
-
-enum Exception : quint8
-{
-    InvalidFunctionCode = 0x01,
-    InvalidDataAddress = 0x02,
-    InvalidDataValue = 0x03,
-    ExecutionFailed1 = 0x04,
-    ExecutionFailed2 = 0x05,
-    ExecutionFailed3 = 0x06
-};
-
-enum ModbusGroupsEnum
-{
-    SIGNALTYPE = 0,
-    FIRSTBYTEADR = 1,
-    SECONDBYTEADR = 2,
-    FIRSTBYTEQ = 3,
-    SECONDBYTEQ = 4
-};
-
-/// \brief Enumeration for type identification.
-enum TypeId : quint8
-{
-    Uint16 = 0, ///< 1 register contains 16 bit uint (WORD)
-    Int16 = 1,  ///< 1 register contains 16 bit int
-    Bool,       ///< 1 register contains 1 bit
-    Uint32,     ///< 2 registers contain uint32 (bitstring)
-    Float,      ///< 2 registers contain float
-    // ...
-    // Smth else
-    // ...
-    None = 255
-};
-Q_ENUM_NS(TypeId)
-
-enum BaudRate : quint8
-{
-    Baud1200 = 0,
-    Baud2400 = 1,
-    Baud4800 = 2,
-    Baud9600 = 3,
-    Baud19200 = 4,
-    Baud38400 = 5,
-    Baud57600 = 6,
-    Baud115200 = 7
-};
-Q_ENUM_NS(BaudRate)
-
-enum Parity : quint8
-{
-    NoParity = 0,
-    EvenParity = 1,
-    OddParity = 2
-};
-
-enum StopBits : quint8
-{
-    OneStop = 0,
-    TwoStop = 1
-};
 
 struct CommandStruct
 {
@@ -96,19 +26,13 @@ struct CommandStruct
     quint16 adr;
     quint16 quantity;
     QByteArray data;
-    TypeId type;
-    QString sender;
 };
 
-struct Coils
-{
-    int countBytes;
-    QByteArray Bytes;
-};
+constexpr char FileSectionLength = 0xF6;
 
-QDebug operator<<(QDebug debug, const CommandsMBS::CommandStruct &cmd);
+QDebug operator<<(QDebug debug, const MBS::CommandStruct &cmd);
 }
-Q_DECLARE_METATYPE(CommandsMBS::CommandStruct)
+Q_DECLARE_METATYPE(MBS::CommandStruct)
 
 constexpr unsigned char TabCRChi[256] = { 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00,
     0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,

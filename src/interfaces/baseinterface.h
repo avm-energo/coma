@@ -4,6 +4,8 @@
 #include "../module/modulesettings.h"
 #include "../s2/configv.h"
 #include "../s2/datarecv.h"
+#include "../s2/filestruct.h"
+#include "interfacesettings.h"
 
 #include <QTimer>
 #include <gen/datamanager/typesproxy.h>
@@ -11,10 +13,6 @@
 #include <gen/error.h>
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
-#include <memory>
-#include <typeinfo>
-
-using InterfaceSettings = ModuleTypes::InterfaceSettings;
 
 enum INTERVAL
 {
@@ -24,13 +22,110 @@ enum INTERVAL
 
 struct ConnectStruct;
 
+namespace Interface
+{
+
+namespace Regs
+{
+    constexpr quint16 bsiExtStartReg = 40;
+    constexpr quint16 timeReg = 4600;
+    constexpr quint16 bsiStartReg = 1;
+    constexpr quint16 bsiCountRegs = 15;
+}
+
+enum State
+{
+    Run,
+    Stop,
+    Wait,
+    None
+};
+
+enum Commands
+{
+    C_ReqStartup,
+    C_ReqBSI,
+    C_ReqBSIExt,
+    C_ReqAlarms,
+    C_ReqFile,
+    C_WriteFile,
+    C_ReqTime,
+    C_WriteTime,
+    C_ReqFloats,
+    C_ReqBitStrings,
+    C_ReqProgress,
+    C_SetNewConfiguration,
+    C_StartFirmwareUpgrade,
+    C_EraseJournals,
+
+    C_StartWorkingChannel,
+    C_SetStartupValues,
+    C_SetStartupPhaseA,
+    C_SetStartupPhaseB,
+    C_SetStartupPhaseC,
+    C_SetStartupUnbounced,
+    C_SetTransOff,
+    C_ClearStartupValues,
+    C_ClearStartupUnbounced,
+    C_ClearStartupError,
+
+    C_Test,
+    C_EraseTechBlock,
+    C_WriteHiddenBlock,
+    C_WriteUserValues,
+    C_WriteSingleCommand,
+    C_ReqTuningCoef,
+    C_WriteTuningCoef,
+    C_WriteBlkData,
+    C_ReqBlkData,
+    C_ReqBlkDataA,
+    C_ReqBlkDataTech,
+    C_WriteBlkDataTech,
+    C_Reboot,
+    C_ReqOscInfo,
+    C_SetMode,
+    C_GetMode,
+    C_WriteHardware
+};
+
+enum CommandRegisters
+{
+    StartWorkingChannel = 803,  ///< Старт рабочего канала
+    SetStartupValues = 900,     ///< Задать начальные значения по всем фазам
+    SetStartupPhaseA = 901,     ///< Задать начальные значения по фазе A
+    SetStartupPhaseB = 902,     ///< Задать начальные значения по фазе B
+    SetStartupPhaseC = 903,     ///< Задать начальные значения по фазе C
+    SetStartupUnbounced = 904,  ///< Задать начальные значения по току небаланса
+    ClearStartupValues = 905,   ///< Сбросить начальные значения по всем фазам
+    ClearStartupSetError = 906, ///< Сбросить ошибку задания начальных значений
+    SetTransOff = 907,          ///< Послать команду "Трансфоратор отключён"
+    ClearStartupUnbounced = 908 ///< Сбросить начальное значение тока небаланса
+};
+
+enum TechBlocks
+{
+    T_Oscillogram = 0x01,
+    T_GeneralEvent = 0x02,
+    T_TechEvent = 0x03,
+    T_SwitchJournal = 0x04,
+    T_WorkArchive = 0x05
+};
+
+struct CommandStruct
+{
+    Commands command;
+    QVariant arg1; // reqFile, writeFile: id, reqStartup: sigAddr, WriteTime: time, WriteCommand: command
+    QVariant arg2; // reqFile: format, reqStartup: sigCount, WriteFile: &bytearray, WriteCommand: value
+};
+
 class BaseInterface : public QObject
 {
     Q_OBJECT
 
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
+
 protected:
-    using FileFormat = Queries::FileFormat;
+    using FileFormat = DataTypes::FileFormat;
 
 public:
     /// BaseInterface has its own memory manager
@@ -38,54 +133,53 @@ public:
     /// multiple times in runtime
     using InterfacePointer = UniquePointer<BaseInterface>;
 
-    enum State
-    {
-        Run,
-        Stop,
-        Wait,
-        None
-    };
-
-    UniquePointer<LogClass> Log;
+    // protocol settings
+    std::unique_ptr<ProtocolDescription> m_settings;
 
     explicit BaseInterface(QObject *parent = nullptr);
-    ~BaseInterface();
+    ~BaseInterface() {};
+
     /// Pointer to current interface
-    static BaseInterface *iface();
+    static BaseInterface *iface()
+    {
+        return m_iface.get();
+    }
+
     /// Creator for interface
-    static void setIface(InterfacePointer iface);
+    static void setIface(InterfacePointer iface)
+    {
+        m_iface = std::move(iface);
+    }
 
     virtual bool start(const ConnectStruct &) = 0;
-    virtual void pause();
-    virtual void resume();
-    virtual void stop();
-    virtual void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
-    virtual void reqBSI() = 0;
-    virtual void reqBSIExt() = 0;
-    virtual void reqFile(quint32, FileFormat format = FileFormat::Binary) = 0;
-    void reqFile(quint32 id, FileFormat format, quint32 expectedSize);
-    virtual void writeFile(quint32, const QByteArray &) = 0;
+    virtual bool supportBSIExt();
+
+    // helper methods
+    bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0);
+    ProtocolDescription *settings();
+    State state();
+    void setState(const State &state);
+
+    // commands to send
+    void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
+    void reqBSI();
+    void reqBSIExt();
+    void reqFile(quint32 id, FileFormat format = FileFormat::Binary, quint32 expectedSize = 0);
+    void writeFile(quint32 id, const QByteArray &ba);
     void writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
-    // void writeConfigFile();
-    virtual void reqTime() = 0;
-    virtual void writeTime(quint32) = 0;
-    virtual void writeCommand(Queries::Commands, QVariant = 0) = 0;
-    virtual void writeCommand(Queries::Commands cmd, const QVariantList &list)
-    {
-        // for each signal in list form the command and set it into the input queue
-        for (const auto &item : list)
-            writeCommand(cmd, item);
-    }
-
+    void reqTime();
+    void writeTime(quint32 time);
+    void writeCommand(Commands cmd, QVariant value = 0);
+    void writeCommand(Commands cmd, const QVariantList &list);
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
-    virtual void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
-    virtual void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) = 0;
-    /// Прямая запись данных
-    virtual void writeRaw(const QByteArray &)
-    {
-    }
+    void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0);
+    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
+    void setToQueue(CommandStruct &cmd);
 
-    // Bac & Bda blocks only supported for now
+    // ===============================================================================
+    // =============================== SYNC METHODS ==================================
+    // ===============================================================================
+
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeConfFileSync(const QList<DataTypes::DataRecV> &config);
@@ -96,42 +190,22 @@ public:
     Error::Msg readS2FileSync(quint32 filenum);
     Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
-    ModuleTypes::InterfaceSettings settings() const;
-
-    template <class T> T settings() const
-    {
-        Q_ASSERT(m_settings.settings.canConvert<T>());
-        // qDebug() << m_settings.settings.type().name() << "<->" << typeid(T).name();
-        // Q_ASSERT(m_settings.settings.type() == typeid(T));
-        // Q_ASSERT(std::holds_alternative<T>(m_settings.settings));
-        // return std::get<T>(m_settings.settings);
-        return m_settings.settings.value<T>();
-    }
-
-    void setSettings(const InterfaceSettings &settings);
-    template <class T> void setSettings(const T &settings)
-    {
-        m_settings.settings = settings;
-    }
-
-    State state();
-    void setState(const State &state);
-    bool virtual supportBSIExt();
 
 signals:
+    void connected();
+    void disconnected();
     void reconnect();
-    void finish();
     void nativeEvent(void *const message);
-    void stateChanged(BaseInterface::State m_state);
+    void stateChanged(State m_state);
+    void wakeUpParser() const;
 
 private:
     bool m_busy, m_timeout;
     QByteArray m_byteArrayResult;
     bool m_responseResult;
-    QTimer *timeoutTimer;
+    QTimer *m_timeoutTimer;
     static InterfacePointer m_iface;
     State m_state;
-    InterfaceSettings m_settings;
     QMutex _stateMutex;
     UniquePointer<DataTypesProxy> proxyBS, proxyGRS, proxyFS, proxyDRL, proxyBStr;
 #ifdef __linux__
@@ -146,6 +220,9 @@ private slots:
     void timeout();
 };
 
-Q_DECLARE_METATYPE(BaseInterface::State)
+}
+
+Q_DECLARE_METATYPE(Interface::State)
+Q_DECLARE_METATYPE(Interface::CommandStruct)
 
 #endif // BASEINTERFACE_H

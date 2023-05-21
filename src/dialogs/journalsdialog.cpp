@@ -116,7 +116,7 @@ QWidget *JournalDialog::jourTab(const Journal *journal)
     hlyout->addWidget(getButton);
     QPushButton *eraseButton = WDFunc::NewPB(this, "ej." + QString::number(jourtype), "Стереть " + str, this, [=] {
         if (checkPassword())
-            BaseInterface::iface()->writeCommand(Queries::QC_EraseJournals, quint8(jourtype));
+            BaseInterface::iface()->writeCommand(Commands::C_EraseJournals, quint8(jourtype));
     });
     hlyout->addWidget(eraseButton);
     QPushButton *saveButton = WDFunc::NewPB(this, "sj." + QString::number(jourtype), "Сохранить журнал в файл", this,
@@ -141,7 +141,7 @@ void JournalDialog::jourFileChoosed(QString &file)
 void JournalDialog::eraseJour()
 {
     if (checkPassword())
-        BaseInterface::iface()->writeCommand(Queries::QC_EraseJournals);
+        BaseInterface::iface()->writeCommand(Commands::C_EraseJournals);
 }
 
 void JournalDialog::saveJour(DataTypes::FilesEnum jourType)
