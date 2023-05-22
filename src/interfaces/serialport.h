@@ -17,9 +17,6 @@ public:
     bool init(SerialPortSettings settings);
     bool clear();
 
-signals:
-    void error();
-
 private:
     QPointer<QSerialPort> port;
     QTimer *m_connectionTimer;
@@ -29,6 +26,10 @@ public slots:
     bool connect() override;
     void disconnect() override;
     void poll() override {};
+    QByteArray readData() override
+    {
+        return {};
+    };
 
 private slots:
     void readBytes();

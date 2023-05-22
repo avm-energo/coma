@@ -88,6 +88,7 @@ void UsbHidPort::poll()
             reconnect();
             continue;
         }
+        // Read
         std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
         bytes = hid_read_timeout(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1, 100);
         // Write
@@ -98,8 +99,6 @@ void UsbHidPort::poll()
             reconnect();
             continue;
         }
-        // Read
-        QByteArray ba;
         // timeout from module (if avtuk accidentally couldnt response)
         if ((bytes == 0) && (m_waitForReply) && (missingCounter == missingCounterMax))
         {
@@ -110,12 +109,8 @@ void UsbHidPort::poll()
         }
         if (bytes > 0)
         {
-            ba = QByteArray(reinterpret_cast<char *>(array.data()), bytes);
+            auto ba = QByteArray::fromRawData(reinterpret_cast<char *>(array.data()), bytes);
             m_waitForReply = false;
-            missingCounter = 0;
-        }
-        if (!ba.isEmpty())
-        {
             missingCounter = 0;
             writeLog(ba.toHex(), Direction::FromDevice);
             emit dataReceived(ba);
@@ -132,6 +127,11 @@ void UsbHidPort::poll()
         }
     }
     finish();
+}
+
+QByteArray UsbHidPort::readData()
+{
+    return {};
 }
 
 void UsbHidPort::deviceConnected(const UsbHidSettings &st)
@@ -333,7 +333,7 @@ void UsbHidPort::writeLog(QByteArray ba, Proto::Direction dir)
         break;
     }
     tmpba.append(ba).append("\n");
-    Log->WriteRaw(tmpba);
+    m_log->WriteRaw(tmpba);
 #endif
 }
 

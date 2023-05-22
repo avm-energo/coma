@@ -50,6 +50,7 @@ public slots:
     void poll() override;
 
 private:
+    virtual QByteArray readData() override;
     void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
     void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection);
     bool writeDataToPort(QByteArray &ba);

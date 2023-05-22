@@ -431,9 +431,12 @@ bool ModbusThread::processReadFile()
     quint16 fileNum = unpackReg<quint16>(m_readData.mid(3, sizeof(quint16)));
     quint16 secNum = unpackReg<quint16>(m_readData.mid(5, sizeof(quint16)));
     Q_UNUSED(secNum)
-    Q_ASSERT(fileNum == m_currentCommand.arg1.value<quint16>()); // проверяем, что номер файла тот, что мы ожидаем
-    Q_ASSERT(m_readData.at(7)
-        == (m_readData.size() - 8)); // проверка, прочитали ли мы столько байт, сколько заявлено в шапке
+    // проверяем, что номер файла тот, что мы ожидаем
+    Q_ASSERT(fileNum == m_currentCommand.arg1.value<quint16>());
+    // проверка, прочитали ли мы столько байт, сколько заявлено в шапке
+    auto size1 = m_readData.at(7);
+    auto size2 = m_readData.size() - 8;
+    Q_ASSERT(size1 == size2);
     if (m_readData.size() > 8) // если в секции вообще что-то есть, может быть и нулевая
         m_fileData.append(m_readData.mid(8));
     if (isLastSection)
@@ -464,9 +467,9 @@ void ModbusThread::readRegisters(MBS::CommandStruct &cms)
 {
     m_commandSent = cms;
     QByteArray ba(createReadPDU(cms));
-    ba = createADU(ba);
     if (cms.data.size())
         ba.append(cms.data);
+    ba = createADU(ba);
     m_bytesToReceive = cms.quantity * 2 + 5; // address, function code, bytes count, crc (2)
     send(ba);
 }
@@ -506,6 +509,7 @@ bool ModbusThread::writeFile(quint16 fileNum)
     ba.prepend(StdFunc::ArrayFromNumber(qToBigEndian(fileNum)));
     ba.prepend(StdFunc::ArrayFromNumber(lastSection));
     ba.prepend(MBS::Commands::WriteFileSection);
+    ba.prepend(m_deviceAddress);
     m_bytesToReceive = 8; // address, function code, last section, numFile (2), numSection (2), secLength
     calcCRCAndSend(ba);
     return true;

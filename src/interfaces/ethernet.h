@@ -31,7 +31,7 @@ signals:
     void Disconnected();
 
 public slots:
-    bool reconnect() override;
+    bool reconnect();
     void disconnect() override;
     bool writeData(const QByteArray &ba) override;
     void poll() override;
