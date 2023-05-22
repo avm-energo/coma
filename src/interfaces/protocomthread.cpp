@@ -265,14 +265,14 @@ void ProtocomThread::parseResponse()
         processOk();
         break;
     }
-    
+
     case ResultError:
     {
         const quint8 errorCode = m_readData.front();
         processError(errorCode);
         break;
     }
-    
+
     case ReadTime:
 #ifdef Q_OS_LINUX
         if (m_readData.size() == sizeof(quint64))

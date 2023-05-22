@@ -20,7 +20,7 @@ BaseInterface::BaseInterface(QObject *parent) : QObject(parent) /* m_working(fal
     m_timeoutTimer = new QTimer(this);
     m_timeoutTimer->setInterval(MAINTIMEOUT);
     connect(m_timeoutTimer, &QTimer::timeout, this, &BaseInterface::timeout);
-    m_state = State::None;
+    m_state = State::Connect;
     m_settings = std::unique_ptr<ProtocolDescription>(new ProtocolDescription());
 }
 

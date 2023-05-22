@@ -16,16 +16,14 @@ struct USBMessage
 };
 
 struct hid_device_;
-typedef struct hid_device_ hid_device; /**< opaque hidapi structure */
+using hid_device = hid_device_; ///< opaque hidapi structure
+// typedef struct hid_device_ hid_device;
 
 namespace HID
 {
-// максимальная длина одного сегмента (0x40)
-constexpr int MaxSegmenthLength = 64;
-// 20 ms main loop sleep
-constexpr unsigned MainLoopDelay = 20;
+constexpr int MaxSegmenthLength = 64;  // максимальная длина одного сегмента (0x40)
+constexpr unsigned MainLoopDelay = 20; // 20 ms main loop sleep
 constexpr char headerValidator[] = "[a-zA-Z]{3}(?=#)";
-
 } // namespace HID
 
 class UsbHidPort : public BasePort
@@ -53,13 +51,8 @@ public slots:
 
 private:
     void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
-    void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)
-    {
-        writeLog(QVariant::fromValue(msg).toByteArray(), dir);
-    }
-
+    void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection);
     bool writeDataToPort(QByteArray &ba);
-
     bool checkCurrentCommand();
     // bool checkQueue();
     void finish();
@@ -68,8 +61,8 @@ private:
     void deviceDisconnected(const UsbHidSettings &st);
     void deviceConnected();
     void deviceDisconnected();
-    bool m_waitForReply;
 
+    bool m_waitForReply;
     hid_device *m_hidDevice;
     bool m_shouldBeStopped;
     QMutex _mutex;

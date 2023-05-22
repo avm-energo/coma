@@ -35,10 +35,10 @@ namespace Regs
 
 enum State
 {
-    Run,
-    Stop,
-    Wait,
-    None
+    Connect,
+    Reconnect,
+    Disconnect,
+    Run
 };
 
 enum Commands

@@ -102,7 +102,7 @@ void Ethernet::disconnect()
     }
     Log->info("Stop signal");
     ClosePortAndFinishThread = true;
-    setState(Interface::State::Stop);
+    setState(Interface::State::Disconnect);
 }
 
 bool Ethernet::reconnect()
@@ -123,7 +123,7 @@ bool Ethernet::reconnect()
         result = true;
     });
     QObject::connect(sock, &QAbstractSocket::errorOccurred, this, [&]() {
-        setState(Interface::State::Stop);
+        setState(Interface::State::Disconnect);
         loop.quit();
         result = false;
     });

@@ -76,7 +76,7 @@ void SerialPort::disconnect()
 {
     if (port->isOpen())
         port->close();
-    setState(Interface::State::Stop);
+    setState(Interface::State::Disconnect);
 }
 
 void SerialPort::errorOccurred(QSerialPort::SerialPortError err)

@@ -160,7 +160,7 @@ void BaseInterfaceThread::run()
         classname = classname.split("::").last();
     m_log->Init(classname);
     m_log->info(logStart);
-    while (BaseInterface::iface()->state() != State::Stop)
+    while (BaseInterface::iface()->state() != State::Disconnect)
     {
         QMutexLocker locker(&_mutex);
         if (!m_isCommandRequested)

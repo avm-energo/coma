@@ -75,9 +75,9 @@ void ModBus::sendReconnectSignal()
     switch (state())
     {
     case State::Run:
-        setState(State::Wait);
+        setState(State::Reconnect);
         break;
-    case State::Wait:
+    case State::Reconnect:
         emit reconnect();
         break;
     default:

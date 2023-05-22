@@ -72,7 +72,7 @@ bool IEC104::start(const ConnectStruct &st)
         sock, &QIODevice::readyRead, parser,
         [=] {
             QByteArray ba = sock->readAll();
-            QMetaObject::invokeMethod(parser, [=] { parser->processReadBytes(ba); });
+            QMetaObject::invokeMethod(parser, [&] { parser->processReadBytes(ba); });
         },
         Qt::QueuedConnection);
     connect(parser, &IEC104Thread::ReconnectSignal, this, &IEC104::EmitReconnectSignal);
@@ -226,7 +226,7 @@ void IEC104::EthThreadFinished()
     EthThreadWorking = false;
     if (!ParseThreadWorking)
     {
-        setState(State::Stop);
+        setState(State::Disconnect);
         emit Finished();
     }
 }
@@ -236,7 +236,7 @@ void IEC104::ParseThreadFinished()
     ParseThreadWorking = false;
     if (!EthThreadWorking)
     {
-        setState(State::Stop);
+        setState(State::Disconnect);
         emit Finished();
     }
 }
@@ -244,7 +244,7 @@ void IEC104::ParseThreadFinished()
 void IEC104::EmitReconnectSignal()
 {
     qDebug() << __PRETTY_FUNCTION__;
-    if (state() != State::Wait)
+    if (state() == State::Reconnect)
         emit reconnect();
 }
 
@@ -281,7 +281,7 @@ void IEC104::EthStateChanged(QAbstractSocket::SocketState state)
 
 void IEC104::disconnect()
 {
-    setState(State::Wait);
+    setState(State::Disconnect);
     emit StopAll();
 }
 

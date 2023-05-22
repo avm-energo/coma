@@ -49,7 +49,7 @@ public slots:
     void StopDT();
     void Stop();
     void Run();
-    void processReadBytes(QByteArray) override;
+    void processReadBytes(QByteArray ba) override;
 
 signals:
     //  void Started();

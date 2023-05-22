@@ -10,7 +10,6 @@
 
 class SerialPort : public BasePort
 {
-
     Q_OBJECT
 public:
     explicit SerialPort(QObject *parent = nullptr);

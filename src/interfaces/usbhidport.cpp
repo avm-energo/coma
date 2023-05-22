@@ -74,12 +74,11 @@ void UsbHidPort::poll()
     int bytes;
     m_waitForReply = false;
     const auto &iface = BaseInterface::iface();
-    while (iface->state() != State::Stop)
+    while (iface->state() != State::Disconnect)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-
         // check if there's any data in input buffer
-        if (iface->state() == State::Wait)
+        if (iface->state() == State::Reconnect)
         {
             StdFunc::Wait(500);
             continue;
@@ -161,7 +160,7 @@ void UsbHidPort::deviceDisconnected(const UsbHidSettings &st)
     if (st != deviceInfo())
         return;
     // Отключено наше устройство
-    emit stateChanged(State::Wait);
+    emit stateChanged(State::Disconnect);
     qInfo() << deviceInfo() << "disconnected";
 }
 
@@ -176,7 +175,7 @@ void UsbHidPort::deviceConnected()
 void UsbHidPort::deviceDisconnected()
 {
     // Отключено наше устройство
-    emit stateChanged(State::Wait);
+    emit stateChanged(State::Disconnect);
     qInfo() << deviceInfo() << "disconnected";
     emit clearQueries();
 }
@@ -317,7 +316,7 @@ void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
 #endif
 }
 
-void UsbHidPort::writeLog(QByteArray ba, Direction dir)
+void UsbHidPort::writeLog(QByteArray ba, Proto::Direction dir)
 {
 #ifdef HIDUSB_LOG
     QByteArray tmpba = QByteArray(metaObject()->className());
@@ -336,6 +335,11 @@ void UsbHidPort::writeLog(QByteArray ba, Direction dir)
     tmpba.append(ba).append("\n");
     Log->WriteRaw(tmpba);
 #endif
+}
+
+void UsbHidPort::writeLog(Error::Msg msg, Proto::Direction dir)
+{
+    writeLog(QVariant::fromValue(msg).toByteArray(), dir);
 }
 
 bool UsbHidPort::writeDataToPort(QByteArray &ba)
@@ -378,20 +382,6 @@ bool UsbHidPort::writeDataToPort(QByteArray &ba)
     missingCounter = 0;
     return true;
 }
-
-// bool UsbHidPort::checkQueue()
-//{
-//    QMutexLocker locker(&_mutex);
-//    if (m_writeQueue.isEmpty())
-//        return false;
-//    QByteArray ba = m_writeQueue.takeFirst();
-//    locker.unlock();
-//    if (writeDataToPort(ba))
-//        return m_waitForReply = true;
-//    else
-//        emit clearQueries();
-//    return false;
-//}
 
 bool UsbHidPort::checkCurrentCommand()
 {

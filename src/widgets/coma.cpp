@@ -72,15 +72,11 @@ void registerForDeviceNotification(QWidget *ptr)
 {
     DEV_BROADCAST_DEVICEINTERFACE devInt;
     ZeroMemory(&devInt, sizeof(devInt));
-    // GUID _guid1 = { 0x25dbce51, 0x6c8f, 0x4a72, { 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 } };
-
     GUID _guid = { 0xa5dcbf10, 0x6530, 0x11d2, { 0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed } };
     devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-
     devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
     // With DEVICE_NOTIFY_ALL_INTERFACE_CLASSES this property ignores
     devInt.dbcc_classguid = _guid;
-
     HDEVNOTIFY blub;
     // NOTE Проверить со всеми модулями
     blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt,
@@ -620,10 +616,10 @@ void Coma::setupConnection()
         case State::Run:
             Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
             break;
-        case State::Stop:
+        case State::Disconnect:
             Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
             break;
-        case State::Wait:
+        case State::Reconnect:
             Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
             break;
         default:

@@ -9,7 +9,6 @@ BasePort::BasePort(const QString &logFilename, QObject *parent) : QObject(parent
     filename.append(".").append(::logExt);
     Log->Init(filename);
     Log->WriteRaw(::logStart);
-    // QObject::connect(this, &BasePort::tryToReconnect, this, &BasePort::reconnect);
 }
 
 void BasePort::setState(Interface::State state)
@@ -22,10 +21,9 @@ bool BasePort::reconnect()
 {
     Log->WriteRaw("!!! Restart connection !!!\n");
     disconnect();
-    QElapsedTimer *tmr = new QElapsedTimer;
-    tmr->start();
-    while (tmr->elapsed() < RECONNECTINTERVAL)
+    QElapsedTimer timer;
+    timer.start();
+    while (timer.elapsed() < RECONNECTINTERVAL)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    delete tmr;
     return connect();
 }
