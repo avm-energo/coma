@@ -34,7 +34,6 @@ bool SerialPort::init(SerialPortSettings settings)
     port->setFlowControl(QSerialPort::NoFlowControl);
     port->setReadBufferSize(1024);
     QObject::connect(port, &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
-    // QObject::connect(port, &QIODevice::readyRead, this, &SerialPort::readBytes);
 
     m_connectionTimer = new QTimer(this);
     m_connectionTimer->setInterval(TIMEOUT);
@@ -89,7 +88,6 @@ void SerialPort::disconnect()
 {
     if (port->isOpen())
         port->close();
-    // setState(Interface::State::Disconnect);
 }
 
 void SerialPort::errorOccurred(QSerialPort::SerialPortError err)
@@ -122,15 +120,3 @@ QByteArray SerialPort::read(bool *status)
     }
     return ba;
 };
-
-// void SerialPort::readBytes()
-//{
-//    QByteArray ba;
-//    while (port->bytesAvailable())
-//    {
-//        ba += port->readAll();
-//        QThread::msleep(2);
-//    }
-//    if (ba.size())
-//        emit dataReceived(ba);
-//}

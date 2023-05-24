@@ -76,29 +76,11 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     if (!port->init(st))
     {
         port->closeConnection();
-        // port->deleteLater();
-        // parser->deleteLater();
-        // parseThread->deleteLater();
         return false;
     }
     emit connected();
     return true;
 }
-
-// void ModBus::sendReconnectSignal()
-//{
-//    switch (state())
-//    {
-//    case State::Run:
-//        setState(State::Reconnect);
-//        break;
-//    case State::Reconnect:
-//        emit reconnect();
-//        break;
-//    default:
-//        break;
-//    }
-//}
 
 quint8 ModBus::obtainDelay(const quint32 baudRate)
 {

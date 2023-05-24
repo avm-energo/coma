@@ -6,8 +6,6 @@
 BasePort::BasePort(const QString &logFilename, QObject *parent)
     : QObject(parent), m_state(Interface::State::Connect), m_log(new LogClass(this)), m_timeoutTimer(new QTimer(this))
 {
-    // QString filename(logFilename);
-    // filename.append(".").append(::logExt);
     m_log->Init(logFilename + "." + ::logExt);
     m_log->WriteRaw(::logStart);
 }

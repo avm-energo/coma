@@ -51,12 +51,7 @@ public slots:
 
 private:
     virtual QByteArray read(bool *status = nullptr) override;
-    // void writeLog(QByteArray ba, Interface::Direction dir = Interface::NoDirection);
-    // void writeLog(Error::Msg msg, Interface::Direction dir = Interface::NoDirection);
     bool writeDataToPort(QByteArray &ba);
-    // bool checkCurrentCommand();
-    // bool checkQueue();
-    // void finish();
     void clear();
     void deviceConnected(const UsbHidSettings &st);
     void deviceDisconnected(const UsbHidSettings &st);

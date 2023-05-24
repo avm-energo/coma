@@ -25,11 +25,9 @@ public slots:
     bool writeData(const QByteArray &ba) override;
     bool connect() override;
     void disconnect() override;
-    // void poll() override {};
     QByteArray read(bool *status = nullptr) override;
 
 private slots:
-    //[[deprecated]] void readBytes();
     void errorOccurred(QSerialPort::SerialPortError err);
 
 signals:
