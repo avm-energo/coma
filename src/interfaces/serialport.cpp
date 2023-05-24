@@ -14,13 +14,14 @@ SerialPort::SerialPort(QObject *parent) : BasePort("ModbusPort", parent)
 
 SerialPort::~SerialPort()
 {
-    disconnect();
-    emit finished();
+    port->deleteLater();
+    // disconnect();
+    // emit finished();
 }
 
 bool SerialPort::init(SerialPortSettings settings)
 {
-    port = new QSerialPort(settings.Port, this);
+    port = new QSerialPort(settings.Port);
     port->setBaudRate(settings.Baud);
     port->setDataBits(QSerialPort::Data8);
     if (settings.Parity == "Нет")
@@ -33,15 +34,16 @@ bool SerialPort::init(SerialPortSettings settings)
     port->setFlowControl(QSerialPort::NoFlowControl);
     port->setReadBufferSize(1024);
     QObject::connect(port, &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
-    QObject::connect(port, &QIODevice::readyRead, this, &SerialPort::readBytes);
+    // QObject::connect(port, &QIODevice::readyRead, this, &SerialPort::readBytes);
 
     m_connectionTimer = new QTimer(this);
     m_connectionTimer->setInterval(TIMEOUT);
     QObject::connect(port, &QIODevice::bytesWritten, this, [&] { m_connectionTimer->start(); });
     QObject::connect(port, &QIODevice::readyRead, m_connectionTimer, &QTimer::stop);
     QObject::connect(m_connectionTimer, &QTimer::timeout, this, [this] {
-        qInfo() << this->metaObject()->className() << Error::Timeout;
-        reconnect();
+        qWarning() << this->metaObject()->className() << Error::Timeout;
+        emit clearQueries();
+        // reconnect();
     });
     return connect();
 }
@@ -55,7 +57,15 @@ bool SerialPort::writeData(const QByteArray &ba)
 {
     if (!port->isOpen())
         return false;
-    port->write(ba.data(), ba.size());
+    m_dataGuard.lock();
+    auto bytes = port->write(ba.data(), ba.size());
+    m_dataGuard.unlock();
+    writeLog(ba.toHex(), Interface::ToDevice);
+    if (bytes <= 0)
+    {
+        qCritical() << "Error with data writing";
+        reconnect();
+    }
     QCoreApplication::processEvents();
     return true;
 }
@@ -69,8 +79,8 @@ bool SerialPort::connect()
     }
     else
     {
-        emit started();
         setState(Interface::State::Run);
+        emit started();
         return true;
     }
 }
@@ -79,7 +89,7 @@ void SerialPort::disconnect()
 {
     if (port->isOpen())
         port->close();
-    setState(Interface::State::Disconnect);
+    // setState(Interface::State::Disconnect);
 }
 
 void SerialPort::errorOccurred(QSerialPort::SerialPortError err)
@@ -106,18 +116,21 @@ QByteArray SerialPort::read(bool *status)
         QThread::msleep(2);
     }
     if (ba.isEmpty())
+    {
+        QCoreApplication::processEvents();
         emit error(NoData);
+    }
     return ba;
 };
 
-void SerialPort::readBytes()
-{
-    QByteArray ba;
-    while (port->bytesAvailable())
-    {
-        ba += port->readAll();
-        QThread::msleep(2);
-    }
-    if (ba.size())
-        emit dataReceived(ba);
-}
+// void SerialPort::readBytes()
+//{
+//    QByteArray ba;
+//    while (port->bytesAvailable())
+//    {
+//        ba += port->readAll();
+//        QThread::msleep(2);
+//    }
+//    if (ba.size())
+//        emit dataReceived(ba);
+//}

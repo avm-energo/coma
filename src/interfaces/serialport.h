@@ -29,8 +29,11 @@ public slots:
     QByteArray read(bool *status = nullptr) override;
 
 private slots:
-    [[deprecated]] void readBytes();
-    [[deprecated]] void errorOccurred(QSerialPort::SerialPortError err);
+    //[[deprecated]] void readBytes();
+    void errorOccurred(QSerialPort::SerialPortError err);
+
+signals:
+    void clearQueries();
 };
 
 #endif // SERIALPORT_H

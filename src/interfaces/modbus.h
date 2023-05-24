@@ -27,6 +27,6 @@ signals:
 private:
     quint8 obtainDelay(const quint32 baudRate);
 
-private slots:
-    void sendReconnectSignal();
+    // private slots:
+    //    void sendReconnectSignal();
 };

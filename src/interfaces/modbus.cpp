@@ -34,56 +34,71 @@ bool ModBus::start(const ConnectStruct &connectStruct)
         return false;
 
     const auto &st = std::get<SerialPortSettings>(connectStruct.settings);
-    auto thr = new QThread;
-    auto port = new SerialPort(this);
+    auto portThread = new QThread;
+    auto parseThread = new QThread;
+    auto port = new SerialPort;
     auto parser = new ModbusThread;
     parser->setDelay(obtainDelay(st.Baud));
     parser->setDeviceAddress(st.Address);
-    thr->setObjectName("Modbus thread");
+    parseThread->setObjectName("Modbus thread");
 
-    connect(thr, &QThread::started, parser, &ModbusThread::run);
-    connect(parser, &ModbusThread::finished, thr, &QThread::quit);
+    connect(portThread, &QThread::started, port, &BasePort::poll);
+    connect(parseThread, &QThread::started, parser, &ModbusThread::run);
+    connect(parser, &ModbusThread::finished, parseThread, &QThread::quit);
     // connect(thr, &QThread::finished, port, &BasePort::disconnect);
-    connect(thr, &QThread::finished, port, &QObject::deleteLater);
-    connect(thr, &QThread::finished, thr, &QObject::deleteLater);
-    connect(thr, &QThread::finished, parser, &QObject::deleteLater);
+    //    connect(parseThread, &QThread::finished, port, &QObject::deleteLater);
+    //    connect(parseThread, &QThread::finished, parseThread, &QObject::deleteLater);
+    //    connect(parseThread, &QThread::finished, parser, &QObject::deleteLater);
     connect(this, &BaseInterface::wakeUpParser, parser, &BaseInterfaceThread::wakeUp, Qt::DirectConnection);
-    connect(port, &BasePort::dataReceived, parser, &ModbusThread::processReadBytes);
-    connect(parser, &ModbusThread::sendDataToPort, port, &BasePort::writeData);
-    connect(parser, &ModbusThread::clearBuffer, port, &SerialPort::clear);
-    connect(port, &SerialPort::error, this, &ModBus::sendReconnectSignal);
-    connect(this, &BaseInterface::reconnect, port, &BasePort::reconnect);
+    connect(port, &BasePort::dataReceived, parser, &BaseInterfaceThread::processReadBytes, Qt::DirectConnection);
+    connect(parser, &ModbusThread::sendDataToPort, port, &BasePort::writeData, Qt::DirectConnection);
+    connect(parser, &ModbusThread::clearBuffer, port, &SerialPort::clear, Qt::DirectConnection);
+    connect(port, &SerialPort::clearQueries, parser, &BaseInterfaceThread::clear, Qt::DirectConnection);
+    // connect(port, &SerialPort::error, this, &ModBus::sendReconnectSignal, Qt::DirectConnection);
+    connect(this, &BaseInterface::reconnect, port, &BasePort::reconnect, Qt::DirectConnection);
+    connect(port, &BasePort::stateChanged, this, &BaseInterface::stateChanged, Qt::QueuedConnection);
+
+    connect(port, &BasePort::finished, portThread, &QThread::quit);
+    connect(port, &BasePort::finished, parseThread, &QThread::quit);
+    connect(portThread, &QThread::finished, port, &QObject::deleteLater);
+    connect(parseThread, &QThread::finished, parser, &QObject::deleteLater);
+    connect(portThread, &QThread::finished, &QObject::deleteLater);
+    connect(parseThread, &QThread::finished, &QObject::deleteLater);
+
     connect(port, &SerialPort::started, port, [=] {
         setState(State::Run);
-        parser->moveToThread(thr);
-        thr->start();
+        parser->moveToThread(parseThread);
+        port->moveToThread(portThread);
+        parseThread->start();
+        portThread->start();
         StdFunc::Wait(1000);
     });
     if (!port->init(st))
     {
-        port->deleteLater();
-        parser->deleteLater();
-        thr->deleteLater();
+        port->closeConnection();
+        // port->deleteLater();
+        // parser->deleteLater();
+        // parseThread->deleteLater();
         return false;
     }
     emit connected();
     return true;
 }
 
-void ModBus::sendReconnectSignal()
-{
-    switch (state())
-    {
-    case State::Run:
-        setState(State::Reconnect);
-        break;
-    case State::Reconnect:
-        emit reconnect();
-        break;
-    default:
-        break;
-    }
-}
+// void ModBus::sendReconnectSignal()
+//{
+//    switch (state())
+//    {
+//    case State::Run:
+//        setState(State::Reconnect);
+//        break;
+//    case State::Reconnect:
+//        emit reconnect();
+//        break;
+//    default:
+//        break;
+//    }
+//}
 
 quint8 ModBus::obtainDelay(const quint32 baudRate)
 {

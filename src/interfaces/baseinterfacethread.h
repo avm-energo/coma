@@ -17,7 +17,7 @@ class BaseInterfaceThread : public QObject
 public:
     explicit BaseInterfaceThread(QObject *parent = nullptr);
 
-    virtual void clear();
+    void clear();
     void wakeUp();
 
     quint16 blockByReg(const quint32 regAddr)
