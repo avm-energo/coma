@@ -11,8 +11,8 @@
 
 // typedef QQueue<QByteArray> ByteQueue;
 using DataTypes::FileFormat;
+using Interface::Direction;
 using Proto::CommandStruct;
-using Proto::Direction;
 using Proto::Starters;
 using namespace Interface;
 
@@ -37,7 +37,7 @@ void ProtocomThread::processReadBytes(QByteArray ba)
 
     m_responseReceived = Proto::Commands(ba.at(1)); // received from device "command"
     auto size = quint16(ba.at(2));
-    writeLog(ba, Proto::FromDevice);
+    writeLog(ba, Interface::FromDevice);
     ba.remove(0, 4);
     ba.resize(size);
     m_readData.append(ba);
@@ -338,16 +338,16 @@ void ProtocomThread::parseResponse()
     finishCommand();
 }
 
-void ProtocomThread::writeLog(const QByteArray &ba, Proto::Direction dir)
+void ProtocomThread::writeLog(const QByteArray &ba, Direction dir)
 {
 #ifdef PROTOCOM_DEBUG
     QString msg = metaObject()->className();
     switch (dir)
     {
-    case Proto::FromDevice:
+    case Interface::FromDevice:
         msg += ": <- ";
         break;
-    case Proto::ToDevice:
+    case Interface::ToDevice:
         msg += ": -> ";
         break;
     default:

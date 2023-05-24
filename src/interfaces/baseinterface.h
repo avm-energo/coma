@@ -41,6 +41,13 @@ enum State
     Run
 };
 
+enum Direction
+{
+    NoDirection,
+    ToDevice,
+    FromDevice
+};
+
 enum Commands
 {
     C_ReqStartup,

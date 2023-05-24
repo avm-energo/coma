@@ -14,21 +14,21 @@ class BasePort : public QObject
 {
     Q_OBJECT
 public:
-    // Temporary in comment
-    //    enum PortErrors
-    //    {
-    //    };
+    enum PortErrors
+    {
+        Timeout,
+        ReadError,
+        NoData
+    };
 
     explicit BasePort(const QString &logFilename, QObject *parent = nullptr);
     bool reconnect();
-    // virtual void init();
 
 signals:
     void dataReceived(QByteArray ba);
     void started();
     void finished();
-    void error();
-    void timeout();
+    void error(BasePort::PortErrors error);
     void stateChanged(Interface::State);
 
 private:
@@ -42,14 +42,17 @@ protected:
 
     void setState(Interface::State state);
     Interface::State getState();
-    virtual QByteArray readData() = 0;
-    // virtual void finish();
 
-public slots:
-    void poll(bool ok);
-    virtual void poll() = 0;
+    void writeLog(const QByteArray &ba, Interface::Direction dir = Interface::NoDirection);
+    void writeLog(const Error::Msg msg, Interface::Direction dir = Interface::NoDirection);
+
+    virtual QByteArray read(bool *status = nullptr) = 0;
     virtual bool connect() = 0;
     virtual void disconnect() = 0;
+
+public slots:
+    void poll();
+    void closeConnection();
     virtual bool writeData(const QByteArray &ba) = 0;
 };
 

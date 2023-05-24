@@ -8,7 +8,7 @@
 #include <QSerialPort>
 #include <QTimer>
 
-class SerialPort : public BasePort
+class SerialPort final : public BasePort
 {
     Q_OBJECT
 public:
@@ -25,15 +25,12 @@ public slots:
     bool writeData(const QByteArray &ba) override;
     bool connect() override;
     void disconnect() override;
-    void poll() override {};
-    QByteArray readData() override
-    {
-        return {};
-    };
+    // void poll() override {};
+    QByteArray read(bool *status = nullptr) override;
 
 private slots:
-    void readBytes();
-    void errorOccurred(QSerialPort::SerialPortError err);
+    [[deprecated]] void readBytes();
+    [[deprecated]] void errorOccurred(QSerialPort::SerialPortError err);
 };
 
 #endif // SERIALPORT_H

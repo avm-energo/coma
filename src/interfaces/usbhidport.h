@@ -26,12 +26,12 @@ constexpr unsigned MainLoopDelay = 20; // 20 ms main loop sleep
 constexpr char headerValidator[] = "[a-zA-Z]{3}(?=#)";
 } // namespace HID
 
-class UsbHidPort : public BasePort
+class UsbHidPort final : public BasePort
 {
     Q_OBJECT
 public:
     explicit UsbHidPort(const UsbHidSettings &dev, QObject *parent = 0);
-    ~UsbHidPort();
+    ~UsbHidPort() = default;
 
     UsbHidSettings deviceInfo() const;
     void setDeviceInfo(const UsbHidSettings &deviceInfo);
@@ -47,16 +47,16 @@ public slots:
     bool connect() override;
     void disconnect() override;
     bool writeData(const QByteArray &ba) override;
-    void poll() override;
+    //[[deprecated]] void poll();
 
 private:
-    virtual QByteArray readData() override;
-    void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
-    void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection);
+    virtual QByteArray read(bool *status = nullptr) override;
+    // void writeLog(QByteArray ba, Interface::Direction dir = Interface::NoDirection);
+    // void writeLog(Error::Msg msg, Interface::Direction dir = Interface::NoDirection);
     bool writeDataToPort(QByteArray &ba);
-    bool checkCurrentCommand();
+    // bool checkCurrentCommand();
     // bool checkQueue();
-    void finish();
+    // void finish();
     void clear();
     void deviceConnected(const UsbHidSettings &st);
     void deviceDisconnected(const UsbHidSettings &st);

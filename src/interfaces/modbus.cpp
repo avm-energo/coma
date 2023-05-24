@@ -43,7 +43,7 @@ bool ModBus::start(const ConnectStruct &connectStruct)
 
     connect(thr, &QThread::started, parser, &ModbusThread::run);
     connect(parser, &ModbusThread::finished, thr, &QThread::quit);
-    connect(thr, &QThread::finished, port, &BasePort::disconnect);
+    // connect(thr, &QThread::finished, port, &BasePort::disconnect);
     connect(thr, &QThread::finished, port, &QObject::deleteLater);
     connect(thr, &QThread::finished, thr, &QObject::deleteLater);
     connect(thr, &QThread::finished, parser, &QObject::deleteLater);

@@ -23,24 +23,29 @@
 // clang-format on
 #endif
 
+using Interface::Direction;
 using Proto::CommandStruct;
-using Proto::Direction;
 using Proto::Starters;
 using namespace Interface;
 
-UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent) : BasePort("UsbHidPort", parent), m_deviceInfo(dev)
+UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent)
+    : BasePort("UsbHidPort", parent)
+    , m_deviceInfo(dev)
+    , m_hidDevice(nullptr)
+    , m_waitForReply(false)
+    , m_shouldBeStopped(false)
 {
     using namespace settings;
-    m_hidDevice = nullptr;
-    m_shouldBeStopped = false;
+    // m_hidDevice = nullptr;
+    // m_shouldBeStopped = false;
     QObject::connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
     QSettings sets;
     missingCounterMax = sets.value(regMap[hidTimeout].name, "50").toInt();
 }
 
-UsbHidPort::~UsbHidPort()
-{
-}
+// UsbHidPort::~UsbHidPort()
+//{
+//}
 
 inline hid_device *openDevice(const UsbHidSettings &dev)
 {
@@ -52,7 +57,8 @@ bool UsbHidPort::connect()
     if ((deviceInfo().vendor_id == 0) || (deviceInfo().product_id == 0))
     {
         qCritical() << Error::Msg::NoDeviceError;
-        finish();
+        // finish();
+        closeConnection();
         return false;
     }
 
@@ -61,77 +67,120 @@ bool UsbHidPort::connect()
     if (!m_hidDevice)
     {
         qCritical() << Error::Msg::OpenError;
-        finish();
+        // finish();
+        closeConnection();
         return false;
     }
-    hid_set_nonblocking(m_hidDevice, 1);
-    qInfo("HID opened successfully");
-    return true;
-}
-
-void UsbHidPort::poll()
-{
-    int bytes;
-    m_waitForReply = false;
-    const auto &iface = BaseInterface::iface();
-    while (iface->state() != State::Disconnect)
+    else
     {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-        // check if there's any data in input buffer
-        if (iface->state() == State::Reconnect)
-        {
-            StdFunc::Wait(500);
-            continue;
-        }
-        if (!m_hidDevice)
-        {
-            reconnect();
-            continue;
-        }
-        // Read
-        std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
-        bytes = hid_read_timeout(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1, 100);
-        // Write
-        if (bytes < 0)
-        {
-            // -1 is the only error value according to hidapi documentation.
-            Q_ASSERT(bytes == -1);
-            reconnect();
-            continue;
-        }
-        // timeout from module (if avtuk accidentally couldnt response)
-        if ((bytes == 0) && (m_waitForReply) && (missingCounter == missingCounterMax))
-        {
-            array = { 0x3c, 0xf0, 0x01, 0x00, 0x01 };
-            bytes = 5;
-            m_waitForReply = false;
-            missingCounter = 0;
-        }
-        if (bytes > 0)
-        {
-            auto ba = QByteArray::fromRawData(reinterpret_cast<char *>(array.data()), bytes);
-            m_waitForReply = false;
-            missingCounter = 0;
-            writeLog(ba.toHex(), Direction::FromDevice);
-            emit dataReceived(ba);
-        }
-        if (m_waitForReply)
-        {
-            ++missingCounter;
-            continue;
-        }
-        // write data to port if there's something delayed in out queue
-        if (checkCurrentCommand())
-        {
-            missingCounter = 0;
-        }
+        hid_set_nonblocking(m_hidDevice, 1);
+        setState(State::Run);
+        qInfo("HID opened successfully");
+        return true;
     }
-    finish();
 }
 
-QByteArray UsbHidPort::readData()
+// void UsbHidPort::poll()
+//{
+//    int bytes;
+//    // m_waitForReply = false;
+//    const auto &iface = BaseInterface::iface();
+//    while (iface->state() != State::Disconnect)
+//    {
+//        QCoreApplication::processEvents(QEventLoop::AllEvents);
+//        // check if there's any data in input buffer
+//        if (iface->state() == State::Reconnect)
+//        {
+//            StdFunc::Wait(500);
+//            continue;
+//        }
+//        if (!m_hidDevice)
+//        {
+//            reconnect();
+//            continue;
+//        }
+//        // Read
+//        std::array<byte, HID::MaxSegmenthLength + 1> array; // +1 to ID
+//        bytes = hid_read_timeout(m_hidDevice, array.data(), HID::MaxSegmenthLength + 1, 100);
+//        // Write
+//        if (bytes < 0)
+//        {
+//            // -1 is the only error value according to hidapi documentation.
+//            Q_ASSERT(bytes == -1);
+//            reconnect();
+//            continue;
+//        }
+//        // timeout from module (if avtuk accidentally couldnt response)
+//        if ((bytes == 0) && (m_waitForReply) && (missingCounter == missingCounterMax))
+//        {
+//            array = { 0x3c, 0xf0, 0x01, 0x00, 0x01 };
+//            bytes = 5;
+//            m_waitForReply = false;
+//            missingCounter = 0;
+//        }
+//        if (bytes > 0)
+//        {
+//            auto ba = QByteArray::fromRawData(reinterpret_cast<char *>(array.data()), bytes);
+//            m_waitForReply = false;
+//            missingCounter = 0;
+//            writeLog(ba.toHex(), Direction::FromDevice);
+//            emit dataReceived(ba);
+//        }
+//        if (m_waitForReply)
+//        {
+//            ++missingCounter;
+//            continue;
+//        }
+//        // write data to port if there's something delayed in out queue
+//        if (checkCurrentCommand())
+//        {
+//            missingCounter = 0;
+//        }
+//    }
+//    finish();
+//}
+
+QByteArray UsbHidPort::read(bool *status)
 {
-    return {};
+    constexpr auto maxLength = HID::MaxSegmenthLength + 1; // +1 to ID
+    QByteArray data(maxLength, 0);
+    auto dataPtr = reinterpret_cast<unsigned char *>(data.data());
+    // data.reserve(maxLength);           // +1 to ID
+    // std::array<byte, maxLength> array; // +1 to ID
+    auto bytes = hid_read_timeout(m_hidDevice, dataPtr, maxLength, 100);
+    if (bytes < 0)
+    {
+        // -1 is the only error value according to hidapi documentation.
+        Q_ASSERT(bytes == -1);
+        emit error(ReadError);
+        reconnect();
+        *status = false;
+        data.clear();
+    }
+    // timeout from module (if avtuk accidentally couldnt response)
+    if ((bytes == 0) && (m_waitForReply) && (missingCounter == missingCounterMax))
+    {
+        constexpr int responseSize = 5;
+        unsigned char timeoutResponse[responseSize] = { 0x3c, 0xf0, 0x01, 0x00, 0x01 };
+        data.prepend(reinterpret_cast<char *>(&timeoutResponse[0]), responseSize);
+        bytes = responseSize;
+        // m_waitForReply = false;
+        // missingCounter = 0;
+    }
+    if (bytes > 0)
+    {
+        data.resize(bytes);
+        m_waitForReply = false;
+        missingCounter = 0;
+        // writeLog(data.toHex(), Direction::FromDevice);
+    }
+    else
+    {
+        data.clear();
+        emit error(NoData);
+    }
+
+    return data;
 }
 
 void UsbHidPort::deviceConnected(const UsbHidSettings &st)
@@ -203,9 +252,16 @@ void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
 bool UsbHidPort::writeData(const QByteArray &ba)
 {
     QMutexLocker locker(&_mutex);
-    // m_writeQueue.append(ba);
     m_currCommand = ba;
-    return true;
+    if (!m_currCommand.isEmpty())
+    {
+        auto status = writeDataToPort(m_currCommand);
+        if (status)
+            return m_waitForReply = true;
+        else
+            emit clearQueries();
+    }
+    return false;
 }
 
 void UsbHidPort::disconnect()
@@ -215,13 +271,13 @@ void UsbHidPort::disconnect()
     emit clearQueries();
 }
 
-void UsbHidPort::finish()
-{
-    disconnect();
-    qInfo() << metaObject()->className() << "finished";
-    emit finished();
-    QCoreApplication::processEvents();
-}
+// void UsbHidPort::finish()
+//{
+//    disconnect();
+//    qInfo() << metaObject()->className() << "finished";
+//    emit finished();
+//    QCoreApplication::processEvents();
+//}
 
 void UsbHidPort::clear()
 {
@@ -316,31 +372,28 @@ void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
 #endif
 }
 
-void UsbHidPort::writeLog(QByteArray ba, Proto::Direction dir)
-{
-#ifdef HIDUSB_LOG
-    QByteArray tmpba = QByteArray(metaObject()->className());
-    switch (dir)
-    {
-    case Proto::FromDevice:
-        tmpba.append(": -> ");
-        break;
-    case Proto::ToDevice:
-        tmpba.append(": <- ");
-        break;
-    default:
-        tmpba.append(":  ");
-        break;
-    }
-    tmpba.append(ba).append("\n");
-    m_log->WriteRaw(tmpba);
-#endif
-}
-
-void UsbHidPort::writeLog(Error::Msg msg, Proto::Direction dir)
-{
-    writeLog(QVariant::fromValue(msg).toByteArray(), dir);
-}
+// void UsbHidPort::writeLog(QByteArray ba, Interface::Direction dir)
+//{
+//    QByteArray tmpba = QByteArray(metaObject()->className());
+//    switch (dir)
+//    {
+//    case Interface::FromDevice:
+//        tmpba.append(": -> ");
+//        break;
+//    case Interface::ToDevice:
+//        tmpba.append(": <- ");
+//        break;
+//    default:
+//        tmpba.append(":  ");
+//        break;
+//    }
+//    tmpba.append(ba).append("\n");
+//    m_log->WriteRaw(tmpba);
+//}
+// void UsbHidPort::writeLog(Error::Msg msg, Interface::Direction dir)
+//{
+//    writeLog(QVariant::fromValue(msg).toByteArray(), dir);
+//}
 
 bool UsbHidPort::writeDataToPort(QByteArray &ba)
 {
@@ -348,6 +401,7 @@ bool UsbHidPort::writeDataToPort(QByteArray &ba)
     {
         writeLog(Error::Msg::NoDeviceError);
         qCritical() << Error::Msg::NoDeviceError;
+        closeConnection();
         return false;
     }
 
@@ -364,7 +418,7 @@ bool UsbHidPort::writeDataToPort(QByteArray &ba)
         qCritical() << Error::Msg::NullDataError;
         return false;
     }
-    writeLog(ba.toHex(), Proto::ToDevice);
+    writeLog(ba.toHex(), Interface::ToDevice);
     if (ba.size() < HID::MaxSegmenthLength)
         ba.append(HID::MaxSegmenthLength - ba.size(), static_cast<char>(0x00));
 
@@ -383,17 +437,7 @@ bool UsbHidPort::writeDataToPort(QByteArray &ba)
     return true;
 }
 
-bool UsbHidPort::checkCurrentCommand()
-{
-    QMutexLocker locker(&_mutex);
-    if (!m_currCommand.isEmpty())
-    {
-        auto status = writeDataToPort(m_currCommand);
-        m_currCommand.clear();
-        if (status)
-            return m_waitForReply = true;
-        else
-            emit clearQueries();
-    }
-    return false;
-}
+// bool UsbHidPort::checkCurrentCommand()
+//{
+//    return true;
+//}

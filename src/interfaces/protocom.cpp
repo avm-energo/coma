@@ -52,7 +52,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     // к интерфейсу для обновления данных
     QList<QMetaObject::Connection> connections;
     // Старт
-    connect(portThread, &QThread::started, port, &UsbHidPort::poll);
+    connect(portThread, &QThread::started, port, &BasePort::poll);
     connect(parseThread, &QThread::started, parser, &BaseInterfaceThread::run);
     // Рабочий режим
     connections << connect(
@@ -103,7 +103,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
         },
         Qt::DirectConnection);
 #endif
-    connect(port, &UsbHidPort::stateChanged, this, &BaseInterface::stateChanged, Qt::QueuedConnection);
+    connect(port, &BasePort::stateChanged, this, &BaseInterface::stateChanged, Qt::QueuedConnection);
     qInfo() << metaObject()->className() << "connected";
     port->moveToThread(portThread);
     parser->moveToThread(parseThread);

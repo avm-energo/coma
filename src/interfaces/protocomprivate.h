@@ -123,13 +123,6 @@ enum HiddenBlockModule : byte
     BaseMezzAdd = 0x07
 };
 
-enum Direction
-{
-    NoDirection,
-    ToDevice,
-    FromDevice
-};
-
 struct CommandStruct
 {
     Proto::Commands cmd;
@@ -151,5 +144,3 @@ Q_ENUM_NS(TypeId)
 
 }
 Q_DECLARE_METATYPE(Proto::CommandStruct)
-
-#define HIDUSB_LOG

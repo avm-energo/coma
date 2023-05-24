@@ -28,7 +28,7 @@ private:
     void parseRequest(const CommandStruct &cmdStr) override;
     void parseResponse() override;
 
-    void writeLog(const QByteArray &ba, Proto::Direction dir = Proto::NoDirection);
+    void writeLog(const QByteArray &ba, Interface::Direction dir = Interface::NoDirection);
     void appendInt16(QByteArray &ba, quint16 data);
     bool isOneSegment(quint16 length);
     bool isSplitted(quint16 length);

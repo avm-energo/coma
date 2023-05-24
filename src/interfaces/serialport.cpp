@@ -67,9 +67,12 @@ bool SerialPort::connect()
         qCritical() << port->metaObject()->className() << port->portName() << Error::OpenError;
         return false;
     }
-    emit started();
-    setState(Interface::State::Run);
-    return true;
+    else
+    {
+        emit started();
+        setState(Interface::State::Run);
+        return true;
+    }
 }
 
 void SerialPort::disconnect()
@@ -81,17 +84,31 @@ void SerialPort::disconnect()
 
 void SerialPort::errorOccurred(QSerialPort::SerialPortError err)
 {
-    if (!err)
+    if (err == QSerialPort::NoError)
         return;
-    if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError || err == QSerialPort::TimeoutError)
+    else if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError || err == QSerialPort::TimeoutError)
     {
-        qCritical() << QVariant::fromValue(err).toString();
-        emit error();
+        qWarning() << QVariant::fromValue(err).toString();
+        emit error(ReadError);
     }
     else
         qDebug() << QVariant::fromValue(err).toString();
     reconnect();
 }
+
+QByteArray SerialPort::read(bool *status)
+{
+    Q_UNUSED(status);
+    QByteArray ba;
+    while (port->bytesAvailable())
+    {
+        ba += port->readAll();
+        QThread::msleep(2);
+    }
+    if (ba.isEmpty())
+        emit error(NoData);
+    return ba;
+};
 
 void SerialPort::readBytes()
 {

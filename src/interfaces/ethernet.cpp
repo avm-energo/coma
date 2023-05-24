@@ -46,21 +46,21 @@ bool Ethernet::init(IEC104Settings settings)
     return reconnect();
 }
 
-void Ethernet::poll()
-{
-    while (!ClosePortAndFinishThread)
-    // while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
-    {
-        qDebug() << __PRETTY_FUNCTION__;
-        QMutexLocker locker(&OutDataBufMtx);
-        if (!OutDataBuf.isEmpty())
-            SendData();
-        else
-            _waiter.wait(&OutDataBufMtx /*, 1000*/);
-        // QCoreApplication::processEvents();
-    }
-    disconnect();
-}
+// void Ethernet::poll()
+//{
+//    while (!ClosePortAndFinishThread)
+//    // while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
+//    {
+//        qDebug() << __PRETTY_FUNCTION__;
+//        QMutexLocker locker(&OutDataBufMtx);
+//        if (!OutDataBuf.isEmpty())
+//            SendData();
+//        else
+//            _waiter.wait(&OutDataBufMtx /*, 1000*/);
+//        // QCoreApplication::processEvents();
+//    }
+//    disconnect();
+//}
 
 void Ethernet::SendData()
 {

@@ -34,7 +34,7 @@ public slots:
     bool reconnect();
     void disconnect() override;
     bool writeData(const QByteArray &ba) override;
-    void poll() override;
+    // void poll();
 
 private slots:
     void CheckForData();
