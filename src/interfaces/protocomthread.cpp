@@ -114,6 +114,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
                 protoCommandMap.value(cmdStr.command), StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>()));
             emit sendDataToPort(ba);
         }
+        break;
     }
 
         // file request: known file types should be download from disk and others must be taken from module by Protocom,
@@ -177,9 +178,9 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         if (cmdStr.arg1.canConvert<DataTypes::BlockStruct>())
         {
             DataTypes::BlockStruct bs = cmdStr.arg1.value<DataTypes::BlockStruct>();
-            ba = StdFunc::ArrayFromNumber(bs.ID);
+            ba = StdFunc::ArrayFromNumber(static_cast<quint8>(bs.ID)); // сужающий каст
             ba.append(bs.data);
-            writeBlock(protoCommandMap.value(cmdStr.command), bs.data);
+            writeBlock(protoCommandMap.value(cmdStr.command), ba);
         }
         break;
     }
@@ -191,7 +192,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         {
             QVariantList vl = cmdStr.arg1.value<QVariantList>();
             const quint16 start_addr = vl.first().value<DataTypes::FloatStruct>().sigAdr;
-            const auto blockNum = blockByReg(start_addr);
+            const auto blockNum = static_cast<quint8>(blockByReg(start_addr)); // сужающий каст
             ba = StdFunc::ArrayFromNumber(blockNum);
             for (const auto &i : vl)
             {
@@ -251,16 +252,14 @@ void ProtocomThread::parseResponse()
     case ResultOk:
     {
         if (m_currentCommand.command == C_WriteFile)
-        {
             setProgressCount(m_sentBytesCount);
-            if (!m_longBlockChunks.isEmpty())
-            {
-                QByteArray ba = m_longBlockChunks.takeFirst();
-                m_sentBytesCount += ba.size();
-                emit sendDataToPort(ba);
-                _waiter.wakeOne();
-                return;
-            }
+        if (!m_longBlockChunks.isEmpty())
+        {
+            QByteArray ba = m_longBlockChunks.takeFirst();
+            m_sentBytesCount += ba.size();
+            emit sendDataToPort(ba);
+            _waiter.wakeOne();
+            return;
         }
         processOk();
         break;
@@ -471,11 +470,11 @@ void ProtocomThread::writeBlock(Proto::Commands cmd, const QByteArray &arg2)
         m_longBlockChunks.reserve(segCount);
 
         QByteArray tba;
-        tba.append(ba.left(MaxSegmenthLength - 1));
+        tba.append(ba.left(MaxSegmenthLength));
 
         m_longBlockChunks.append(prepareBlock(cmd, tba));
 
-        for (int pos = MaxSegmenthLength - 1; pos < ba.size(); pos += MaxSegmenthLength)
+        for (int pos = MaxSegmenthLength; pos < ba.size(); pos += MaxSegmenthLength)
         {
             tba = ba.mid(pos, MaxSegmenthLength);
             m_longBlockChunks.append(prepareBlock(cmd, tba, Proto::Starters::Continue));
@@ -521,10 +520,11 @@ void ProtocomThread::processU32(const QByteArray &ba, quint16 startAddr)
 void ProtocomThread::processFloat(const QByteArray &ba, quint32 startAddr)
 {
     // NOTE Проблема со стартовыми регистрами, получим на один регистр больше чем по другим протоколам
-    Q_ASSERT(ba.size() >= 4); // должен быть хотя бы один флоат
+    Q_ASSERT(ba.size() >= sizeof(float));     // должен быть хотя бы один флоат
+    Q_ASSERT(ba.size() % sizeof(float) == 0); // размер кратен размеру флоат
     int bapos = 0;
-    const int baendpos = ba.size() - 3; // 3 = sizeof(float) - 1
-    while (bapos < baendpos)
+    const int baendpos = ba.size();
+    while (bapos != baendpos)
     {
         QByteArray tba = ba.mid(bapos, sizeof(float));
         float blk = *reinterpret_cast<const float *>(tba.data());
