@@ -47,14 +47,16 @@ protected:
     void writeLog(const QByteArray &ba, Interface::Direction dir = Interface::NoDirection);
     void writeLog(const Error::Msg msg, Interface::Direction dir = Interface::NoDirection);
 
-    virtual QByteArray read(bool *status = nullptr) = 0;
     virtual bool connect() = 0;
     virtual void disconnect() = 0;
+    virtual QByteArray read(bool *status = nullptr) = 0;
+    virtual bool write(const QByteArray &ba) = 0;
 
 public slots:
     void poll();
+    void writeDataSync(const QByteArray &ba);
     void closeConnection();
-    virtual bool writeData(const QByteArray &ba) = 0;
+    //[[deprecated]] virtual bool writeData(const QByteArray &ba) = 0;
 };
 
 #endif // BASEPORT_H

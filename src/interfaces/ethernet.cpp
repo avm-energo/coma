@@ -81,13 +81,25 @@ void Ethernet::SendData()
     OutDataBuf.clear();
 }
 
-bool Ethernet::writeData(const QByteArray &ba)
+// bool Ethernet::writeData(const QByteArray &ba)
+//{
+//    // qDebug() << __PRETTY_FUNCTION__;
+//    OutDataBufMtx.lock();
+//    OutDataBuf = ba;
+//    OutDataBufMtx.unlock();
+//    _waiter.wakeOne();
+//    return true;
+//}
+
+QByteArray Ethernet::read(bool *status)
 {
-    // qDebug() << __PRETTY_FUNCTION__;
-    OutDataBufMtx.lock();
-    OutDataBuf = ba;
-    OutDataBufMtx.unlock();
-    _waiter.wakeOne();
+    Q_UNUSED(status);
+    return {};
+}
+
+bool Ethernet::write(const QByteArray &ba)
+{
+    Q_UNUSED(ba);
     return true;
 }
 

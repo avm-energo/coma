@@ -45,10 +45,11 @@ signals:
 public slots:
     bool connect() override;
     void disconnect() override;
-    bool writeData(const QByteArray &ba) override;
 
 private:
     virtual QByteArray read(bool *status = nullptr) override;
+    virtual bool write(const QByteArray &ba) override;
+
     bool writeDataToPort(QByteArray &ba);
     void clear();
     void deviceConnected(const UsbHidSettings &st);
@@ -60,7 +61,6 @@ private:
     hid_device *m_hidDevice;
     bool m_shouldBeStopped;
     QMutex _mutex;
-    // QList<QByteArray> m_writeQueue;
     QByteArray m_currCommand;
     UsbHidSettings m_deviceInfo;
     int missingCounter = 0;

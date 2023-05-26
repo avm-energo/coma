@@ -41,11 +41,6 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent)
     missingCounterMax = sets.value(regMap[hidTimeout].name, "50").toInt();
 }
 
-// inline hid_device *openDevice(const UsbHidSettings &dev)
-//{
-//    return hid_open(dev.vendor_id, dev.product_id, dev.serial.toStdWString().c_str());
-//}
-
 bool UsbHidPort::connect()
 {
     if ((deviceInfo().vendor_id == 0) || (deviceInfo().product_id == 0))
@@ -69,6 +64,13 @@ bool UsbHidPort::connect()
         qInfo("HID opened successfully");
         return true;
     }
+}
+
+void UsbHidPort::disconnect()
+{
+    if (m_hidDevice)
+        hid_close(m_hidDevice);
+    emit clearQueries();
 }
 
 QByteArray UsbHidPort::read(bool *status)
@@ -107,6 +109,17 @@ QByteArray UsbHidPort::read(bool *status)
     }
 
     return data;
+}
+
+bool UsbHidPort::write(const QByteArray &ba)
+{
+    m_currCommand = ba;
+    auto status = writeDataToPort(m_currCommand);
+    if (status)
+        m_waitForReply = true;
+    else
+        emit clearQueries();
+    return status;
 }
 
 void UsbHidPort::deviceConnected(const UsbHidSettings &st)
@@ -173,28 +186,6 @@ UsbHidSettings UsbHidPort::deviceInfo() const
 void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
 {
     m_deviceInfo = deviceInfo;
-}
-
-bool UsbHidPort::writeData(const QByteArray &ba)
-{
-    QMutexLocker locker(&_mutex);
-    m_currCommand = ba;
-    if (!m_currCommand.isEmpty())
-    {
-        auto status = writeDataToPort(m_currCommand);
-        if (status)
-            return m_waitForReply = true;
-        else
-            emit clearQueries();
-    }
-    return false;
-}
-
-void UsbHidPort::disconnect()
-{
-    if (m_hidDevice)
-        hid_close(m_hidDevice);
-    emit clearQueries();
 }
 
 void UsbHidPort::clear()
@@ -298,7 +289,6 @@ bool UsbHidPort::writeDataToPort(QByteArray &ba)
         closeConnection();
         return false;
     }
-
     if (ba.size() > HID::MaxSegmenthLength)
     {
         writeLog(Error::Msg::SizeError);
@@ -306,27 +296,15 @@ bool UsbHidPort::writeDataToPort(QByteArray &ba)
         return false;
     }
 
-    if (ba.isEmpty())
-    {
-        writeLog(Error::Msg::NullDataError);
-        qCritical() << Error::Msg::NullDataError;
-        return false;
-    }
-    writeLog(ba.toHex(), Interface::ToDevice);
     if (ba.size() < HID::MaxSegmenthLength)
         ba.append(HID::MaxSegmenthLength - ba.size(), static_cast<char>(0x00));
+    ba.prepend(static_cast<char>(0x00)); // inserting ID field for HID protocol
 
-    // inserting ID field for HID protocol
-    ba.prepend(static_cast<char>(0x00));
-
-    size_t tmpt = static_cast<size_t>(ba.size());
-
+    auto tmpt = static_cast<size_t>(ba.size());
     int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);
     if (errorCode == -1)
-    {
-        qCritical() << Error::Msg::WriteError;
         return false;
-    }
+
     missingCounter = 0;
     return true;
 }
