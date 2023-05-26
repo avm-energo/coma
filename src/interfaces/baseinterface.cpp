@@ -1,9 +1,11 @@
 #include "baseinterface.h"
 
 #include "../s2/s2.h"
+#include "baseport.h"
 
 #include <QCoreApplication>
 #include <QMutexLocker>
+#include <QTimer>
 #include <gen/stdfunc.h>
 #include <memory>
 
@@ -13,7 +15,7 @@ namespace Interface
 // Static members
 BaseInterface::InterfacePointer BaseInterface::m_iface;
 
-BaseInterface::BaseInterface(QObject *parent) : QObject(parent) /* m_working(false),*/
+BaseInterface::BaseInterface(QObject *parent) : QObject(parent) /* m_working(false),*/, ifacePort(nullptr)
 {
     ProxyInit();
     qRegisterMetaType<State>();
@@ -257,6 +259,12 @@ void BaseInterface::setState(const State &state)
     QMutexLocker locker(&_stateMutex);
     m_state = state;
     emit stateChanged(m_state);
+}
+
+void BaseInterface::close()
+{
+    if (ifacePort)
+        ifacePort->closeConnection();
 }
 
 // ===============================================================================

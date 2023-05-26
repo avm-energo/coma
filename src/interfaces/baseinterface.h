@@ -7,7 +7,6 @@
 #include "../s2/filestruct.h"
 #include "interfacesettings.h"
 
-#include <QTimer>
 #include <gen/datamanager/typesproxy.h>
 #include <gen/datatypes.h>
 #include <gen/error.h>
@@ -20,7 +19,8 @@ enum INTERVAL
     WAIT = 15000
 };
 
-struct ConnectStruct;
+class BasePort;       // Forward declaration
+struct ConnectStruct; // Forward declaration
 
 namespace Interface
 {
@@ -166,6 +166,7 @@ public:
     ProtocolDescription *settings();
     State state();
     void setState(const State &state);
+    void close();
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
@@ -219,6 +220,9 @@ private:
     UniquePointer<DataTypesProxy> proxyTS;
 #endif
     void ProxyInit();
+
+protected:
+    BasePort *ifacePort;
 
 private slots:
     void resultReady(const QVariant &msg);

@@ -36,38 +36,29 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent)
     , m_shouldBeStopped(false)
 {
     using namespace settings;
-    // m_hidDevice = nullptr;
-    // m_shouldBeStopped = false;
     QObject::connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
     QSettings sets;
     missingCounterMax = sets.value(regMap[hidTimeout].name, "50").toInt();
 }
 
-// UsbHidPort::~UsbHidPort()
+// inline hid_device *openDevice(const UsbHidSettings &dev)
 //{
+//    return hid_open(dev.vendor_id, dev.product_id, dev.serial.toStdWString().c_str());
 //}
-
-inline hid_device *openDevice(const UsbHidSettings &dev)
-{
-    return hid_open(dev.vendor_id, dev.product_id, dev.serial.toStdWString().c_str());
-}
 
 bool UsbHidPort::connect()
 {
     if ((deviceInfo().vendor_id == 0) || (deviceInfo().product_id == 0))
     {
         qCritical() << Error::Msg::NoDeviceError;
-        // finish();
         closeConnection();
         return false;
     }
-
-    m_hidDevice = openDevice(m_deviceInfo);
-
+    m_hidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, //
+        m_deviceInfo.serial.toStdWString().c_str());
     if (!m_hidDevice)
     {
         qCritical() << Error::Msg::OpenError;
-        // finish();
         closeConnection();
         return false;
     }
@@ -85,8 +76,6 @@ QByteArray UsbHidPort::read(bool *status)
     constexpr auto maxLength = HID::MaxSegmenthLength + 1; // +1 to ID
     QByteArray data(maxLength, 0);
     auto dataPtr = reinterpret_cast<unsigned char *>(data.data());
-    // data.reserve(maxLength);           // +1 to ID
-    // std::array<byte, maxLength> array; // +1 to ID
     auto bytes = hid_read_timeout(m_hidDevice, dataPtr, maxLength, 100);
     if (bytes < 0)
     {
@@ -104,15 +93,12 @@ QByteArray UsbHidPort::read(bool *status)
         unsigned char timeoutResponse[responseSize] = { 0x3c, 0xf0, 0x01, 0x00, 0x01 };
         data.prepend(reinterpret_cast<char *>(&timeoutResponse[0]), responseSize);
         bytes = responseSize;
-        // m_waitForReply = false;
-        // missingCounter = 0;
     }
     if (bytes > 0)
     {
         data.resize(bytes);
         m_waitForReply = false;
         missingCounter = 0;
-        // writeLog(data.toHex(), Direction::FromDevice);
     }
     else
     {
@@ -216,7 +202,6 @@ void UsbHidPort::clear()
     QMutexLocker locker(&_mutex);
     m_waitForReply = false;
     m_currCommand.clear();
-    // m_writeQueue.clear();
     m_hidDevice = nullptr;
 }
 

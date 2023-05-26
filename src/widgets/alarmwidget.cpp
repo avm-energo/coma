@@ -5,6 +5,7 @@
 #include "wd_func.h"
 
 #include <QDialogButtonBox>
+#include <QTimer>
 
 AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
 {

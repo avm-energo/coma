@@ -5,6 +5,7 @@
 
 #include <QMutex>
 #include <QObject>
+#include <QTimer>
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
 

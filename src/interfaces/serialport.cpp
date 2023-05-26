@@ -15,8 +15,7 @@ SerialPort::SerialPort(QObject *parent) : BasePort("ModbusPort", parent)
 SerialPort::~SerialPort()
 {
     port->deleteLater();
-    // disconnect();
-    // emit finished();
+    m_connectionTimer->deleteLater();
 }
 
 bool SerialPort::init(SerialPortSettings settings)
@@ -92,9 +91,10 @@ void SerialPort::disconnect()
 
 void SerialPort::errorOccurred(QSerialPort::SerialPortError err)
 {
-    if (err == QSerialPort::NoError)
+    // NOTE: TimeoutError is ok due calling the waitForReadyRead function of the QSerialPort instance.
+    if (err == QSerialPort::NoError || err == QSerialPort::TimeoutError)
         return;
-    else if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError || err == QSerialPort::TimeoutError)
+    else if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError)
     {
         qWarning() << QVariant::fromValue(err).toString();
         emit error(ReadError);
@@ -104,19 +104,26 @@ void SerialPort::errorOccurred(QSerialPort::SerialPortError err)
     reconnect();
 }
 
+// blocking read from serial port with timeout implementation
 QByteArray SerialPort::read(bool *status)
 {
     Q_UNUSED(status);
     QByteArray ba;
-    while (port->bytesAvailable())
+    bool readyRead = true;                      // enabling read flag
+    if (!port->bytesAvailable())                // if no data
+        readyRead = port->waitForReadyRead(10); // wait data (timeout 10 ms)
+    if (readyRead)
     {
-        ba += port->readAll();
-        QThread::msleep(2);
+        while (port->bytesAvailable())
+        {
+            ba += port->readAll();
+            QThread::msleep(2);
+        }
     }
     if (ba.isEmpty())
     {
-        QCoreApplication::processEvents();
         emit error(NoData);
+        QCoreApplication::processEvents();
     }
     return ba;
 };

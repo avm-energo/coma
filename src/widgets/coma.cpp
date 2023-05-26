@@ -508,7 +508,7 @@ void Coma::connectSB()
                             msgConnectionState->setForegroundRole(QPalette::Highlight);
                             msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
                         },
-                        Qt::DirectConnection);
+                        Qt::QueuedConnection);
                     QObject::connect(board, &Board::interfaceTypeChanged, msgConnectionType,
                         [=](const Board::InterfaceType &interfaceType) {
                             QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
@@ -686,6 +686,7 @@ void Coma::disconnectAndClear()
 
         ConfigStorage::GetInstance().clearModuleSettings();
         Board::GetInstance().reset();
+        BaseInterface::iface()->close();
         // BUG Segfault
         //    if (Reconnect)
         //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);

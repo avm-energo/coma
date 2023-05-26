@@ -37,6 +37,7 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     auto portThread = new QThread;
     auto parseThread = new QThread;
     auto port = new SerialPort;
+    ifacePort = port;
     auto parser = new ModbusThread;
     parser->setDelay(obtainDelay(st.Baud));
     parser->setDeviceAddress(st.Address);

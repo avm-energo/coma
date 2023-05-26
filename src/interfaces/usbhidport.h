@@ -17,7 +17,6 @@ struct USBMessage
 
 struct hid_device_;
 using hid_device = hid_device_; ///< opaque hidapi structure
-// typedef struct hid_device_ hid_device;
 
 namespace HID
 {
@@ -47,7 +46,6 @@ public slots:
     bool connect() override;
     void disconnect() override;
     bool writeData(const QByteArray &ba) override;
-    //[[deprecated]] void poll();
 
 private:
     virtual QByteArray read(bool *status = nullptr) override;
