@@ -1309,7 +1309,7 @@
                         <toolTip>Частота в сети, Гц</toolTip>
                     </mwidget>
                     <mwidget desc="Ψ%10" view="float">
-                        <start-addr>2401</start-addr>
+                        <start-addr>2402</start-addr>
                         <count>5</count>
                         <toolTip>Угол сдвига между каналами %1-0, градусов</toolTip>
                     </mwidget>
