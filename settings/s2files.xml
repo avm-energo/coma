@@ -4242,7 +4242,7 @@
 			<string>Максимальная амплитуда сигналов вибраций (1,25, 2,5, 5,0В)</string>
 			<min>0</min>
 			<max>10000</max>
-			<decimals>0</decimals>
+			<decimals>2</decimals>
 		</widget>
 	</record>
 	<record>
@@ -4615,7 +4615,7 @@
 			<count>6</count>
 			<min>0</min>
 			<max>10000</max>
-			<decimals>0</decimals>
+			<decimals>2</decimals>
 		</widget>
 	</record>
 	<record>
