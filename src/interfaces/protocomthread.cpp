@@ -4,6 +4,7 @@
 
 #include <QDebug>
 #include <QQueue>
+#include <gen/files.h>
 
 #ifdef Q_OS_LINUX
 #include <time.h>
@@ -70,7 +71,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
 
     switch (cmdStr.command)
     {
-        // commands requesting regs with addresses ("fake" read regs commands)
+    // commands requesting regs with addresses ("fake" read regs commands)
     case Commands::C_ReqAlarms:
     case Commands::C_ReqStartup:
     case Commands::C_ReqFloats:
@@ -81,7 +82,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         emit sendDataToPort(ba);
         break;
     }
-        // commands without any arguments
+    // commands without any arguments
     case Commands::C_ReqBSI:
     case Commands::C_ReqBSIExt:
     case Commands::C_ReqTime:
@@ -96,7 +97,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         }
         break;
     }
-        // commands with only one uint8 parameter (blocknum or smth similar)
+    // commands with only one uint8 parameter (blocknum or smth similar)
     case Commands::C_EraseTechBlock:
     case Commands::C_EraseJournals:
     case Commands::C_SetMode:
@@ -117,8 +118,8 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // file request: known file types should be download from disk and others must be taken from module by Protocom,
-        // arg1 - file number
+    // file request: known file types should be download from disk and others must be taken from module by Protocom,
+    // arg1 - file number
     case Commands::C_ReqFile:
     {
         DataTypes::FilesEnum filetype = cmdStr.arg1.value<DataTypes::FilesEnum>();
@@ -137,7 +138,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // commands with one bytearray argument arg2
+    // commands with one bytearray argument arg2
     case Commands::C_WriteFile:
     {
         if (cmdStr.arg2.canConvert<QByteArray>())
@@ -148,7 +149,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // write time command with different behaviour under different OS's
+    // write time command with different behaviour under different OS's
     case Commands::C_WriteTime:
     {
         QByteArray tba;
@@ -169,7 +170,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // block write, arg1 is BlockStruct of one quint32 (block ID) and one QByteArray (block contents)
+    // block write, arg1 is BlockStruct of one quint32 (block ID) and one QByteArray (block contents)
     case Commands::C_WriteHardware:
     case Commands::C_WriteBlkDataTech:
     case Commands::C_SetNewConfiguration:
@@ -185,7 +186,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // QVariantList write
+    // QVariantList write
     case Commands::C_WriteUserValues:
     {
         if (cmdStr.arg1.canConvert<QVariantList>())
@@ -217,7 +218,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // "WS" commands
+    // "WS" commands
     case Commands::C_ClearStartupError:
     case Commands::C_ClearStartupUnbounced:
     case Commands::C_ClearStartupValues:
@@ -403,6 +404,62 @@ bool ProtocomThread::isValidIncomingData(const QByteArray &data)
         qCritical() << Error::HeaderSizeError << data.toHex();
 
     return false;
+}
+
+void ProtocomThread::processFileFromDisk(DataTypes::FilesEnum fileNum)
+{
+    QString fileToFind;
+    switch (fileNum)
+    {
+    case DataTypes::JourSys:
+    {
+        fileToFind = "system.dat";
+        break;
+    }
+    case DataTypes::JourMeas:
+    {
+        fileToFind = "measj.dat";
+        break;
+    }
+    case DataTypes::JourWork:
+    {
+        fileToFind = "workj.dat";
+        break;
+    }
+    default:
+        qDebug() << "Wrong file type!"; // we should not be here
+        return;
+    }
+
+    m_isCommandRequested = false;
+
+    QStringList drives = Files::Drives();
+    if (drives.isEmpty())
+    {
+        qCritical() << Error::NoDeviceError;
+        return;
+    }
+    QStringList files = Files::SearchForFile(drives, fileToFind);
+    if (files.isEmpty())
+    {
+        qCritical() << Error::FileNameError;
+        return;
+    }
+    QString JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
+    if (JourFile.isEmpty())
+    {
+        qCritical() << Error::FileNameError;
+        return;
+    }
+    QFile file(JourFile);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qCritical() << Error::FileOpenError;
+        return;
+    }
+    QByteArray ba = file.readAll();
+    FilePostpone(ba, fileNum, DataTypes::FileFormat::Binary);
+    // TODO: Replace FilePostpone function
 }
 
 void ProtocomThread::progressFile(const QByteArray &data)

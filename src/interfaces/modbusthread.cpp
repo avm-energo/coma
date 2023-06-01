@@ -29,7 +29,7 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
 {
     switch (cmdStr.command)
     {
-        // commands requesting regs with addresses ("fake" read regs commands)
+    // commands requesting regs with addresses ("fake" read regs commands)
     case Commands::C_ReqAlarms:
     {
         MBS::CommandStruct inp {
@@ -56,43 +56,35 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // commands without any arguments
+    // commands without any arguments
     case Commands::C_ReqTime:
     {
-        MBS::CommandStruct inp { MBS::Commands::ReadHoldingRegisters, //
-            Regs::timeReg,                                            //
-            2,                                                        //
-            {} };
+        MBS::CommandStruct inp {
+            MBS::Commands::ReadHoldingRegisters, //
+            Regs::timeReg,                       //
+            2,                                   //
+            {}                                   //
+        };
         readRegisters(inp);
         break;
     }
 
-        // file request: known file types should be download from disk and others must be taken from module by Protocom,
-        // arg1 - file number
+    // arg1 - file number
     case Commands::C_ReqFile:
     {
-        DataTypes::FilesEnum filetype = cmdStr.arg1.value<DataTypes::FilesEnum>();
-        switch (filetype)
-        {
-        case DataTypes::JourSys:
-        case DataTypes::JourWork:
-        case DataTypes::JourMeas:
-            processFileFromDisk(filetype);
-            break;
-        default:
-            MBS::CommandStruct inp { MBS::Commands::ReadFileSection, //
-                cmdStr.arg1.value<quint16>(), // номер файла - нехорошо, т.к. кладём туда quint32
-                0,                            // номер секции
-                StdFunc::ArrayFromNumber(MBS::FileSectionLength) };
-            m_fileData.clear();
-            m_fileSectionNum = 0;
-            readRegisters(inp);
-            break;
-        }
+        MBS::CommandStruct inp {
+            MBS::Commands::ReadFileSection, //
+            cmdStr.arg1.value<quint16>(), // номер файла - нехорошо, т.к. кладём туда quint32
+            0,                            // номер секции
+            StdFunc::ArrayFromNumber(MBS::FileSectionLength) //
+        };
+        m_fileData.clear();
+        m_fileSectionNum = 0;
+        readRegisters(inp);
         break;
     }
 
-        // commands with one bytearray argument arg2
+    // commands with one bytearray argument arg2
     case Commands::C_WriteFile:
     {
         m_fileData = cmdStr.arg2.value<QByteArray>();
@@ -101,11 +93,10 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // write time command with different behaviour under different OS's
+    // write time command with different behaviour under different OS's
     case Commands::C_WriteTime:
     {
         QByteArray timeArray = packReg(cmdStr.arg1.value<quint32>());
-
         MBS::CommandStruct inp {
             MBS::Commands::WriteMultipleRegisters, //
             Regs::timeReg,                         //
@@ -116,7 +107,7 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // QVariantList write
+    // QVariantList write
     case Commands::C_WriteUserValues:
     {
         if (cmdStr.arg1.canConvert<QVariantList>())
@@ -165,7 +156,7 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
-        // "WS" commands
+    // "WS" commands
     case Commands::C_ClearStartupError:
     case Commands::C_ClearStartupUnbounced:
     case Commands::C_ClearStartupValues:

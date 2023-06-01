@@ -25,7 +25,6 @@ public:
         return BaseInterface::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
     }
 
-    void processFileFromDisk(DataTypes::FilesEnum fileNum);
     void FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format);
     void checkQueue();
     void finishCommand();
