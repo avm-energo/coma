@@ -378,7 +378,7 @@ Error::Msg BaseInterface::writeS2FileSync(DataTypes::FilesEnum number, S2DataTyp
 
     // с 4 байта начинается FileHeader.size
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
-    length += sizeof(S2DataTypes::FileHeader);
+    length += sizeof(S2DataTypes::S2FileHeader);
     Q_ASSERT(length == quint32(ba.size()));
     return writeFileSync(DataTypes::Config, ba);
 }
