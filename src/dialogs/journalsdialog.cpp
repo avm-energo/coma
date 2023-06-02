@@ -5,6 +5,7 @@
 #include "../journals/sysjournal.h"
 #include "../journals/workjournal.h"
 #include "../module/board.h"
+#include "../s2/s2datatypes.h"
 #include "../widgets/QProgressIndicator.h"
 #include "../widgets/wd_func.h"
 
@@ -34,7 +35,7 @@ static constexpr char name[] = "jourHash";
 JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent), proxy(&DataManager::GetInstance())
 {
-    proxy.RegisterType<DataTypes::FileStruct>();
+    proxy.RegisterType<S2DataTypes::S2BFile>();
     createJournals(settings);
 
     progress = new QProgressDialog(this);
@@ -73,7 +74,7 @@ void JournalDialog::setupUI()
 {
     auto layout = new QVBoxLayout;
     auto tabWidget = new QTabWidget;
-    tabWidget->setObjectName("conftw4");
+    // tabWidget->setObjectName("conftw4");
 
     for (auto &journal : journals)
     {

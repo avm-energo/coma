@@ -286,6 +286,11 @@ void ProtocomThread::parseResponse()
 
     case ReadBlkStartInfo:
     case ReadBlkStartInfoExt:
+        if (boardType.isEmpty())
+        {
+            boardType.mTypeB = m_readData[0];
+            boardType.mTypeM = m_readData[4];
+        }
         processU32(m_readData, addr);
         break;
 
@@ -458,8 +463,17 @@ void ProtocomThread::processFileFromDisk(DataTypes::FilesEnum fileNum)
         return;
     }
     QByteArray ba = file.readAll();
-    FilePostpone(ba, fileNum, DataTypes::FileFormat::Binary);
-    // TODO: Replace FilePostpone function
+    if (!boardType.isEmpty())
+    {
+        auto s2bFile = S2::emulateS2B({ fileNum, ba }, fileNum, boardType.mTypeB, boardType.mTypeM);
+        auto &dataManager = DataManager::GetInstance();
+        DataTypes::GeneralResponseStruct genResp {
+            DataTypes::GeneralResponseTypes::Ok,      //
+            static_cast<quint64>(s2bFile.header.size) //
+        };
+        dataManager.addSignalToOutList(genResp);
+        dataManager.addSignalToOutList(s2bFile);
+    }
 }
 
 void ProtocomThread::progressFile(const QByteArray &data)

@@ -196,7 +196,7 @@ quint64 S2::GetFileSize(const QByteArray &bain)
     return fh.size + sizeof(S2DataTypes::S2FileHeader);
 }
 
-S2DataTypes::S2BFile S2::emulateS2B(DataTypes::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM)
+S2DataTypes::S2BFile S2::emulateS2B(const DataTypes::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM)
 {
     using namespace S2DataTypes;
     constexpr quint32 tailEnd = 0xEEEE1111;

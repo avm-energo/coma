@@ -23,7 +23,7 @@ public:
     static void tester(S2DataTypes::S2ConfigType &buffer);
     static quint16 GetIdByName(QString name);
     static quint64 GetFileSize(const QByteArray &data);
-    static S2DataTypes::S2BFile emulateS2B(DataTypes::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM);
+    static S2DataTypes::S2BFile emulateS2B(const DataTypes::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM);
     static S2DataTypes::S2BFile parseS2B(const QByteArray &file);
 
     static QMap<QString, quint16> NameIdMap;

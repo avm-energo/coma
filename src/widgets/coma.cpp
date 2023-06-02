@@ -285,13 +285,13 @@ void Coma::initInterfaceConnection()
         break;
 #endif
     case Board::InterfaceType::USB:
-        device = BaseInterface::InterfacePointer(new Protocom());
+        device.reset(new Protocom());
         break;
     case Board::InterfaceType::Ethernet:
-        device = BaseInterface::InterfacePointer(new IEC104());
+        device.reset(new IEC104());
         break;
     case Board::InterfaceType::RS485:
-        device = BaseInterface::InterfacePointer(new ModBus());
+        device.reset(new ModBus());
         break;
     default:
         qFatal("Connection type error");
