@@ -1,6 +1,6 @@
 #include "../dialogs/journalsdialog.h"
 
-#include "../dialogs/keypressdialog.h"
+//#include "../dialogs/keypressdialog.h"
 #include "../journals/measjournal.h"
 #include "../journals/sysjournal.h"
 #include "../journals/workjournal.h"
@@ -35,6 +35,7 @@ static constexpr char name[] = "jourHash";
 JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent), proxy(&DataManager::GetInstance())
 {
+    disableSuccessMessage();
     proxy.RegisterType<S2DataTypes::S2BFile>();
     createJournals(settings);
 
@@ -134,10 +135,10 @@ QWidget *JournalDialog::jourTab(const Journal *journal)
     return w;
 }
 
-void JournalDialog::jourFileChoosed(QString &file)
-{
-    JourFile = file;
-}
+// void JournalDialog::jourFileChoosed(QString &file)
+//{
+//    JourFile = file;
+//}
 
 void JournalDialog::eraseJour()
 {
@@ -189,25 +190,24 @@ void JournalDialog::saveJour(DataTypes::FilesEnum jourType)
     emit startSaveJour(filename);
 }
 
-int JournalDialog::getJourNum(const QString &objname)
-{
-    bool ok = false;
-    QStringList sl = objname.split(".");
-
-    if (sl.size() < 2)
-    {
-        qDebug() << "sl.size() < 2";
-        return INT_MAX;
-    }
-    int jourtype = sl.at(1).toInt(&ok);
-    const QString jourprefix = sl.at(0);
-    if (((jourprefix != "gj") && (jourprefix != "ej") && (jourprefix != "sj") && (jourprefix != "mj")) || !ok)
-    {
-        qDebug("Bad jourprefix");
-        return INT_MAX;
-    }
-    return jourtype;
-}
+// int JournalDialog::getJourNum(const QString &objname)
+//{
+//    bool ok = false;
+//    QStringList sl = objname.split(".");
+//    if (sl.size() < 2)
+//    {
+//        qDebug() << "sl.size() < 2";
+//        return INT_MAX;
+//    }
+//    int jourtype = sl.at(1).toInt(&ok);
+//    const QString jourprefix = sl.at(0);
+//    if (((jourprefix != "gj") && (jourprefix != "ej") && (jourprefix != "sj") && (jourprefix != "mj")) || !ok)
+//    {
+//        qDebug("Bad jourprefix");
+//        return INT_MAX;
+//    }
+//    return jourtype;
+//}
 
 void JournalDialog::done(const QString &msg)
 {

@@ -16,8 +16,6 @@ public:
     void disableSuccessMessage();
     void enableSuccessMessage();
 
-public slots:
-
 protected:
     QString successMsg() const;
     void setSuccessMsg(const QString successMsg);

@@ -10,8 +10,6 @@
 #include <QSortFilterProxyModel>
 #include <QTableView>
 
-//#define MAXSWJNUM 262144
-
 using Journal = journals::BaseJournal;
 
 class JournalDialog : public UDialog
@@ -27,11 +25,11 @@ private:
     void createJournals(const ModuleSettings &settings);
     void setupUI();
     QWidget *jourTab(const Journal *journal);
-    int getJourNum(const QString &objname);
+    // int getJourNum(const QString &objname);
 
 private slots:
     void tabChanged(const int index);
-    void jourFileChoosed(QString &file);
+    // void jourFileChoosed(QString &file);
     void eraseJour();
     void saveJour(DataTypes::FilesEnum jourType);
     void done(const QString &msg);
@@ -40,7 +38,7 @@ private slots:
 private:
     int currentTab;
     QList<Journal *> journals;
-    QString JourFile;
+    // QString JourFile;
     QProgressDialog *progress;
     DataTypesProxy proxy;
 };
