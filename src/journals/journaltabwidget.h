@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../journals/basejournal.h"
 #include "../s2/s2datatypes.h"
 #include "../widgets/QProgressIndicator.h"
+#include "basejournal.h"
 
 #include <QDialog>
 #include <QProgressDialog>
@@ -15,7 +15,7 @@ class JournalTabWidget : public QWidget
 {
     Q_OBJECT
 private:
-    using Journal = journals::BaseJournal;
+    using Journal = BaseJournal;
     Journal *journal;
     ETableView *modelView;
     QDialog *getProgressDialog;

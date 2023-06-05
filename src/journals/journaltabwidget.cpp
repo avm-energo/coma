@@ -1,10 +1,10 @@
 #include "journaltabwidget.h"
 
+#include "../dialogs/keypressdialog.h"
 #include "../interfaces/baseinterface.h"
 #include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
-#include "keypressdialog.h"
 
 #include <QPushButton>
 #include <QVBoxLayout>

@@ -15,6 +15,8 @@ set(files_h
     workjournal.h
     measjournal.h
     measparser.h
+    journaldialog.h
+    journaltabwidget.h
 )
 
 set(files_cpp
@@ -24,6 +26,8 @@ set(files_cpp
     workjournal.cpp
     measjournal.cpp
     measparser.cpp
+    journaldialog.cpp
+    journaltabwidget.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
