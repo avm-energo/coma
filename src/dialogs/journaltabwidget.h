@@ -36,9 +36,8 @@ private slots:
 
 public:
     JournalTabWidget(Journal *jour, QWidget *parent = nullptr);
-
-public slots:
     void setJournalFile(const S2DataTypes::S2BFile &jourFile);
+    const QString &getJournalName() const;
 };
 
 }

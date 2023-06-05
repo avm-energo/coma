@@ -146,4 +146,9 @@ void JournalTabWidget::setJournalFile(const S2DataTypes::S2BFile &jourFile)
     }
 }
 
+const QString &JournalTabWidget::getJournalName() const
+{
+    return journal->getName();
+}
+
 }
