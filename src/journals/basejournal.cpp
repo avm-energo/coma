@@ -123,23 +123,20 @@ void BaseJournal::save(const QString &filename)
         currentCell.setColumn(2);
         // время события
         workSheet->writeString(currentCell, dataModel->data(dataModel->index(i, 1), Qt::DisplayRole).toString());
-
         for (int j = 2; j < dataModel->columnCount(); ++j)
         {
             currentCell.setColumn(1 + j);
-            QVariant value = dataModel->data(dataModel->index(i, 1), Qt::DisplayRole);
+            QVariant value = dataModel->data(dataModel->index(i, j), Qt::DisplayRole);
             switch (value.type())
             {
             case QVariant::Type::Double:
-                workSheet->writeNumeric(
-                    currentCell, dataModel->data(dataModel->index(i, j), Qt::DisplayRole).toFloat());
+                workSheet->writeNumeric(currentCell, value.toFloat());
                 break;
             case QVariant::Type::Int:
-                workSheet->writeNumeric(currentCell, dataModel->data(dataModel->index(i, j), Qt::DisplayRole).toInt());
+                workSheet->writeNumeric(currentCell, value.toInt());
                 break;
             default:
-                workSheet->writeString(
-                    currentCell, dataModel->data(dataModel->index(i, j), Qt::DisplayRole).toString());
+                workSheet->writeString(currentCell, value.toString());
                 break;
             }
         }

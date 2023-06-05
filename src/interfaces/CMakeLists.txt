@@ -15,7 +15,6 @@ add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
   gen
-  #module
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::SerialPort)

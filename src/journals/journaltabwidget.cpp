@@ -8,12 +8,13 @@
 
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <gen/files.h>
 #include <map>
 
 namespace journals
 {
 
-JournalTabWidget::JournalTabWidget(Journal *jour, QWidget *parent)
+JournalTabWidget::JournalTabWidget(BaseJournal *jour, QWidget *parent)
     : QWidget(parent)
     , journal(jour)
     , modelView(journal->createModelView(this))
@@ -23,8 +24,8 @@ JournalTabWidget::JournalTabWidget(Journal *jour, QWidget *parent)
 {
     setupProgressDialogs();
     setupUI();
-    connect(journal, &Journal::done, this, &JournalTabWidget::done);
-    connect(journal, &Journal::error, this, &JournalTabWidget::error);
+    connect(journal, &BaseJournal::done, this, &JournalTabWidget::done);
+    connect(journal, &BaseJournal::error, this, &JournalTabWidget::error);
 }
 
 void JournalTabWidget::setupProgressDialogs()
@@ -38,8 +39,8 @@ void JournalTabWidget::setupProgressDialogs()
     getProgressDialog->setLayout(progressLayout);
     saveProgressDialog->setCancelButton(nullptr);
     saveProgressDialog->cancel();
-    connect(journal, &Journal::resendMaxResult, saveProgressDialog, &QProgressDialog::setMaximum);
-    connect(journal, &Journal::resendResult, saveProgressDialog, &QProgressDialog::setValue);
+    connect(journal, &BaseJournal::resendMaxResult, saveProgressDialog, &QProgressDialog::setMaximum);
+    connect(journal, &BaseJournal::resendResult, saveProgressDialog, &QProgressDialog::setValue);
 }
 
 void JournalTabWidget::setupUI()
@@ -67,7 +68,7 @@ void JournalTabWidget::setupUI()
     saveBinaryButton->setEnabled(false);
     hLayout2->addWidget(saveBinaryButton);
 
-    connect(journal, &Journal::done, this, [this, saveExcelButton, saveBinaryButton] {
+    connect(journal, &BaseJournal::done, this, [this, saveExcelButton, saveBinaryButton] {
         getProgressDialog->close();
         modelView->setUpdatesEnabled(true);
         saveExcelButton->setEnabled(true);
@@ -78,6 +79,27 @@ void JournalTabWidget::setupUI()
     vLayout->addLayout(hLayout2);
     vLayout->addWidget(modelView, 89);
     setLayout(vLayout);
+}
+
+QString JournalTabWidget::getSuggestedFilename()
+{
+    QString suggestedFilename = "";
+    static const std::map<JournalType, QString> names {
+        { JournalType::System, "SysJ" }, //
+        { JournalType::Work, "WorkJ" },  //
+        { JournalType::Meas, "MeasJ" }   //
+    };
+    auto search = names.find(journal->getType());
+    if (search != names.end())
+    {
+        const auto &board = Board::GetInstance();
+        suggestedFilename = search->second + " ";
+        suggestedFilename += QString::number(journalFile.header.typeB, 16);
+        suggestedFilename += QString::number(journalFile.header.typeM, 16) + " #";
+        suggestedFilename += QString("%1").arg(board.serialNumber(Board::BaseAdd), 8, 10, QChar('0'));
+        suggestedFilename += " " + QDate::currentDate().toString("dd-MM-yyyy");
+    }
+    return suggestedFilename;
 }
 
 void JournalTabWidget::getJournal()
@@ -100,29 +122,40 @@ void JournalTabWidget::eraseJournal()
 
 void JournalTabWidget::saveExcelJournal()
 {
-    static const std::map<JournalType, QString> names {
-        { JournalType::System, "SysJ" }, //
-        { JournalType::Work, "WorkJ" },  //
-        { JournalType::Meas, "MeasJ" }   //
-    };
-    auto search = names.find(journal->getType());
-    if (search != names.end())
+    auto suggestedFilename = getSuggestedFilename();
+    if (!suggestedFilename.isEmpty())
     {
-        const auto &board = Board::GetInstance();
-        auto suggestedFilename = search->second + " ";
-        suggestedFilename += QString::number(journalFile.header.typeB, 16);
-        suggestedFilename += QString::number(journalFile.header.typeM, 16) + " #";
-        suggestedFilename += QString("%1").arg(board.serialNumber(Board::BaseAdd), 8, 10, QChar('0'));
-        suggestedFilename += " " + QDate::currentDate().toString("dd-MM-yyyy") + ".xlsx";
+        suggestedFilename += ".xlsx";
         auto filename = WDFunc::ChooseFileForSave(nullptr, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
-        saveProgressDialog->setMinimumDuration(0);
-        journal->save(filename);
+        if (!filename.isEmpty())
+        {
+            saveProgressDialog->setMinimumDuration(0);
+            journal->save(filename);
+        }
     }
 }
 
 void JournalTabWidget::saveBinaryJournal()
 {
-    ;
+
+    auto suggestedFilename = getSuggestedFilename();
+    if (!suggestedFilename.isEmpty())
+    {
+        suggestedFilename += ".jn";
+        auto filename = WDFunc::ChooseFileForSave(nullptr, "Journal files (*.jn)", "jn", suggestedFilename);
+        if (!filename.isEmpty())
+        {
+            auto &fileHeader = journalFile.header;
+            auto file = QByteArray::fromRawData(reinterpret_cast<const char *>(&fileHeader), sizeof(fileHeader));
+            auto recHeader = journalFile.file.serialize().header;
+            file.append(QByteArray::fromRawData(reinterpret_cast<const char *>(&recHeader), sizeof(recHeader)));
+            file.append(journalFile.file.data);
+            auto &fileTail = journalFile.tail;
+            file.append(QByteArray::fromRawData(reinterpret_cast<const char *>(&fileTail), sizeof(fileTail)));
+            Files::SaveToFile(filename, file);
+            done("Файл создан успешно");
+        }
+    }
 }
 
 void JournalTabWidget::done(const QString &message)

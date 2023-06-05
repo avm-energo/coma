@@ -15,8 +15,7 @@ class JournalTabWidget : public QWidget
 {
     Q_OBJECT
 private:
-    using Journal = BaseJournal;
-    Journal *journal;
+    BaseJournal *journal;
     ETableView *modelView;
     QDialog *getProgressDialog;
     QProgressIndicator *getProgressIndicator;
@@ -25,6 +24,7 @@ private:
 
     void setupProgressDialogs();
     void setupUI();
+    QString getSuggestedFilename();
 
 private slots:
     void getJournal();
@@ -35,7 +35,7 @@ private slots:
     void error(const QString &message);
 
 public:
-    JournalTabWidget(Journal *jour, QWidget *parent = nullptr);
+    JournalTabWidget(BaseJournal *jour, QWidget *parent = nullptr);
     void setJournalFile(const S2DataTypes::S2BFile &jourFile);
     const QString &getJournalName() const;
 };
