@@ -2,6 +2,7 @@
 
 #include "../models/edynamictablemodel.h"
 #include "../module/modulesettings.h"
+#include "../s2/filestruct.h"
 #include "../widgets/etableview.h"
 
 #include <QObject>
@@ -12,7 +13,7 @@
 namespace journals
 {
 /// \brief Перечисление для типа журнала.
-enum JournalType : quint8
+enum class JournalType : quint8
 {
     System = 4,
     Work = 5,
@@ -64,6 +65,13 @@ public:
     /// \brief Возвращает тип текущего журнала.
     const JournalType getType() const;
 
+    /// \brief Заполняет модель данными, приходящими извне.
+    /// \param file[in] - FileStruct, содержащий прочитанный бинарный файл журнала.
+    void fill(const DataTypes::FileStruct &file);
+
+    /// \brief Сохраняет модель в Excel-файл с указанным именем.
+    void save(const QString &filename);
+
 signals:
     /// \brief Сигнал об успешном выполнении операции.
     void done(const QString &msg);
@@ -73,14 +81,6 @@ signals:
     void resendResult(const int result);
     /// \brief Число шагов выполняющейся операции.
     void resendMaxResult(const int max);
-
-public slots:
-    /// \brief Заполняет модель данными, приходящими извне.
-    /// \param data[in] - FileStruct, содержащий прочитанный бинарный файл журнала.
-    void fill(const QVariant &data);
-
-    /// \brief Сохраняет модель в Excel-файл с указанным именем.
-    void save(const QString &filename);
 };
 
 }

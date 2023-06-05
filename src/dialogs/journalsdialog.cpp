@@ -64,10 +64,10 @@ void JournalDialog::createJournals(const ModuleSettings &settings)
 
 void JournalDialog::tabChanged(const int index)
 {
-    disconnect(&proxy, &DataTypesProxy::DataStorable, journals[currentTab], &Journal::fill);
+    // disconnect(&proxy, &DataTypesProxy::DataStorable, journals[currentTab], &Journal::fill);
     disconnect(this, &JournalDialog::startSaveJour, journals[currentTab], &Journal::save);
     currentTab = index;
-    connect(&proxy, &DataTypesProxy::DataStorable, journals[currentTab], &Journal::fill);
+    // connect(&proxy, &DataTypesProxy::DataStorable, journals[currentTab], &Journal::fill);
     connect(this, &JournalDialog::startSaveJour, journals[currentTab], &Journal::save);
 }
 
@@ -87,51 +87,54 @@ void JournalDialog::setupUI()
 
     connect(tabWidget, &QTabWidget::currentChanged, this, &JournalDialog::tabChanged);
     currentTab = 0;
-    connect(&proxy, &DataTypesProxy::DataStorable, journals[currentTab], &Journal::fill);
+    // connect(&proxy, &DataTypesProxy::DataStorable, journals[currentTab], &Journal::fill);
     connect(this, &JournalDialog::startSaveJour, journals[currentTab], &Journal::save);
 }
 
-QWidget *JournalDialog::jourTab(const Journal *journal)
+QWidget *JournalDialog::jourTab([[maybe_unused]] const Journal *journal)
 {
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QVBoxLayout *vlyout = new QVBoxLayout;
+    // QHBoxLayout *hlyout = new QHBoxLayout;
+    // QVBoxLayout *vlyout = new QVBoxLayout;
     QWidget *w = new QWidget(this);
-    auto str = journal->getName().toLower();
-    auto modelView = journal->createModelView(this);
-    auto jourtype = journal->getType();
+    //    auto str = journal->getName().toLower();
+    //    auto modelView = journal->createModelView(this);
+    //    auto jourtype = journal->getType();
 
-    QDialog *progressDialog = new QDialog(
-        this, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
-    QProgressIndicator *progressIndicator = new QProgressIndicator(this);
-    hlyout->addWidget(progressIndicator);
-    progressDialog->setLayout(hlyout);
-    hlyout = new QHBoxLayout;
-    progressIndicator->startAnimation();
-    QPushButton *getButton = WDFunc::NewPB(this, "gj." + QString::number(jourtype), "Получить " + str, this, [=] {
-        progressDialog->show();
-        progressIndicator->startAnimation();
-        BaseInterface::iface()->reqFile(quint32(jourtype));
-        modelView->setUpdatesEnabled(false);
-    });
-    connect(journal, &Journal::done, progressDialog, &QWidget::close);
-    connect(journal, &Journal::done, modelView, [modelView] { modelView->setUpdatesEnabled(true); });
-    hlyout->addWidget(getButton);
-    QPushButton *eraseButton = WDFunc::NewPB(this, "ej." + QString::number(jourtype), "Стереть " + str, this, [=] {
-        if (checkPassword())
-            BaseInterface::iface()->writeCommand(Commands::C_EraseJournals, quint8(jourtype));
-    });
-    hlyout->addWidget(eraseButton);
-    QPushButton *saveButton = WDFunc::NewPB(this, "sj." + QString::number(jourtype), "Сохранить журнал в файл", this,
-        [=] { saveJour(DataTypes::FilesEnum(jourtype)); });
-    saveButton->setEnabled(false);
-    connect(journal, &Journal::done, this, [saveButton](const QString &str) {
-        Q_UNUSED(str)
-        saveButton->setEnabled(true);
-    });
-    hlyout->addWidget(saveButton);
-    vlyout->addLayout(hlyout);
-    vlyout->addWidget(modelView, 89);
-    w->setLayout(vlyout);
+    //    QDialog *progressDialog = new QDialog(
+    //        this, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::FramelessWindowHint |
+    //        Qt::NoDropShadowWindowHint);
+    //    QProgressIndicator *progressIndicator = new QProgressIndicator(this);
+    //    hlyout->addWidget(progressIndicator);
+    //    progressDialog->setLayout(hlyout);
+    //    hlyout = new QHBoxLayout;
+    //    progressIndicator->startAnimation();
+    //    QPushButton *getButton = WDFunc::NewPB(this, "gj." + QString::number(jourtype), "Получить " + str, this, [=] {
+    //        progressDialog->show();
+    //        progressIndicator->startAnimation();
+    //        BaseInterface::iface()->reqFile(quint32(jourtype));
+    //        modelView->setUpdatesEnabled(false);
+    //    });
+    //    connect(journal, &Journal::done, progressDialog, &QWidget::close);
+    //    connect(journal, &Journal::done, modelView, [modelView] { modelView->setUpdatesEnabled(true); });
+    //    hlyout->addWidget(getButton);
+    //    QPushButton *eraseButton = WDFunc::NewPB(this, "ej." + QString::number(jourtype), "Стереть " + str, this, [=]
+    //    {
+    //        if (checkPassword())
+    //            BaseInterface::iface()->writeCommand(Commands::C_EraseJournals, quint8(jourtype));
+    //    });
+    //    hlyout->addWidget(eraseButton);
+    //    //QPushButton *saveButton = WDFunc::NewPB(this, "sj." + QString::number(jourtype), "Сохранить журнал в файл",
+    //    this,
+    //    //    [=] { saveJour(DataTypes::FilesEnum(jourtype)); });
+    //    //saveButton->setEnabled(false);
+    //    connect(journal, &Journal::done, this, [saveButton](const QString &str) {
+    //        Q_UNUSED(str)
+    //        saveButton->setEnabled(true);
+    //    });
+    //    hlyout->addWidget(saveButton);
+    //    vlyout->addLayout(hlyout);
+    //    vlyout->addWidget(modelView, 89);
+    //    w->setLayout(vlyout);
     return w;
 }
 

@@ -8,7 +8,7 @@
 #include <QProgressDialog>
 #include <QWidget>
 
-namespace Test
+namespace journals
 {
 
 class JournalTabWidget : public QWidget
@@ -29,7 +29,10 @@ private:
 private slots:
     void getJournal();
     void eraseJournal();
-    void saveJournal();
+    void saveExcelJournal();
+    void saveBinaryJournal();
+    void done(const QString &message);
+    void error(const QString &message);
 
 public:
     JournalTabWidget(Journal *jour, QWidget *parent = nullptr);

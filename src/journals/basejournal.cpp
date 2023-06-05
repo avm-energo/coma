@@ -1,7 +1,6 @@
 #include "basejournal.h"
 
 #include "../module/board.h"
-#include "../s2/s2datatypes.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>
@@ -55,21 +54,14 @@ const JournalType BaseJournal::getType() const
     return type;
 }
 
-void BaseJournal::fill(const QVariant &data)
+void BaseJournal::fill(const DataTypes::FileStruct &file)
 {
-    if (data.canConvert<S2DataTypes::S2BFile>())
-    {
-        auto s2bFile = data.value<S2DataTypes::S2BFile>();
-        if (s2bFile.file.ID == type)
-        {
-            if (!dataModel->isEmpty())
-                dataModel->clearModel();
-            dataModel->setHorizontalHeaderLabels(headers);
-            fillModel(s2bFile.file.data);
-            proxyModel->setSourceModel(dataModel.get());
-            emit done("Прочитано успешно");
-        }
-    }
+    if (!dataModel->isEmpty())
+        dataModel->clearModel();
+    dataModel->setHorizontalHeaderLabels(headers);
+    fillModel(file.data);
+    proxyModel->setSourceModel(dataModel.get());
+    emit done("Прочитано успешно");
 }
 
 void BaseJournal::save(const QString &filename)

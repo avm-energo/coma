@@ -1,13 +1,16 @@
 #include "journaltabwidget.h"
 
 #include "../interfaces/baseinterface.h"
-//#include "../widgets/wd_func.h"
+#include "../module/board.h"
+#include "../widgets/epopup.h"
+#include "../widgets/wd_func.h"
 #include "keypressdialog.h"
 
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <map>
 
-namespace Test
+namespace journals
 {
 
 JournalTabWidget::JournalTabWidget(Journal *jour, QWidget *parent)
@@ -20,6 +23,8 @@ JournalTabWidget::JournalTabWidget(Journal *jour, QWidget *parent)
 {
     setupProgressDialogs();
     setupUI();
+    connect(journal, &Journal::done, this, &JournalTabWidget::done);
+    connect(journal, &Journal::error, this, &JournalTabWidget::error);
 }
 
 void JournalTabWidget::setupProgressDialogs()
@@ -39,29 +44,38 @@ void JournalTabWidget::setupProgressDialogs()
 
 void JournalTabWidget::setupUI()
 {
-    auto hLayout = new QHBoxLayout;
+    auto hLayout1 = new QHBoxLayout;
+    auto hLayout2 = new QHBoxLayout;
     auto vLayout = new QVBoxLayout;
     auto str = journal->getName().toLower();
 
     auto getButton = new QPushButton("Получить " + str, this);
     connect(getButton, &QPushButton::clicked, this, &JournalTabWidget::getJournal);
-    hLayout->addWidget(getButton);
+    hLayout1->addWidget(getButton);
 
     auto eraseButton = new QPushButton("Стереть " + str, this);
     connect(eraseButton, &QPushButton::clicked, this, &JournalTabWidget::eraseJournal);
-    hLayout->addWidget(eraseButton);
+    hLayout1->addWidget(eraseButton);
 
-    auto saveButton = new QPushButton("Сохранить журнал в файл", this);
-    connect(saveButton, &QPushButton::clicked, this, &JournalTabWidget::saveJournal);
-    hLayout->addWidget(saveButton);
+    auto saveExcelButton = new QPushButton("Сохранить журнал в Excel файл", this);
+    connect(saveExcelButton, &QPushButton::clicked, this, &JournalTabWidget::saveExcelJournal);
+    saveExcelButton->setEnabled(false);
+    hLayout2->addWidget(saveExcelButton);
 
-    connect(journal, &Journal::done, this, [this, saveButton] {
+    auto saveBinaryButton = new QPushButton("Сохранить журнал в бинарный файл", this);
+    connect(saveBinaryButton, &QPushButton::clicked, this, &JournalTabWidget::saveBinaryJournal);
+    saveBinaryButton->setEnabled(false);
+    hLayout2->addWidget(saveBinaryButton);
+
+    connect(journal, &Journal::done, this, [this, saveExcelButton, saveBinaryButton] {
         getProgressDialog->close();
         modelView->setUpdatesEnabled(true);
-        saveButton->setEnabled(true);
+        saveExcelButton->setEnabled(true);
+        saveBinaryButton->setEnabled(true);
     });
 
-    vLayout->addLayout(hLayout);
+    vLayout->addLayout(hLayout1);
+    vLayout->addLayout(hLayout2);
     vLayout->addWidget(modelView, 89);
     setLayout(vLayout);
 }
@@ -84,9 +98,42 @@ void JournalTabWidget::eraseJournal()
         BaseInterface::iface()->writeCommand(Commands::C_EraseJournals, quint8(journal->getType()));
 }
 
-void JournalTabWidget::saveJournal()
+void JournalTabWidget::saveExcelJournal()
+{
+    static const std::map<JournalType, QString> names {
+        { JournalType::System, "SysJ" }, //
+        { JournalType::Work, "WorkJ" },  //
+        { JournalType::Meas, "MeasJ" }   //
+    };
+    auto search = names.find(journal->getType());
+    if (search != names.end())
+    {
+        const auto &board = Board::GetInstance();
+        auto suggestedFilename = search->second + " ";
+        suggestedFilename += QString::number(journalFile.header.typeB, 16);
+        suggestedFilename += QString::number(journalFile.header.typeM, 16) + " #";
+        suggestedFilename += QString("%1").arg(board.serialNumber(Board::BaseAdd), 8, 10, QChar('0'));
+        suggestedFilename += " " + QDate::currentDate().toString("dd-MM-yyyy") + ".xlsx";
+        auto filename = WDFunc::ChooseFileForSave(nullptr, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
+        saveProgressDialog->setMinimumDuration(0);
+        journal->save(filename);
+    }
+}
+
+void JournalTabWidget::saveBinaryJournal()
 {
     ;
+}
+
+void JournalTabWidget::done(const QString &message)
+{
+    EMessageBox::information(this, message);
+}
+
+void JournalTabWidget::error(const QString &message)
+{
+    EMessageBox::error(this, message);
+    qCritical() << message;
 }
 
 void JournalTabWidget::setJournalFile(const S2DataTypes::S2BFile &jourFile)
@@ -95,7 +142,7 @@ void JournalTabWidget::setJournalFile(const S2DataTypes::S2BFile &jourFile)
     if (storedType == jourFile.file.ID)
     {
         journalFile = jourFile;
-        // journal->fill();
+        journal->fill(journalFile.file);
     }
 }
 

@@ -8,9 +8,6 @@ find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Widgets
   REQUIRED)
 
-#file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
-#file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
-
 set(files_h
     basejournal.h
     eventparser.h
