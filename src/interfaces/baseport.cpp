@@ -4,12 +4,10 @@
 #include <QElapsedTimer>
 
 BasePort::BasePort(const QString &logFilename, QObject *parent)
-    : QObject(parent), m_state(Interface::State::Connect), m_log(new LogClass(this)), m_timeoutTimer(new QTimer(this))
+    : QObject(parent), m_state(Interface::State::Connect), m_log(new LogClass(this))
 {
     m_log->Init(logFilename + "." + ::logExt);
     m_log->WriteRaw(::logStart);
-    m_timeoutTimer->setSingleShot(true);
-    m_timeoutTimer->setInterval(200);
 }
 
 void BasePort::setState(Interface::State state)
@@ -72,12 +70,11 @@ void BasePort::poll()
         else if (state == Interface::State::Run)
         {
             bool status = true;
-            m_dataGuard.lock();        // lock port
+            // m_dataGuard.lock();        // lock port
             auto data = read(&status); // read data
-            m_dataGuard.unlock();      // unlock port
+            // m_dataGuard.unlock();      // unlock port
             if (!data.isEmpty() && status)
             {
-                // m_timeoutTimer->stop();
                 writeLog(data.toHex(), Interface::Direction::FromDevice);
                 emit dataReceived(data);
             }
@@ -104,14 +101,11 @@ void BasePort::writeDataSync(const QByteArray &ba)
     {
         if (!ba.isEmpty())
         {
-            m_dataGuard.lock();       // lock port
+            // m_dataGuard.lock();       // lock port
             auto success = write(ba); // write data
-            m_dataGuard.unlock();     // unlock port
+            // m_dataGuard.unlock();     // unlock port
             if (success)
-            {
                 writeLog(ba.toHex(), Interface::Direction::ToDevice);
-                // m_timeoutTimer->start();
-            }
             else
                 status = Error::Msg::WriteError;
         }

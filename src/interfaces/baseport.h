@@ -39,7 +39,6 @@ private:
 protected:
     QMutex m_dataGuard;
     UniquePointer<LogClass> m_log;
-    UniquePointer<QTimer> m_timeoutTimer;
 
     void setState(Interface::State state);
     Interface::State getState();
@@ -56,7 +55,6 @@ public slots:
     void poll();
     void writeDataSync(const QByteArray &ba);
     void closeConnection();
-    //[[deprecated]] virtual bool writeData(const QByteArray &ba) = 0;
 };
 
 #endif // BASEPORT_H

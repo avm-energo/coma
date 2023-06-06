@@ -78,7 +78,9 @@ QByteArray UsbHidPort::read(bool *status)
     constexpr auto maxLength = HID::MaxSegmenthLength + 1; // +1 to ID
     QByteArray data(maxLength, 0);
     auto dataPtr = reinterpret_cast<unsigned char *>(data.data());
-    auto bytes = hid_read_timeout(m_hidDevice, dataPtr, maxLength, 100);
+    m_dataGuard.lock();                                                  // lock port
+    auto bytes = hid_read_timeout(m_hidDevice, dataPtr, maxLength, 100); // read
+    m_dataGuard.unlock();                                                // unlock port
     if (bytes < 0)
     {
         // -1 is the only error value according to hidapi documentation.
@@ -190,10 +192,12 @@ void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
 
 void UsbHidPort::clear()
 {
-    QMutexLocker locker(&_mutex);
+    // QMutexLocker locker(&_mutex);
+    m_dataGuard.lock(); // lock port
     m_waitForReply = false;
     m_currCommand.clear();
     m_hidDevice = nullptr;
+    m_dataGuard.unlock(); // unlock port
 }
 
 void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
@@ -301,7 +305,9 @@ bool UsbHidPort::writeDataToPort(QByteArray &ba)
     ba.prepend(static_cast<char>(0x00)); // inserting ID field for HID protocol
 
     auto tmpt = static_cast<size_t>(ba.size());
-    int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);
+    m_dataGuard.lock();                                                                         // lock port
+    int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt); // write
+    m_dataGuard.unlock();                                                                       // unlock port
     if (errorCode == -1)
         return false;
 

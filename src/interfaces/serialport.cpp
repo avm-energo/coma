@@ -12,14 +12,9 @@ SerialPort::SerialPort(QObject *parent) : BasePort("ModbusPort", parent)
 {
 }
 
-SerialPort::~SerialPort()
-{
-    port->deleteLater();
-}
-
 bool SerialPort::init(SerialPortSettings settings)
 {
-    port = new QSerialPort(settings.Port);
+    port.reset(new QSerialPort(settings.Port));
     port->setBaudRate(settings.Baud);
     port->setDataBits(QSerialPort::Data8);
     if (settings.Parity == "Нет")
@@ -31,17 +26,7 @@ bool SerialPort::init(SerialPortSettings settings)
     port->setStopBits(settings.Stop == "1" ? QSerialPort::OneStop : QSerialPort::TwoStop);
     port->setFlowControl(QSerialPort::NoFlowControl);
     port->setReadBufferSize(1024);
-    QObject::connect(port, &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
-
-    //    m_connectionTimer = new QTimer(this);
-    //    m_connectionTimer->setInterval(TIMEOUT);
-    //    QObject::connect(port, &QIODevice::bytesWritten, this, [&] { m_connectionTimer->start(); });
-    //    QObject::connect(port, &QIODevice::readyRead, m_connectionTimer, &QTimer::stop);
-    //    QObject::connect(m_connectionTimer, &QTimer::timeout, this, [this] {
-    //        qWarning() << this->metaObject()->className() << Error::Timeout;
-    //        emit clearQueries();
-    //        // reconnect();
-    //    });
+    QObject::connect(port.get(), &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
     return connect();
 }
 
@@ -81,11 +66,13 @@ QByteArray SerialPort::read(bool *status)
         readyRead = port->waitForReadyRead(10); // wait data (timeout 10 ms)
     if (readyRead)
     {
+        m_dataGuard.lock(); // lock port
         while (port->bytesAvailable())
         {
-            ba += port->readAll();
+            ba += port->readAll(); // read data
             QThread::msleep(2);
         }
+        m_dataGuard.unlock(); // unlock port
     }
     if (ba.isEmpty())
     {
@@ -99,7 +86,9 @@ bool SerialPort::write(const QByteArray &ba)
 {
     if (!port->isOpen())
         return false;
-    auto bytes = port->write(ba.data(), ba.size());
+    m_dataGuard.lock();                             // lock port
+    auto bytes = port->write(ba.data(), ba.size()); // write data
+    m_dataGuard.unlock();                           // unlock port
     if (bytes <= 0)
     {
         qCritical() << "Error with data writing";

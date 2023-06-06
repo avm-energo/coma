@@ -60,7 +60,7 @@ private:
     bool m_waitForReply;
     hid_device *m_hidDevice;
     bool m_shouldBeStopped;
-    QMutex _mutex;
+    // QMutex _mutex;
     QByteArray m_currCommand;
     UsbHidSettings m_deviceInfo;
     int missingCounter = 0;
