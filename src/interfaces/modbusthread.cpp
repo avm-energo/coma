@@ -88,6 +88,8 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_WriteFile:
     {
         m_fileData = cmdStr.arg2.value<QByteArray>();
+        setProgressRange(m_fileData.size());
+        m_sentBytesCount = 0;
         m_fileSectionNum = 0;
         writeFile(cmdStr.arg1.value<quint16>());
         break;
@@ -229,6 +231,9 @@ void ModbusThread::parseResponse()
     }
     case Commands::C_WriteFile:
     {
+        // Q_ASSERT(m_readData.size() == 8);
+        // m_sentBytesCount += quint8(m_readData[7]);
+        // setProgressCount(m_sentBytesCount);
         if (writeFile(m_currentCommand.arg1.value<quint16>())) // посылаем следующую секцию или возвращаем false
             return;
         DataTypes::GeneralResponseStruct grs;
@@ -261,6 +266,11 @@ void ModbusThread::processReadBytes(QByteArray ba)
             finishCommand();
             return;
         }
+    }
+    if (m_currentCommand.command == C_WriteFile)
+    {
+        if (m_readData.size() < 10)
+            return;
     }
     if (m_currentCommand.command == C_ReqFile)
     {
@@ -490,6 +500,7 @@ bool ModbusThread::writeFile(quint16 fileNum)
 {
     quint8 lastSection = 0; // не последняя секция
     QByteArray ba = m_fileData.mid(0, MBS::FileSectionLength);
+    m_sentBytesCount += ba.size();
     if (ba.isEmpty())
         return false;
     m_fileData = m_fileData.mid(ba.size()); // удаляем секцию из массива
@@ -503,6 +514,7 @@ bool ModbusThread::writeFile(quint16 fileNum)
     ba.prepend(m_deviceAddress);
     m_bytesToReceive = 8; // address, function code, last section, numFile (2), numSection (2), secLength
     calcCRCAndSend(ba);
+    setProgressCount(m_sentBytesCount);
     return true;
 }
 

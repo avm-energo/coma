@@ -209,7 +209,7 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
 void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
 {
     const auto &board = Board::GetInstance();
-    if (board.interfaceType() != Board::InterfaceType::RS485)
+    if (board.interfaceType() != Board::InterfaceType::Ethernet)
         addDialogToList(new FWUploadDialog(mParent), "Загрузка ВПО", "upload");
     addDialogToList(new InfoDialog(mParent), "О приборе", "info");
 
