@@ -17,6 +17,7 @@ set(files_h
     measparser.h
     journaldialog.h
     journaltabwidget.h
+    journalviewer.h
 )
 
 set(files_cpp
@@ -28,6 +29,7 @@ set(files_cpp
     measparser.cpp
     journaldialog.cpp
     journaltabwidget.cpp
+    journalviewer.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
