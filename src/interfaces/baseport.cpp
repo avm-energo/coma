@@ -70,9 +70,7 @@ void BasePort::poll()
         else if (state == Interface::State::Run)
         {
             bool status = true;
-            // m_dataGuard.lock();        // lock port
             auto data = read(&status); // read data
-            // m_dataGuard.unlock();      // unlock port
             if (!data.isEmpty() && status)
             {
                 writeLog(data.toHex(), Interface::Direction::FromDevice);
@@ -101,9 +99,7 @@ void BasePort::writeDataSync(const QByteArray &ba)
     {
         if (!ba.isEmpty())
         {
-            // m_dataGuard.lock();       // lock port
             auto success = write(ba); // write data
-            // m_dataGuard.unlock();     // unlock port
             if (success)
                 writeLog(ba.toHex(), Interface::Direction::ToDevice);
             else

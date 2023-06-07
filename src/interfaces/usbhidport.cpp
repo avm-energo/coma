@@ -305,9 +305,7 @@ bool UsbHidPort::writeDataToPort(QByteArray &ba)
     ba.prepend(static_cast<char>(0x00)); // inserting ID field for HID protocol
 
     auto tmpt = static_cast<size_t>(ba.size());
-    m_dataGuard.lock();                                                                         // lock port
     int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt); // write
-    m_dataGuard.unlock();                                                                       // unlock port
     if (errorCode == -1)
         return false;
 

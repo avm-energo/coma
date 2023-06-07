@@ -95,6 +95,20 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
         break;
     }
 
+    case Commands::C_StartFirmwareUpgrade:
+    {
+        QByteArray value = packReg(quint16(1));
+        constexpr quint16 firmwareModbusAddr = 802;
+        MBS::CommandStruct command {
+            MBS::Commands::WriteMultipleRegisters, //
+            firmwareModbusAddr,                    //
+            1,                                     //
+            value                                  //
+        };
+        writeMultipleRegisters(command);
+        break;
+    }
+
     // write time command with different behaviour under different OS's
     case Commands::C_WriteTime:
     {
@@ -266,11 +280,6 @@ void ModbusThread::processReadBytes(QByteArray ba)
             finishCommand();
             return;
         }
-    }
-    if (m_currentCommand.command == C_WriteFile)
-    {
-        if (m_readData.size() < 10)
-            return;
     }
     if (m_currentCommand.command == C_ReqFile)
     {
@@ -512,7 +521,7 @@ bool ModbusThread::writeFile(quint16 fileNum)
     ba.prepend(StdFunc::ArrayFromNumber(lastSection));
     ba.prepend(MBS::Commands::WriteFileSection);
     ba.prepend(m_deviceAddress);
-    m_bytesToReceive = 8; // address, function code, last section, numFile (2), numSection (2), secLength
+    m_bytesToReceive = 10; // address, function code, last section, numFile (2), numSection (2), secLength, crc (2)
     calcCRCAndSend(ba);
     setProgressCount(m_sentBytesCount);
     return true;
