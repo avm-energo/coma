@@ -7,6 +7,7 @@
 #include <QSettings>
 #include <QStandardItemModel>
 #include <gen/error.h>
+#include <gen/stdfunc.h>
 
 InterfaceEmuDialog::InterfaceEmuDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
@@ -38,7 +39,7 @@ bool InterfaceEmuDialog::updateModel()
     QStringList rslist;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
-        auto sets = std::unique_ptr<QSettings>(new QSettings);
+        UniquePointer<QSettings> sets(new QSettings);
         QString rsname = "EMU-" + QString::number(i);
         rslist << sets->value(rsname, "").toString();
     }
@@ -53,7 +54,7 @@ bool InterfaceEmuDialog::updateModel()
     {
         QString key = QCoreApplication::applicationName();
         key += "\\" + item;
-        auto sets = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
+        UniquePointer<QSettings> sets(new QSettings(QCoreApplication::organizationName(), key));
         QList<QStandardItem *> items {
             new QStandardItem(item),                                //
             new QStandardItem(sets->value("typeb", "").toString()), //
@@ -126,7 +127,7 @@ void InterfaceEmuDialog::acceptedInterface()
     rotateSettings("EMU-", name);
     QString key = QCoreApplication::applicationName();
     key += "\\" + name;
-    auto settings = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
+    UniquePointer<QSettings> settings(new QSettings(QCoreApplication::organizationName(), key));
     settings->setValue("typeb", WDFunc::LEData(dlg, "typeble"));
     settings->setValue("typem", WDFunc::LEData(dlg, "typemle"));
 
