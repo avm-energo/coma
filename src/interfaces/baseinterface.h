@@ -7,6 +7,7 @@
 #include "../s2/filestruct.h"
 #include "interfacesettings.h"
 
+#include <QTimer>
 #include <gen/datamanager/typesproxy.h>
 #include <gen/datatypes.h>
 #include <gen/error.h>
@@ -177,6 +178,7 @@ public:
     void writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
     void reqTime();
     void writeTime(quint32 time);
+    void writeTime(const timespec &time);
     void writeCommand(Commands cmd, QVariant value = 0);
     void writeCommand(Commands cmd, const QVariantList &list);
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);

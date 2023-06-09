@@ -173,6 +173,12 @@ void BaseInterface::writeTime(quint32 time)
     setToQueue(bi);
 }
 
+void BaseInterface::writeTime(const timespec &time)
+{
+    CommandStruct bi { C_WriteTime, QVariant::fromValue(time), QVariant() };
+    setToQueue(bi);
+}
+
 void BaseInterface::writeCommand(Commands cmd, QVariant value)
 {
     CommandStruct bi { cmd, value, QVariant() };
