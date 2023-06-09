@@ -50,10 +50,10 @@ bool IEC104::start(const ConnectStruct &st)
             sock->deleteLater();
         }
     });
-    connect(sock, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError error) {
-        Log->info("Error: " + QVariant::fromValue(error).toString());
-        sock->disconnectFromHost();
-    });
+    //    connect(sock, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError error) {
+    //        Log->info("Error: " + QVariant::fromValue(error).toString());
+    //        sock->disconnectFromHost();
+    //    });
     connect(sock, &QAbstractSocket::stateChanged, this, &IEC104::EthStateChanged);
     connect(parserThread, &QThread::finished, parser, &QObject::deleteLater);
     connect(parserThread, &QThread::finished, parserThread, &QObject::deleteLater);

@@ -16,6 +16,7 @@ set(files_h
     baseinterfacethread.h
     baseport.h
     emulator.h
+    ethernet.h
     iec104.h
     iec104private.h
     iec104thread.h
@@ -39,6 +40,7 @@ set(files_cpp
     baseinterfacethread.cpp
     baseport.cpp
     emulator.cpp
+    ethernet.cpp
     iec104.cpp
     iec104thread.cpp
     modbus.cpp

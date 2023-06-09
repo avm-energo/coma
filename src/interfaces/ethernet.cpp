@@ -25,10 +25,10 @@ bool Ethernet::init(IEC104Settings settings)
     m_baseadr = settings.baseadr;
     m_ip = settings.ip;
     sock = new QTcpSocket(this);
-    QObject::connect(sock, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError error) {
-        Log->info("Error: " + QVariant::fromValue(error).toString());
-        sock->disconnectFromHost();
-    });
+    //    QObject::connect(sock, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError error) {
+    //        Log->info("Error: " + QVariant::fromValue(error).toString());
+    //        sock->disconnectFromHost();
+    //    });
     QObject::connect(sock, &QAbstractSocket::stateChanged, this, &Ethernet::EthStateChanged, Qt::DirectConnection);
     QObject::connect(sock, &QAbstractSocket::connected, this, &Ethernet::Connected, Qt::DirectConnection);
     QObject::connect(sock, &QAbstractSocket::connected, this, &Ethernet::EthSetConnected, Qt::DirectConnection);
@@ -122,11 +122,11 @@ bool Ethernet::reconnect()
         loop.quit();
         result = true;
     });
-    QObject::connect(sock, &QAbstractSocket::errorOccurred, this, [&]() {
-        setState(Interface::State::Disconnect);
-        loop.quit();
-        result = false;
-    });
+    //    QObject::connect(sock, &QAbstractSocket::errorOccurred, this, [&]() {
+    //        setState(Interface::State::Disconnect);
+    //        loop.quit();
+    //        result = false;
+    //    });
     loop.exec();
     return result;
 }
