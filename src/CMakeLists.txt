@@ -117,7 +117,7 @@ conan_cmake_install(
 # Building libraries and targets
 include(gen)
 # Step 1: Build dependencies
-if (BUILD_AVM_DEBUG OR BUILD_AVM_SERVICE)
+if (BUILD_AVM_DEBUG OR BUILD_AVM_SERVICE OR AVTUK-14)
   include(qcustomplot)
   include(limereport)
   include(qxlsx)
@@ -152,9 +152,9 @@ if (BUILD_WITH_ALISE)
   set(PROTOS_GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/protos/protos)
   add_subdirectory(protos)
   # Build details for AVTUK-14
-  if (AVTUK-14 AND NOT BUILD_AVM_DEBUG AND NOT BUILD_AVM_SERVICE)
-    add_subdirectory(interfaces)
-  endif()
+  #if (AVTUK-14 AND NOT BUILD_AVM_DEBUG AND NOT BUILD_AVM_SERVICE)
+  #  add_subdirectory(interfaces)
+  #endif()
   add_subdirectory(alise)
 endif()
 

@@ -20,8 +20,10 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     auto addrInput = new QSpinBox(this);
     addrInput->setMinimum(addrMin);
     addrInput->setMaximum(addrMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(addrInput, &QSpinBox::textChanged, this, //
         qOverload<const QString &>(&XmlSignalDialog::dataChanged));
+#endif
     QObject::connect(addrInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlSignalDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
@@ -33,8 +35,10 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     auto countInput = new QSpinBox(this);
     countInput->setMinimum(countMin);
     countInput->setMaximum(countMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(countInput, &QSpinBox::textChanged, this, //
         qOverload<const QString &>(&XmlSignalDialog::dataChanged));
+#endif
     QObject::connect(countInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlSignalDialog::dataChanged));
     countLayout->addWidget(countLabel);
@@ -46,8 +50,10 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     auto idInput = new QSpinBox(this);
     idInput->setMinimum(idMin);
     idInput->setMaximum(idMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(idInput, &QSpinBox::textChanged, this, //
         qOverload<const QString &>(&XmlSignalDialog::dataChanged));
+#endif
     QObject::connect(idInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlSignalDialog::dataChanged));
     idLayout->addWidget(idLabel);

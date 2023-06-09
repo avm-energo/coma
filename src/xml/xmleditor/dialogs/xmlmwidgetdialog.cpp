@@ -22,8 +22,10 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     auto addrInput = new QSpinBox(this);
     addrInput->setMinimum(addrMin);
     addrInput->setMaximum(addrMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(addrInput, &QSpinBox::textChanged, this, //
         qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
+#endif
     QObject::connect(addrInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlMWidgetDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
@@ -43,8 +45,10 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     auto countInput = new QSpinBox(this);
     countInput->setMinimum(countMin);
     countInput->setMaximum(countMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(countInput, &QSpinBox::textChanged, this, //
         qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
+#endif
     QObject::connect(countInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlMWidgetDialog::dataChanged));
     countLayout->addWidget(countLabel);

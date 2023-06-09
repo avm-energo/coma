@@ -64,7 +64,9 @@ void Xml104Dialog::setupUI(QVBoxLayout *mainLayout)
     auto sigIdInput = new QSpinBox(this);
     sigIdInput->setMinimum(idMin);
     sigIdInput->setMaximum(idMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(sigIdInput, &QSpinBox::textChanged, this, qOverload<const QString &>(&Xml104Dialog::dataChanged));
+#endif
     QObject::connect(sigIdInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&Xml104Dialog::dataChanged));
     sigIdLayout->addWidget(sigIdLabel);

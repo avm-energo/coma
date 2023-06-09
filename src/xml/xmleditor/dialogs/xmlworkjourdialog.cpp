@@ -18,8 +18,10 @@ void XmlWorkJourDialog::setupUI(QVBoxLayout *mainLayout)
     auto addrInput = new QSpinBox(this);
     addrInput->setMinimum(addrMin);
     addrInput->setMaximum(addrMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(addrInput, &QSpinBox::textChanged, this, //
         qOverload<const QString &>(&XmlWorkJourDialog::dataChanged));
+#endif
     QObject::connect(addrInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlWorkJourDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
