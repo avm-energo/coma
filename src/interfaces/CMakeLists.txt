@@ -8,8 +8,50 @@ find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network SerialPort
   REQUIRED)
 
-file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
-file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+#file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp EXCLUDE ethernet.cpp)
+#file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h EXCLUDE ethernet.h)
+
+set(files_h
+    baseinterface.h
+    baseinterfacethread.h
+    baseport.h
+    emulator.h
+    iec104.h
+    iec104private.h
+    iec104thread.h
+    interfacesettings.h
+    modbus.h
+    modbusprivate.h
+    modbusthread.h
+    moduledataupdater.h
+    protocom.h
+    protocomprivate.h
+    protocomthread.h
+    serialport.h
+    settingstypes.h
+    usbhidport.h
+    usbhidportinfo.h
+    usbhidsettings.h
+)
+
+set(files_cpp
+    baseinterface.cpp
+    baseinterfacethread.cpp
+    baseport.cpp
+    emulator.cpp
+    iec104.cpp
+    iec104thread.cpp
+    modbus.cpp
+    modbusprivate.cpp
+    modbusthread.cpp
+    moduledataupdater.cpp
+    protocom.cpp
+    protocomthread.cpp
+    serialport.cpp
+    usbhidport.cpp
+    usbhidportinfo.cpp
+    usbhidsettings.cpp
+)
 
 add_library(
   ${PROJECT_NAME} STATIC
