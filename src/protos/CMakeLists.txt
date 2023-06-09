@@ -4,7 +4,7 @@ project(protos CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 conan_cmake_configure(
-    REQUIRES protobuf/3.17.1
+    REQUIRES protobuf/3.16.0
     GENERATORS cmake_find_package)
 
 conan_cmake_install(
