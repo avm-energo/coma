@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../interfaces/interfacesettings.h"
 #include "../s2/datarecv.h"
 #include "modules.h"
 
@@ -72,12 +73,6 @@ struct MeasJournal
     bool visibility; ///< атрибут "visibility"
 };
 
-/// \brief Структура для хранения информации о протоколах protocom, modbus и iec104.
-struct InterfaceSettings
-{
-    QVariant settings;
-};
-
 using SignalMap = QHash<quint32, Signal>;        ///< Хранит узлы <signal> секции <signals>.
 using TabsMap = QHash<quint32, QString>;         ///< Хранит узлы <tab> секции <section-tabs>.
 using ConfigList = QList<DataTypes::RecordPair>; ///< Хранит узлы <record> секции <config>.
@@ -111,7 +106,6 @@ public:
     void appendWorkJournal(const quint32 id, const QString &desc);
     void appendMeasJournal(const quint32 index, const QString &header, //
         const ModuleTypes::BinaryType type, bool visib);
-    void setInterfaceSettings(const ModuleTypes::InterfaceSettings &settings);
 
     const ModuleTypes::ConfigMap &getConfigMap() const;
     const ModuleTypes::ConfigList getConfigs() const;
@@ -123,7 +117,6 @@ public:
     const ModuleTypes::HighlightMap &getHighlights(const Modules::AlarmType &type) const;
     const ModuleTypes::WorkJourMap &getWorkJours() const;
     const ModuleTypes::MeasJourList &getMeasJours() const;
-    const ModuleTypes::InterfaceSettings &getInterfaceSettings() const;
 
 private:
     int curConfigIndex;
@@ -136,5 +129,4 @@ private:
     ModuleTypes::HighlightMap critHighlight, warnHighlight;
     ModuleTypes::WorkJourMap workJournals;
     ModuleTypes::MeasJourList measJournals;
-    ModuleTypes::InterfaceSettings mIfaceSettings;
 };

@@ -58,6 +58,7 @@
 #include <gen/logger.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
+#include <iostream>
 #include <memory>
 
 #ifdef Q_OS_WINDOWS
@@ -71,15 +72,11 @@ void registerForDeviceNotification(QWidget *ptr)
 {
     DEV_BROADCAST_DEVICEINTERFACE devInt;
     ZeroMemory(&devInt, sizeof(devInt));
-    // GUID _guid1 = { 0x25dbce51, 0x6c8f, 0x4a72, { 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 } };
-
     GUID _guid = { 0xa5dcbf10, 0x6530, 0x11d2, { 0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed } };
     devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-
     devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
     // With DEVICE_NOTIFY_ALL_INTERFACE_CLASSES this property ignores
     devInt.dbcc_classguid = _guid;
-
     HDEVNOTIFY blub;
     // NOTE Проверить со всеми модулями
     blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt,
@@ -511,7 +508,7 @@ void Coma::connectSB()
                             msgConnectionState->setForegroundRole(QPalette::Highlight);
                             msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
                         },
-                        Qt::DirectConnection);
+                        Qt::QueuedConnection);
                     QObject::connect(board, &Board::interfaceTypeChanged, msgConnectionType,
                         [=](const Board::InterfaceType &interfaceType) {
                             QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
@@ -599,7 +596,7 @@ void Coma::disconnect()
     qInfo(__PRETTY_FUNCTION__);
     BdaTimer->stop();
     AlarmW->clear();
-    BaseInterface::iface()->stop();
+    BaseInterface::iface()->disconnect();
 
     //     emit StopCommunications();
     // while (ActiveThreads) // wait for all threads to finish
@@ -613,17 +610,16 @@ void Coma::setupConnection()
     XmlConfigParser::ParseS2ConfigToMap(S2::NameIdMap);
     auto const &board = Board::GetInstance();
 
-    connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const BaseInterface::State state) {
-        using State = BaseInterface::State;
+    connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const State state) {
         switch (state)
         {
         case State::Run:
             Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
             break;
-        case State::Stop:
+        case State::Disconnect:
             Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
             break;
-        case State::Wait:
+        case State::Reconnect:
             Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
             break;
         default:
@@ -631,10 +627,9 @@ void Coma::setupConnection()
         }
     });
 
-    auto ww = new WaitWidget;
     auto connectionReady = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     auto connectionTimeout = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    *connectionTimeout = connect(ww, &WaitWidget::destroyed, this, [=] {
+    *connectionTimeout = connect(BaseInterface::iface(), &BaseInterface::disconnected, this, [=] {
         QObject::disconnect(*connectionReady);
         QObject::disconnect(*connectionTimeout);
         if (Board::GetInstance().type() != 0)
@@ -648,26 +643,15 @@ void Coma::setupConnection()
     *connectionReady = connect(&board, &Board::readyRead, this, [=]() {
         QObject::disconnect(*connectionTimeout);
         QObject::disconnect(*connectionReady);
-        //        ww->Stop();
 
         QApplication::restoreOverrideCursor();
         prepare();
     });
 
-    //    ww->setObjectName("ww");
-    //    WaitWidget::ww_struct wws = { true, false, WaitWidget::WW_TIME,
-    //        15 }; // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
-    //    ww->Init(wws);
-    //    ww->SetMessage("Пожалуйста, подождите");
-    // QEventLoop loop;
-    //  connect(ww, &WaitWidget::finished, &loop, &QEventLoop::quit);
-    //    ww->Start();
-    // loop.exec();
     if (!BaseInterface::iface()->start(ConnectSettings))
     {
         QObject::disconnect(*connectionReady);
         QObject::disconnect(*connectionTimeout);
-        //        ww->Stop();
         EMessageBox::error(this, "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
         qCritical() << "Cannot connect" << Error::GeneralError;
@@ -702,6 +686,7 @@ void Coma::disconnectAndClear()
 
         ConfigStorage::GetInstance().clearModuleSettings();
         Board::GetInstance().reset();
+        BaseInterface::iface()->close();
         // BUG Segfault
         //    if (Reconnect)
         //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);

@@ -2,8 +2,8 @@
 #define VALUEMAP_H
 
 #include "../ctti/type_id.hpp"
-#include "s2helper.h"
 
+#include <gen/datatypes.h>
 #include <gen/std_ext.h>
 #include <map>
 

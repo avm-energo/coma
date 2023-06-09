@@ -33,13 +33,13 @@ private:
     QWidget *uiValuesTab(QWidget *parent = nullptr);
     QWidget *uiCommandsTab(QWidget *parent = nullptr);
     bool checkSpinBoxes(QList<QDoubleSpinBox *> spinBoxes);
-    void sendCommand(Queries::Commands cmd, bool value = true);
+    void sendCommand(Commands cmd, bool value = true);
     void SetupUI() override;
 
 public slots:
     void SaveToFile() override;
     void ReadFromFile() override;
-    void ErrorRead();
+    // void ErrorRead();
 };
 
 #endif // CORDIALOG_H

@@ -11,9 +11,7 @@ find_package(Qt${QT_VERSION_MAJOR}
 file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
-add_library(
-  ${PROJECT_NAME} STATIC
-  ${files_cpp} ${files_h})
+add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
   Qt${QT_VERSION_MAJOR}::Core

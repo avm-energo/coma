@@ -1,5 +1,6 @@
 #include "tunekivadc.h"
 
+#include "../../interfaces/baseinterface.h"
 #include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
@@ -11,6 +12,8 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
+
+using namespace Interface;
 
 TuneKIVADC::TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
@@ -118,7 +121,7 @@ Error::Msg TuneKIVADC::checkTuneCoefs()
 
 Error::Msg TuneKIVADC::setSMode2()
 {
-    BaseInterface::iface()->writeCommand(Queries::QUSB_SetMode, 0x02);
+    BaseInterface::iface()->writeCommand(Commands::C_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 

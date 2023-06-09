@@ -15,6 +15,7 @@
 #define TD_VBAT 3.0       // voltage
 #define TD_FREQ 50        // Hz
 #define MEASTIMERINT 1000 // интервал проведения измерений - 1 с
+#define TIMEFORBDATOSETINMS 2000 // время, необходимое для значений Bda, чтобы установиться
 
 #define TUNE_POINTSPER 500 // столько миллисекунд должно усредняться при регулировке
 #define WAITFORCONST 1 // seconds to let voltages be constant

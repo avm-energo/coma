@@ -8,6 +8,7 @@ struct IEC104Settings
 {
     quint16 baseadr;
     QString ip;
+
     bool isValid() const
     {
         auto parts = ip.split(".");
@@ -26,6 +27,7 @@ struct SerialPortSettings
     QString Stop;
     quint8 Address;
     QString Port;
+
     bool isValid() const
     {
         return !Port.isEmpty();

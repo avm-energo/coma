@@ -136,56 +136,6 @@ void ConfigStorage::measJourDataReceive(const quint32 index, const QString &head
     mSettings->appendMeasJournal(index, header, type, visib);
 }
 
-/// \brief Slot for saving module's interface settings.
-void ConfigStorage::interfaceSettingsReceive(const QVariant &iSettings, const Board::InterfaceType iType)
-{
-    if (iSettings.isValid())
-    {
-        // A L E R T! Говнокод, но по-другому сделать с двумя файлами будет сложнее :/
-        auto ifSettings = mSettings->getInterfaceSettings().settings;
-        if (!ifSettings.isNull() && ifSettings.isValid())
-        {
-            if (iType == Board::USB || iType == Board::Emulator)
-            {
-                auto ifOld = ifSettings.value<InterfaceInfo<ProtocomGroup>>();
-                auto ifNew = iSettings.value<InterfaceInfo<ProtocomGroup>>();
-                for (const auto &val : ifNew.dictionary())
-                {
-                    ifOld.addGroup(val);
-                }
-                ifSettings.setValue(ifOld);
-            }
-            else if (iType == Board::RS485)
-            {
-                auto ifOld = ifSettings.value<InterfaceInfo<ModbusGroup>>();
-                auto ifNew = iSettings.value<InterfaceInfo<ModbusGroup>>();
-                for (const auto &val : ifNew.dictionary())
-                {
-                    ifOld.addGroup(val);
-                }
-                ifSettings.setValue(ifOld);
-            }
-            else if (iType == Board::Ethernet)
-            {
-                auto ifOld = ifSettings.value<InterfaceInfo<Iec104Group>>();
-                auto ifNew = iSettings.value<InterfaceInfo<Iec104Group>>();
-                for (const auto &val : ifNew.dictionary())
-                {
-                    ifOld.addGroup(val);
-                }
-                ifSettings.setValue(ifOld);
-            }
-            mSettings->setInterfaceSettings({ ifSettings });
-            BaseInterface::iface()->setSettings(mSettings->getInterfaceSettings());
-        }
-        else
-        {
-            mSettings->setInterfaceSettings({ iSettings });
-            BaseInterface::iface()->setSettings(mSettings->getInterfaceSettings());
-        }
-    }
-}
-
 /// \brief Slot for saving module's config record.
 void ConfigStorage::configDataReceive(const quint16 id, const QString &defVal, const bool visib, const quint16 count)
 {
@@ -198,5 +148,32 @@ void ConfigStorage::configDataReceive(const quint16 id, const QString &defVal, c
         mSettings->appendToCurrentConfig({ { id, defVal }, visib });
         if (count != 0)
             mSettings->appendDetailCount(id, count);
+    }
+}
+
+/// \brief Slot for saving module's protocol groups
+void ConfigStorage::protocolDescriptionReceived(const parseXChangeStruct &str)
+{
+    auto &sigMap = getModuleSettings().getSignals();
+    if (sigMap.contains(str.sigId))
+    {
+        auto signal = sigMap.value(str.sigId);
+        Board::InterfaceType ifaceType = str.interfaceType.value<Board::InterfaceType>();
+        ProtocolDescription *descr = Interface::BaseInterface::iface()->settings();
+        switch (ifaceType)
+        {
+        case Board::USB:
+            descr->addGroup(ProtocomGroup({ signal.startAddr, signal.count, str.par2.value<quint16>() }));
+            break;
+        case Board::RS485:
+            descr->addGroup(ModbusGroup({ signal.startAddr, signal.count, str.par2.value<quint16>() }));
+            break;
+        case Board::Ethernet:
+            descr->addGroup(
+                Iec104Group({ signal.startAddr, signal.count, str.par2.value<quint16>(), str.par3.value<quint16>() }));
+            break;
+        default:
+            break;
+        }
     }
 }

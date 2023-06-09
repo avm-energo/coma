@@ -44,7 +44,7 @@ ConfigDialog::ConfigDialog(
 void ConfigDialog::readConfig()
 {
     setSuccessMsg(tr("Конфигурация прочитана успешно"));
-    BaseInterface::iface()->reqFile(DataTypes::Config, Queries::FileFormat::DefaultS2);
+    BaseInterface::iface()->reqFile(DataTypes::Config, DataTypes::FileFormat::DefaultS2);
 }
 
 void ConfigDialog::writeConfig()
@@ -149,7 +149,6 @@ void ConfigDialog::saveConfigToFile()
     switch (res)
     {
     case Error::Msg::NoError:
-        //        QMessageBox::information(this, "Внимание", "Записано успешно!");
         EMessageBox::information(this, "Записано успешно!");
         break;
     case Error::Msg::FileWriteError:
@@ -181,7 +180,6 @@ void ConfigDialog::loadConfigFromFile()
     outlist.setValue(outlistV);
 
     configReceived(outlist);
-    //    QMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
     EMessageBox::information(this, "Загрузка прошла успешно!");
 }
 

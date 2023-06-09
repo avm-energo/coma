@@ -16,7 +16,7 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     mTitle += "группы сигналов";
 
     // Виджеты для адресов группы сигналов
-    auto addrLabel = new QLabel("Адрес сигнализации: ", this);
+    auto addrLabel = new QLabel("Начальный адрес: ", this);
     auto addrInput = new QSpinBox(this);
     addrInput->setMinimum(addrMin);
     addrInput->setMaximum(addrMax);
@@ -42,7 +42,7 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     dlgItems.append(countInput);
 
     // Виджеты для ID группы сигналов
-    auto idLabel = new QLabel("ID вкладки: ", this);
+    auto idLabel = new QLabel("ID группы сигналов: ", this);
     auto idInput = new QSpinBox(this);
     idInput->setMinimum(idMin);
     idInput->setMaximum(idMax);

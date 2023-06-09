@@ -41,14 +41,10 @@ private:
     void FillBackCor() override;
     void FillCor() override;
     void FillBackWBd8();
-
     void SetupUI() override;
     void FillBd(QWidget *parent, QString Name, QString Value);
 
-signals:
-
 public slots:
-
     void WriteCor() override;
     void SetupCor() override;
     void ResetCor() override;

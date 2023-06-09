@@ -26,6 +26,9 @@
 //};
 //}
 
+namespace Interface
+{
+
 class IEC104 final : public BaseInterface
 {
     Q_OBJECT
@@ -33,30 +36,31 @@ class IEC104 final : public BaseInterface
 private:
     bool EthThreadWorking, ParseThreadWorking, AboutToFinish;
     QTcpSocket *sock;
+    LogClass *Log;
 
-    Commands104::CommandRegisters get104Command(Queries::Commands cmd);
+    Commands104::CommandRegisters get104Command(Commands cmd);
 
 public:
     IEC104(QObject *parent = nullptr);
     ~IEC104();
     bool start(const ConnectStruct &st) override;
 
+    void disconnect();
 public slots:
-    void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) override;
-    void reqBSI() override;
-    void reqBSIExt() override;
-    // void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
-    void reqFile(quint32 filenum, Queries::FileFormat format) override;
-    void writeFile(quint32 filenum, const QByteArray &file) override;
-    // void writeConfigFile(S2DataTypes::S2ConfigType *s2config) override;
-    void reqTime() override;
-    void writeTime(quint32 time) override;
-    void writeCommand(Queries::Commands cmd, QVariant item) override;
-    void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) override;
-    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) override;
+    //    void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0) override;
+    //    void reqBSI() override;
+    //    void reqBSIExt() override;
+    //    // void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
+    //    void reqFile(quint32 filenum, Datatypes::FileFormat format) override;
+    //    void writeFile(quint32 filenum, const QByteArray &file) override;
+    //    // void writeConfigFile(S2DataTypes::S2ConfigType *s2config) override;
+    //    void reqTime() override;
+    //    void writeTime(quint32 time) override;
+    //    void writeCommand(Queries::Commands cmd, QVariant item) override;
+    //    void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0) override;
+    //    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0) override;
 
     //    static void SelectFile(char);
-    void stop() override;
 
     //    static void Com45(quint32 com);
     //    static void Com50(quint32 adr, float param);
@@ -82,4 +86,5 @@ private slots:
     void EthStateChanged(QAbstractSocket::SocketState state);
 };
 
+}
 #endif // IEC104_H

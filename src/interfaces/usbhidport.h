@@ -1,6 +1,7 @@
 #pragma once
 
 #include "baseinterface.h"
+#include "baseport.h"
 #include "protocomprivate.h"
 #include "settingstypes.h"
 
@@ -15,28 +16,21 @@ struct USBMessage
 };
 
 struct hid_device_;
-typedef struct hid_device_ hid_device; /**< opaque hidapi structure */
+using hid_device = hid_device_; ///< opaque hidapi structure
 
 namespace HID
 {
-// максимальная длина одного сегмента (0x40)
-constexpr int MaxSegmenthLength = 64;
-// 20 ms main loop sleep
-constexpr unsigned MainLoopDelay = 20;
+constexpr int MaxSegmenthLength = 64;  // максимальная длина одного сегмента (0x40)
+constexpr unsigned MainLoopDelay = 20; // 20 ms main loop sleep
 constexpr char headerValidator[] = "[a-zA-Z]{3}(?=#)";
-
 } // namespace HID
 
-class UsbHidPort : public QObject
+class UsbHidPort final : public BasePort
 {
     Q_OBJECT
 public:
-    explicit UsbHidPort(const UsbHidSettings &dev, LogClass *logh, QObject *parent = 0);
-    ~UsbHidPort();
-
-    bool setupConnection();
-    void closeConnection();
-    void writeDataAttempt(const QByteArray &ba);
+    explicit UsbHidPort(const UsbHidSettings &dev, QObject *parent = 0);
+    ~UsbHidPort() = default;
 
     UsbHidSettings deviceInfo() const;
     void setDeviceInfo(const UsbHidSettings &deviceInfo);
@@ -46,37 +40,28 @@ public:
     void shouldBeStopped(bool isShouldBeStopped);
 
 signals:
-    void dataReceived(QByteArray ba);
-    void finished();
-    void started();
     void clearQueries();
-    void stateChanged(BaseInterface::State);
+
 public slots:
-    void poll();
+    bool connect() override;
+    void disconnect() override;
+    bool writeData(const QByteArray &ba) override;
 
 private:
-    void writeLog(QByteArray ba, Proto::Direction dir = Proto::NoDirection);
-    void writeLog(Error::Msg msg, Proto::Direction dir = Proto::NoDirection)
-    {
-        writeLog(QVariant::fromValue(msg).toByteArray(), dir);
-    }
-
-    bool writeData(QByteArray &ba);
-
-    bool checkQueue();
-    void finish();
+    virtual QByteArray read(bool *status = nullptr) override;
+    bool writeDataToPort(QByteArray &ba);
     void clear();
     void deviceConnected(const UsbHidSettings &st);
     void deviceDisconnected(const UsbHidSettings &st);
     void deviceConnected();
     void deviceDisconnected();
-    bool m_waitForReply;
 
+    bool m_waitForReply;
     hid_device *m_hidDevice;
     bool m_shouldBeStopped;
-    LogClass *log;
     QMutex _mutex;
-    QList<QByteArray> m_writeQueue;
+    // QList<QByteArray> m_writeQueue;
+    QByteArray m_currCommand;
     UsbHidSettings m_deviceInfo;
     int missingCounter = 0;
     int missingCounterMax;

@@ -11,9 +11,14 @@
 #include <gen/files.h>
 #include <gen/timefunc.h>
 
+namespace Interface
+{
+
 IEC104::IEC104(QObject *parent)
     : BaseInterface(parent), EthThreadWorking(false), ParseThreadWorking(false), sock(new QTcpSocket(this))
 {
+    Log = new LogClass;
+    Log->Init("ethernet.log");
 }
 
 IEC104::~IEC104()
@@ -22,8 +27,6 @@ IEC104::~IEC104()
 
 bool IEC104::start(const ConnectStruct &st)
 {
-    Log->Init(st.name + ".log");
-    Log->info("=== Log started ===");
     Q_ASSERT(std::holds_alternative<IEC104Settings>(st.settings));
     qInfo() << metaObject()->className() << "connect";
     if (!std::holds_alternative<IEC104Settings>(st.settings))
@@ -33,7 +36,7 @@ bool IEC104::start(const ConnectStruct &st)
     EthThreadWorking = false;
     ParseThreadWorking = false;
 
-    auto parser = new IEC104Thread(Log.get());
+    auto parser = new IEC104Thread();
     auto parserThread = new QThread;
     parserThread->setObjectName("parserThread");
 
@@ -47,18 +50,10 @@ bool IEC104::start(const ConnectStruct &st)
             sock->deleteLater();
         }
     });
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    connect(sock, qOverload<QAbstractSocket::SocketError>(&QAbstractSocket::error), this,
-        [=](QAbstractSocket::SocketError error) {
-            Log->info("Error: " + QVariant::fromValue(error).toString());
-            sock->disconnectFromHost();
-        });
-#else
     connect(sock, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError error) {
         Log->info("Error: " + QVariant::fromValue(error).toString());
         sock->disconnectFromHost();
     });
-#endif
     connect(sock, &QAbstractSocket::stateChanged, this, &IEC104::EthStateChanged);
     connect(parserThread, &QThread::finished, parser, &QObject::deleteLater);
     connect(parserThread, &QThread::finished, parserThread, &QObject::deleteLater);
@@ -77,7 +72,7 @@ bool IEC104::start(const ConnectStruct &st)
         sock, &QIODevice::readyRead, parser,
         [=] {
             QByteArray ba = sock->readAll();
-            QMetaObject::invokeMethod(parser, [=] { parser->GetSomeData(ba); });
+            QMetaObject::invokeMethod(parser, [&] { parser->processReadBytes(ba); });
         },
         Qt::QueuedConnection);
     connect(parser, &IEC104Thread::ReconnectSignal, this, &IEC104::EmitReconnectSignal);
@@ -113,7 +108,7 @@ bool IEC104::start(const ConnectStruct &st)
     return ethconnected;
 }
 
-void IEC104::reqStartup(quint32 sigAdr, quint32 sigCount)
+/*void IEC104::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
     // adr & count are used in modbus only, 104 has special group STARTUPGROUP for these parameters
     Q_UNUSED(sigAdr)
@@ -133,7 +128,7 @@ void IEC104::reqBSIExt()
     // No request, bsiExt is in the same group with bsi, so request bsi also requests bsi ext
 }
 
-void IEC104::reqFile(quint32 filenum, Queries::FileFormat format)
+void IEC104::reqFile(quint32 filenum, Datatypes::FileFormat format)
 {
     auto cmd104 = (format) ? Commands104::CM104_REQCONFIGFILE : Commands104::CM104_REQFILE;
     Commands104::CommandStruct inp { cmd104, filenum, 0, {} };
@@ -189,23 +184,22 @@ void IEC104::writeCommand(Queries::Commands cmd, QVariant item)
     }
 }
 
-Commands104::CommandRegisters IEC104::get104Command(Queries::Commands cmd)
+Commands104::CommandRegisters IEC104::get104Command(Commands cmd)
 {
-    using namespace Queries;
     using namespace Commands104;
-    static const QMap<Queries::Commands, Commands104::CommandRegisters> iec104CommandMap {
-        { QC_SetNewConfiguration, SetNewConfigurationReg },   //
-        { QC_SetStartupValues, SetStartupValuesReg },         //
-        { QC_SetStartupPhaseA, SetStartupPhaseA },            //
-        { QC_SetStartupPhaseB, SetStartupPhaseB },            //
-        { QC_SetStartupPhaseC, SetStartupPhaseC },            //
-        { QC_SetStartupUnbounced, SetStartupUnbounced },      //
-        { QC_ClearStartupUnbounced, ClearStartupUnbounced },  //
-        { QC_SetTransOff, SetTransOff },                      //
-        { QC_ClearStartupValues, ClearStartupValuesReg },     //
-        { QC_ClearStartupError, ClearStartupSetError },       //
-        { QC_StartFirmwareUpgrade, StartFirmwareUpgradeReg }, //
-        { QC_StartWorkingChannel, StartWorkingChannelReg }    //
+    static const QMap<Commands, Commands104::CommandRegisters> iec104CommandMap {
+        { C_SetNewConfiguration, SetNewConfigurationReg },   //
+        { C_SetStartupValues, SetStartupValuesReg },         //
+        { C_SetStartupPhaseA, SetStartupPhaseA },            //
+        { C_SetStartupPhaseB, SetStartupPhaseB },            //
+        { C_SetStartupPhaseC, SetStartupPhaseC },            //
+        { C_SetStartupUnbounced, SetStartupUnbounced },      //
+        { C_ClearStartupUnbounced, ClearStartupUnbounced },  //
+        { C_SetTransOff, SetTransOff },                      //
+        { C_ClearStartupValues, ClearStartupValuesReg },     //
+        { C_ClearStartupError, ClearStartupSetError },       //
+        { C_StartFirmwareUpgrade, StartFirmwareUpgradeReg }, //
+        { C_StartWorkingChannel, StartWorkingChannelReg }    //
     };
     return iec104CommandMap.value(cmd);
 }
@@ -226,12 +220,13 @@ void IEC104::reqBitStrings(quint32 sigAdr, quint32 sigCount)
     DataManager::GetInstance().addToInQueue(inp);
 }
 
+*/
 void IEC104::EthThreadFinished()
 {
     EthThreadWorking = false;
     if (!ParseThreadWorking)
     {
-        setState(State::Stop);
+        setState(State::Disconnect);
         emit Finished();
     }
 }
@@ -241,7 +236,7 @@ void IEC104::ParseThreadFinished()
     ParseThreadWorking = false;
     if (!EthThreadWorking)
     {
-        setState(State::Stop);
+        setState(State::Disconnect);
         emit Finished();
     }
 }
@@ -249,7 +244,7 @@ void IEC104::ParseThreadFinished()
 void IEC104::EmitReconnectSignal()
 {
     qDebug() << __PRETTY_FUNCTION__;
-    if (state() != State::Wait)
+    if (state() == State::Reconnect)
         emit reconnect();
 }
 
@@ -284,8 +279,10 @@ void IEC104::EthStateChanged(QAbstractSocket::SocketState state)
     }
 }
 
-void IEC104::stop()
+void IEC104::disconnect()
 {
-    setState(BaseInterface::State::Wait);
+    setState(State::Disconnect);
     emit StopAll();
+}
+
 }

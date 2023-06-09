@@ -2,6 +2,7 @@
 #define IEC104THREAD_H
 
 #include "../s2/s2datatypes.h"
+#include "baseinterfacethread.h"
 
 #include <QQueue>
 #include <QTimer>
@@ -10,7 +11,10 @@
 #include <gen/error.h>
 #include <gen/logclass.h>
 
-class IEC104Thread : public QObject
+namespace Interface
+{
+
+class IEC104Thread : public BaseInterfaceThread
 {
     Q_OBJECT
 public:
@@ -32,17 +36,20 @@ public:
             int SigNumber;
         } BS104Signals; */
 
-    IEC104Thread(LogClass *log, QObject *parent = nullptr);
+    IEC104Thread(QObject *parent = nullptr);
     ~IEC104Thread();
 
     void SetBaseAdr(quint16 adr);
+    // void clear() override {};
+    void parseRequest([[maybe_unused]] const CommandStruct &cmdStr) override {};
+    void parseResponse() override {};
 
 public slots:
     void StartDT();
     void StopDT();
     void Stop();
     void Run();
-    void GetSomeData(QByteArray);
+    void processReadBytes(QByteArray ba) override;
 
 signals:
     //  void Started();
@@ -70,7 +77,7 @@ private:
     int m_signalCounter, m_noAnswer;
     bool m_isFileSending;
     // flag indicates how file should be restored
-    Queries::FileFormat m_fileIsConfigFile;
+    DataTypes::FileFormat m_fileIsConfigFile;
     QByteArray m_file;
     QList<QByteArray> m_parseData;
     //    quint32 ReadDataSize;
@@ -87,7 +94,6 @@ private:
     quint8 m_APDULength;
     quint8 m_APDUFormat;
     quint8 m_sectionNum;
-    LogClass *m_log;
     quint8 m_baseAdrHigh, m_baseAdrLow;
     quint16 m_baseAdr;
     QTimer *m_sendTestTimer;
@@ -96,6 +102,7 @@ private:
     QByteArray m_cutPckt;
     bool m_isFirstParse;
     bool m_writingToPortBlocked;
+    LogClass *m_log;
 
     void ParseIFormat(QByteArray &ba);
     Error::Msg isIncomeDataValid(QByteArray);
@@ -123,11 +130,12 @@ private:
     void Com51WriteTime(quint32 time);
     //    void convert(IEC104Thread::SponSignals *signal);
     void setGeneralResponse(DataTypes::GeneralResponseTypes type, quint64 data = 0);
-    bool handleFile(QByteArray &ba, DataTypes::FilesEnum addr, Queries::FileFormat format);
+    bool handleFile(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format);
 private slots:
     void SendTestAct();
 
 protected:
 };
 
+}
 #endif // IEC104THREAD_H

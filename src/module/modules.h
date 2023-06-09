@@ -15,7 +15,8 @@ enum Model
 {
     KTF = 0xA282,
     KIV = 0xA284,
-    KDV = 0xA387
+    KDV = 0xA387,
+    MPE = 0xC001
 };
 Q_ENUM_NS(Model);
 
@@ -187,82 +188,6 @@ const QStringList HthToolTip {
 };
 
 }
-
-// namespace AVM_KTF
-//{
-// struct MeasureStruct
-//{
-//    quint32 NUM;
-//    quint32 Time;
-//    float Ueff[3];
-//    float Ieff[3];
-//    float Frequency;
-//    float U0;
-//    float U1;
-//    float U2;
-//    float I0;
-//    float I1;
-//    float I2;
-//    float Pf[4];
-//    float Qf[4];
-//    float Sf[4];
-//    float Cosphi;
-//    float Twin;
-//    float Tmk;
-//    float Tamb;
-//    quint32 res;
-//};
-//}
-// namespace AVM_KDV
-//{
-// struct MeasureStruct
-//{
-//    quint32 NUM;
-//    quint32 Time;
-//    float Ueff[3];
-//    float Ieff[3];
-//    float Frequency;
-//    float U1;
-//    float U2;
-//    float I1;
-//    float I2;
-//    float Pf_sum;
-//    float Qf_sum;
-//    float Sf_sum;
-//    float CosPhi;
-//    float Tmk;
-//    float Tamb;
-//    float Twin;
-//    float VibrSCZ_V[6];
-//    float VibrSCZ_D[6];
-//};
-//}
-// namespace AVM_KIV
-//{
-// struct MeasureStruct
-//{
-//    quint32 NUM;
-//    quint32 Time;
-//    float Ueff[3];
-//    float Ieff[3];
-//    float Frequency;
-//    float U0;
-//    float U1;
-//    float U2;
-//    float I0;
-//    float I1;
-//    float I2;
-//    float Cbush[3];
-//    float Tg_d[3];
-//    float dCbush[3];
-//    float dTg_d[3];
-//    float Iunb;
-//    float Phy_unb;
-//    float Tmk;
-//    float Tamb;
-//    quint32 res;
-//};
-//}
 
 // Oscillogram / SwitchJournal Part
 

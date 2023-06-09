@@ -8,11 +8,8 @@
 
 constexpr int MAXSIZE = 200000;
 
-class BaseInterface;
 class S2
 {
-    // friend BaseInterface;
-
 public:
     S2();
     // S2: Сборщик в память:

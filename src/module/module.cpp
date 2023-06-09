@@ -74,10 +74,11 @@ void Module::loadModuleSettings(const quint16 &typeB, const quint16 &typeM)
         mStorage, &ConfigStorage::workJourDataReceive);
     QObject::connect(moduleParser, &Xml::ModuleParser::measJourDataSending, //
         mStorage, &ConfigStorage::measJourDataReceive);
-    QObject::connect(moduleParser, &Xml::ModuleParser::interfaceSettingsSending, //
-        mStorage, &ConfigStorage::interfaceSettingsReceive);
     QObject::connect(moduleParser, &Xml::ModuleParser::configDataSending, //
         mStorage, &ConfigStorage::configDataReceive);
+    QObject::connect(moduleParser, &Xml::ModuleParser::parseError, this, &Module::parseErrorHandle);
+    QObject::connect(
+        moduleParser, &Xml::ModuleParser::protocolGroupSending, mStorage, &ConfigStorage::protocolDescriptionReceived);
     QObject::connect(moduleParser, &Xml::ModuleParser::parseError, this, &Module::parseErrorHandle);
     moduleParser->parse();
     moduleParser->deleteLater();

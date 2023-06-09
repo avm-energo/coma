@@ -29,7 +29,8 @@ signals:
     void workJourDataSending(const quint32 id, const QString &desc);
     void measJourDataSending(const quint32 idx, const QString &header, //
         const ModuleTypes::BinaryType type, bool visib);
-    void interfaceSettingsSending(const QVariant &iSettings, const Board::InterfaceType iType);
+    void interfaceSettingsSending(const ProtocolDescription &iSettings, const Board::InterfaceType iType);
+    void protocolGroupSending(const parseXChangeStruct &str);
     void configDataSending(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
 
 private:
@@ -50,9 +51,9 @@ private:
     void parseWorkJournal(const QDomNode &jourNode);
     void parseMeasJournal(const QDomNode &jourNode);
     void parseInterface(const QDomNode &root);
-    void parseModbus(const QDomNode &modbusNode, InterfaceInfo<ModbusGroup> &settings);
-    void parseProtocom(const QDomNode &protocomNode, InterfaceInfo<ProtocomGroup> &settings);
-    void parseIec(const QDomNode &iecNode, InterfaceInfo<Iec104Group> &settings);
+    void parseModbus(const QDomNode &modbusNode);
+    void parseProtocom(const QDomNode &protocomNode);
+    void parseIec(const QDomNode &iecNode);
     void parseConfig(const QDomNode &configNode);
 };
 

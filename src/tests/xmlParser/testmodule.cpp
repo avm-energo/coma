@@ -103,8 +103,6 @@ void TestModule::checkA284()
     // Highlights
     QCOMPARE(settings.getHighlights(Modules::AlarmType::Critical).size(), a284::critHighlights);
     QCOMPARE(settings.getHighlights(Modules::AlarmType::Warning).size(), a284::warnHighlights);
-    // Interface settings verifying
-    QVERIFY(!settings.getInterfaceSettings().settings.isValid());
     // Sections comparing
     const auto &sections = settings.getSections();
     QCOMPARE(sections.size(), a284::sections);
@@ -121,8 +119,6 @@ void TestModule::checkA284USB()
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings());
-    auto &settings = ConfigStorage::GetInstance().getModuleSettings();
-    QVERIFY(settings.getInterfaceSettings().settings.isValid());
 }
 
 void TestModule::checkA284Eth()
@@ -132,8 +128,6 @@ void TestModule::checkA284Eth()
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings());
-    auto &settings = ConfigStorage::GetInstance().getModuleSettings();
-    QVERIFY(settings.getInterfaceSettings().settings.isValid());
 }
 
 void TestModule::checkA284Modbus()
@@ -143,8 +137,6 @@ void TestModule::checkA284Modbus()
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings());
-    auto &settings = ConfigStorage::GetInstance().getModuleSettings();
-    QVERIFY(settings.getInterfaceSettings().settings.isValid());
 }
 
 /*
