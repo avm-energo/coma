@@ -51,7 +51,7 @@ void JournalTabWidget::setupUI()
     auto str = journal->getName().toLower();
 
     auto getButton = new QPushButton("Получить " + str, this);
-    connect(getButton, &QPushButton::clicked, this, &JournalTabWidget::getJournal);
+    connect(getButton, &QPushButton::clicked, this, &JournalTabWidget::gettingJournal);
     hLayout1->addWidget(getButton);
 
     auto eraseButton = new QPushButton("Стереть " + str, this);
@@ -102,7 +102,7 @@ QString JournalTabWidget::getSuggestedFilename()
     return suggestedFilename;
 }
 
-void JournalTabWidget::getJournal()
+void JournalTabWidget::gettingJournal()
 {
     getProgressDialog->show();
     getProgressIndicator->startAnimation();
@@ -179,7 +179,7 @@ void JournalTabWidget::setJournalFile(const S2DataTypes::S2BFile &jourFile)
     }
 }
 
-const QString &JournalTabWidget::getJournalName() const
+const QString &JournalTabWidget::getTabName() const
 {
     return journal->getName();
 }

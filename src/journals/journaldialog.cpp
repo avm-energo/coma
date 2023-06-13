@@ -49,7 +49,7 @@ void JournalDialog::setupUI()
     for (const auto &journal : journals)
     {
         auto journalTab = journal.second;
-        tabWidget->addTab(journalTab, journalTab->getJournalName());
+        tabWidget->addTab(journalTab, journalTab->getTabName());
     }
     layout->addWidget(tabWidget);
     setLayout(layout);

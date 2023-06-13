@@ -66,8 +66,14 @@ void BaseJournal::fill(const DataTypes::FileStruct &file)
 
 void BaseJournal::save(const QString &filename)
 {
-    QXlsx::Document doc(filename);
-    QXlsx::Worksheet *workSheet = doc.currentWorksheet();
+    // Если не удалить прошлый существующий файл, то QXlsx откроет его и
+    // начнёт читать. Для больших файлов (например, журналов измерений)
+    // на это тратится слишком много времени.
+    if (QFile::exists(filename))
+        QFile::remove(filename);
+
+    auto doc = new QXlsx::Document(filename, this);
+    auto workSheet = doc->currentWorksheet();
     QXlsx::CellReference cellJourType(1, 1);
     QXlsx::CellReference cellModuleType(2, 1);
     QXlsx::CellReference cellDate(3, 1);
@@ -99,24 +105,24 @@ void BaseJournal::save(const QString &filename)
         QString tempString = dataModel->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString();
         if (tempString.length() > 10)
         {
-            if (!doc.setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 2))
+            if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 2))
                 qDebug("Couldnt change column width");
             if (tempString.contains("Описание"))
-                if (!doc.setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 4))
+                if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 4))
                     qDebug("Couldnt change column width");
         }
         else
         {
-            if (!doc.setColumnWidth(cellHeader.column(), cellHeader.column(), 8 * sqrt(tempString.length() / 3)))
+            if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), 8 * sqrt(tempString.length() / 3)))
                 qDebug("Couldnt change column width");
         }
         workSheet->writeString(cellHeader, tempString);
     }
     // теперь по всем строкам модели пишем данные
-    emit resendMaxResult(dataModel->itemCount());
-    for (int i = 0; i < dataModel->itemCount(); ++i)
+    auto modelSize = dataModel->itemCount();
+    emit resendMaxResult(modelSize);
+    for (int i = 0; i < modelSize; ++i)
     {
-        qDebug() << i;
         QXlsx::CellReference currentCell(6 + i, 1);
         // номер события
         workSheet->writeNumeric(currentCell, dataModel->data(dataModel->index(i, 0), Qt::DisplayRole).toInt());
@@ -143,8 +149,8 @@ void BaseJournal::save(const QString &filename)
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         emit resendResult(i);
     }
-
-    doc.save();
+    doc->save();
+    doc->deleteLater();
     emit resendResult(dataModel->itemCount());
     emit done("Файл создан успешно");
 }
