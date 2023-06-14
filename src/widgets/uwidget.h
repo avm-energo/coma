@@ -9,12 +9,6 @@ class UWidget : public QWidget
 {
     Q_OBJECT
 public:
-    enum WidgetType
-    {
-        NORMAL = 0,
-        WITHOUT_GUI = 1
-    };
-
     struct HighlightWarnAlarmStruct
     {
         quint32 fieldnum;

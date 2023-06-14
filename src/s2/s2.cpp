@@ -16,7 +16,7 @@ S2::S2()
 void S2::StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, int fname)
 {
     S2Dev::CRC32 crc;
-    S2DataTypes::FileHeader header;
+    S2DataTypes::S2FileHeader header;
     QByteArray ba;
     header.size = 0;
     for (const S2DataTypes::DataRec &record : dr)
@@ -64,14 +64,14 @@ void S2::StoreDataMem(QByteArray &mem, const std::vector<DataTypes::FileStruct> 
 
 bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
 {
-    Q_ASSERT(bain.size() >= sizeof(S2DataTypes::FileHeader));
+    Q_ASSERT(bain.size() >= sizeof(S2DataTypes::S2FileHeader));
     qInfo() << "S2 File size:" << bain.size();
     S2DataTypes::DataRecHeader recordHeader;
 
     // копируем FileHeader
-    S2DataTypes::FileHeader fileHeader;
-    memcpy(&fileHeader, &bain.data()[0], sizeof(S2DataTypes::FileHeader));
-    bain.remove(0, sizeof(S2DataTypes::FileHeader));
+    S2DataTypes::S2FileHeader fileHeader;
+    memcpy(&fileHeader, &bain.data()[0], sizeof(S2DataTypes::S2FileHeader));
+    bain.remove(0, sizeof(S2DataTypes::S2FileHeader));
 
     // проверка контрольной суммы
     Q_ASSERT(bain.size() == fileHeader.size);
@@ -113,14 +113,14 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
 
 bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
 {
-    Q_ASSERT(bain.size() >= sizeof(S2DataTypes::FileHeader));
+    Q_ASSERT(bain.size() >= sizeof(S2DataTypes::S2FileHeader));
     qInfo() << "S2 File size:" << bain.size();
     S2DataTypes::DataRec DR;
 
     // копируем FileHeader
-    S2DataTypes::FileHeader fh;
-    memcpy(&fh, &bain.data()[0], sizeof(S2DataTypes::FileHeader));
-    bain.remove(0, sizeof(S2DataTypes::FileHeader));
+    S2DataTypes::S2FileHeader fh;
+    memcpy(&fh, &bain.data()[0], sizeof(S2DataTypes::S2FileHeader));
+    bain.remove(0, sizeof(S2DataTypes::S2FileHeader));
 
     // проверка контрольной суммы
     Q_ASSERT(bain.size() == fh.size);
@@ -162,168 +162,6 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
     return true;
 }
 
-S2DataTypes::S2ConfigType S2::ParseHexToS2(QByteArray &ba)
-{
-    using namespace S2DataTypes;
-    FileStruct *PV_file = new FileStruct;
-    S2ConfigType S2DR;
-    uint usize = 0;
-    int i = 0, j = 0, k = 0, h = 0, p = 0, size = 0, copysize = 0, iVal = 0;
-    QString str, st;
-    QStringList sl;
-    bool ok = false;
-    QString binnumber, process;
-    char byte = '\0';
-    QByteArray *BaForSend = new QByteArray;
-    str = ba;
-    sl.append(str.split("\r\n:"));
-    BaForSend->resize(MAXSIZE);
-    BaForSend->clear();
-    int MainSize = 0;
-    for (i = 0; i < sl.size(); i++)
-    {
-        str = sl.at(i);
-
-        if (i == 1)
-        {
-            st = QString("%1%2").arg(str.at(0)).arg(str.at(1));
-            copysize = size = st.toInt(&ok, 16);
-
-            if (size)
-            {
-                st = QString("%1%2").arg(str.at(6)).arg(str.at(7));
-                if (st == "00")
-                {
-                    MainSize += size;
-                    for (j = 0; j < size; j = j + 2)
-                    {
-                        binnumber.clear();
-                        process.clear();
-                        iVal = QString("%1%2").arg(str.at(8 + j)).arg(str.at(9 + j)).toInt(&ok, 16); // size
-                        binnumber = st.setNum(iVal, 2);
-                        byte = '\0';
-                        if ((binnumber.size() - 1) < 7)
-                        {
-                            for (k = 0; k < (8 - binnumber.size()); k++)
-                                process.append("0");
-                            process.append(binnumber);
-                            binnumber = process;
-                        }
-
-                        for (h = 7, p = 0; h >= 0; h--, p++)
-                        {
-                            if (binnumber.at(h).toLatin1() & 1)
-                                byte |= 0b00000001 << p;
-                        }
-                        BaForSend->append(byte);
-                    }
-                    st = QString("%1%2").arg(str.at(14)).arg(str.at(15));
-                    for (j = 0; j < copysize; j = j + 2)
-                    {
-                        binnumber.clear();
-                        process.clear();
-                        iVal = QString("%1%2").arg(str.at(16 + j)).arg(str.at(17 + j)).toInt(&ok, 16);
-                        binnumber = st.setNum(iVal, 2);
-                        byte = '\0';
-                        if ((binnumber.size() - 1) < 7)
-                        {
-                            for (k = 0; k < (8 - binnumber.size()); k++)
-                                process.append("0");
-                            process.append(binnumber);
-                            binnumber = process;
-                        }
-
-                        for (h = 7, p = 0; h >= 0; h--, p++)
-                        {
-                            if (binnumber.at(h).toLatin1() & 1)
-                                byte |= 0b00000001 << p;
-                        }
-                        BaForSend->append(byte);
-                    }
-                }
-            }
-        }
-        else
-        {
-            st = QString("%1%2").arg(str.at(0)).arg(str.at(1));
-            size = st.toInt(&ok, 16);
-
-            if (size)
-            {
-                st = QString("%1%2").arg(str.at(6)).arg(str.at(7));
-                if (st == "00")
-                {
-                    MainSize += size;
-                    for (j = 0; j < 2 * size; j = j + 2)
-                    {
-                        binnumber.clear();
-                        process.clear();
-                        st = QString("%1%2").arg(str.at(8 + j)).arg(str.at(9 + j)); //, 4, QChar('0')
-                        iVal = QString("%1%2").arg(str.at(8 + j)).arg(str.at(9 + j)).toInt(&ok, 16);
-                        binnumber = st.setNum(iVal, 2); //.arg(iVal, 8, QChar('0'));  //st.setNum(iVal, 2).
-                        byte = '\0';
-                        if ((binnumber.size() - 1) < 7)
-                        {
-                            for (k = 0; k < (8 - binnumber.size()); k++)
-                                process.append("0");
-                            process.append(binnumber);
-                            binnumber = process;
-                        }
-
-                        for (h = 7, p = 0; h >= 0; h--, p++)
-                        {
-                            if (binnumber.at(h).toLatin1() & 1)
-                                byte |= 0b00000001 << p;
-                        }
-                        BaForSend->append(byte);
-                    }
-                }
-            }
-        }
-    }
-
-    BaForSend->resize(MainSize);
-
-    PV_file->file.data.clear();
-    PV_file->file.data.resize(MainSize - 8);
-
-    PV_file->type.typeHeader.id = 8000;
-    PV_file->type.typeHeader.numByte = 8;
-    memcpy(&PV_file->type.typeTheData, &BaForSend->data()[0], 4);
-    memcpy(&PV_file->type.versionSoftware, &BaForSend->data()[4], 4);
-
-    st.clear();
-    st.append("Ver");
-    for (i = 3; i >= 0; i--)
-        st.append("." + QString::number(PV_file->type.versionSoftware[i]));
-
-    PV_file->file.fileDataHeader.id = 8001;
-    usize = (MainSize - 8);
-    PV_file->file.fileDataHeader.numByte = usize;
-    memcpy(&PV_file->file.data.data()[0], &BaForSend->data()[8], usize);
-
-    PV_file->void_recHeader.id = 0xFFFFFFFF;
-    PV_file->void_recHeader.numByte = 0;
-
-    S2DR.append({ { PV_file->type.typeHeader.id, PV_file->type.typeHeader.numByte }, &PV_file->type.typeTheData });
-    S2DR.append({ { PV_file->file.fileDataHeader.id, PV_file->file.fileDataHeader.numByte },
-        &PV_file->file.data.data()[0] }); // BaForSend->data_ptr()
-    S2DR.append({ { PV_file->void_recHeader.id, PV_file->void_recHeader.numByte }, nullptr });
-
-    /*ForProcess->clear();
-    ForProcess->resize(MAXSIZE);
-
-    memcpy(&ForProcess->data()[0], &PV_file.Type.TypeHeader.id, 24);
-    memcpy(&ForProcess->data()[24], &BaForSend->data()[8], (BaForSend->size()-8));
-    ForProcess->resize((BaForSend->size()+16));
-    //BaForSend->resize(ForProcess->size());
-    memcpy(&BaForSend->data()[0], &ForProcess->data()[0],
-        (BaForSend->size()+16));*/
-    if (!ok)
-        return S2ConfigType();
-    return S2DR;
-}
-
 quint16 S2::GetIdByName(QString name)
 {
     return NameIdMap.value(name, 0);
@@ -353,9 +191,53 @@ void S2::tester(S2DataTypes::S2ConfigType &buffer)
 quint64 S2::GetFileSize(const QByteArray &bain)
 {
     // копируем FileHeader
-    S2DataTypes::FileHeader fh;
-    memcpy(&fh, &bain.data()[0], sizeof(S2DataTypes::FileHeader));
-    return fh.size + sizeof(S2DataTypes::FileHeader);
+    S2DataTypes::S2FileHeader fh;
+    memcpy(&fh, &bain.data()[0], sizeof(S2DataTypes::S2FileHeader));
+    return fh.size + sizeof(S2DataTypes::S2FileHeader);
+}
+
+S2DataTypes::S2BFile S2::emulateS2B(const DataTypes::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM)
+{
+    using namespace S2DataTypes;
+    constexpr quint32 tailEnd = 0xEEEE1111;
+    S2Dev::CRC32 crc;
+    S2BFileHeader header;
+    DataRecHeader recHeader { journal.ID, quint32(journal.data.size()) };
+    crc.update(reinterpret_cast<quint8 *>(&recHeader), sizeof(recHeader));
+    crc.update(journal.data);
+    header.fname = fname;
+    header.types2b = 0;
+    header.size = journal.data.size() + sizeof(recHeader);
+    header.typeB = typeB;
+    header.typeM = typeM;
+    header.thetime = getTime32();
+    S2BFileTail tail;
+    tail.crc32 = crc;
+    tail.end = tailEnd;
+    return { header, journal, tail };
+}
+
+S2DataTypes::S2BFile S2::parseS2B(const QByteArray &file)
+{
+    using namespace S2DataTypes;
+    constexpr auto minSize = sizeof(S2BFileHeader) + sizeof(S2BFileTail) + sizeof(DataRecHeader);
+    Q_ASSERT(file.size() > minSize);
+    auto headerBytes = file.left(sizeof(S2BFileHeader));
+    const auto header = *reinterpret_cast<const S2BFileHeader *>(headerBytes.constData());
+    Q_ASSERT(header.size > sizeof(DataRecHeader));
+    const auto calcSize = sizeof(S2BFileHeader) + sizeof(S2BFileTail) + header.size;
+    Q_ASSERT(file.size() == calcSize);
+    auto recordBytes = file.mid(sizeof(S2BFileHeader), header.size);
+    Q_ASSERT(recordBytes.size() == header.size);
+    auto recHeaderBytes = recordBytes.left(sizeof(DataRecHeader));
+    const auto recHeader = *reinterpret_cast<const DataRecHeader *>(recHeaderBytes.constData());
+    Q_ASSERT(header.size - sizeof(DataRecHeader) == recHeader.numByte);
+    auto fileBytes = recordBytes.mid(sizeof(DataRecHeader));
+    Q_ASSERT(recHeader.numByte == fileBytes.size());
+    auto tailBytes = file.right(sizeof(S2BFileTail));
+    Q_ASSERT(tailBytes.size() == sizeof(S2BFileTail));
+    const auto tail = *reinterpret_cast<const S2BFileTail *>(tailBytes.constData());
+    return { header, { recHeader.id, fileBytes }, tail };
 }
 
 quint32 S2::getTime32()

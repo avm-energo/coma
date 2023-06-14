@@ -52,6 +52,7 @@ private slots:
     void loadOsc();
     void loadSwj();
     void openXmlEditor();
+    void openJournalViewer();
     void showAboutDialog();
     void closeEvent(QCloseEvent *event) override;
     void update(const QVariant &msg);

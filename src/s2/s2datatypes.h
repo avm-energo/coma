@@ -73,13 +73,39 @@ struct SwitchJourRecord
 
 /// S2: Определение типа заголовка
 /// Заголовок файла (Прил. 1)
-struct FileHeader
+struct S2FileHeader
 {
     quint16 fname;
     quint16 service;
     quint32 size;
     quint32 crc32;
     quint32 thetime;
+};
+
+/// \brief S2B File header format.
+struct S2BFileHeader
+{
+    quint16 fname;
+    quint16 types2b;
+    quint32 size;
+    quint16 typeB;
+    quint16 typeM;
+    quint32 thetime;
+};
+
+/// \brief S2B File tail format.
+struct S2BFileTail
+{
+    quint32 crc32;
+    quint32 end;
+};
+
+/// \brief S2B Binary file format.
+struct S2BFile
+{
+    S2BFileHeader header;
+    DataTypes::FileStruct file;
+    S2BFileTail tail;
 };
 
 /// Тип группы плат
@@ -101,7 +127,7 @@ struct DataRecF
 
 struct FileStruct
 {
-    FileHeader fileHeader;
+    S2FileHeader fileHeader;
     DataRecT type;
     DataRecF file;
     // заголовок пустой записи
@@ -123,6 +149,7 @@ struct OscHeader
 
 }
 
+Q_DECLARE_METATYPE(S2DataTypes::S2BFile)
 Q_DECLARE_METATYPE(S2DataTypes::OscInfo)
 Q_DECLARE_METATYPE(S2DataTypes::SwitchJourInfo)
 

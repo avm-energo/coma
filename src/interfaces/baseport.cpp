@@ -4,7 +4,7 @@
 #include <QElapsedTimer>
 
 BasePort::BasePort(const QString &logFilename, QObject *parent)
-    : QObject(parent), m_state(Interface::State::Connect), m_log(new LogClass(this)), m_timeoutTimer(new QTimer(this))
+    : QObject(parent), m_state(Interface::State::Connect), m_log(new LogClass(this))
 {
     m_log->Init(logFilename + "." + ::logExt);
     m_log->WriteRaw(::logStart);
@@ -70,9 +70,7 @@ void BasePort::poll()
         else if (state == Interface::State::Run)
         {
             bool status = true;
-            m_dataGuard.lock();        // lock port
             auto data = read(&status); // read data
-            m_dataGuard.unlock();      // unlock port
             if (!data.isEmpty() && status)
             {
                 writeLog(data.toHex(), Interface::Direction::FromDevice);
@@ -89,9 +87,32 @@ void BasePort::poll()
     // Finish thread
     QMutexLocker locker(&m_dataGuard);
     disconnect();
-    m_log->WriteRaw("Thread finished\n");
+    m_log->info(QString(metaObject()->className()) + " is finished\n");
     emit finished();
     QCoreApplication::processEvents();
+}
+
+void BasePort::writeDataSync(const QByteArray &ba)
+{
+    auto status = Error::Msg::NoError;
+    if (getState() == Interface::State::Run) // port is running
+    {
+        if (!ba.isEmpty())
+        {
+            auto success = write(ba); // write data
+            if (success)
+                writeLog(ba.toHex(), Interface::Direction::ToDevice);
+            else
+                status = Error::Msg::WriteError;
+        }
+        else
+            status = Error::Msg::NullDataError;
+    }
+    if (status != Error::Msg::NoError)
+    {
+        writeLog(status);
+        qCritical() << status;
+    }
 }
 
 void BasePort::closeConnection()

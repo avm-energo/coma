@@ -25,6 +25,17 @@ private:
     QList<QByteArray> m_longBlockChunks;
     int m_sentBytesCount;
 
+    /// \brief Anonymous structure for representing type of the connected board.
+    struct
+    {
+        quint8 mTypeB = 0;
+        quint8 mTypeM = 0;
+        bool isEmpty()
+        {
+            return ((mTypeB == 0) || (mTypeM == 0));
+        }
+    } boardType;
+
     void parseRequest(const CommandStruct &cmdStr) override;
     void parseResponse() override;
 
@@ -33,6 +44,7 @@ private:
     bool isOneSegment(quint16 length);
     bool isSplitted(quint16 length);
     bool isValidIncomingData(const QByteArray &data);
+    void processFileFromDisk(DataTypes::FilesEnum fileNum);
     void progressFile(const QByteArray &data);
 
     QByteArray prepareOk(bool isStart, byte cmd);

@@ -1,12 +1,6 @@
 #include "dialogcreator.h"
 
-//#include "../journals/journkdv.h"
-//#include "../journals/journkiv.h"
-//#include "../journals/journktf.h"
-//
-#include "../journals/sysjournal.h"
-#include "../journals/workjournal.h"
-//
+#include "../journals/journaldialog.h"
 #include "../module/board.h"
 #include "../oscillograms/oscdialog.h"
 #include "../startup/startupkdvdialog.h"
@@ -20,7 +14,6 @@
 #include "fwuploaddialog.h"
 #include "hiddendialog.h"
 #include "infodialog.h"
-#include "journalsdialog.h"
 #include "plotdialog.h"
 #include "relaydialog.h"
 #include "switchjournaldialog.h"
@@ -118,6 +111,7 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
 /// \brief Creating journal dialog.
 void DialogCreator::createJournalDialog()
 {
+    using namespace journals;
     // Делаем проверку и создаём диалог для журналов
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
         addDialogToList(new JournalDialog(settings, mParent), "Журналы", "jours");
@@ -215,7 +209,7 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
 void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
 {
     const auto &board = Board::GetInstance();
-    if (board.interfaceType() != Board::InterfaceType::RS485)
+    if (board.interfaceType() != Board::InterfaceType::Ethernet)
         addDialogToList(new FWUploadDialog(mParent), "Загрузка ВПО", "upload");
     addDialogToList(new InfoDialog(mParent), "О приборе", "info");
 

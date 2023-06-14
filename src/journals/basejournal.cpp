@@ -1,7 +1,6 @@
 #include "basejournal.h"
 
 #include "../module/board.h"
-#include "../s2/filestruct.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>
@@ -55,27 +54,26 @@ const JournalType BaseJournal::getType() const
     return type;
 }
 
-void BaseJournal::fill(const QVariant &data)
+void BaseJournal::fill(const DataTypes::FileStruct &file)
 {
-    if (data.canConvert<DataTypes::FileStruct>())
-    {
-        auto file = data.value<DataTypes::FileStruct>();
-        if (file.ID == type)
-        {
-            if (!dataModel->isEmpty())
-                dataModel->clearModel();
-            dataModel->setHorizontalHeaderLabels(headers);
-            fillModel(file.data);
-            proxyModel->setSourceModel(dataModel.get());
-            emit done("Прочитано успешно");
-        }
-    }
+    if (!dataModel->isEmpty())
+        dataModel->clearModel();
+    dataModel->setHorizontalHeaderLabels(headers);
+    fillModel(file.data);
+    proxyModel->setSourceModel(dataModel.get());
+    emit done("Прочитано успешно");
 }
 
 void BaseJournal::save(const QString &filename)
 {
-    QXlsx::Document doc(filename);
-    QXlsx::Worksheet *workSheet = doc.currentWorksheet();
+    // Если не удалить прошлый существующий файл, то QXlsx откроет его и
+    // начнёт читать. Для больших файлов (например, журналов измерений)
+    // на это тратится слишком много времени.
+    if (QFile::exists(filename))
+        QFile::remove(filename);
+
+    auto doc = new QXlsx::Document(filename, this);
+    auto workSheet = doc->currentWorksheet();
     QXlsx::CellReference cellJourType(1, 1);
     QXlsx::CellReference cellModuleType(2, 1);
     QXlsx::CellReference cellDate(3, 1);
@@ -107,55 +105,52 @@ void BaseJournal::save(const QString &filename)
         QString tempString = dataModel->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString();
         if (tempString.length() > 10)
         {
-            if (!doc.setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 2))
+            if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 2))
                 qDebug("Couldnt change column width");
             if (tempString.contains("Описание"))
-                if (!doc.setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 4))
+                if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 4))
                     qDebug("Couldnt change column width");
         }
         else
         {
-            if (!doc.setColumnWidth(cellHeader.column(), cellHeader.column(), 8 * sqrt(tempString.length() / 3)))
+            if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), 8 * sqrt(tempString.length() / 3)))
                 qDebug("Couldnt change column width");
         }
         workSheet->writeString(cellHeader, tempString);
     }
     // теперь по всем строкам модели пишем данные
-    emit resendMaxResult(dataModel->itemCount());
-    for (int i = 0; i < dataModel->itemCount(); ++i)
+    auto modelSize = dataModel->itemCount();
+    emit resendMaxResult(modelSize);
+    for (int i = 0; i < modelSize; ++i)
     {
-        qDebug() << i;
         QXlsx::CellReference currentCell(6 + i, 1);
         // номер события
         workSheet->writeNumeric(currentCell, dataModel->data(dataModel->index(i, 0), Qt::DisplayRole).toInt());
         currentCell.setColumn(2);
         // время события
         workSheet->writeString(currentCell, dataModel->data(dataModel->index(i, 1), Qt::DisplayRole).toString());
-
         for (int j = 2; j < dataModel->columnCount(); ++j)
         {
             currentCell.setColumn(1 + j);
-            QVariant value = dataModel->data(dataModel->index(i, 1), Qt::DisplayRole);
+            QVariant value = dataModel->data(dataModel->index(i, j), Qt::DisplayRole);
             switch (value.type())
             {
             case QVariant::Type::Double:
-                workSheet->writeNumeric(
-                    currentCell, dataModel->data(dataModel->index(i, j), Qt::DisplayRole).toFloat());
+                workSheet->writeNumeric(currentCell, value.toFloat());
                 break;
             case QVariant::Type::Int:
-                workSheet->writeNumeric(currentCell, dataModel->data(dataModel->index(i, j), Qt::DisplayRole).toInt());
+                workSheet->writeNumeric(currentCell, value.toInt());
                 break;
             default:
-                workSheet->writeString(
-                    currentCell, dataModel->data(dataModel->index(i, j), Qt::DisplayRole).toString());
+                workSheet->writeString(currentCell, value.toString());
                 break;
             }
         }
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         emit resendResult(i);
     }
-
-    doc.save();
+    doc->save();
+    doc->deleteLater();
     emit resendResult(dataModel->itemCount());
     emit done("Файл создан успешно");
 }

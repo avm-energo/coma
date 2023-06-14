@@ -40,6 +40,7 @@ private:
     MBS::CommandStruct m_commandSent;
     int m_bytesToReceive;
     QByteArray m_fileData;
+    int m_sentBytesCount;
 
     // commands to send
     void readRegisters(MBS::CommandStruct &cms);

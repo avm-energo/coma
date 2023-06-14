@@ -28,7 +28,7 @@ struct CommandStruct
     QByteArray data;
 };
 
-constexpr char FileSectionLength = 0xF6;
+constexpr quint8 FileSectionLength = 0xF6;
 
 QDebug operator<<(QDebug debug, const MBS::CommandStruct &cmd);
 }

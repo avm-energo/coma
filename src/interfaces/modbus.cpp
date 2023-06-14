@@ -43,7 +43,7 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     parser->setDeviceAddress(st.Address);
     parseThread->setObjectName("Modbus thread");
 
-    connect(portThread, &QThread::started, port, &BasePort::poll);
+    connect(portThread, &QThread::started, port, &BasePort::poll, Qt::QueuedConnection);
     connect(parseThread, &QThread::started, parser, &ModbusThread::run);
     connect(parser, &ModbusThread::finished, parseThread, &QThread::quit);
     // connect(thr, &QThread::finished, port, &BasePort::disconnect);
@@ -52,7 +52,7 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     //    connect(parseThread, &QThread::finished, parser, &QObject::deleteLater);
     connect(this, &BaseInterface::wakeUpParser, parser, &BaseInterfaceThread::wakeUp, Qt::DirectConnection);
     connect(port, &BasePort::dataReceived, parser, &BaseInterfaceThread::processReadBytes, Qt::DirectConnection);
-    connect(parser, &ModbusThread::sendDataToPort, port, &BasePort::writeData, Qt::DirectConnection);
+    connect(parser, &ModbusThread::sendDataToPort, port, &BasePort::writeDataSync, Qt::QueuedConnection);
     connect(parser, &ModbusThread::clearBuffer, port, &SerialPort::clear, Qt::DirectConnection);
     connect(port, &SerialPort::clearQueries, parser, &BaseInterfaceThread::clear, Qt::DirectConnection);
     // connect(port, &SerialPort::error, this, &ModBus::sendReconnectSignal, Qt::DirectConnection);

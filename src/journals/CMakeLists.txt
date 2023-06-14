@@ -8,9 +8,6 @@ find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Widgets
   REQUIRED)
 
-#file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
-#file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
-
 set(files_h
     basejournal.h
     eventparser.h
@@ -18,6 +15,9 @@ set(files_h
     workjournal.h
     measjournal.h
     measparser.h
+    journaldialog.h
+    journaltabwidget.h
+    journalviewer.h
 )
 
 set(files_cpp
@@ -27,6 +27,9 @@ set(files_cpp
     workjournal.cpp
     measjournal.cpp
     measparser.cpp
+    journaldialog.cpp
+    journaltabwidget.cpp
+    journalviewer.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})

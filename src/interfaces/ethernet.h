@@ -12,7 +12,7 @@
 
 #define PORT104 2404 // порт связи по протоколу МЭК 60870-5-104
 
-class Ethernet : public BasePort
+class Ethernet final : public BasePort
 {
     Q_OBJECT
 
@@ -33,8 +33,10 @@ signals:
 public slots:
     bool reconnect();
     void disconnect() override;
-    bool writeData(const QByteArray &ba) override;
+    // bool writeData(const QByteArray &ba) override;
     // void poll();
+    QByteArray read(bool *status = nullptr) override;
+    virtual bool write(const QByteArray &ba) override;
 
 private slots:
     void CheckForData();

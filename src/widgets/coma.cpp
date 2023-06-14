@@ -33,6 +33,7 @@
 #include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
+#include "../journals/journalviewer.h"
 #include "../module/board.h"
 #include "../oscillograms/swjmanager.h"
 #include "../s2/s2.h"
@@ -230,6 +231,7 @@ void Coma::setupMenubar()
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
+    menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
     menubar->addMenu(menu);
     setMenuBar(menubar);
 }
@@ -285,13 +287,13 @@ void Coma::initInterfaceConnection()
         break;
 #endif
     case Board::InterfaceType::USB:
-        device = BaseInterface::InterfacePointer(new Protocom());
+        device.reset(new Protocom());
         break;
     case Board::InterfaceType::Ethernet:
-        device = BaseInterface::InterfacePointer(new IEC104());
+        device.reset(new IEC104());
         break;
     case Board::InterfaceType::RS485:
-        device = BaseInterface::InterfacePointer(new ModBus());
+        device.reset(new ModBus());
         break;
     default:
         qFatal("Connection type error");
@@ -361,6 +363,17 @@ void Coma::openXmlEditor()
         editor = new XmlEditor(this);
     else
         editor->exec();
+}
+
+void Coma::openJournalViewer()
+{
+    using namespace journals;
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Journal files (*.jn)");
+    if (!filepath.isEmpty())
+    {
+        auto jourViewer = new JournalViewer(filepath, this);
+        jourViewer->exec();
+    }
 }
 
 void Coma::showAboutDialog()

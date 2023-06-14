@@ -142,7 +142,7 @@ void ConfigDialog::saveConfigToFile()
     }
     S2::StoreDataMem(ba, configV->getConfig(), DataTypes::Config);
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
-    length += sizeof(S2DataTypes::FileHeader);
+    length += sizeof(S2DataTypes::S2FileHeader);
     Q_ASSERT(length == quint32(ba.size()));
 
     Error::Msg res = Files::SaveToFile(WDFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba);
