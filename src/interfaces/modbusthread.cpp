@@ -283,8 +283,8 @@ void ModbusThread::processReadBytes(QByteArray ba)
     }
     if (m_currentCommand.command == C_ReqFile)
     {
-        if (m_readData.size() >= 8) // [8] = section length
-            m_bytesToReceive = m_readData[7];
+        if (m_readData.size() >= 8)                // [8] = section length
+            m_bytesToReceive = m_readData[7] + 10; // дополнительные данные
         else
             return; // не получили ещё длину, рано продолжать
     }
@@ -531,7 +531,7 @@ void ModbusThread::setQueryStartBytes(MBS::CommandStruct &cms, QByteArray &ba)
 {
     m_commandSent = cms;
     ba.append(m_deviceAddress); // адрес устройства
-    ba.append(cms.cmd);         //аналоговый выход
+    ba.append(cms.cmd);         // аналоговый выход
     QByteArray bigEndArray;
     bigEndArray = StdFunc::ArrayFromNumber(qToBigEndian(cms.adr));
     ba.append(bigEndArray);

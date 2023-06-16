@@ -8,7 +8,7 @@
 #include <QTimer>
 
 #define TIMEOUT 3000
-SerialPort::SerialPort(QObject *parent) : BasePort("ModbusPort", parent)
+SerialPort::SerialPort(QObject *parent) : BasePort("ModbusPort", parent), timeoutTimer(nullptr)
 {
 }
 
@@ -54,6 +54,11 @@ void SerialPort::disconnect()
 {
     if (port->isOpen())
         port->close();
+    if (timeoutTimer)
+    {
+        timeoutTimer->stop();
+        timeoutTimer->deleteLater();
+    }
 }
 
 // blocking read from serial port with timeout implementation
@@ -95,7 +100,19 @@ bool SerialPort::write(const QByteArray &ba)
         reconnect();
         return false;
     }
-    return true;
+    else
+    {
+        if (!timeoutTimer)
+        {
+            timeoutTimer = new QTimer;
+            timeoutTimer->setSingleShot(true);
+            timeoutTimer->setInterval(3000);
+            QObject::connect(timeoutTimer, &QTimer::timeout, this, //
+                [this]([[maybe_unused]] auto x) { emit error(PortErrors::Timeout); });
+        }
+        timeoutTimer->start();
+        return true;
+    }
 }
 
 void SerialPort::errorOccurred(QSerialPort::SerialPortError err)

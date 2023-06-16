@@ -17,6 +17,7 @@ public:
 
 private:
     UniquePointer<QSerialPort> port;
+    QTimer *timeoutTimer;
 
     bool connect() override;
     void disconnect() override;
