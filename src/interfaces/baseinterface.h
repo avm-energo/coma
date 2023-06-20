@@ -7,6 +7,7 @@
 #include "../s2/filestruct.h"
 #include "interfacesettings.h"
 
+#include <QTimer>
 #include <gen/datamanager/typesproxy.h>
 #include <gen/datatypes.h>
 #include <gen/error.h>

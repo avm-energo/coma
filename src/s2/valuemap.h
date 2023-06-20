@@ -25,8 +25,15 @@ public:
         m_map.insert({ key, ctti::unnamed_type_id<T>() });
     }
 
-    void insert(int key, ctti::unnamed_type_id_t value);
-    const ValueMap::value_type &map() const;
+    void insert(int key, ctti::unnamed_type_id_t value)
+    {
+        m_map.insert({ key, value });
+    }
+
+    const ValueMap::value_type &map() const
+    {
+        return m_map;
+    }
 
 private:
     value_type m_map;
