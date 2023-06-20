@@ -664,25 +664,33 @@ bool WDFunc::floatIsWithinLimits(const QString &varname, double var, double base
 
 QString WDFunc::ChooseFileForOpen(QWidget *parent, QString mask)
 {
+    auto workPath = StdFunc::GetHomeDir();
     auto dlg = new QFileDialog(parent);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    auto filename = dlg->getOpenFileName(parent, "Открыть файл", StdFunc::GetHomeDir(), mask, Q_NULLPTR);
-    QFileInfo info(filename);
-    StdFunc::SetHomeDir(info.absolutePath());
+    auto filename = dlg->getOpenFileName(parent, "Открыть файл", workPath, mask, Q_NULLPTR);
+    if (!filename.isEmpty())
+    {
+        QFileInfo info(filename);
+        StdFunc::SetHomeDir(info.absolutePath());
+    }
     dlg->close();
     return filename;
 }
 
 QString WDFunc::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr)
 {
+    auto workPath = StdFunc::GetHomeDir();
     auto tmps = Files::ChooseFileForSave(FileHelper::ChooseFileForSave(ext), filenamestr);
     auto dlg = new QFileDialog(parent);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    auto filename = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR);
-    QFileInfo info(filename);
-    StdFunc::SetHomeDir(info.absolutePath());
+    auto filename = dlg->getSaveFileName(parent, "Сохранить файл", workPath + "/" + tmps, mask, Q_NULLPTR);
+    if (!filename.isEmpty())
+    {
+        QFileInfo info(filename);
+        StdFunc::SetHomeDir(info.absolutePath());
+    }
     dlg->close();
     return filename;
 }
