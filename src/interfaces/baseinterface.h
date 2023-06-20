@@ -178,6 +178,9 @@ public:
     void writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
     void reqTime();
     void writeTime(quint32 time);
+#ifdef __linux__
+    void writeTime(const timespec &time);
+#endif
     void writeCommand(Commands cmd, QVariant value = 0);
     void writeCommand(Commands cmd, const QVariantList &list);
     void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);

@@ -18,8 +18,10 @@ void XmlSTabDialog::setupUI(QVBoxLayout *mainLayout)
     auto idTabInput = new QSpinBox(this);
     idTabInput->setMinimum(idMin);
     idTabInput->setMaximum(idMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(idTabInput, &QSpinBox::textChanged, this, //
         qOverload<const QString &>(&XmlSTabDialog::dataChanged));
+#endif
     QObject::connect(idTabInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlSTabDialog::dataChanged));
     idLayout->addWidget(idLabel);

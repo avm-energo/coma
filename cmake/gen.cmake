@@ -3,7 +3,7 @@ include(FetchContent)
 FetchContent_Declare(
   gen
   GIT_REPOSITORY https://github.com/avm-energo/gen.git
-  GIT_TAG        origin/new_datatypes
+  GIT_TAG        origin/alice-buster
 )
 
 if(BUILD_WITH_ALISE)

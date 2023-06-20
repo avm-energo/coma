@@ -161,6 +161,7 @@ void DataController::renameFile(const QString &oldName, const QString &newName)
     if (QFile::exists(oldFilepath) && !QFile::exists(newFilepath))
     {
         if (!QFile::rename(oldFilepath, newFilepath))
+
             EMessageBox::error(nullptr, "Не получилось переименовать файл!");
     }
     else
@@ -174,8 +175,13 @@ void DataController::removeFile(const QString &filename)
     auto filepath = getFilePath(filename);
     if (QFile::exists(filepath))
     {
-        // Перемещаем его в корзину (not hard delete!)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+        // Перемещаем файл в корзину
         if (!QFile::moveToTrash(filepath))
+#else
+        // Hard delete file
+        if (!QFile::remove(filepath))
+#endif
             EMessageBox::error(nullptr, "Не получилось удалить файл!");
     }
 }

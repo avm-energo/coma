@@ -18,8 +18,10 @@ void XmlProtocomDialog::setupUI(QVBoxLayout *mainLayout)
     auto blockInput = new QSpinBox(this);
     blockInput->setMinimum(idMin);
     blockInput->setMaximum(idMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(blockInput, &QSpinBox::textChanged, this, //
         qOverload<const QString &>(&XmlProtocomDialog::dataChanged));
+#endif
     QObject::connect(blockInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlProtocomDialog::dataChanged));
     blockLayout->addWidget(blockLabel);
@@ -31,8 +33,10 @@ void XmlProtocomDialog::setupUI(QVBoxLayout *mainLayout)
     auto sigIdInput = new QSpinBox(this);
     sigIdInput->setMinimum(idMin);
     sigIdInput->setMaximum(idMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(sigIdInput, &QSpinBox::textChanged, this, //
         qOverload<const QString &>(&XmlProtocomDialog::dataChanged));
+#endif
     QObject::connect(sigIdInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlProtocomDialog::dataChanged));
     sigIdLayout->addWidget(sigIdLabel);

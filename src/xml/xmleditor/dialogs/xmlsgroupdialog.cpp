@@ -27,8 +27,10 @@ void XmlSGroupDialog::setupUI(QVBoxLayout *mainLayout)
     auto idInput = new QSpinBox(this);
     idInput->setMinimum(idMin);
     idInput->setMaximum(idMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(idInput, &QSpinBox::textChanged, this, //
         qOverload<const QString &>(&XmlSGroupDialog::dataChanged));
+#endif
     QObject::connect(idInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlSGroupDialog::dataChanged));
     idLayout->addWidget(idLabel);

@@ -20,7 +20,9 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
     auto idInput = new QSpinBox(this);
     idInput->setMinimum(idMin);
     idInput->setMaximum(idMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(idInput, &QSpinBox::textChanged, this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
+#endif
     QObject::connect(idInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlConfigDialog::dataChanged));
     idLayout->addWidget(idLabel);
@@ -41,8 +43,10 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
     auto countInput = new QSpinBox(this);
     countInput->setMinimum(configCountMin);
     countInput->setMaximum(configCountMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(countInput, &QSpinBox::textChanged, //
         this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
+#endif
     QObject::connect(countInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlConfigDialog::dataChanged));
     countLayout->addWidget(countLabel);

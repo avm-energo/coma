@@ -20,8 +20,10 @@ void XmlMeasJourDialog::setupUI(QVBoxLayout *mainLayout)
     auto idndexInput = new QSpinBox(this);
     idndexInput->setMinimum(0);
     idndexInput->setMaximum(idMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(idndexInput, &QSpinBox::textChanged, this, //
         qOverload<const QString &>(&XmlMeasJourDialog::dataChanged));
+#endif
     QObject::connect(idndexInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlMeasJourDialog::dataChanged));
     indexLayout->addWidget(indexLabel);
