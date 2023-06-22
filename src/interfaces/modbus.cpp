@@ -46,10 +46,6 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     connect(portThread, &QThread::started, port, &BasePort::poll, Qt::QueuedConnection);
     connect(parseThread, &QThread::started, parser, &ModbusThread::run);
     connect(parser, &ModbusThread::finished, parseThread, &QThread::quit);
-    // connect(thr, &QThread::finished, port, &BasePort::disconnect);
-    //    connect(parseThread, &QThread::finished, port, &QObject::deleteLater);
-    //    connect(parseThread, &QThread::finished, parseThread, &QObject::deleteLater);
-    //    connect(parseThread, &QThread::finished, parser, &QObject::deleteLater);
     connect(this, &BaseInterface::wakeUpParser, parser, &BaseInterfaceThread::wakeUp, Qt::DirectConnection);
     connect(port, &BasePort::dataReceived, parser, &BaseInterfaceThread::processReadBytes, Qt::DirectConnection);
     connect(parser, &ModbusThread::sendDataToPort, port, &BasePort::writeDataSync, Qt::QueuedConnection);
@@ -58,6 +54,19 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     // connect(port, &SerialPort::error, this, &ModBus::sendReconnectSignal, Qt::DirectConnection);
     connect(this, &BaseInterface::reconnect, port, &BasePort::reconnect, Qt::DirectConnection);
     connect(port, &BasePort::stateChanged, this, &BaseInterface::stateChanged, Qt::QueuedConnection);
+    // TODO: Нужен полноценный обработчик ошибок от портов для каждого интерфейса
+    // To Think: Можно сделать виртуальный слот в BaseInterface, а в потомках его переопределять
+    connect(
+        port, &BasePort::error, this,
+        [this, parser, port](BasePort::PortErrors error) {
+            if (error == BasePort::PortErrors::Timeout && parser->m_currentCommand.command == C_ReqBSI)
+            {
+                port->closeConnection();
+                qCritical() << "Превышено время ожидания блока BSI. Disconnect...";
+                emit disconnected();
+            }
+        },
+        Qt::DirectConnection);
 
     connect(port, &BasePort::finished, portThread, &QThread::quit);
     connect(port, &BasePort::finished, parseThread, &QThread::quit);

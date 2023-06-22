@@ -656,7 +656,6 @@ void Coma::setupConnection()
     *connectionReady = connect(&board, &Board::readyRead, this, [=]() {
         QObject::disconnect(*connectionTimeout);
         QObject::disconnect(*connectionReady);
-
         QApplication::restoreOverrideCursor();
         prepare();
     });

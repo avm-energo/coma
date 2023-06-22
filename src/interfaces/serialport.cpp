@@ -15,7 +15,7 @@ SerialPort::SerialPort(QObject *parent) : BasePort("ModbusPort", parent)
 
 bool SerialPort::init(SerialPortSettings settings)
 {
-    port.reset(new QSerialPort(settings.Port));
+    port.reset(new QSerialPort(settings.Port, this));
     port->setBaudRate(settings.Baud);
     port->setDataBits(QSerialPort::Data8);
     if (settings.Parity == "Нет")
@@ -33,6 +33,7 @@ bool SerialPort::init(SerialPortSettings settings)
     QObject::connect(port.get(), &QIODevice::bytesWritten, this, [this] { timeoutTimer->start(); });
     QObject::connect(port.get(), &QIODevice::readyRead, timeoutTimer, &QTimer::stop);
     QObject::connect(timeoutTimer, &QTimer::timeout, this, [this] {
+        emit error(PortErrors::Timeout);
         qWarning() << this->metaObject()->className() << Error::Timeout;
         writeLog(Error::Timeout);
         emit clearQueries();
@@ -86,7 +87,7 @@ QByteArray SerialPort::read(bool *status)
     }
     if (ba.isEmpty())
     {
-        emit error(NoData);
+        emit error(PortErrors::NoData);
         QCoreApplication::processEvents();
     }
     return ba;
@@ -116,7 +117,7 @@ void SerialPort::errorOccurred(QSerialPort::SerialPortError err)
     else if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError)
     {
         qWarning() << QVariant::fromValue(err).toString();
-        emit error(ReadError);
+        emit error(PortErrors::ReadError);
     }
     else
         qDebug() << QVariant::fromValue(err).toString();
