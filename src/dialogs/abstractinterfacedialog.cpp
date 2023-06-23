@@ -14,9 +14,9 @@ void AbstractInterfaceDialog::setupUI()
     QPushButton *pb = new QPushButton("Отмена");
     connect(pb, &QAbstractButton::clicked, this, &QDialog::close);
     QVBoxLayout *lyout = static_cast<QVBoxLayout *>(layout());
-    lyout->addStretch(20);
+    // lyout->addStretch(20);
     lyout->addWidget(pb);
-    lyout->addStretch(20);
+    // lyout->addStretch(20);
 }
 
 void AbstractInterfaceDialog::rotateSettings(const QString &type, const QString &name)
@@ -70,6 +70,9 @@ void AbstractInterfaceDialog::removeDevice(const QString &name)
     settings->remove(name);
     const auto keys = settings->allKeys();
     for (const auto &key : keys)
-        if (settings->value(key).toString() == name)
+    {
+        auto storedValue = settings->value(key).toString();
+        if (storedValue == name)
             settings->remove(key);
+    }
 }

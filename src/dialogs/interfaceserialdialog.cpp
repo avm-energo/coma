@@ -11,6 +11,7 @@
 #include <QStandardItemModel>
 #include <QVBoxLayout>
 #include <gen/error.h>
+#include <gen/stdfunc.h>
 #include <memory>
 
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
@@ -24,14 +25,20 @@ void InterfaceSerialDialog::setupUI()
     lyout->addWidget(tableView);
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addStretch(10);
-    hlyout->addWidget(WDFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceSerialDialog::addInterface));
+    // hlyout->addStretch(10);
+    hlyout->addWidget(WDFunc::NewPB(this, "newrspb", "Добавить", this, [this] {
+        if (checkSize())
+            QMessageBox::warning(this, "Внимание!", "Превышен лимит соединений!");
+        else
+            addInterface();
+    }));
     hlyout->addWidget(WDFunc::NewPB(this, "", tr("Удалить"), this, [this] {
         auto name = tableView->currentIndex().siblingAtColumn(0).data().toString();
-        removeDevice(name);
+        // removeDevice(name);
+        removeConnection(name);
         updateModel();
     }));
-    hlyout->addStretch(10);
+    // hlyout->addStretch(10);
     lyout->addLayout(hlyout);
     setLayout(lyout);
     connect(tableView, &QTableView::doubleClicked, this, &InterfaceSerialDialog::setInterface);
@@ -94,37 +101,36 @@ void InterfaceSerialDialog::addInterface()
 
 bool InterfaceSerialDialog::updateModel()
 {
-    QStringList rslist;
-    QSettings sets;
-    for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
-    {
-        QString rsname = "RS485-" + QString::number(i);
-        if (sets.contains(rsname))
-            rslist << sets.value(rsname, "").toString();
-    }
-    QStringList sl { "Имя", "Порт", "Скорость", "Четность", "Стоп бит", "Адрес" };
-    QStandardItemModel *mdl = static_cast<QStandardItemModel *>(tableView->model());
-    if (mdl == nullptr)
-        mdl = new QStandardItemModel(this);
+    QStringList headers { "Имя", "Порт", "Скорость", "Четность", "Стоп бит", "Адрес" };
+    auto tableViewModel = static_cast<QStandardItemModel *>(tableView->model());
+    if (tableViewModel == nullptr)
+        tableViewModel = new QStandardItemModel(this);
     else
-        mdl->clear();
-    mdl->setHorizontalHeaderLabels(sl);
-    for (const auto &item : qAsConst(rslist))
+        tableViewModel->clear();
+    tableViewModel->setHorizontalHeaderLabels(headers);
+
+    QSettings settings;
+    if (settings.childGroups().contains("RS485"))
     {
-        QString key = QCoreApplication::applicationName();
-        key += "\\" + item;
-        auto newSets = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key)); // !!!
-        QList<QStandardItem *> items {
-            new QStandardItem(item),                                    //
-            new QStandardItem(newSets->value("port", "").toString()),   //
-            new QStandardItem(newSets->value("speed", "").toString()),  //
-            new QStandardItem(newSets->value("parity", "").toString()), //
-            new QStandardItem(newSets->value("stop", "").toString()),   //
-            new QStandardItem(newSets->value("address", "").toString()) //
-        };
-        mdl->appendRow(items);
+        settings.beginGroup("RS485");
+        auto rslist = settings.childGroups();
+        for (const auto &item : qAsConst(rslist))
+        {
+            settings.beginGroup(item);
+            QList<QStandardItem *> items {
+                new QStandardItem(item),                                         //
+                new QStandardItem(settings.value("port", "COM-1").toString()),   //
+                new QStandardItem(settings.value("speed", "115200").toString()), //
+                new QStandardItem(settings.value("parity", "").toString()),      //
+                new QStandardItem(settings.value("stop", "1").toString()),       //
+                new QStandardItem(settings.value("address", "1").toString())     //
+            };
+            tableViewModel->appendRow(items);
+            settings.endGroup();
+        }
+        settings.endGroup();
     }
-    tableView->setModel(mdl);
+    tableView->setModel(tableViewModel);
     tableView->resizeColumnsToContents();
     return true;
 }
@@ -136,23 +142,52 @@ void InterfaceSerialDialog::acceptedInterface()
         return;
     QString name = WDFunc::LEData(dlg, "namele");
     // check if there's such name in registry
-    if (isKeyExist("RS485-", name))
+    if (isNameExist(name))
     {
         QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
         return;
     }
-    rotateSettings("RS485-", name);
-    QString key = QCoreApplication::applicationName();
-    key += "\\" + name;
-    auto settings = std::unique_ptr<QSettings>(new QSettings(QCoreApplication::organizationName(), key));
-    settings->setValue("port", WDFunc::CBData(dlg, "portcb"));
-    settings->setValue("speed", WDFunc::CBData(dlg, "speedcb"));
-    settings->setValue("parity", WDFunc::CBData(dlg, "paritycb"));
-    settings->setValue("stop", WDFunc::CBData(dlg, "stopbitcb"));
+    // Попробуем сохранять настройки без цыганской магии вроде этого метода
+    // rotateSettings("RS485-", name);
+    QSettings settings;
+    settings.beginGroup("RS485");
+    settings.beginGroup(name);
+    settings.setValue("port", WDFunc::CBData(dlg, "portcb"));
+    settings.setValue("speed", WDFunc::CBData(dlg, "speedcb"));
+    settings.setValue("parity", WDFunc::CBData(dlg, "paritycb"));
+    settings.setValue("stop", WDFunc::CBData(dlg, "stopbitcb"));
     int spbdata;
     WDFunc::SPBData(dlg, "addressspb", spbdata);
-    settings->setValue("address", QString::number(spbdata));
+    settings.setValue("address", QString::number(spbdata));
     if (!updateModel())
         qCritical() << Error::GeneralError;
+    settings.endGroup();
+    settings.endGroup();
     dlg->close();
+}
+
+void InterfaceSerialDialog::removeConnection(const QString &name)
+{
+    QSettings settings;
+    settings.beginGroup("RS485");
+    if (settings.childGroups().contains(name))
+        settings.remove(name);
+    settings.endGroup();
+}
+
+bool InterfaceSerialDialog::isNameExist(const QString &name)
+{
+    QSettings settings;
+    settings.beginGroup("RS485");
+    auto status = settings.childGroups().contains(name);
+    settings.endGroup();
+    return status;
+}
+
+bool InterfaceSerialDialog::checkSize()
+{
+    auto tableViewModel = static_cast<QStandardItemModel *>(tableView->model());
+    if (tableViewModel)
+        return (tableViewModel->rowCount() == MAXREGISTRYINTERFACECOUNT);
+    return false;
 }

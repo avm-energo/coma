@@ -13,6 +13,8 @@ public:
 private:
     void setInterface(QModelIndex index) override;
     void addInterface() override;
-
     void acceptedInterface() override;
+    void removeConnection(const QString &name);
+    bool isNameExist(const QString &name);
+    bool checkSize();
 };
