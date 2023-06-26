@@ -30,7 +30,9 @@ bool SerialPort::init(SerialPortSettings settings)
     timeoutTimer = new QTimer(this);
     timeoutTimer->setInterval(TIMEOUT);
     QObject::connect(port.get(), &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
-    QObject::connect(port.get(), &QIODevice::bytesWritten, this, [this] { timeoutTimer->start(); });
+    QObject::connect(port.get(), &QIODevice::bytesWritten, this, [this] {
+        timeoutTimer->start(); //
+    });
     QObject::connect(port.get(), &QIODevice::readyRead, timeoutTimer, &QTimer::stop);
     QObject::connect(timeoutTimer, &QTimer::timeout, this, [this] {
         emit error(PortErrors::Timeout);
@@ -113,13 +115,13 @@ void SerialPort::errorOccurred(QSerialPort::SerialPortError err)
 {
     // NOTE: TimeoutError is ok due calling the waitForReadyRead function of the QSerialPort instance.
     if (err == QSerialPort::NoError || err == QSerialPort::TimeoutError)
-        return;
+        emit error(PortErrors::Timeout);
     else if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError)
     {
         qWarning() << QVariant::fromValue(err).toString();
         emit error(PortErrors::ReadError);
+        reconnect();
     }
     else
         qDebug() << QVariant::fromValue(err).toString();
-    reconnect();
 }
