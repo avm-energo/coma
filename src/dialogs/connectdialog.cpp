@@ -23,25 +23,37 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
 #endif
     setMinimumWidth(150);
     setAttribute(Qt::WA_DeleteOnClose);
-    QVBoxLayout *lyout = new QVBoxLayout;
+    settings.beginGroup("settings");
 
-    lyout->addWidget(WDFunc::NewLBL2(this, "Выберите интерфейс связи"));
-    lyout->addWidget(WDFunc::NewCB2(this, "intercb", intersl));
+    auto layout = new QVBoxLayout;
+    layout->addWidget(WDFunc::NewLBL2(this, "Выберите интерфейс связи"));
+    auto intercb = WDFunc::NewCB2(this, "intercb", intersl);
+    if (settings.contains("LastConnectionType"))
+    {
+        auto lastConnectionType = settings.value("LastConnectionType").toString();
+        intercb->setCurrentIndex(intersl.indexOf(lastConnectionType));
+    }
+    layout->addWidget(intercb);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Далее");
-    connect(pb, &QPushButton::clicked, this, &ConnectDialog::setInterface);
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb, &QAbstractButton::clicked, this, &QDialog::close);
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    setLayout(lyout);
+    auto nextButton = new QPushButton("Далее");
+    connect(nextButton, &QPushButton::clicked, this, &ConnectDialog::setInterface);
+    hlyout->addWidget(nextButton);
+    nextButton = new QPushButton("Отмена");
+    connect(nextButton, &QAbstractButton::clicked, this, &QDialog::close);
+    hlyout->addWidget(nextButton);
+    layout->addLayout(hlyout);
+    setLayout(layout);
 }
 
 void ConnectDialog::setInterface()
 {
     auto comboBox = this->findChild<QComboBox *>();
-    Board::GetInstance().setProperty("interface", comboBox->currentText());
+    if (comboBox != nullptr)
+    {
+        auto connectionType = comboBox->currentText();
+        Board::GetInstance().setProperty("interface", connectionType);
+        settings.setValue("LastConnectionType", connectionType);
+    }
 
     switch (Board::GetInstance().interfaceType())
     {
