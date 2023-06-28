@@ -7,6 +7,7 @@ class QCheckBox;
 class QComboBox;
 class QDoubleSpinBox;
 class QGroupBox;
+class QHBoxLayout;
 
 class SearchModbusDevicesDialog : public QDialog
 {
@@ -22,13 +23,15 @@ private:
         std::array<QCheckBox *, 2> stopBits;
     } widgets;
 
-    void selectAllBaudCheckBoxes();
-    void clearAllBaudCheckBoxes();
     QGroupBox *createComGroupBox();
     QGroupBox *createTimeoutGroupBox();
     QGroupBox *createAddressGroupBox();
     QGroupBox *createBaudGroupBox();
+    QGroupBox *createParityGroupBox();
+    QGroupBox *createStopbitsGroupBox();
+    QHBoxLayout *createControlLayout();
     void setupUI();
+    void runSearch();
 
 public:
     SearchModbusDevicesDialog(QWidget *parent = nullptr);
