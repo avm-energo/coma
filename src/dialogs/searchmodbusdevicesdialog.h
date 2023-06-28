@@ -1,20 +1,32 @@
 #pragma once
 
 #include <QDialog>
-#include <memory>
+#include <array>
 
-struct SearchDialogWidgets;
+class QCheckBox;
+class QComboBox;
+class QDoubleSpinBox;
 class QGroupBox;
 
 class SearchModbusDevicesDialog : public QDialog
 {
 private:
-    std::unique_ptr<SearchDialogWidgets> widgets;
+    struct
+    {
+        QComboBox *com;
+        QDoubleSpinBox *timeout;
+        QDoubleSpinBox *startAddr;
+        QDoubleSpinBox *endAddr;
+        std::array<QCheckBox *, 7> baud;
+        std::array<QCheckBox *, 3> parity;
+        std::array<QCheckBox *, 2> stopBits;
+    } widgets;
 
-    void selectAllCheckBoxes();
-    void clearAllCheckBoxes();
+    void selectAllBaudCheckBoxes();
+    void clearAllBaudCheckBoxes();
     QGroupBox *createComGroupBox();
     QGroupBox *createTimeoutGroupBox();
+    QGroupBox *createAddressGroupBox();
     QGroupBox *createBaudGroupBox();
     void setupUI();
 
