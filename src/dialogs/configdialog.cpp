@@ -134,6 +134,10 @@ void ConfigDialog::configReceived(const QVariant &msg)
 
 void ConfigDialog::saveConfigToFile()
 {
+    auto filepath = WDFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf");
+    if (filepath.isEmpty())
+        return;
+
     QByteArray ba;
     if (!prepareConfigToWrite())
     {
@@ -145,7 +149,7 @@ void ConfigDialog::saveConfigToFile()
     length += sizeof(S2DataTypes::S2FileHeader);
     Q_ASSERT(length == quint32(ba.size()));
 
-    Error::Msg res = Files::SaveToFile(WDFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba);
+    Error::Msg res = Files::SaveToFile(filepath, ba);
     switch (res)
     {
     case Error::Msg::NoError:
@@ -167,8 +171,12 @@ void ConfigDialog::saveConfigToFile()
 
 void ConfigDialog::loadConfigFromFile()
 {
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Config files (*.cf)");
+    if (filepath.isEmpty())
+        return;
+
     QByteArray ba;
-    Error::Msg res = Files::LoadFromFile(WDFunc::ChooseFileForOpen(this, "Config files (*.cf)"), ba);
+    Error::Msg res = Files::LoadFromFile(filepath, ba);
     if (res != Error::Msg::NoError)
     {
         qCritical("Ошибка при загрузке файла конфигурации");

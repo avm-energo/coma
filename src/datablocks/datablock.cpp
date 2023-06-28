@@ -277,7 +277,9 @@ void DataBlock::readBlockFromModule()
 
 void DataBlock::readFromFileUserChoose()
 {
-    loadFromFileAndWriteToModule(WDFunc::ChooseFileForOpen(nullptr, ExtMap[m_block.blocktype].mask));
+    auto filepath = WDFunc::ChooseFileForOpen(nullptr, ExtMap[m_block.blocktype].mask);
+    if (!filepath.isEmpty())
+        loadFromFileAndWriteToModule(filepath);
 }
 
 Error::Msg DataBlock::loadFromFileAndWriteToModule(const QString &filename)
@@ -309,10 +311,12 @@ Error::Msg DataBlock::saveToFile()
 void DataBlock::saveToFileUserChoose()
 {
     readBlockFromModule();
+    auto filepath = WDFunc::ChooseFileForSave(nullptr, ExtMap[m_block.blocktype].mask, //
+        ExtMap[m_block.blocktype].extension, cpuIDFilenameStr());
+    if (filepath.isEmpty())
+        return;
     QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
-    Files::SaveToFile(WDFunc::ChooseFileForSave(nullptr, ExtMap[m_block.blocktype].mask,
-                          ExtMap[m_block.blocktype].extension, cpuIDFilenameStr()),
-        ba);
+    Files::SaveToFile(filepath, ba);
 }
 
 void DataBlock::readAndUpdate()

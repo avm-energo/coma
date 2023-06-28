@@ -196,11 +196,14 @@ void StartupKTFDialog::ResetCor()
 
 void StartupKTFDialog::SaveToFile()
 {
+
+    auto filepath = WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor");
+    if (filepath.isEmpty())
+        return;
+
     QByteArray ba = QByteArray::fromRawData(reinterpret_cast<char *>(WBd7Block), sizeof(WBd7Block));
     FillBackCor();
-
-    Error::Msg res = Files::SaveToFile(WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);
-
+    Error::Msg res = Files::SaveToFile(filepath, ba);
     switch (res)
     {
     case Error::Msg::NoError:
@@ -222,10 +225,13 @@ void StartupKTFDialog::SaveToFile()
 
 void StartupKTFDialog::ReadFromFile()
 {
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
+    if (filepath.isEmpty())
+        return;
+
     QByteArray ba;
     ba.resize(sizeof(*Bd9Block));
-
-    Error::Msg res = Files::LoadFromFile(WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
+    Error::Msg res = Files::LoadFromFile(filepath, ba);
     if (res != Error::Msg::NoError)
     {
         QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");

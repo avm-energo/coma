@@ -677,14 +677,16 @@ void Coma::setupConnection()
 
 void Coma::loadOsc()
 {
-    QString filename = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
-    loadOsc(filename);
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
+    if (!filepath.isEmpty())
+        loadOsc(filepath);
 }
 
 void Coma::loadSwj()
 {
-    QString filename = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
-    loadSwj(filename);
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
+    if (!filepath.isEmpty())
+        loadSwj(filepath);
 }
 
 void Coma::disconnectAndClear()

@@ -53,8 +53,12 @@ void FWUploadDialog::LoadFW()
         return;
     }
 
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Program Version (*.hex)");
+    if (filepath.isEmpty())
+        return;
+
     QByteArray ba;
-    Error::Msg res = Files::LoadFromFile(WDFunc::ChooseFileForOpen(this, "Program Version (*.hex)"), ba);
+    Error::Msg res = Files::LoadFromFile(filepath, ba);
     if (res != Error::Msg::NoError)
     {
         qCritical() << "Ошибка файла ПО" << res;
