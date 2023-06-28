@@ -1,18 +1,15 @@
 #include "interfaceserialdialog.h"
 
 #include "../interfaces/settingstypes.h"
+#include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
+#include "searchmodbusdevicesdialog.h"
 
-#include <QCoreApplication>
-#include <QDebug>
-#include <QMessageBox>
 #include <QSerialPortInfo>
-#include <QSettings>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <memory>
 
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
@@ -34,7 +31,7 @@ void InterfaceSerialDialog::setupUI()
     auto firstRow = new QHBoxLayout;
     auto addButton = WDFunc::NewPB(this, "newrspb", "Добавить", this, [this] {
         if (checkSize())
-            QMessageBox::warning(this, "Внимание!", "Превышен лимит соединений!");
+            EMessageBox::warning(this, "Превышен лимит соединений!");
         else
             addInterface();
     });
@@ -55,7 +52,9 @@ void InterfaceSerialDialog::setupUI()
     });
     auto searchButton = WDFunc::NewPB(this, "", "Поиск устройств", this, [this] {
         // searchDevices();
-        updateModel();
+        // updateModel();
+        auto searchDialog = new SearchModbusDevicesDialog(this);
+        searchDialog->exec();
     });
     secondRow->addWidget(editButton);
     secondRow->addWidget(searchButton);
@@ -85,6 +84,9 @@ void InterfaceSerialDialog::setInterface(QModelIndex index)
 
 void InterfaceSerialDialog::editConnection(QModelIndex index)
 {
+    if (!index.isValid())
+        return;
+
     // Getting data from model
     auto model = index.model();
     int row = index.row();
@@ -136,8 +138,15 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
     // Logic of working
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewPB(dialog, "acceptpb", "Сохранить", dialog, [=] {
+        auto newName = namele->text();
+        // Новое имя не совпадает со старым, но уже имеется в настройках
+        if (newName != name && isNameExist(newName))
+        {
+            EMessageBox::error(this, "Такое имя уже имеется");
+            return;
+        }
         removeConnection(name);
-        settings.beginGroup(namele->text());
+        settings.beginGroup(newName);
         settings.setValue("port", portcb->currentText());
         settings.setValue("speed", speedcb->currentText());
         settings.setValue("parity", paritycb->currentText());
@@ -230,7 +239,7 @@ void InterfaceSerialDialog::acceptedInterface()
     // check if there's such name in registry
     if (isNameExist(name))
     {
-        QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
+        EMessageBox::error(this, "Такое имя уже имеется");
         return;
     }
     settings.beginGroup(name);
