@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QByteArray>
 #include <QDialog>
 #include <QSerialPort>
 #include <vector>
@@ -22,10 +23,15 @@ class SearchProccessDialog : public QDialog
 private:
     SearchParams params;
     QTimer *timeoutTimer;
+    bool timeout;
+    bool responseReceived;
+    bool portError;
 
     void setupUI();
     void errorHandler(QSerialPort::SerialPortError error);
     void receiveResponse(QSerialPort *port);
+    QByteArray createRequest(int address);
+    void createModelItem(quint32 row, int addr, int baud, QSerialPort::Parity parity, QSerialPort::StopBits stopBit);
     void search();
     virtual void showEvent(QShowEvent *event) override;
 
