@@ -51,8 +51,6 @@ void InterfaceSerialDialog::setupUI()
         updateModel();
     });
     auto searchButton = WDFunc::NewPB(this, "", "Поиск устройств", this, [this] {
-        // searchDevices();
-        // updateModel();
         auto searchDialog = new SearchModbusDevicesDialog(this);
         searchDialog->exec();
     });

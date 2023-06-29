@@ -1,6 +1,7 @@
 #pragma once
 
-#include <QDialog>
+#include "searchproccessdialog.h"
+
 #include <array>
 
 class QCheckBox;
@@ -14,14 +15,16 @@ class SearchModbusDevicesDialog : public QDialog
 private:
     struct
     {
-        QComboBox *com;
+        QComboBox *port;
         QDoubleSpinBox *timeout;
         QDoubleSpinBox *startAddr;
         QDoubleSpinBox *endAddr;
         std::array<QCheckBox *, 7> baud;
-        std::array<QCheckBox *, 3> parity;
-        std::array<QCheckBox *, 2> stopBits;
+        QCheckBox *parityNone, *parityOdd, *parityEven;
+        QCheckBox *stopBitOne, *stopBitTwo;
     } widgets;
+
+    SearchParams data;
 
     QGroupBox *createComGroupBox();
     QGroupBox *createTimeoutGroupBox();
@@ -31,6 +34,9 @@ private:
     QGroupBox *createStopbitsGroupBox();
     QHBoxLayout *createControlLayout();
     void setupUI();
+
+    void getData();
+    bool validate();
     void runSearch();
 
 public:

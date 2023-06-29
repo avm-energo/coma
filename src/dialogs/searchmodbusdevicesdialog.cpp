@@ -1,5 +1,6 @@
 #include "searchmodbusdevicesdialog.h"
 
+#include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -7,10 +8,12 @@
 #include <QHBoxLayout>
 #include <QSerialPortInfo>
 #include <QVBoxLayout>
-#include <vector>
 
 SearchModbusDevicesDialog::SearchModbusDevicesDialog(QWidget *parent) : QDialog(parent)
 {
+    data.bauds.reserve(widgets.baud.size());
+    data.parities.reserve(3);
+    data.stopBits.reserve(2);
     setObjectName("rsSearchDevicesDialog");
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle("Поиск устройств");
@@ -26,11 +29,11 @@ QGroupBox *SearchModbusDevicesDialog::createComGroupBox()
     for (const auto &portInfo : portList)
         comPorts << portInfo.portName();
 
-    auto comGroupBox = new QGroupBox("COM для поиска", this);
+    auto comGroupBox = new QGroupBox("Порт", this);
     auto comGroupBoxLayout = new QVBoxLayout;
-    auto comSelect = WDFunc::NewCB2(comGroupBox, "comSelect", comPorts);
-    widgets.com = comSelect;
-    comGroupBoxLayout->addWidget(comSelect);
+    auto portSelect = WDFunc::NewCB2(comGroupBox, "portSelect", comPorts);
+    widgets.port = portSelect;
+    comGroupBoxLayout->addWidget(portSelect);
     comGroupBox->setLayout(comGroupBoxLayout);
     return comGroupBox;
 }
@@ -54,14 +57,14 @@ QGroupBox *SearchModbusDevicesDialog::createAddressGroupBox()
     auto addrGroupBoxLayout = new QVBoxLayout;
     auto firstItemLayout = new QHBoxLayout;
     auto startAddrLabel = WDFunc::NewLBL2(addrGroupBox, "Начало:");
-    auto startAddrSelect = WDFunc::NewSPB2(addrGroupBox, "startAddrSelect", 0, 255, 0);
+    auto startAddrSelect = WDFunc::NewSPB2(addrGroupBox, "startAddrSelect", 1, 254, 0);
     widgets.startAddr = startAddrSelect;
     firstItemLayout->addWidget(startAddrLabel);
     firstItemLayout->addWidget(startAddrSelect);
     auto secondItemLayout = new QHBoxLayout;
     auto endAddrLabel = WDFunc::NewLBL2(addrGroupBox, "Конец:");
-    auto endAddrSelect = WDFunc::NewSPB2(addrGroupBox, "endAddrSelect", 0, 255, 0);
-    endAddrSelect->setValue(255);
+    auto endAddrSelect = WDFunc::NewSPB2(addrGroupBox, "endAddrSelect", 1, 254, 0);
+    endAddrSelect->setValue(254);
     widgets.endAddr = endAddrSelect;
     secondItemLayout->addWidget(endAddrLabel);
     secondItemLayout->addWidget(endAddrSelect);
@@ -122,31 +125,17 @@ QGroupBox *SearchModbusDevicesDialog::createParityGroupBox()
     auto parityGroupBox = new QGroupBox("Чётность", this);
     auto parityGroupBoxLayout = new QVBoxLayout;
     auto parityMainLayout = new QHBoxLayout;
-    std::size_t index = 0;
+    // std::size_t index = 0;
     auto parityCheckBox1 = WDFunc::NewChB2(parityGroupBox, "parityCheckBox1", "Нет");
     parityMainLayout->addWidget(parityCheckBox1);
-    widgets.parity[index++] = parityCheckBox1;
+    widgets.parityNone = parityCheckBox1;
     auto parityCheckBox2 = WDFunc::NewChB2(parityGroupBox, "parityCheckBox2", "Нечёт");
     parityMainLayout->addWidget(parityCheckBox2);
-    widgets.parity[index++] = parityCheckBox2;
+    widgets.parityOdd = parityCheckBox2;
     auto parityCheckBox3 = WDFunc::NewChB2(parityGroupBox, "parityCheckBox3", "Чёт");
     parityMainLayout->addWidget(parityCheckBox3);
-    widgets.parity[index] = parityCheckBox3;
-    auto buttonsLayout = new QHBoxLayout;
-    auto selectAllButton = WDFunc::NewPB(parityGroupBox, "selectAllParityButton", //
-        "Выбрать все", this, [this] {
-            for (auto &checkBox : widgets.parity)
-                checkBox->setCheckState(Qt::CheckState::Checked);
-        });
-    buttonsLayout->addWidget(selectAllButton);
-    auto clearAllButton = WDFunc::NewPB(parityGroupBox, "clearAllParityButton", //
-        "Очистить все", this, [this] {
-            for (auto &checkBox : widgets.parity)
-                checkBox->setCheckState(Qt::CheckState::Unchecked);
-        });
-    buttonsLayout->addWidget(clearAllButton);
+    widgets.parityEven = parityCheckBox3;
     parityGroupBoxLayout->addLayout(parityMainLayout);
-    parityGroupBoxLayout->addLayout(buttonsLayout);
     parityGroupBox->setLayout(parityGroupBoxLayout);
     return parityGroupBox;
 }
@@ -158,25 +147,11 @@ QGroupBox *SearchModbusDevicesDialog::createStopbitsGroupBox()
     auto stopbitsMainLayout = new QHBoxLayout;
     auto stopbitCheckBox1 = WDFunc::NewChB2(stopbitsGroupBox, "stopbitCheckBox1", "1");
     stopbitsMainLayout->addWidget(stopbitCheckBox1);
-    widgets.stopBits[0] = stopbitCheckBox1;
+    widgets.stopBitOne = stopbitCheckBox1;
     auto stopbitCheckBox2 = WDFunc::NewChB2(stopbitsGroupBox, "stopbitCheckBox2", "2");
     stopbitsMainLayout->addWidget(stopbitCheckBox2);
-    widgets.stopBits[1] = stopbitCheckBox2;
-    auto buttonsLayout = new QHBoxLayout;
-    auto selectAllButton = WDFunc::NewPB(stopbitsGroupBox, "selectAllStopbitButton", //
-        "Выбрать все", this, [this] {
-            for (auto &checkBox : widgets.stopBits)
-                checkBox->setCheckState(Qt::CheckState::Checked);
-        });
-    buttonsLayout->addWidget(selectAllButton);
-    auto clearAllButton = WDFunc::NewPB(stopbitsGroupBox, "clearAllStopbitButton", //
-        "Очистить все", this, [this] {
-            for (auto &checkBox : widgets.stopBits)
-                checkBox->setCheckState(Qt::CheckState::Unchecked);
-        });
-    buttonsLayout->addWidget(clearAllButton);
+    widgets.stopBitTwo = stopbitCheckBox2;
     stopbitsGroupBoxLayout->addLayout(stopbitsMainLayout);
-    stopbitsGroupBoxLayout->addLayout(buttonsLayout);
     stopbitsGroupBox->setLayout(stopbitsGroupBoxLayout);
     return stopbitsGroupBox;
 }
@@ -211,33 +186,67 @@ void SearchModbusDevicesDialog::setupUI()
     adjustSize();
 }
 
+void SearchModbusDevicesDialog::getData()
+{
+    data.bauds.clear();
+    data.parities.clear();
+    data.stopBits.clear();
+
+    data.port = widgets.port->currentText();
+    data.timeout = static_cast<int>(widgets.timeout->value());
+    data.startAddr = static_cast<int>(widgets.startAddr->value());
+    data.endAddr = static_cast<int>(widgets.endAddr->value());
+    for (auto &checkBox : widgets.baud)
+        if (checkBox->isChecked())
+            data.bauds.push_back(static_cast<qint32>(checkBox->text().toInt()));
+
+    if (widgets.parityNone->isChecked())
+        data.parities.push_back(QSerialPort::Parity::NoParity);
+    if (widgets.parityOdd->isChecked())
+        data.parities.push_back(QSerialPort::Parity::OddParity);
+    if (widgets.parityEven->isChecked())
+        data.parities.push_back(QSerialPort::Parity::EvenParity);
+    if (widgets.stopBitOne->isChecked())
+        data.stopBits.push_back(QSerialPort::StopBits::OneStop);
+    if (widgets.stopBitTwo->isChecked())
+        data.stopBits.push_back(QSerialPort::StopBits::TwoStop);
+}
+
+bool SearchModbusDevicesDialog::validate()
+{
+    // Проверка диапазона адресов
+    if (data.startAddr > data.endAddr)
+    {
+        EMessageBox::warning(this, "Начальный адрес должен быть меньше или равен конечному");
+        return false;
+    }
+    // Проверка выбранных скоростей
+    if (data.bauds.empty())
+    {
+        EMessageBox::warning(this, "Необходимо выбрать хотя бы одну скорость");
+        return false;
+    }
+    // Проверка выбранных параметров чётности
+    if (data.parities.empty())
+    {
+        EMessageBox::warning(this, "Необходимо выбрать хотя бы один параметр чётности");
+        return false;
+    }
+    // Проверка выбранных параметров стоповых битов
+    if (data.stopBits.empty())
+    {
+        EMessageBox::warning(this, "Необходимо выбрать хотя бы один параметр стоп-битов");
+        return false;
+    }
+    return true;
+}
+
 void SearchModbusDevicesDialog::runSearch()
 {
-    enum class Parity : quint8
+    getData();
+    if (validate())
     {
-        None = 0,
-        Odd,
-        Even
-    };
-
-    [[maybe_unused]] auto comString = widgets.com->currentText();
-    [[maybe_unused]] auto timeout = static_cast<int>(widgets.timeout->value());
-    [[maybe_unused]] auto startAddr = static_cast<int>(widgets.startAddr->value());
-    [[maybe_unused]] auto endAddr = static_cast<int>(widgets.endAddr->value());
-    std::vector<int> bauds, stopbits;
-    bauds.reserve(widgets.baud.size());
-    stopbits.reserve(widgets.stopBits.size());
-    std::vector<Parity> parities;
-    parities.reserve(widgets.parity.size());
-
-    bool ok = true;
-    for (auto &checkBox : widgets.baud)
-    {
-        if (checkBox->isChecked())
-        {
-            auto baud = checkBox->text().toInt(&ok);
-            if (ok)
-                bauds.push_back(baud);
-        }
+        auto proccessDlg = new SearchProccessDialog(data, this);
+        proccessDlg->exec();
     }
 }
