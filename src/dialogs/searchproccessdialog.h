@@ -35,7 +35,7 @@ private:
     void errorHandler(QSerialPort::SerialPortError error);
     void receiveResponse(QSerialPort *port);
     QByteArray createRequest(int address);
-    void createModelItem(int addr, int baud, QSerialPort::Parity parity, QSerialPort::StopBits stopBit);
+    void createModelItem(quint32 row, int addr, int baud, QSerialPort::Parity parity, QSerialPort::StopBits stopBit);
     void sendRequest(QSerialPort *port, int addr);
     void updateTable(quint32 row);
     void setMaxProgressBar();

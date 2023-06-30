@@ -4,8 +4,10 @@
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
+#include <QHeaderView>
 #include <QProgressBar>
 #include <QStandardItemModel>
+#include <QThread>
 #include <QTimer>
 
 SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *parent)
@@ -42,7 +44,7 @@ void SearchProccessDialog::setupUI()
     progressBar->setOrientation(Qt::Horizontal);
     mainLayout->addWidget(progressBar);
     setLayout(mainLayout);
-    adjustSize();
+    setMinimumSize(700, 600);
 }
 
 void SearchProccessDialog::errorHandler(QSerialPort::SerialPortError error)
@@ -72,7 +74,14 @@ void SearchProccessDialog::receiveResponse(QSerialPort *port)
     if (port->isOpen())
     {
         // TODO: Можно анализировать ответ от устройства
-        [[maybe_unused]] auto received = port->readAll();
+        QByteArray received;
+        while (port->bytesAvailable())
+        {
+            received += port->readAll(); // read data
+            QThread::msleep(2);
+        }
+        // For debug
+        // qWarning() << received.toHex() << " ; byte  count: " << received.size();
         responseReceived = true;
     }
     else
@@ -88,7 +97,7 @@ QByteArray SearchProccessDialog::createRequest(int address)
     return request;
 }
 
-void SearchProccessDialog::createModelItem(int addr, int baud, //
+void SearchProccessDialog::createModelItem(quint32 row, int addr, int baud, //
     QSerialPort::Parity parity, QSerialPort::StopBits stopBit)
 {
     auto model = static_cast<QStandardItemModel *>(tableView->model());
@@ -113,8 +122,8 @@ void SearchProccessDialog::createModelItem(int addr, int baud, //
             items.append(new QStandardItem("2"));
         items.append(new QStandardItem("Wait..."));
         model->appendRow(items);
+        tableView->scrollTo(model->index(row, 0));
     }
-    tableView->setModel(model);
     QCoreApplication::processEvents();
 }
 
@@ -155,7 +164,6 @@ void SearchProccessDialog::updateTable(quint32 row)
         else if (responseReceived)
             model->setData(itemIndex, green, Qt::BackgroundRole);
     }
-    updateProgressBar();
 
     portError = false;
     timeout = false;
@@ -181,6 +189,13 @@ void SearchProccessDialog::updateProgressBar()
 void SearchProccessDialog::search()
 {
     constexpr auto bufferSize = 1024;
+    auto port = new QSerialPort(params.port, this);
+    QObject::connect(port, &QSerialPort::errorOccurred, this, &SearchProccessDialog::errorHandler);
+    QObject::connect(port, &QIODevice::readyRead, this, [this, port] { receiveResponse(port); });
+    port->setFlowControl(QSerialPort::NoFlowControl);
+    port->setDataBits(QSerialPort::Data8);
+    port->setReadBufferSize(bufferSize);
+
     quint32 row = 0;
     setMaxProgressBar();
     for (const auto baud : params.bauds)
@@ -189,32 +204,27 @@ void SearchProccessDialog::search()
         {
             for (const auto stopBit : params.stopBits)
             {
-                auto port = new QSerialPort(params.port, this);
-                QObject::connect(port, &QSerialPort::errorOccurred, this, &SearchProccessDialog::errorHandler);
-                QObject::connect(port, &QIODevice::readyRead, this, [this, port] { receiveResponse(port); });
-                port->setFlowControl(QSerialPort::NoFlowControl);
-                port->setDataBits(QSerialPort::Data8);
-                port->setReadBufferSize(bufferSize);
                 port->setBaudRate(baud);
                 port->setParity(parity);
                 port->setStopBits(stopBit);
                 auto openStatus = port->open(QIODevice::ReadWrite);
                 for (auto addr = params.startAddr; addr <= params.endAddr; addr++)
                 {
-                    createModelItem(addr, baud, parity, stopBit);
+                    createModelItem(row, addr, baud, parity, stopBit);
                     if (openStatus)
                         sendRequest(port, addr);
                     else
                         portError = true;
                     updateTable(row);
+                    updateProgressBar();
                     row++;
                 }
                 port->flush();
                 port->close();
-                port->deleteLater();
                 QCoreApplication::processEvents();
             }
         }
     }
+    port->deleteLater();
     EMessageBox::information(this, "Сканирование завершено!");
 }
