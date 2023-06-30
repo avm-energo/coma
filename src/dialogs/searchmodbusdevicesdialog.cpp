@@ -125,7 +125,6 @@ QGroupBox *SearchModbusDevicesDialog::createParityGroupBox()
     auto parityGroupBox = new QGroupBox("Чётность", this);
     auto parityGroupBoxLayout = new QVBoxLayout;
     auto parityMainLayout = new QHBoxLayout;
-    // std::size_t index = 0;
     auto parityCheckBox1 = WDFunc::NewChB2(parityGroupBox, "parityCheckBox1", "Нет");
     parityMainLayout->addWidget(parityCheckBox1);
     widgets.parityNone = parityCheckBox1;
@@ -247,6 +246,7 @@ void SearchModbusDevicesDialog::runSearch()
     if (validate())
     {
         auto proccessDlg = new SearchProccessDialog(data, this);
-        proccessDlg->exec();
+        proccessDlg->show();
+        proccessDlg->search();
     }
 }

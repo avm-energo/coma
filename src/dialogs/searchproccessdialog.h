@@ -6,6 +6,8 @@
 #include <vector>
 
 class QTimer;
+class QTableView;
+class QProgressBar;
 
 struct SearchParams
 {
@@ -23,6 +25,8 @@ class SearchProccessDialog : public QDialog
 private:
     SearchParams params;
     QTimer *timeoutTimer;
+    QTableView *tableView;
+    QProgressBar *progressBar;
     bool timeout;
     bool responseReceived;
     bool portError;
@@ -31,10 +35,13 @@ private:
     void errorHandler(QSerialPort::SerialPortError error);
     void receiveResponse(QSerialPort *port);
     QByteArray createRequest(int address);
-    void createModelItem(quint32 row, int addr, int baud, QSerialPort::Parity parity, QSerialPort::StopBits stopBit);
-    void search();
-    virtual void showEvent(QShowEvent *event) override;
+    void createModelItem(int addr, int baud, QSerialPort::Parity parity, QSerialPort::StopBits stopBit);
+    void sendRequest(QSerialPort *port, int addr);
+    void updateTable(quint32 row);
+    void setMaxProgressBar();
+    void updateProgressBar();
 
 public:
     SearchProccessDialog(const SearchParams &data, QWidget *parent = nullptr);
+    void search();
 };
