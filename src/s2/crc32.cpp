@@ -1,6 +1,6 @@
 #include "crc32.h"
 
-namespace S2Dev
+namespace utils
 {
 
 const quint32 CRC32::table[256] = {
@@ -54,7 +54,7 @@ void CRC32::updateChecksum(const quint8 byte)
     checksum = (checksum >> 8) ^ table[byte ^ (checksum & lastByteMask)];
 }
 
-CRC32::CRC32(const QByteArray &data) noexcept : checksum(initialValue)
+CRC32::CRC32(const QByteArray &data) : CRC32()
 {
     update(data);
 }
@@ -76,37 +76,37 @@ void CRC32::reset() noexcept
     checksum = initialValue;
 }
 
-CRC32::operator quint32() const
+CRC32::operator quint32() const noexcept
 {
     return checksum;
 }
 
-bool operator==(const CRC32 lhs, const CRC32 rhs)
+bool operator==(const CRC32 lhs, const CRC32 rhs) noexcept
 {
     return lhs.checksum == rhs.checksum;
 }
 
-bool operator==(const quint32 lhs, const CRC32 rhs)
+bool operator==(const quint32 lhs, const CRC32 rhs) noexcept
 {
     return lhs == rhs.checksum;
 }
 
-bool operator==(const CRC32 lhs, const quint32 rhs)
+bool operator==(const CRC32 lhs, const quint32 rhs) noexcept
 {
     return lhs.checksum == rhs;
 }
 
-bool operator!=(const CRC32 lhs, const CRC32 rhs)
+bool operator!=(const CRC32 lhs, const CRC32 rhs) noexcept
 {
     return !(lhs == rhs);
 }
 
-bool operator!=(const quint32 lhs, const CRC32 rhs)
+bool operator!=(const quint32 lhs, const CRC32 rhs) noexcept
 {
     return !(lhs == rhs);
 }
 
-bool operator!=(const CRC32 lhs, const quint32 rhs)
+bool operator!=(const CRC32 lhs, const quint32 rhs) noexcept
 {
     return !(lhs == rhs);
 }

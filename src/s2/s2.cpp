@@ -15,7 +15,7 @@ S2::S2()
 
 void S2::StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, int fname)
 {
-    S2Dev::CRC32 crc;
+    utils::CRC32 crc;
     S2DataTypes::S2FileHeader header;
     QByteArray ba;
     header.size = 0;
@@ -75,7 +75,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
 
     // проверка контрольной суммы
     Q_ASSERT(bain.size() == fileHeader.size);
-    S2Dev::CRC32 crc32(bain);
+    utils::CRC32 crc32(bain);
     if (crc32 != fileHeader.crc32)
     {
         qCritical() << "S2" << Error::Msg::CrcError; // выход за границу принятых байт
@@ -124,7 +124,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
 
     // проверка контрольной суммы
     Q_ASSERT(bain.size() == fh.size);
-    S2Dev::CRC32 crc32(bain);
+    utils::CRC32 crc32(bain);
     if (crc32 != fh.crc32)
     {
         qCritical() << Error::Msg::CrcError << "S2"; // выход за границу принятых байт
@@ -200,7 +200,7 @@ S2DataTypes::S2BFile S2::emulateS2B(const DataTypes::FileStruct &journal, quint1
 {
     using namespace S2DataTypes;
     constexpr quint32 tailEnd = 0xEEEE1111;
-    S2Dev::CRC32 crc;
+    utils::CRC32 crc;
     S2BFileHeader header;
     DataRecHeader recHeader { journal.ID, quint32(journal.data.size()) };
     crc.update(reinterpret_cast<quint8 *>(&recHeader), sizeof(recHeader));
