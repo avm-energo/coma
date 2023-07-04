@@ -114,8 +114,10 @@ bool SerialPort::write(const QByteArray &ba)
 void SerialPort::errorOccurred(QSerialPort::SerialPortError err)
 {
     // NOTE: TimeoutError is ok due calling the waitForReadyRead function of the QSerialPort instance.
-    if (err == QSerialPort::NoError || err == QSerialPort::TimeoutError)
-        emit error(PortErrors::Timeout);
+    if (err == QSerialPort::NoError)
+        return;
+    // else if (err == QSerialPort::TimeoutError)
+    //    emit error(PortErrors::Timeout);
     else if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError)
     {
         qWarning() << QVariant::fromValue(err).toString();

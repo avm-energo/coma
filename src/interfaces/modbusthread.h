@@ -61,7 +61,7 @@ private:
     void processCommandResponse();
     void processSinglePointSignals();
     bool processReadFile();
-    quint16 calcCRC(QByteArray &ba) const;
+    // quint16 calcCRC(QByteArray &ba) const;
 
     template <typename T> T unpackReg(QByteArray ba) const
     {
