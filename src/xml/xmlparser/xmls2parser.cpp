@@ -65,7 +65,7 @@ Xml::S2Parser::S2Parser(QObject *parent) : BaseParser(parent)
 }
 
 /// \brief Возвращаем хэш типа для его идентификации
-uint64_t Xml::S2Parser::parseType(const QDomElement &typeNode)
+std::uint64_t Xml::S2Parser::parseType(const QDomElement &typeNode)
 {
     auto name = typeNode.text();
     name.replace(" ", "");

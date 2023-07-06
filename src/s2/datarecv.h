@@ -2,9 +2,9 @@
 #define DATARECV_H
 
 #include "datarec.h"
-#include "valuemap.h"
 
 #include <QVariant>
+#include <gen/datatypes.h>
 
 template <typename T, std::size_t N1, std::size_t N2>
 auto inline operator<<(std::array<std::array<T, N2>, N1> &array, const QStringList &list) -> decltype(array)
@@ -44,7 +44,7 @@ public:
     DataRecV(quint16 _id, const QString &str);
     DataRecV(quint16 _id);
 
-    template <typename T, std::enable_if_t<ValueMap::true_type<T>::value, bool> = true>
+    template <typename T, std::enable_if_t<isValueType<T>::value, bool> = true>
     DataRecV(quint16 _id, T _data) : id(_id), data(_data)
     {
     }
@@ -59,7 +59,7 @@ public:
     void setData(const valueType &value);
     size_t typeIndex() const;
 
-    template <typename T, std::enable_if_t<ValueMap::true_type<T>::value, bool> = true> T value() const
+    template <typename T, std::enable_if_t<isValueType<T>::value, bool> = true> T value() const
     {
         assert(std::holds_alternative<T>(data) && "Requested wrong type");
         if (std::holds_alternative<T>(data))

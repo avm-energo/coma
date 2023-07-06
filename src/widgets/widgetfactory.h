@@ -16,7 +16,7 @@ class ConfigV;
 class WidgetFactory
 {
     friend class Module;
-    friend class NewModule;
+    // friend class NewModule;
 
 public:
     WidgetFactory(ConfigV *config);

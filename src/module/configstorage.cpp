@@ -20,15 +20,15 @@ void ConfigStorage::setS2Status(const bool &status)
 }
 
 /// \brief Constant getter for S2 configs hashmap.
-const DataTypes::ValueMap::value_type &ConfigStorage::getS2Map() const
+const TypeByIdMap &ConfigStorage::getS2Map() const
 {
-    return mS2Map.map();
+    return s2Map;
 }
 
 /// \brief Constant getter for S2 widget hashmap.
 const config::widgetMap &ConfigStorage::getWidgetMap() const
 {
-    return mWidgetMap;
+    return widgetMap;
 }
 
 /// \brief Constant getter for S2 tabs map.
@@ -50,23 +50,23 @@ void ConfigStorage::clearModuleSettings()
 }
 
 /// \brief Slot for saving S2 config record.
-void ConfigStorage::typeDataReceive(const quint16 &id, const uint64_t &typeId)
+void ConfigStorage::typeDataReceive(const quint16 id, const uint64_t typeId)
 {
     if (id == 0)
         qWarning() << "Invalid S2 config id: " << id;
     else if (typeId != 0)
-        mS2Map.insert(id, typeId);
+        s2Map.insert({ id, typeId });
 }
 
 /// \brief Slot for saving S2 widget record.
-void ConfigStorage::widgetDataReceive(const quint16 &id, const config::itemVariant &widget)
+void ConfigStorage::widgetDataReceive(const quint16 id, const config::itemVariant &widget)
 {
     if (id == 0)
         qWarning() << "Invalid S2 widget id: " << id;
     else if (widget.valueless_by_exception())
         qWarning() << "Invalid S2 widget data, widget id: " << id;
     else
-        mWidgetMap.insert({ id, widget });
+        widgetMap.insert({ id, widget });
 }
 
 /// \brief Slot for saving S2 tab record.
