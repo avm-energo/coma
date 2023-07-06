@@ -27,6 +27,10 @@ private:
     QTimer *timeoutTimer;
     QTableView *tableView;
     QProgressBar *progressBar;
+
+    QByteArray response;
+    int expectedResponseSize;
+
     bool timeout;
     bool responseReceived;
     bool portError;

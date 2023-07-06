@@ -42,7 +42,7 @@ QGroupBox *SearchModbusDevicesDialog::createTimeoutGroupBox()
 {
     auto timeoutGroupBox = new QGroupBox("Таймаут", this);
     auto timeoutGroupBoxLayout = new QHBoxLayout;
-    auto timeoutSelect = WDFunc::NewSPB2(timeoutGroupBox, "timeoutSelect", 100, 5000, 0);
+    auto timeoutSelect = WDFunc::NewSPB2(timeoutGroupBox, "timeoutSelect", 500, 5000, 0);
     widgets.timeout = timeoutSelect;
     auto msLabel = WDFunc::NewLBL2(timeoutGroupBox, "мс.");
     timeoutGroupBoxLayout->addWidget(timeoutSelect, Qt::AlignRight);

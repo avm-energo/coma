@@ -9,6 +9,7 @@
 #include <QStandardItemModel>
 #include <QThread>
 #include <QTimer>
+#include <gen/utils/crc16.h>
 
 SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *parent)
     : QDialog(parent)
@@ -16,6 +17,7 @@ SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *pa
     , timeoutTimer(new QTimer(this))
     , tableView(nullptr)
     , progressBar(nullptr)
+    , expectedResponseSize(0)
     , timeout(false)
     , responseReceived(false)
     , portError(false)
@@ -74,15 +76,19 @@ void SearchProccessDialog::receiveResponse(QSerialPort *port)
     if (port->isOpen())
     {
         // TODO: Можно анализировать ответ от устройства
-        QByteArray received;
-        while (port->bytesAvailable())
+        while (port->bytesAvailable() && (!timeout))
         {
-            received += port->readAll(); // read data
-            QThread::msleep(2);
+            response.append(port->readAll());
+            QCoreApplication::processEvents();
         }
         // For debug
-        // qWarning() << received.toHex() << " ; byte  count: " << received.size();
-        responseReceived = true;
+        // qWarning() << response.toHex() << " ; byte  count: " << response.size();
+
+        if (response.size() == expectedResponseSize)
+        {
+            timeoutTimer->stop();
+            responseReceived = true;
+        }
     }
     else
         portError = true;
@@ -90,10 +96,13 @@ void SearchProccessDialog::receiveResponse(QSerialPort *port)
 
 QByteArray SearchProccessDialog::createRequest(int address)
 {
-    constexpr char body[] = { 0x04, 0x00, 0x01, 0x00, 0x1e, 0x21, static_cast<char>(0xc2) };
+    constexpr char body[] = { 0x04, 0x00, 0x01, 0x00, 0x1e };
     const auto oneByteAddr = static_cast<char>(address);
     auto request = QByteArray::fromRawData(&body[0], sizeof(body));
     request = request.prepend(oneByteAddr);
+    utils::CRC16 crc(request);
+    crc.appendTo(request);
+    expectedResponseSize = (request.at(5) * 2) + 4;
     return request;
 }
 
@@ -129,6 +138,7 @@ void SearchProccessDialog::createModelItem(quint32 row, int addr, int baud, //
 
 void SearchProccessDialog::sendRequest(QSerialPort *port, int addr)
 {
+    response.clear();
     if (port->isOpen())
     {
         auto request = createRequest(addr);
@@ -192,7 +202,7 @@ void SearchProccessDialog::search()
     auto port = new QSerialPort(params.port, this);
     QObject::connect(port, &QSerialPort::errorOccurred, this, &SearchProccessDialog::errorHandler);
     QObject::connect(port, &QIODevice::readyRead, this, [this, port] { receiveResponse(port); });
-    port->setFlowControl(QSerialPort::NoFlowControl);
+    port->setFlowControl(QSerialPort::FlowControl::SoftwareControl);
     port->setDataBits(QSerialPort::Data8);
     port->setReadBufferSize(bufferSize);
 
