@@ -5,22 +5,6 @@
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
-//#include <QCheckBox>
-//#include <QComboBox>
-//#include <QCoreApplication>
-//#include <QDoubleSpinBox>
-//#include <QFileDialog>
-//#include <QGridLayout>
-//#include <QGroupBox>
-//#include <QLabel>
-//#include <QLineEdit>
-//#include <QMessageBox>
-//#include <QPushButton>
-//#include <QSpinBox>
-//#include <QStringListModel>
-//#include <QTabBar>
-//#include <QTabWidget>
-//#include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/files.h>

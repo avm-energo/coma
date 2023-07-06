@@ -2,7 +2,6 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../module/board.h"
-#include "../s2/crc32.h"
 #include "../s2/s2.h"
 #include "../widgets/epopup.h"
 #include "../widgets/etableview.h"
@@ -17,6 +16,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
+#include <gen/utils/crc32.h>
 #include <map>
 
 namespace crypto

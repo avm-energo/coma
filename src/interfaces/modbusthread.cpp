@@ -1,6 +1,5 @@
 #include "modbusthread.h"
 
-#include "../s2/crc16.h"
 #include "baseinterface.h"
 
 #include <QCoreApplication>
@@ -13,6 +12,7 @@
 #include <gen/helper.h>
 #include <gen/pch.h>
 #include <gen/stdfunc.h>
+#include <gen/utils/crc16.h>
 
 constexpr auto RECONNECTTIME = 10000;
 
@@ -296,7 +296,6 @@ void ModbusThread::processReadBytes(QByteArray ba)
 
         quint16 receivedCRC = (quint8(m_readData[rdsize - 2]) << 8) | quint8(m_readData[rdsize - 1]);
         m_readData.chop(2);
-        // quint16 calculatedCRC = calcCRC(m_readData);
         utils::CRC16 calculatedCRC(m_readData);
         if (calculatedCRC != receivedCRC)
         {
@@ -316,9 +315,6 @@ void ModbusThread::setDelay(quint8 newDelay)
 
 void ModbusThread::calcCRCAndSend(QByteArray &ba)
 {
-    // quint16 crc = calcCRC(ba);
-    // ba.append(static_cast<char>(crc >> 8));
-    // ba.append(static_cast<char>(crc));
     utils::CRC16 crc(ba);
     crc.appendTo(ba);
     send(ba);
@@ -456,25 +452,6 @@ bool ModbusThread::processReadFile()
     return true;
 }
 
-// quint16 ModbusThread::calcCRC(QByteArray &ba) const
-//{
-//    quint8 CRChi = 0xFF;
-//    quint8 CRClo = 0xFF;
-//    quint8 Ind;
-//    quint16 crc;
-//    int count = 0;
-
-//    while (count < ba.size())
-//    {
-//        Ind = CRChi ^ ba.at(count);
-//        count++;
-//        CRChi = CRClo ^ TabCRChi[Ind];
-//        CRClo = TabCRClo[Ind];
-//    }
-//    crc = ((CRChi << 8) | CRClo);
-//    return crc;
-//}
-
 void ModbusThread::readRegisters(MBS::CommandStruct &cms)
 {
     m_commandSent = cms;
@@ -555,9 +532,6 @@ QByteArray ModbusThread::createADU(const QByteArray &pdu) const
     QByteArray ba;
     ba.append(m_deviceAddress);
     ba.append(pdu);
-    // quint16 crc = calcCRC(ba);
-    // ba.append(static_cast<char>(crc >> 8));
-    // ba.append(static_cast<char>(crc));
     utils::CRC16 crc(ba);
     crc.appendTo(ba);
     return ba;
