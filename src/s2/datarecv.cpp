@@ -4,7 +4,7 @@
 
 #include <type_traits>
 
-namespace DataTypes
+namespace S2DataTypes
 {
 DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id(record.header.id)
 {
@@ -185,24 +185,23 @@ DataRecV::DataRecV(quint16 _id) : DataRecV(_id, QString::number(0))
 {
 }
 
-bool operator==(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
+bool operator==(const DataRecV &lhs, const DataRecV &rhs)
 {
     using namespace S2DataTypes;
     return (lhs.id == rhs.id) && (lhs.data == rhs.data);
 }
 
-bool operator!=(const DataTypes::DataRecV &lhs, const DataTypes::DataRecV &rhs)
+bool operator!=(const DataRecV &lhs, const DataRecV &rhs)
 {
     using namespace S2DataTypes;
     return !(lhs == rhs);
 }
 
-S2DataTypes::DataRec DataRecV::serialize() const
+DataRec DataRecV::serialize() const
 {
     return std::visit(
         [=](auto &arg) -> S2DataTypes::DataRec {
             using internalType = std::remove_reference_t<decltype(arg)>;
-            // typedef std::remove_reference_t<decltype(arg)> internalType;
             S2DataTypes::DataRec record { { id, sizeof(internalType) }, (void *)(&arg) };
             return record;
         },

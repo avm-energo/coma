@@ -8,11 +8,11 @@ namespace S2DataTypes
 struct DataRec;
 }
 
-namespace DataTypes
+namespace S2DataTypes
 {
 
 /*! Приложение 3. Номера файлов */
-enum FilesEnum : quint16
+enum class FilesEnum : quint16
 {
     Config = 1,        ///< Конфигурация
     Firmware = 3,      ///< Встроенное ПО (Firmware)
@@ -37,14 +37,14 @@ struct FileStruct
 
     friend QDataStream &operator<<(QDataStream &stream, const FileStruct &str);
     friend QDataStream &operator>>(QDataStream &stream, FileStruct &str);
-    friend QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st);
+    friend QDebug operator<<(QDebug debug, const FileStruct &st);
 };
 
 QDataStream &operator<<(QDataStream &stream, const FileStruct &str);
 QDataStream &operator>>(QDataStream &stream, FileStruct &str);
-QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st);
+QDebug operator<<(QDebug debug, const FileStruct &st);
 
 }
 
-Q_DECLARE_METATYPE(DataTypes::FileStruct)
-Q_DECLARE_METATYPE(DataTypes::FilesEnum)
+Q_DECLARE_METATYPE(S2DataTypes::FilesEnum)
+Q_DECLARE_METATYPE(S2DataTypes::FileStruct)

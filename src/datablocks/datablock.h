@@ -8,6 +8,7 @@
 #include <QWidget>
 #include <gen/datatypes.h>
 #include <gen/error.h>
+#include <variant>
 
 class DataBlock : public QObject
 {

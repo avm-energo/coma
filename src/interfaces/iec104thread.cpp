@@ -251,14 +251,14 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
     }
 }
 
-bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format)
+bool IEC104Thread::handleFile(QByteArray &ba, S2DataTypes::FilesEnum addr, DataTypes::FileFormat format)
 {
     using DataTypes::FileFormat;
     switch (format)
     {
     case FileFormat::DefaultS2:
     {
-        QList<DataTypes::DataRecV> outlistV;
+        QList<S2DataTypes::DataRecV> outlistV;
         if (!S2::RestoreData(ba, outlistV))
             return false;
         DataManager::GetInstance().addSignalToOutList(outlistV);
@@ -270,7 +270,7 @@ bool IEC104Thread::handleFile(QByteArray &ba, DataTypes::FilesEnum addr, DataTyp
         if (!S2::RestoreData(ba, outlist))
             return false;
         Q_ASSERT(outlist.size() == 1 && "Only one file supported");
-        DataTypes::FileStruct df { addr, outlist.first().data };
+        S2DataTypes::FileStruct df { addr, outlist.first().data };
         DataManager::GetInstance().addSignalToOutList(df);
         break;
     }
@@ -447,7 +447,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     m_sendTestTimer->start();
                     m_isFileSending = false;
                     m_log->info("FileSending clear");
-                    auto filetype = static_cast<DataTypes::FilesEnum>(ba.at(9));
+                    auto filetype = S2DataTypes::FilesEnum(ba.at(9));
                     if (!handleFile(m_readData, filetype, m_fileIsConfigFile))
                         m_log->error("Error while income file S2 parsing");
                     m_readPos = 0;

@@ -37,7 +37,7 @@ private:
     OscManager manager;
     std::unique_ptr<TrendViewModel> oscModel;
     QMap<int, S2DataTypes::OscInfo> oscMap;
-    std::vector<DataTypes::FileStruct> fileBuffer;
+    std::vector<S2DataTypes::FileStruct> fileBuffer;
     UniquePointer<ETableModel> tableModel;
     UniquePointer<DataTypesProxy> proxyOI, proxyFS;
     int reqOscNum;

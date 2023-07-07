@@ -3,8 +3,7 @@
 
 #include "s2datatypes.h"
 
-//#include <QVariant>
-#include <gen/datatypes.h>
+//#include <gen/datatypes.h>
 
 template <typename T, std::size_t N1, std::size_t N2>
 auto inline operator<<(std::array<std::array<T, N2>, N1> &array, const QStringList &list) -> decltype(array)
@@ -32,7 +31,7 @@ template <typename T, std::size_t N> std::array<T, N> inline operator<<(std::arr
     return (array << list);
 }
 
-namespace DataTypes
+namespace S2DataTypes
 {
 
 class DataRecV
@@ -53,7 +52,7 @@ public:
     friend bool operator!=(const DataRecV &lhs, const DataRecV &rhs);
 
     void printer() const;
-    S2DataTypes::DataRec serialize() const;
+    DataRec serialize() const;
     quint16 getId() const;
     valueType getData() const;
     void setData(const valueType &value);
@@ -117,6 +116,6 @@ struct RecordPair
 
 }
 
-Q_DECLARE_METATYPE(DataTypes::DataRecV)
+Q_DECLARE_METATYPE(S2DataTypes::DataRecV)
 
 #endif // DATARECV_H

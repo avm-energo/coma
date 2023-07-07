@@ -204,7 +204,7 @@ bool OscManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &o
         return false;
     }
 
-    auto header = loadCommon({ DataTypes::FilesEnum(foundOscHeader->ID), foundOscHeader->data });
+    auto header = loadCommon({ S2DataTypes::FilesEnum(foundOscHeader->ID), foundOscHeader->data });
     output.push_back(header);
     auto foundOsc = std::find_if(input.cbegin(), input.cend(), isOsc);
 
@@ -213,7 +213,7 @@ bool OscManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &o
         qWarning() << Error::DescError << "No osc";
         return false;
     }
-    auto model = load(header, { DataTypes::FilesEnum(foundOsc->ID), foundOsc->data });
+    auto model = load(header, { S2DataTypes::FilesEnum(foundOsc->ID), foundOsc->data });
 
     if (!model)
     {

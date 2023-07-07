@@ -310,7 +310,7 @@ bool WidgetFactory::fillBack(quint16 key, const QWidget *parent)
 
 template <>
 QList<QStandardItem *> WidgetFactory::createItem(
-    quint16 key, const DataTypes::BYTE_8t &value, [[maybe_unused]] const QWidget *parent)
+    quint16 key, const S2DataTypes::BYTE_8t &value, [[maybe_unused]] const QWidget *parent)
 {
     QList<QStandardItem *> items {};
     auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
@@ -529,7 +529,7 @@ bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unn
             break;
         }
 
-        DataTypes::BYTE_8t masterBuffer = *reinterpret_cast<DataTypes::BYTE_8t *>(&master);
+        S2DataTypes::BYTE_8t masterBuffer = *reinterpret_cast<S2DataTypes::BYTE_8t *>(&master);
         configV->setRecordValue({ key, masterBuffer });
     }
     return true;

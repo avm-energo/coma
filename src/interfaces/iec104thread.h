@@ -130,7 +130,7 @@ private:
     void Com51WriteTime(quint32 time);
     //    void convert(IEC104Thread::SponSignals *signal);
     void setGeneralResponse(DataTypes::GeneralResponseTypes type, quint64 data = 0);
-    bool handleFile(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format);
+    bool handleFile(QByteArray &ba, S2DataTypes::FilesEnum addr, DataTypes::FileFormat format);
 private slots:
     void SendTestAct();
 

@@ -24,7 +24,7 @@ OscDialog::OscDialog(QWidget *parent)
     , proxyFS(new DataTypesProxy(&DataManager::GetInstance()))
 {
     proxyOI->RegisterType<S2DataTypes::OscInfo>();
-    proxyFS->RegisterType<DataTypes::FileStruct>();
+    proxyFS->RegisterType<S2DataTypes::FileStruct>();
     connect(proxyOI.get(), &DataTypesProxy::DataStorable, this, &OscDialog::fillOscInfo);
     connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &OscDialog::fillOsc);
     setupUI();
@@ -130,7 +130,7 @@ bool OscDialog::loadIfExist(quint32 size)
             S2::RestoreData(ba, outlist);
             for (auto &&s2file : outlist)
             {
-                DataTypes::FileStruct resp { DataTypes::FilesEnum(s2file.ID), s2file.data };
+                S2DataTypes::FileStruct resp { S2DataTypes::FilesEnum(s2file.ID), s2file.data };
                 auto mngr = &DataManager::GetInstance();
                 mngr->addSignalToOutList(resp);
             }
@@ -169,9 +169,9 @@ void OscDialog::fillOsc(const QVariant &msg)
     if (!updatesEnabled())
         return;
 
-    if (msg.canConvert<DataTypes::FileStruct>())
+    if (msg.canConvert<S2DataTypes::FileStruct>())
     {
-        const auto file = msg.value<DataTypes::FileStruct>();
+        const auto file = msg.value<S2DataTypes::FileStruct>();
         switch (file.ID)
         {
         case MT_HEAD_ID:
@@ -187,9 +187,7 @@ void OscDialog::fillOsc(const QVariant &msg)
         }
         default:
         {
-
             oscModel = manager.load(file);
-
             if (!oscModel)
             {
                 qWarning() << Error::ReadError;

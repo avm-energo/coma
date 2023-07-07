@@ -175,7 +175,7 @@ public:
     void reqBSIExt();
     void reqFile(quint32 id, FileFormat format = FileFormat::Binary, quint32 expectedSize = 0);
     void writeFile(quint32 id, const QByteArray &ba);
-    void writeS2File(DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file);
+    void writeS2File(S2DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file);
     void reqTime();
     void writeTime(quint32 time);
     void writeCommand(Commands cmd, QVariant value = 0);
@@ -191,13 +191,13 @@ public:
 
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
-    Error::Msg writeConfFileSync(const QList<DataTypes::DataRecV> &config);
-    Error::Msg pushAndWriteConfFileSync(ConfigV *config, const QList<DataTypes::DataRecV> recordList);
+    Error::Msg writeConfFileSync(const QList<S2DataTypes::DataRecV> &config);
+    Error::Msg pushAndWriteConfFileSync(ConfigV *config, const QList<S2DataTypes::DataRecV> recordList);
     Error::Msg popAndWriteConfFileSync(ConfigV *config);
-    Error::Msg writeFileSync(int filenum, QByteArray &ba);
-    Error::Msg writeS2FileSync(DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file);
-    Error::Msg readS2FileSync(quint32 filenum);
-    Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
+    Error::Msg writeFileSync(S2DataTypes::FilesEnum filenum, QByteArray &ba);
+    Error::Msg writeS2FileSync(S2DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file);
+    Error::Msg readS2FileSync(S2DataTypes::FilesEnum filenum);
+    Error::Msg readFileSync(S2DataTypes::FilesEnum filenum, QByteArray &ba);
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
 
 signals:

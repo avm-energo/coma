@@ -36,8 +36,8 @@ void BaseInterface::ProxyInit()
 
     proxyBS->RegisterType<DataTypes::BlockStruct>();
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
-    proxyFS->RegisterType<DataTypes::FileStruct>();
-    proxyDRL->RegisterType<QList<DataTypes::DataRecV>>();
+    proxyFS->RegisterType<S2DataTypes::FileStruct>();
+    proxyDRL->RegisterType<QList<S2DataTypes::DataRecV>>();
     proxyBStr->RegisterType<DataTypes::BitStringStruct>();
 
 #ifdef __linux__
@@ -154,11 +154,11 @@ void BaseInterface::writeFile(quint32 id, const QByteArray &ba)
     setToQueue(bi);
 }
 
-void BaseInterface::writeS2File(DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file)
+void BaseInterface::writeS2File(S2DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file)
 {
     QByteArray ba;
-    S2::StoreDataMem(ba, file, number);
-    writeFile(number, ba);
+    S2::StoreDataMem(ba, file, int(number));
+    writeFile(quint32(number), ba);
 }
 
 void BaseInterface::reqTime()
@@ -210,7 +210,7 @@ void BaseInterface::responseReceived(const QVariant &msg)
 
 void BaseInterface::fileReceived(const QVariant &msg)
 {
-    auto file = msg.value<DataTypes::FileStruct>();
+    auto file = msg.value<S2DataTypes::FileStruct>();
     disconnect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::fileReceived);
     m_byteArrayResult = file.data;
     m_busy = false;
@@ -329,7 +329,7 @@ Error::Msg BaseInterface::writeBlockSync(
     }
 }
 
-Error::Msg BaseInterface::writeConfFileSync(const QList<DataTypes::DataRecV> &config)
+Error::Msg BaseInterface::writeConfFileSync(const QList<S2DataTypes::DataRecV> &config)
 {
     S2DataTypes::S2ConfigType buffer;
 
@@ -338,10 +338,10 @@ Error::Msg BaseInterface::writeConfFileSync(const QList<DataTypes::DataRecV> &co
     S2::tester(buffer);
 
     buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
-    return writeS2FileSync(DataTypes::Config, buffer);
+    return writeS2FileSync(S2DataTypes::FilesEnum::Config, buffer);
 }
 
-Error::Msg BaseInterface::pushAndWriteConfFileSync(ConfigV *config, const QList<DataTypes::DataRecV> recordList)
+Error::Msg BaseInterface::pushAndWriteConfFileSync(ConfigV *config, const QList<S2DataTypes::DataRecV> recordList)
 {
     config->pushConfig();
     for (auto record : recordList)
@@ -355,12 +355,12 @@ Error::Msg BaseInterface::popAndWriteConfFileSync(ConfigV *config)
     return writeConfFileSync(config->getConfig());
 }
 
-Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)
+Error::Msg BaseInterface::writeFileSync(S2DataTypes::FilesEnum filenum, QByteArray &ba)
 {
     m_busy = true;
     m_timeout = false;
     connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::responseReceived);
-    writeFile(filenum, ba);
+    writeFile(quint32(filenum), ba);
     m_timeoutTimer->start();
     while (m_busy)
     {
@@ -372,19 +372,19 @@ Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
-Error::Msg BaseInterface::writeS2FileSync(DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file)
+Error::Msg BaseInterface::writeS2FileSync(S2DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file)
 {
     QByteArray ba;
-    S2::StoreDataMem(ba, file, number);
+    S2::StoreDataMem(ba, file, int(number));
 
     // с 4 байта начинается FileHeader.size
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
     length += sizeof(S2DataTypes::S2FileHeader);
     Q_ASSERT(length == quint32(ba.size()));
-    return writeFileSync(DataTypes::Config, ba);
+    return writeFileSync(S2DataTypes::FilesEnum::Config, ba);
 }
 
-Error::Msg BaseInterface::readS2FileSync(quint32 filenum)
+Error::Msg BaseInterface::readS2FileSync(S2DataTypes::FilesEnum filenum)
 {
     m_busy = true;
     m_timeout = false;
@@ -393,7 +393,7 @@ Error::Msg BaseInterface::readS2FileSync(quint32 filenum)
         QObject::disconnect(*connection);
         m_busy = false;
     });
-    reqFile(filenum, FileFormat::DefaultS2);
+    reqFile(quint32(filenum), FileFormat::DefaultS2);
     m_timeoutTimer->start();
     while (m_busy)
     {
@@ -406,12 +406,12 @@ Error::Msg BaseInterface::readS2FileSync(quint32 filenum)
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
-Error::Msg BaseInterface::readFileSync(quint32 filenum, QByteArray &ba)
+Error::Msg BaseInterface::readFileSync(S2DataTypes::FilesEnum filenum, QByteArray &ba)
 {
     m_busy = true;
     m_timeout = false;
     connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::fileReceived);
-    reqFile(filenum, FileFormat::Binary);
+    reqFile(quint32(filenum), FileFormat::Binary);
     m_timeoutTimer->start();
     while (m_busy)
     {

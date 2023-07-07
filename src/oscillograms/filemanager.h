@@ -26,7 +26,7 @@ template <typename T> class FileManager
 {
 protected:
     using OscHeader = S2DataTypes::OscHeader;
-    using FileStruct = DataTypes::FileStruct;
+    using FileStruct = S2DataTypes::FileStruct;
     using Record = T;
 
 public:

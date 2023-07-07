@@ -11,7 +11,7 @@
 class ConfigDialog : public UDialog
 {
 public:
-    explicit ConfigDialog(ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, bool prereadConf = true,
+    explicit ConfigDialog(ConfigV *config, const QList<S2DataTypes::RecordPair> &defaultConfig, bool prereadConf = true,
         QWidget *parent = nullptr);
     void prereadConfig();
     void fillBack() const;
@@ -30,14 +30,14 @@ private:
     void loadConfigFromFile();
     void readConfig();
     void writeConfig();
-    void checkForDiff(const QList<DataTypes::DataRecV> &list);
+    void checkForDiff(const QList<S2DataTypes::DataRecV> &list);
     void configReceived(const QVariant &msg);
 
     void showConfigErrState();
 
     bool m_prereadConf;
     QStringList CheckConfErrors;
-    const QList<DataTypes::RecordPair> m_defaultValues;
+    const QList<S2DataTypes::RecordPair> m_defaultValues;
     ConfigV *configV;
     UniquePointer<DataTypesProxy> proxyDRL;
     ErrConfState *errConfState;

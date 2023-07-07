@@ -43,7 +43,7 @@ bool SwjManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &o
         return false;
     }
 
-    auto model = load({ DataTypes::FilesEnum(foundSwj->ID), foundSwj->data });
+    auto model = load({ S2DataTypes::FilesEnum(foundSwj->ID), foundSwj->data });
 
     output.push_back(std::move(model));
 

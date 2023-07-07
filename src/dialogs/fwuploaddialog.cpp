@@ -80,7 +80,7 @@ void FWUploadDialog::LoadFW()
     }
 
     QByteArray firmware;
-    S2::StoreDataMem(firmware, s2array, DataTypes::Firmware);
+    S2::StoreDataMem(firmware, s2array, int(S2DataTypes::FilesEnum::Firmware));
     if (firmware.isEmpty())
     {
         qCritical() << Error::SizeError;
@@ -88,7 +88,7 @@ void FWUploadDialog::LoadFW()
         return;
     }
     setSuccessMsg("ПО записано успешно");
-    BaseInterface::iface()->writeFile(DataTypes::Firmware, firmware);
+    BaseInterface::iface()->writeFile(quint32(S2DataTypes::FilesEnum::Firmware), firmware);
 
     //    auto firmwareS2 = S2::ParseHexToS2(ba);
     //    if (firmwareS2.isEmpty())

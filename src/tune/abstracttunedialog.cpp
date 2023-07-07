@@ -465,7 +465,7 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
     QByteArray ba;
-    if (BaseInterface::iface()->readFileSync(DataTypes::Config, ba) != Error::Msg::NoError)
+    if (BaseInterface::iface()->readFileSync(S2DataTypes::FilesEnum::Config, ba) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     return Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba);
 }
@@ -475,7 +475,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
     QByteArray ba;
     if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba)
         != Error::Msg::NoError)
-        return BaseInterface::iface()->writeFileSync(DataTypes::Config, ba);
+        return BaseInterface::iface()->writeFileSync(S2DataTypes::FilesEnum::Config, ba);
     return Error::Msg::GeneralError;
 }
 

@@ -73,9 +73,9 @@ struct MeasJournal
     bool visibility; ///< атрибут "visibility"
 };
 
-using SignalMap = QHash<quint32, Signal>;        ///< Хранит узлы <signal> секции <signals>.
-using TabsMap = QHash<quint32, QString>;         ///< Хранит узлы <tab> секции <section-tabs>.
-using ConfigList = QList<DataTypes::RecordPair>; ///< Хранит узлы <record> секции <config>.
+using SignalMap = QHash<quint32, Signal>;          ///< Хранит узлы <signal> секции <signals>.
+using TabsMap = QHash<quint32, QString>;           ///< Хранит узлы <tab> секции <section-tabs>.
+using ConfigList = QList<S2DataTypes::RecordPair>; ///< Хранит узлы <record> секции <config>.
 using ConfigMap = QHash<quint32, ConfigList>; ///< Хранение конфигурации для базы и мезонина в разных списках.
 using HighlightMap = QMultiMap<quint32, quint32>; ///< Для подсветки элементов.
 using SectionList = QList<Section>;               ///< Хранит узлы <section> секции <sections>.
@@ -96,7 +96,7 @@ public:
     ModuleSettings();
     void clear();
     void startNewConfig();
-    void appendToCurrentConfig(const DataTypes::RecordPair &pair);
+    void appendToCurrentConfig(const S2DataTypes::RecordPair &pair);
     void appendDetailCount(const quint16 id, const quint16 count);
     void appendSignal(const quint32 id, const ModuleTypes::Signal sig);
     void appendTab(const quint32 id, const QString &tabName);

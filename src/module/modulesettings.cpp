@@ -28,7 +28,7 @@ void ModuleSettings::startNewConfig()
 }
 
 /// \brief Добавление конфига в текущий список конфигурации.
-void ModuleSettings::appendToCurrentConfig(const DataTypes::RecordPair &pair)
+void ModuleSettings::appendToCurrentConfig(const S2DataTypes::RecordPair &pair)
 {
     if (mConfigs.contains(curConfigIndex))
         mConfigs[curConfigIndex].append(pair);

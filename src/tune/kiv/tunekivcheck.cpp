@@ -84,9 +84,9 @@ Error::Msg TuneKIVCheck::showScheme()
 
 Error::Msg TuneKIVCheck::check()
 {
-    QList<DataTypes::DataRecV> recordList;
+    QList<S2DataTypes::DataRecV> recordList;
 
-    recordList = { { S2::GetIdByName("C_Pasp_ID"), DataTypes::FLOAT_3t({ 9000, 9000, 9000 }) },
+    recordList = { { S2::GetIdByName("C_Pasp_ID"), S2DataTypes::FLOAT_3t({ 9000, 9000, 9000 }) },
         { S2::GetIdByName("Unom1"), float(220) } };
 
     if (BaseInterface::iface()->pushAndWriteConfFileSync(configV, recordList) != Error::NoError)

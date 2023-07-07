@@ -240,7 +240,7 @@ void ModbusThread::parseResponse()
         {
             quint32 addr = m_currentCommand.arg1.toUInt();
             quint32 count = m_currentCommand.arg2.toUInt();
-            FilePostpone(m_fileData, DataTypes::FilesEnum(addr), FileFormat(count));
+            FilePostpone(m_fileData, S2DataTypes::FilesEnum(addr), FileFormat(count));
         }
         break;
     }

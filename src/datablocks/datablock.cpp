@@ -266,7 +266,7 @@ void DataBlock::readBlockFromModule()
     }
     case DataTypes::DataBlockTypes::BciBlock:
     {
-        const auto err = BaseInterface::iface()->readS2FileSync(DataTypes::Config);
+        const auto err = BaseInterface::iface()->readS2FileSync(S2DataTypes::FilesEnum::Config);
         if (err != Error::Msg::NoError)
             qCritical("Не удалось прочитать блок");
     }

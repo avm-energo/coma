@@ -65,7 +65,7 @@ void Tune85Temp60::setTuneFunctions()
 
 Error::Msg Tune85Temp60::setNewConfAndTune()
 {
-    configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"), DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
+    configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"), S2DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
     configV->setRecordValue({ S2::GetIdByName("Unom1"), float(220) });
 
     if (BaseInterface::iface()->writeConfFileSync(configV->getConfig()) != Error::Msg::NoError)

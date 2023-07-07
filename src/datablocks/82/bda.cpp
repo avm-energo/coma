@@ -17,7 +17,7 @@ void Bda82::setupValuesDesc()
     addNewGroup("Значения сигналов в единицах АЦП", "NADC", 6, 0, &m_blockData->IUeff_ADC[0], 0);
 }
 
-Error::Msg Bda82::checkValues(Modules::MezzanineBoard mtypeM, DataTypes::FLOAT_6t i2Noms)
+Error::Msg Bda82::checkValues(Modules::MezzanineBoard mtypeM, S2DataTypes::FLOAT_6t i2Noms)
 {
     // we suggest that each three of currents are equal inside each other
     assert(i2Noms.size() > 3);

@@ -67,7 +67,7 @@ private:
 // Template specialisation
 
 template <>
-QList<QStandardItem *> WidgetFactory::createItem(quint16 key, const DataTypes::BYTE_8t &value, const QWidget *parent);
+QList<QStandardItem *> WidgetFactory::createItem(quint16 key, const S2DataTypes::BYTE_8t &value, const QWidget *parent);
 
 // Template definition
 

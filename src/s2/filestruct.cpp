@@ -4,10 +4,10 @@
 
 #include <QDebug>
 
-namespace DataTypes
+namespace S2DataTypes
 {
 
-FileStruct::FileStruct(const FilesEnum num, const QByteArray &file) : ID(num), data(file)
+FileStruct::FileStruct(const FilesEnum num, const QByteArray &file) : ID(quint16(num)), data(file)
 {
 }
 
@@ -44,7 +44,7 @@ QDataStream &operator>>(QDataStream &stream, FileStruct &str)
     return stream;
 }
 
-QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st)
+QDebug operator<<(QDebug debug, const FileStruct &st)
 {
     debug.nospace() << QString::number(st.ID) << ":"
                     << "File size: " << QString::number(st.data.size());

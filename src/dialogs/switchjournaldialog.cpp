@@ -26,7 +26,7 @@ SwitchJournalDialog::SwitchJournalDialog(QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent), proxySWJ(new DataTypesProxy), proxyFS(new DataTypesProxy)
 {
     proxySWJ->RegisterType<S2DataTypes::SwitchJourInfo>();
-    proxyFS->RegisterType<DataTypes::FileStruct>();
+    proxyFS->RegisterType<S2DataTypes::FileStruct>();
     connect(proxySWJ.get(), &DataTypesProxy::DataStorable, this, &SwitchJournalDialog::fillSwJInfo);
     connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &SwitchJournalDialog::fillJour);
     setupUI();
@@ -70,7 +70,7 @@ void SwitchJournalDialog::fillJour(const QVariant &msg)
     if (!updatesEnabled())
         return;
 
-    auto fs = msg.value<DataTypes::FileStruct>();
+    auto fs = msg.value<S2DataTypes::FileStruct>();
     fileBuffer.push_back(fs);
 
     switch (fs.ID)
@@ -230,7 +230,7 @@ bool SwitchJournalDialog::loadIfExist(quint32 size)
             S2::RestoreData(ba, outlist);
             for (auto &&swjFileIn : outlist)
             {
-                DataTypes::FileStruct resp { DataTypes::FilesEnum(swjFileIn.ID), swjFileIn.data };
+                S2DataTypes::FileStruct resp { swjFileIn.ID, swjFileIn.data };
                 auto mngr = &DataManager::GetInstance();
                 mngr->addSignalToOutList(resp);
             }

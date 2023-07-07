@@ -42,19 +42,19 @@ void S2::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::DataRec> &
     mem.prepend(ba);
 }
 
-void S2::StoreDataMem(QByteArray &mem, const QList<DataTypes::DataRecV> &dr, int fname)
+void S2::StoreDataMem(QByteArray &mem, const QList<S2DataTypes::DataRecV> &dr, int fname)
 {
     std::vector<S2DataTypes::DataRec> recVec;
     std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
-        [](const DataTypes::DataRecV &record) { return record.serialize(); });
+        [](const S2DataTypes::DataRecV &record) { return record.serialize(); });
     StoreDataMem(mem, recVec, fname);
 }
 
-void S2::StoreDataMem(QByteArray &mem, const std::vector<DataTypes::FileStruct> &dr, int fname)
+void S2::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::FileStruct> &dr, int fname)
 {
     std::vector<S2DataTypes::DataRec> recVec;
     std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
-        [](const DataTypes::FileStruct &record) { return record.serialize(); });
+        [](const S2DataTypes::FileStruct &record) { return record.serialize(); });
     StoreDataMem(mem, recVec, fname);
 }
 
@@ -107,7 +107,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
     return true;
 }
 
-bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
+bool S2::RestoreData(QByteArray bain, QList<S2DataTypes::DataRecV> &outlist)
 {
     Q_ASSERT(bain.size() >= sizeof(S2DataTypes::S2FileHeader));
     qInfo() << "S2 File size:" << bain.size();
@@ -145,7 +145,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::DataRecV> &outlist)
             auto search = s2map.find(DR.header.id);
             if (search != s2map.end())
             {
-                DataTypes::DataRecV DRV(DR, bain.left(size));
+                S2DataTypes::DataRecV DRV(DR, bain.left(size));
                 outlist.append(DRV);
             }
             else
@@ -166,13 +166,12 @@ quint16 S2::GetIdByName(QString name)
 void S2::tester(const S2DataTypes::S2ConfigType &buffer)
 {
     // here is test functions
-    std::vector<DataTypes::DataRecV> bufferV;
-    std::transform(buffer.begin(), buffer.end(), std::back_inserter(bufferV),
-        [](const auto &oldRec) -> DataTypes::DataRecV { return DataTypes::DataRecV(oldRec); });
+    using namespace S2DataTypes;
+    std::vector<DataRecV> bufferV;
+    std::transform(
+        buffer.begin(), buffer.end(), std::back_inserter(bufferV), [](const auto &oldRec) { return DataRecV(oldRec); });
     Q_ASSERT(std::equal(buffer.cbegin(), buffer.cend(), bufferV.cbegin(), bufferV.cend(),
-                 [](const S2DataTypes::DataRec &oldRec, const DataTypes::DataRecV &newRec) {
-                     return oldRec == newRec.serialize();
-                 })
+                 [](const DataRec &oldRec, const DataRecV &newRec) { return oldRec == newRec.serialize(); })
         && "Broken DataRecV S2 conf");
     for (auto i = 0; i != bufferV.size() && i != buffer.size(); ++i)
     {
@@ -192,7 +191,7 @@ quint64 S2::GetFileSize(const QByteArray &bain)
     return fh.size + sizeof(S2DataTypes::S2FileHeader);
 }
 
-S2DataTypes::S2BFile S2::emulateS2B(const DataTypes::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM)
+S2DataTypes::S2BFile S2::emulateS2B(const S2DataTypes::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM)
 {
     using namespace S2DataTypes;
     constexpr quint32 tailEnd = 0xEEEE1111;

@@ -54,7 +54,7 @@ const JournalType BaseJournal::getType() const
     return type;
 }
 
-void BaseJournal::fill(const DataTypes::FileStruct &file)
+void BaseJournal::fill(const S2DataTypes::FileStruct &file)
 {
     if (!dataModel->isEmpty())
         dataModel->clearModel();

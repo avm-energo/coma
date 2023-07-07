@@ -258,7 +258,7 @@ Error::Msg TuneKIVADC::setADCCoef(const int coef)
 {
     const QMap<int, float> adcCoefMap { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
     configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"),
-        DataTypes::FLOAT_3t({ adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) }) });
+        S2DataTypes::FLOAT_3t({ adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) }) });
 
     return BaseInterface::iface()->writeConfFileSync(configV->getConfig());
 }

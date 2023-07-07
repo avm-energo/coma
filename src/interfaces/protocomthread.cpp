@@ -122,12 +122,13 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     // arg1 - file number
     case Commands::C_ReqFile:
     {
-        DataTypes::FilesEnum filetype = cmdStr.arg1.value<DataTypes::FilesEnum>();
+        using namespace S2DataTypes;
+        FilesEnum filetype = cmdStr.arg1.value<FilesEnum>();
         switch (filetype)
         {
-        case DataTypes::JourSys:
-        case DataTypes::JourWork:
-        case DataTypes::JourMeas:
+        case FilesEnum::JourSys:
+        case FilesEnum::JourWork:
+        case FilesEnum::JourMeas:
             processFileFromDisk(filetype);
             break;
         default:
@@ -246,6 +247,7 @@ void ProtocomThread::parseResponse()
 {
     using namespace Proto;
     using namespace DataTypes;
+    using namespace S2DataTypes;
     quint32 addr = m_currentCommand.arg1.toUInt();
     quint32 count = m_currentCommand.arg2.toUInt();
     switch (m_responseReceived)
@@ -411,22 +413,22 @@ bool ProtocomThread::isValidIncomingData(const QByteArray &data)
     return false;
 }
 
-void ProtocomThread::processFileFromDisk(DataTypes::FilesEnum fileNum)
+void ProtocomThread::processFileFromDisk(S2DataTypes::FilesEnum fileNum)
 {
     QString fileToFind;
     switch (fileNum)
     {
-    case DataTypes::JourSys:
+    case S2DataTypes::FilesEnum::JourSys:
     {
         fileToFind = "system.dat";
         break;
     }
-    case DataTypes::JourMeas:
+    case S2DataTypes::FilesEnum::JourMeas:
     {
         fileToFind = "measj.dat";
         break;
     }
-    case DataTypes::JourWork:
+    case S2DataTypes::FilesEnum::JourWork:
     {
         fileToFind = "workj.dat";
         break;
@@ -465,7 +467,7 @@ void ProtocomThread::processFileFromDisk(DataTypes::FilesEnum fileNum)
     QByteArray ba = file.readAll();
     if (!boardType.isEmpty())
     {
-        auto s2bFile = S2::emulateS2B({ fileNum, ba }, fileNum, boardType.mTypeB, boardType.mTypeM);
+        auto s2bFile = S2::emulateS2B({ fileNum, ba }, quint16(fileNum), boardType.mTypeB, boardType.mTypeM);
         auto &dataManager = DataManager::GetInstance();
         DataTypes::GeneralResponseStruct genResp {
             DataTypes::GeneralResponseTypes::Ok,      //
