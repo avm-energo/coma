@@ -154,10 +154,10 @@ void BaseInterface::writeFile(quint32 id, const QByteArray &ba)
     setToQueue(bi);
 }
 
-void BaseInterface::writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)
+void BaseInterface::writeS2File(DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file)
 {
     QByteArray ba;
-    S2::StoreDataMem(ba, *file, number);
+    S2::StoreDataMem(ba, file, number);
     writeFile(number, ba);
 }
 
@@ -338,7 +338,7 @@ Error::Msg BaseInterface::writeConfFileSync(const QList<DataTypes::DataRecV> &co
     S2::tester(buffer);
 
     buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
-    return writeS2FileSync(DataTypes::Config, &buffer);
+    return writeS2FileSync(DataTypes::Config, buffer);
 }
 
 Error::Msg BaseInterface::pushAndWriteConfFileSync(ConfigV *config, const QList<DataTypes::DataRecV> recordList)
@@ -372,10 +372,10 @@ Error::Msg BaseInterface::writeFileSync(int filenum, QByteArray &ba)
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
-Error::Msg BaseInterface::writeS2FileSync(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file)
+Error::Msg BaseInterface::writeS2FileSync(DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file)
 {
     QByteArray ba;
-    S2::StoreDataMem(ba, *file, number);
+    S2::StoreDataMem(ba, file, number);
 
     // с 4 байта начинается FileHeader.size
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);

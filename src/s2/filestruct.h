@@ -1,10 +1,12 @@
-#ifndef FILESTRUCT_H
-#define FILESTRUCT_H
-
-#include "datarec.h"
+#pragma once
 
 #include <QDataStream>
 #include <QVariant>
+
+namespace S2DataTypes
+{
+struct DataRec;
+}
 
 namespace DataTypes
 {
@@ -46,5 +48,3 @@ QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st);
 
 Q_DECLARE_METATYPE(DataTypes::FileStruct)
 Q_DECLARE_METATYPE(DataTypes::FilesEnum)
-
-#endif // FILESTRUCT_H

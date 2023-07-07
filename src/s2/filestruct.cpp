@@ -1,5 +1,7 @@
 #include "filestruct.h"
 
+#include "s2datatypes.h"
+
 #include <QDebug>
 
 namespace DataTypes

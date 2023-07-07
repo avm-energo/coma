@@ -1,24 +1,55 @@
-#ifndef S2DATATYPES_H
-#define S2DATATYPES_H
+#pragma once
 
 #include "filestruct.h"
 
 #include <QVariant>
-#include <gen/std_ext.h>
+#include <vector>
+
+//#include <gen/std_ext.h>
 
 namespace S2DataTypes
 {
 constexpr quint32 dummyElement = 0xffffffff;
 
-inline bool is_same(const DataRec &lhs, const DataRec &rhs)
+struct DataRecHeader
+{
+    quint32 id;      // ID
+    quint32 numByte; // количество байт в TypeTheData
+};
+
+struct DataRec
+{
+    DataRecHeader header;
+    void *thedata;
+
+    friend inline bool operator==(const DataRec &lhs, const DataRec &rhs);
+    friend inline bool operator!=(const DataRec &lhs, const DataRec &rhs);
+};
+
+inline bool operator==(const DataRec &lhs, const DataRec &rhs)
 {
     bool is_same_value = false;
     if ((lhs.header.id == rhs.header.id) && (lhs.header.numByte == rhs.header.numByte))
         is_same_value = !memcmp(lhs.thedata, rhs.thedata, lhs.header.numByte);
-
-    Q_ASSERT(is_same_value);
     return is_same_value;
 }
+
+inline bool operator!=(const DataRec &lhs, const DataRec &rhs)
+{
+    return !(lhs == rhs);
+}
+
+using S2ConfigType = std::vector<DataRec>;
+
+// inline bool is_same(const DataRec &lhs, const DataRec &rhs)
+//{
+//    bool is_same_value = false;
+//    if ((lhs.header.id == rhs.header.id) && (lhs.header.numByte == rhs.header.numByte))
+//        is_same_value = !memcmp(lhs.thedata, rhs.thedata, lhs.header.numByte);
+
+//    Q_ASSERT(is_same_value);
+//    return is_same_value;
+//}
 
 #pragma pack(push) /* push current alignment to stack */
 #pragma pack(1)    /* set alignment to 1 byte boundary */
@@ -108,37 +139,11 @@ struct S2BFile
     S2BFileTail tail;
 };
 
-/// Тип группы плат
-struct DataRecT
-{
-    ///< заголовок записи
-    DataRecHeader typeHeader;
-    quint8 typeTheData[4];
-    quint8 versionSoftware[4];
-};
-
-/// Файл ВПО в формате BIN
-struct DataRecF
-{
-    ///< заголовок записи
-    DataRecHeader fileDataHeader;
-    QByteArray data;
-};
-
-struct FileStruct
-{
-    S2FileHeader fileHeader;
-    DataRecT type;
-    DataRecF file;
-    // заголовок пустой записи
-    DataRecHeader void_recHeader;
-};
-
-struct DataRecSwitchJour
-{
-    DataRecHeader header;
-    SwitchJourRecord swjRecord;
-};
+// struct DataRecSwitchJour
+//{
+//    DataRecHeader header;
+//    SwitchJourRecord swjRecord;
+//};
 
 struct OscHeader
 {
@@ -152,5 +157,3 @@ struct OscHeader
 Q_DECLARE_METATYPE(S2DataTypes::S2BFile)
 Q_DECLARE_METATYPE(S2DataTypes::OscInfo)
 Q_DECLARE_METATYPE(S2DataTypes::SwitchJourInfo)
-
-#endif // S2DATATYPES_H

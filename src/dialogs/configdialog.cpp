@@ -59,7 +59,7 @@ void ConfigDialog::writeConfig()
                 [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
             S2::tester(buffer);
             buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
-            BaseInterface::iface()->writeS2File(DataTypes::Config, &buffer);
+            BaseInterface::iface()->writeS2File(DataTypes::Config, buffer);
         }
         else
             qCritical("Ошибка чтения конфигурации");

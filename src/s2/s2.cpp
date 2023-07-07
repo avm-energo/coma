@@ -9,11 +9,7 @@
 
 QMap<QString, quint16> S2::NameIdMap;
 
-S2::S2()
-{
-}
-
-void S2::StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, int fname)
+void S2::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::DataRec> &dr, int fname)
 {
     utils::CRC32 crc;
     S2DataTypes::S2FileHeader header;
@@ -48,7 +44,7 @@ void S2::StoreDataMem(QByteArray &mem, const QVector<S2DataTypes::DataRec> &dr, 
 
 void S2::StoreDataMem(QByteArray &mem, const QList<DataTypes::DataRecV> &dr, int fname)
 {
-    QVector<S2DataTypes::DataRec> recVec;
+    std::vector<S2DataTypes::DataRec> recVec;
     std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
         [](const DataTypes::DataRecV &record) { return record.serialize(); });
     StoreDataMem(mem, recVec, fname);
@@ -56,7 +52,7 @@ void S2::StoreDataMem(QByteArray &mem, const QList<DataTypes::DataRecV> &dr, int
 
 void S2::StoreDataMem(QByteArray &mem, const std::vector<DataTypes::FileStruct> &dr, int fname)
 {
-    QVector<S2DataTypes::DataRec> recVec;
+    std::vector<S2DataTypes::DataRec> recVec;
     std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
         [](const DataTypes::FileStruct &record) { return record.serialize(); });
     StoreDataMem(mem, recVec, fname);
@@ -167,22 +163,22 @@ quint16 S2::GetIdByName(QString name)
     return NameIdMap.value(name, 0);
 }
 
-void S2::tester(S2DataTypes::S2ConfigType &buffer)
+void S2::tester(const S2DataTypes::S2ConfigType &buffer)
 {
     // here is test functions
-    QList<DataTypes::DataRecV> bufferV;
+    std::vector<DataTypes::DataRecV> bufferV;
     std::transform(buffer.begin(), buffer.end(), std::back_inserter(bufferV),
         [](const auto &oldRec) -> DataTypes::DataRecV { return DataTypes::DataRecV(oldRec); });
     Q_ASSERT(std::equal(buffer.cbegin(), buffer.cend(), bufferV.cbegin(), bufferV.cend(),
                  [](const S2DataTypes::DataRec &oldRec, const DataTypes::DataRecV &newRec) {
-                     return S2DataTypes::is_same(oldRec, newRec.serialize());
+                     return oldRec == newRec.serialize();
                  })
         && "Broken DataRecV S2 conf");
     for (auto i = 0; i != bufferV.size() && i != buffer.size(); ++i)
     {
         const auto oldRec = buffer.at(i);
         const auto newRec = bufferV.at(i).serialize();
-        if (!S2DataTypes::is_same(oldRec, newRec))
+        if (oldRec != newRec)
             qDebug() << oldRec.header.id << oldRec.header.numByte;
     }
     // test funcs end

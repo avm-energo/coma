@@ -1,9 +1,9 @@
 #ifndef DATARECV_H
 #define DATARECV_H
 
-#include "datarec.h"
+#include "s2datatypes.h"
 
-#include <QVariant>
+//#include <QVariant>
 #include <gen/datatypes.h>
 
 template <typename T, std::size_t N1, std::size_t N2>
