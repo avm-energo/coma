@@ -3,7 +3,7 @@
 DialogManager::DialogManager(const ModuleSettings &settings, QWidget *parent)
     : UDialog(parent)
     , curDialogIndex(0)
-    , mDlgCreator(new DialogCreator(settings, this))
+    , mDlgCreator(new DialogCreator(settings, Board::GetInstance(), this))
     , mWorkspace(new QStackedWidget(this))
     , mSidebar(new QListWidget(this))
 {

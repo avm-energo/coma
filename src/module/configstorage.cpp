@@ -8,7 +8,7 @@ ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent), mSetting
 }
 
 /// \brief Constant getter for S2 parsing status.
-const bool &ConfigStorage::getS2Status() const
+bool ConfigStorage::getS2Status() const
 {
     return isS2Parsed;
 }

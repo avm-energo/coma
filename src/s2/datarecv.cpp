@@ -17,115 +17,71 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
     switch (value.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
-    {
-        helper<BYTE>(record.header.numByte, rawdata, data);
+        helper<BYTE>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<WORD>().hash():
-    {
-        helper<WORD>(record.header.numByte, rawdata, data);
+        helper<WORD>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<DWORD>().hash():
-    {
-        helper<DWORD>(record.header.numByte, rawdata, data);
+        helper<DWORD>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<INT32>().hash():
-    {
-        helper<INT32>(record.header.numByte, rawdata, data);
+        helper<INT32>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<BYTE_4t>().hash():
-    {
-        helper<BYTE_4t>(record.header.numByte, rawdata, data);
+        helper<BYTE_4t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<WORD_4t>().hash():
-    {
-        helper<WORD_4t>(record.header.numByte, rawdata, data);
+        helper<WORD_4t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_4t>().hash():
-    {
-        helper<DWORD_4t>(record.header.numByte, rawdata, data);
+        helper<DWORD_4t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<BYTE_8t>().hash():
-    {
-        helper<BYTE_8t>(record.header.numByte, rawdata, data);
+        helper<BYTE_8t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<WORD_8t>().hash():
-    {
-        helper<WORD_8t>(record.header.numByte, rawdata, data);
+        helper<WORD_8t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_8t>().hash():
-    {
-        helper<DWORD_8t>(record.header.numByte, rawdata, data);
+        helper<DWORD_8t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<BYTE_16t>().hash():
-    {
-        helper<BYTE_16t>(record.header.numByte, rawdata, data);
+        helper<BYTE_16t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<WORD_16t>().hash():
-    {
-        helper<WORD_16t>(record.header.numByte, rawdata, data);
+        helper<WORD_16t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_16t>().hash():
-    {
-        helper<DWORD_16t>(record.header.numByte, rawdata, data);
+        helper<DWORD_16t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<BYTE_32t>().hash():
-    {
-        helper<BYTE_32t>(record.header.numByte, rawdata, data);
+        helper<BYTE_32t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<WORD_32t>().hash():
-    {
-        helper<WORD_32t>(record.header.numByte, rawdata, data);
+        helper<WORD_32t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<DWORD_32t>().hash():
-    {
-        helper<DWORD_32t>(record.header.numByte, rawdata, data);
+        helper<DWORD_32t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT>().hash():
-    {
-        helper<float>(record.header.numByte, rawdata, data);
+        helper<FLOAT>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_2t>().hash():
-    {
-        helper<FLOAT_2t>(record.header.numByte, rawdata, data);
+        helper<FLOAT_2t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
-    {
-        helper<FLOAT_3t>(record.header.numByte, rawdata, data);
+        helper<FLOAT_3t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_4t>().hash():
-    {
-        helper<FLOAT_4t>(record.header.numByte, rawdata, data);
+        helper<FLOAT_4t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_6t>().hash():
-    {
-        helper<FLOAT_6t>(record.header.numByte, rawdata, data);
+        helper<FLOAT_6t>(record.header.numByte, rawdata);
         break;
-    }
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
-    {
-        helper<FLOAT_8t>(record.header.numByte, rawdata, data);
+        helper<FLOAT_8t>(record.header.numByte, rawdata);
         break;
-    }
     default:
         assert(false && "Unknown type id");
     }
@@ -142,79 +98,79 @@ DataRecV::DataRecV(quint16 _id, const QString &str) : id(_id)
     switch (value.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
-        data = helper<BYTE>(str);
+        helper<BYTE>(str);
         break;
     case ctti::unnamed_type_id<WORD>().hash():
-        data = helper<WORD>(str);
+        helper<WORD>(str);
         break;
     case ctti::unnamed_type_id<DWORD>().hash():
-        data = helper<DWORD>(str);
+        helper<DWORD>(str);
         break;
     case ctti::unnamed_type_id<INT32>().hash():
-        data = helper<INT32>(str);
+        helper<INT32>(str);
         break;
     case ctti::unnamed_type_id<BYTE_4t>().hash():
-        data = helper<BYTE_4t>(str);
+        helper<BYTE_4t>(str);
         break;
     case ctti::unnamed_type_id<WORD_4t>().hash():
-        data = helper<WORD_4t>(str);
+        helper<WORD_4t>(str);
         break;
     case ctti::unnamed_type_id<DWORD_4t>().hash():
-        data = helper<DWORD_4t>(str);
+        helper<DWORD_4t>(str);
         break;
     case ctti::unnamed_type_id<BYTE_6t>().hash():
-        data = helper<BYTE_6t>(str);
+        helper<BYTE_6t>(str);
         break;
     case ctti::unnamed_type_id<WORD_6t>().hash():
-        data = helper<WORD_6t>(str);
+        helper<WORD_6t>(str);
         break;
     case ctti::unnamed_type_id<DWORD_6t>().hash():
-        data = helper<DWORD_6t>(str);
+        helper<DWORD_6t>(str);
         break;
     case ctti::unnamed_type_id<BYTE_8t>().hash():
-        data = helper<BYTE_8t>(str);
+        helper<BYTE_8t>(str);
         break;
     case ctti::unnamed_type_id<WORD_8t>().hash():
-        data = helper<WORD_8t>(str);
+        helper<WORD_8t>(str);
         break;
     case ctti::unnamed_type_id<DWORD_8t>().hash():
-        data = helper<DWORD_8t>(str);
+        helper<DWORD_8t>(str);
         break;
     case ctti::unnamed_type_id<BYTE_16t>().hash():
-        data = helper<BYTE_16t>(str);
+        helper<BYTE_16t>(str);
         break;
     case ctti::unnamed_type_id<WORD_16t>().hash():
-        data = helper<WORD_16t>(str);
+        helper<WORD_16t>(str);
         break;
     case ctti::unnamed_type_id<DWORD_16t>().hash():
-        data = helper<DWORD_16t>(str);
+        helper<DWORD_16t>(str);
         break;
     case ctti::unnamed_type_id<BYTE_32t>().hash():
-        data = helper<BYTE_32t>(str);
+        helper<BYTE_32t>(str);
         break;
     case ctti::unnamed_type_id<WORD_32t>().hash():
-        data = helper<WORD_32t>(str);
+        helper<WORD_32t>(str);
         break;
     case ctti::unnamed_type_id<DWORD_32t>().hash():
-        data = helper<DWORD_32t>(str);
+        helper<DWORD_32t>(str);
         break;
     case ctti::unnamed_type_id<float>().hash():
-        data = helper<float>(str);
+        helper<FLOAT>(str);
         break;
     case ctti::unnamed_type_id<FLOAT_2t>().hash():
-        data = helper<FLOAT_2t>(str);
+        helper<FLOAT_2t>(str);
         break;
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
-        data = helper<FLOAT_3t>(str);
+        helper<FLOAT_3t>(str);
         break;
     case ctti::unnamed_type_id<FLOAT_4t>().hash():
-        data = helper<FLOAT_4t>(str);
+        helper<FLOAT_4t>(str);
         break;
     case ctti::unnamed_type_id<FLOAT_6t>().hash():
-        data = helper<FLOAT_6t>(str);
+        helper<FLOAT_6t>(str);
         break;
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
-        data = helper<FLOAT_8t>(str);
+        helper<FLOAT_8t>(str);
         break;
     default:
         assert(false && "Unknown type id");
@@ -245,7 +201,8 @@ S2DataTypes::DataRec DataRecV::serialize() const
 {
     return std::visit(
         [=](auto &arg) -> S2DataTypes::DataRec {
-            typedef std::remove_reference_t<decltype(arg)> internalType;
+            using internalType = std::remove_reference_t<decltype(arg)>;
+            // typedef std::remove_reference_t<decltype(arg)> internalType;
             S2DataTypes::DataRec record { { id, sizeof(internalType) }, (void *)(&arg) };
             return record;
         },

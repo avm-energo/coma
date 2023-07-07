@@ -38,6 +38,10 @@ struct FileStruct
     friend QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st);
 };
 
+QDataStream &operator<<(QDataStream &stream, const FileStruct &str);
+QDataStream &operator>>(QDataStream &stream, FileStruct &str);
+QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st);
+
 }
 
 Q_DECLARE_METATYPE(DataTypes::FileStruct)

@@ -1,7 +1,6 @@
 #include "dialogcreator.h"
 
 #include "../journals/journaldialog.h"
-#include "../module/board.h"
 #include "../oscillograms/oscdialog.h"
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
@@ -19,8 +18,8 @@
 #include "switchjournaldialog.h"
 #include "timedialog.h"
 
-DialogCreator::DialogCreator(const ModuleSettings &settings, QWidget *parent)
-    : QObject(parent), settings(settings), mParent(parent)
+DialogCreator::DialogCreator(const ModuleSettings &settings, const Board &board, QWidget *parent)
+    : QObject(parent), settings(settings), board(board), mParent(parent)
 {
 }
 
@@ -113,7 +112,7 @@ void DialogCreator::createJournalDialog()
 {
     using namespace journals;
     // Делаем проверку и создаём диалог для журналов
-    if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
+    if (board.interfaceType() != Board::InterfaceType::RS485)
         addDialogToList(new JournalDialog(settings, mParent), "Журналы", "jours");
 }
 
@@ -170,7 +169,7 @@ void DialogCreator::createOscAndSwJourDialogs(const Modules::BaseBoard &typeb, c
 void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
 {
     using namespace Modules;
-    auto &board = Board::GetInstance();
+    // auto &board = Board::GetInstance();
     // Коробочный модуль
     if (isBoxModule(board.baseSerialInfo().type()))
     {
@@ -208,7 +207,7 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
 /// \brief Creating common dialogs (all modules).
 void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
 {
-    const auto &board = Board::GetInstance();
+    // const auto &board = Board::GetInstance();
     if (board.interfaceType() != Board::InterfaceType::Ethernet)
         addDialogToList(new FWUploadDialog(mParent), "Загрузка ВПО", "upload");
     addDialogToList(new InfoDialog(mParent), "О приборе", "info");

@@ -22,7 +22,7 @@ S2DataTypes::DataRec FileStruct::serialize() const
 
 QDataStream &operator<<(QDataStream &stream, const FileStruct &str)
 {
-#if QT_VERSION >= 0x050C00
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     stream << str.ID;
 #else
     stream << std::underlying_type_t<FilesEnum>(str.ID);
@@ -33,7 +33,7 @@ QDataStream &operator<<(QDataStream &stream, const FileStruct &str)
 
 QDataStream &operator>>(QDataStream &stream, FileStruct &str)
 {
-#if QT_VERSION >= 0x050C00
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     stream >> str.ID;
 #else
     stream >> *reinterpret_cast<std::underlying_type_t<FilesEnum> *>(&str.ID);

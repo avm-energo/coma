@@ -22,7 +22,7 @@ private:
 
 public:
     explicit ConfigStorage(token, QObject *parent = nullptr);
-    const bool &getS2Status() const;
+    bool getS2Status() const;
     void setS2Status(const bool &status = true);
     const TypeByIdMap &getS2Map() const;
     const config::widgetMap &getWidgetMap() const;

@@ -84,27 +84,25 @@ private:
     quint16 id;
     valueType data;
 
-    template <typename T> void helper(unsigned int numByte, const char *rawdata, valueType &data)
+    template <typename T> //
+    void helper(unsigned int numByte, const char *rawdata)
     {
-        // constexpr auto hash = ctti::unnamed_type_id<T>().hash();
         assert(sizeof(T) == numByte);
         data = *reinterpret_cast<const T *>(rawdata);
     }
 
-    template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool> = true>
-    valueType helper(const QString &str)
+    template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool> = true> //
+    void helper(const QString &str)
     {
         T arr {};
         arr << str;
         data = arr;
-        return valueType(arr);
     }
 
-    template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true>
-    valueType helper(const QString &str)
+    template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true> //
+    void helper(const QString &str)
     {
-        valueType d = QVariant(str).value<T>();
-        return d;
+        data = QVariant(str).value<T>();
     }
 };
 
