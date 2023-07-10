@@ -37,7 +37,7 @@ ConfigDialog::ConfigDialog(
     , proxyDRL(new DataTypesProxy)
     , errConfState(nullptr)
 {
-    proxyDRL->RegisterType<QList<S2DataTypes::DataRecV>>();
+    proxyDRL->RegisterType<QList<S2DataTypes::DataItem>>();
     connect(proxyDRL.get(), &DataTypesProxy::DataStorable, this, &ConfigDialog::configReceived);
 }
 
@@ -83,7 +83,7 @@ bool operator<(const S2DataTypes::RecordPair &record, const quint16 &number)
     return number < record.record.getId();
 }
 
-void ConfigDialog::checkForDiff(const QList<S2DataTypes::DataRecV> &list)
+void ConfigDialog::checkForDiff(const QList<S2DataTypes::DataItem> &list)
 {
     std::set<quint16> receivedItems;
     std::transform(list.cbegin(), list.cend(), setInserter(receivedItems), //
@@ -106,7 +106,7 @@ void ConfigDialog::checkForDiff(const QList<S2DataTypes::DataRecV> &list)
 void ConfigDialog::configReceived(const QVariant &msg)
 {
     using namespace S2DataTypes;
-    auto list = msg.value<QList<DataRecV>>();
+    auto list = msg.value<QList<DataItem>>();
     configV->setConfig(list);
 
     const auto s2typeB = configV->getRecord(S2Util::GetIdByName("MTypeB_ID")).value<DWORD>();
@@ -182,7 +182,7 @@ void ConfigDialog::loadConfigFromFile()
         qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
-    QList<S2DataTypes::DataRecV> outlistV;
+    QList<S2DataTypes::DataItem> outlistV;
     S2Util::RestoreData(ba, outlistV);
     QVariant outlist;
     outlist.setValue(outlistV);

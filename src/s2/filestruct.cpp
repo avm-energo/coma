@@ -15,7 +15,7 @@ FileStruct::FileStruct(const quint32 num, const QByteArray &file) : ID(num), dat
 {
 }
 
-S2DataTypes::DataRec FileStruct::serialize() const
+DataRec FileStruct::serialize() const
 {
     auto constDataPtr = static_cast<const void *>(data.data());
     auto dataPtr = const_cast<void *>(constDataPtr);

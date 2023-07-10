@@ -40,7 +40,7 @@ void BaseInterfaceThread::FilePostpone(QByteArray &ba, S2DataTypes::FilesEnum ad
     }
     case FileFormat::DefaultS2:
     {
-        QList<S2DataTypes::DataRecV> outlistV;
+        QList<S2DataTypes::DataItem> outlistV;
 
         if (!S2Util::RestoreData(ba, outlistV))
         {

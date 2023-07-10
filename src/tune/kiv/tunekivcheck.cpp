@@ -84,7 +84,7 @@ Error::Msg TuneKIVCheck::showScheme()
 
 Error::Msg TuneKIVCheck::check()
 {
-    QList<S2DataTypes::DataRecV> recordList;
+    QList<S2DataTypes::DataItem> recordList;
 
     recordList = { { S2Util::GetIdByName("C_Pasp_ID"), S2DataTypes::FLOAT_3t({ 9000, 9000, 9000 }) },
         { S2Util::GetIdByName("Unom1"), float(220) } };

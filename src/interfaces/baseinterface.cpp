@@ -37,7 +37,7 @@ void BaseInterface::ProxyInit()
     proxyBS->RegisterType<DataTypes::BlockStruct>();
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
     proxyFS->RegisterType<S2DataTypes::FileStruct>();
-    proxyDRL->RegisterType<QList<S2DataTypes::DataRecV>>();
+    proxyDRL->RegisterType<QList<S2DataTypes::DataItem>>();
     proxyBStr->RegisterType<DataTypes::BitStringStruct>();
 
 #ifdef __linux__
@@ -329,7 +329,7 @@ Error::Msg BaseInterface::writeBlockSync(
     }
 }
 
-Error::Msg BaseInterface::writeConfFileSync(const QList<S2DataTypes::DataRecV> &config)
+Error::Msg BaseInterface::writeConfFileSync(const QList<S2DataTypes::DataItem> &config)
 {
     S2DataTypes::S2ConfigType buffer;
 
@@ -341,7 +341,7 @@ Error::Msg BaseInterface::writeConfFileSync(const QList<S2DataTypes::DataRecV> &
     return writeS2FileSync(S2DataTypes::FilesEnum::Config, buffer);
 }
 
-Error::Msg BaseInterface::pushAndWriteConfFileSync(ConfigV *config, const QList<S2DataTypes::DataRecV> recordList)
+Error::Msg BaseInterface::pushAndWriteConfFileSync(ConfigV *config, const QList<S2DataTypes::DataItem> recordList)
 {
     config->pushConfig();
     for (auto record : recordList)

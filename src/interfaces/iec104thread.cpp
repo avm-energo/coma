@@ -258,7 +258,7 @@ bool IEC104Thread::handleFile(QByteArray &ba, S2DataTypes::FilesEnum addr, DataT
     {
     case FileFormat::DefaultS2:
     {
-        QList<S2DataTypes::DataRecV> outlistV;
+        QList<S2DataTypes::DataItem> outlistV;
         if (!S2Util::RestoreData(ba, outlistV))
             return false;
         DataManager::GetInstance().addSignalToOutList(outlistV);

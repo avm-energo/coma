@@ -1,6 +1,6 @@
 #include "s2.h"
 
-#include "../module/configstorage.h"
+//#include "../module/configstorage.h"
 
 #include <QDateTime>
 #include <QDebug>
@@ -42,11 +42,11 @@ void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::DataRe
     mem.prepend(ba);
 }
 
-void S2Util::StoreDataMem(QByteArray &mem, const QList<S2DataTypes::DataRecV> &dr, int fname)
+void S2Util::StoreDataMem(QByteArray &mem, const QList<S2DataTypes::DataItem> &dr, int fname)
 {
     std::vector<S2DataTypes::DataRec> recVec;
     std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
-        [](const S2DataTypes::DataRecV &record) { return record.serialize(); });
+        [](const S2DataTypes::DataItem &record) { return record.serialize(); });
     StoreDataMem(mem, recVec, fname);
 }
 
@@ -107,7 +107,7 @@ bool S2Util::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
     return true;
 }
 
-bool S2Util::RestoreData(QByteArray bain, QList<S2DataTypes::DataRecV> &outlist)
+bool S2Util::RestoreData(QByteArray bain, QList<S2DataTypes::DataItem> &outlist)
 {
     Q_ASSERT(bain.size() >= sizeof(S2DataTypes::S2FileHeader));
     qInfo() << "S2 File size:" << bain.size();
@@ -140,18 +140,20 @@ bool S2Util::RestoreData(QByteArray bain, QList<S2DataTypes::DataRecV> &outlist)
 
         if (DR.header.id != S2DataTypes::dummyElement)
         {
-            size = DR.header.numByte;
-            auto &s2map = ConfigStorage::GetInstance().getS2Map();
-            auto search = s2map.find(DR.header.id);
-            if (search != s2map.end())
-            {
-                S2DataTypes::DataRecV DRV(DR, bain.left(size));
-                outlist.append(DRV);
-            }
-            else
-            {
-                qCritical("В модуле неизвестная конфигурация, необходимо взять конфигурацию по умолчанию");
-            }
+            /// TODO: Переписать с использованием S2::DataFactory
+            //            size = DR.header.numByte;
+            //            auto &s2map = ConfigStorage::GetInstance().getS2Map();
+            //            auto search = s2map.find(DR.header.id);
+            //            if (search != s2map.end())
+            //            {
+            //                S2DataTypes::DataItem DRV(DR, bain.left(size));
+            //                outlist.append(DRV);
+            //            }
+            //            else
+            //            {
+            //                qCritical("В модуле неизвестная конфигурация, необходимо взять конфигурацию по
+            //                умолчанию");
+            //            }
             bain.remove(0, size);
         }
     }
@@ -167,11 +169,11 @@ void S2Util::tester(const S2DataTypes::S2ConfigType &buffer)
 {
     // here is test functions
     using namespace S2DataTypes;
-    std::vector<DataRecV> bufferV;
+    std::vector<DataItem> bufferV;
     std::transform(
-        buffer.begin(), buffer.end(), std::back_inserter(bufferV), [](const auto &oldRec) { return DataRecV(oldRec); });
+        buffer.begin(), buffer.end(), std::back_inserter(bufferV), [](const auto &oldRec) { return DataItem(oldRec); });
     Q_ASSERT(std::equal(buffer.cbegin(), buffer.cend(), bufferV.cbegin(), bufferV.cend(),
-                 [](const DataRec &oldRec, const DataRecV &newRec) { return oldRec == newRec.serialize(); })
+                 [](const DataRec &oldRec, const DataItem &newRec) { return oldRec == newRec.serialize(); })
         && "Broken DataRecV S2 conf");
     for (auto i = 0; i != bufferV.size() && i != buffer.size(); ++i)
     {

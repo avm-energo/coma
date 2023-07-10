@@ -3,7 +3,7 @@
 
 #include "../module/modulesettings.h"
 #include "../s2/configv.h"
-#include "../s2/datarecv.h"
+#include "../s2/dataitem.h"
 #include "../s2/filestruct.h"
 #include "interfacesettings.h"
 
@@ -191,8 +191,8 @@ public:
 
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
-    Error::Msg writeConfFileSync(const QList<S2DataTypes::DataRecV> &config);
-    Error::Msg pushAndWriteConfFileSync(ConfigV *config, const QList<S2DataTypes::DataRecV> recordList);
+    Error::Msg writeConfFileSync(const QList<S2DataTypes::DataItem> &config);
+    Error::Msg pushAndWriteConfFileSync(ConfigV *config, const QList<S2DataTypes::DataItem> recordList);
     Error::Msg popAndWriteConfFileSync(ConfigV *config);
     Error::Msg writeFileSync(S2DataTypes::FilesEnum filenum, QByteArray &ba);
     Error::Msg writeS2FileSync(S2DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file);

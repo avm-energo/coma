@@ -13,7 +13,7 @@ find_package(Qt${QT_VERSION_MAJOR}
 
 set(headers
     configv.h
-    datarecv.h
+    dataitem.h
     filestruct.h
     hexparser.h
     s2.h
@@ -24,7 +24,7 @@ set(headers
 
 set(sources
     configv.cpp
-    datarecv.cpp
+    dataitem.cpp
     filestruct.cpp
     hexparser.cpp
     s2.cpp
@@ -37,9 +37,10 @@ add_library(${PROJECT_NAME} STATIC ${sources} ${headers})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
   Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Xml
-  Qt${QT_VERSION_MAJOR}::Network
-  Qt${QT_VERSION_MAJOR}::Xml
-  PUBLIC gen module)
+#  Qt${QT_VERSION_MAJOR}::Network
+#  Qt${QT_VERSION_MAJOR}::Xml
+  PUBLIC gen
+#  module
+)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

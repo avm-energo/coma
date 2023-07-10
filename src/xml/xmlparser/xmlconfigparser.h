@@ -6,5 +6,5 @@
 class XmlConfigParser
 {
 public:
-    static void ParseS2ConfigToMap(QMap<QString, quint16> &map);
+    [[deprecated]] static void ParseS2ConfigToMap(QMap<QString, quint16> &map);
 };

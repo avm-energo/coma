@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <gen/error.h>
 
-S2DataTypes::DataRecV ConfigV::getRecord(quint16 id)
+S2DataTypes::DataItem ConfigV::getRecord(quint16 id)
 {
     auto result = std::find_if(config.cbegin(), config.cend(), //
         [id](const auto &record) { return (id == record.getId()); });
@@ -12,18 +12,18 @@ S2DataTypes::DataRecV ConfigV::getRecord(quint16 id)
     else
     {
         qDebug() << Error::NullDataError << id;
-        return S2DataTypes::DataRecV(id);
+        return S2DataTypes::DataItem(id);
     }
 }
 
-void ConfigV::setRecordValue(const S2DataTypes::DataRecV &record)
+void ConfigV::setRecordValue(const S2DataTypes::DataItem &record)
 {
     auto result = std::find_if(config.begin(), config.end(), //
         [&record](const auto &lhs) { return (lhs.getId() == record.getId()); });
     if (result != config.end())
     {
         // buffer is here for debug purposes
-        [[maybe_unused]] S2DataTypes::DataRecV &buffer = *result;
+        [[maybe_unused]] S2DataTypes::DataItem &buffer = *result;
         Q_ASSERT(result->typeIndex() == record.typeIndex());
         *result = record;
     }
@@ -41,18 +41,18 @@ void ConfigV::setRecordValue(const quint16 key, const S2DataTypes::valueType &va
     }
     else
     {
-        S2DataTypes::DataRecV record(key);
+        S2DataTypes::DataItem record(key);
         record.setData(value);
         config.push_back(record);
     }
 }
 
-const QList<S2DataTypes::DataRecV> &ConfigV::getConfig() const
+const QList<S2DataTypes::DataItem> &ConfigV::getConfig() const
 {
     return config;
 }
 
-void ConfigV::setConfig(const QList<S2DataTypes::DataRecV> &newConfig)
+void ConfigV::setConfig(const QList<S2DataTypes::DataItem> &newConfig)
 {
     config = newConfig;
 }

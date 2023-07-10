@@ -30,7 +30,7 @@ private:
     void loadConfigFromFile();
     void readConfig();
     void writeConfig();
-    void checkForDiff(const QList<S2DataTypes::DataRecV> &list);
+    void checkForDiff(const QList<S2DataTypes::DataItem> &list);
     void configReceived(const QVariant &msg);
 
     void showConfigErrState();

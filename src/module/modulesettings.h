@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../interfaces/interfacesettings.h"
-#include "../s2/datarecv.h"
+#include "../s2/dataitem.h"
 #include "modules.h"
 
 #include <QHash>

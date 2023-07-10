@@ -5,11 +5,8 @@
 
 namespace S2DataTypes
 {
-struct DataRec;
-}
 
-namespace S2DataTypes
-{
+struct DataRec;
 
 /*! Приложение 3. Номера файлов */
 enum class FilesEnum : quint16
@@ -33,7 +30,7 @@ struct FileStruct
     FileStruct() = default;
     FileStruct(const FilesEnum num, const QByteArray &file);
     FileStruct(const quint32 num, const QByteArray &file);
-    S2DataTypes::DataRec serialize() const;
+    DataRec serialize() const;
 
     friend QDataStream &operator<<(QDataStream &stream, const FileStruct &str);
     friend QDataStream &operator>>(QDataStream &stream, FileStruct &str);
