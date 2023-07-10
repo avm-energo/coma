@@ -57,7 +57,7 @@ void ConfigDialog::writeConfig()
             S2DataTypes::S2ConfigType buffer;
             std::transform(configV->getConfig().cbegin(), configV->getConfig().cend(), std::back_inserter(buffer),
                 [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
-            S2::tester(buffer);
+            S2Util::tester(buffer);
             buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
             BaseInterface::iface()->writeS2File(S2DataTypes::FilesEnum::Config, buffer);
         }
@@ -109,22 +109,22 @@ void ConfigDialog::configReceived(const QVariant &msg)
     auto list = msg.value<QList<DataRecV>>();
     configV->setConfig(list);
 
-    const auto s2typeB = configV->getRecord(S2::GetIdByName("MTypeB_ID")).value<DWORD>();
+    const auto s2typeB = configV->getRecord(S2Util::GetIdByName("MTypeB_ID")).value<DWORD>();
     if (s2typeB != Board::GetInstance().typeB())
     {
         qCritical() << "Conflict typeB, module: " <<                //
             QString::number(Board::GetInstance().typeB(), 16)       //
                     << " config: " << QString::number(s2typeB, 16); //
-        configV->setRecordValue({ S2::GetIdByName("MTypeB_ID"), DWORD(Board::GetInstance().typeB()) });
+        configV->setRecordValue({ S2Util::GetIdByName("MTypeB_ID"), DWORD(Board::GetInstance().typeB()) });
     }
 
-    const auto s2typeM = configV->getRecord(S2::GetIdByName("MTypeE_ID")).value<DWORD>();
+    const auto s2typeM = configV->getRecord(S2Util::GetIdByName("MTypeE_ID")).value<DWORD>();
     if (s2typeM != Board::GetInstance().typeM())
     {
         qCritical() << "Conflict typeB, module: " <<                //
             QString::number(Board::GetInstance().typeM(), 16)       //
                     << " config: " << QString::number(s2typeM, 16); //
-        configV->setRecordValue({ S2::GetIdByName("MTypeE_ID"), DWORD(Board::GetInstance().typeM()) });
+        configV->setRecordValue({ S2Util::GetIdByName("MTypeE_ID"), DWORD(Board::GetInstance().typeM()) });
     }
 
     checkForDiff(list);
@@ -144,7 +144,7 @@ void ConfigDialog::saveConfigToFile()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    S2::StoreDataMem(ba, configV->getConfig(), int(FilesEnum::Config));
+    S2Util::StoreDataMem(ba, configV->getConfig(), int(FilesEnum::Config));
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
     length += sizeof(S2FileHeader);
     Q_ASSERT(length == quint32(ba.size()));
@@ -183,7 +183,7 @@ void ConfigDialog::loadConfigFromFile()
         return;
     }
     QList<S2DataTypes::DataRecV> outlistV;
-    S2::RestoreData(ba, outlistV);
+    S2Util::RestoreData(ba, outlistV);
     QVariant outlist;
     outlist.setValue(outlistV);
 

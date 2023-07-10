@@ -3,8 +3,6 @@
 
 #include "s2datatypes.h"
 
-//#include <gen/datatypes.h>
-
 template <typename T, std::size_t N1, std::size_t N2>
 auto inline operator<<(std::array<std::array<T, N2>, N1> &array, const QStringList &list) -> decltype(array)
 {

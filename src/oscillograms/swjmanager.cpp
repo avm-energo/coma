@@ -16,7 +16,7 @@ File::Vector SwjManager::loadFromFile(const QString &filename) const
         return {};
 
     DataTypes::S2FilePack outlist;
-    S2::RestoreData(buffer, outlist);
+    S2Util::RestoreData(buffer, outlist);
 
     File::Vector vector;
     bool status = loadRecords(outlist, vector);

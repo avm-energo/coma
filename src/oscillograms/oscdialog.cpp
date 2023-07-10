@@ -127,7 +127,7 @@ bool OscDialog::loadIfExist(quint32 size)
         {
             qInfo() << "Swj loaded from file: " << file;
             DataTypes::S2FilePack outlist;
-            S2::RestoreData(ba, outlist);
+            S2Util::RestoreData(ba, outlist);
             for (auto &&s2file : outlist)
             {
                 S2DataTypes::FileStruct resp { S2DataTypes::FilesEnum(s2file.ID), s2file.data };
@@ -201,7 +201,7 @@ void OscDialog::fillOsc(const QVariant &msg)
         if (fileBuffer.size() == 2)
         {
             QByteArray ba;
-            S2::StoreDataMem(ba, fileBuffer, reqOscNum);
+            S2Util::StoreDataMem(ba, fileBuffer, reqOscNum);
             auto time = oscMap.value(reqOscNum).unixtime;
             QString sfile = filename(time, reqOscNum);
             if (Files::SaveToFile(sfile, ba) == Error::Msg::NoError)

@@ -80,7 +80,7 @@ void FWUploadDialog::LoadFW()
     }
 
     QByteArray firmware;
-    S2::StoreDataMem(firmware, s2array, int(S2DataTypes::FilesEnum::Firmware));
+    S2Util::StoreDataMem(firmware, s2array, int(S2DataTypes::FilesEnum::Firmware));
     if (firmware.isEmpty())
     {
         qCritical() << Error::SizeError;

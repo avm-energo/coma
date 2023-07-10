@@ -67,8 +67,8 @@ Error::Msg TuneKIVTemp60::setNewConfAndTune()
     // CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 2250;
     // CKIV->Bci_block.Unom1 = 220;
 
-    configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"), S2DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
-    configV->setRecordValue({ S2::GetIdByName("Unom1"), float(220) });
+    configV->setRecordValue({ S2Util::GetIdByName("C_Pasp_ID"), S2DataTypes::FLOAT_3t({ 2250, 2250, 2250 }) });
+    configV->setRecordValue({ S2Util::GetIdByName("Unom1"), float(220) });
 
     if (BaseInterface::iface()->writeConfFileSync(configV->getConfig()) != Error::Msg::NoError)
         return Error::Msg::GeneralError;

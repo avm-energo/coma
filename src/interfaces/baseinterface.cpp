@@ -157,7 +157,7 @@ void BaseInterface::writeFile(quint32 id, const QByteArray &ba)
 void BaseInterface::writeS2File(S2DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file)
 {
     QByteArray ba;
-    S2::StoreDataMem(ba, file, int(number));
+    S2Util::StoreDataMem(ba, file, int(number));
     writeFile(quint32(number), ba);
 }
 
@@ -335,7 +335,7 @@ Error::Msg BaseInterface::writeConfFileSync(const QList<S2DataTypes::DataRecV> &
 
     std::transform(config.begin(), config.end(), std::back_inserter(buffer),
         [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
-    S2::tester(buffer);
+    S2Util::tester(buffer);
 
     buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
     return writeS2FileSync(S2DataTypes::FilesEnum::Config, buffer);
@@ -375,7 +375,7 @@ Error::Msg BaseInterface::writeFileSync(S2DataTypes::FilesEnum filenum, QByteArr
 Error::Msg BaseInterface::writeS2FileSync(S2DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file)
 {
     QByteArray ba;
-    S2::StoreDataMem(ba, file, int(number));
+    S2Util::StoreDataMem(ba, file, int(number));
 
     // с 4 байта начинается FileHeader.size
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);

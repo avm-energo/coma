@@ -3,7 +3,10 @@
 #include "board.h"
 #include "configstorage.h"
 
-#include <QtXml>
+namespace S2
+{
+class ConfigStorage;
+}
 
 class Module : public QObject
 {
@@ -18,10 +21,11 @@ public:
     explicit Module(const bool criticalCheck = true,
         const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
         QObject *parent = nullptr);
+
+    bool loadS2Settings(S2::ConfigStorage *s2Storage);
     bool loadSettings();
 
 private:
-    void loadS2Settings();
     void loadModuleSettings(const quint16 &typeB, const quint16 &typeM);
 
 private slots:

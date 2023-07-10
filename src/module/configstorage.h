@@ -22,19 +22,19 @@ private:
 
 public:
     explicit ConfigStorage(token, QObject *parent = nullptr);
-    bool getS2Status() const;
-    void setS2Status(const bool &status = true);
-    const TypeByIdMap &getS2Map() const;
-    const config::widgetMap &getWidgetMap() const;
-    const ModuleTypes::TabsMap &getConfigTabs() const;
+    [[deprecated]] bool getS2Status() const;
+    [[deprecated]] void setS2Status(const bool &status = true);
+    [[deprecated]] const TypeByIdMap &getS2Map() const;
+    [[deprecated]] const config::widgetMap &getWidgetMap() const;
+    [[deprecated]] const ModuleTypes::TabsMap &getConfigTabs() const;
     const ModuleSettings &getModuleSettings() const;
     void clearModuleSettings();
 
 public slots:
     // S2 data slots
-    void typeDataReceive(const quint16 id, const std::uint64_t typeId);
-    void widgetDataReceive(const quint16 id, const config::itemVariant &widget);
-    void configTabDataReceive(const quint32 &id, const QString &tabName);
+    [[deprecated]] void typeDataReceive(const quint16 id, const std::uint64_t typeId);
+    [[deprecated]] void widgetDataReceive(const quint16 id, const config::itemVariant &widget);
+    [[deprecated]] void configTabDataReceive(const quint32 &id, const QString &tabName);
 
     // Module data slots
     void startNewConfig();

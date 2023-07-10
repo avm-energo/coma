@@ -130,7 +130,7 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
     //  CKIV->Bci_block.Unom1 = 220;
-    configV->setRecordValue({ S2::GetIdByName("Unom1"), float(220) });
+    configV->setRecordValue({ S2Util::GetIdByName("Unom1"), float(220) });
 
     Error::Msg res = setADCCoef(coef);
     if (res != Error::Msg::NoError)
@@ -257,7 +257,7 @@ Error::Msg TuneKIVADC::CheckTune()
 Error::Msg TuneKIVADC::setADCCoef(const int coef)
 {
     const QMap<int, float> adcCoefMap { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
-    configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"),
+    configV->setRecordValue({ S2Util::GetIdByName("C_Pasp_ID"),
         S2DataTypes::FLOAT_3t({ adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) }) });
 
     return BaseInterface::iface()->writeConfFileSync(configV->getConfig());

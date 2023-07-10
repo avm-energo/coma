@@ -21,7 +21,7 @@ JournalViewer::JournalViewer(const QString &filepath, QWidget *parent) : QDialog
     QByteArray fileData;
     if (Files::LoadFromFile(filepath, fileData) == Error::Msg::NoError)
     {
-        auto s2bFormat = S2::parseS2B(fileData);
+        auto s2bFormat = S2Util::parseS2B(fileData);
         auto type = JournalType(s2bFormat.file.ID);
         auto jour = createJournal(type, s2bFormat.header.typeB, s2bFormat.header.typeM);
         if (jour)

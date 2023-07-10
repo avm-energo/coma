@@ -121,7 +121,7 @@ Error::Msg Tune84ADC::ADCCoef(int coef)
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
 
-    configV->setRecordValue({ S2::GetIdByName("Unom1"), float(220) });
+    configV->setRecordValue({ S2Util::GetIdByName("Unom1"), float(220) });
     //  CKIV->Bci_block.Unom1 = 220;
 
     Error::Msg res = setADCCoef(coef);
@@ -246,7 +246,7 @@ Error::Msg Tune84ADC::CheckTune()
 Error::Msg Tune84ADC::setADCCoef(int coef)
 {
     QMap<int, float> adcCoefMap = { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
-    configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"),
+    configV->setRecordValue({ S2Util::GetIdByName("C_Pasp_ID"),
         S2DataTypes::FLOAT_3t({ adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) }) });
 
     // CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = adcCoefMap[coef];

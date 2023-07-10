@@ -84,7 +84,7 @@ template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_un
 
 template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey)
 {
-    const auto mbMaster = S2::GetIdByName("MBMaster");
+    const auto mbMaster = S2Util::GetIdByName("MBMaster");
     if (parentKey == mbMaster)
     {
         return fillBackModbus(key, parent, ctti::unnamed_type_id<QTableView>(), parentKey);

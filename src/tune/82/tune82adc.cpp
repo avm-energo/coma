@@ -207,13 +207,13 @@ void Tune82ADC::setCurrentsTo(float i)
     saveWorkConfig();
     // set nominal currents in config to i A
     S2DataTypes::FLOAT_6t i2NomConfig = { i, i, i, i, i, i };
-    configV->setRecordValue(S2::GetIdByName("I2nom"), i2NomConfig);
+    configV->setRecordValue(S2Util::GetIdByName("I2nom"), i2NomConfig);
 }
 
 void Tune82ADC::getBd1()
 {
     Mip *mip = new Mip(false, m_typeM, this);
-    S2DataTypes::FLOAT_6t inom = configV->getRecord(S2::GetIdByName("I2nom")).value<S2DataTypes::FLOAT_6t>();
+    S2DataTypes::FLOAT_6t inom = configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2DataTypes::FLOAT_6t>();
     mipdata = mip->takeOneMeasurement(inom.at(3));
     m_bd1->readBlockFromModule();
 }

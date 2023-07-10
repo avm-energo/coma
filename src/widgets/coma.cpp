@@ -37,6 +37,8 @@
 #include "../module/board.h"
 #include "../oscillograms/swjmanager.h"
 #include "../s2/s2.h"
+#include "../s2/s2configstorage.h"
+#include "../s2/s2datafactory.h"
 #include "../xml/xmlparser/xmlconfigparser.h"
 #include "alarmwidget.h"
 #include "epopup.h"
@@ -89,6 +91,7 @@ QPoint Coma::s_comaCenter = QPoint(0, 0);
 
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
+    , s2ConfigStorage(new S2::ConfigStorage(this))
     , proxyBS(new DataTypesProxy)
     , proxyGRS(new DataTypesProxy)
     , editor(nullptr)
@@ -177,12 +180,15 @@ void Coma::setupUI()
 void Coma::prepareDialogs()
 {
     module = UniquePointer<Module>(new Module(true, Board::GetInstance().baseSerialInfo(), this));
-    if (!module->loadSettings())
+    if (module->loadS2Settings(s2ConfigStorage.get()))
     {
-        EMessageBox::error(this,
-            "Не удалось найти конфигурацию для модуля.\n"
-            "Проверьте журнал сообщений.\n"
-            "Доступны минимальные функции.");
+        if (!module->loadSettings())
+        {
+            EMessageBox::error(this,
+                "Не удалось найти конфигурацию для модуля.\n"
+                "Проверьте журнал сообщений.\n"
+                "Доступны минимальные функции.");
+        }
     }
     AlarmW->configure();
     mDlgManager->setupUI(mAppConfig, size());
@@ -620,7 +626,7 @@ void Coma::disconnect()
 
 void Coma::setupConnection()
 {
-    XmlConfigParser::ParseS2ConfigToMap(S2::NameIdMap);
+    XmlConfigParser::ParseS2ConfigToMap(S2Util::NameIdMap);
     auto const &board = Board::GetInstance();
 
     connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const State state) {

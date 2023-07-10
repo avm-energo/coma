@@ -259,7 +259,7 @@ bool IEC104Thread::handleFile(QByteArray &ba, S2DataTypes::FilesEnum addr, DataT
     case FileFormat::DefaultS2:
     {
         QList<S2DataTypes::DataRecV> outlistV;
-        if (!S2::RestoreData(ba, outlistV))
+        if (!S2Util::RestoreData(ba, outlistV))
             return false;
         DataManager::GetInstance().addSignalToOutList(outlistV);
         break;
@@ -267,7 +267,7 @@ bool IEC104Thread::handleFile(QByteArray &ba, S2DataTypes::FilesEnum addr, DataT
     default:
     {
         DataTypes::S2FilePack outlist;
-        if (!S2::RestoreData(ba, outlist))
+        if (!S2Util::RestoreData(ba, outlist))
             return false;
         Q_ASSERT(outlist.size() == 1 && "Only one file supported");
         S2DataTypes::FileStruct df { addr, outlist.first().data };

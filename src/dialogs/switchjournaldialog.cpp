@@ -109,7 +109,7 @@ void SwitchJournalDialog::fillJour(const QVariant &msg)
     if (fileBuffer.size() == 3)
     {
         QByteArray ba;
-        S2::StoreDataMem(ba, fileBuffer, reqSwJNum);
+        S2Util::StoreDataMem(ba, fileBuffer, reqSwJNum);
         auto time = swjMap.value(reqSwJNum).time;
         QString file = filename(time);
         if (Files::SaveToFile(file, ba) == Error::Msg::NoError)
@@ -227,7 +227,7 @@ bool SwitchJournalDialog::loadIfExist(quint32 size)
         {
             qInfo() << "Swj loaded from file: " << file;
             DataTypes::S2FilePack outlist;
-            S2::RestoreData(ba, outlist);
+            S2Util::RestoreData(ba, outlist);
             for (auto &&swjFileIn : outlist)
             {
                 S2DataTypes::FileStruct resp { swjFileIn.ID, swjFileIn.data };

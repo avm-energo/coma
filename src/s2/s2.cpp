@@ -7,9 +7,9 @@
 #include <gen/error.h>
 #include <gen/utils/crc32.h>
 
-QMap<QString, quint16> S2::NameIdMap;
+QMap<QString, quint16> S2Util::NameIdMap;
 
-void S2::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::DataRec> &dr, int fname)
+void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::DataRec> &dr, int fname)
 {
     utils::CRC32 crc;
     S2DataTypes::S2FileHeader header;
@@ -42,7 +42,7 @@ void S2::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::DataRec> &
     mem.prepend(ba);
 }
 
-void S2::StoreDataMem(QByteArray &mem, const QList<S2DataTypes::DataRecV> &dr, int fname)
+void S2Util::StoreDataMem(QByteArray &mem, const QList<S2DataTypes::DataRecV> &dr, int fname)
 {
     std::vector<S2DataTypes::DataRec> recVec;
     std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
@@ -50,7 +50,7 @@ void S2::StoreDataMem(QByteArray &mem, const QList<S2DataTypes::DataRecV> &dr, i
     StoreDataMem(mem, recVec, fname);
 }
 
-void S2::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::FileStruct> &dr, int fname)
+void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::FileStruct> &dr, int fname)
 {
     std::vector<S2DataTypes::DataRec> recVec;
     std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
@@ -58,7 +58,7 @@ void S2::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::FileStruct
     StoreDataMem(mem, recVec, fname);
 }
 
-bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
+bool S2Util::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
 {
     Q_ASSERT(bain.size() >= sizeof(S2DataTypes::S2FileHeader));
     qInfo() << "S2 File size:" << bain.size();
@@ -107,7 +107,7 @@ bool S2::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
     return true;
 }
 
-bool S2::RestoreData(QByteArray bain, QList<S2DataTypes::DataRecV> &outlist)
+bool S2Util::RestoreData(QByteArray bain, QList<S2DataTypes::DataRecV> &outlist)
 {
     Q_ASSERT(bain.size() >= sizeof(S2DataTypes::S2FileHeader));
     qInfo() << "S2 File size:" << bain.size();
@@ -158,12 +158,12 @@ bool S2::RestoreData(QByteArray bain, QList<S2DataTypes::DataRecV> &outlist)
     return true;
 }
 
-quint16 S2::GetIdByName(QString name)
+quint16 S2Util::GetIdByName(QString name)
 {
     return NameIdMap.value(name, 0);
 }
 
-void S2::tester(const S2DataTypes::S2ConfigType &buffer)
+void S2Util::tester(const S2DataTypes::S2ConfigType &buffer)
 {
     // here is test functions
     using namespace S2DataTypes;
@@ -183,7 +183,7 @@ void S2::tester(const S2DataTypes::S2ConfigType &buffer)
     // test funcs end
 }
 
-quint64 S2::GetFileSize(const QByteArray &bain)
+quint64 S2Util::GetFileSize(const QByteArray &bain)
 {
     // копируем FileHeader
     S2DataTypes::S2FileHeader fh;
@@ -191,7 +191,8 @@ quint64 S2::GetFileSize(const QByteArray &bain)
     return fh.size + sizeof(S2DataTypes::S2FileHeader);
 }
 
-S2DataTypes::S2BFile S2::emulateS2B(const S2DataTypes::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM)
+S2DataTypes::S2BFile S2Util::emulateS2B(
+    const S2DataTypes::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM)
 {
     using namespace S2DataTypes;
     constexpr quint32 tailEnd = 0xEEEE1111;
@@ -212,7 +213,7 @@ S2DataTypes::S2BFile S2::emulateS2B(const S2DataTypes::FileStruct &journal, quin
     return { header, journal, tail };
 }
 
-S2DataTypes::S2BFile S2::parseS2B(const QByteArray &file)
+S2DataTypes::S2BFile S2Util::parseS2B(const QByteArray &file)
 {
     using namespace S2DataTypes;
     constexpr auto minSize = sizeof(S2BFileHeader) + sizeof(S2BFileTail) + sizeof(DataRecHeader);
@@ -235,7 +236,7 @@ S2DataTypes::S2BFile S2::parseS2B(const QByteArray &file)
     return { header, { recHeader.id, fileBytes }, tail };
 }
 
-quint32 S2::getTime32()
+quint32 S2Util::getTime32()
 {
     QDateTime dt;
     return dt.currentDateTime().toSecsSinceEpoch();

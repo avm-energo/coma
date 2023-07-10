@@ -42,7 +42,7 @@ void BaseInterfaceThread::FilePostpone(QByteArray &ba, S2DataTypes::FilesEnum ad
     {
         QList<S2DataTypes::DataRecV> outlistV;
 
-        if (!S2::RestoreData(ba, outlistV))
+        if (!S2Util::RestoreData(ba, outlistV))
         {
             DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
                 static_cast<quint64>(ba.size()) };
@@ -58,7 +58,7 @@ void BaseInterfaceThread::FilePostpone(QByteArray &ba, S2DataTypes::FilesEnum ad
     case FileFormat::CustomS2:
     {
         DataTypes::S2FilePack outlist;
-        if (!S2::RestoreData(ba, outlist))
+        if (!S2Util::RestoreData(ba, outlist))
         {
             DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
                 static_cast<quint64>(ba.size()) };

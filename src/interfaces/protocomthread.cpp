@@ -467,7 +467,7 @@ void ProtocomThread::processFileFromDisk(S2DataTypes::FilesEnum fileNum)
     QByteArray ba = file.readAll();
     if (!boardType.isEmpty())
     {
-        auto s2bFile = S2::emulateS2B({ fileNum, ba }, quint16(fileNum), boardType.mTypeB, boardType.mTypeM);
+        auto s2bFile = S2Util::emulateS2B({ fileNum, ba }, quint16(fileNum), boardType.mTypeB, boardType.mTypeM);
         auto &dataManager = DataManager::GetInstance();
         DataTypes::GeneralResponseStruct genResp {
             DataTypes::GeneralResponseTypes::Ok,      //
@@ -484,7 +484,7 @@ void ProtocomThread::progressFile(const QByteArray &data)
     if (m_currentCommand.command == Commands::C_ReqFile)
     {
         if (isFirstBlock)
-            setProgressRange(S2::GetFileSize(data)); // set progressbar max size
+            setProgressRange(S2Util::GetFileSize(data)); // set progressbar max size
         m_progress += data.size();
         setProgressCount(m_progress); // set current progressbar position
     }
