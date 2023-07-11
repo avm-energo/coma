@@ -222,7 +222,10 @@ void Xml::S2Parser::parse()
             auto id = quint16(0);
             auto idNode = recordNode.firstChildElement(tags::id);
             if (!idNode.isNull())
+            {
                 id = static_cast<quint16>(parseNum<uint>(idNode));
+                emit nameDataSending(id, parseString(recordNode, tags::name));
+            }
 
             auto typeNode = recordNode.firstChildElement(tags::type);
             if (!typeNode.isNull())

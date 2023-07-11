@@ -257,9 +257,8 @@ Error::Msg TuneKIVADC::CheckTune()
 Error::Msg TuneKIVADC::setADCCoef(const int coef)
 {
     const QMap<int, float> adcCoefMap { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
-    configV->setRecordValue({ S2Util::GetIdByName("C_Pasp_ID"),
-        S2DataTypes::FLOAT_3t({ adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) }) });
-
+    S2DataTypes::FLOAT_3t value { adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) };
+    configV->setRecordValue(S2Util::GetIdByName("C_Pasp_ID"), value);
     return BaseInterface::iface()->writeConfFileSync(configV->getConfig());
 }
 
@@ -294,12 +293,22 @@ void TuneKIVADC::IULayout(RegType type, int coef, QVBoxLayout *lyout)
         QString EMRange;
         QString Ret10Coef;
     };
-    QMap<int, retomStruct> retomCoefMap = { { 1, { "2,9 A", "500 mA", "30:3" } }, { 2, { "2,5 A", "500 mA", "30:3" } },
-        { 4, { "1,4 A", "250 mA", "30:3" } }, { 8, { "8 A", "100 mA", "300:3" } }, { 16, { "4 A", "50 mA", "300:3" } },
-        { 32, { "2.3 A", "50 mA", "300:3" } } };
-    QMap<int, retomStruct> ImCoefMap = { { 1, { "290 mA", "500 mA", "30:3" } }, { 2, { "250 mA", "500 mA", "30:3" } },
-        { 4, { "140 mA", "250 mA", "30:6" } }, { 8, { "80 mA", "100 mA", "30:6" } },
-        { 16, { "40 mA", "50 mA", "1:1" } }, { 32, { "23 mA", "50 mA", "1:1" } } };
+    QMap<int, retomStruct> retomCoefMap = {
+        { 1, { "2,9 A", "500 mA", "30:3" } }, //
+        { 2, { "2,5 A", "500 mA", "30:3" } }, //
+        { 4, { "1,4 A", "250 mA", "30:3" } }, //
+        { 8, { "8 A", "100 mA", "300:3" } },  //
+        { 16, { "4 A", "50 mA", "300:3" } },  //
+        { 32, { "2.3 A", "50 mA", "300:3" } } //
+    };
+    QMap<int, retomStruct> ImCoefMap = {
+        { 1, { "290 mA", "500 mA", "30:3" } }, //
+        { 2, { "250 mA", "500 mA", "30:3" } }, //
+        { 4, { "140 mA", "250 mA", "30:6" } }, //
+        { 8, { "80 mA", "100 mA", "30:6" } },  //
+        { 16, { "40 mA", "50 mA", "1:1" } },   //
+        { 32, { "23 mA", "50 mA", "1:1" } }    //
+    };
     QMap<RegType, QMap<int, retomStruct>> map = { { RegType::IMITATOR, ImCoefMap }, { RegType::RETOM, retomCoefMap } };
 
     QString tmps;

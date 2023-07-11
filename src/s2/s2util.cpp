@@ -2,14 +2,13 @@
 
 //#include "../module/configstorage.h"
 
+#include "s2configstorage.h"
 #include "s2datafactory.h"
 
 #include <QDateTime>
 #include <QDebug>
 #include <gen/error.h>
 #include <gen/utils/crc32.h>
-
-QMap<QString, quint16> S2Util::NameIdMap;
 
 void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::DataRec> &dr, int fname)
 {
@@ -152,9 +151,14 @@ bool S2Util::RestoreData(QByteArray bain, QList<S2DataTypes::DataItem> &outlist)
     return true;
 }
 
-quint16 S2Util::GetIdByName(QString name)
+quint16 S2Util::GetIdByName(const QString &name)
 {
-    return NameIdMap.value(name, 0);
+    static const auto &nameMap = S2::ConfigStorage::GetInstance().getIdByNameMap();
+    auto search = nameMap.find(name);
+    if (search == nameMap.cend())
+        return 0;
+    else
+        return search->second;
 }
 
 void S2Util::tester(const S2DataTypes::S2ConfigType &buffer)

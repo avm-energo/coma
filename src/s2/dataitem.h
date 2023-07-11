@@ -21,11 +21,12 @@ public:
     friend bool operator==(const DataItem &lhs, const DataItem &rhs);
     friend bool operator!=(const DataItem &lhs, const DataItem &rhs);
 
-    void printer() const;
     DataRec serialize() const;
+
     quint16 getId() const;
     valueType getData() const;
     void setData(const valueType &value);
+
     size_t typeIndex() const;
 
     template <typename T, std::enable_if_t<isValueType<T>::value, bool> = true> //

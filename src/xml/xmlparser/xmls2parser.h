@@ -21,9 +21,10 @@ public:
     void parse();
 
 signals:
+    void nameDataSending(const quint16 id, const QString &itemName);
     void typeDataSending(const quint16 id, const std::uint64_t type);
     void widgetDataSending(const quint16 id, const config::itemVariant &widget);
-    void configTabDataSending(const quint32 &id, const QString &tabName);
+    void configTabDataSending(const quint32 id, const QString &tabName);
 
 private:
     std::uint64_t parseType(const QDomElement &typeNode);

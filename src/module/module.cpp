@@ -43,6 +43,8 @@ bool Module::loadS2Settings(S2::ConfigStorage &s2Storage)
     if (s2Storage.getParseStatus() == S2::ParseStatus::NotYetParsed)
     {
         auto mS2Parser = new Xml::S2Parser(this);
+        QObject::connect(mS2Parser, &Xml::S2Parser::nameDataSending, //
+            &s2Storage, &S2::ConfigStorage::nameDataReceive);
         QObject::connect(mS2Parser, &Xml::S2Parser::typeDataSending, //
             &s2Storage, &S2::ConfigStorage::typeDataReceive);
         QObject::connect(mS2Parser, &Xml::S2Parser::widgetDataSending, //

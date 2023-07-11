@@ -23,15 +23,13 @@ public:
 
     static void tester(const S2DataTypes::S2ConfigType &buffer);
 
-    [[deprecated]] static quint16 GetIdByName(QString name);
+    static quint16 GetIdByName(const QString &name);
 
     static quint64 GetFileSize(const QByteArray &data);
 
     static S2DataTypes::S2BFile emulateS2B(const S2DataTypes::FileStruct &journal, //
         quint16 fname, quint16 typeB, quint16 typeM);
     static S2DataTypes::S2BFile parseS2B(const QByteArray &file);
-
-    [[deprecated]] static QMap<QString, quint16> NameIdMap;
 
 private:
     static quint32 getTime32();

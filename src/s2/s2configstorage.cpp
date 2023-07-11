@@ -20,19 +20,29 @@ void ConfigStorage::setParseStatus(const ParseStatus pStatus)
     status = pStatus;
 }
 
-const std::map<quint16, ctti::unnamed_type_id_t> &ConfigStorage::getTypeByIdMap() const
-{
-    return typeById;
-}
-
 const std::map<QString, quint16> &ConfigStorage::getIdByNameMap() const
 {
     return idByName;
 }
 
+const std::map<quint16, ctti::unnamed_type_id_t> &ConfigStorage::getTypeByIdMap() const
+{
+    return typeById;
+}
+
 const std::map<quint32, QString> &ConfigStorage::getConfigTabs() const
 {
     return configTabs;
+}
+
+void ConfigStorage::nameDataReceive(const quint16 id, const QString &name)
+{
+    if (id == 0)
+        qWarning() << "Invalid S2 config id: " << id;
+    else if (name.isEmpty())
+        qWarning() << "Empty S2 name for item with id: " << id;
+    else
+        idByName.insert({ name, id });
 }
 
 const config::widgetMap &ConfigStorage::getWidgetMap() const
@@ -46,16 +56,6 @@ void ConfigStorage::typeDataReceive(const quint16 id, const std::uint64_t typeId
         qWarning() << "Invalid S2 config id: " << id;
     else if (typeId != 0)
         typeById.insert({ id, typeId });
-}
-
-void ConfigStorage::nameDataReceive(const quint16 id, const QString &name)
-{
-    if (id == 0)
-        qWarning() << "Invalid S2 config id: " << id;
-    else if (name.isEmpty())
-        qWarning() << "Empty S2 name for item with id: " << id;
-    else
-        idByName.insert({ name, id });
 }
 
 void ConfigStorage::widgetDataReceive(const quint16 id, const config::itemVariant &widget)

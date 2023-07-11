@@ -6,7 +6,6 @@
 #include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
-#include "../xml/xmlparser/xmlconfigparser.h"
 #include "tunesequencefile.h"
 
 #include <QEventLoop>

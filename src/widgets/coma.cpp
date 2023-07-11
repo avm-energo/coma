@@ -39,7 +39,6 @@
 #include "../s2/s2configstorage.h"
 #include "../s2/s2datafactory.h"
 #include "../s2/s2util.h"
-#include "../xml/xmlparser/xmlconfigparser.h"
 #include "alarmwidget.h"
 #include "epopup.h"
 #include "splashscreen.h"
@@ -626,9 +625,8 @@ void Coma::disconnect()
 
 void Coma::setupConnection()
 {
-    XmlConfigParser::ParseS2ConfigToMap(S2Util::NameIdMap);
+    // XmlConfigParser::ParseS2ConfigToMap(S2Util::NameIdMap);
     auto const &board = Board::GetInstance();
-
     connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const State state) {
         switch (state)
         {
