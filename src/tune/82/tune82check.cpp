@@ -6,7 +6,7 @@
 #include "../../widgets/epopup.h"
 #include "../../widgets/wd_func.h"
 #include "../mip.h"
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 
 #include <QDialog>
 #include <QEventLoop>

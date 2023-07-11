@@ -1,5 +1,6 @@
 #pragma once
 #include "../module/configstorage.h"
+#include "../s2/s2configstorage.h"
 #include "../s2/s2datatypes.h"
 #include "../widgets/delegate_common.h"
 #include "../widgets/ipctrl.h"
@@ -129,9 +130,9 @@ bool WidgetFactory::fillTableView(
 template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quint16 key, const T &value)
 {
     bool status = false;
-    auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
+    auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto search = widgetMap.find(key);
-    if (search == widgetMap.end())
+    if (search == widgetMap.cend())
     {
         if (key == 0)
         {

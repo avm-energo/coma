@@ -3,38 +3,8 @@
 #include "../interfaces/baseinterface.h"
 #include "../interfaces/interfacesettings.h"
 
-ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent), mSettings(new ModuleSettings), isS2Parsed(false)
+ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent), mSettings(new ModuleSettings)
 {
-}
-
-/// \brief Constant getter for S2 parsing status.
-bool ConfigStorage::getS2Status() const
-{
-    return isS2Parsed;
-}
-
-/// \brief Setter for S2 parsing status.
-void ConfigStorage::setS2Status(const bool &status)
-{
-    isS2Parsed = status;
-}
-
-/// \brief Constant getter for S2 configs hashmap.
-const TypeByIdMap &ConfigStorage::getS2Map() const
-{
-    return s2Map;
-}
-
-/// \brief Constant getter for S2 widget hashmap.
-const config::widgetMap &ConfigStorage::getWidgetMap() const
-{
-    return widgetMap;
-}
-
-/// \brief Constant getter for S2 tabs map.
-const ModuleTypes::TabsMap &ConfigStorage::getConfigTabs() const
-{
-    return s2tabs;
 }
 
 /// \brief Constant getter for module settings.
@@ -47,35 +17,6 @@ const ModuleSettings &ConfigStorage::getModuleSettings() const
 void ConfigStorage::clearModuleSettings()
 {
     mSettings->clear();
-}
-
-/// \brief Slot for saving S2 config record.
-void ConfigStorage::typeDataReceive(const quint16 id, const uint64_t typeId)
-{
-    if (id == 0)
-        qWarning() << "Invalid S2 config id: " << id;
-    else if (typeId != 0)
-        s2Map.insert({ id, typeId });
-}
-
-/// \brief Slot for saving S2 widget record.
-void ConfigStorage::widgetDataReceive(const quint16 id, const config::itemVariant &widget)
-{
-    if (id == 0)
-        qWarning() << "Invalid S2 widget id: " << id;
-    else if (widget.valueless_by_exception())
-        qWarning() << "Invalid S2 widget data, widget id: " << id;
-    else
-        widgetMap.insert({ id, widget });
-}
-
-/// \brief Slot for saving S2 tab record.
-void ConfigStorage::configTabDataReceive(const quint32 &id, const QString &tabName)
-{
-    if (tabName == "")
-        qWarning() << "Empty tab name, tab id: " << id;
-    else
-        s2tabs.insert(id, tabName);
 }
 
 /// \brief Slot for starting new config in module settings (for second configuration file).
@@ -145,7 +86,7 @@ void ConfigStorage::configDataReceive(const quint16 id, const QString &defVal, c
         qWarning() << "Invalid default value, config id: " << id;
     else
     {
-        mSettings->appendToCurrentConfig({ { id, defVal }, visib });
+        mSettings->appendToCurrentConfig({ s2factory.create(id, defVal), visib });
         if (count != 0)
             mSettings->appendDetailCount(id, count);
     }

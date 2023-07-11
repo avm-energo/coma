@@ -1,6 +1,6 @@
 #include "journalviewer.h"
 
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../xml/xmlparser/xmlmoduleparser.h"
 #include "measjournal.h"

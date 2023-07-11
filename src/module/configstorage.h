@@ -1,6 +1,7 @@
 #ifndef CONFIGSTORAGE_H
 #define CONFIGSTORAGE_H
 
+#include "../s2/s2datafactory.h"
 #include "../widgets/delegate_common.h"
 #include "board.h"
 #include "modulesettings.h"
@@ -8,34 +9,21 @@
 #include <QObject>
 #include <gen/singleton.h>
 
-using TypeByIdMap = std::map<int, ctti::unnamed_type_id_t>;
-
 class ConfigStorage : public QObject, public Singleton<ConfigStorage>
 {
     Q_OBJECT
 private:
-    TypeByIdMap s2Map;
     config::widgetMap widgetMap;
     ModuleTypes::TabsMap s2tabs;
     std::unique_ptr<ModuleSettings> mSettings;
-    bool isS2Parsed;
+    S2::DataFactory s2factory;
 
 public:
     explicit ConfigStorage(token, QObject *parent = nullptr);
-    [[deprecated]] bool getS2Status() const;
-    [[deprecated]] void setS2Status(const bool &status = true);
-    [[deprecated]] const TypeByIdMap &getS2Map() const;
-    [[deprecated]] const config::widgetMap &getWidgetMap() const;
-    [[deprecated]] const ModuleTypes::TabsMap &getConfigTabs() const;
     const ModuleSettings &getModuleSettings() const;
     void clearModuleSettings();
 
 public slots:
-    // S2 data slots
-    [[deprecated]] void typeDataReceive(const quint16 id, const std::uint64_t typeId);
-    [[deprecated]] void widgetDataReceive(const quint16 id, const config::itemVariant &widget);
-    [[deprecated]] void configTabDataReceive(const quint32 &id, const QString &tabName);
-
     // Module data slots
     void startNewConfig();
     void signalDataReceive(const quint32 id, const quint32 addr, //

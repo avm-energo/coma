@@ -1,6 +1,6 @@
 #include "baseinterface.h"
 
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "baseport.h"
 
 #include <QCoreApplication>

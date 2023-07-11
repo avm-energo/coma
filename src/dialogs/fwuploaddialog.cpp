@@ -2,7 +2,7 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../module/board.h"
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"

@@ -2,7 +2,7 @@
 
 #include "../models/etablemodel.h"
 #include "../module/board.h"
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../widgets/etableview.h"
 #include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"

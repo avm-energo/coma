@@ -2,7 +2,6 @@
 
 #include "filestruct.h"
 
-#include <QVariant>
 #include <array>
 #include <gen/std_ext.h>
 #include <variant>

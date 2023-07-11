@@ -1,6 +1,6 @@
 #include "baseinterfacethread.h"
 
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 
 #include <QCoreApplication>
 #include <gen/datamanager/typesproxy.h>

@@ -2,7 +2,7 @@
 
 #include "../models/comboboxdelegate.h"
 #include "../s2/configv.h"
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"
 #include "../widgets/ipctrl.h"
@@ -105,7 +105,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
     //    if (key == S2::GetIdByName("timezone"))
     //        qWarning() << "mTimezone";
     QWidget *widget = nullptr;
-    auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
+    auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto search = widgetMap.find(key);
     if (search == widgetMap.end())
     {
@@ -222,7 +222,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
 bool WidgetFactory::fillBack(quint16 key, const QWidget *parent)
 {
     bool status = false;
-    auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
+    auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto search = widgetMap.find(key);
     if (search == widgetMap.end())
     {
@@ -313,7 +313,7 @@ QList<QStandardItem *> WidgetFactory::createItem(
     quint16 key, const S2DataTypes::BYTE_8t &value, [[maybe_unused]] const QWidget *parent)
 {
     QList<QStandardItem *> items {};
-    auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
+    auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto search = widgetMap.find(key);
     if (search == widgetMap.end())
     {
@@ -428,13 +428,12 @@ const QString WidgetFactory::widgetName(int group, int item)
 /// TODO: ОЧЕНЬ ПЛОХОЕ РЕШЕНИЕ, МАКСИМАЛЬНЫЙ КОСТЫЛЬ
 quint16 WidgetFactory::getRealCount(const quint16 key)
 {
-    const auto &cfgStorage = ConfigStorage::GetInstance();
-    auto &widgetMap = cfgStorage.getWidgetMap();
+    auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto widgetSearch = widgetMap.find(key);
     if (widgetSearch != widgetMap.end())
     {
         quint16 realCount = 0;
-        auto &cfgCountMap = cfgStorage.getModuleSettings().getDetailConfigCount();
+        auto &cfgCountMap = ConfigStorage::GetInstance().getModuleSettings().getDetailConfigCount();
         auto countSearch = cfgCountMap.find(key);
         if (countSearch != cfgCountMap.end())
         {

@@ -1,6 +1,6 @@
 #include "oscmanager.h"
 
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../widgets/wd_func.h"
 #include "parseid10001.h"
 #include "parseid10020.h"

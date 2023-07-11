@@ -5,8 +5,9 @@
 namespace S2
 {
 
-ConfigStorage::ConfigStorage(QObject *parent) : QObject(parent), status(ParseStatus::NotYetParsed)
+ConfigStorage::ConfigStorage(token token, QObject *parent) : QObject(parent), status(ParseStatus::NotYetParsed)
 {
+    Q_UNUSED(token);
 }
 
 ParseStatus ConfigStorage::getParseStatus() const
@@ -22,6 +23,11 @@ void ConfigStorage::setParseStatus(const ParseStatus pStatus)
 const std::map<quint16, ctti::unnamed_type_id_t> &ConfigStorage::getTypeByIdMap() const
 {
     return typeById;
+}
+
+const std::map<QString, quint16> &ConfigStorage::getIdByNameMap() const
+{
+    return idByName;
 }
 
 const std::map<quint32, QString> &ConfigStorage::getConfigTabs() const
@@ -44,7 +50,6 @@ void ConfigStorage::typeDataReceive(const quint16 id, const std::uint64_t typeId
 
 void ConfigStorage::nameDataReceive(const quint16 id, const QString &name)
 {
-
     if (id == 0)
         qWarning() << "Invalid S2 config id: " << id;
     else if (name.isEmpty())

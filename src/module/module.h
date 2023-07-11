@@ -22,7 +22,7 @@ public:
         const Modules::StartupInfoBlock &startupInfoBlock = Board::GetInstance().baseSerialInfo(),
         QObject *parent = nullptr);
 
-    bool loadS2Settings(S2::ConfigStorage *s2Storage);
+    bool loadS2Settings(S2::ConfigStorage &s2Storage);
     bool loadSettings();
 
 private:

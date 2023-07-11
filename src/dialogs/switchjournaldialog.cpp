@@ -3,7 +3,7 @@
 #include "../models/etablemodel.h"
 #include "../module/board.h"
 #include "../oscillograms/swjmanager.h"
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
 

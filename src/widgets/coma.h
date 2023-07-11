@@ -22,12 +22,6 @@ enum THREAD
     MODBUS = 0x04
 };
 
-namespace S2
-{
-class ConfigStorage;
-class DataFactory;
-}
-
 class Coma : public QMainWindow
 {
     Q_OBJECT
@@ -65,7 +59,6 @@ private slots:
 
 private:
     UniquePointer<Module> module;
-    UniquePointer<S2::ConfigStorage> s2ConfigStorage;
 
     QTimer *BdaTimer, *AlrmTimer;
     AlarmWidget *AlarmW;

@@ -5,7 +5,7 @@
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
 #include "../s2/configv.h"
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../tunesteps.h"
 
 #include <QMessageBox>

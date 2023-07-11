@@ -1,6 +1,8 @@
-#include "s2.h"
+#include "s2util.h"
 
 //#include "../module/configstorage.h"
+
+#include "s2datafactory.h"
 
 #include <QDateTime>
 #include <QDebug>
@@ -111,6 +113,7 @@ bool S2Util::RestoreData(QByteArray bain, QList<S2DataTypes::DataItem> &outlist)
 {
     Q_ASSERT(bain.size() >= sizeof(S2DataTypes::S2FileHeader));
     qInfo() << "S2 File size:" << bain.size();
+    S2::DataFactory factory;
     S2DataTypes::DataRec DR;
 
     // копируем FileHeader
@@ -140,20 +143,9 @@ bool S2Util::RestoreData(QByteArray bain, QList<S2DataTypes::DataItem> &outlist)
 
         if (DR.header.id != S2DataTypes::dummyElement)
         {
-            /// TODO: Переписать с использованием S2::DataFactory
-            //            size = DR.header.numByte;
-            //            auto &s2map = ConfigStorage::GetInstance().getS2Map();
-            //            auto search = s2map.find(DR.header.id);
-            //            if (search != s2map.end())
-            //            {
-            //                S2DataTypes::DataItem DRV(DR, bain.left(size));
-            //                outlist.append(DRV);
-            //            }
-            //            else
-            //            {
-            //                qCritical("В модуле неизвестная конфигурация, необходимо взять конфигурацию по
-            //                умолчанию");
-            //            }
+            size = DR.header.numByte;
+            auto dataItem = factory.create(DR.header.id, bain.left(size));
+            outlist.append(dataItem);
             bain.remove(0, size);
         }
     }
@@ -169,10 +161,11 @@ void S2Util::tester(const S2DataTypes::S2ConfigType &buffer)
 {
     // here is test functions
     using namespace S2DataTypes;
+    S2::DataFactory factory;
     std::vector<DataItem> bufferV;
-    std::transform(
-        buffer.begin(), buffer.end(), std::back_inserter(bufferV), [](const auto &oldRec) { return DataItem(oldRec); });
-    Q_ASSERT(std::equal(buffer.cbegin(), buffer.cend(), bufferV.cbegin(), bufferV.cend(),
+    std::transform(buffer.begin(), buffer.end(), std::back_inserter(bufferV), //
+        [factory](const DataRec &oldRec) { return factory.create(oldRec); });
+    Q_ASSERT(std::equal(buffer.cbegin(), buffer.cend(), bufferV.cbegin(), bufferV.cend(), //
                  [](const DataRec &oldRec, const DataItem &newRec) { return oldRec == newRec.serialize(); })
         && "Broken DataRecV S2 conf");
     for (auto i = 0; i != bufferV.size() && i != buffer.size(); ++i)

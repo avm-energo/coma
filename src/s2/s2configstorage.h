@@ -3,6 +3,7 @@
 #include "../widgets/delegate_common.h"
 
 #include <QObject>
+#include <gen/singleton.h>
 
 namespace S2
 {
@@ -13,7 +14,7 @@ enum class ParseStatus : bool
     AlreadyParsed = true
 };
 
-class ConfigStorage : public QObject
+class ConfigStorage : public QObject, public Singleton<ConfigStorage>
 {
     Q_OBJECT
 private:
@@ -24,7 +25,7 @@ private:
     ParseStatus status;
 
 public:
-    explicit ConfigStorage(QObject *parent = nullptr);
+    explicit ConfigStorage(token token, QObject *parent = nullptr);
 
     ParseStatus getParseStatus() const;
     void setParseStatus(const ParseStatus pStatus);

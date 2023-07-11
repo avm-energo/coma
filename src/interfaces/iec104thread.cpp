@@ -1,6 +1,6 @@
 #include "iec104thread.h"
 
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "iec104private.h"
 
 #include <QCoreApplication>

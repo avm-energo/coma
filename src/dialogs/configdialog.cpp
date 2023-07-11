@@ -4,7 +4,7 @@
 #include "../module/board.h"
 #include "../module/configstorage.h"
 #include "../s2/configv.h"
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 #include "../xml/xmlparser/xmlconfigparser.h"
@@ -12,9 +12,7 @@
 #include <QDebug>
 #include <QGridLayout>
 #include <QGroupBox>
-//#include <QMessageBox>
 #include <QScrollArea>
-//#include <QTextEdit>
 #include <gen/datamanager/typesproxy.h>
 #include <gen/error.h>
 #include <gen/files.h>
@@ -233,7 +231,7 @@ QWidget *widgetAt(QTabWidget *tabWidget, int index)
 
 delegate::WidgetGroup groupForId(quint16 id)
 {
-    auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
+    auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto search = widgetMap.find(id);
     if (search == widgetMap.end())
     {
@@ -286,18 +284,22 @@ void ConfigDialog::setupUI()
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
     std::set<delegate::WidgetGroup> currentCategories, intersection;
-    auto &tabs = ConfigStorage::GetInstance().getConfigTabs();
+    auto &tabs = S2::ConfigStorage::GetInstance().getConfigTabs();
+
     for (const auto &record : qAsConst(m_defaultValues))
     {
         auto tab = groupForId(record.record.getId());
-        if (tabs.contains(tab))
+        auto search = tabs.find(tab);
+        if (search != tabs.cend())
             intersection.insert(tab);
         else
             qDebug() << "Undefined tab ID" << tab;
     }
+
     for (const auto &group : intersection)
     {
-        auto subBox = new QGroupBox("Группа " + tabs.value(group), this);
+        auto &tabName = tabs.at(group);
+        auto subBox = new QGroupBox("Группа " + tabName, this);
         auto subvlyout = new QVBoxLayout;
         subvlyout->setAlignment(Qt::AlignTop);
         subvlyout->setSpacing(0);
@@ -308,7 +310,7 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
         scrollArea->setFrameShape(QFrame::NoFrame);
         scrollArea->setWidgetResizable(true);
         scrollArea->setWidget(subBox);
-        tabWidget->addTab(scrollArea, tabs.value(group));
+        tabWidget->addTab(scrollArea, tabName);
     }
 }
 

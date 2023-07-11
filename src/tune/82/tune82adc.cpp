@@ -1,7 +1,7 @@
 #include "tune82adc.h"
 
 #include "../../s2/configv.h"
-#include "../../s2/s2.h"
+#include "../../s2/s2util.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"

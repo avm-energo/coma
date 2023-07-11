@@ -41,7 +41,7 @@ S2DataTypes::valueType helper(const QString &str)
 namespace S2
 {
 
-DataFactory::DataFactory(const ConfigStorage &s2Storage, QObject *parent) : QObject(parent), confStorage(s2Storage)
+DataFactory::DataFactory() : confStorage(S2::ConfigStorage::GetInstance())
 {
 }
 

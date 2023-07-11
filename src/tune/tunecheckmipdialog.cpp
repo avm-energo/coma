@@ -3,7 +3,7 @@
 #include "../module/board.h"
 #include "../module/modules.h"
 #include "../s2/configv.h"
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 #include "../xml/xmlparser/xmlconfigparser.h"

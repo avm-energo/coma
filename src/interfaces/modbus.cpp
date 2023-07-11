@@ -1,6 +1,6 @@
 #include "modbus.h"
 
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "interfacesettings.h"
 #include "modbusthread.h"
 #include "serialport.h"

@@ -8,9 +8,8 @@ namespace S2
 
 class ConfigStorage;
 
-class DataFactory : public QObject
+class DataFactory
 {
-    Q_OBJECT
 private:
     const ConfigStorage &confStorage;
 
@@ -18,7 +17,7 @@ private:
     quint16 getId(const QString &name) const;
 
 public:
-    explicit DataFactory(const ConfigStorage &s2Storage, QObject *parent = nullptr);
+    explicit DataFactory();
 
     S2DataTypes::DataItem create(const S2DataTypes::DataRec &record) const;
     S2DataTypes::DataItem create(const quint16 id, const QByteArray &data) const;
