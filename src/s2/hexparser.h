@@ -83,7 +83,7 @@ public:
     void parseFile(const QByteArray &binaryFile);
 
     /// \brief Returns S2 format of the stored HEX records.
-    std::vector<S2DataTypes::FileStruct> getS2Format();
+    std::vector<S2::FileStruct> getS2Format();
 
 signals:
     /// \brief The signal for the parsing error information.

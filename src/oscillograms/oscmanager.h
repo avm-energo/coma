@@ -7,7 +7,7 @@
 #include <gen/stdfunc.h>
 #include <optional>
 
-class OscManager : public FileManager<S2DataTypes::OscHeader>
+class OscManager : public FileManager<S2::OscHeader>
 {
 public:
     OscManager() = default;

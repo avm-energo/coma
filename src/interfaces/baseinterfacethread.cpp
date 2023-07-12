@@ -25,7 +25,7 @@ void BaseInterfaceThread::wakeUp()
     _waiter.wakeOne();
 }
 
-void BaseInterfaceThread::FilePostpone(QByteArray &ba, S2DataTypes::FilesEnum addr, DataTypes::FileFormat format)
+void BaseInterfaceThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataTypes::FileFormat format)
 {
     switch (format)
     {
@@ -34,13 +34,13 @@ void BaseInterfaceThread::FilePostpone(QByteArray &ba, S2DataTypes::FilesEnum ad
         DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
             static_cast<quint64>(ba.size()) };
         DataManager::GetInstance().addSignalToOutList(genResp);
-        S2DataTypes::FileStruct resp { addr, ba };
+        S2::FileStruct resp { addr, ba };
         DataManager::GetInstance().addSignalToOutList(resp);
         break;
     }
     case FileFormat::DefaultS2:
     {
-        QList<S2DataTypes::DataItem> outlistV;
+        QList<S2::DataItem> outlistV;
 
         if (!S2Util::RestoreData(ba, outlistV))
         {
@@ -70,7 +70,7 @@ void BaseInterfaceThread::FilePostpone(QByteArray &ba, S2DataTypes::FilesEnum ad
         DataManager::GetInstance().addSignalToOutList(genResp);
         for (auto &&file : outlist)
         {
-            S2DataTypes::FileStruct resp { S2DataTypes::FilesEnum(file.ID), file.data };
+            S2::FileStruct resp { S2::FilesEnum(file.ID), file.data };
             DataManager::GetInstance().addSignalToOutList(resp);
         }
         break;

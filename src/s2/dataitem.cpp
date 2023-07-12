@@ -4,7 +4,7 @@
 
 #include <type_traits>
 
-namespace S2DataTypes
+namespace S2
 {
 
 DataItem::DataItem(quint16 _id) : DataItem(_id, 0)

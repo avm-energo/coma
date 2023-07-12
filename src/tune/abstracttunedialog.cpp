@@ -356,6 +356,14 @@ Error::Msg AbstractTuneDialog::readTuneCoefs()
     return Error::Msg::NoError;
 }
 
+Error::Msg AbstractTuneDialog::updateConfigAndSend(const QList<S2::DataItem> &changes) const
+{
+    auto configCopy = configV->copy();
+    for (auto changeRecord : changes)
+        configCopy.setRecordValue(changeRecord.getId(), changeRecord.getData());
+    return BaseInterface::iface()->writeConfFileSync(configCopy.getConfig());
+}
+
 // void AbstractTuneDialog::loadTuneCoefsSlot()
 //{
 //    readTuneCoefs();
@@ -465,7 +473,7 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
     QByteArray ba;
-    if (BaseInterface::iface()->readFileSync(S2DataTypes::FilesEnum::Config, ba) != Error::Msg::NoError)
+    if (BaseInterface::iface()->readFileSync(S2::FilesEnum::Config, ba) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     return Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba);
 }
@@ -475,7 +483,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
     QByteArray ba;
     if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba)
         != Error::Msg::NoError)
-        return BaseInterface::iface()->writeFileSync(S2DataTypes::FilesEnum::Config, ba);
+        return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, ba);
     return Error::Msg::GeneralError;
 }
 

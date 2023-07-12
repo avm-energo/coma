@@ -11,7 +11,7 @@ public:
     virtual ~ParseModule();
     bool PosPlusPlus(void *dst, int &count, int size);
 
-    virtual bool Parse(quint32 id, const S2DataTypes::OscHeader &OHD, TrendViewModel *model) = 0;
+    virtual bool Parse(quint32 id, const S2::OscHeader &OHD, TrendViewModel *model) = 0;
 
 private:
     const QByteArray BArray;

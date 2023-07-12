@@ -7,17 +7,14 @@ class ConfigV
 public:
     ConfigV() = default;
 
-    S2DataTypes::DataItem getRecord(quint16 id);
-    void setRecordValue(const S2DataTypes::DataItem &record);
-    void setRecordValue(const quint16 key, const S2DataTypes::valueType &value);
+    S2::DataItem getRecord(quint16 id);
+    void setRecordValue(const S2::DataItem &record);
+    void setRecordValue(const quint16 key, const S2::valueType &value);
 
-    const QList<S2DataTypes::DataItem> &getConfig() const;
-    void setConfig(const QList<S2DataTypes::DataItem> &newConfig);
-
-    void pushConfig();
-    void popConfig();
+    const QList<S2::DataItem> &getConfig() const;
+    void setConfig(const QList<S2::DataItem> &newConfig);
+    ConfigV copy() const;
 
 private:
-    QList<S2DataTypes::DataItem> config;
-    QList<S2DataTypes::DataItem> savedConfig;
+    QList<S2::DataItem> config;
 };

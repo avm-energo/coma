@@ -89,9 +89,9 @@ quint16 HexParser::getIdByAddress(const QByteArray &binAddr)
         return idNotFound;
 }
 
-std::vector<S2DataTypes::FileStruct> HexParser::getS2Format()
+std::vector<S2::FileStruct> HexParser::getS2Format()
 {
-    std::vector<S2DataTypes::FileStruct> retVal;
+    std::vector<S2::FileStruct> retVal;
     QByteArray data;
     quint16 prevBlockId = idNotFound, currBlockId = idNotFound;
 
@@ -111,7 +111,7 @@ std::vector<S2DataTypes::FileStruct> HexParser::getS2Format()
 
             if (!data.isEmpty())
             {
-                retVal.push_back(S2DataTypes::FileStruct { prevBlockId, data });
+                retVal.push_back(S2::FileStruct { prevBlockId, data });
                 data.clear();
             }
             prevBlockId = currBlockId;
@@ -122,7 +122,7 @@ std::vector<S2DataTypes::FileStruct> HexParser::getS2Format()
         }
         else if (record.recordType == RecordType::EndOfFile)
         {
-            retVal.push_back(S2DataTypes::FileStruct { prevBlockId, data });
+            retVal.push_back(S2::FileStruct { prevBlockId, data });
             data.clear();
             break;
         }
@@ -132,7 +132,7 @@ std::vector<S2DataTypes::FileStruct> HexParser::getS2Format()
         }
     }
 
-    retVal.push_back(S2DataTypes::FileStruct { S2DataTypes::dummyElement, QByteArray() });
+    retVal.push_back(S2::FileStruct { S2::dummyElement, QByteArray() });
     return retVal;
 }
 

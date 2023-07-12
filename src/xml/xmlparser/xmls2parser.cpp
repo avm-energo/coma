@@ -29,31 +29,31 @@ const QHash<QString, std::uint64_t> Xml::S2Parser::nameTypeMap = {
     { "QComboBox", ctti::unnamed_type_id<QComboBox>().hash() },                       //
     { "QLineEdit", ctti::unnamed_type_id<QLineEdit>().hash() },                       //
     { "QTableView", ctti::unnamed_type_id<QTableView>().hash() },                     //
-    { "BYTE", ctti::unnamed_type_id<S2DataTypes::BYTE>().hash() },                    //
-    { "BYTE[4]", ctti::unnamed_type_id<S2DataTypes::BYTE_4t>().hash() },              //
-    { "BYTE[6]", ctti::unnamed_type_id<S2DataTypes::BYTE_6t>().hash() },              //
-    { "BYTE[8]", ctti::unnamed_type_id<S2DataTypes::BYTE_8t>().hash() },              //
-    { "BYTE[16]", ctti::unnamed_type_id<S2DataTypes::BYTE_16t>().hash() },            //
-    { "BYTE[32]", ctti::unnamed_type_id<S2DataTypes::BYTE_32t>().hash() },            //
-    { "WORD", ctti::unnamed_type_id<S2DataTypes::WORD>().hash() },                    //
-    { "WORD[4]", ctti::unnamed_type_id<S2DataTypes::WORD_4t>().hash() },              //
-    { "WORD[6]", ctti::unnamed_type_id<S2DataTypes::WORD_6t>().hash() },              //
-    { "WORD[8]", ctti::unnamed_type_id<S2DataTypes::WORD_8t>().hash() },              //
-    { "WORD[16]", ctti::unnamed_type_id<S2DataTypes::WORD_16t>().hash() },            //
-    { "WORD[32]", ctti::unnamed_type_id<S2DataTypes::WORD_32t>().hash() },            //
-    { "DWORD", ctti::unnamed_type_id<S2DataTypes::DWORD>().hash() },                  //
-    { "DWORD[4]", ctti::unnamed_type_id<S2DataTypes::DWORD_4t>().hash() },            //
-    { "DWORD[6]", ctti::unnamed_type_id<S2DataTypes::DWORD_6t>().hash() },            //
-    { "DWORD[8]", ctti::unnamed_type_id<S2DataTypes::DWORD_8t>().hash() },            //
-    { "DWORD[16]", ctti::unnamed_type_id<S2DataTypes::DWORD_16t>().hash() },          //
-    { "DWORD[32]", ctti::unnamed_type_id<S2DataTypes::DWORD_32t>().hash() },          //
-    { "FLOAT", ctti::unnamed_type_id<S2DataTypes::FLOAT>().hash() },                  //
-    { "FLOAT[2]", ctti::unnamed_type_id<S2DataTypes::FLOAT_2t>().hash() },            //
-    { "FLOAT[3]", ctti::unnamed_type_id<S2DataTypes::FLOAT_3t>().hash() },            //
-    { "FLOAT[4]", ctti::unnamed_type_id<S2DataTypes::FLOAT_4t>().hash() },            //
-    { "FLOAT[6]", ctti::unnamed_type_id<S2DataTypes::FLOAT_6t>().hash() },            //
-    { "FLOAT[8]", ctti::unnamed_type_id<S2DataTypes::FLOAT_8t>().hash() },            //
-    { "INT32", ctti::unnamed_type_id<S2DataTypes::INT32>().hash() }                   //
+    { "BYTE", ctti::unnamed_type_id<S2::BYTE>().hash() },                    //
+    { "BYTE[4]", ctti::unnamed_type_id<S2::BYTE_4t>().hash() },              //
+    { "BYTE[6]", ctti::unnamed_type_id<S2::BYTE_6t>().hash() },              //
+    { "BYTE[8]", ctti::unnamed_type_id<S2::BYTE_8t>().hash() },              //
+    { "BYTE[16]", ctti::unnamed_type_id<S2::BYTE_16t>().hash() },            //
+    { "BYTE[32]", ctti::unnamed_type_id<S2::BYTE_32t>().hash() },            //
+    { "WORD", ctti::unnamed_type_id<S2::WORD>().hash() },                    //
+    { "WORD[4]", ctti::unnamed_type_id<S2::WORD_4t>().hash() },              //
+    { "WORD[6]", ctti::unnamed_type_id<S2::WORD_6t>().hash() },              //
+    { "WORD[8]", ctti::unnamed_type_id<S2::WORD_8t>().hash() },              //
+    { "WORD[16]", ctti::unnamed_type_id<S2::WORD_16t>().hash() },            //
+    { "WORD[32]", ctti::unnamed_type_id<S2::WORD_32t>().hash() },            //
+    { "DWORD", ctti::unnamed_type_id<S2::DWORD>().hash() },                  //
+    { "DWORD[4]", ctti::unnamed_type_id<S2::DWORD_4t>().hash() },            //
+    { "DWORD[6]", ctti::unnamed_type_id<S2::DWORD_6t>().hash() },            //
+    { "DWORD[8]", ctti::unnamed_type_id<S2::DWORD_8t>().hash() },            //
+    { "DWORD[16]", ctti::unnamed_type_id<S2::DWORD_16t>().hash() },          //
+    { "DWORD[32]", ctti::unnamed_type_id<S2::DWORD_32t>().hash() },          //
+    { "FLOAT", ctti::unnamed_type_id<S2::FLOAT>().hash() },                  //
+    { "FLOAT[2]", ctti::unnamed_type_id<S2::FLOAT_2t>().hash() },            //
+    { "FLOAT[3]", ctti::unnamed_type_id<S2::FLOAT_3t>().hash() },            //
+    { "FLOAT[4]", ctti::unnamed_type_id<S2::FLOAT_4t>().hash() },            //
+    { "FLOAT[6]", ctti::unnamed_type_id<S2::FLOAT_6t>().hash() },            //
+    { "FLOAT[8]", ctti::unnamed_type_id<S2::FLOAT_8t>().hash() },            //
+    { "INT32", ctti::unnamed_type_id<S2::INT32>().hash() }                   //
 }; ///< Хэш-мапа для идентификации типа в рантайме
 
 Xml::S2Parser::S2Parser(QObject *parent) : BaseParser(parent)

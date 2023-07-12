@@ -26,7 +26,7 @@ static constexpr char name[] = "confHash";
 }
 
 ConfigDialog::ConfigDialog(
-    ConfigV *config, const QList<S2DataTypes::RecordPair> &defaultConfig, bool prereadConf, QWidget *parent)
+    ConfigV *config, const QList<S2::RecordPair> &defaultConfig, bool prereadConf, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent)
     , m_prereadConf(prereadConf)
     , m_defaultValues(defaultConfig)
@@ -34,14 +34,14 @@ ConfigDialog::ConfigDialog(
     , proxyDRL(new DataTypesProxy)
     , errConfState(nullptr)
 {
-    proxyDRL->RegisterType<QList<S2DataTypes::DataItem>>();
+    proxyDRL->RegisterType<QList<S2::DataItem>>();
     connect(proxyDRL.get(), &DataTypesProxy::DataStorable, this, &ConfigDialog::configReceived);
 }
 
 void ConfigDialog::readConfig()
 {
     setSuccessMsg(tr("Конфигурация прочитана успешно"));
-    BaseInterface::iface()->reqFile(quint32(S2DataTypes::FilesEnum::Config), DataTypes::FileFormat::DefaultS2);
+    BaseInterface::iface()->reqFile(quint32(S2::FilesEnum::Config), DataTypes::FileFormat::DefaultS2);
 }
 
 void ConfigDialog::writeConfig()
@@ -51,12 +51,12 @@ void ConfigDialog::writeConfig()
     {
         if (prepareConfigToWrite())
         {
-            S2DataTypes::S2ConfigType buffer;
+            S2::S2ConfigType buffer;
             std::transform(configV->getConfig().cbegin(), configV->getConfig().cend(), std::back_inserter(buffer),
-                [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
+                [](const auto &record) -> S2::DataRec { return record.serialize(); });
             S2Util::tester(buffer);
-            buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
-            BaseInterface::iface()->writeS2File(S2DataTypes::FilesEnum::Config, buffer);
+            buffer.push_back({ { S2::dummyElement, 0 }, nullptr });
+            BaseInterface::iface()->writeS2File(S2::FilesEnum::Config, buffer);
         }
         else
             qCritical("Ошибка чтения конфигурации");
@@ -70,17 +70,17 @@ auto setInserter(Container &set)
     return std::inserter(set, std::end(set));
 }
 
-bool operator<(const quint16 &number, const S2DataTypes::RecordPair &record)
+bool operator<(const quint16 &number, const S2::RecordPair &record)
 {
     return number < record.record.getId();
 }
 
-bool operator<(const S2DataTypes::RecordPair &record, const quint16 &number)
+bool operator<(const S2::RecordPair &record, const quint16 &number)
 {
     return number < record.record.getId();
 }
 
-void ConfigDialog::checkForDiff(const QList<S2DataTypes::DataItem> &list)
+void ConfigDialog::checkForDiff(const QList<S2::DataItem> &list)
 {
     std::set<quint16> receivedItems;
     std::transform(list.cbegin(), list.cend(), setInserter(receivedItems), //
@@ -102,7 +102,7 @@ void ConfigDialog::checkForDiff(const QList<S2DataTypes::DataItem> &list)
 
 void ConfigDialog::configReceived(const QVariant &msg)
 {
-    using namespace S2DataTypes;
+    using namespace S2;
     auto list = msg.value<QList<DataItem>>();
     configV->setConfig(list);
 
@@ -130,17 +130,17 @@ void ConfigDialog::configReceived(const QVariant &msg)
 
 void ConfigDialog::saveConfigToFile()
 {
-    using namespace S2DataTypes;
+    using namespace S2;
     auto filepath = WDFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf");
     if (filepath.isEmpty())
         return;
 
-    QByteArray ba;
     if (!prepareConfigToWrite())
     {
         qCritical("Ошибка чтения конфигурации");
         return;
     }
+    QByteArray ba;
     S2Util::StoreDataMem(ba, configV->getConfig(), int(FilesEnum::Config));
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
     length += sizeof(S2FileHeader);
@@ -179,7 +179,7 @@ void ConfigDialog::loadConfigFromFile()
         qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
-    QList<S2DataTypes::DataItem> outlistV;
+    QList<S2::DataItem> outlistV;
     S2Util::RestoreData(ba, outlistV);
     QVariant outlist;
     outlist.setValue(outlistV);

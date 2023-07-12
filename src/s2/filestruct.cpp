@@ -4,7 +4,7 @@
 
 #include <QDebug>
 
-namespace S2DataTypes
+namespace S2
 {
 
 FileStruct::FileStruct(const FilesEnum num, const QByteArray &file) : ID(quint16(num)), data(file)

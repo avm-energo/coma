@@ -16,7 +16,7 @@ void TestFiles::testOsc()
     for (auto &item : fileVector)
     {
         std::visit(overloaded {
-                       [](S2DataTypes::OscHeader &record) {
+                       [](S2::OscHeader &record) {
                            QCOMPARE(record.len, 498);
                            QCOMPARE(record.step, 20.0);
                            QCOMPARE(record.time, 5832358505620324140);
@@ -39,7 +39,7 @@ void TestFiles::testOsc85()
     for (auto &item : fileVector)
     {
         std::visit(overloaded {
-                       [](S2DataTypes::OscHeader &record) {
+                       [](S2::OscHeader &record) {
                            QCOMPARE(record.len, 1947);
                            QCOMPARE(record.step, 0.0792380943894);
                            QCOMPARE(record.time, 6730917119207093248);
@@ -82,7 +82,7 @@ void TestFiles::testSwj()
     for (auto &item : fileVector)
     {
         std::visit(overloaded {
-                       [](S2DataTypes::OscHeader &record) {
+                       [](S2::OscHeader &record) {
                            QCOMPARE(record.len, 4096);
                            QCOMPARE(record.step, 0.0792380943894);
                            QCOMPARE(record.time, 6730912496293968896);

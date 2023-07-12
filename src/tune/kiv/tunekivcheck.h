@@ -18,8 +18,6 @@ private:
     Error::Msg check();
     Error::Msg setSMode2();
 
-private slots:
-
 protected:
     void showEvent(QShowEvent *e) override;
 };

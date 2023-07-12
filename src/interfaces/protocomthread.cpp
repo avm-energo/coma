@@ -122,7 +122,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     // arg1 - file number
     case Commands::C_ReqFile:
     {
-        using namespace S2DataTypes;
+        using namespace S2;
         FilesEnum filetype = cmdStr.arg1.value<FilesEnum>();
         switch (filetype)
         {
@@ -247,7 +247,7 @@ void ProtocomThread::parseResponse()
 {
     using namespace Proto;
     using namespace DataTypes;
-    using namespace S2DataTypes;
+    using namespace S2;
     quint32 addr = m_currentCommand.arg1.toUInt();
     quint32 count = m_currentCommand.arg2.toUInt();
     switch (m_responseReceived)
@@ -413,22 +413,22 @@ bool ProtocomThread::isValidIncomingData(const QByteArray &data)
     return false;
 }
 
-void ProtocomThread::processFileFromDisk(S2DataTypes::FilesEnum fileNum)
+void ProtocomThread::processFileFromDisk(S2::FilesEnum fileNum)
 {
     QString fileToFind;
     switch (fileNum)
     {
-    case S2DataTypes::FilesEnum::JourSys:
+    case S2::FilesEnum::JourSys:
     {
         fileToFind = "system.dat";
         break;
     }
-    case S2DataTypes::FilesEnum::JourMeas:
+    case S2::FilesEnum::JourMeas:
     {
         fileToFind = "measj.dat";
         break;
     }
-    case S2DataTypes::FilesEnum::JourWork:
+    case S2::FilesEnum::JourWork:
     {
         fileToFind = "workj.dat";
         break;
@@ -650,13 +650,13 @@ void ProtocomThread::processTechBlock(const QByteArray &ba, quint32 blkNum)
         //  Блок наличия осциллограмм Bo
     case T_Oscillogram:
     {
-        Q_ASSERT(ba.size() % sizeof(S2DataTypes::OscInfo) == 0);
-        for (int i = 0; i != ba.size(); i += sizeof(S2DataTypes::OscInfo))
+        Q_ASSERT(ba.size() % sizeof(S2::OscInfo) == 0);
+        for (int i = 0; i != ba.size(); i += sizeof(S2::OscInfo))
         {
-            QByteArray buffer = ba.mid(i, sizeof(S2DataTypes::OscInfo));
+            QByteArray buffer = ba.mid(i, sizeof(S2::OscInfo));
 
-            S2DataTypes::OscInfo oscInfo;
-            memcpy(&oscInfo, buffer.constData(), sizeof(S2DataTypes::OscInfo));
+            S2::OscInfo oscInfo;
+            memcpy(&oscInfo, buffer.constData(), sizeof(S2::OscInfo));
             DataManager::GetInstance().addSignalToOutList(oscInfo);
         }
 
@@ -677,13 +677,13 @@ void ProtocomThread::processTechBlock(const QByteArray &ba, quint32 blkNum)
     case T_SwitchJournal:
     {
         qDebug("Блок наличия журналов переключения");
-        Q_ASSERT(ba.size() % sizeof(S2DataTypes::SwitchJourInfo) == 0);
-        for (int i = 0; i != ba.size(); i += sizeof(S2DataTypes::SwitchJourInfo))
+        Q_ASSERT(ba.size() % sizeof(S2::SwitchJourInfo) == 0);
+        for (int i = 0; i != ba.size(); i += sizeof(S2::SwitchJourInfo))
         {
-            QByteArray buffer = ba.mid(i, sizeof(S2DataTypes::SwitchJourInfo));
+            QByteArray buffer = ba.mid(i, sizeof(S2::SwitchJourInfo));
 
-            S2DataTypes::SwitchJourInfo swjInfo;
-            memcpy(&swjInfo, buffer.constData(), sizeof(S2DataTypes::SwitchJourInfo));
+            S2::SwitchJourInfo swjInfo;
+            memcpy(&swjInfo, buffer.constData(), sizeof(S2::SwitchJourInfo));
             DataManager::GetInstance().addSignalToOutList(swjInfo);
         }
         break;

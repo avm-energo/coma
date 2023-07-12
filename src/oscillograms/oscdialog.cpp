@@ -23,8 +23,8 @@ OscDialog::OscDialog(QWidget *parent)
     , proxyOI(new DataTypesProxy(&DataManager::GetInstance()))
     , proxyFS(new DataTypesProxy(&DataManager::GetInstance()))
 {
-    proxyOI->RegisterType<S2DataTypes::OscInfo>();
-    proxyFS->RegisterType<S2DataTypes::FileStruct>();
+    proxyOI->RegisterType<S2::OscInfo>();
+    proxyFS->RegisterType<S2::FileStruct>();
     connect(proxyOI.get(), &DataTypesProxy::DataStorable, this, &OscDialog::fillOscInfo);
     connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &OscDialog::fillOsc);
     setupUI();
@@ -82,7 +82,7 @@ void OscDialog::getOsc(const QModelIndex &idx)
     }
     if (!loadIfExist(size))
         BaseInterface::iface()->reqFile(
-            reqOscNum, DataTypes::FileFormat::CustomS2, size + sizeof(S2DataTypes::DataRecHeader));
+            reqOscNum, DataTypes::FileFormat::CustomS2, size + sizeof(S2::DataRecHeader));
 }
 
 void OscDialog::eraseOsc()
@@ -117,7 +117,7 @@ bool OscDialog::loadIfExist(quint32 size)
     if (!swjFile.exists())
         return false;
 
-    if (swjFile.size() < (size - sizeof(S2DataTypes::SwitchJourRecord)))
+    if (swjFile.size() < (size - sizeof(S2::SwitchJourRecord)))
         return false;
 
     int ret = QMessageBox::question(this, "Кэширование", "Прочитать из кэша");
@@ -130,7 +130,7 @@ bool OscDialog::loadIfExist(quint32 size)
             S2Util::RestoreData(ba, outlist);
             for (auto &&s2file : outlist)
             {
-                S2DataTypes::FileStruct resp { S2DataTypes::FilesEnum(s2file.ID), s2file.data };
+                S2::FileStruct resp { S2::FilesEnum(s2file.ID), s2file.data };
                 auto mngr = &DataManager::GetInstance();
                 mngr->addSignalToOutList(resp);
             }
@@ -144,12 +144,12 @@ bool OscDialog::loadIfExist(quint32 size)
     return false;
 }
 
-// void OscDialog::fillOscInfo(S2DataTypes::OscInfo info)
+// void OscDialog::fillOscInfo(S2::OscInfo info)
 void OscDialog::fillOscInfo(const QVariant &msg)
 {
-    if (msg.canConvert<S2DataTypes::OscInfo>())
+    if (msg.canConvert<S2::OscInfo>())
     {
-        auto info = msg.value<S2DataTypes::OscInfo>();
+        auto info = msg.value<S2::OscInfo>();
         oscMap.insert(info.typeHeader.id, info);
         QVector<QVariant> lsl {
             QString::number(info.typeHeader.id),         //
@@ -169,9 +169,9 @@ void OscDialog::fillOsc(const QVariant &msg)
     if (!updatesEnabled())
         return;
 
-    if (msg.canConvert<S2DataTypes::FileStruct>())
+    if (msg.canConvert<S2::FileStruct>())
     {
-        const auto file = msg.value<S2DataTypes::FileStruct>();
+        const auto file = msg.value<S2::FileStruct>();
         switch (file.ID)
         {
         case MT_HEAD_ID:

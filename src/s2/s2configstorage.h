@@ -43,3 +43,5 @@ public slots:
 };
 
 }
+
+using S2ConfigStorage = S2::ConfigStorage;

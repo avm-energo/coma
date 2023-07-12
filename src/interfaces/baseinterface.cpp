@@ -36,8 +36,8 @@ void BaseInterface::ProxyInit()
 
     proxyBS->RegisterType<DataTypes::BlockStruct>();
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
-    proxyFS->RegisterType<S2DataTypes::FileStruct>();
-    proxyDRL->RegisterType<QList<S2DataTypes::DataItem>>();
+    proxyFS->RegisterType<S2::FileStruct>();
+    proxyDRL->RegisterType<QList<S2::DataItem>>();
     proxyBStr->RegisterType<DataTypes::BitStringStruct>();
 
 #ifdef __linux__
@@ -154,7 +154,7 @@ void BaseInterface::writeFile(quint32 id, const QByteArray &ba)
     setToQueue(bi);
 }
 
-void BaseInterface::writeS2File(S2DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file)
+void BaseInterface::writeS2File(S2::FilesEnum number, const S2::S2ConfigType &file)
 {
     QByteArray ba;
     S2Util::StoreDataMem(ba, file, int(number));
@@ -210,7 +210,7 @@ void BaseInterface::responseReceived(const QVariant &msg)
 
 void BaseInterface::fileReceived(const QVariant &msg)
 {
-    auto file = msg.value<S2DataTypes::FileStruct>();
+    auto file = msg.value<S2::FileStruct>();
     disconnect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &BaseInterface::fileReceived);
     m_byteArrayResult = file.data;
     m_busy = false;
@@ -329,33 +329,33 @@ Error::Msg BaseInterface::writeBlockSync(
     }
 }
 
-Error::Msg BaseInterface::writeConfFileSync(const QList<S2DataTypes::DataItem> &config)
+Error::Msg BaseInterface::writeConfFileSync(const QList<S2::DataItem> &config)
 {
-    S2DataTypes::S2ConfigType buffer;
+    S2::S2ConfigType buffer;
 
     std::transform(config.begin(), config.end(), std::back_inserter(buffer),
-        [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
+        [](const auto &record) -> S2::DataRec { return record.serialize(); });
     S2Util::tester(buffer);
 
-    buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
-    return writeS2FileSync(S2DataTypes::FilesEnum::Config, buffer);
+    buffer.push_back({ { S2::dummyElement, 0 }, nullptr });
+    return writeS2FileSync(S2::FilesEnum::Config, buffer);
 }
 
-Error::Msg BaseInterface::pushAndWriteConfFileSync(ConfigV *config, const QList<S2DataTypes::DataItem> recordList)
-{
-    config->pushConfig();
-    for (auto record : recordList)
-        config->setRecordValue(record.getId(), record.getData());
-    return writeConfFileSync(config->getConfig());
-}
+// Error::Msg BaseInterface::pushAndWriteConfFileSync(ConfigV *config, const QList<S2::DataItem> &recordList)
+//{
+//    config->pushConfig();
+//    for (auto record : recordList)
+//        config->setRecordValue(record.getId(), record.getData());
+//    return writeConfFileSync(config->getConfig());
+//}
 
-Error::Msg BaseInterface::popAndWriteConfFileSync(ConfigV *config)
-{
-    config->popConfig();
-    return writeConfFileSync(config->getConfig());
-}
+// Error::Msg BaseInterface::popAndWriteConfFileSync(ConfigV *config)
+//{
+//    config->popConfig();
+//    return writeConfFileSync(config->getConfig());
+//}
 
-Error::Msg BaseInterface::writeFileSync(S2DataTypes::FilesEnum filenum, QByteArray &ba)
+Error::Msg BaseInterface::writeFileSync(S2::FilesEnum filenum, const QByteArray &ba)
 {
     m_busy = true;
     m_timeout = false;
@@ -372,19 +372,19 @@ Error::Msg BaseInterface::writeFileSync(S2DataTypes::FilesEnum filenum, QByteArr
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
-Error::Msg BaseInterface::writeS2FileSync(S2DataTypes::FilesEnum number, const S2DataTypes::S2ConfigType &file)
+Error::Msg BaseInterface::writeS2FileSync(S2::FilesEnum number, const S2::S2ConfigType &file)
 {
     QByteArray ba;
     S2Util::StoreDataMem(ba, file, int(number));
 
     // с 4 байта начинается FileHeader.size
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
-    length += sizeof(S2DataTypes::S2FileHeader);
+    length += sizeof(S2::S2FileHeader);
     Q_ASSERT(length == quint32(ba.size()));
-    return writeFileSync(S2DataTypes::FilesEnum::Config, ba);
+    return writeFileSync(S2::FilesEnum::Config, ba);
 }
 
-Error::Msg BaseInterface::readS2FileSync(S2DataTypes::FilesEnum filenum)
+Error::Msg BaseInterface::readS2FileSync(S2::FilesEnum filenum)
 {
     m_busy = true;
     m_timeout = false;
@@ -406,7 +406,7 @@ Error::Msg BaseInterface::readS2FileSync(S2DataTypes::FilesEnum filenum)
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
-Error::Msg BaseInterface::readFileSync(S2DataTypes::FilesEnum filenum, QByteArray &ba)
+Error::Msg BaseInterface::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
 {
     m_busy = true;
     m_timeout = false;

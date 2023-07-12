@@ -53,7 +53,7 @@ public slots:
     //    // void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
     //    void reqFile(quint32 filenum, Datatypes::FileFormat format) override;
     //    void writeFile(quint32 filenum, const QByteArray &file) override;
-    //    // void writeConfigFile(S2DataTypes::S2ConfigType *s2config) override;
+    //    // void writeConfigFile(S2::S2ConfigType *s2config) override;
     //    void reqTime() override;
     //    void writeTime(quint32 time) override;
     //    void writeCommand(Queries::Commands cmd, QVariant item) override;

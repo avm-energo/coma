@@ -84,12 +84,12 @@ Error::Msg TuneKIVCheck::showScheme()
 
 Error::Msg TuneKIVCheck::check()
 {
-    QList<S2DataTypes::DataItem> recordList;
+    QList<S2::DataItem> recordList {
+        { S2Util::GetIdByName("C_Pasp_ID"), S2::FLOAT_3t({ 9000, 9000, 9000 }) }, //
+        { S2Util::GetIdByName("Unom1"), float(220) }                                       //
+    };
 
-    recordList = { { S2Util::GetIdByName("C_Pasp_ID"), S2DataTypes::FLOAT_3t({ 9000, 9000, 9000 }) },
-        { S2Util::GetIdByName("Unom1"), float(220) } };
-
-    if (BaseInterface::iface()->pushAndWriteConfFileSync(configV, recordList) != Error::NoError)
+    if (updateConfigAndSend(recordList) != Error::NoError)
     {
         EMessageBox::error(this, "Ошибка при записи конфигурации");
         return Error::GeneralError;
@@ -117,10 +117,12 @@ Error::Msg TuneKIVCheck::check()
     if (!WDFunc::floatIsWithinLimits("частоты", bda->data()->Frequency, 51.0, 0.05))
         goto FaultLabel;
 #endif
-    BaseInterface::iface()->popAndWriteConfFileSync(configV);
+    // BaseInterface::iface()->popAndWriteConfFileSync(configV);
+    BaseInterface::iface()->writeConfFileSync(configV->getConfig());
     return Error::Msg::NoError;
 FaultLabel:
-    BaseInterface::iface()->popAndWriteConfFileSync(configV);
+    // BaseInterface::iface()->popAndWriteConfFileSync(configV);
+    BaseInterface::iface()->writeConfFileSync(configV->getConfig());
     return Error::Msg::GeneralError;
 }
 

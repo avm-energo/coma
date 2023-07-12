@@ -7,7 +7,7 @@
 #include <variant>
 #include <vector>
 
-namespace S2DataTypes
+namespace S2
 {
 constexpr quint32 dummyElement = 0xffffffff;
 
@@ -98,7 +98,7 @@ struct OscInfo
     quint64 unixtime; ///< Время начала записи осциллограммы
     quint32 idOsc0; ///< ID первой осциллограммы в файле (определяет структуру точки и номер канала)
 
-    friend QDebug operator<<(QDebug debug, const S2DataTypes::OscInfo &st);
+    friend QDebug operator<<(QDebug debug, const S2::OscInfo &st);
 };
 
 struct SwitchJourInfo
@@ -191,6 +191,6 @@ struct OscHeader
 
 }
 
-Q_DECLARE_METATYPE(S2DataTypes::S2BFile)
-Q_DECLARE_METATYPE(S2DataTypes::OscInfo)
-Q_DECLARE_METATYPE(S2DataTypes::SwitchJourInfo)
+Q_DECLARE_METATYPE(S2::S2BFile)
+Q_DECLARE_METATYPE(S2::OscInfo)
+Q_DECLARE_METATYPE(S2::SwitchJourInfo)

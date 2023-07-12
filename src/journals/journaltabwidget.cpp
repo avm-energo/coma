@@ -169,7 +169,7 @@ void JournalTabWidget::error(const QString &message)
     qCritical() << message;
 }
 
-void JournalTabWidget::setJournalFile(const S2DataTypes::S2BFile &jourFile)
+void JournalTabWidget::setJournalFile(const S2::S2BFile &jourFile)
 {
     auto storedType = quint32(journal->getType());
     if (storedType == jourFile.file.ID)

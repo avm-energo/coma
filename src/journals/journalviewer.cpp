@@ -80,7 +80,7 @@ void JournalViewer::measDataReceived(const quint32 index, const QString &header,
     measSettings.append({ index, header, type, visib });
 }
 
-void JournalViewer::setupUI(const S2DataTypes::FileStruct &file)
+void JournalViewer::setupUI(const S2::FileStruct &file)
 {
     auto layout = new QVBoxLayout;
     auto modelView = journal->createModelView(this);

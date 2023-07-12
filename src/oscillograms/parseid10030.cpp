@@ -6,7 +6,7 @@ ParseID10030::ParseID10030(const QByteArray &BA) : ParseModule(BA)
 {
 }
 
-bool ParseID10030::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)
+bool ParseID10030::Parse(quint32 id, const S2::OscHeader &header, TrendViewModel *model)
 {
     Q_UNUSED(id)
     const QStringList digitalValues = model->digitalValues();

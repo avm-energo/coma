@@ -44,7 +44,7 @@ private:
     bool isOneSegment(quint16 length);
     bool isSplitted(quint16 length);
     bool isValidIncomingData(const QByteArray &data);
-    void processFileFromDisk(S2DataTypes::FilesEnum fileNum);
+    void processFileFromDisk(S2::FilesEnum fileNum);
     void progressFile(const QByteArray &data);
 
     QByteArray prepareOk(bool isStart, byte cmd);

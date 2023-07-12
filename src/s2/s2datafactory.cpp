@@ -15,14 +15,14 @@ std::array<T, N> operator<<(std::array<T, N> &array, const QStringList &list)
 }
 
 template <typename T> //
-S2DataTypes::valueType helper(unsigned int numByte, const char *rawdata)
+S2::valueType helper(unsigned int numByte, const char *rawdata)
 {
     assert(sizeof(T) == numByte);
     return *reinterpret_cast<const T *>(rawdata);
 }
 
 template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool> = true> //
-S2DataTypes::valueType helper(const QString &str)
+S2::valueType helper(const QString &str)
 {
     T arr {};
     const auto list = str.split(',');
@@ -31,7 +31,7 @@ S2DataTypes::valueType helper(const QString &str)
 }
 
 template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true> //
-S2DataTypes::valueType helper(const QString &str)
+S2::valueType helper(const QString &str)
 {
     return QVariant(str).value<T>();
 }
@@ -61,10 +61,10 @@ quint16 DataFactory::getId(const QString &name) const
     return search->second;
 }
 
-S2DataTypes::DataItem DataFactory::create(const S2DataTypes::DataRec &record) const
+S2::DataItem DataFactory::create(const S2::DataRec &record) const
 {
     using namespace detail;
-    using namespace S2DataTypes;
+    using namespace S2;
     auto rawdata = static_cast<const char *>(record.thedata);
     auto id = static_cast<quint16>(record.header.id);
     auto type = getType(id);
@@ -120,15 +120,15 @@ S2DataTypes::DataItem DataFactory::create(const S2DataTypes::DataRec &record) co
     }
 }
 
-S2DataTypes::DataItem DataFactory::create(const quint16 id, const QByteArray &data) const
+S2::DataItem DataFactory::create(const quint16 id, const QByteArray &data) const
 {
     return create({ { id, quint32(data.size()) }, (void *)(data.data()) });
 }
 
-S2DataTypes::DataItem DataFactory::create(quint16 id, const QString &str) const
+S2::DataItem DataFactory::create(quint16 id, const QString &str) const
 {
     using namespace detail;
-    using namespace S2DataTypes;
+    using namespace S2;
     auto type = getType(id);
     switch (type.hash())
     {

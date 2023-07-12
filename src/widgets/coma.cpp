@@ -313,7 +313,7 @@ void Coma::loadOsc(const QString &filename)
     for (auto &item : fileVector)
     {
         std::visit(overloaded {
-                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); },  //
+                       [&](S2::OscHeader &header) { oscManager.setHeader(header); },  //
                        [](auto &&arg) { Q_UNUSED(arg) },                                       //
                        [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
                    },
@@ -334,7 +334,7 @@ void Coma::loadSwj(const QString &filename)
     for (auto &item : fileVector)
     {
         std::visit(overloaded {
-                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); }, //
+                       [&](S2::OscHeader &header) { oscManager.setHeader(header); }, //
                        [&](SwjModel &model) { swjModel = &model; },                           //
                        [&](std::unique_ptr<TrendViewModel> &model) { oscModel = &model; }     //
                    },

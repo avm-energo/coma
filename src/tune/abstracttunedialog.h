@@ -24,7 +24,13 @@
 
 // disable all limits checks
 // #define NO_LIMITS
+
 class ConfigV;
+
+namespace S2
+{
+class DataItem;
+}
 
 class AbstractTuneDialog : public QDialog
 {
@@ -87,6 +93,7 @@ public:
     Error::Msg writeTuneCoefs();
     Error::Msg writeTuneCoefs(bool isUserChoosingRequired);
     Error::Msg readTuneCoefs();
+    Error::Msg updateConfigAndSend(const QList<S2::DataItem> &changes) const;
 
 private:
     QMap<int, DataBlock *> AbsBac;

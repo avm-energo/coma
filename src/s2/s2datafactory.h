@@ -19,12 +19,12 @@ private:
 public:
     explicit DataFactory();
 
-    S2DataTypes::DataItem create(const S2DataTypes::DataRec &record) const;
-    S2DataTypes::DataItem create(const quint16 id, const QByteArray &data) const;
-    S2DataTypes::DataItem create(quint16 id, const QString &str) const;
+    S2::DataItem create(const S2::DataRec &record) const;
+    S2::DataItem create(const quint16 id, const QByteArray &data) const;
+    S2::DataItem create(quint16 id, const QString &str) const;
 
-    template <typename T, std::enable_if_t<S2DataTypes::isValueType<T>::value, bool> = true> //
-    S2DataTypes::DataItem create(const QString &name, const T value)
+    template <typename T, std::enable_if_t<S2::isValueType<T>::value, bool> = true> //
+    S2::DataItem create(const QString &name, const T value)
     {
         return { getId(name), value };
     }

@@ -10,20 +10,20 @@
 #include <gen/error.h>
 #include <gen/utils/crc32.h>
 
-void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::DataRec> &dr, int fname)
+void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2::DataRec> &dr, int fname)
 {
     utils::CRC32 crc;
-    S2DataTypes::S2FileHeader header;
+    S2::S2FileHeader header;
     QByteArray ba;
     header.size = 0;
-    for (const S2DataTypes::DataRec &record : dr)
+    for (const S2::DataRec &record : dr)
     {
         auto tmpi = sizeof(record.header);
         header.size += tmpi;
         ba = QByteArray::fromRawData(reinterpret_cast<const char *>(&record.header), tmpi);
         crc.update(ba);
         mem.append(ba);
-        if (record.header.id == S2DataTypes::dummyElement)
+        if (record.header.id == S2::dummyElement)
             break;
         if (record.thedata != nullptr)
         {
@@ -43,32 +43,32 @@ void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::DataRe
     mem.prepend(ba);
 }
 
-void S2Util::StoreDataMem(QByteArray &mem, const QList<S2DataTypes::DataItem> &dr, int fname)
+void S2Util::StoreDataMem(QByteArray &mem, const QList<S2::DataItem> &dr, int fname)
 {
-    std::vector<S2DataTypes::DataRec> recVec;
+    std::vector<S2::DataRec> recVec;
     std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
-        [](const S2DataTypes::DataItem &record) { return record.serialize(); });
+        [](const S2::DataItem &record) { return record.serialize(); });
     StoreDataMem(mem, recVec, fname);
 }
 
-void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2DataTypes::FileStruct> &dr, int fname)
+void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2::FileStruct> &dr, int fname)
 {
-    std::vector<S2DataTypes::DataRec> recVec;
+    std::vector<S2::DataRec> recVec;
     std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
-        [](const S2DataTypes::FileStruct &record) { return record.serialize(); });
+        [](const S2::FileStruct &record) { return record.serialize(); });
     StoreDataMem(mem, recVec, fname);
 }
 
 bool S2Util::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
 {
-    Q_ASSERT(bain.size() >= sizeof(S2DataTypes::S2FileHeader));
+    Q_ASSERT(bain.size() >= sizeof(S2::S2FileHeader));
     qInfo() << "S2 File size:" << bain.size();
-    S2DataTypes::DataRecHeader recordHeader;
+    S2::DataRecHeader recordHeader;
 
     // копируем FileHeader
-    S2DataTypes::S2FileHeader fileHeader;
-    memcpy(&fileHeader, &bain.data()[0], sizeof(S2DataTypes::S2FileHeader));
-    bain.remove(0, sizeof(S2DataTypes::S2FileHeader));
+    S2::S2FileHeader fileHeader;
+    memcpy(&fileHeader, &bain.data()[0], sizeof(S2::S2FileHeader));
+    bain.remove(0, sizeof(S2::S2FileHeader));
 
     // проверка контрольной суммы
     Q_ASSERT(bain.size() == fileHeader.size);
@@ -79,9 +79,9 @@ bool S2Util::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
         return false;
     }
     recordHeader.id = 0;
-    while ((recordHeader.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
+    while ((recordHeader.id != S2::dummyElement) && (!bain.isEmpty()))
     {
-        auto size = sizeof(S2DataTypes::DataRecHeader);
+        auto size = sizeof(S2::DataRecHeader);
         if (size > bain.size())
         {
             qCritical() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
@@ -90,7 +90,7 @@ bool S2Util::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
         memcpy(&recordHeader, &bain.data()[0], size);
         bain.remove(0, size);
 
-        if (recordHeader.id != S2DataTypes::dummyElement)
+        if (recordHeader.id != S2::dummyElement)
         {
             DataTypes::S2Record cfp;
             cfp.ID = recordHeader.id;
@@ -108,17 +108,17 @@ bool S2Util::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
     return true;
 }
 
-bool S2Util::RestoreData(QByteArray bain, QList<S2DataTypes::DataItem> &outlist)
+bool S2Util::RestoreData(QByteArray bain, QList<S2::DataItem> &outlist)
 {
-    Q_ASSERT(bain.size() >= sizeof(S2DataTypes::S2FileHeader));
+    Q_ASSERT(bain.size() >= sizeof(S2::S2FileHeader));
     qInfo() << "S2 File size:" << bain.size();
     S2::DataFactory factory;
-    S2DataTypes::DataRec DR;
+    S2::DataRec DR;
 
     // копируем FileHeader
-    S2DataTypes::S2FileHeader fh;
-    memcpy(&fh, &bain.data()[0], sizeof(S2DataTypes::S2FileHeader));
-    bain.remove(0, sizeof(S2DataTypes::S2FileHeader));
+    S2::S2FileHeader fh;
+    memcpy(&fh, &bain.data()[0], sizeof(S2::S2FileHeader));
+    bain.remove(0, sizeof(S2::S2FileHeader));
 
     // проверка контрольной суммы
     Q_ASSERT(bain.size() == fh.size);
@@ -129,9 +129,9 @@ bool S2Util::RestoreData(QByteArray bain, QList<S2DataTypes::DataItem> &outlist)
         return false;
     }
     DR.header.id = 0;
-    while ((DR.header.id != S2DataTypes::dummyElement) && (!bain.isEmpty()))
+    while ((DR.header.id != S2::dummyElement) && (!bain.isEmpty()))
     {
-        auto size = sizeof(S2DataTypes::DataRec) - sizeof(void *);
+        auto size = sizeof(S2::DataRec) - sizeof(void *);
         if (size > static_cast<quint64>(bain.size()))
         {
             qCritical() << Error::Msg::SizeError << "S2: out of memory"; // выход за границу принятых байт
@@ -140,7 +140,7 @@ bool S2Util::RestoreData(QByteArray bain, QList<S2DataTypes::DataItem> &outlist)
         memcpy(&DR, &bain.data()[0], size);
         bain.remove(0, size);
 
-        if (DR.header.id != S2DataTypes::dummyElement)
+        if (DR.header.id != S2::dummyElement)
         {
             size = DR.header.numByte;
             auto dataItem = factory.create(DR.header.id, bain.left(size));
@@ -161,11 +161,11 @@ quint16 S2Util::GetIdByName(const QString &name)
         return search->second;
 }
 
-void S2Util::tester(const S2DataTypes::S2ConfigType &buffer)
+void S2Util::tester(const S2::S2ConfigType &buffer)
 {
     // here is test functions
-    using namespace S2DataTypes;
-    S2::DataFactory factory;
+    using namespace S2;
+    DataFactory factory;
     std::vector<DataItem> bufferV;
     std::transform(buffer.begin(), buffer.end(), std::back_inserter(bufferV), //
         [factory](const DataRec &oldRec) { return factory.create(oldRec); });
@@ -185,15 +185,14 @@ void S2Util::tester(const S2DataTypes::S2ConfigType &buffer)
 quint64 S2Util::GetFileSize(const QByteArray &bain)
 {
     // копируем FileHeader
-    S2DataTypes::S2FileHeader fh;
-    memcpy(&fh, &bain.data()[0], sizeof(S2DataTypes::S2FileHeader));
-    return fh.size + sizeof(S2DataTypes::S2FileHeader);
+    S2::S2FileHeader fh;
+    memcpy(&fh, &bain.data()[0], sizeof(S2::S2FileHeader));
+    return fh.size + sizeof(S2::S2FileHeader);
 }
 
-S2DataTypes::S2BFile S2Util::emulateS2B(
-    const S2DataTypes::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM)
+S2::S2BFile S2Util::emulateS2B(const S2::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM)
 {
-    using namespace S2DataTypes;
+    using namespace S2;
     constexpr quint32 tailEnd = 0xEEEE1111;
     utils::CRC32 crc;
     S2BFileHeader header;
@@ -212,9 +211,9 @@ S2DataTypes::S2BFile S2Util::emulateS2B(
     return { header, journal, tail };
 }
 
-S2DataTypes::S2BFile S2Util::parseS2B(const QByteArray &file)
+S2::S2BFile S2Util::parseS2B(const QByteArray &file)
 {
-    using namespace S2DataTypes;
+    using namespace S2;
     constexpr auto minSize = sizeof(S2BFileHeader) + sizeof(S2BFileTail) + sizeof(DataRecHeader);
     Q_ASSERT(file.size() > minSize);
     auto headerBytes = file.left(sizeof(S2BFileHeader));

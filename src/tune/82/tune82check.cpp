@@ -83,7 +83,7 @@ Error::Msg Tune82Check::check()
     Bda82 *bda = new Bda82;
     bda->readAndUpdate();
 #ifndef NO_LIMITS
-    return bda->checkValues(m_typeM, configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2DataTypes::FLOAT_6t>());
+    return bda->checkValues(m_typeM, configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2::FLOAT_6t>());
 #elif
     return Error::Msg::NoError;
 #endif
@@ -92,7 +92,7 @@ Error::Msg Tune82Check::check()
 Error::Msg Tune82Check::checkMip()
 {
     Mip *mip = new Mip(false);
-    S2DataTypes::FLOAT_6t inom = configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2DataTypes::FLOAT_6t>();
+    S2::FLOAT_6t inom = configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2::FLOAT_6t>();
     assert(inom.size() > 3);
     mip->setNominalCurrent(inom.at(3)); // 2nd currents, phase A
     if (!mip->start())

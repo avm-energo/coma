@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <gen/error.h>
 
-S2DataTypes::DataItem ConfigV::getRecord(quint16 id)
+S2::DataItem ConfigV::getRecord(quint16 id)
 {
     auto result = std::find_if(config.cbegin(), config.cend(), //
         [id](const auto &record) { return (id == record.getId()); });
@@ -12,18 +12,18 @@ S2DataTypes::DataItem ConfigV::getRecord(quint16 id)
     else
     {
         qDebug() << Error::NullDataError << id;
-        return S2DataTypes::DataItem(id);
+        return S2::DataItem(id);
     }
 }
 
-void ConfigV::setRecordValue(const S2DataTypes::DataItem &record)
+void ConfigV::setRecordValue(const S2::DataItem &record)
 {
     auto result = std::find_if(config.begin(), config.end(), //
         [&record](const auto &lhs) { return (lhs.getId() == record.getId()); });
     if (result != config.end())
     {
         // buffer is here for debug purposes
-        [[maybe_unused]] S2DataTypes::DataItem &buffer = *result;
+        [[maybe_unused]] S2::DataItem &buffer = *result;
         Q_ASSERT(result->typeIndex() == record.typeIndex());
         *result = record;
     }
@@ -31,7 +31,7 @@ void ConfigV::setRecordValue(const S2DataTypes::DataItem &record)
         config.push_back(record);
 }
 
-void ConfigV::setRecordValue(const quint16 key, const S2DataTypes::valueType &value)
+void ConfigV::setRecordValue(const quint16 key, const S2::valueType &value)
 {
     auto result
         = std::find_if(std::begin(config), std::end(config), [key](const auto &lhs) { return (lhs.getId() == key); });
@@ -41,28 +41,37 @@ void ConfigV::setRecordValue(const quint16 key, const S2DataTypes::valueType &va
     }
     else
     {
-        S2DataTypes::DataItem record(key);
+        S2::DataItem record(key);
         record.setData(value);
         config.push_back(record);
     }
 }
 
-const QList<S2DataTypes::DataItem> &ConfigV::getConfig() const
+const QList<S2::DataItem> &ConfigV::getConfig() const
 {
     return config;
 }
 
-void ConfigV::setConfig(const QList<S2DataTypes::DataItem> &newConfig)
+void ConfigV::setConfig(const QList<S2::DataItem> &newConfig)
 {
     config = newConfig;
 }
 
-void ConfigV::pushConfig()
+ConfigV ConfigV::copy() const
 {
-    savedConfig = config;
+    ConfigV copy;
+    QList<S2::DataItem> configCopy;
+    std::copy(config.cbegin(), config.cend(), configCopy.begin());
+    copy.setConfig(configCopy);
+    return copy;
 }
 
-void ConfigV::popConfig()
-{
-    config = savedConfig;
-}
+// void ConfigV::pushConfig()
+//{
+//    savedConfig = config;
+//}
+
+// void ConfigV::popConfig()
+//{
+//    config = savedConfig;
+//}

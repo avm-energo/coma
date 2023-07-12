@@ -25,8 +25,8 @@ static constexpr char name[] = "swjourHash";
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent), proxySWJ(new DataTypesProxy), proxyFS(new DataTypesProxy)
 {
-    proxySWJ->RegisterType<S2DataTypes::SwitchJourInfo>();
-    proxyFS->RegisterType<S2DataTypes::FileStruct>();
+    proxySWJ->RegisterType<S2::SwitchJourInfo>();
+    proxyFS->RegisterType<S2::FileStruct>();
     connect(proxySWJ.get(), &DataTypesProxy::DataStorable, this, &SwitchJournalDialog::fillSwJInfo);
     connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &SwitchJournalDialog::fillJour);
     setupUI();
@@ -70,7 +70,7 @@ void SwitchJournalDialog::fillJour(const QVariant &msg)
     if (!updatesEnabled())
         return;
 
-    auto fs = msg.value<S2DataTypes::FileStruct>();
+    auto fs = msg.value<S2::FileStruct>();
     fileBuffer.push_back(fs);
 
     switch (fs.ID)
@@ -123,10 +123,10 @@ void SwitchJournalDialog::fillJour(const QVariant &msg)
     }
 }
 
-// void SwitchJournalDialog::fillSwJInfo(S2DataTypes::SwitchJourInfo swjInfo)
+// void SwitchJournalDialog::fillSwJInfo(S2::SwitchJourInfo swjInfo)
 void SwitchJournalDialog::fillSwJInfo(const QVariant &msg)
 {
-    auto swjInfo = msg.value<S2DataTypes::SwitchJourInfo>();
+    auto swjInfo = msg.value<S2::SwitchJourInfo>();
     if (swjInfo.num == 0)
         return;
     if (swjMap.contains(swjInfo.num))
@@ -172,7 +172,7 @@ void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
 
     if (!loadIfExist(size))
         BaseInterface::iface()->reqFile(
-            fileNum, DataTypes::FileFormat::CustomS2, size + 2 * sizeof(S2DataTypes::DataRecHeader));
+            fileNum, DataTypes::FileFormat::CustomS2, size + 2 * sizeof(S2::DataRecHeader));
 }
 
 void SwitchJournalDialog::exportSwJ(uint32_t swjNum)
@@ -230,7 +230,7 @@ bool SwitchJournalDialog::loadIfExist(quint32 size)
             S2Util::RestoreData(ba, outlist);
             for (auto &&swjFileIn : outlist)
             {
-                S2DataTypes::FileStruct resp { swjFileIn.ID, swjFileIn.data };
+                S2::FileStruct resp { swjFileIn.ID, swjFileIn.data };
                 auto mngr = &DataManager::GetInstance();
                 mngr->addSignalToOutList(resp);
             }

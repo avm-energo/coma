@@ -30,7 +30,7 @@ public:
     {
         qDebug() << st;
     }
-    void print(const S2DataTypes::FileStruct &st)
+    void print(const S2::FileStruct &st)
     {
         qDebug() << st;
     }
@@ -50,7 +50,7 @@ public:
     {
         qDebug() << st;
     }
-    void print(const S2DataTypes::OscInfo &st)
+    void print(const S2::OscInfo &st)
     {
         qDebug() << st;
     }

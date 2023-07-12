@@ -3,7 +3,7 @@
 
 #include "s2datatypes.h"
 
-namespace S2DataTypes
+namespace S2
 {
 
 class DataItem
@@ -68,6 +68,6 @@ struct RecordPair
 
 }
 
-Q_DECLARE_METATYPE(S2DataTypes::DataItem)
+Q_DECLARE_METATYPE(S2::DataItem)
 
 #endif // DATAITEM_H

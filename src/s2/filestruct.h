@@ -3,7 +3,7 @@
 #include <QDataStream>
 #include <QVariant>
 
-namespace S2DataTypes
+namespace S2
 {
 
 struct DataRec;
@@ -43,5 +43,5 @@ QDebug operator<<(QDebug debug, const FileStruct &st);
 
 }
 
-Q_DECLARE_METATYPE(S2DataTypes::FilesEnum)
-Q_DECLARE_METATYPE(S2DataTypes::FileStruct)
+Q_DECLARE_METATYPE(S2::FilesEnum)
+Q_DECLARE_METATYPE(S2::FileStruct)

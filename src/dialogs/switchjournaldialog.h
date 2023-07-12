@@ -41,8 +41,8 @@ private:
 
     UniquePointer<ETableModel> tableModel;
     ETableView *swjTableView;
-    QMap<quint32, S2DataTypes::SwitchJourInfo> swjMap;
-    std::vector<S2DataTypes::FileStruct> fileBuffer;
+    QMap<quint32, S2::SwitchJourInfo> swjMap;
+    std::vector<S2::FileStruct> fileBuffer;
 
     std::unique_ptr<TrendViewModel> oscModel;
     OscManager oscManager;

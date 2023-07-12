@@ -19,7 +19,7 @@ public:
     void setupValuesDesc() override;
 
     Error::Msg checkValues(Modules::MezzanineBoard mtypeM,
-        S2DataTypes::FLOAT_6t i2Noms); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0:
+        S2::FLOAT_6t i2Noms); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0:
                                        // начальная точность, 1 - повышенная
     BlockData *data();
 
