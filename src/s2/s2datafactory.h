@@ -31,3 +31,5 @@ public:
 };
 
 }
+
+using S2DataFactory = S2::DataFactory;

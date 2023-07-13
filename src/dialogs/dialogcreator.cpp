@@ -27,10 +27,9 @@ DialogCreator::DialogCreator(const ModuleSettings &settings, const Board &board,
 void DialogCreator::createDialogs(const AppConfiguration appCfg)
 {
     deleteDialogs();
-    // const auto &board = Board::GetInstance();
-    // if (board.interfaceType() == Board::InterfaceType::USB)
     createConfigDialogs();
     createCheckDialogs();
+    createJournalDialog();
     createSpecificDialogs(appCfg);
     createCommonDialogs(appCfg);
 }
@@ -111,6 +110,7 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
 void DialogCreator::createJournalDialog()
 {
     using namespace journals;
+    // TODO: Только для USB
     // Делаем проверку и создаём диалог для журналов
     if (board.interfaceType() != Board::InterfaceType::RS485)
         addDialogToList(new JournalDialog(settings, mParent), "Журналы", "jours");
@@ -169,7 +169,7 @@ void DialogCreator::createOscAndSwJourDialogs(const Modules::BaseBoard &typeb, c
 void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
 {
     using namespace Modules;
-    // auto &board = Board::GetInstance();
+
     // Коробочный модуль
     if (isBoxModule(board.baseSerialInfo().type()))
     {
@@ -177,16 +177,13 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
         // Добавляем регулировку, если АВМ Настройка
         if (appCfg == AppConfiguration::Debug)
             createBoxTuneDialogs(moduleModel);
-        // TODO: Временно выключено для модбаса, надо допилить журналы
+        // TODO: Временно выключено для модбаса
         if (board.interfaceType() == Board::InterfaceType::USB)
-        {
-            createJournalDialog();            // Добавляем диалог журналов
             createStartupDialog(moduleModel); // Добавляем диалог начальных значений
-        }
+
         // TODO: Fix it
         //        addDialogToList(new PlotDialog(mParent), "Диаграммы", "plot"); // векторные диаграммы нужны для
         //        АВ-ТУК-82 и АВМ-КТФ, а не для всех коробочных модулей
-        addDialogToList(new TimeDialog(mParent), "Время", "time");
     }
     // Модуль состоит из двух плат
     else
@@ -207,9 +204,9 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
 /// \brief Creating common dialogs (all modules).
 void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
 {
-    // const auto &board = Board::GetInstance();
     if (board.interfaceType() != Board::InterfaceType::Ethernet)
         addDialogToList(new FWUploadDialog(mParent), "Загрузка ВПО", "upload");
+    addDialogToList(new TimeDialog(mParent), "Время", "time");
     addDialogToList(new InfoDialog(mParent), "О приборе", "info");
 
     if (appCfg == AppConfiguration::Debug)

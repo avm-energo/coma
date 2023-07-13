@@ -1,7 +1,7 @@
 #ifndef MODULEDATAUPDATER_H
 #define MODULEDATAUPDATER_H
 
-#include "../interfaces/baseinterface.h"
+#include "baseinterface.h"
 
 #include <QObject>
 #include <gen/datatypes.h>
