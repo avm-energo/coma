@@ -107,8 +107,8 @@ public:
     void appendMeasJournal(const quint32 index, const QString &header, //
         const ModuleTypes::BinaryType type, bool visib);
 
-    const ModuleTypes::ConfigMap &getConfigMap() const;
-    const ModuleTypes::ConfigList getConfigs() const;
+    [[deprecated]] const ModuleTypes::ConfigMap &getConfigMap() const;
+    [[deprecated]] const ModuleTypes::ConfigList getConfigs() const;
     const ModuleTypes::DetailCountMap &getDetailConfigCount() const;
     const ModuleTypes::SignalMap &getSignals() const;
     const ModuleTypes::TabsMap &getTabs() const;

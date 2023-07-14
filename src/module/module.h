@@ -6,6 +6,7 @@
 namespace S2
 {
 class ConfigStorage;
+class DataManager;
 }
 
 class Module : public QObject
@@ -14,8 +15,9 @@ class Module : public QObject
 private:
     bool checks;
     bool state;
+    quint16 typeB;
+    quint16 typeM;
     const Modules::StartupInfoBlock &sInfoBlock;
-    ConfigStorage *mStorage;
 
 public:
     explicit Module(const bool criticalCheck = true,
@@ -23,10 +25,10 @@ public:
         QObject *parent = nullptr);
 
     bool loadS2Settings(S2::ConfigStorage &s2Storage);
-    bool loadSettings();
+    bool loadSettings(ConfigStorage &mStorage, S2::DataManager &s2manager);
 
 private:
-    void loadModuleSettings(const quint16 &typeB, const quint16 &typeM);
+    void loadModuleSettings(ConfigStorage &mStorage, S2::DataManager &s2manager);
 
 private slots:
     void parseErrorHandle(const QString errMsg);

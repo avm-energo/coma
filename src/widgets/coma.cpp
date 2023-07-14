@@ -178,11 +178,11 @@ void Coma::setupUI()
 
 void Coma::prepareDialogs()
 {
-    auto &s2ConfigStorage = s2dataManager->getStorage();
+    auto &storage = ConfigStorage::GetInstance();
     module.reset(new Module(true, Board::GetInstance().baseSerialInfo(), this));
-    if (module->loadS2Settings(s2ConfigStorage))
+    if (module->loadS2Settings(s2dataManager->getStorage()))
     {
-        if (!module->loadSettings())
+        if (!module->loadSettings(storage, *s2dataManager))
         {
             EMessageBox::error(this,
                 "Не удалось найти конфигурацию для модуля.\n"
@@ -352,11 +352,6 @@ void Coma::loadSwj(const QString &filename)
     dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
     dialog->adjustSize();
 }
-
-// QPoint Coma::ComaPos()
-//{
-//    return Coma::s_comaPos;
-//}
 
 QPoint Coma::ComaCenter()
 {
@@ -704,6 +699,7 @@ void Coma::disconnectAndClear()
         mDlgManager->clearDialogs();
 
         ConfigStorage::GetInstance().clearModuleSettings();
+        s2dataManager->clear();
         Board::GetInstance().reset();
         BaseInterface::iface()->close();
         // BUG Segfault

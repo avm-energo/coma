@@ -18,12 +18,12 @@ private:
 public:
     explicit DataFactory(const S2ConfigStorage &confStorage = S2ConfigStorage::GetInstance());
 
-    S2::DataItem create(const S2::DataRec &record) const;
-    S2::DataItem create(const quint16 id, const QByteArray &data) const;
-    S2::DataItem create(quint16 id, const QString &str) const;
+    DataItem create(const DataRec &record) const;
+    DataItem create(const quint16 id, const QByteArray &data) const;
+    DataItem create(const quint16 id, const QString &str) const;
 
-    template <typename T, std::enable_if_t<S2::isValueType<T>::value, bool> = true> //
-    S2::DataItem create(const QString &name, const T value)
+    template <typename T, std::enable_if_t<isValueType<T>::value, bool> = true> //
+    DataItem create(const QString &name, const T &value)
     {
         return { getId(name), value };
     }

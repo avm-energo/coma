@@ -23,8 +23,8 @@ void TestModule::TestS2Parsing()
     bsi.MTypeM = 0x11;
     bsi.Fwver = StdFunc::StrToVer(a284::version);
     auto mModule = new Module(true, bsi, this);
-    auto state = mModule->loadSettings();
-    const auto &mSettings = ConfigStorage::GetInstance().getModuleSettings();
+    auto state = mModule->loadSettings(storage, *s2Manager);
+    const auto &mSettings = storage.getModuleSettings();
     printModuleSettings(mSettings);
     QCOMPARE(state, false);
 }

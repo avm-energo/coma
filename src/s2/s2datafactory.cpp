@@ -59,10 +59,9 @@ quint16 DataFactory::getId(const QString &name) const
     return search->second;
 }
 
-S2::DataItem DataFactory::create(const S2::DataRec &record) const
+DataItem DataFactory::create(const DataRec &record) const
 {
     using namespace detail;
-    using namespace S2;
     auto rawdata = static_cast<const char *>(record.thedata);
     auto id = static_cast<quint16>(record.header.id);
     auto type = getType(id);
@@ -118,15 +117,14 @@ S2::DataItem DataFactory::create(const S2::DataRec &record) const
     }
 }
 
-S2::DataItem DataFactory::create(const quint16 id, const QByteArray &data) const
+DataItem DataFactory::create(const quint16 id, const QByteArray &data) const
 {
     return create({ { id, quint32(data.size()) }, (void *)(data.data()) });
 }
 
-S2::DataItem DataFactory::create(quint16 id, const QString &str) const
+DataItem DataFactory::create(const quint16 id, const QString &str) const
 {
     using namespace detail;
-    using namespace S2;
     auto type = getType(id);
     switch (type.hash())
     {

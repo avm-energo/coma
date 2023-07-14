@@ -13,6 +13,16 @@ private:
 
 public:
     Configuration(const S2ConfigStorage &storage);
+
+    bool append(const S2::DataRec &record);
+    bool append(const quint16 id, const QByteArray &bytes);
+    bool append(const quint16 id, const QString &str);
+
+    template <typename T> //
+    bool append(const QString &name, const T &value)
+    {
+        ;
+    }
 };
 
 } // namespace S2

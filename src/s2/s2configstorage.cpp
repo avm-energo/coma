@@ -35,6 +35,16 @@ const std::map<quint32, QString> &ConfigStorage::getConfigTabs() const
     return configTabs;
 }
 
+const std::map<quint16, WidgetDetail> &ConfigStorage::getWidgetDetailMap() const
+{
+    return widgetDetailMap;
+}
+
+void ConfigStorage::clearDetailData() noexcept
+{
+    widgetDetailMap.clear();
+}
+
 void ConfigStorage::nameDataReceive(const quint16 id, const QString &name)
 {
     if (id == 0)
@@ -74,6 +84,11 @@ void ConfigStorage::configTabDataReceive(const quint32 id, const QString &tabNam
         qWarning() << "Empty tab name, tab id: " << id;
     else
         configTabs.insert({ id, tabName });
+}
+
+void ConfigStorage::widgetDetailsReceive(const quint16 id, const bool visib, const quint16 count)
+{
+    widgetDetailMap.insert({ id, { visib, count } });
 }
 
 }

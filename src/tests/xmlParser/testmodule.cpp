@@ -6,12 +6,14 @@
 #include "../../interfaces/protocom.h"
 #include "../../interfaces/protocomprivate.h"
 #include "../../module/board.h"
+#include "../../s2/s2datamanager.h"
 #include "testdata.h"
 
 #include <QtXml>
 #include <gen/stdfunc.h>
 
-TestModule::TestModule(QObject *parent) : QObject(parent)
+TestModule::TestModule(QObject *parent)
+    : QObject(parent), storage(ConfigStorage::GetInstance()), s2Manager(new S2::DataManager(this))
 {
 }
 
@@ -90,8 +92,8 @@ void TestModule::checkA284()
 {
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
-    QVERIFY(module->loadSettings());
-    auto &settings = ConfigStorage::GetInstance().getModuleSettings();
+    QVERIFY(module->loadSettings(storage, *s2Manager));
+    auto &settings = storage.getModuleSettings();
     // Journals comparing
     auto workJourSize = settings.getWorkJours().size();
     QCOMPARE(workJourSize, a284::workJours);
@@ -118,7 +120,7 @@ void TestModule::checkA284USB()
     createInterfaceContext(Board::InterfaceType::USB);
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
-    QVERIFY(module->loadSettings());
+    QVERIFY(module->loadSettings(storage, *s2Manager));
 }
 
 void TestModule::checkA284Eth()
@@ -127,7 +129,7 @@ void TestModule::checkA284Eth()
     Board::GetInstance().setInterfaceType(Board::InterfaceType::Ethernet);
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
-    QVERIFY(module->loadSettings());
+    QVERIFY(module->loadSettings(storage, *s2Manager));
 }
 
 void TestModule::checkA284Modbus()
@@ -136,7 +138,7 @@ void TestModule::checkA284Modbus()
     Board::GetInstance().setInterfaceType(Board::InterfaceType::RS485);
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
-    QVERIFY(module->loadSettings());
+    QVERIFY(module->loadSettings(storage, *s2Manager));
 }
 
 /*
