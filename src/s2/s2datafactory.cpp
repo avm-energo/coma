@@ -1,7 +1,5 @@
 #include "s2datafactory.h"
 
-#include "s2configstorage.h"
-
 namespace detail
 {
 
@@ -41,13 +39,13 @@ S2::valueType helper(const QString &str)
 namespace S2
 {
 
-DataFactory::DataFactory() : confStorage(S2::ConfigStorage::GetInstance())
+DataFactory::DataFactory(const S2ConfigStorage &confStorage) : s2confStorage(confStorage)
 {
 }
 
 ctti::unnamed_type_id_t DataFactory::getType(quint16 id) const
 {
-    auto &typeMap = confStorage.getTypeByIdMap();
+    auto &typeMap = s2confStorage.getTypeByIdMap();
     auto search = typeMap.find(id);
     assert(search != typeMap.cend());
     return search->second;
@@ -55,7 +53,7 @@ ctti::unnamed_type_id_t DataFactory::getType(quint16 id) const
 
 quint16 DataFactory::getId(const QString &name) const
 {
-    auto &nameMap = confStorage.getIdByNameMap();
+    auto &nameMap = s2confStorage.getIdByNameMap();
     auto search = nameMap.find(name);
     assert(search != nameMap.cend());
     return search->second;

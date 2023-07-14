@@ -90,6 +90,7 @@ QPoint Coma::s_comaCenter = QPoint(0, 0);
 
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
+    , s2dataManager(new S2DataManager(this))
     , proxyBS(new DataTypesProxy)
     , proxyGRS(new DataTypesProxy)
     , editor(nullptr)
@@ -177,8 +178,8 @@ void Coma::setupUI()
 
 void Coma::prepareDialogs()
 {
-    auto &s2ConfigStorage = S2::ConfigStorage::GetInstance();
-    module = UniquePointer<Module>(new Module(true, Board::GetInstance().baseSerialInfo(), this));
+    auto &s2ConfigStorage = s2dataManager->getStorage();
+    module.reset(new Module(true, Board::GetInstance().baseSerialInfo(), this));
     if (module->loadS2Settings(s2ConfigStorage))
     {
         if (!module->loadSettings())
@@ -313,7 +314,7 @@ void Coma::loadOsc(const QString &filename)
     for (auto &item : fileVector)
     {
         std::visit(overloaded {
-                       [&](S2::OscHeader &header) { oscManager.setHeader(header); },  //
+                       [&](S2::OscHeader &header) { oscManager.setHeader(header); },           //
                        [](auto &&arg) { Q_UNUSED(arg) },                                       //
                        [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
                    },
@@ -334,9 +335,9 @@ void Coma::loadSwj(const QString &filename)
     for (auto &item : fileVector)
     {
         std::visit(overloaded {
-                       [&](S2::OscHeader &header) { oscManager.setHeader(header); }, //
-                       [&](SwjModel &model) { swjModel = &model; },                           //
-                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = &model; }     //
+                       [&](S2::OscHeader &header) { oscManager.setHeader(header); },      //
+                       [&](SwjModel &model) { swjModel = &model; },                       //
+                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = &model; } //
                    },
             item);
     }

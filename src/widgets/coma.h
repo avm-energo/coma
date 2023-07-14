@@ -5,6 +5,7 @@
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
 #include "../oscillograms/oscmanager.h"
+#include "../s2/s2datamanager.h"
 #include "../xml/xmleditor/xmleditor.h"
 
 #include <QApplication>
@@ -59,6 +60,7 @@ private slots:
 
 private:
     UniquePointer<Module> module;
+    UniquePointer<S2DataManager> s2dataManager;
 
     QTimer *BdaTimer, *AlrmTimer;
     AlarmWidget *AlarmW;

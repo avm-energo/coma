@@ -25,7 +25,7 @@ public:
 
 public slots:
     // Module data slots
-    void startNewConfig();
+    [[deprecated]] void startNewConfig();
     void signalDataReceive(const quint32 id, const quint32 addr, //
         const quint16 count, const ModuleTypes::SignalType sigType);
     void tabDataReceive(const quint32 id, const QString &name);
@@ -35,7 +35,8 @@ public slots:
     void workJourDataReceive(const quint32 id, const QString &desc);
     void measJourDataReceive(const quint32 index, const QString &header, //
         const ModuleTypes::BinaryType type, bool visib);
-    void configDataReceive(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
+    [[deprecated]] void configDataReceive(
+        const quint16 id, const QString &defVal, const bool visib, const quint16 count);
     void protocolDescriptionReceived(const parseXChangeStruct &str);
 };
 

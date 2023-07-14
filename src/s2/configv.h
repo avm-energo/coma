@@ -1,7 +1,7 @@
 #pragma once
 #include "dataitem.h"
 
-class ConfigV
+class [[deprecated]] ConfigV
 {
 
 public:

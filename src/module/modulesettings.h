@@ -95,9 +95,9 @@ class ModuleSettings
 public:
     ModuleSettings();
     void clear();
-    void startNewConfig();
-    void appendToCurrentConfig(const S2::RecordPair &pair);
-    void appendDetailCount(const quint16 id, const quint16 count);
+    [[deprecated]] void startNewConfig();
+    [[deprecated]] void appendToCurrentConfig(const S2::RecordPair &pair);
+    [[deprecated]] void appendDetailCount(const quint16 id, const quint16 count);
     void appendSignal(const quint32 id, const ModuleTypes::Signal sig);
     void appendTab(const quint32 id, const QString &tabName);
     void appendSection(const ModuleTypes::Section &section);

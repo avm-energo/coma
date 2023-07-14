@@ -20,6 +20,8 @@ set(headers
     s2configstorage.h
     s2datatypes.h
     s2datafactory.h
+    s2configuration.h
+    s2datamanager.h
 )
 
 set(sources
@@ -30,6 +32,8 @@ set(sources
     s2util.cpp
     s2configstorage.cpp
     s2datafactory.cpp
+    s2configuration.cpp
+    s2datamanager.cpp
 )
 
 

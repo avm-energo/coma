@@ -2,22 +2,21 @@
 
 #include "../ctti/type_id.hpp"
 #include "dataitem.h"
+#include "s2configstorage.h"
 
 namespace S2
 {
 
-class ConfigStorage;
-
 class DataFactory
 {
 private:
-    const ConfigStorage &confStorage;
+    const S2ConfigStorage &s2confStorage;
 
     ctti::unnamed_type_id_t getType(quint16 id) const;
     quint16 getId(const QString &name) const;
 
 public:
-    explicit DataFactory();
+    explicit DataFactory(const S2ConfigStorage &confStorage = S2ConfigStorage::GetInstance());
 
     S2::DataItem create(const S2::DataRec &record) const;
     S2::DataItem create(const quint16 id, const QByteArray &data) const;
