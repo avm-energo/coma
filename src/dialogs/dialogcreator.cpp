@@ -18,8 +18,9 @@
 #include "switchjournaldialog.h"
 #include "timedialog.h"
 
-DialogCreator::DialogCreator(const ModuleSettings &settings, const Board &board, QWidget *parent)
-    : QObject(parent), settings(settings), board(board), mParent(parent)
+DialogCreator::DialogCreator(const ModuleSettings &settings, //
+    const Board &board, S2DataManager &s2DataManager, QWidget *parent)
+    : QObject(parent), settings(settings), board(board), s2manager(s2DataManager), mParent(parent)
 {
 }
 
@@ -67,12 +68,20 @@ bool DialogCreator::isBoxModule(const quint16 &type) const
 /// \brief Creating config dialogs.
 void DialogCreator::createConfigDialogs()
 {
-    auto &config = settings.getConfigMap();
-    for (auto it = config.cbegin(); it != config.cend(); it++)
+    if (s2manager.isOneBoard())
     {
-        QString indexStr = (config.size() > 1) ? ((it.key() == baseConfigIndex) ? "база" : "мезонин") : "";
-        addDialogToList(new ConfigDialog(&configV, it.value(), true, mParent), //
-            "Конфигурация " + indexStr, "conf" + QString::number(it.key()));
+        auto confDialog = new ConfigDialog(s2manager.getCurrentConfiguration(), true, mParent);
+        addDialogToList(confDialog, "Конфигурация", "conf");
+    }
+    else
+    {
+        for (auto &iter : s2manager)
+        {
+            const auto key = iter.first;
+            QString indexStr = (iter.first == S2::BoardConfig::Base) ? "база" : "мезонин";
+            auto confDialog = new ConfigDialog(iter.second, true, mParent);
+            addDialogToList(confDialog, "Конфигурация " + indexStr, "conf" + QString::number(int(key)));
+        }
     }
 }
 
@@ -95,6 +104,7 @@ void DialogCreator::createCheckDialogs()
 /// \brief Creating tune dialogs for KIV, KTF and KDV.
 void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
 {
+    s2manager;
     if (boxModel == Modules::Model::KIV)
     {
         // TODO: Реанимировать регулировку для КИВ, временно не работает :(
@@ -131,6 +141,7 @@ void DialogCreator::createStartupDialog(const Modules::Model boxModel)
 void DialogCreator::createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem)
 {
     using namespace Modules;
+    s2manager;
     if (typeb == BaseBoard::MTB_80)
     {
         if ((typem == MezzanineBoard::MTM_81) || (typem == MezzanineBoard::MTM_82) || (typem == MezzanineBoard::MTM_83))

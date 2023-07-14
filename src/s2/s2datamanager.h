@@ -26,12 +26,23 @@ private:
     BoardConfig currentParseTarget;
 
 public:
+    using Iter = decltype(data)::iterator;
+    using ConstIter = decltype(data)::const_iterator;
+
     explicit DataManager(QObject *parent = nullptr);
 
     S2ConfigStorage &getStorage() noexcept;
     const S2ConfigStorage &getStorage() const noexcept;
+    BoardConfiguration &getCurrentConfiguration() noexcept;
+    const BoardConfiguration &getCurrentConfiguration() const noexcept;
+
     void clear() noexcept;
     bool isOneBoard() const noexcept;
+
+    Iter begin() noexcept;
+    Iter end() noexcept;
+    ConstIter cbegin() const noexcept;
+    ConstIter cend() const noexcept;
 
 public slots:
     void startNewConfig();

@@ -12,6 +12,9 @@ private:
     std::map<quint16, DataItem> data;
 
 public:
+    using Iter = decltype(data)::iterator;
+    using ConstIter = decltype(data)::const_iterator;
+
     Configuration(const S2ConfigStorage &storage);
 
     bool append(const S2::DataRec &record);
@@ -23,6 +26,13 @@ public:
     {
         ;
     }
+
+    Iter begin() noexcept;
+    Iter end() noexcept;
+    ConstIter cbegin() const noexcept;
+    ConstIter cend() const noexcept;
+
+    std::vector<quint16> checkDiff(const Configuration &rhs) const;
 };
 
 } // namespace S2

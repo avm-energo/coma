@@ -95,7 +95,7 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     , proxyGRS(new DataTypesProxy)
     , editor(nullptr)
     , mAppConfig(appCfg)
-    , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this))
+    , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), *s2dataManager, this))
 {
     proxyBS->RegisterType<DataTypes::BitStringStruct>();
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();

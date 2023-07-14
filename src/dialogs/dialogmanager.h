@@ -21,7 +21,7 @@ private:
     void showUI();
 
 public:
-    DialogManager(const ModuleSettings &settings, QWidget *parent = nullptr);
+    DialogManager(const ModuleSettings &settings, S2DataManager &s2DataManager, QWidget *parent = nullptr);
     QPair<QListWidget *, QStackedWidget *> getUI();
     void setupUI(const AppConfiguration appCfg, const QSize size);
 

@@ -19,6 +19,16 @@ const S2ConfigStorage &DataManager::getStorage() const noexcept
     return storage;
 }
 
+BoardConfiguration &DataManager::getCurrentConfiguration() noexcept
+{
+    return data.at(currentParseTarget);
+}
+
+const BoardConfiguration &DataManager::getCurrentConfiguration() const noexcept
+{
+    return data.at(currentParseTarget);
+}
+
 void DataManager::clear() noexcept
 {
     data.clear();
@@ -30,6 +40,26 @@ bool DataManager::isOneBoard() const noexcept
     // Если в парсинге использовался один XML-файл, то модуль
     // состоит из одной платы и имеет один диалог для конфигурации.
     return currentParseTarget == BoardConfig::Base;
+}
+
+DataManager::Iter DataManager::begin() noexcept
+{
+    return data.begin();
+}
+
+DataManager::Iter DataManager::end() noexcept
+{
+    return data.end();
+}
+
+DataManager::ConstIter DataManager::cbegin() const noexcept
+{
+    return data.cbegin();
+}
+
+DataManager::ConstIter DataManager::cend() const noexcept
+{
+    return data.cend();
 }
 
 void DataManager::startNewConfig()

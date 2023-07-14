@@ -4,6 +4,7 @@
 #include "../module/modules.h"
 #include "../module/modulesettings.h"
 #include "../s2/configv.h"
+#include "../s2/s2datamanager.h"
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
 
@@ -21,7 +22,8 @@ class DialogCreator : public QObject
 {
     Q_OBJECT
 public:
-    DialogCreator(const ModuleSettings &settings, const Board &board = Board::GetInstance(), QWidget *parent = nullptr);
+    DialogCreator(const ModuleSettings &settings, const Board &board, //
+        S2DataManager &s2DataManager, QWidget *parent = nullptr);
     void createDialogs(const AppConfiguration appCfg);
     void deleteDialogs();
     QList<UDialog *> &getDialogs();
@@ -29,6 +31,7 @@ public:
 private:
     const ModuleSettings &settings;
     const Board &board;
+    S2DataManager &s2manager;
     QWidget *mParent;
     QList<UDialog *> mDialogs;
     ConfigV configV;

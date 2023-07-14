@@ -1,9 +1,9 @@
 #include "dialogmanager.h"
 
-DialogManager::DialogManager(const ModuleSettings &settings, QWidget *parent)
+DialogManager::DialogManager(const ModuleSettings &settings, S2DataManager &s2DataManager, QWidget *parent)
     : UDialog(parent)
     , curDialogIndex(0)
-    , mDlgCreator(new DialogCreator(settings, Board::GetInstance(), this))
+    , mDlgCreator(new DialogCreator(settings, Board::GetInstance(), s2DataManager, this))
     , mWorkspace(new QStackedWidget(this))
     , mSidebar(new QListWidget(this))
 {
@@ -49,7 +49,6 @@ void DialogManager::dialogChanged(int newIndex)
         auto newDialog = dialogs[newIndex];
         newDialog->engine()->setUpdatesEnabled(true);
         newDialog->setEnabled(true);
-        // newDialog->reqUpdate();
         curDialogIndex = newIndex;
     }
     // Индекс -1 норма, когда удаляются диалоги

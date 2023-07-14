@@ -7,6 +7,7 @@
 #include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
+#include "../widgets/widgetfactory.h"
 
 #include <QDebug>
 #include <QGridLayout>
@@ -25,12 +26,12 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char name[] = "confHash";
 }
 
-ConfigDialog::ConfigDialog(
-    ConfigV *config, const QList<S2::RecordPair> &defaultConfig, bool prereadConf, QWidget *parent)
+ConfigDialog::ConfigDialog(S2BoardConfig &boardConf, bool prereadConf, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent)
+    , boardConfig(boardConf)
     , m_prereadConf(prereadConf)
-    , m_defaultValues(defaultConfig)
-    , configV(config)
+    //, m_defaultValues(defaultConfig)
+    // , configV(config)
     , proxyDRL(new DataTypesProxy)
     , errConfState(nullptr)
 {
@@ -63,41 +64,53 @@ void ConfigDialog::writeConfig()
     }
 }
 
-// thanx to P0471R0
-template <class Container> //
-auto setInserter(Container &set)
-{
-    return std::inserter(set, std::end(set));
-}
+//// thanx to P0471R0
+// template <class Container> //
+// auto setInserter(Container &set)
+//{
+//    return std::inserter(set, std::end(set));
+//}
 
-bool operator<(const quint16 &number, const S2::RecordPair &record)
-{
-    return number < record.record.getId();
-}
+// bool operator<(const quint16 &number, const S2::RecordPair &record)
+//{
+//    return number < record.record.getId();
+//}
 
-bool operator<(const S2::RecordPair &record, const quint16 &number)
-{
-    return number < record.record.getId();
-}
+// bool operator<(const S2::RecordPair &record, const quint16 &number)
+//{
+//    return number < record.record.getId();
+//}
 
 void ConfigDialog::checkForDiff(const QList<S2::DataItem> &list)
 {
-    std::set<quint16> receivedItems;
-    std::transform(list.cbegin(), list.cend(), setInserter(receivedItems), //
-        [](const auto &record) { return record.getId(); });
+    //    std::set<quint16> receivedItems;
+    //    std::transform(list.cbegin(), list.cend(), setInserter(receivedItems), //
+    //        [](const auto &record) { return record.getId(); });
 
-    std::set<quint16> defaultItems;
-    std::transform(m_defaultValues.cbegin(), m_defaultValues.cend(), setInserter(defaultItems), //
-        [](const auto &record) { return record.record.getId(); });
+    //    std::set<quint16> defaultItems;
+    //    std::transform(m_defaultValues.cbegin(), m_defaultValues.cend(), setInserter(defaultItems), //
+    //        [](const auto &record) { return record.record.getId(); });
 
-    std::vector<quint16> diffItems;
-    std::set_difference(receivedItems.cbegin(), receivedItems.cend(), defaultItems.cbegin(), defaultItems.cend(),
-        std::back_inserter(diffItems));
+    // std::vector<quint16> diffItems;
+    //    std::set_difference(receivedItems.cbegin(), receivedItems.cend(), defaultItems.cbegin(), defaultItems.cend(),
+    //        std::back_inserter(diffItems));
 
+    const auto diffItems = boardConfig.defaultConfig.checkDiff(boardConfig.workingConfig);
     if (!diffItems.empty())
     {
         qDebug() << diffItems;
     }
+}
+
+bool ConfigDialog::isVisible(const quint16 id) const
+{
+    const auto &detailMap = S2::ConfigStorage::GetInstance().getWidgetDetailMap();
+    auto search = detailMap.find(id);
+    Q_ASSERT(search != detailMap.cend());
+    if (search != detailMap.cend())
+        return search->second.first;
+    else
+        return false;
 }
 
 void ConfigDialog::configReceived(const QVariant &msg)
@@ -251,11 +264,11 @@ void ConfigDialog::setupUI()
     WidgetFactory factory(configV);
     createTabs(ConfTW);
 
-    for (const auto &record : qAsConst(m_defaultValues))
+    for (const auto &record : boardConfig.defaultConfig)
     {
-        if (record.visibility)
+        const auto id = record.first;
+        if (isVisible(id))
         {
-            auto id = record.record.getId();
             auto widget = factory.createWidget(id, this);
             if (widget)
             {
@@ -285,9 +298,9 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
     std::set<delegate::WidgetGroup> currentCategories, intersection;
     auto &tabs = S2::ConfigStorage::GetInstance().getConfigTabs();
 
-    for (const auto &record : qAsConst(m_defaultValues))
+    for (const auto &record : boardConfig.defaultConfig)
     {
-        auto tab = groupForId(record.record.getId());
+        auto tab = groupForId(record.first);
         auto search = tabs.find(tab);
         if (search != tabs.cend())
             intersection.insert(tab);
@@ -315,22 +328,23 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
 
 void ConfigDialog::fill()
 {
-    for (const auto &defRecord : m_defaultValues)
+    for (const auto &defRecord : boardConfig.defaultConfig)
     {
-        if (!defRecord.visibility)
-            continue;
-        auto id = defRecord.record.getId();
-        const auto record = configV->getRecord(id);
-        std::visit(
-            [=](const auto &&value) {
-                WidgetFactory factory(configV);
-                bool status = factory.fillWidget(this, record.getId(), value);
-                if (!status)
-                {
-                    qWarning() << "Couldnt fill widget for item: " << record.getId();
-                }
-            },
-            record.getData());
+        const auto id = defRecord.first;
+        if (isVisible(id))
+        {
+            const auto record = configV->getRecord(id);
+            std::visit(
+                [=](const auto &&value) {
+                    WidgetFactory factory(configV);
+                    bool status = factory.fillWidget(this, record.getId(), value);
+                    if (!status)
+                    {
+                        qWarning() << "Couldnt fill widget for item: " << record.getId();
+                    }
+                },
+                record.getData());
+        }
     }
 }
 
@@ -348,21 +362,25 @@ void ConfigDialog::prereadConfig()
 void ConfigDialog::fillBack() const
 {
     WidgetFactory factory(configV);
-    for (const auto &record : m_defaultValues)
+    for (const auto &record : boardConfig.defaultConfig)
     {
-        if (!record.visibility)
-            continue;
-        auto id = record.record.getId();
-        auto status = factory.fillBack(id, this);
-        if (!status)
-            qWarning() << "Couldnt fill back item from widget: " << id;
+        const auto id = record.first;
+        if (isVisible(id))
+        {
+            auto status = factory.fillBack(id, this);
+            if (!status)
+                qWarning() << "Couldnt fill back item from widget: " << id;
+        }
     }
 }
 
 void ConfigDialog::setDefaultConfig()
 {
-    for (const auto &record : m_defaultValues)
-        configV->setRecordValue(record.record);
+    /// TODO: Assignment operator implementation
+    // boardConfig.workingConfig = boardConfig.defaultConfig;
+
+    // for (const auto &record : boardConfig.defaultConfig)
+    //    configV->setRecordValue(record.record);
     fill();
 }
 
