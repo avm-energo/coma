@@ -7,7 +7,7 @@
 namespace S2
 {
 
-FileStruct::FileStruct(const FilesEnum num, const QByteArray &file) : ID(quint16(num)), data(file)
+FileStruct::FileStruct(const FilesEnum num, const QByteArray &file) : ID(std_ext::to_underlying(num)), data(file)
 {
 }
 

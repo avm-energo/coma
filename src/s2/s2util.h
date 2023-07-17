@@ -1,17 +1,30 @@
 #pragma once
 
 #include "dataitem.h"
-#include "s2datatypes.h"
 
 #include <QVector>
 #include <gen/datatypes.h>
 
 constexpr int MAXSIZE = 200000;
 
+namespace S2
+{
+class ConfigStorage;
+class Configuration;
+}
+
 class S2Util
 {
+private:
+    const S2::ConfigStorage &s2confStorage;
+
 public:
-    S2Util() = default;
+    S2Util(const S2::ConfigStorage &s2confStorage);
+
+    quint32 getIdByName(const QString &name) const;
+    QByteArray toByteArray(const quint32 id, const S2::DataItem &item) const;
+    QByteArray toByteArray(const S2::Configuration &config, quint32 fileType) const;
+
     // S2: Сборщик в память:
     // 0 - успешно, иначе код ошибки S2: получение размера:
     static void StoreDataMem(QByteArray &mem, const QList<S2::DataItem> &dr, int fname);

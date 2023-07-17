@@ -4,6 +4,7 @@
 #include "../module/modules.h"
 #include "../s2/s2datamanager.h"
 #include "../widgets/udialog.h"
+#include "../widgets/widgetfactory.h"
 
 //#define MAXBYTEARRAY 65535
 //#define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
@@ -31,7 +32,7 @@ private:
     void loadConfigFromFile();
     void readConfig();
     void writeConfig();
-    void checkForDiff(const QList<S2::DataItem> &list);
+    void checkForDiff();
     bool isVisible(const quint16 id) const;
     void configReceived(const QVariant &msg);
 
@@ -39,8 +40,8 @@ private:
 
     S2BoardConfig &boardConfig;
     bool m_prereadConf;
-    // const QList<S2::RecordPair> m_defaultValues;
     ConfigV *configV;
+    WidgetFactory factory;
     UniquePointer<DataTypesProxy> proxyDRL;
     ErrConfState *errConfState;
     QStringList CheckConfErrors;

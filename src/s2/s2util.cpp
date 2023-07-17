@@ -1,14 +1,75 @@
 #include "s2util.h"
 
-//#include "../module/configstorage.h"
-
-#include "s2configstorage.h"
-#include "s2datafactory.h"
+#include "s2configuration.h"
 
 #include <QDateTime>
 #include <QDebug>
 #include <gen/error.h>
 #include <gen/utils/crc32.h>
+
+namespace helper
+{
+/// \brief Декларация для определния POD-типов.
+/// \see https://en.cppreference.com/w/cpp/types/is_pod
+template <typename T> //
+constexpr static auto is_simple_v = std::is_standard_layout_v<T> &&std::is_trivial_v<T>;
+
+template <typename T, std::enable_if_t<is_simple_v<T>, bool> = true> //
+inline QByteArray convert(const T &value)
+{
+    return QByteArray::fromRawData(reinterpret_cast<const char *>(&value), sizeof(T));
+}
+
+}
+
+S2Util::S2Util(const S2::ConfigStorage &confStorage) : s2confStorage(confStorage)
+{
+}
+
+quint32 S2Util::getIdByName(const QString &name) const
+{
+    const auto &nameMap = s2confStorage.getIdByNameMap();
+    auto search = nameMap.find(name);
+    if (search == nameMap.cend())
+        return 0;
+    else
+        return search->second;
+}
+
+QByteArray S2Util::toByteArray(const quint32 id, const S2::DataItem &item) const
+{
+    const auto bytes = item.toByteArray();
+    S2::DataRecHeader header { id, static_cast<quint32>(bytes.size()) };
+    QByteArray retValue = helper::convert(header);
+    if (id != S2::dummyElement && !bytes.isEmpty())
+        retValue.append(bytes);
+    return retValue;
+}
+
+QByteArray S2Util::toByteArray(const S2::Configuration &config, quint32 fileType) const
+{
+    utils::CRC32 crc;
+    S2::S2FileHeader header;
+    QByteArray retValue, temp;
+    header.size = 0;
+    for (const auto &iter : config)
+    {
+        const auto id = iter.first;
+        temp = toByteArray(id, iter.second);
+        header.size += temp.size();
+        crc.update(temp);
+        retValue.append(temp);
+        if (id == S2::dummyElement)
+            break;
+    }
+    header.crc32 = crc;
+    header.thetime = getTime32();
+    header.service = 0xFFFF;
+    header.fname = static_cast<quint16>(fileType);
+    temp = helper::convert(header);
+    retValue.prepend(temp);
+    return retValue;
+}
 
 void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2::DataRec> &dr, int fname)
 {

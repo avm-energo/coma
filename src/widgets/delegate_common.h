@@ -212,7 +212,7 @@ using itemVariant = std::variant<  //
     Item                           //
     >;
 
-using widgetMap = std::map<quint16, itemVariant>;
+using widgetMap = std::map<quint32, itemVariant>;
 };
 
 #endif // DELEGATE_COMMON_H

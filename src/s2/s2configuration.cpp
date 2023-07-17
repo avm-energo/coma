@@ -17,8 +17,15 @@ auto setInserter(Set &set)
 namespace S2
 {
 
-Configuration::Configuration(const S2ConfigStorage &storage) : factory(storage)
+Configuration::Configuration(const S2ConfigStorage &storage) : factory(storage), util(storage)
 {
+}
+
+const Configuration &Configuration::operator=(const Configuration &rhs)
+{
+    // Не копируем data factory
+    data = rhs.data;
+    return *this;
 }
 
 bool Configuration::append(const S2::DataRec &record)
@@ -28,14 +35,14 @@ bool Configuration::append(const S2::DataRec &record)
     return success;
 }
 
-bool Configuration::append(const quint16 id, const QByteArray &bytes)
+bool Configuration::append(const quint32 id, const QByteArray &bytes)
 {
     const auto [it, success] = data.insert({ id, factory.create(id, bytes) });
     Q_UNUSED(it);
     return success;
 }
 
-bool Configuration::append(const quint16 id, const QString &str)
+bool Configuration::append(const quint32 id, const QString &str)
 {
     const auto [it, success] = data.insert({ id, factory.create(id, str) });
     Q_UNUSED(it);
@@ -52,25 +59,46 @@ Configuration::Iter Configuration::end() noexcept
     return data.end();
 }
 
-Configuration::ConstIter Configuration::cbegin() const noexcept
+Configuration::ConstIter Configuration::begin() const noexcept
 {
     return data.cbegin();
 }
 
-Configuration::ConstIter Configuration::cend() const noexcept
+Configuration::ConstIter Configuration::end() const noexcept
 {
     return data.cend();
 }
 
-std::vector<quint16> Configuration::checkDiff(const Configuration &rhs) const
+void Configuration::setRecord(const quint32 id, const DataItem &record)
 {
-    std::set<quint16> currentItems, receivedtItems;
+    data.insert_or_assign(id, record);
+}
+
+void Configuration::setRecord(const quint32 id, const valueType &value)
+{
+    data.insert_or_assign(id, DataItem { id, value });
+}
+
+const DataItem &Configuration::getRecord(const quint32 id) const
+{
+    return data.at(id);
+}
+
+const DataItem &Configuration::getRecord(const QString &name) const
+{
+    auto id = util.getIdByName(name);
+    return data.at(id);
+}
+
+std::vector<quint32> Configuration::checkDiff(const Configuration &rhs) const
+{
+    std::set<quint32> currentItems, receivedtItems;
     std::transform(data.cbegin(), data.cend(), detail::setInserter(currentItems), //
         [](const auto &iter) { return iter.first; });
     std::transform(rhs.data.cbegin(), rhs.data.cend(), detail::setInserter(receivedtItems), //
         [](const auto &iter) { return iter.first; });
 
-    std::vector<quint16> diffItems;
+    std::vector<quint32> diffItems;
     std::set_difference(currentItems.cbegin(), currentItems.cend(), //
         receivedtItems.cbegin(), receivedtItems.cend(),             //
         std::back_inserter(diffItems)                               //

@@ -7,11 +7,11 @@
 namespace S2
 {
 
-DataItem::DataItem(quint16 _id) : DataItem(_id, 0)
+DataItem::DataItem(quint32 _id) : DataItem(_id, 0)
 {
 }
 
-DataItem::DataItem(quint16 _id, const valueType &value) : id(_id), data(value)
+DataItem::DataItem(quint32 _id, const valueType &value) : id(_id), data(value)
 {
 }
 
@@ -36,7 +36,18 @@ DataRec DataItem::serialize() const
         data);
 }
 
-quint16 DataItem::getId() const
+QByteArray DataItem::toByteArray() const
+{
+    return std::visit(
+        [](auto &arg) -> QByteArray {
+            using internalType = std::remove_reference_t<decltype(arg)>;
+            auto dataPtr = reinterpret_cast<const char *>(&arg);
+            return QByteArray::fromRawData(dataPtr, sizeof(internalType));
+        },
+        data);
+}
+
+quint32 DataItem::getId() const
 {
     return id;
 }

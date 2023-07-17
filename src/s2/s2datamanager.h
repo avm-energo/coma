@@ -41,8 +41,8 @@ public:
 
     Iter begin() noexcept;
     Iter end() noexcept;
-    ConstIter cbegin() const noexcept;
-    ConstIter cend() const noexcept;
+    ConstIter begin() const noexcept;
+    ConstIter end() const noexcept;
 
 public slots:
     void startNewConfig();

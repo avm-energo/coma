@@ -10,11 +10,11 @@ class DataItem
 {
 public:
     DataItem() = default;
-    DataItem(quint16 _id);
-    DataItem(quint16 _id, const valueType &value);
+    DataItem(quint32 _id);
+    DataItem(quint32 _id, const valueType &value);
 
     template <typename T, std::enable_if_t<isValueType<T>::value, bool> = true>
-    DataItem(quint16 _id, T _data) : id(_id), data(_data)
+    DataItem(quint32 _id, T _data) : id(_id), data(_data)
     {
     }
 
@@ -22,8 +22,9 @@ public:
     friend bool operator!=(const DataItem &lhs, const DataItem &rhs);
 
     DataRec serialize() const;
+    QByteArray toByteArray() const;
 
-    quint16 getId() const;
+    quint32 getId() const;
     valueType getData() const;
     void setData(const valueType &value);
 
@@ -53,7 +54,7 @@ public:
     }
 
 private:
-    quint16 id;
+    quint32 id;
     valueType data;
 };
 

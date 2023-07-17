@@ -82,7 +82,7 @@ template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_un
     return nullptr;
 }
 
-template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey)
+template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey) const
 {
     const auto mbMaster = S2Util::GetIdByName("MBMaster");
     if (parentKey == mbMaster)
@@ -219,7 +219,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
     return widget;
 }
 
-bool WidgetFactory::fillBack(quint16 key, const QWidget *parent)
+bool WidgetFactory::fillBack(quint16 key, const QWidget *parent) const
 {
     bool status = false;
     auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
@@ -454,7 +454,8 @@ quint16 WidgetFactory::getRealCount(const quint16 key)
         return 0;
 }
 
-bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey)
+bool WidgetFactory::fillBackModbus(
+    quint16 key, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey) const
 {
     auto tableView = parent->findChild<QTableView *>(WidgetFactory::hashedName(type, parentKey));
 
@@ -534,7 +535,7 @@ bool WidgetFactory::fillBackModbus(quint16 key, const QWidget *parent, ctti::unn
     return true;
 }
 
-bool WidgetFactory::fillBackIpCtrl(quint16 key, const QWidget *parent)
+bool WidgetFactory::fillBackIpCtrl(quint16 key, const QWidget *parent) const
 {
     auto widget = parent->findChild<IPCtrl *>(QString::number(key));
     if (!widget)
@@ -544,7 +545,7 @@ bool WidgetFactory::fillBackIpCtrl(quint16 key, const QWidget *parent)
     return true;
 }
 
-bool WidgetFactory::fillBackCheckBox(quint16 key, const QWidget *parent)
+bool WidgetFactory::fillBackCheckBox(quint16 key, const QWidget *parent) const
 {
     bool status = false;
     auto widget = parent->findChild<QCheckBox *>(QString::number(key));
@@ -567,7 +568,7 @@ bool WidgetFactory::fillBackCheckBox(quint16 key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackLineEdit(quint16 key, const QWidget *parent)
+bool WidgetFactory::fillBackLineEdit(quint16 key, const QWidget *parent) const
 {
     bool status = false;
     auto widget = parent->findChild<QLineEdit *>(QString::number(key));
@@ -598,7 +599,7 @@ bool WidgetFactory::fillBackLineEdit(quint16 key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackSPBG(quint16 key, const QWidget *parent)
+bool WidgetFactory::fillBackSPBG(quint16 key, const QWidget *parent) const
 {
     bool status = false;
     auto record = configV->getRecord(key);
@@ -619,7 +620,7 @@ bool WidgetFactory::fillBackSPBG(quint16 key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackSPB(quint16 key, const QWidget *parent)
+bool WidgetFactory::fillBackSPB(quint16 key, const QWidget *parent) const
 {
     bool status = false;
     auto record = configV->getRecord(key);
@@ -637,7 +638,7 @@ bool WidgetFactory::fillBackSPB(quint16 key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackChBG(quint16 key, const QWidget *parent)
+bool WidgetFactory::fillBackChBG(quint16 key, const QWidget *parent) const
 {
     bool status = false;
     auto record = configV->getRecord(key);
@@ -672,7 +673,7 @@ bool WidgetFactory::fillBackChBG(quint16 key, const QWidget *parent)
     return status;
 }
 
-bool WidgetFactory::fillBackComboBox(quint16 key, const QWidget *parent, delegate::QComboBox::PrimaryField field)
+bool WidgetFactory::fillBackComboBox(quint16 key, const QWidget *parent, delegate::QComboBox::PrimaryField field) const
 {
     bool status = false;
     auto record = configV->getRecord(key);
@@ -712,7 +713,7 @@ bool WidgetFactory::fillBackComboBox(quint16 key, const QWidget *parent, delegat
     return status;
 }
 
-bool WidgetFactory::fillBackComboBoxGroup(quint16 key, const QWidget *parent, int count)
+bool WidgetFactory::fillBackComboBoxGroup(quint16 key, const QWidget *parent, int count) const
 {
     bool status = false;
     auto record = configV->getRecord(key);

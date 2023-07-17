@@ -43,7 +43,7 @@ DataFactory::DataFactory(const S2ConfigStorage &confStorage) : s2confStorage(con
 {
 }
 
-ctti::unnamed_type_id_t DataFactory::getType(quint16 id) const
+ctti::unnamed_type_id_t DataFactory::getType(quint32 id) const
 {
     auto &typeMap = s2confStorage.getTypeByIdMap();
     auto search = typeMap.find(id);
@@ -51,19 +51,11 @@ ctti::unnamed_type_id_t DataFactory::getType(quint16 id) const
     return search->second;
 }
 
-quint16 DataFactory::getId(const QString &name) const
-{
-    auto &nameMap = s2confStorage.getIdByNameMap();
-    auto search = nameMap.find(name);
-    assert(search != nameMap.cend());
-    return search->second;
-}
-
 DataItem DataFactory::create(const DataRec &record) const
 {
     using namespace detail;
     auto rawdata = static_cast<const char *>(record.thedata);
-    auto id = static_cast<quint16>(record.header.id);
+    auto id = record.header.id;
     auto type = getType(id);
     switch (type.hash())
     {
@@ -117,12 +109,12 @@ DataItem DataFactory::create(const DataRec &record) const
     }
 }
 
-DataItem DataFactory::create(const quint16 id, const QByteArray &data) const
+DataItem DataFactory::create(const quint32 id, const QByteArray &data) const
 {
     return create({ { id, quint32(data.size()) }, (void *)(data.data()) });
 }
 
-DataItem DataFactory::create(const quint16 id, const QString &str) const
+DataItem DataFactory::create(const quint32 id, const QString &str) const
 {
     using namespace detail;
     auto type = getType(id);

@@ -52,12 +52,12 @@ DataManager::Iter DataManager::end() noexcept
     return data.end();
 }
 
-DataManager::ConstIter DataManager::cbegin() const noexcept
+DataManager::ConstIter DataManager::begin() const noexcept
 {
     return data.cbegin();
 }
 
-DataManager::ConstIter DataManager::cend() const noexcept
+DataManager::ConstIter DataManager::end() const noexcept
 {
     return data.cend();
 }
@@ -70,7 +70,7 @@ void DataManager::startNewConfig()
         auto search = data.find(boardType);
         if (search == data.end())
         {
-            data.insert({ boardType, BoardConfiguration { storage, storage } });
+            data.insert({ boardType, BoardConfiguration { S2Configuration(storage), S2Configuration(storage) } });
             currentParseTarget = boardType;
             break;
         }

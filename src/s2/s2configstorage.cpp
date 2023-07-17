@@ -20,12 +20,12 @@ void ConfigStorage::setParseStatus(const ParseStatus pStatus)
     status = pStatus;
 }
 
-const std::map<QString, quint16> &ConfigStorage::getIdByNameMap() const
+const std::map<QString, quint32> &ConfigStorage::getIdByNameMap() const
 {
     return idByName;
 }
 
-const std::map<quint16, ctti::unnamed_type_id_t> &ConfigStorage::getTypeByIdMap() const
+const std::map<quint32, ctti::unnamed_type_id_t> &ConfigStorage::getTypeByIdMap() const
 {
     return typeById;
 }
@@ -35,7 +35,7 @@ const std::map<quint32, QString> &ConfigStorage::getConfigTabs() const
     return configTabs;
 }
 
-const std::map<quint16, WidgetDetail> &ConfigStorage::getWidgetDetailMap() const
+const std::map<quint32, WidgetDetail> &ConfigStorage::getWidgetDetailMap() const
 {
     return widgetDetailMap;
 }
@@ -45,7 +45,7 @@ void ConfigStorage::clearDetailData() noexcept
     widgetDetailMap.clear();
 }
 
-void ConfigStorage::nameDataReceive(const quint16 id, const QString &name)
+void ConfigStorage::nameDataReceive(const quint32 id, const QString &name)
 {
     if (id == 0)
         qWarning() << "Invalid S2 config id: " << id;
@@ -60,7 +60,7 @@ const config::widgetMap &ConfigStorage::getWidgetMap() const
     return widgetMap;
 }
 
-void ConfigStorage::typeDataReceive(const quint16 id, const std::uint64_t typeId)
+void ConfigStorage::typeDataReceive(const quint32 id, const std::uint64_t typeId)
 {
     if (id == 0)
         qWarning() << "Invalid S2 config id: " << id;
@@ -68,7 +68,7 @@ void ConfigStorage::typeDataReceive(const quint16 id, const std::uint64_t typeId
         typeById.insert({ id, typeId });
 }
 
-void ConfigStorage::widgetDataReceive(const quint16 id, const config::itemVariant &widget)
+void ConfigStorage::widgetDataReceive(const quint32 id, const config::itemVariant &widget)
 {
     if (id == 0)
         qWarning() << "Invalid S2 widget id: " << id;
@@ -86,7 +86,7 @@ void ConfigStorage::configTabDataReceive(const quint32 id, const QString &tabNam
         configTabs.insert({ id, tabName });
 }
 
-void ConfigStorage::widgetDetailsReceive(const quint16 id, const bool visib, const quint16 count)
+void ConfigStorage::widgetDetailsReceive(const quint32 id, const bool visib, const quint16 count)
 {
     widgetDetailMap.insert({ id, { visib, count } });
 }
