@@ -20,7 +20,7 @@ class WidgetFactory
     // friend class NewModule;
 
 public:
-    WidgetFactory(ConfigV *config);
+    WidgetFactory();
     QWidget *createWidget(quint16 key, QWidget *parent = nullptr);
     template <typename T> bool fillWidget(const QWidget *parent, quint16 key, const T &value);
     bool fillBack(quint16 key, const QWidget *parent) const;

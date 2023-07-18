@@ -29,13 +29,14 @@ ConfigDialog::ConfigDialog(S2BoardConfig &boardConf, bool prereadConf, QWidget *
     : UDialog(crypto::hash, crypto::name, parent)
     , boardConfig(boardConf)
     , m_prereadConf(prereadConf)
-    , configV(nullptr)
-    , factory(configV)
+    // , configV(nullptr)
+    , factory()
     , proxyDRL(new DataTypesProxy)
-    , errConfState(nullptr)
+    , errConfState(new ErrConfState())
 {
-    proxyDRL->RegisterType<QList<S2::DataItem>>();
-    connect(proxyDRL.get(), &DataTypesProxy::DataStorable, this, &ConfigDialog::configReceived);
+    proxyDRL->RegisterType<QByteArray>();
+    connect(proxyDRL.get(), &DataTypesProxy::DataStorable, this, //
+        [this](const QVariant &var) { configReceived(var.value<QByteArray>()); });
 }
 
 void ConfigDialog::readConfig()
@@ -51,12 +52,15 @@ void ConfigDialog::writeConfig()
     {
         if (prepareConfigToWrite())
         {
-            S2::S2ConfigType buffer;
-            std::transform(configV->getConfig().cbegin(), configV->getConfig().cend(), std::back_inserter(buffer),
-                [](const auto &record) -> S2::DataRec { return record.serialize(); });
-            S2Util::tester(buffer);
-            buffer.push_back({ { S2::dummyElement, 0 }, nullptr });
-            BaseInterface::iface()->writeS2File(S2::FilesEnum::Config, buffer);
+            // S2::S2ConfigType buffer;
+            // std::transform(configV->getConfig().cbegin(), configV->getConfig().cend(), std::back_inserter(buffer),
+            //    [](const auto &record) -> S2::DataRec { return record.serialize(); });
+            // S2Util::tester(buffer);
+            // buffer.push_back({ { S2::dummyElement, 0 }, nullptr });
+            // BaseInterface::iface()->writeS2File(S2::FilesEnum::Config, buffer);
+            auto s2file = boardConfig.workingConfig.toByteArray();
+            auto fileType = std_ext::to_underlying(S2::FilesEnum::Config);
+            BaseInterface::iface()->writeFile(fileType, s2file);
         }
         else
             qCritical("Ошибка чтения конфигурации");
@@ -81,28 +85,34 @@ bool ConfigDialog::isVisible(const quint16 id) const
         return false;
 }
 
-void ConfigDialog::configReceived(const QVariant &msg)
+void ConfigDialog::configReceived(const QByteArray &rawData)
 {
     using namespace S2;
-    auto list = msg.value<QList<DataItem>>();
-    configV->setConfig(list);
+    // auto list = msg.value<QList<DataItem>>();
+    // configV->setConfig(list);
+    auto &workConfig = boardConfig.workingConfig;
+    workConfig.updateByRawData(rawData);
 
-    const auto s2typeB = configV->getRecord(S2Util::GetIdByName("MTypeB_ID")).value<DWORD>();
-    if (s2typeB != Board::GetInstance().typeB())
+    // const auto s2typeB = configV->getRecord(S2Util::GetIdByName("MTypeB_ID")).value<DWORD>();
+    const auto s2typeB = workConfig["MTypeB_ID"].value<DWORD>();
+    const auto typeB = Board::GetInstance().typeB();
+    if (s2typeB != typeB)
     {
-        qCritical() << "Conflict typeB, module: " <<                //
-            QString::number(Board::GetInstance().typeB(), 16)       //
-                    << " config: " << QString::number(s2typeB, 16); //
-        configV->setRecordValue({ S2Util::GetIdByName("MTypeB_ID"), DWORD(Board::GetInstance().typeB()) });
+        qCritical() << "Conflict typeB, module: " << QString::number(typeB, 16)
+                    << " config: " << QString::number(s2typeB, 16);
+        // configV->setRecordValue({ S2Util::GetIdByName("MTypeB_ID"), DWORD(typeB) });
+        workConfig["MTypeB_ID"].setData(DWORD(typeB));
     }
 
-    const auto s2typeM = configV->getRecord(S2Util::GetIdByName("MTypeE_ID")).value<DWORD>();
-    if (s2typeM != Board::GetInstance().typeM())
+    // const auto s2typeM = configV->getRecord(S2Util::GetIdByName("MTypeE_ID")).value<DWORD>();
+    const auto s2typeM = workConfig["MTypeE_ID"].value<DWORD>();
+    const auto typeM = Board::GetInstance().typeM();
+    if (s2typeM != typeM)
     {
-        qCritical() << "Conflict typeB, module: " <<                //
-            QString::number(Board::GetInstance().typeM(), 16)       //
-                    << " config: " << QString::number(s2typeM, 16); //
-        configV->setRecordValue({ S2Util::GetIdByName("MTypeE_ID"), DWORD(Board::GetInstance().typeM()) });
+        qCritical() << "Conflict typeB, module: " << QString::number(typeM, 16)
+                    << " config: " << QString::number(s2typeM, 16);
+        // configV->setRecordValue({ S2Util::GetIdByName("MTypeE_ID"), DWORD(typeB) });
+        workConfig["MTypeE_ID"].setData(DWORD(typeM));
     }
 
     checkForDiff();
@@ -121,8 +131,8 @@ void ConfigDialog::saveConfigToFile()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    QByteArray ba;
-    S2Util::StoreDataMem(ba, configV->getConfig(), int(FilesEnum::Config));
+    QByteArray ba = boardConfig.workingConfig.toByteArray();
+    // S2Util::StoreDataMem(ba, configV->getConfig(), int(FilesEnum::Config));
     quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
     length += sizeof(S2FileHeader);
     Q_ASSERT(length == quint32(ba.size()));
@@ -153,19 +163,22 @@ void ConfigDialog::loadConfigFromFile()
     if (filepath.isEmpty())
         return;
 
-    QByteArray ba;
-    Error::Msg res = Files::LoadFromFile(filepath, ba);
+    QByteArray file;
+    Error::Msg res = Files::LoadFromFile(filepath, file);
     if (res != Error::Msg::NoError)
     {
         qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
-    QList<S2::DataItem> outlistV;
-    S2Util::RestoreData(ba, outlistV);
-    QVariant outlist;
-    outlist.setValue(outlistV);
+    configReceived(file);
 
-    configReceived(outlist);
+    // TODO: Remove S2Util::RestoreData
+    // QList<S2::DataItem> outlistV;
+    // S2Util::RestoreData(ba, outlistV);
+    // QVariant outlist;
+    // outlist.setValue(outlistV);
+    // configReceived(outlist);
+
     EMessageBox::information(this, "Загрузка прошла успешно!");
 }
 
@@ -295,12 +308,12 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
 
 void ConfigDialog::fill()
 {
-    for (const auto &defRecord : boardConfig.defaultConfig)
+    for (const auto &defRecord : boardConfig.workingConfig)
     {
         const auto id = defRecord.first;
         if (isVisible(id))
         {
-            const auto record = configV->getRecord(id);
+            const auto record = defRecord.second;
             std::visit(
                 [=](const auto &&value) {
                     bool status = factory.fillWidget(this, id, value);
@@ -325,8 +338,7 @@ void ConfigDialog::prereadConfig()
 
 void ConfigDialog::fillBack() const
 {
-    // WidgetFactory factory(configV);
-    for (const auto &record : boardConfig.defaultConfig)
+    for (const auto &record : boardConfig.workingConfig)
     {
         const auto id = record.first;
         if (isVisible(id))
@@ -346,13 +358,7 @@ void ConfigDialog::setDefaultConfig()
 
 void ConfigDialog::showConfigErrState()
 {
-    if (errConfState == nullptr)
-    {
-        errConfState = new ErrConfState();
-        errConfState->show();
-    }
-    else
-        errConfState->show();
+    errConfState->show();
 }
 
 bool ConfigDialog::prepareConfigToWrite()

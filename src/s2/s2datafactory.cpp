@@ -43,7 +43,7 @@ DataFactory::DataFactory(const S2ConfigStorage &confStorage) : s2confStorage(con
 {
 }
 
-ctti::unnamed_type_id_t DataFactory::getType(quint32 id) const
+ctti::unnamed_type_id_t DataFactory::getType(const quint32 id) const
 {
     auto &typeMap = s2confStorage.getTypeByIdMap();
     auto search = typeMap.find(id);

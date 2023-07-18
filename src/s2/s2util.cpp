@@ -4,16 +4,16 @@
 
 #include <QDateTime>
 #include <QDebug>
-#include <gen/error.h>
 #include <gen/utils/crc32.h>
 
 namespace helper
 {
-/// \brief Декларация для определния POD-типов.
+/// \brief Декларация для определния простых (POD) типов.
 /// \see https://en.cppreference.com/w/cpp/types/is_pod
 template <typename T> //
 constexpr static auto is_simple_v = std::is_standard_layout_v<T> &&std::is_trivial_v<T>;
 
+/// \brief Создаёт из инстансов простых типов QByteArray.
 template <typename T, std::enable_if_t<is_simple_v<T>, bool> = true> //
 inline QByteArray convert(const T &value)
 {
@@ -22,46 +22,38 @@ inline QByteArray convert(const T &value)
 
 }
 
-S2Util::S2Util(const S2::ConfigStorage &confStorage) : s2confStorage(confStorage)
-{
-}
-
-quint32 S2Util::getIdByName(const QString &name) const
-{
-    const auto &nameMap = s2confStorage.getIdByNameMap();
-    auto search = nameMap.find(name);
-    if (search == nameMap.cend())
-        return 0;
-    else
-        return search->second;
-}
-
-QByteArray S2Util::toByteArray(const quint32 id, const S2::DataItem &item) const
+QByteArray S2Util::convert(const quint32 id, const S2::DataItem &item) const
 {
     const auto bytes = item.toByteArray();
     S2::DataRecHeader header { id, static_cast<quint32>(bytes.size()) };
     QByteArray retValue = helper::convert(header);
-    if (id != S2::dummyElement && !bytes.isEmpty())
+    if (!bytes.isEmpty())
         retValue.append(bytes);
     return retValue;
 }
 
-QByteArray S2Util::toByteArray(const S2::Configuration &config, quint32 fileType) const
+QByteArray S2Util::convert(const S2::Configuration &config, quint32 fileType) const
 {
     utils::CRC32 crc;
     S2::S2FileHeader header;
     QByteArray retValue, temp;
     header.size = 0;
+    // Append data from configuration
     for (const auto &iter : config)
     {
         const auto id = iter.first;
-        temp = toByteArray(id, iter.second);
+        temp = convert(id, iter.second);
         header.size += temp.size();
         crc.update(temp);
         retValue.append(temp);
-        if (id == S2::dummyElement)
-            break;
     }
+    // Append file tail
+    S2::DataRecHeader tail { S2::dummyElement, 0 };
+    temp = helper::convert(tail);
+    header.size += temp.size();
+    crc.update(temp);
+    retValue.append(temp);
+    // Prepend file header
     header.crc32 = crc;
     header.thetime = getTime32();
     header.service = 0xFFFF;
@@ -69,6 +61,42 @@ QByteArray S2Util::toByteArray(const S2::Configuration &config, quint32 fileType
     temp = helper::convert(header);
     retValue.prepend(temp);
     return retValue;
+}
+
+Error::Msg S2Util::convert(const QByteArray &rawFile, const S2::DataFactory &factory, //
+    std::map<quint32, S2::DataItem> &result) const
+{
+    using namespace S2;
+    if (rawFile.size() < sizeof(S2FileHeader))
+        return Error::Msg::HeaderSizeError;
+    auto headerBytes = rawFile.left(sizeof(S2FileHeader));
+    auto header = *reinterpret_cast<const S2FileHeader *>(headerBytes.constData());
+    auto workLoad = rawFile.mid(sizeof(S2FileHeader));
+    if (workLoad.size() != header.size)
+        return Error::Msg::SizeError;
+    if (header.fname != std_ext::to_underlying(FilesEnum::Config))
+        return Error::Msg::WrongFileError;
+    utils::CRC32 crc(workLoad);
+    if (crc != header.crc32)
+        return Error::Msg::CrcError;
+    DataRecHeader recordHeader { 0, 0 };
+    while (recordHeader.id != S2::dummyElement && (!workLoad.isEmpty()))
+    {
+        auto size = sizeof(recordHeader);
+        if (size > workLoad.size())
+            return Error::Msg::SizeError;
+        auto recordHeaderBytes = workLoad.left(size);
+        recordHeader = *reinterpret_cast<const DataRecHeader *>(recordHeaderBytes.constData());
+        workLoad.remove(0, size);
+        if (recordHeader.id != S2::dummyElement && recordHeader.numByte > 0)
+        {
+            size = recordHeader.numByte;
+            auto dataItem = factory.create(recordHeader.id, workLoad.left(size));
+            result.insert({ recordHeader.id, dataItem });
+            workLoad.remove(0, size);
+        }
+    }
+    return Error::Msg::NoError;
 }
 
 void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2::DataRec> &dr, int fname)
@@ -104,13 +132,13 @@ void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2::DataRec> &dr, i
     mem.prepend(ba);
 }
 
-void S2Util::StoreDataMem(QByteArray &mem, const QList<S2::DataItem> &dr, int fname)
-{
-    std::vector<S2::DataRec> recVec;
-    std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
-        [](const S2::DataItem &record) { return record.serialize(); });
-    StoreDataMem(mem, recVec, fname);
-}
+// void S2Util::StoreDataMem(QByteArray &mem, const QList<S2::DataItem> &dr, int fname)
+//{
+//    std::vector<S2::DataRec> recVec;
+//    std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
+//        [](const S2::DataItem &record) { return record.serialize(); });
+//    StoreDataMem(mem, recVec, fname);
+//}
 
 void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2::FileStruct> &dr, int fname)
 {

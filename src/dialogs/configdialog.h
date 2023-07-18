@@ -34,13 +34,13 @@ private:
     void writeConfig();
     void checkForDiff();
     bool isVisible(const quint16 id) const;
-    void configReceived(const QVariant &msg);
+    void configReceived(const QByteArray &rawData);
 
     void showConfigErrState();
 
     S2BoardConfig &boardConfig;
     bool m_prereadConf;
-    ConfigV *configV;
+    // ConfigV *configV;
     WidgetFactory factory;
     UniquePointer<DataTypesProxy> proxyDRL;
     ErrConfState *errConfState;

@@ -20,6 +20,11 @@ void ConfigStorage::setParseStatus(const ParseStatus pStatus)
     status = pStatus;
 }
 
+void ConfigStorage::clearDetailData() noexcept
+{
+    widgetDetailMap.clear();
+}
+
 const std::map<QString, quint32> &ConfigStorage::getIdByNameMap() const
 {
     return idByName;
@@ -38,11 +43,6 @@ const std::map<quint32, QString> &ConfigStorage::getConfigTabs() const
 const std::map<quint32, WidgetDetail> &ConfigStorage::getWidgetDetailMap() const
 {
     return widgetDetailMap;
-}
-
-void ConfigStorage::clearDetailData() noexcept
-{
-    widgetDetailMap.clear();
 }
 
 void ConfigStorage::nameDataReceive(const quint32 id, const QString &name)

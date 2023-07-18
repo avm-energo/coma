@@ -96,7 +96,7 @@ template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidge
     return false;
 };
 
-WidgetFactory::WidgetFactory(ConfigV *config) : configV(config)
+WidgetFactory::WidgetFactory() : configV(nullptr)
 {
 }
 

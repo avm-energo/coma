@@ -39,10 +39,18 @@ public:
     void clear() noexcept;
     bool isOneBoard() const noexcept;
 
-    Iter begin() noexcept;
-    Iter end() noexcept;
-    ConstIter begin() const noexcept;
-    ConstIter end() const noexcept;
+    /// \brief Возвращает итератор на начало хранимых данных.
+    /// \details Нужно для range-based циклов for.
+    [[nodiscard]] Iter begin() noexcept;
+    /// \brief Возвращает итератор на конец хранимых данных.
+    /// \details Нужно для range-based циклов for.
+    [[nodiscard]] Iter end() noexcept;
+    /// \brief Возвращает константный итератор на начало хранимых данных.
+    /// \details Нужно для range-based циклов for.
+    [[nodiscard]] ConstIter begin() const noexcept;
+    /// \brief Возвращает константный итератор на конец хранимых данных.
+    /// \details Нужно для range-based циклов for.
+    [[nodiscard]] ConstIter end() const noexcept;
 
 public slots:
     void startNewConfig();

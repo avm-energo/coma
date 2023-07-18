@@ -12,7 +12,7 @@ class DataFactory
 private:
     const S2ConfigStorage &s2confStorage;
 
-    ctti::unnamed_type_id_t getType(quint32 id) const;
+    ctti::unnamed_type_id_t getType(const quint32 id) const;
 
 public:
     explicit DataFactory(const S2ConfigStorage &confStorage = S2ConfigStorage::GetInstance());

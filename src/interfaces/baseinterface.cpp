@@ -154,12 +154,12 @@ void BaseInterface::writeFile(quint32 id, const QByteArray &ba)
     setToQueue(bi);
 }
 
-void BaseInterface::writeS2File(S2::FilesEnum number, const S2::S2ConfigType &file)
-{
-    QByteArray ba;
-    S2Util::StoreDataMem(ba, file, int(number));
-    writeFile(quint32(number), ba);
-}
+// void BaseInterface::writeS2File(S2::FilesEnum number, const S2::S2ConfigType &file)
+//{
+//    QByteArray ba;
+//    S2Util::StoreDataMem(ba, file, int(number));
+//    writeFile(quint32(number), ba);
+//}
 
 void BaseInterface::reqTime()
 {
@@ -340,20 +340,6 @@ Error::Msg BaseInterface::writeConfFileSync(const QList<S2::DataItem> &config)
     buffer.push_back({ { S2::dummyElement, 0 }, nullptr });
     return writeS2FileSync(S2::FilesEnum::Config, buffer);
 }
-
-// Error::Msg BaseInterface::pushAndWriteConfFileSync(ConfigV *config, const QList<S2::DataItem> &recordList)
-//{
-//    config->pushConfig();
-//    for (auto record : recordList)
-//        config->setRecordValue(record.getId(), record.getData());
-//    return writeConfFileSync(config->getConfig());
-//}
-
-// Error::Msg BaseInterface::popAndWriteConfFileSync(ConfigV *config)
-//{
-//    config->popConfig();
-//    return writeConfFileSync(config->getConfig());
-//}
 
 Error::Msg BaseInterface::writeFileSync(S2::FilesEnum filenum, const QByteArray &ba)
 {

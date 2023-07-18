@@ -175,7 +175,7 @@ public:
     void reqBSIExt();
     void reqFile(quint32 id, FileFormat format = FileFormat::Binary, quint32 expectedSize = 0);
     void writeFile(quint32 id, const QByteArray &ba);
-    void writeS2File(S2::FilesEnum number, const S2::S2ConfigType &file);
+    // void writeS2File(S2::FilesEnum number, const S2::S2ConfigType &file);
     void reqTime();
     void writeTime(quint32 time);
     void writeCommand(Commands cmd, QVariant value = 0);

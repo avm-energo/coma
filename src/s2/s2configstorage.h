@@ -32,22 +32,45 @@ private:
 public:
     explicit ConfigStorage(token token, QObject *parent = nullptr);
 
+    /// \brief Возвращает статус парсинга s2files.xml.
     ParseStatus getParseStatus() const;
+    /// \brief Устанавливает статус парсинга s2files.xml.
     void setParseStatus(const ParseStatus pStatus);
-
-    const std::map<QString, quint32> &getIdByNameMap() const;
-    const std::map<quint32, ctti::unnamed_type_id_t> &getTypeByIdMap() const;
-    const config::widgetMap &getWidgetMap() const;
-    const std::map<quint32, QString> &getConfigTabs() const;
-    const std::map<quint32, WidgetDetail> &getWidgetDetailMap() const;
-
+    /// \brief Очищает изменяемые данные, характерные для модуля.
+    /// \details Такими данными являются: видимость виджета,
+    /// уточнённое количество виджетов в группе.
     void clearDetailData() noexcept;
 
+    /// \brief Возвращает std::map, где key - имя записи S2, value - ID записи S2.
+    /// \details Позволяет искать данные по имени.
+    const std::map<QString, quint32> &getIdByNameMap() const;
+    /// \brief Возвращает std::map, где key - ID записи S2,
+    /// value - хэш типа хранимых данных, в записи с указанным S2 ID.
+    const std::map<quint32, ctti::unnamed_type_id_t> &getTypeByIdMap() const;
+    /// \brief Возвращает std::map, где key - ID записи S2, value - структура,
+    /// описывающая виджет для представления данных указанной записи S2.
+    const config::widgetMap &getWidgetMap() const;
+    /// \brief Возвращает std::map, где key - ID вкладки, value - строка с именем вкладки.
+    const std::map<quint32, QString> &getConfigTabs() const;
+    /// \brief Возвращает std::map, где key - ID записи S2,
+    /// value - уточнённые данные для отображения виджета с указанным S2 ID.
+    const std::map<quint32, WidgetDetail> &getWidgetDetailMap() const;
+
 public slots:
+    /// \brief Слот для сохранения S2 ID по его имени.
+    /// \see getIdByNameMap.
     void nameDataReceive(const quint32 id, const QString &name);
+    /// \brief Слот для сохранения информации о типе данных записи S2 по его S2 ID.
+    /// \see getTypeByIdMap.
     void typeDataReceive(const quint32 id, const std::uint64_t typeId);
+    /// \brief Слот для сохранения информации о виджете по его S2 ID.
+    /// \see getWidgetMap.
     void widgetDataReceive(const quint32 id, const config::itemVariant &widget);
+    /// \brief Слот для сохранения имени вкладки по её ID.
+    /// \see getConfigTabs.
     void configTabDataReceive(const quint32 id, const QString &tabName);
+    /// \brief Слот для сохранения уточнённой информации о виджете по его S2 ID.
+    /// \see getWidgetDetailMap.
     void widgetDetailsReceive(const quint32 id, const bool visib, const quint16 count);
 };
 
