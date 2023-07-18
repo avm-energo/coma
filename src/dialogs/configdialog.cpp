@@ -30,7 +30,7 @@ ConfigDialog::ConfigDialog(S2BoardConfig &boardConf, bool prereadConf, QWidget *
     , boardConfig(boardConf)
     , m_prereadConf(prereadConf)
     // , configV(nullptr)
-    , factory()
+    , factory(boardConfig.workingConfig)
     , proxyDRL(new DataTypesProxy)
     , errConfState(new ErrConfState())
 {
@@ -78,7 +78,7 @@ bool ConfigDialog::isVisible(const quint16 id) const
 {
     const auto &detailMap = S2::ConfigStorage::GetInstance().getWidgetDetailMap();
     auto search = detailMap.find(id);
-    Q_ASSERT(search != detailMap.cend());
+    // Q_ASSERT(search != detailMap.cend());
     if (search != detailMap.cend())
         return search->second.first;
     else
@@ -91,32 +91,36 @@ void ConfigDialog::configReceived(const QByteArray &rawData)
     // auto list = msg.value<QList<DataItem>>();
     // configV->setConfig(list);
     auto &workConfig = boardConfig.workingConfig;
-    workConfig.updateByRawData(rawData);
-
-    // const auto s2typeB = configV->getRecord(S2Util::GetIdByName("MTypeB_ID")).value<DWORD>();
-    const auto s2typeB = workConfig["MTypeB_ID"].value<DWORD>();
-    const auto typeB = Board::GetInstance().typeB();
-    if (s2typeB != typeB)
+    if (workConfig.updateByRawData(rawData))
     {
-        qCritical() << "Conflict typeB, module: " << QString::number(typeB, 16)
-                    << " config: " << QString::number(s2typeB, 16);
-        // configV->setRecordValue({ S2Util::GetIdByName("MTypeB_ID"), DWORD(typeB) });
-        workConfig["MTypeB_ID"].setData(DWORD(typeB));
-    }
+        // const auto s2typeB = configV->getRecord(S2Util::GetIdByName("MTypeB_ID")).value<DWORD>();
+        const auto s2typeB = workConfig["MTypeB_ID"].value<DWORD>();
+        const auto typeB = Board::GetInstance().typeB();
+        if (s2typeB != typeB)
+        {
+            qCritical() << "Conflict typeB, module: " << QString::number(typeB, 16)
+                        << " config: " << QString::number(s2typeB, 16);
+            // configV->setRecordValue({ S2Util::GetIdByName("MTypeB_ID"), DWORD(typeB) });
+            workConfig["MTypeB_ID"].setData(DWORD(typeB));
+        }
 
-    // const auto s2typeM = configV->getRecord(S2Util::GetIdByName("MTypeE_ID")).value<DWORD>();
-    const auto s2typeM = workConfig["MTypeE_ID"].value<DWORD>();
-    const auto typeM = Board::GetInstance().typeM();
-    if (s2typeM != typeM)
-    {
-        qCritical() << "Conflict typeB, module: " << QString::number(typeM, 16)
-                    << " config: " << QString::number(s2typeM, 16);
-        // configV->setRecordValue({ S2Util::GetIdByName("MTypeE_ID"), DWORD(typeB) });
-        workConfig["MTypeE_ID"].setData(DWORD(typeM));
-    }
+        // const auto s2typeM = configV->getRecord(S2Util::GetIdByName("MTypeE_ID")).value<DWORD>();
+        const auto s2typeM = workConfig["MTypeE_ID"].value<DWORD>();
+        const auto typeM = Board::GetInstance().typeM();
+        if (s2typeM != typeM)
+        {
+            qCritical() << "Conflict typeB, module: " << QString::number(typeM, 16)
+                        << " config: " << QString::number(s2typeM, 16);
+            // configV->setRecordValue({ S2Util::GetIdByName("MTypeE_ID"), DWORD(typeB) });
+            workConfig["MTypeE_ID"].setData(DWORD(typeM));
+        }
 
-    checkForDiff();
-    fill();
+        checkForDiff();
+        fill();
+        EMessageBox::information(this, "Конфигурация прочитана успешно");
+    }
+    else
+        EMessageBox::warning(this, "Ошибка чтения конфигурации, проверьте лог");
 }
 
 void ConfigDialog::saveConfigToFile()

@@ -116,17 +116,6 @@ void Configuration::setRecord(const quint32 id, const valueType &value)
     data.insert_or_assign(id, DataItem { id, value });
 }
 
-// const DataItem &Configuration::getRecord(const quint32 id) const
-//{
-//    return data.at(id);
-//}
-
-// const DataItem &Configuration::getRecord(const QString &name) const
-//{
-//    auto id = util.getIdByName(name);
-//    return data.at(id);
-//}
-
 QByteArray Configuration::toByteArray() const
 {
     return util.convert(*this, std_ext::to_underlying(FilesEnum::Config));

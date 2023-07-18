@@ -14,6 +14,7 @@ private:
     S2Util util;
     std::map<quint32, DataItem> data;
 
+    /// \brief Возвращает ID S2 записи по её имени.
     quint32 getIdByName(const QString &name) const noexcept;
 
 public:
@@ -63,7 +64,7 @@ public:
     template <typename T> //
     bool append(const QString &name, const T &value)
     {
-        auto id = util.getIdByName(name);
+        auto id = getIdByName(name);
         const auto [it, success] = data.insert({ id, factory.create(id, value) });
         Q_UNUSED(it);
         return success;

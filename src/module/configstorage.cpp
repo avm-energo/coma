@@ -19,12 +19,6 @@ void ConfigStorage::clearModuleSettings()
     mSettings->clear();
 }
 
-/// \brief Slot for starting new config in module settings (for second configuration file).
-// void ConfigStorage::startNewConfig()
-//{
-//    mSettings->startNewConfig();
-//}
-
 /// \brief Slot for saving module's signal record.
 void ConfigStorage::signalDataReceive(const quint32 id, const quint32 addr, //
     const quint16 count, const ModuleTypes::SignalType sigType)
@@ -76,21 +70,6 @@ void ConfigStorage::measJourDataReceive(const quint32 index, const QString &head
 {
     mSettings->appendMeasJournal(index, header, type, visib);
 }
-
-/// \brief Slot for saving module's config record.
-// void ConfigStorage::configDataReceive(const quint16 id, const QString &defVal, const bool visib, const quint16 count)
-//{
-//    if (id == 0)
-//        qWarning() << "Invalid config id: " << id;
-//    else if (defVal == "")
-//        qWarning() << "Invalid default value, config id: " << id;
-//    else
-//    {
-//        mSettings->appendToCurrentConfig({ s2factory.create(id, defVal), visib });
-//        if (count != 0)
-//            mSettings->appendDetailCount(id, count);
-//    }
-//}
 
 /// \brief Slot for saving module's protocol groups
 void ConfigStorage::protocolDescriptionReceived(const parseXChangeStruct &str)

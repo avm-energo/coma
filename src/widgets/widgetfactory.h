@@ -1,7 +1,6 @@
 #pragma once
 #include "../module/configstorage.h"
-#include "../s2/s2configstorage.h"
-#include "../s2/s2datatypes.h"
+#include "../s2/s2configuration.h"
 #include "../widgets/delegate_common.h"
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
@@ -10,17 +9,15 @@
 #include <bitset>
 #include <gen/std_ext.h>
 
-//#define DEBUG_FACTORY
-
-class ConfigV;
+// class ConfigV;
 
 class WidgetFactory
 {
-    // friend class Module;
-    // friend class NewModule;
+private:
+    S2Configuration &config;
 
 public:
-    WidgetFactory();
+    WidgetFactory(S2Configuration &workingConfig);
     QWidget *createWidget(quint16 key, QWidget *parent = nullptr);
     template <typename T> bool fillWidget(const QWidget *parent, quint16 key, const T &value);
     bool fillBack(quint16 key, const QWidget *parent) const;
@@ -52,17 +49,17 @@ private:
     template <typename T> bool fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey) const;
 
     // helpers for fill back from widget
-    bool fillBackModbus(quint16 key, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey) const;
-    bool fillBackIpCtrl(quint16 key, const QWidget *parent) const;
-    bool fillBackCheckBox(quint16 key, const QWidget *parent) const;
-    bool fillBackLineEdit(quint16 key, const QWidget *parent) const;
-    bool fillBackSPBG(quint16 key, const QWidget *parent) const;
-    bool fillBackSPB(quint16 key, const QWidget *parent) const;
-    bool fillBackChBG(quint16 key, const QWidget *parent) const;
-    bool fillBackComboBox(quint16 key, const QWidget *parent, delegate::QComboBox::PrimaryField field) const;
-    bool fillBackComboBoxGroup(quint16 key, const QWidget *parent, int count) const;
+    bool fillBackModbus(quint32 id, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey) const;
+    bool fillBackIpCtrl(quint32 id, const QWidget *parent) const;
+    bool fillBackCheckBox(quint32 id, const QWidget *parent) const;
+    bool fillBackLineEdit(quint32 id, const QWidget *parent) const;
+    bool fillBackSPBG(quint32 id, const QWidget *parent) const;
+    bool fillBackSPB(quint32 id, const QWidget *parent) const;
+    bool fillBackChBG(quint32 id, const QWidget *parent) const;
+    bool fillBackComboBox(quint32 id, const QWidget *parent, delegate::QComboBox::PrimaryField field) const;
+    bool fillBackComboBoxGroup(quint32 id, const QWidget *parent, int count) const;
 
-    ConfigV *configV;
+    // ConfigV *configV;
 };
 
 // Template specialisation

@@ -1,13 +1,8 @@
 #include "modulesettings.h"
 
-ModuleSettings::ModuleSettings() : curConfigIndex(-1)
-{
-}
-
 /// \brief Очистка настроек модуля.
 void ModuleSettings::clear()
 {
-    mConfigs.clear();
     mCountMap.clear();
     mSignals.clear();
     mTabs.clear();
@@ -17,27 +12,6 @@ void ModuleSettings::clear()
     measJournals.clear();
     critHighlight.clear();
     warnHighlight.clear();
-    curConfigIndex = 0;
-}
-
-/// \brief Создание нового списка конфигурации.
-void ModuleSettings::startNewConfig()
-{
-    curConfigIndex++;
-    mConfigs[curConfigIndex] = ModuleTypes::ConfigList();
-}
-
-/// \brief Добавление конфига в текущий список конфигурации.
-void ModuleSettings::appendToCurrentConfig(const S2::RecordPair &pair)
-{
-    if (mConfigs.contains(curConfigIndex))
-        mConfigs[curConfigIndex].append(pair);
-}
-
-/// \brief Добавление уточнённого числа элементов для виджета в разделе конфигурирования.
-void ModuleSettings::appendDetailCount(const quint16 id, const quint16 count)
-{
-    mCountMap.insert(id, count);
 }
 
 /// \brief Добавление нового сигнала в список сигналов.
@@ -90,18 +64,6 @@ void ModuleSettings::appendMeasJournal(const quint32 index, const QString &heade
     const ModuleTypes::BinaryType type, bool visib)
 {
     measJournals.append({ index, header, type, visib });
-}
-
-/// \brief Constant getter for configs hashmap.
-const ModuleTypes::ConfigMap &ModuleSettings::getConfigMap() const
-{
-    return mConfigs;
-}
-
-/// \brief Constant getter for current config list from configs hashmap.
-const ModuleTypes::ConfigList ModuleSettings::getConfigs() const
-{
-    return mConfigs[curConfigIndex];
 }
 
 /// \brief Constant getter for detailed count hashmap for current config list.

@@ -132,14 +132,6 @@ void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2::DataRec> &dr, i
     mem.prepend(ba);
 }
 
-// void S2Util::StoreDataMem(QByteArray &mem, const QList<S2::DataItem> &dr, int fname)
-//{
-//    std::vector<S2::DataRec> recVec;
-//    std::transform(dr.cbegin(), dr.cend(), std::back_inserter(recVec), //
-//        [](const S2::DataItem &record) { return record.serialize(); });
-//    StoreDataMem(mem, recVec, fname);
-//}
-
 void S2Util::StoreDataMem(QByteArray &mem, const std::vector<S2::FileStruct> &dr, int fname)
 {
     std::vector<S2::DataRec> recVec;

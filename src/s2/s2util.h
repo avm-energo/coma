@@ -14,9 +14,9 @@ class Configuration;
 class DataFactory;
 }
 
-struct test
-{
-};
+// struct test
+//{
+//};
 
 class S2Util
 {
@@ -24,8 +24,6 @@ public:
     /// \brief Конуструктор класса.
     S2Util() = default;
 
-    /// \brief Возвращает ID S2 записи по её имени.
-    quint32 getIdByName(const QString &name) const;
     QByteArray convert(const quint32 id, const S2::DataItem &item) const;
     QByteArray convert(const S2::Configuration &config, quint32 fileType) const;
     Error::Msg convert(const QByteArray &rawFile, const S2::DataFactory &factory, //
@@ -33,7 +31,6 @@ public:
 
     // S2: Сборщик в память:
     // 0 - успешно, иначе код ошибки S2: получение размера:
-    // [[deprecated]] static void StoreDataMem(QByteArray &mem, const QList<S2::DataItem> &dr, int fname);
     static void StoreDataMem(QByteArray &mem, const std::vector<S2::FileStruct> &dr, int fname);
     static void StoreDataMem(QByteArray &mem, const std::vector<S2::DataRec> &dr, int fname);
     // restore IDs and contents in ConfParameters list
