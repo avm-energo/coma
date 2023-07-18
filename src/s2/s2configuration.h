@@ -25,9 +25,10 @@ public:
 
     /// \brief Конструктор класса.
     explicit Configuration(const S2ConfigStorage &storage);
+    explicit Configuration(const Configuration &rhs);
+
     /// \brief Перегрузка оператора присваивания.
     const Configuration &operator=(const Configuration &rhs);
-
     /// \brief Перегрузка оператора индексирования, индекс - ID записи S2.
     /// \returns Возвращает неконстантную ссылку на запись S2.
     [[nodiscard]] DataItem &operator[](const quint32 id);
@@ -72,6 +73,7 @@ public:
 
     void setRecord(const quint32 id, const DataItem &record);
     void setRecord(const quint32 id, const valueType &value);
+    void setRecord(const QString &name, const valueType &value);
 
     /// \brief Конвертация хранимых данных согласно формату S2 в массив байт.
     [[nodiscard]] QByteArray toByteArray() const;

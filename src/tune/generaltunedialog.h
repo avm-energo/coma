@@ -22,13 +22,14 @@ public:
     QList<TuneDialogStruct> m_dialogList;
     LimeReport::ReportEngine *m_Report;
 
-    GeneralTuneDialog(ConfigV *config, QWidget *parent = nullptr);
+    GeneralTuneDialog(S2::Configuration &workConfig, QWidget *parent = nullptr);
     void SetupUI();
     virtual void prepareReport();
     int addWidgetToTabWidget(QWidget *w, const QString &caption);
 
 protected:
-    ConfigV *configV;
+    // ConfigV *configV;
+    S2::Configuration &config;
 
 private:
     TuneTabWidget *m_tuneTabWidget;

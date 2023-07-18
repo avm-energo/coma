@@ -10,7 +10,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-Tune82Dialog::Tune82Dialog(ConfigV *config, Modules::MezzanineBoard typeM, QWidget *parent)
+Tune82Dialog::Tune82Dialog(S2::Configuration &config, Modules::MezzanineBoard typeM, QWidget *parent)
     : GeneralTuneDialog(config, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);

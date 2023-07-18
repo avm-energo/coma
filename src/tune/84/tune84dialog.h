@@ -17,7 +17,7 @@ class Tune84Dialog : public GeneralTuneDialog
 {
     Q_OBJECT
 public:
-    explicit Tune84Dialog(ConfigV *config, QWidget *parent = nullptr);
+    explicit Tune84Dialog(S2::Configuration &config, QWidget *parent = nullptr);
 
 public slots:
 

@@ -11,7 +11,7 @@ class Tune85Temp60 : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune85Temp60(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
+    Tune85Temp60(S2::Configuration &config, int tuneStep, QWidget *parent = nullptr);
 
 private:
     struct MidTuneStruct

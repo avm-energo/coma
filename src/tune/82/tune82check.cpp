@@ -16,7 +16,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-Tune82Check::Tune82Check(ConfigV *config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent)
+Tune82Check::Tune82Check(S2::Configuration &config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
 {
     m_typeM = type;
@@ -83,7 +83,9 @@ Error::Msg Tune82Check::check()
     Bda82 *bda = new Bda82;
     bda->readAndUpdate();
 #ifndef NO_LIMITS
-    return bda->checkValues(m_typeM, configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2::FLOAT_6t>());
+    // return bda->checkValues(m_typeM, configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2::FLOAT_6t>());
+    const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
+    return bda->checkValues(m_typeM, inom);
 #elif
     return Error::Msg::NoError;
 #endif
@@ -92,8 +94,9 @@ Error::Msg Tune82Check::check()
 Error::Msg Tune82Check::checkMip()
 {
     Mip *mip = new Mip(false);
-    S2::FLOAT_6t inom = configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2::FLOAT_6t>();
-    assert(inom.size() > 3);
+    // S2::FLOAT_6t inom = configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2::FLOAT_6t>();
+    const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
+    static_assert(inom.size() > 3);
     mip->setNominalCurrent(inom.at(3)); // 2nd currents, phase A
     if (!mip->start())
     {

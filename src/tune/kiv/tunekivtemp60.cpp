@@ -18,7 +18,7 @@
 
 using namespace Interface;
 
-TuneKIVTemp60::TuneKIVTemp60(ConfigV *config, int tuneStep, QWidget *parent)
+TuneKIVTemp60::TuneKIVTemp60(S2::Configuration &config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
 {
     TuneSequenceFile::clearTuneDescrVector();
@@ -63,14 +63,18 @@ void TuneKIVTemp60::setTuneFunctions()
 
 Error::Msg TuneKIVTemp60::setNewConfAndTune()
 {
-    // CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = 2250;
-    // CKIV->Bci_block.Unom1 = 220;
+    //    configV->setRecordValue({ S2Util::GetIdByName("C_Pasp_ID"), S2::FLOAT_3t({ 2250, 2250, 2250 }) });
+    //    configV->setRecordValue({ S2Util::GetIdByName("Unom1"), float(220) });
+    //    if (BaseInterface::iface()->writeConfFileSync(configV->getConfig()) != Error::Msg::NoError)
+    //        return Error::Msg::GeneralError;
 
-    configV->setRecordValue({ S2Util::GetIdByName("C_Pasp_ID"), S2::FLOAT_3t({ 2250, 2250, 2250 }) });
-    configV->setRecordValue({ S2Util::GetIdByName("Unom1"), float(220) });
-
-    if (BaseInterface::iface()->writeConfFileSync(configV->getConfig()) != Error::Msg::NoError)
+    config.setRecord("C_Pasp_ID", S2::FLOAT_3t { 2250, 2250, 2250 });
+    config.setRecord("Unom1", float(220));
+    auto s2file = config.toByteArray();
+    auto status = BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+    if (status != Error::Msg::NoError)
         return Error::Msg::GeneralError;
+
     for (int i = 0; i < 6; ++i)
     {
         m_bac->data()->TKUa[i] = 0;

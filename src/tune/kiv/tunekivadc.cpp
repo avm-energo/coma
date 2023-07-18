@@ -15,7 +15,8 @@
 
 using namespace Interface;
 
-TuneKIVADC::TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
+TuneKIVADC::TuneKIVADC(S2::Configuration &config, int tuneStep, QWidget *parent)
+    : AbstractTuneDialog(config, tuneStep, parent)
 {
     m_bac = new BacA284(this);
     m_bac2 = new Bac2A284(this);
@@ -130,7 +131,8 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
     //  CKIV->Bci_block.Unom1 = 220;
-    configV->setRecordValue({ S2Util::GetIdByName("Unom1"), float(220) });
+    // configV->setRecordValue({ S2Util::GetIdByName("Unom1"), float(220) });
+    config.setRecord("Unom1", float(220));
 
     Error::Msg res = setADCCoef(coef);
     if (res != Error::Msg::NoError)
@@ -257,9 +259,13 @@ Error::Msg TuneKIVADC::CheckTune()
 Error::Msg TuneKIVADC::setADCCoef(const int coef)
 {
     const QMap<int, float> adcCoefMap { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
-    S2::FLOAT_3t value { adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) };
-    configV->setRecordValue(S2Util::GetIdByName("C_Pasp_ID"), value);
-    return BaseInterface::iface()->writeConfFileSync(configV->getConfig());
+    const auto adcCoef = adcCoefMap.value(coef);
+    // S2::FLOAT_3t value { adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) };
+    // configV->setRecordValue(S2Util::GetIdByName("C_Pasp_ID"), value);
+    // return BaseInterface::iface()->writeConfFileSync(configV->getConfig());
+    config.setRecord("C_Pasp_ID", S2::FLOAT_3t { adcCoef, adcCoef, adcCoef });
+    const auto s2file = config.toByteArray();
+    return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
 }
 
 Error::Msg TuneKIVADC::showRetomDialog(int coef)

@@ -3,6 +3,7 @@
 
 #include "../datablocks/datablock.h"
 #include "../models/report.h"
+#include "../s2/s2configuration.h"
 #include "../widgets/tunetabwidget.h"
 
 #include <QByteArray>
@@ -25,12 +26,7 @@
 // disable all limits checks
 // #define NO_LIMITS
 
-class ConfigV;
-
-namespace S2
-{
-class DataItem;
-}
+// class ConfigV;
 
 class AbstractTuneDialog : public QDialog
 {
@@ -52,7 +48,7 @@ public:
         TuneFunc func;
     };
 
-    explicit AbstractTuneDialog(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
+    explicit AbstractTuneDialog(S2::Configuration &workConfig, int tuneStep, QWidget *parent = nullptr);
     ~AbstractTuneDialog();
 
     template <typename T> void addTuneFunc(const QString &msg, Error::Msg (T::*func)())
@@ -93,7 +89,7 @@ public:
     Error::Msg writeTuneCoefs();
     Error::Msg writeTuneCoefs(bool isUserChoosingRequired);
     Error::Msg readTuneCoefs();
-    Error::Msg updateConfigAndSend(const QList<S2::DataItem> &changes) const;
+    Error::Msg updateConfigAndSend(const std::vector<std::pair<QString, S2::valueType>> &changes) const;
 
 private:
     QMap<int, DataBlock *> AbsBac;
@@ -124,7 +120,8 @@ protected:
     void closeEvent(QCloseEvent *e);
     void keyPressEvent(QKeyEvent *e);
 
-    ConfigV *configV;
+    //    ConfigV *configV;
+    S2::Configuration &config;
 };
 
 using TuneFunc = Error::Msg (AbstractTuneDialog::*)();

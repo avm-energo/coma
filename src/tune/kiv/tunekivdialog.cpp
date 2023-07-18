@@ -8,7 +8,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-TuneKIVDialog::TuneKIVDialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog(config, parent)
+TuneKIVDialog::TuneKIVDialog(S2::Configuration &config, QWidget *parent) : GeneralTuneDialog(config, parent)
 {
 
     setAttribute(Qt::WA_DeleteOnClose);

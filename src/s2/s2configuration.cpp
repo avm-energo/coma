@@ -21,14 +21,20 @@ Configuration::Configuration(const S2ConfigStorage &storage) : s2confStorage(sto
 {
 }
 
+Configuration::Configuration(const Configuration &rhs)
+    : s2confStorage(rhs.s2confStorage), factory(s2confStorage), data(rhs.data)
+{
+}
+
 quint32 Configuration::getIdByName(const QString &name) const noexcept
 {
     const auto &nameMap = s2confStorage.getIdByNameMap();
     auto search = nameMap.find(name);
-    if (search == nameMap.cend())
-        return 0;
-    else
+    Q_ASSERT(search != nameMap.cend());
+    if (search != nameMap.cend())
         return search->second;
+    else
+        return 0;
 }
 
 const Configuration &Configuration::operator=(const Configuration &rhs)
@@ -113,6 +119,12 @@ void Configuration::setRecord(const quint32 id, const DataItem &record)
 
 void Configuration::setRecord(const quint32 id, const valueType &value)
 {
+    data.insert_or_assign(id, DataItem { id, value });
+}
+
+void Configuration::setRecord(const QString &name, const valueType &value)
+{
+    auto id = getIdByName(name);
     data.insert_or_assign(id, DataItem { id, value });
 }
 

@@ -10,10 +10,10 @@ TuneDialogFabric::TuneDialogFabric()
 {
 }
 
-void TuneDialogFabric::setConfigV(ConfigV *config)
-{
-    s_Config = config;
-}
+// void TuneDialogFabric::setConfigV(ConfigV *config)
+//{
+//    s_Config = config;
+//}
 
 UDialog *TuneDialogFabric::GetTuneDialogForType(Modules::BaseBoard typeB, Modules::MezzanineBoard typeM)
 {
@@ -35,7 +35,7 @@ UDialog *TuneDialogFabric::GetTuneDialogForType(Modules::BaseBoard typeB, Module
         switch (typeM)
         {
         case Modules::MezzanineBoard::MTM_84:
-            return new TuneKIVDialog(s_Config);
+            // return new TuneKIVDialog(s_Config);
         default:
             return 0;
         }

@@ -12,7 +12,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-Tune85Check::Tune85Check(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
+Tune85Check::Tune85Check(S2::Configuration &config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
     setupUI();
 }

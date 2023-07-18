@@ -9,7 +9,7 @@ class Tune82Check : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune82Check(ConfigV *config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent = nullptr);
+    Tune82Check(S2::Configuration &config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent = nullptr);
 
 private:
     void setTuneFunctions() override;

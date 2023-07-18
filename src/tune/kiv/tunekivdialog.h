@@ -18,7 +18,7 @@ class TuneKIVDialog : public GeneralTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneKIVDialog(ConfigV *config, QWidget *parent = nullptr);
+    explicit TuneKIVDialog(S2::Configuration &config, QWidget *parent = nullptr);
 
 public slots:
 

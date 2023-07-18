@@ -14,10 +14,6 @@ class Configuration;
 class DataFactory;
 }
 
-// struct test
-//{
-//};
-
 class S2Util
 {
 public:

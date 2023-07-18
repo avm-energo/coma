@@ -18,7 +18,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-TuneKIVCheck::TuneKIVCheck(ConfigV *config, int tuneStep, QWidget *parent)
+TuneKIVCheck::TuneKIVCheck(S2::Configuration &config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
 {
     setupUI();
@@ -84,9 +84,9 @@ Error::Msg TuneKIVCheck::showScheme()
 
 Error::Msg TuneKIVCheck::check()
 {
-    QList<S2::DataItem> recordList {
-        { S2Util::GetIdByName("C_Pasp_ID"), S2::FLOAT_3t({ 9000, 9000, 9000 }) }, //
-        { S2Util::GetIdByName("Unom1"), float(220) }                                       //
+    std::vector<std::pair<QString, S2::valueType>> recordList {
+        { "C_Pasp_ID", S2::FLOAT_3t { 9000, 9000, 9000 } }, //
+        { "Unom1", float(220) }                             //
     };
 
     if (updateConfigAndSend(recordList) != Error::NoError)
@@ -105,6 +105,8 @@ Error::Msg TuneKIVCheck::check()
     ww->Stop();
     BdaA284 *bda = new BdaA284;
     bda->readAndUpdate();
+    auto s2file = config.toByteArray();
+
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)
         if (!WDFunc::floatIsWithinLimits("напряжения", bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
@@ -118,11 +120,13 @@ Error::Msg TuneKIVCheck::check()
         goto FaultLabel;
 #endif
     // BaseInterface::iface()->popAndWriteConfFileSync(configV);
-    BaseInterface::iface()->writeConfFileSync(configV->getConfig());
+    // BaseInterface::iface()->writeConfFileSync(configV->getConfig());
+    BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
     return Error::Msg::NoError;
 FaultLabel:
     // BaseInterface::iface()->popAndWriteConfFileSync(configV);
-    BaseInterface::iface()->writeConfFileSync(configV->getConfig());
+    // BaseInterface::iface()->writeConfFileSync(configV->getConfig());
+    BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
     return Error::Msg::GeneralError;
 }
 

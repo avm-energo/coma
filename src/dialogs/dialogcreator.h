@@ -34,7 +34,7 @@ private:
     S2DataManager &s2manager;
     QWidget *mParent;
     QList<UDialog *> mDialogs;
-    ConfigV configV;
+    // ConfigV configV;
 
     bool isBoxModule(const quint16 &type) const;
     void addDialogToList(UDialog *dlg, const QString &caption, const QString &name);

@@ -11,7 +11,7 @@ class Tune82ADC : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune82ADC(ConfigV *config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent = nullptr);
+    Tune82ADC(S2::Configuration &config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent = nullptr);
 
 private:
     Bac82 *m_bac, m_bacNewBlock;

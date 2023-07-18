@@ -104,11 +104,11 @@ void DialogCreator::createCheckDialogs()
 /// \brief Creating tune dialogs for KIV, KTF and KDV.
 void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
 {
-    s2manager;
+    auto &workConfig = s2manager.getCurrentConfiguration().workingConfig;
     if (boxModel == Modules::Model::KIV)
     {
         // TODO: Реанимировать регулировку для КИВ, временно не работает :(
-        addDialogToList(new TuneKIVDialog(&configV, mParent), "Регулировка", "tune");
+        addDialogToList(new TuneKIVDialog(workConfig, mParent), "Регулировка", "tune");
     }
     else
     {
@@ -141,14 +141,14 @@ void DialogCreator::createStartupDialog(const Modules::Model boxModel)
 void DialogCreator::createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem)
 {
     using namespace Modules;
-    s2manager;
+    auto &workConfig = s2manager.getCurrentConfiguration().workingConfig;
     if (typeb == BaseBoard::MTB_80)
     {
         if ((typem == MezzanineBoard::MTM_81) || (typem == MezzanineBoard::MTM_82) || (typem == MezzanineBoard::MTM_83))
-            addDialogToList(new Tune82Dialog(&configV, typem, mParent), "Регулировка", "tune");
+            addDialogToList(new Tune82Dialog(workConfig, typem, mParent), "Регулировка", "tune");
         else if (typem == MezzanineBoard::MTM_84)
         {
-            addDialogToList(new TuneKIVDialog(&configV, mParent), "Регулировка", "tune");
+            addDialogToList(new TuneKIVDialog(workConfig, mParent), "Регулировка", "tune");
             addDialogToList(new StartupKIVDialog(mParent), "Начальные\nзначения", "startup");
         }
     }
