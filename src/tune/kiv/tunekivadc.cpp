@@ -1,11 +1,9 @@
 #include "tunekivadc.h"
 
 #include "../../interfaces/baseinterface.h"
-#include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
-#include "../s2/s2util.h"
 #include "../tunesteps.h"
 
 #include <QMessageBox>
@@ -241,10 +239,8 @@ Error::Msg TuneKIVADC::SendBac()
 Error::Msg TuneKIVADC::CheckTune()
 {
     EMessageBox::information(this,
-        "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите Esc");
-    //    QMessageBox::information(this, "Информация",
-    //        "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите
-    //        Esc");
+        "После закрытия данного сообщения для завершения настройки нажмите Enter\n"
+        "Для отказа от настройки нажмите Esc");
     m_finished = false;
     while ((!StdFunc::IsCancelled()) && !m_finished)
     {
@@ -260,9 +256,6 @@ Error::Msg TuneKIVADC::setADCCoef(const int coef)
 {
     const QMap<int, float> adcCoefMap { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
     const auto adcCoef = adcCoefMap.value(coef);
-    // S2::FLOAT_3t value { adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) };
-    // configV->setRecordValue(S2Util::GetIdByName("C_Pasp_ID"), value);
-    // return BaseInterface::iface()->writeConfFileSync(configV->getConfig());
     config.setRecord("C_Pasp_ID", S2::FLOAT_3t { adcCoef, adcCoef, adcCoef });
     const auto s2file = config.toByteArray();
     return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);

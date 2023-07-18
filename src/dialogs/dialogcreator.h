@@ -3,7 +3,6 @@
 #include "../module/board.h"
 #include "../module/modules.h"
 #include "../module/modulesettings.h"
-#include "../s2/configv.h"
 #include "../s2/s2datamanager.h"
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
@@ -34,7 +33,6 @@ private:
     S2DataManager &s2manager;
     QWidget *mParent;
     QList<UDialog *> mDialogs;
-    // ConfigV configV;
 
     bool isBoxModule(const quint16 &type) const;
     void addDialogToList(UDialog *dlg, const QString &caption, const QString &name);

@@ -28,7 +28,6 @@ public:
     int addWidgetToTabWidget(QWidget *w, const QString &caption);
 
 protected:
-    // ConfigV *configV;
     S2::Configuration &config;
 
 private:

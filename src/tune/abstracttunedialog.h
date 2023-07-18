@@ -26,8 +26,6 @@
 // disable all limits checks
 // #define NO_LIMITS
 
-// class ConfigV;
-
 class AbstractTuneDialog : public QDialog
 {
     Q_OBJECT
@@ -120,7 +118,6 @@ protected:
     void closeEvent(QCloseEvent *e);
     void keyPressEvent(QKeyEvent *e);
 
-    //    ConfigV *configV;
     S2::Configuration &config;
 };
 

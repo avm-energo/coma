@@ -2,11 +2,9 @@
 
 #include "../../datablocks/kiv/bda.h"
 #include "../../interfaces/protocom.h"
-#include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
-#include "../s2/s2util.h"
 
 #include <QCoreApplication>
 #include <QDialog>
@@ -119,13 +117,9 @@ Error::Msg TuneKIVCheck::check()
     if (!WDFunc::floatIsWithinLimits("частоты", bda->data()->Frequency, 51.0, 0.05))
         goto FaultLabel;
 #endif
-    // BaseInterface::iface()->popAndWriteConfFileSync(configV);
-    // BaseInterface::iface()->writeConfFileSync(configV->getConfig());
     BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
     return Error::Msg::NoError;
 FaultLabel:
-    // BaseInterface::iface()->popAndWriteConfFileSync(configV);
-    // BaseInterface::iface()->writeConfFileSync(configV->getConfig());
     BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
     return Error::Msg::GeneralError;
 }

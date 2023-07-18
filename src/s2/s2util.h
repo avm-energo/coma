@@ -31,11 +31,10 @@ public:
     static void StoreDataMem(QByteArray &mem, const std::vector<S2::DataRec> &dr, int fname);
     // restore IDs and contents in ConfParameters list
     static bool RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist);
-    static bool RestoreData(QByteArray bain, QList<S2::DataItem> &outlist);
 
-    static void tester(const S2::S2ConfigType &buffer);
-
-    static quint16 GetIdByName(const QString &name);
+    [[deprecated]] static bool RestoreData(QByteArray bain, QList<S2::DataItem> &outlist);
+    [[deprecated]] static void tester(const S2::S2ConfigType &buffer);
+    [[deprecated]] static quint16 GetIdByName(const QString &name);
 
     static quint64 GetFileSize(const QByteArray &data);
 

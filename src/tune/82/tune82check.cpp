@@ -2,11 +2,9 @@
 
 #include "../../datablocks/82/bda.h"
 #include "../../interfaces/protocom.h"
-#include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/wd_func.h"
 #include "../mip.h"
-#include "../s2/s2util.h"
 
 #include <QDialog>
 #include <QEventLoop>
@@ -83,7 +81,6 @@ Error::Msg Tune82Check::check()
     Bda82 *bda = new Bda82;
     bda->readAndUpdate();
 #ifndef NO_LIMITS
-    // return bda->checkValues(m_typeM, configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2::FLOAT_6t>());
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
     return bda->checkValues(m_typeM, inom);
 #elif
@@ -94,7 +91,6 @@ Error::Msg Tune82Check::check()
 Error::Msg Tune82Check::checkMip()
 {
     Mip *mip = new Mip(false);
-    // S2::FLOAT_6t inom = configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2::FLOAT_6t>();
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
     static_assert(inom.size() > 3);
     mip->setNominalCurrent(inom.at(3)); // 2nd currents, phase A

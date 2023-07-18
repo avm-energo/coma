@@ -40,20 +40,6 @@ void BaseInterfaceThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataT
     }
     case FileFormat::DefaultS2:
     {
-        //        QList<S2::DataItem> outlistV;
-        //        if (!S2Util::RestoreData(ba, outlistV))
-        //        {
-        //            DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
-        //                static_cast<quint64>(ba.size()) };
-        //            DataManager::GetInstance().addSignalToOutList(resp);
-        //            return;
-        //        }
-        //        DataTypes::GeneralResponseStruct genResp {
-        //            DataTypes::GeneralResponseTypes::Ok, //
-        //            static_cast<quint64>(ba.size())      //
-        //        };
-        //        DataManager::GetInstance().addSignalToOutList(genResp);
-        //        DataManager::GetInstance().addSignalToOutList(outlistV);
         DataManager::GetInstance().addSignalToOutList(ba);
         break;
     }

@@ -3,8 +3,6 @@
 #include "../dialogs/keypressdialog.h"
 #include "../module/board.h"
 #include "../module/configstorage.h"
-#include "../s2/configv.h"
-#include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -52,12 +50,6 @@ void ConfigDialog::writeConfig()
     {
         if (prepareConfigToWrite())
         {
-            // S2::S2ConfigType buffer;
-            // std::transform(configV->getConfig().cbegin(), configV->getConfig().cend(), std::back_inserter(buffer),
-            //    [](const auto &record) -> S2::DataRec { return record.serialize(); });
-            // S2Util::tester(buffer);
-            // buffer.push_back({ { S2::dummyElement, 0 }, nullptr });
-            // BaseInterface::iface()->writeS2File(S2::FilesEnum::Config, buffer);
             auto s2file = boardConfig.workingConfig.toByteArray();
             auto fileType = std_ext::to_underlying(S2::FilesEnum::Config);
             BaseInterface::iface()->writeFile(fileType, s2file);
@@ -78,7 +70,6 @@ bool ConfigDialog::isVisible(const quint16 id) const
 {
     const auto &detailMap = S2::ConfigStorage::GetInstance().getWidgetDetailMap();
     auto search = detailMap.find(id);
-    // Q_ASSERT(search != detailMap.cend());
     if (search != detailMap.cend())
         return search->second.first;
     else
@@ -88,30 +79,24 @@ bool ConfigDialog::isVisible(const quint16 id) const
 void ConfigDialog::configReceived(const QByteArray &rawData)
 {
     using namespace S2;
-    // auto list = msg.value<QList<DataItem>>();
-    // configV->setConfig(list);
     auto &workConfig = boardConfig.workingConfig;
     if (workConfig.updateByRawData(rawData))
     {
-        // const auto s2typeB = configV->getRecord(S2Util::GetIdByName("MTypeB_ID")).value<DWORD>();
         const auto s2typeB = workConfig["MTypeB_ID"].value<DWORD>();
         const auto typeB = Board::GetInstance().typeB();
         if (s2typeB != typeB)
         {
             qCritical() << "Conflict typeB, module: " << QString::number(typeB, 16)
                         << " config: " << QString::number(s2typeB, 16);
-            // configV->setRecordValue({ S2Util::GetIdByName("MTypeB_ID"), DWORD(typeB) });
             workConfig["MTypeB_ID"].setData(DWORD(typeB));
         }
 
-        // const auto s2typeM = configV->getRecord(S2Util::GetIdByName("MTypeE_ID")).value<DWORD>();
         const auto s2typeM = workConfig["MTypeE_ID"].value<DWORD>();
         const auto typeM = Board::GetInstance().typeM();
         if (s2typeM != typeM)
         {
             qCritical() << "Conflict typeB, module: " << QString::number(typeM, 16)
                         << " config: " << QString::number(s2typeM, 16);
-            // configV->setRecordValue({ S2Util::GetIdByName("MTypeE_ID"), DWORD(typeB) });
             workConfig["MTypeE_ID"].setData(DWORD(typeM));
         }
 
@@ -125,7 +110,6 @@ void ConfigDialog::configReceived(const QByteArray &rawData)
 
 void ConfigDialog::saveConfigToFile()
 {
-    using namespace S2;
     auto filepath = WDFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf");
     if (filepath.isEmpty())
         return;
@@ -135,13 +119,12 @@ void ConfigDialog::saveConfigToFile()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    QByteArray ba = boardConfig.workingConfig.toByteArray();
-    // S2Util::StoreDataMem(ba, configV->getConfig(), int(FilesEnum::Config));
-    quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
-    length += sizeof(S2FileHeader);
-    Q_ASSERT(length == quint32(ba.size()));
+    QByteArray file = boardConfig.workingConfig.toByteArray();
+    quint32 length = *reinterpret_cast<quint32 *>(&file.data()[4]);
+    length += sizeof(S2::S2FileHeader);
+    Q_ASSERT(length == quint32(file.size()));
 
-    Error::Msg res = Files::SaveToFile(filepath, ba);
+    Error::Msg res = Files::SaveToFile(filepath, file);
     switch (res)
     {
     case Error::Msg::NoError:
@@ -175,14 +158,6 @@ void ConfigDialog::loadConfigFromFile()
         return;
     }
     configReceived(file);
-
-    // TODO: Remove S2Util::RestoreData
-    // QList<S2::DataItem> outlistV;
-    // S2Util::RestoreData(ba, outlistV);
-    // QVariant outlist;
-    // outlist.setValue(outlistV);
-    // configReceived(outlist);
-
     EMessageBox::information(this, "Загрузка прошла успешно!");
 }
 

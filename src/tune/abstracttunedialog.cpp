@@ -357,11 +357,6 @@ Error::Msg AbstractTuneDialog::readTuneCoefs()
 
 Error::Msg AbstractTuneDialog::updateConfigAndSend(const std::vector<std::pair<QString, S2::valueType>> &changes) const
 {
-    // auto configCopy = configV->copy();
-    // for (auto changeRecord : changes)
-    //    configCopy.setRecordValue(changeRecord.getId(), changeRecord.getData());
-    // return BaseInterface::iface()->writeConfFileSync(configCopy.getConfig());
-
     S2::Configuration configCopy(config);
     for (const auto &[name, value] : changes)
         configCopy.setRecord(name, value);

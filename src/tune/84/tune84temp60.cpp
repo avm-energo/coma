@@ -2,11 +2,9 @@
 
 #include "../../interfaces/baseinterface.h"
 #include "../../module/board.h"
-#include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
-#include "../s2/s2util.h"
 #include "../tunesequencefile.h"
 #include "../tunesteps.h"
 
@@ -65,11 +63,6 @@ void Tune84Temp60::setTuneFunctions()
 
 Error::Msg Tune84Temp60::setNewConfAndTune()
 {
-    // configV->setRecordValue({ S2Util::GetIdByName("C_Pasp_ID"), S2::FLOAT_3t({ 2250, 2250, 2250 }) });
-    // configV->setRecordValue({ S2Util::GetIdByName("Unom1"), float(220) });
-    // if (BaseInterface::iface()->writeConfFileSync(configV->getConfig()) != Error::Msg::NoError)
-    //    return Error::Msg::GeneralError;
-
     config.setRecord("C_Pasp_ID", S2::FLOAT_3t { 2250, 2250, 2250 });
     config.setRecord("Unom1", float(220));
     auto s2file = config.toByteArray();

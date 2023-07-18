@@ -12,7 +12,6 @@ find_package(Qt${QT_VERSION_MAJOR}
 #file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
 set(headers
-    configv.h
     dataitem.h
     filestruct.h
     hexparser.h
@@ -25,7 +24,6 @@ set(headers
 )
 
 set(sources
-    configv.cpp
     dataitem.cpp
     filestruct.cpp
     hexparser.cpp

@@ -2,8 +2,6 @@
 
 #include "../module/board.h"
 #include "../module/modules.h"
-#include "../s2/configv.h"
-#include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 #include "tunesequencefile.h"
@@ -83,7 +81,6 @@ Error::Msg TuneCheckMipDialog::showScheme()
 Error::Msg TuneCheckMipDialog::check()
 {
     Mip *mip = new Mip(true, m_moduleType);
-    // mip->takeOneMeasurement(configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2::FLOAT_6t>().at(3));
     auto i2nom = config["I2nom"].value<S2::FLOAT_6t>();
     mip->takeOneMeasurement(i2nom.at(3));
     return mip->check();

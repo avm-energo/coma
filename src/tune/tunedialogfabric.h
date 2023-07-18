@@ -1,7 +1,6 @@
 #ifndef TUNEDIALOGFABRIC_H
 #define TUNEDIALOGFABRIC_H
 
-#include "../s2/configv.h"
 #include "generaltunedialog.h"
 
 #include <QObject>

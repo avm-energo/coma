@@ -1,8 +1,6 @@
 #include "widgetfactory.h"
 
 #include "../models/comboboxdelegate.h"
-#include "../s2/configv.h"
-#include "../s2/s2util.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"
 #include "../widgets/ipctrl.h"
@@ -392,7 +390,8 @@ quint16 WidgetFactory::getRealCount(const quint16 key)
         return 0;
 }
 
-bool WidgetFactory::fillBackModbus(quint32 id, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey) const
+bool WidgetFactory::fillBackModbus(
+    quint32 id, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey) const
 {
     auto tableView = parent->findChild<QTableView *>(WidgetFactory::hashedName(type, parentKey));
 

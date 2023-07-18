@@ -1,7 +1,5 @@
 #include "tune82adc.h"
 
-#include "../../s2/configv.h"
-#include "../../s2/s2util.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -207,14 +205,12 @@ void Tune82ADC::setCurrentsTo(float i)
     saveWorkConfig();
     // set nominal currents in config to i A
     S2::FLOAT_6t i2NomConfig { i, i, i, i, i, i };
-    // configV->setRecordValue(S2Util::GetIdByName("I2nom"), i2NomConfig);
     config.setRecord("I2nom", i2NomConfig);
 }
 
 void Tune82ADC::getBd1()
 {
     Mip *mip = new Mip(false, m_typeM, this);
-    // S2::FLOAT_6t inom = configV->getRecord(S2Util::GetIdByName("I2nom")).value<S2::FLOAT_6t>();
     auto inom = config["I2nom"].value<S2::FLOAT_6t>();
     mipdata = mip->takeOneMeasurement(inom.at(3));
     m_bd1->readBlockFromModule();

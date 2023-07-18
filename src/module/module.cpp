@@ -69,8 +69,6 @@ bool Module::loadS2Settings(S2::ConfigStorage &s2Storage)
 void Module::loadModuleSettings(ConfigStorage &mStorage, S2::DataManager &s2manager)
 {
     auto moduleParser = new Xml::ModuleParser(typeB, typeM, checks, this);
-    // QObject::connect(moduleParser, &Xml::ModuleParser::startNewConfig, //
-    //    &mStorage, &ConfigStorage::startNewConfig);
     QObject::connect(moduleParser, &Xml::ModuleParser::startNewConfig, //
         &s2manager, &S2::DataManager::startNewConfig);
     QObject::connect(moduleParser, &Xml::ModuleParser::signalDataSending, //
@@ -85,8 +83,6 @@ void Module::loadModuleSettings(ConfigStorage &mStorage, S2::DataManager &s2mana
         &mStorage, &ConfigStorage::workJourDataReceive);
     QObject::connect(moduleParser, &Xml::ModuleParser::measJourDataSending, //
         &mStorage, &ConfigStorage::measJourDataReceive);
-    // QObject::connect(moduleParser, &Xml::ModuleParser::configDataSending, //
-    //    &mStorage, &ConfigStorage::configDataReceive);
     QObject::connect(moduleParser, &Xml::ModuleParser::configDataSending, //
         &s2manager, &S2::DataManager::configDataReceive);
     QObject::connect(moduleParser, &Xml::ModuleParser::protocolGroupSending, //

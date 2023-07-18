@@ -9,8 +9,6 @@
 #include <bitset>
 #include <gen/std_ext.h>
 
-// class ConfigV;
-
 class WidgetFactory
 {
 private:
@@ -58,8 +56,6 @@ private:
     bool fillBackChBG(quint32 id, const QWidget *parent) const;
     bool fillBackComboBox(quint32 id, const QWidget *parent, delegate::QComboBox::PrimaryField field) const;
     bool fillBackComboBoxGroup(quint32 id, const QWidget *parent, int count) const;
-
-    // ConfigV *configV;
 };
 
 // Template specialisation
