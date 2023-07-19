@@ -1,12 +1,13 @@
 #include "journalviewer.h"
 
 #include "../s2/s2.h"
-#include "../widgets/epopup.h"
+//#include "../widgets/epopup.h"
 #include "../xml/xmlparser/xmlmoduleparser.h"
 #include "measjournal.h"
 #include "sysjournal.h"
 #include "workjournal.h"
 
+#include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <gen/files.h>
@@ -29,22 +30,22 @@ JournalViewer::JournalViewer(const QString &filepath, QWidget *parent) : QDialog
             showJournal(s2bFile);
             break;
         case Error::Msg::SizeError:
-            EMessageBox::error(this, "Ошибка размера файла журнала");
+            QMessageBox::critical(this, "Ошибка", "Ошибка размера файла журнала");
             break;
         case Error::Msg::WrongFormatError:
-            EMessageBox::error(this,
+            QMessageBox::critical(this, "Ошибка",
                 "Неверный формат заголовка журнала\n"
                 "Файл не является журналом в формате S2B");
             break;
         case Error::Msg::CrcError:
-            EMessageBox::error(this, "Ошибка контрольной суммы");
+            QMessageBox::critical(this, "Ошибка", "Ошибка контрольной суммы");
             break;
         default:
             break;
         }
     }
     else
-        EMessageBox::error(this, "Ошибка открытия файла журнала");
+        QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла журнала");
 }
 
 void JournalViewer::showJournal(const S2DataTypes::S2BFile &s2bFile)
@@ -79,7 +80,7 @@ BaseJournal *JournalViewer::createJournal(const JournalType type, const quint16 
         retJournal = new MeasJournal(measSettings, this);
         break;
     default:
-        EMessageBox::error(this, "Получен журнал неизвестного формата");
+        QMessageBox::critical(this, "Ошибка", "Получен журнал неизвестного формата");
         break;
     }
     return retJournal;
