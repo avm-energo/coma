@@ -1,6 +1,6 @@
 #include "oscmanager.h"
 
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../widgets/wd_func.h"
 #include "parseid10001.h"
 #include "parseid10020.h"
@@ -81,7 +81,7 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
 {
     auto curFileNum = fs.ID;
 
-    constexpr int minSize = sizeof(S2DataTypes::OscHeader) + sizeof(S2DataTypes::DataRecHeader);
+    constexpr int minSize = sizeof(S2::OscHeader) + sizeof(S2::DataRecHeader);
     if (fs.data.size() <= minSize)
     {
         qCritical() << Error::SizeError;
@@ -177,7 +177,7 @@ File::Vector OscManager::loadFromFile(const QString &filename) const
         return {};
 
     DataTypes::S2FilePack outlist;
-    S2::RestoreData(buffer, outlist);
+    S2Util::RestoreData(buffer, outlist);
 
     File::Vector vector;
     bool status = loadRecords(outlist, vector);
@@ -204,7 +204,7 @@ bool OscManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &o
         return false;
     }
 
-    auto header = loadCommon({ DataTypes::FilesEnum(foundOscHeader->ID), foundOscHeader->data });
+    auto header = loadCommon({ S2::FilesEnum(foundOscHeader->ID), foundOscHeader->data });
     output.push_back(header);
     auto foundOsc = std::find_if(input.cbegin(), input.cend(), isOsc);
 
@@ -213,7 +213,7 @@ bool OscManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &o
         qWarning() << Error::DescError << "No osc";
         return false;
     }
-    auto model = load(header, { DataTypes::FilesEnum(foundOsc->ID), foundOsc->data });
+    auto model = load(header, { S2::FilesEnum(foundOsc->ID), foundOsc->data });
 
     if (!model)
     {

@@ -15,7 +15,8 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-GeneralTuneDialog::GeneralTuneDialog(ConfigV *config, QWidget *parent) : UDialog(parent), configV(config)
+GeneralTuneDialog::GeneralTuneDialog(S2::Configuration &workConfig, QWidget *parent)
+    : UDialog(parent), config(workConfig)
 {
     m_tuneTabWidget = new TuneTabWidget;
     TuneSequenceFile::init();

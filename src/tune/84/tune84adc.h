@@ -14,7 +14,7 @@ class Tune84ADC : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84ADC(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
+    Tune84ADC(S2::Configuration &config, int tuneStep, QWidget *parent = nullptr);
 
 private:
     BacA284 *m_bac;

@@ -4,7 +4,6 @@
 #include "../interfaces/protocom.h"
 #include "../module/board.h"
 #include "../module/modules.h"
-#include "../s2/configv.h"
 #include "../widgets/epopup.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
@@ -29,8 +28,8 @@ namespace crypto
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
 static constexpr char name[] = "tuneHash";
 }
-AbstractTuneDialog::AbstractTuneDialog(ConfigV *config, int tuneStep, QWidget *parent)
-    : QDialog(parent), configV(config)
+AbstractTuneDialog::AbstractTuneDialog(S2::Configuration &workConfig, int tuneStep, QWidget *parent)
+    : QDialog(parent), config(workConfig)
 {
     TuneVariant = 0;
     IsNeededDefConf = false;
@@ -356,6 +355,15 @@ Error::Msg AbstractTuneDialog::readTuneCoefs()
     return Error::Msg::NoError;
 }
 
+Error::Msg AbstractTuneDialog::updateConfigAndSend(const std::vector<std::pair<QString, S2::valueType>> &changes) const
+{
+    S2::Configuration configCopy(config);
+    for (const auto &[name, value] : changes)
+        configCopy.setRecord(name, value);
+    auto s2file = configCopy.toByteArray();
+    return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+}
+
 // void AbstractTuneDialog::loadTuneCoefsSlot()
 //{
 //    readTuneCoefs();
@@ -465,7 +473,7 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
     QByteArray ba;
-    if (BaseInterface::iface()->readFileSync(DataTypes::Config, ba) != Error::Msg::NoError)
+    if (BaseInterface::iface()->readFileSync(S2::FilesEnum::Config, ba) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     return Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba);
 }
@@ -475,7 +483,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
     QByteArray ba;
     if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba)
         != Error::Msg::NoError)
-        return BaseInterface::iface()->writeFileSync(DataTypes::Config, ba);
+        return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, ba);
     return Error::Msg::GeneralError;
 }
 

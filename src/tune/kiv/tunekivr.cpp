@@ -9,7 +9,7 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 
-TuneKIVR::TuneKIVR(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
+TuneKIVR::TuneKIVR(S2::Configuration &config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
 {
 
     m_bac = new Bac2A284(this);

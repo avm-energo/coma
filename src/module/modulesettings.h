@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../interfaces/interfacesettings.h"
-#include "../s2/datarecv.h"
+#include "../s2/dataitem.h"
 #include "modules.h"
 
 #include <QHash>
@@ -73,10 +73,8 @@ struct MeasJournal
     bool visibility; ///< атрибут "visibility"
 };
 
-using SignalMap = QHash<quint32, Signal>;        ///< Хранит узлы <signal> секции <signals>.
-using TabsMap = QHash<quint32, QString>;         ///< Хранит узлы <tab> секции <section-tabs>.
-using ConfigList = QList<DataTypes::RecordPair>; ///< Хранит узлы <record> секции <config>.
-using ConfigMap = QHash<quint32, ConfigList>; ///< Хранение конфигурации для базы и мезонина в разных списках.
+using SignalMap = QHash<quint32, Signal>;         ///< Хранит узлы <signal> секции <signals>.
+using TabsMap = QHash<quint32, QString>;          ///< Хранит узлы <tab> секции <section-tabs>.
 using HighlightMap = QMultiMap<quint32, quint32>; ///< Для подсветки элементов.
 using SectionList = QList<Section>;               ///< Хранит узлы <section> секции <sections>.
 using AlarmKey = Modules::AlarmType;              ///< Modules::AlarmType - тип сигнализации.
@@ -93,11 +91,8 @@ using DetailCountMap
 class ModuleSettings
 {
 public:
-    ModuleSettings();
+    ModuleSettings() = default;
     void clear();
-    void startNewConfig();
-    void appendToCurrentConfig(const DataTypes::RecordPair &pair);
-    void appendDetailCount(const quint16 id, const quint16 count);
     void appendSignal(const quint32 id, const ModuleTypes::Signal sig);
     void appendTab(const quint32 id, const QString &tabName);
     void appendSection(const ModuleTypes::Section &section);
@@ -107,8 +102,6 @@ public:
     void appendMeasJournal(const quint32 index, const QString &header, //
         const ModuleTypes::BinaryType type, bool visib);
 
-    const ModuleTypes::ConfigMap &getConfigMap() const;
-    const ModuleTypes::ConfigList getConfigs() const;
     const ModuleTypes::DetailCountMap &getDetailConfigCount() const;
     const ModuleTypes::SignalMap &getSignals() const;
     const ModuleTypes::TabsMap &getTabs() const;
@@ -119,8 +112,6 @@ public:
     const ModuleTypes::MeasJourList &getMeasJours() const;
 
 private:
-    int curConfigIndex;
-    ModuleTypes::ConfigMap mConfigs;
     ModuleTypes::DetailCountMap mCountMap;
     ModuleTypes::SignalMap mSignals;
     ModuleTypes::TabsMap mTabs;

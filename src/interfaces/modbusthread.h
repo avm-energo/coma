@@ -55,13 +55,11 @@ private:
     QByteArray createADU(const QByteArray &pdu) const;
     void calcCRCAndSend(QByteArray &ba);
     void send(const QByteArray &ba);
-    // void waitReply();
     void processFloatSignals();
     void processIntegerSignals();
     void processCommandResponse();
     void processSinglePointSignals();
     bool processReadFile();
-    quint16 calcCRC(QByteArray &ba) const;
 
     template <typename T> T unpackReg(QByteArray ba) const
     {
@@ -76,7 +74,6 @@ private:
         QByteArray ba;
         std::array<char, sizeof(T)> valueBytes;
         std::copy(&value, &value + sizeof(T), valueBytes.begin());
-        // memcpy(&valueBytes, &value, sizeof(T));
         for (auto it = valueBytes.begin(); it != valueBytes.end(); it = it + 2)
         {
             ba.push_back(*(it + 1));

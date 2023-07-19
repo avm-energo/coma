@@ -1,6 +1,6 @@
 #include "swjmanager.h"
 
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "oscmanager.h"
 
 #include <QDebug>
@@ -16,7 +16,7 @@ File::Vector SwjManager::loadFromFile(const QString &filename) const
         return {};
 
     DataTypes::S2FilePack outlist;
-    S2::RestoreData(buffer, outlist);
+    S2Util::RestoreData(buffer, outlist);
 
     File::Vector vector;
     bool status = loadRecords(outlist, vector);
@@ -43,7 +43,7 @@ bool SwjManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &o
         return false;
     }
 
-    auto model = load({ DataTypes::FilesEnum(foundSwj->ID), foundSwj->data });
+    auto model = load({ S2::FilesEnum(foundSwj->ID), foundSwj->data });
 
     output.push_back(std::move(model));
 

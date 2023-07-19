@@ -41,12 +41,14 @@ class EventParser : public QObject
 {
     Q_OBJECT
 private:
-    const EventRecord *iter;
+    QByteArray binaryFile;
     std::size_t size;
     QVector<EventView> records;
 
     /// \brief Возвращает строковое представление  перечисления типа события.
     QString eventTypeToString(const EventType type);
+
+    EventRecord getRecord();
 
 public:
     EventParser(QObject *parent = nullptr);

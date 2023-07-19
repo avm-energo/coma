@@ -20,7 +20,7 @@ public:
         IMITATOR = 1
     };
 
-    TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
+    TuneKIVADC(S2::Configuration &config, int tuneStep, QWidget *parent = nullptr);
 
 private:
     BacA284 *m_bac;

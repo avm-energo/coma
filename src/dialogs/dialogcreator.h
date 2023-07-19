@@ -1,15 +1,16 @@
 #pragma once
 
+#include "../module/board.h"
 #include "../module/modules.h"
 #include "../module/modulesettings.h"
-#include "../s2/configv.h"
+#include "../s2/s2datamanager.h"
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
 
 #include <QObject>
 
 /// \brief Enumeration for application configuration.
-enum AppConfiguration : bool
+enum class AppConfiguration : bool
 {
     Debug = false,
     Service = true
@@ -20,16 +21,18 @@ class DialogCreator : public QObject
 {
     Q_OBJECT
 public:
-    DialogCreator(const ModuleSettings &settings, QWidget *parent = nullptr);
+    DialogCreator(const ModuleSettings &settings, const Board &board, //
+        S2DataManager &s2DataManager, QWidget *parent = nullptr);
     void createDialogs(const AppConfiguration appCfg);
     void deleteDialogs();
     QList<UDialog *> &getDialogs();
 
 private:
     const ModuleSettings &settings;
+    const Board &board;
+    S2DataManager &s2manager;
     QWidget *mParent;
     QList<UDialog *> mDialogs;
-    ConfigV configV;
 
     bool isBoxModule(const quint16 &type) const;
     void addDialogToList(UDialog *dlg, const QString &caption, const QString &name);

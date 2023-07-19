@@ -58,10 +58,12 @@ set(files_cpp
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-  gen
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
-  Qt${QT_VERSION_MAJOR}::SerialPort)
+  Qt${QT_VERSION_MAJOR}::SerialPort
+  s2
+  PUBLIC gen
+)
 
 if(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)

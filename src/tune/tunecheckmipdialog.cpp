@@ -2,16 +2,14 @@
 
 #include "../module/board.h"
 #include "../module/modules.h"
-#include "../s2/configv.h"
-#include "../s2/s2.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
-#include "../xml/xmlparser/xmlconfigparser.h"
 #include "tunesequencefile.h"
 
 #include <QEventLoop>
 
-TuneCheckMipDialog::TuneCheckMipDialog(ConfigV *config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent)
+TuneCheckMipDialog::TuneCheckMipDialog(S2::Configuration &config, int tuneStep, //
+    Modules::MezzanineBoard type, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
 {
     TuneSequenceFile::init();
@@ -83,6 +81,7 @@ Error::Msg TuneCheckMipDialog::showScheme()
 Error::Msg TuneCheckMipDialog::check()
 {
     Mip *mip = new Mip(true, m_moduleType);
-    mip->takeOneMeasurement(configV->getRecord(S2::GetIdByName("I2nom")).value<DataTypes::FLOAT_6t>().at(3));
+    auto i2nom = config["I2nom"].value<S2::FLOAT_6t>();
+    mip->takeOneMeasurement(i2nom.at(3));
     return mip->check();
 }

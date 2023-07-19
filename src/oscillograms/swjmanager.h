@@ -5,9 +5,9 @@
 
 #include <QAbstractItemModel>
 #include <gen/std_ext.h>
-class SwjManager : public FileManager<S2DataTypes::SwitchJourRecord>
+class SwjManager : public FileManager<S2::SwitchJourRecord>
 {
-    using SwitchJourRecord = S2DataTypes::SwitchJourRecord;
+    using SwitchJourRecord = S2::SwitchJourRecord;
 
 public:
     SwjManager() = default;

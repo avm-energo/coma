@@ -1,6 +1,6 @@
 #include "journalviewer.h"
 
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../xml/xmlparser/xmlmoduleparser.h"
 #include "measjournal.h"
@@ -21,7 +21,7 @@ JournalViewer::JournalViewer(const QString &filepath, QWidget *parent) : QDialog
     QByteArray fileData;
     if (Files::LoadFromFile(filepath, fileData) == Error::Msg::NoError)
     {
-        auto s2bFormat = S2::parseS2B(fileData);
+        auto s2bFormat = S2Util::parseS2B(fileData);
         auto type = JournalType(s2bFormat.file.ID);
         auto jour = createJournal(type, s2bFormat.header.typeB, s2bFormat.header.typeM);
         if (jour)
@@ -80,7 +80,7 @@ void JournalViewer::measDataReceived(const quint32 index, const QString &header,
     measSettings.append({ index, header, type, visib });
 }
 
-void JournalViewer::setupUI(const DataTypes::FileStruct &file)
+void JournalViewer::setupUI(const S2::FileStruct &file)
 {
     auto layout = new QVBoxLayout;
     auto modelView = journal->createModelView(this);

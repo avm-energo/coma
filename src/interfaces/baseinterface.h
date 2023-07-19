@@ -2,8 +2,7 @@
 #define BASEINTERFACE_H
 
 #include "../module/modulesettings.h"
-#include "../s2/configv.h"
-#include "../s2/datarecv.h"
+#include "../s2/dataitem.h"
 #include "../s2/filestruct.h"
 #include "interfacesettings.h"
 
@@ -175,7 +174,6 @@ public:
     void reqBSIExt();
     void reqFile(quint32 id, FileFormat format = FileFormat::Binary, quint32 expectedSize = 0);
     void writeFile(quint32 id, const QByteArray &ba);
-    void writeS2File(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
     void reqTime();
     void writeTime(quint32 time);
 #ifdef __linux__
@@ -194,13 +192,9 @@ public:
 
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
-    Error::Msg writeConfFileSync(const QList<DataTypes::DataRecV> &config);
-    Error::Msg pushAndWriteConfFileSync(ConfigV *config, const QList<DataTypes::DataRecV> recordList);
-    Error::Msg popAndWriteConfFileSync(ConfigV *config);
-    Error::Msg writeFileSync(int filenum, QByteArray &ba);
-    Error::Msg writeS2FileSync(DataTypes::FilesEnum number, S2DataTypes::S2ConfigType *file);
-    Error::Msg readS2FileSync(quint32 filenum);
-    Error::Msg readFileSync(quint32 filenum, QByteArray &ba);
+    Error::Msg writeFileSync(S2::FilesEnum filenum, const QByteArray &ba);
+    Error::Msg readS2FileSync(S2::FilesEnum filenum);
+    Error::Msg readFileSync(S2::FilesEnum filenum, QByteArray &ba);
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
 
 signals:

@@ -4,8 +4,6 @@
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
-#include "../s2/configv.h"
-#include "../s2/s2.h"
 #include "../tunesteps.h"
 
 #include <QMessageBox>
@@ -15,7 +13,8 @@
 
 using namespace Interface;
 
-Tune85ADC::Tune85ADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
+Tune85ADC::Tune85ADC(S2::Configuration &config, int tuneStep, QWidget *parent)
+    : AbstractTuneDialog(config, tuneStep, parent)
 {
 
     m_bac = new BacA284;
@@ -119,9 +118,7 @@ Error::Msg Tune85ADC::ADCCoef(int coef)
 {
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
-
-    configV->setRecordValue({ S2::GetIdByName("Unom1"), float(220) });
-    //  CKIV->Bci_block.Unom1 = 220;
+    config.setRecord("Unom1", float(220));
 
     Error::Msg res = setADCCoef(coef);
     if (res != Error::Msg::NoError)
@@ -245,12 +242,10 @@ Error::Msg Tune85ADC::CheckTune()
 Error::Msg Tune85ADC::setADCCoef(int coef)
 {
     QMap<int, float> adcCoefMap = { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
-    configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"),
-        DataTypes::FLOAT_3t({ adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) }) });
-
-    // CKIV->Bci_block.C_pasp[0] = CKIV->Bci_block.C_pasp[1] = CKIV->Bci_block.C_pasp[2] = adcCoefMap[coef];
-
-    return BaseInterface::iface()->writeConfFileSync(configV->getConfig());
+    const auto adcCoef = adcCoefMap.value(coef);
+    config.setRecord("C_Pasp_ID", S2::FLOAT_3t { adcCoef, adcCoef, adcCoef });
+    const auto s2file = config.toByteArray();
+    return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
 }
 
 Error::Msg Tune85ADC::showRetomDialog(int coef)

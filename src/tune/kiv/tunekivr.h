@@ -12,7 +12,7 @@ class TuneKIVR : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVR(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
+    TuneKIVR(S2::Configuration &config, int tuneStep, QWidget *parent = nullptr);
 
 private:
     Bac2A284 *m_bac;

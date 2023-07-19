@@ -1,7 +1,5 @@
 #include "tune82adc.h"
 
-#include "../../s2/configv.h"
-#include "../../s2/s2.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -12,7 +10,7 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 
-Tune82ADC::Tune82ADC(ConfigV *config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent)
+Tune82ADC::Tune82ADC(S2::Configuration &config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
 {
     m_typeM = type;
@@ -206,14 +204,14 @@ void Tune82ADC::setCurrentsTo(float i)
 {
     saveWorkConfig();
     // set nominal currents in config to i A
-    DataTypes::FLOAT_6t i2NomConfig = { i, i, i, i, i, i };
-    configV->setRecordValue(S2::GetIdByName("I2nom"), i2NomConfig);
+    S2::FLOAT_6t i2NomConfig { i, i, i, i, i, i };
+    config.setRecord("I2nom", i2NomConfig);
 }
 
 void Tune82ADC::getBd1()
 {
     Mip *mip = new Mip(false, m_typeM, this);
-    DataTypes::FLOAT_6t inom = configV->getRecord(S2::GetIdByName("I2nom")).value<DataTypes::FLOAT_6t>();
+    auto inom = config["I2nom"].value<S2::FLOAT_6t>();
     mipdata = mip->takeOneMeasurement(inom.at(3));
     m_bd1->readBlockFromModule();
 }

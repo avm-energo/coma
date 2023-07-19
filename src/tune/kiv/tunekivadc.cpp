@@ -1,11 +1,9 @@
 #include "tunekivadc.h"
 
 #include "../../interfaces/baseinterface.h"
-#include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
-#include "../s2/s2.h"
 #include "../tunesteps.h"
 
 #include <QMessageBox>
@@ -15,7 +13,8 @@
 
 using namespace Interface;
 
-TuneKIVADC::TuneKIVADC(ConfigV *config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
+TuneKIVADC::TuneKIVADC(S2::Configuration &config, int tuneStep, QWidget *parent)
+    : AbstractTuneDialog(config, tuneStep, parent)
 {
     m_bac = new BacA284(this);
     m_bac2 = new Bac2A284(this);
@@ -130,7 +129,8 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
     //  CKIV->Bci_block.Unom1 = 220;
-    configV->setRecordValue({ S2::GetIdByName("Unom1"), float(220) });
+    // configV->setRecordValue({ S2Util::GetIdByName("Unom1"), float(220) });
+    config.setRecord("Unom1", float(220));
 
     Error::Msg res = setADCCoef(coef);
     if (res != Error::Msg::NoError)
@@ -239,10 +239,8 @@ Error::Msg TuneKIVADC::SendBac()
 Error::Msg TuneKIVADC::CheckTune()
 {
     EMessageBox::information(this,
-        "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите Esc");
-    //    QMessageBox::information(this, "Информация",
-    //        "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите
-    //        Esc");
+        "После закрытия данного сообщения для завершения настройки нажмите Enter\n"
+        "Для отказа от настройки нажмите Esc");
     m_finished = false;
     while ((!StdFunc::IsCancelled()) && !m_finished)
     {
@@ -257,10 +255,10 @@ Error::Msg TuneKIVADC::CheckTune()
 Error::Msg TuneKIVADC::setADCCoef(const int coef)
 {
     const QMap<int, float> adcCoefMap { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
-    configV->setRecordValue({ S2::GetIdByName("C_Pasp_ID"),
-        DataTypes::FLOAT_3t({ adcCoefMap.value(coef), adcCoefMap.value(coef), adcCoefMap.value(coef) }) });
-
-    return BaseInterface::iface()->writeConfFileSync(configV->getConfig());
+    const auto adcCoef = adcCoefMap.value(coef);
+    config.setRecord("C_Pasp_ID", S2::FLOAT_3t { adcCoef, adcCoef, adcCoef });
+    const auto s2file = config.toByteArray();
+    return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
 }
 
 Error::Msg TuneKIVADC::showRetomDialog(int coef)
@@ -294,12 +292,22 @@ void TuneKIVADC::IULayout(RegType type, int coef, QVBoxLayout *lyout)
         QString EMRange;
         QString Ret10Coef;
     };
-    QMap<int, retomStruct> retomCoefMap = { { 1, { "2,9 A", "500 mA", "30:3" } }, { 2, { "2,5 A", "500 mA", "30:3" } },
-        { 4, { "1,4 A", "250 mA", "30:3" } }, { 8, { "8 A", "100 mA", "300:3" } }, { 16, { "4 A", "50 mA", "300:3" } },
-        { 32, { "2.3 A", "50 mA", "300:3" } } };
-    QMap<int, retomStruct> ImCoefMap = { { 1, { "290 mA", "500 mA", "30:3" } }, { 2, { "250 mA", "500 mA", "30:3" } },
-        { 4, { "140 mA", "250 mA", "30:6" } }, { 8, { "80 mA", "100 mA", "30:6" } },
-        { 16, { "40 mA", "50 mA", "1:1" } }, { 32, { "23 mA", "50 mA", "1:1" } } };
+    QMap<int, retomStruct> retomCoefMap = {
+        { 1, { "2,9 A", "500 mA", "30:3" } }, //
+        { 2, { "2,5 A", "500 mA", "30:3" } }, //
+        { 4, { "1,4 A", "250 mA", "30:3" } }, //
+        { 8, { "8 A", "100 mA", "300:3" } },  //
+        { 16, { "4 A", "50 mA", "300:3" } },  //
+        { 32, { "2.3 A", "50 mA", "300:3" } } //
+    };
+    QMap<int, retomStruct> ImCoefMap = {
+        { 1, { "290 mA", "500 mA", "30:3" } }, //
+        { 2, { "250 mA", "500 mA", "30:3" } }, //
+        { 4, { "140 mA", "250 mA", "30:6" } }, //
+        { 8, { "80 mA", "100 mA", "30:6" } },  //
+        { 16, { "40 mA", "50 mA", "1:1" } },   //
+        { 32, { "23 mA", "50 mA", "1:1" } }    //
+    };
     QMap<RegType, QMap<int, retomStruct>> map = { { RegType::IMITATOR, ImCoefMap }, { RegType::RETOM, retomCoefMap } };
 
     QString tmps;

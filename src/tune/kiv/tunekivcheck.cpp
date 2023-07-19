@@ -2,11 +2,9 @@
 
 #include "../../datablocks/kiv/bda.h"
 #include "../../interfaces/protocom.h"
-#include "../../s2/configv.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
-#include "../s2/s2.h"
 
 #include <QCoreApplication>
 #include <QDialog>
@@ -18,7 +16,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-TuneKIVCheck::TuneKIVCheck(ConfigV *config, int tuneStep, QWidget *parent)
+TuneKIVCheck::TuneKIVCheck(S2::Configuration &config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
 {
     setupUI();
@@ -84,12 +82,12 @@ Error::Msg TuneKIVCheck::showScheme()
 
 Error::Msg TuneKIVCheck::check()
 {
-    QList<DataTypes::DataRecV> recordList;
+    std::vector<std::pair<QString, S2::valueType>> recordList {
+        { "C_Pasp_ID", S2::FLOAT_3t { 9000, 9000, 9000 } }, //
+        { "Unom1", float(220) }                             //
+    };
 
-    recordList = { { S2::GetIdByName("C_Pasp_ID"), DataTypes::FLOAT_3t({ 9000, 9000, 9000 }) },
-        { S2::GetIdByName("Unom1"), float(220) } };
-
-    if (BaseInterface::iface()->pushAndWriteConfFileSync(configV, recordList) != Error::NoError)
+    if (updateConfigAndSend(recordList) != Error::NoError)
     {
         EMessageBox::error(this, "Ошибка при записи конфигурации");
         return Error::GeneralError;
@@ -105,6 +103,8 @@ Error::Msg TuneKIVCheck::check()
     ww->Stop();
     BdaA284 *bda = new BdaA284;
     bda->readAndUpdate();
+    auto s2file = config.toByteArray();
+
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)
         if (!WDFunc::floatIsWithinLimits("напряжения", bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
@@ -117,10 +117,10 @@ Error::Msg TuneKIVCheck::check()
     if (!WDFunc::floatIsWithinLimits("частоты", bda->data()->Frequency, 51.0, 0.05))
         goto FaultLabel;
 #endif
-    BaseInterface::iface()->popAndWriteConfFileSync(configV);
+    BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
     return Error::Msg::NoError;
 FaultLabel:
-    BaseInterface::iface()->popAndWriteConfFileSync(configV);
+    BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
     return Error::Msg::GeneralError;
 }
 

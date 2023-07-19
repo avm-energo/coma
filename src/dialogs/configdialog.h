@@ -2,17 +2,19 @@
 
 #include "../module/errconfstate.h"
 #include "../module/modules.h"
+#include "../s2/s2datamanager.h"
 #include "../widgets/udialog.h"
 #include "../widgets/widgetfactory.h"
 
 //#define MAXBYTEARRAY 65535
 //#define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
 
+class QTabWidget;
+
 class ConfigDialog : public UDialog
 {
 public:
-    explicit ConfigDialog(ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, bool prereadConf = true,
-        QWidget *parent = nullptr);
+    explicit ConfigDialog(S2BoardConfig &boardConf, bool prereadConf = true, QWidget *parent = nullptr);
     void prereadConfig();
     void fillBack() const;
     void setDefaultConfig();
@@ -30,15 +32,17 @@ private:
     void loadConfigFromFile();
     void readConfig();
     void writeConfig();
-    void checkForDiff(const QList<DataTypes::DataRecV> &list);
-    void configReceived(const QVariant &msg);
+    void checkForDiff();
+    bool isVisible(const quint16 id) const;
+    void configReceived(const QByteArray &rawData);
 
     void showConfigErrState();
 
+    S2BoardConfig &boardConfig;
     bool m_prereadConf;
-    QStringList CheckConfErrors;
-    const QList<DataTypes::RecordPair> m_defaultValues;
-    ConfigV *configV;
+    // ConfigV *configV;
+    WidgetFactory factory;
     UniquePointer<DataTypesProxy> proxyDRL;
     ErrConfState *errConfState;
+    QStringList CheckConfErrors;
 };

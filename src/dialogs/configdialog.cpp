@@ -3,18 +3,13 @@
 #include "../dialogs/keypressdialog.h"
 #include "../module/board.h"
 #include "../module/configstorage.h"
-#include "../s2/configv.h"
-#include "../s2/s2.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
-#include "../xml/xmlparser/xmlconfigparser.h"
 
 #include <QDebug>
 #include <QGridLayout>
 #include <QGroupBox>
-//#include <QMessageBox>
 #include <QScrollArea>
-#include <QTextEdit>
 #include <gen/datamanager/typesproxy.h>
 #include <gen/error.h>
 #include <gen/files.h>
@@ -28,23 +23,24 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char name[] = "confHash";
 }
 
-ConfigDialog::ConfigDialog(
-    ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, bool prereadConf, QWidget *parent)
+ConfigDialog::ConfigDialog(S2BoardConfig &boardConf, bool prereadConf, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent)
+    , boardConfig(boardConf)
     , m_prereadConf(prereadConf)
-    , m_defaultValues(defaultConfig)
-    , configV(config)
+    // , configV(nullptr)
+    , factory(boardConfig.workingConfig)
     , proxyDRL(new DataTypesProxy)
-    , errConfState(nullptr)
+    , errConfState(new ErrConfState())
 {
-    proxyDRL->RegisterType<QList<DataTypes::DataRecV>>();
-    connect(proxyDRL.get(), &DataTypesProxy::DataStorable, this, &ConfigDialog::configReceived);
+    proxyDRL->RegisterType<QByteArray>();
+    connect(proxyDRL.get(), &DataTypesProxy::DataStorable, this, //
+        [this](const QVariant &var) { configReceived(var.value<QByteArray>()); });
 }
 
 void ConfigDialog::readConfig()
 {
     setSuccessMsg(tr("Конфигурация прочитана успешно"));
-    BaseInterface::iface()->reqFile(DataTypes::Config, DataTypes::FileFormat::DefaultS2);
+    BaseInterface::iface()->reqFile(quint32(S2::FilesEnum::Config), DataTypes::FileFormat::DefaultS2);
 }
 
 void ConfigDialog::writeConfig()
@@ -54,98 +50,81 @@ void ConfigDialog::writeConfig()
     {
         if (prepareConfigToWrite())
         {
-            S2DataTypes::S2ConfigType buffer;
-            std::transform(configV->getConfig().cbegin(), configV->getConfig().cend(), std::back_inserter(buffer),
-                [](const auto &record) -> S2DataTypes::DataRec { return record.serialize(); });
-            S2::tester(buffer);
-            buffer.push_back({ { S2DataTypes::dummyElement, 0 }, nullptr });
-            BaseInterface::iface()->writeS2File(DataTypes::Config, &buffer);
+            auto s2file = boardConfig.workingConfig.toByteArray();
+            auto fileType = std_ext::to_underlying(S2::FilesEnum::Config);
+            BaseInterface::iface()->writeFile(fileType, s2file);
         }
         else
             qCritical("Ошибка чтения конфигурации");
     }
 }
 
-// thanx to P0471R0
-template <class Container> auto sinserter(Container &c)
+void ConfigDialog::checkForDiff()
 {
-    using std::end;
-    return std::inserter(c, end(c));
-}
-
-bool operator<(const quint16 &number, const DataTypes::RecordPair &record)
-{
-    return number < record.record.getId();
-}
-
-bool operator<(const DataTypes::RecordPair &record, const quint16 &number)
-{
-    return number < record.record.getId();
-}
-
-void ConfigDialog::checkForDiff(const QList<DataTypes::DataRecV> &list)
-{
-    std::set<quint16> receivedItems;
-    std::transform(list.cbegin(), list.cend(), sinserter(receivedItems),
-        [](const DataTypes::DataRecV &record) { return record.getId(); });
-
-    std::set<quint16> defaultItems;
-    std::transform(m_defaultValues.cbegin(), m_defaultValues.cend(), sinserter(defaultItems),
-        [](const DataTypes::RecordPair &record) { return record.record.getId(); });
-
-    std::vector<quint16> diffItems;
-    std::set_difference(receivedItems.cbegin(), receivedItems.cend(), defaultItems.cbegin(), defaultItems.cend(),
-        std::back_inserter(diffItems));
-
+    const auto diffItems = boardConfig.defaultConfig.checkDiff(boardConfig.workingConfig);
     if (!diffItems.empty())
-    {
         qDebug() << diffItems;
-    }
 }
 
-// void ConfigDialog::confReceived(const QList<DataTypes::DataRecV> &list)
-void ConfigDialog::configReceived(const QVariant &msg)
+bool ConfigDialog::isVisible(const quint16 id) const
 {
-    using namespace DataTypes;
-    auto list = msg.value<QList<DataRecV>>();
-    configV->setConfig(list);
+    const auto &detailMap = S2::ConfigStorage::GetInstance().getWidgetDetailMap();
+    auto search = detailMap.find(id);
+    if (search != detailMap.cend())
+        return search->second.first;
+    else
+        return false;
+}
 
-    const auto s2typeB = configV->getRecord(S2::GetIdByName("MTypeB_ID")).value<DWORD>();
-    if (s2typeB != Board::GetInstance().typeB())
+void ConfigDialog::configReceived(const QByteArray &rawData)
+{
+    using namespace S2;
+    auto &workConfig = boardConfig.workingConfig;
+    if (workConfig.updateByRawData(rawData))
     {
-        qCritical() << "Conflict typeB, module: " <<                //
-            QString::number(Board::GetInstance().typeB(), 16)       //
-                    << " config: " << QString::number(s2typeB, 16); //
-        configV->setRecordValue({ S2::GetIdByName("MTypeB_ID"), DWORD(Board::GetInstance().typeB()) });
-    }
+        const auto s2typeB = workConfig["MTypeB_ID"].value<DWORD>();
+        const auto typeB = Board::GetInstance().typeB();
+        if (s2typeB != typeB)
+        {
+            qCritical() << "Conflict typeB, module: " << QString::number(typeB, 16)
+                        << " config: " << QString::number(s2typeB, 16);
+            workConfig["MTypeB_ID"].setData(DWORD(typeB));
+        }
 
-    const auto s2typeM = configV->getRecord(S2::GetIdByName("MTypeE_ID")).value<DWORD>();
-    if (s2typeM != Board::GetInstance().typeM())
-    {
-        qCritical() << "Conflict typeB, module: " <<                //
-            QString::number(Board::GetInstance().typeM(), 16)       //
-                    << " config: " << QString::number(s2typeM, 16); //
-        configV->setRecordValue({ S2::GetIdByName("MTypeE_ID"), DWORD(Board::GetInstance().typeM()) });
-    }
+        const auto s2typeM = workConfig["MTypeE_ID"].value<DWORD>();
+        const auto typeM = Board::GetInstance().typeM();
+        if (s2typeM != typeM)
+        {
+            qCritical() << "Conflict typeB, module: " << QString::number(typeM, 16)
+                        << " config: " << QString::number(s2typeM, 16);
+            workConfig["MTypeE_ID"].setData(DWORD(typeM));
+        }
 
-    checkForDiff(list);
-    fill();
+        checkForDiff();
+        fill();
+        EMessageBox::information(this, "Конфигурация прочитана успешно");
+    }
+    else
+        EMessageBox::warning(this, "Ошибка чтения конфигурации, проверьте лог");
 }
 
 void ConfigDialog::saveConfigToFile()
 {
-    QByteArray ba;
+    auto filepath = WDFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf");
+    if (filepath.isEmpty())
+        return;
+
     if (!prepareConfigToWrite())
     {
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    S2::StoreDataMem(ba, configV->getConfig(), DataTypes::Config);
-    quint32 length = *reinterpret_cast<quint32 *>(&ba.data()[4]);
-    length += sizeof(S2DataTypes::S2FileHeader);
-    Q_ASSERT(length == quint32(ba.size()));
+    QByteArray file = boardConfig.workingConfig.toByteArray();
+    quint32 length = *reinterpret_cast<quint32 *>(&file.data()[4]);
+    length += sizeof(S2::S2FileHeader);
+    Q_ASSERT(length == quint32(file.size()));
 
-    Error::Msg res = Files::SaveToFile(WDFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba);
+    Error::Msg res = Files::SaveToFile(filepath, file);
     switch (res)
     {
     case Error::Msg::NoError:
@@ -167,19 +146,18 @@ void ConfigDialog::saveConfigToFile()
 
 void ConfigDialog::loadConfigFromFile()
 {
-    QByteArray ba;
-    Error::Msg res = Files::LoadFromFile(WDFunc::ChooseFileForOpen(this, "Config files (*.cf)"), ba);
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Config files (*.cf)");
+    if (filepath.isEmpty())
+        return;
+
+    QByteArray file;
+    Error::Msg res = Files::LoadFromFile(filepath, file);
     if (res != Error::Msg::NoError)
     {
         qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
-    QList<DataTypes::DataRecV> outlistV;
-    S2::RestoreData(ba, outlistV);
-    QVariant outlist;
-    outlist.setValue(outlistV);
-
-    configReceived(outlist);
+    configReceived(file);
     EMessageBox::information(this, "Загрузка прошла успешно!");
 }
 
@@ -225,7 +203,7 @@ QWidget *widgetAt(QTabWidget *tabWidget, int index)
 
 delegate::WidgetGroup groupForId(quint16 id)
 {
-    auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
+    auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto search = widgetMap.find(id);
     if (search == widgetMap.end())
     {
@@ -243,14 +221,13 @@ void ConfigDialog::setupUI()
 {
     auto vlyout = new QVBoxLayout;
     auto ConfTW = new QTabWidget(this);
-    WidgetFactory factory(configV);
     createTabs(ConfTW);
 
-    for (const auto &record : qAsConst(m_defaultValues))
+    for (const auto &record : boardConfig.defaultConfig)
     {
-        if (record.visibility)
+        const auto id = record.first;
+        if (isVisible(id))
         {
-            auto id = record.record.getId();
             auto widget = factory.createWidget(id, this);
             if (widget)
             {
@@ -259,9 +236,7 @@ void ConfigDialog::setupUI()
                 QGroupBox *subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
                 Q_ASSERT(subBox);
                 if (!subBox)
-                {
                     widget->deleteLater();
-                }
                 else
                 {
                     auto lyout = subBox->layout();
@@ -269,9 +244,7 @@ void ConfigDialog::setupUI()
                 }
             }
             else
-            {
                 qWarning() << "Bad config widget for item: " << id;
-            }
         }
     }
     vlyout->addWidget(ConfTW);
@@ -282,18 +255,22 @@ void ConfigDialog::setupUI()
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
     std::set<delegate::WidgetGroup> currentCategories, intersection;
-    auto &tabs = ConfigStorage::GetInstance().getConfigTabs();
-    for (const auto &record : qAsConst(m_defaultValues))
+    auto &tabs = S2::ConfigStorage::GetInstance().getConfigTabs();
+
+    for (const auto &record : boardConfig.defaultConfig)
     {
-        auto tab = groupForId(record.record.getId());
-        if (tabs.contains(tab))
+        auto tab = groupForId(record.first);
+        auto search = tabs.find(tab);
+        if (search != tabs.cend())
             intersection.insert(tab);
         else
             qDebug() << "Undefined tab ID" << tab;
     }
+
     for (const auto &group : intersection)
     {
-        auto subBox = new QGroupBox("Группа " + tabs.value(group), this);
+        auto &tabName = tabs.at(group);
+        auto subBox = new QGroupBox("Группа " + tabName, this);
         auto subvlyout = new QVBoxLayout;
         subvlyout->setAlignment(Qt::AlignTop);
         subvlyout->setSpacing(0);
@@ -304,28 +281,26 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
         scrollArea->setFrameShape(QFrame::NoFrame);
         scrollArea->setWidgetResizable(true);
         scrollArea->setWidget(subBox);
-        tabWidget->addTab(scrollArea, tabs.value(group));
+        tabWidget->addTab(scrollArea, tabName);
     }
 }
 
 void ConfigDialog::fill()
 {
-    for (const auto &defRecord : m_defaultValues)
+    for (const auto &defRecord : boardConfig.workingConfig)
     {
-        if (!defRecord.visibility)
-            continue;
-        auto id = defRecord.record.getId();
-        const auto record = configV->getRecord(id);
-        std::visit(
-            [=](const auto &&value) {
-                WidgetFactory factory(configV);
-                bool status = factory.fillWidget(this, record.getId(), value);
-                if (!status)
-                {
-                    qWarning() << "Couldnt fill widget for item: " << record.getId();
-                }
-            },
-            record.getData());
+        const auto id = defRecord.first;
+        if (isVisible(id))
+        {
+            const auto record = defRecord.second;
+            std::visit(
+                [=](const auto &&value) {
+                    bool status = factory.fillWidget(this, id, value);
+                    if (!status)
+                        qWarning() << "Couldnt fill widget for item: " << id;
+                },
+                record.getData());
+        }
     }
 }
 
@@ -335,7 +310,6 @@ void ConfigDialog::prereadConfig()
     {
         setDefaultConfig();
         EMessageBox::information(this, "Задана конфигурация по умолчанию");
-        //        QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
     }
     else
         readConfig();
@@ -343,73 +317,66 @@ void ConfigDialog::prereadConfig()
 
 void ConfigDialog::fillBack() const
 {
-    WidgetFactory factory(configV);
-    for (const auto &record : m_defaultValues)
+    for (const auto &record : boardConfig.workingConfig)
     {
-        if (!record.visibility)
-            continue;
-        auto id = record.record.getId();
-        auto status = factory.fillBack(id, this);
-        if (!status)
+        const auto id = record.first;
+        if (isVisible(id))
         {
-            qWarning() << "Couldnt fill back item from widget: " << id;
+            auto status = factory.fillBack(id, this);
+            if (!status)
+                qWarning() << "Couldnt fill back item from widget: " << id;
         }
     }
 }
 
 void ConfigDialog::setDefaultConfig()
 {
-    for (const auto &record : m_defaultValues)
-        configV->setRecordValue(record.record);
+    boardConfig.workingConfig = boardConfig.defaultConfig;
     fill();
 }
 
 void ConfigDialog::showConfigErrState()
 {
-    if (errConfState == nullptr)
-    {
-        errConfState = new ErrConfState();
-        errConfState->show();
-    }
-    else
-    {
-        errConfState->show();
-    }
+    errConfState->show();
 }
 
 bool ConfigDialog::prepareConfigToWrite()
 {
     fillBack();
-    CheckConfErrors.clear();
     checkConfig();
     if (CheckConfErrors.isEmpty())
         return true;
+    else
+    {
+        EMessageBox::warning(this, "В конфигурации есть ошибки, проверьте и исправьте");
+        return false;
+    }
 
-    auto dlg = new QDialog;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    auto vlyout = new QVBoxLayout;
-    auto lbl = new QLabel("В конфигурации есть ошибки, проверьте и исправьте");
-    vlyout->addWidget(lbl, 0, Qt::AlignLeft);
-    auto te = new QTextEdit;
-    te->setPlainText(CheckConfErrors.join("\n"));
-    vlyout->addWidget(te, 0, Qt::AlignCenter);
-    auto pb = new QPushButton("Хорошо");
-    connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
-    vlyout->addWidget(pb);
-    dlg->setLayout(vlyout);
-    dlg->show();
-    return false;
+    //    auto dlg = new QDialog;
+    //    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    //    auto vlyout = new QVBoxLayout;
+    //    auto lbl = new QLabel("В конфигурации есть ошибки, проверьте и исправьте");
+    //    vlyout->addWidget(lbl, 0, Qt::AlignLeft);
+    //    auto te = new QTextEdit;
+    //    te->setPlainText(CheckConfErrors.join("\n"));
+    //    vlyout->addWidget(te, 0, Qt::AlignCenter);
+    //    auto pb = new QPushButton("Хорошо");
+    //    connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
+    //    vlyout->addWidget(pb);
+    //    dlg->setLayout(vlyout);
+    //    dlg->show();
+    //    return false;
 }
 
 void ConfigDialog::uponInterfaceSetting()
 {
     setupUI();
     if (m_prereadConf)
-    {
         prereadConfig();
-    }
 }
 
 void ConfigDialog::checkConfig()
 {
+    CheckConfErrors.clear();
+    /// TODO: А как проверять конфигурацию?
 }

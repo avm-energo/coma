@@ -30,9 +30,19 @@ QString EventParser::eventTypeToString(const EventType type)
 void EventParser::update(const QByteArray &ba)
 {
     records.clear();
-    iter = reinterpret_cast<const EventRecord *>(ba.constData());
+    binaryFile = ba;
     size = ba.size() / sizeof(EventRecord);
     records.reserve(size);
+}
+
+EventRecord EventParser::getRecord()
+{
+    constexpr auto recordSize = sizeof(EventRecord);
+    EventRecord record;
+    auto recordByteArray = binaryFile.left(recordSize);
+    record = *reinterpret_cast<const EventRecord *>(recordByteArray.constData());
+    binaryFile.remove(0, recordSize);
+    return record;
 }
 
 const Data EventParser::parse(const Descriptions &desc, const QTimeZone timeZone)
@@ -43,7 +53,7 @@ const Data EventParser::parse(const Descriptions &desc, const QTimeZone timeZone
     int i, count;
     for (i = 0, count = 0; i < size; i++)
     {
-        auto record = iter[i];
+        auto record = getRecord();
         if (record.time == ULLONG_MAX)
             continue;
         count++;

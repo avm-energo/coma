@@ -9,7 +9,8 @@ class TuneCheckMipDialog : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneCheckMipDialog(ConfigV *config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent = nullptr);
+    TuneCheckMipDialog(S2::Configuration &config, int tuneStep, //
+        Modules::MezzanineBoard type, QWidget *parent = nullptr);
 
     void setModuleType(Modules::MezzanineBoard type);
 

@@ -21,7 +21,7 @@ private:
     QDialog *getProgressDialog;
     QProgressIndicator *getProgressIndicator;
     QProgressDialog *saveProgressDialog;
-    S2DataTypes::S2BFile journalFile;
+    S2::S2BFile journalFile;
 
     /// \brief Метод для создания виджетов, сигнализирующих
     /// пользователю состояние обмена данными и сохранения данных в файл.
@@ -55,7 +55,7 @@ public:
 
     /// \brief Обновление содержимого виджета по полученному файлу журнала.
     /// \param jourFile[in] - файл журнала в формате S2B, полученный от устройства.
-    void setJournalFile(const S2DataTypes::S2BFile &jourFile);
+    void setJournalFile(const S2::S2BFile &jourFile);
 
     /// \brief Функция, возвращающая имя вкладки.
     const QString &getTabName() const;

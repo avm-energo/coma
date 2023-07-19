@@ -5,22 +5,6 @@
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
-//#include <QCheckBox>
-//#include <QComboBox>
-//#include <QCoreApplication>
-//#include <QDoubleSpinBox>
-//#include <QFileDialog>
-//#include <QGridLayout>
-//#include <QGroupBox>
-//#include <QLabel>
-//#include <QLineEdit>
-//#include <QMessageBox>
-//#include <QPushButton>
-//#include <QSpinBox>
-//#include <QStringListModel>
-//#include <QTabBar>
-//#include <QTabWidget>
-//#include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/files.h>
@@ -235,13 +219,17 @@ void StartupKDVDialog::ResetCor()
 
 void StartupKDVDialog::SaveToFile()
 {
+    auto filepath = WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor");
+    if (filepath.isEmpty())
+        return;
+
     QByteArray ba;
     FillBackCor();
     FillBackWBd8();
     ba.resize(sizeof(*WBd7Block) + sizeof(*WBd8Block));
     memcpy(&(ba.data()[0]), WBd7Block, sizeof(*WBd7Block));
     memcpy(&(ba.data()[sizeof(*WBd7Block)]), WBd8Block, sizeof(*WBd8Block));
-    Error::Msg res = Files::SaveToFile(WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);
+    Error::Msg res = Files::SaveToFile(filepath, ba);
     switch (res)
     {
     case Error::Msg::NoError:
@@ -267,10 +255,13 @@ void StartupKDVDialog::SaveToFile()
 
 void StartupKDVDialog::ReadFromFile()
 {
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
+    if (filepath.isEmpty())
+        return;
+
     QByteArray ba;
     ba.resize(sizeof(*Bd9Block));
-
-    Error::Msg res = Files::LoadFromFile(WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
+    Error::Msg res = Files::LoadFromFile(filepath, ba);
     if (res != Error::Msg::NoError)
     {
         EMessageBox::error(this, "Ошибка при загрузке файла!");

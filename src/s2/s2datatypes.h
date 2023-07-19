@@ -1,24 +1,92 @@
-#ifndef S2DATATYPES_H
-#define S2DATATYPES_H
+#pragma once
 
 #include "filestruct.h"
 
-#include <QVariant>
+#include <array>
 #include <gen/std_ext.h>
+#include <variant>
+#include <vector>
 
-namespace S2DataTypes
+namespace S2
 {
 constexpr quint32 dummyElement = 0xffffffff;
 
-inline bool is_same(const DataRec &lhs, const DataRec &rhs)
+using BYTE = std::uint8_t;
+using WORD = std::uint16_t;
+using DWORD = std::uint32_t;
+using INT32 = std::int32_t;
+using BYTE_4t = std::array<BYTE, 4>;
+using WORD_4t = std::array<WORD, 4>;
+using DWORD_4t = std::array<DWORD, 4>;
+using BYTE_6t = std::array<BYTE, 6>;
+using WORD_6t = std::array<WORD, 6>;
+using DWORD_6t = std::array<DWORD, 6>;
+using BYTE_8t = std::array<BYTE, 8>;
+using WORD_8t = std::array<WORD, 8>;
+using DWORD_8t = std::array<DWORD, 8>;
+using BYTE_16t = std::array<BYTE, 16>;
+using WORD_16t = std::array<WORD, 16>;
+using DWORD_16t = std::array<DWORD, 16>;
+using BYTE_32t = std::array<BYTE, 32>;
+using WORD_32t = std::array<WORD, 32>;
+using DWORD_32t = std::array<DWORD, 32>;
+using FLOAT = float;
+using FLOAT_2t = std::array<FLOAT, 2>;
+using FLOAT_3t = std::array<FLOAT, 3>;
+using FLOAT_4t = std::array<FLOAT, 4>;
+using FLOAT_6t = std::array<FLOAT, 6>;
+using FLOAT_8t = std::array<FLOAT, 8>;
+
+static_assert(sizeof(BYTE) != sizeof(WORD), "Broken datatypes");
+static_assert(sizeof(BYTE) != sizeof(DWORD), "Broken datatypes");
+static_assert(sizeof(INT32) == sizeof(DWORD), "Broken datatypes");
+static_assert(sizeof(FLOAT) == sizeof(DWORD), "Broken datatypes");
+static_assert(sizeof(WORD_4t) == sizeof(BYTE_8t), "Broken datatypes");
+static_assert(sizeof(DWORD_4t) == sizeof(BYTE_16t), "Broken datatypes");
+static_assert(sizeof(FLOAT_2t) == sizeof(BYTE_8t), "Broken datatypes");
+
+using valueType = std::variant<BYTE, WORD, DWORD, INT32, //
+    BYTE_4t, WORD_4t, DWORD_4t,                          //
+    BYTE_6t, WORD_6t, DWORD_6t,                          //
+    BYTE_8t, WORD_8t, DWORD_8t,                          //
+    BYTE_16t, WORD_16t, DWORD_16t,                       //
+    BYTE_32t, WORD_32t, DWORD_32t,                       //
+    FLOAT, FLOAT_2t, FLOAT_3t, FLOAT_4t, FLOAT_6t, FLOAT_8t>;
+
+template <typename T> struct isValueType
+{
+    static constexpr bool value = std_ext::is_variant_alternative<T, valueType>();
+};
+
+struct DataRecHeader
+{
+    quint32 id;      // ID
+    quint32 numByte; // количество байт в TypeTheData
+};
+
+struct DataRec
+{
+    DataRecHeader header;
+    void *thedata;
+
+    friend inline bool operator==(const DataRec &lhs, const DataRec &rhs);
+    friend inline bool operator!=(const DataRec &lhs, const DataRec &rhs);
+};
+
+inline bool operator==(const DataRec &lhs, const DataRec &rhs)
 {
     bool is_same_value = false;
     if ((lhs.header.id == rhs.header.id) && (lhs.header.numByte == rhs.header.numByte))
         is_same_value = !memcmp(lhs.thedata, rhs.thedata, lhs.header.numByte);
-
-    Q_ASSERT(is_same_value);
     return is_same_value;
 }
+
+inline bool operator!=(const DataRec &lhs, const DataRec &rhs)
+{
+    return !(lhs == rhs);
+}
+
+using S2ConfigType = std::vector<DataRec>;
 
 #pragma pack(push) /* push current alignment to stack */
 #pragma pack(1)    /* set alignment to 1 byte boundary */
@@ -30,7 +98,7 @@ struct OscInfo
     quint64 unixtime; ///< Время начала записи осциллограммы
     quint32 idOsc0; ///< ID первой осциллограммы в файле (определяет структуру точки и номер канала)
 
-    friend QDebug operator<<(QDebug debug, const S2DataTypes::OscInfo &st);
+    friend QDebug operator<<(QDebug debug, const S2::OscInfo &st);
 };
 
 struct SwitchJourInfo
@@ -104,41 +172,15 @@ struct S2BFileTail
 struct S2BFile
 {
     S2BFileHeader header;
-    DataTypes::FileStruct file;
+    FileStruct file;
     S2BFileTail tail;
 };
 
-/// Тип группы плат
-struct DataRecT
-{
-    ///< заголовок записи
-    DataRecHeader typeHeader;
-    quint8 typeTheData[4];
-    quint8 versionSoftware[4];
-};
-
-/// Файл ВПО в формате BIN
-struct DataRecF
-{
-    ///< заголовок записи
-    DataRecHeader fileDataHeader;
-    QByteArray data;
-};
-
-struct FileStruct
-{
-    S2FileHeader fileHeader;
-    DataRecT type;
-    DataRecF file;
-    // заголовок пустой записи
-    DataRecHeader void_recHeader;
-};
-
-struct DataRecSwitchJour
-{
-    DataRecHeader header;
-    SwitchJourRecord swjRecord;
-};
+// struct DataRecSwitchJour
+//{
+//    DataRecHeader header;
+//    SwitchJourRecord swjRecord;
+//};
 
 struct OscHeader
 {
@@ -149,8 +191,6 @@ struct OscHeader
 
 }
 
-Q_DECLARE_METATYPE(S2DataTypes::S2BFile)
-Q_DECLARE_METATYPE(S2DataTypes::OscInfo)
-Q_DECLARE_METATYPE(S2DataTypes::SwitchJourInfo)
-
-#endif // S2DATATYPES_H
+Q_DECLARE_METATYPE(S2::S2BFile)
+Q_DECLARE_METATYPE(S2::OscInfo)
+Q_DECLARE_METATYPE(S2::SwitchJourInfo)

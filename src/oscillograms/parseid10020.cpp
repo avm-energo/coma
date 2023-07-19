@@ -6,7 +6,7 @@ ParseID10020::ParseID10020(const QByteArray &BA) : ParseModule(BA)
 {
 }
 
-bool ParseID10020::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)
+bool ParseID10020::Parse(quint32 id, const S2::OscHeader &header, TrendViewModel *model)
 {
     Q_UNUSED(id)
     const auto analogValues = model->analogValues();

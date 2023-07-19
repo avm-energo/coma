@@ -4,6 +4,7 @@
 #include "abstractinterfacedialog.h"
 
 #include <QDialog>
+#include <QSettings>
 
 class ConnectDialog : public QDialog
 {
@@ -19,6 +20,7 @@ private slots:
 
 private:
     AbstractInterfaceDialog *m_idialog;
+    QSettings settings;
 };
 
 #endif // CONNECTDIALOG_H

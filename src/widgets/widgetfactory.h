@@ -1,6 +1,6 @@
 #pragma once
 #include "../module/configstorage.h"
-#include "../s2/s2datatypes.h"
+#include "../s2/s2configuration.h"
 #include "../widgets/delegate_common.h"
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
@@ -9,20 +9,16 @@
 #include <bitset>
 #include <gen/std_ext.h>
 
-//#define DEBUG_FACTORY
-
-class ConfigV;
-
 class WidgetFactory
 {
-    friend class Module;
-    friend class NewModule;
+private:
+    S2Configuration &config;
 
 public:
-    WidgetFactory(ConfigV *config);
+    WidgetFactory(S2Configuration &workingConfig);
     QWidget *createWidget(quint16 key, QWidget *parent = nullptr);
     template <typename T> bool fillWidget(const QWidget *parent, quint16 key, const T &value);
-    bool fillBack(quint16 key, const QWidget *parent);
+    bool fillBack(quint16 key, const QWidget *parent) const;
     static QString hashedName(ctti::unnamed_type_id_t type, quint16 key);
     static const QString widgetName(int group, int item);
     static quint16 getRealCount(const quint16 key);
@@ -48,26 +44,24 @@ private:
     bool fillTableView(const QWidget *parent, quint16 key, quint16 parentKey, //
         ctti::unnamed_type_id_t type, const T &value);
 
-    template <typename T> bool fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey);
+    template <typename T> bool fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey) const;
 
     // helpers for fill back from widget
-    bool fillBackModbus(quint16 key, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey);
-    bool fillBackIpCtrl(quint16 key, const QWidget *parent);
-    bool fillBackCheckBox(quint16 key, const QWidget *parent);
-    bool fillBackLineEdit(quint16 key, const QWidget *parent);
-    bool fillBackSPBG(quint16 key, const QWidget *parent);
-    bool fillBackSPB(quint16 key, const QWidget *parent);
-    bool fillBackChBG(quint16 key, const QWidget *parent);
-    bool fillBackComboBox(quint16 key, const QWidget *parent, delegate::QComboBox::PrimaryField field);
-    bool fillBackComboBoxGroup(quint16 key, const QWidget *parent, int count);
-
-    ConfigV *configV;
+    bool fillBackModbus(quint32 id, const QWidget *parent, ctti::unnamed_type_id_t type, quint16 parentKey) const;
+    bool fillBackIpCtrl(quint32 id, const QWidget *parent) const;
+    bool fillBackCheckBox(quint32 id, const QWidget *parent) const;
+    bool fillBackLineEdit(quint32 id, const QWidget *parent) const;
+    bool fillBackSPBG(quint32 id, const QWidget *parent) const;
+    bool fillBackSPB(quint32 id, const QWidget *parent) const;
+    bool fillBackChBG(quint32 id, const QWidget *parent) const;
+    bool fillBackComboBox(quint32 id, const QWidget *parent, delegate::QComboBox::PrimaryField field) const;
+    bool fillBackComboBoxGroup(quint32 id, const QWidget *parent, int count) const;
 };
 
 // Template specialisation
 
 template <>
-QList<QStandardItem *> WidgetFactory::createItem(quint16 key, const DataTypes::BYTE_8t &value, const QWidget *parent);
+QList<QStandardItem *> WidgetFactory::createItem(quint16 key, const S2::BYTE_8t &value, const QWidget *parent);
 
 // Template definition
 
@@ -129,9 +123,9 @@ bool WidgetFactory::fillTableView(
 template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quint16 key, const T &value)
 {
     bool status = false;
-    auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
+    auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto search = widgetMap.find(key);
-    if (search == widgetMap.end())
+    if (search == widgetMap.cend())
     {
         if (key == 0)
         {

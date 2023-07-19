@@ -8,7 +8,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-Tune85Dialog::Tune85Dialog(ConfigV *config, QWidget *parent) : GeneralTuneDialog(config, parent)
+Tune85Dialog::Tune85Dialog(S2::Configuration &config, QWidget *parent) : GeneralTuneDialog(config, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 

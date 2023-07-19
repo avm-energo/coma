@@ -15,7 +15,7 @@ class BasePort : public QObject
 {
     Q_OBJECT
 public:
-    enum PortErrors
+    enum class PortErrors
     {
         Timeout,
         ReadError,
@@ -34,11 +34,11 @@ signals:
 
 private:
     Interface::State m_state;
+    UniquePointer<LogClass> m_log;
     QMutex m_stateGuard;
 
 protected:
     QMutex m_dataGuard;
-    UniquePointer<LogClass> m_log;
 
     void setState(Interface::State state);
     Interface::State getState();

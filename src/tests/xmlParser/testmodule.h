@@ -9,6 +9,9 @@ class TestModule : public QObject
     Q_OBJECT
     // Helpers
 private:
+    ConfigStorage &storage;
+    S2::DataManager *s2Manager;
+
     /// \brief Returns groups number from all sections.
     int getGroupsCount(const ModuleTypes::SectionList &list);
     /// \brief Returns widgets number from all sections.

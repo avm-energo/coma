@@ -18,15 +18,15 @@ struct SwjModel
 
 namespace File
 {
-using Variant = std::variant<S2DataTypes::OscHeader, std::unique_ptr<TrendViewModel>, SwjModel>;
+using Variant = std::variant<S2::OscHeader, std::unique_ptr<TrendViewModel>, SwjModel>;
 using Vector = std::vector<Variant>;
 }
 
 template <typename T> class FileManager
 {
 protected:
-    using OscHeader = S2DataTypes::OscHeader;
-    using FileStruct = DataTypes::FileStruct;
+    using OscHeader = S2::OscHeader;
+    using FileStruct = S2::FileStruct;
     using Record = T;
 
 public:

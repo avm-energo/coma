@@ -1,16 +1,15 @@
-#ifndef FILESTRUCT_H
-#define FILESTRUCT_H
-
-#include "datarec.h"
+#pragma once
 
 #include <QDataStream>
 #include <QVariant>
 
-namespace DataTypes
+namespace S2
 {
 
+struct DataRec;
+
 /*! Приложение 3. Номера файлов */
-enum FilesEnum : quint16
+enum class FilesEnum : quint16
 {
     Config = 1,        ///< Конфигурация
     Firmware = 3,      ///< Встроенное ПО (Firmware)
@@ -31,16 +30,18 @@ struct FileStruct
     FileStruct() = default;
     FileStruct(const FilesEnum num, const QByteArray &file);
     FileStruct(const quint32 num, const QByteArray &file);
-    S2DataTypes::DataRec serialize() const;
+    DataRec serialize() const;
 
     friend QDataStream &operator<<(QDataStream &stream, const FileStruct &str);
     friend QDataStream &operator>>(QDataStream &stream, FileStruct &str);
-    friend QDebug operator<<(QDebug debug, const DataTypes::FileStruct &st);
+    friend QDebug operator<<(QDebug debug, const FileStruct &st);
 };
+
+QDataStream &operator<<(QDataStream &stream, const FileStruct &str);
+QDataStream &operator>>(QDataStream &stream, FileStruct &str);
+QDebug operator<<(QDebug debug, const FileStruct &st);
 
 }
 
-Q_DECLARE_METATYPE(DataTypes::FileStruct)
-Q_DECLARE_METATYPE(DataTypes::FilesEnum)
-
-#endif // FILESTRUCT_H
+Q_DECLARE_METATYPE(S2::FilesEnum)
+Q_DECLARE_METATYPE(S2::FileStruct)

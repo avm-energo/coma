@@ -10,15 +10,13 @@ class TuneKIVCheck : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVCheck(ConfigV *config, int tuneStep, QWidget *parent = nullptr);
+    TuneKIVCheck(S2::Configuration &config, int tuneStep, QWidget *parent = nullptr);
 
 private:
     void setTuneFunctions() override;
     Error::Msg showScheme();
     Error::Msg check();
     Error::Msg setSMode2();
-
-private slots:
 
 protected:
     void showEvent(QShowEvent *e) override;

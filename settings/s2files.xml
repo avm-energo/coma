@@ -54,10 +54,6 @@
 			<name>Гистерезис сигнализации</name>
 		</tab>
 		<tab>
-			<id>6</id>
-			<name>Пустая группа</name>
-		</tab>
-		<tab>
 			<id>300</id>
 			<name>Остальные</name>
 		</tab>
@@ -68,10 +64,6 @@
 		<tab>
 			<id>9</id>
 			<name>Параметры двигателя</name>
-		</tab>
-		<tab>
-			<id>10</id>
-			<name>Пустая группа</name>
 		</tab>
 </config-tabs>
 	<record>
@@ -1694,10 +1686,6 @@
 			</string-array>
 			<count>30</count>
 		</widget>
-	</record>
-	<record>
-		<id>409</id>
-		<type>DWORD</type>
 	</record>
 	<record>
 		<id>421</id>

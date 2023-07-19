@@ -12,6 +12,7 @@
 #include <gen/helper.h>
 #include <gen/pch.h>
 #include <gen/stdfunc.h>
+#include <gen/utils/crc16.h>
 
 constexpr auto RECONNECTTIME = 10000;
 
@@ -239,7 +240,7 @@ void ModbusThread::parseResponse()
         {
             quint32 addr = m_currentCommand.arg1.toUInt();
             quint32 count = m_currentCommand.arg2.toUInt();
-            FilePostpone(m_fileData, DataTypes::FilesEnum(addr), FileFormat(count));
+            FilePostpone(m_fileData, S2::FilesEnum(addr), FileFormat(count));
         }
         break;
     }
@@ -293,12 +294,10 @@ void ModbusThread::processReadBytes(QByteArray ba)
         m_log->info("<- " + m_readData.toHex());
         int rdsize = m_readData.size();
 
-        quint16 crcfinal = (static_cast<quint8>(m_readData.data()[rdsize - 2]) << 8)
-            | (static_cast<quint8>(m_readData.data()[rdsize - 1]));
+        quint16 receivedCRC = (quint8(m_readData[rdsize - 2]) << 8) | quint8(m_readData[rdsize - 1]);
         m_readData.chop(2);
-        quint16 MYKSS = calcCRC(m_readData);
-
-        if (MYKSS != crcfinal)
+        utils::CRC16 calculatedCRC(m_readData);
+        if (calculatedCRC != receivedCRC)
         {
             m_log->error("Crc error");
             qCritical() << Error::CrcError << metaObject()->className();
@@ -316,9 +315,8 @@ void ModbusThread::setDelay(quint8 newDelay)
 
 void ModbusThread::calcCRCAndSend(QByteArray &ba)
 {
-    quint16 crc = calcCRC(ba);
-    ba.append(static_cast<char>(crc >> 8));
-    ba.append(static_cast<char>(crc));
+    utils::CRC16 crc(ba);
+    crc.appendTo(ba);
     send(ba);
 }
 
@@ -454,25 +452,6 @@ bool ModbusThread::processReadFile()
     return true;
 }
 
-quint16 ModbusThread::calcCRC(QByteArray &ba) const
-{
-    quint8 CRChi = 0xFF;
-    quint8 CRClo = 0xFF;
-    quint8 Ind;
-    quint16 crc;
-    int count = 0;
-
-    while (count < ba.size())
-    {
-        Ind = CRChi ^ ba.at(count);
-        count++;
-        CRChi = CRClo ^ TabCRChi[Ind];
-        CRClo = TabCRClo[Ind];
-    }
-    crc = ((CRChi << 8) | CRClo);
-    return crc;
-}
-
 void ModbusThread::readRegisters(MBS::CommandStruct &cms)
 {
     m_commandSent = cms;
@@ -553,9 +532,7 @@ QByteArray ModbusThread::createADU(const QByteArray &pdu) const
     QByteArray ba;
     ba.append(m_deviceAddress);
     ba.append(pdu);
-    // здесь мог бы быть Ваш рефакторинг
-    quint16 crc = calcCRC(ba);
-    ba.append(static_cast<char>(crc >> 8));
-    ba.append(static_cast<char>(crc));
+    utils::CRC16 crc(ba);
+    crc.appendTo(ba);
     return ba;
 }

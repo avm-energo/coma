@@ -180,10 +180,13 @@ void StartupKIVDialog::SetupUI()
 
 void StartupKIVDialog::SaveToFile()
 {
+    auto filepath = WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor");
+    if (filepath.isEmpty())
+        return;
+
     QByteArray ba = QByteArray::fromRawData(reinterpret_cast<char *>(CorBlock), sizeof(CorData));
     FillBackCor();
-
-    Error::Msg res = Files::SaveToFile(WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba);
+    Error::Msg res = Files::SaveToFile(filepath, ba);
     switch (res)
     {
     case Error::Msg::NoError:
@@ -209,10 +212,13 @@ void StartupKIVDialog::SaveToFile()
 
 void StartupKIVDialog::ReadFromFile()
 {
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
+    if (filepath.isEmpty())
+        return;
+
     QByteArray ba;
     ba.resize(sizeof(CorData));
-
-    Error::Msg res = Files::LoadFromFile(WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
+    Error::Msg res = Files::LoadFromFile(filepath, ba);
     if (res != Error::Msg::NoError)
     {
         EMessageBox::error(this, "Ошибка при загрузке файла!");

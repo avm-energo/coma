@@ -6,7 +6,7 @@ ParseID10040::ParseID10040(const QByteArray &BA) : ParseModule(BA)
 {
 }
 
-bool ParseID10040::Parse(quint32 id, const S2DataTypes::OscHeader &header, TrendViewModel *model)
+bool ParseID10040::Parse(quint32 id, const S2::OscHeader &header, TrendViewModel *model)
 {
     Q_UNUSED(id)
     TrendViewModelKDV *mdl = static_cast<TrendViewModelKDV *>(model);

@@ -1,6 +1,6 @@
 #include "protocomthread.h"
 
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 
 #include <QDebug>
 #include <QQueue>
@@ -122,12 +122,13 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     // arg1 - file number
     case Commands::C_ReqFile:
     {
-        DataTypes::FilesEnum filetype = cmdStr.arg1.value<DataTypes::FilesEnum>();
+        using namespace S2;
+        FilesEnum filetype = cmdStr.arg1.value<FilesEnum>();
         switch (filetype)
         {
-        case DataTypes::JourSys:
-        case DataTypes::JourWork:
-        case DataTypes::JourMeas:
+        case FilesEnum::JourSys:
+        case FilesEnum::JourWork:
+        case FilesEnum::JourMeas:
             processFileFromDisk(filetype);
             break;
         default:
@@ -246,6 +247,7 @@ void ProtocomThread::parseResponse()
 {
     using namespace Proto;
     using namespace DataTypes;
+    using namespace S2;
     quint32 addr = m_currentCommand.arg1.toUInt();
     quint32 count = m_currentCommand.arg2.toUInt();
     switch (m_responseReceived)
@@ -411,22 +413,22 @@ bool ProtocomThread::isValidIncomingData(const QByteArray &data)
     return false;
 }
 
-void ProtocomThread::processFileFromDisk(DataTypes::FilesEnum fileNum)
+void ProtocomThread::processFileFromDisk(S2::FilesEnum fileNum)
 {
     QString fileToFind;
     switch (fileNum)
     {
-    case DataTypes::JourSys:
+    case S2::FilesEnum::JourSys:
     {
         fileToFind = "system.dat";
         break;
     }
-    case DataTypes::JourMeas:
+    case S2::FilesEnum::JourMeas:
     {
         fileToFind = "measj.dat";
         break;
     }
-    case DataTypes::JourWork:
+    case S2::FilesEnum::JourWork:
     {
         fileToFind = "workj.dat";
         break;
@@ -465,7 +467,7 @@ void ProtocomThread::processFileFromDisk(DataTypes::FilesEnum fileNum)
     QByteArray ba = file.readAll();
     if (!boardType.isEmpty())
     {
-        auto s2bFile = S2::emulateS2B({ fileNum, ba }, fileNum, boardType.mTypeB, boardType.mTypeM);
+        auto s2bFile = S2Util::emulateS2B({ fileNum, ba }, quint16(fileNum), boardType.mTypeB, boardType.mTypeM);
         auto &dataManager = DataManager::GetInstance();
         DataTypes::GeneralResponseStruct genResp {
             DataTypes::GeneralResponseTypes::Ok,      //
@@ -482,7 +484,7 @@ void ProtocomThread::progressFile(const QByteArray &data)
     if (m_currentCommand.command == Commands::C_ReqFile)
     {
         if (isFirstBlock)
-            setProgressRange(S2::GetFileSize(data)); // set progressbar max size
+            setProgressRange(S2Util::GetFileSize(data)); // set progressbar max size
         m_progress += data.size();
         setProgressCount(m_progress); // set current progressbar position
     }
@@ -648,13 +650,13 @@ void ProtocomThread::processTechBlock(const QByteArray &ba, quint32 blkNum)
         //  Блок наличия осциллограмм Bo
     case T_Oscillogram:
     {
-        Q_ASSERT(ba.size() % sizeof(S2DataTypes::OscInfo) == 0);
-        for (int i = 0; i != ba.size(); i += sizeof(S2DataTypes::OscInfo))
+        Q_ASSERT(ba.size() % sizeof(S2::OscInfo) == 0);
+        for (int i = 0; i != ba.size(); i += sizeof(S2::OscInfo))
         {
-            QByteArray buffer = ba.mid(i, sizeof(S2DataTypes::OscInfo));
+            QByteArray buffer = ba.mid(i, sizeof(S2::OscInfo));
 
-            S2DataTypes::OscInfo oscInfo;
-            memcpy(&oscInfo, buffer.constData(), sizeof(S2DataTypes::OscInfo));
+            S2::OscInfo oscInfo;
+            memcpy(&oscInfo, buffer.constData(), sizeof(S2::OscInfo));
             DataManager::GetInstance().addSignalToOutList(oscInfo);
         }
 
@@ -675,13 +677,13 @@ void ProtocomThread::processTechBlock(const QByteArray &ba, quint32 blkNum)
     case T_SwitchJournal:
     {
         qDebug("Блок наличия журналов переключения");
-        Q_ASSERT(ba.size() % sizeof(S2DataTypes::SwitchJourInfo) == 0);
-        for (int i = 0; i != ba.size(); i += sizeof(S2DataTypes::SwitchJourInfo))
+        Q_ASSERT(ba.size() % sizeof(S2::SwitchJourInfo) == 0);
+        for (int i = 0; i != ba.size(); i += sizeof(S2::SwitchJourInfo))
         {
-            QByteArray buffer = ba.mid(i, sizeof(S2DataTypes::SwitchJourInfo));
+            QByteArray buffer = ba.mid(i, sizeof(S2::SwitchJourInfo));
 
-            S2DataTypes::SwitchJourInfo swjInfo;
-            memcpy(&swjInfo, buffer.constData(), sizeof(S2DataTypes::SwitchJourInfo));
+            S2::SwitchJourInfo swjInfo;
+            memcpy(&swjInfo, buffer.constData(), sizeof(S2::SwitchJourInfo));
             DataManager::GetInstance().addSignalToOutList(swjInfo);
         }
         break;

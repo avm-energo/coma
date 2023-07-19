@@ -10,7 +10,7 @@
 class OscDialog : public UDialog
 {
     Q_OBJECT
-    using OscHeader = S2DataTypes::OscHeader;
+    using OscHeader = S2::OscHeader;
     enum Column
     {
         number = 0,
@@ -36,8 +36,8 @@ private:
 
     OscManager manager;
     std::unique_ptr<TrendViewModel> oscModel;
-    QMap<int, S2DataTypes::OscInfo> oscMap;
-    std::vector<DataTypes::FileStruct> fileBuffer;
+    QMap<int, S2::OscInfo> oscMap;
+    std::vector<S2::FileStruct> fileBuffer;
     UniquePointer<ETableModel> tableModel;
     UniquePointer<DataTypesProxy> proxyOI, proxyFS;
     int reqOscNum;

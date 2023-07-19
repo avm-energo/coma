@@ -17,7 +17,7 @@ class Tune82Dialog : public GeneralTuneDialog
 {
     Q_OBJECT
 public:
-    explicit Tune82Dialog(ConfigV *config, Modules::MezzanineBoard typeM, QWidget *parent = nullptr);
+    explicit Tune82Dialog(S2::Configuration &config, Modules::MezzanineBoard typeM, QWidget *parent = nullptr);
 
 public slots:
 

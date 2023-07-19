@@ -31,7 +31,7 @@ private:
     void parseSettings(const quint16 typeB, const quint16 typeM);
 
     /// \brief Метод для создания UI просмотрщика журналов.
-    void setupUI(const DataTypes::FileStruct &file);
+    void setupUI(const S2::FileStruct &file);
 
 private slots:
     /// \brief Слот для сохранения настроек рабочего журнала.

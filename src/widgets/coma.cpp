@@ -36,8 +36,9 @@
 #include "../journals/journalviewer.h"
 #include "../module/board.h"
 #include "../oscillograms/swjmanager.h"
-#include "../s2/s2.h"
-#include "../xml/xmlparser/xmlconfigparser.h"
+#include "../s2/s2configstorage.h"
+#include "../s2/s2datafactory.h"
+#include "../s2/s2util.h"
 #include "alarmwidget.h"
 #include "epopup.h"
 #include "splashscreen.h"
@@ -89,11 +90,12 @@ QPoint Coma::s_comaCenter = QPoint(0, 0);
 
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
+    , s2dataManager(new S2DataManager(this))
     , proxyBS(new DataTypesProxy)
     , proxyGRS(new DataTypesProxy)
     , editor(nullptr)
     , mAppConfig(appCfg)
-    , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), this))
+    , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), *s2dataManager, this))
 {
     proxyBS->RegisterType<DataTypes::BitStringStruct>();
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
@@ -176,13 +178,17 @@ void Coma::setupUI()
 
 void Coma::prepareDialogs()
 {
-    module = UniquePointer<Module>(new Module(true, Board::GetInstance().baseSerialInfo(), this));
-    if (!module->loadSettings())
+    auto &storage = ConfigStorage::GetInstance();
+    module.reset(new Module(true, Board::GetInstance().baseSerialInfo(), this));
+    if (module->loadS2Settings(s2dataManager->getStorage()))
     {
-        EMessageBox::error(this,
-            "Не удалось найти конфигурацию для модуля.\n"
-            "Проверьте журнал сообщений.\n"
-            "Доступны минимальные функции.");
+        if (!module->loadSettings(storage, *s2dataManager))
+        {
+            EMessageBox::error(this,
+                "Не удалось найти конфигурацию для модуля.\n"
+                "Проверьте журнал сообщений.\n"
+                "Доступны минимальные функции.");
+        }
     }
     AlarmW->configure();
     mDlgManager->setupUI(mAppConfig, size());
@@ -308,7 +314,7 @@ void Coma::loadOsc(const QString &filename)
     for (auto &item : fileVector)
     {
         std::visit(overloaded {
-                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); },  //
+                       [&](S2::OscHeader &header) { oscManager.setHeader(header); },           //
                        [](auto &&arg) { Q_UNUSED(arg) },                                       //
                        [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
                    },
@@ -329,9 +335,9 @@ void Coma::loadSwj(const QString &filename)
     for (auto &item : fileVector)
     {
         std::visit(overloaded {
-                       [&](S2DataTypes::OscHeader &header) { oscManager.setHeader(header); }, //
-                       [&](SwjModel &model) { swjModel = &model; },                           //
-                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = &model; }     //
+                       [&](S2::OscHeader &header) { oscManager.setHeader(header); },      //
+                       [&](SwjModel &model) { swjModel = &model; },                       //
+                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = &model; } //
                    },
             item);
     }
@@ -346,11 +352,6 @@ void Coma::loadSwj(const QString &filename)
     dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
     dialog->adjustSize();
 }
-
-// QPoint Coma::ComaPos()
-//{
-//    return Coma::s_comaPos;
-//}
 
 QPoint Coma::ComaCenter()
 {
@@ -620,9 +621,8 @@ void Coma::disconnect()
 
 void Coma::setupConnection()
 {
-    XmlConfigParser::ParseS2ConfigToMap(S2::NameIdMap);
+    // XmlConfigParser::ParseS2ConfigToMap(S2Util::NameIdMap);
     auto const &board = Board::GetInstance();
-
     connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const State state) {
         switch (state)
         {
@@ -656,7 +656,6 @@ void Coma::setupConnection()
     *connectionReady = connect(&board, &Board::readyRead, this, [=]() {
         QObject::disconnect(*connectionTimeout);
         QObject::disconnect(*connectionReady);
-
         QApplication::restoreOverrideCursor();
         prepare();
     });
@@ -678,14 +677,16 @@ void Coma::setupConnection()
 
 void Coma::loadOsc()
 {
-    QString filename = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
-    loadOsc(filename);
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
+    if (!filepath.isEmpty())
+        loadOsc(filepath);
 }
 
 void Coma::loadSwj()
 {
-    QString filename = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
-    loadSwj(filename);
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
+    if (!filepath.isEmpty())
+        loadSwj(filepath);
 }
 
 void Coma::disconnectAndClear()
@@ -698,6 +699,7 @@ void Coma::disconnectAndClear()
         mDlgManager->clearDialogs();
 
         ConfigStorage::GetInstance().clearModuleSettings();
+        s2dataManager->clear();
         Board::GetInstance().reset();
         BaseInterface::iface()->close();
         // BUG Segfault

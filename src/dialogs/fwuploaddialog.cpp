@@ -2,8 +2,7 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../module/board.h"
-#include "../s2/crc32.h"
-#include "../s2/s2.h"
+#include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
@@ -17,6 +16,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
+#include <gen/utils/crc32.h>
 #include <map>
 
 namespace crypto
@@ -53,8 +53,12 @@ void FWUploadDialog::LoadFW()
         return;
     }
 
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Program Version (*.hex)");
+    if (filepath.isEmpty())
+        return;
+
     QByteArray ba;
-    Error::Msg res = Files::LoadFromFile(WDFunc::ChooseFileForOpen(this, "Program Version (*.hex)"), ba);
+    Error::Msg res = Files::LoadFromFile(filepath, ba);
     if (res != Error::Msg::NoError)
     {
         qCritical() << "Ошибка файла ПО" << res;
@@ -75,8 +79,9 @@ void FWUploadDialog::LoadFW()
         return;
     }
 
+    auto fileType = std_ext::to_underlying(S2::FilesEnum::Firmware);
     QByteArray firmware;
-    S2::StoreDataMem(firmware, s2array, DataTypes::Firmware);
+    S2Util::StoreDataMem(firmware, s2array, fileType);
     if (firmware.isEmpty())
     {
         qCritical() << Error::SizeError;
@@ -84,13 +89,7 @@ void FWUploadDialog::LoadFW()
         return;
     }
     setSuccessMsg("ПО записано успешно");
-    BaseInterface::iface()->writeFile(DataTypes::Firmware, firmware);
-
-    //    auto firmwareS2 = S2::ParseHexToS2(ba);
-    //    if (firmwareS2.isEmpty())
-    //        qCritical() << Error::SizeError;
-    //    setSuccessMsg("ПО записано успешно");
-    //    BaseInterface::iface()->writeS2File(DataTypes::Firmware, &firmwareS2);
+    BaseInterface::iface()->writeFile(fileType, firmware);
 }
 
 void FWUploadDialog::RunSoft()

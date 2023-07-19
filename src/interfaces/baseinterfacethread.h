@@ -25,7 +25,7 @@ public:
         return BaseInterface::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
     }
 
-    void FilePostpone(QByteArray &ba, DataTypes::FilesEnum addr, DataTypes::FileFormat format);
+    void FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataTypes::FileFormat format);
     void checkQueue();
     void finishCommand();
     virtual void parseRequest(const CommandStruct &cmdStr) = 0;

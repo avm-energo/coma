@@ -85,7 +85,7 @@ QByteArray UsbHidPort::read(bool *status)
     {
         // -1 is the only error value according to hidapi documentation.
         Q_ASSERT(bytes == -1);
-        emit error(ReadError);
+        emit error(PortErrors::ReadError);
         reconnect();
         *status = false;
         data.clear();
@@ -107,7 +107,7 @@ QByteArray UsbHidPort::read(bool *status)
     else
     {
         data.clear();
-        emit error(NoData);
+        emit error(PortErrors::NoData);
     }
 
     return data;
