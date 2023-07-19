@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../module/modulesettings.h"
+#include "../s2/s2datatypes.h"
 #include "basejournal.h"
 
 #include <QDialog>
@@ -17,6 +18,8 @@ private:
     UniquePointer<BaseJournal> journal;
     ModuleTypes::WorkJourMap workSettings;
     ModuleTypes::MeasJourList measSettings;
+
+    void showJournal(const S2DataTypes::S2BFile &s2bFile);
 
     /// \brief Создание журнала в зависимости от его типа из файла журнала в формате S2B.
     /// \details Если получен рабочий журнал или журнал измерений, то следует распарсить

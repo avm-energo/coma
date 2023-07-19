@@ -4,7 +4,6 @@
 
 #include <QDateTime>
 #include <QDebug>
-#include <gen/error.h>
 #include <gen/utils/crc32.h>
 
 QMap<QString, quint16> S2::NameIdMap;
@@ -217,27 +216,47 @@ S2DataTypes::S2BFile S2::emulateS2B(const DataTypes::FileStruct &journal, quint1
     return { header, journal, tail };
 }
 
-S2DataTypes::S2BFile S2::parseS2B(const QByteArray &file)
+Error::Msg S2::parseS2B(const QByteArray &file, S2DataTypes::S2BFile &result)
 {
     using namespace S2DataTypes;
     constexpr auto minSize = sizeof(S2BFileHeader) + sizeof(S2BFileTail) + sizeof(DataRecHeader);
-    Q_ASSERT(file.size() > minSize);
+    if (file.size() < minSize)
+        return Error::Msg::SizeError;
+
     auto headerBytes = file.left(sizeof(S2BFileHeader));
     const auto header = *reinterpret_cast<const S2BFileHeader *>(headerBytes.constData());
-    Q_ASSERT(header.size > sizeof(DataRecHeader));
+    if (header.types2b != 0)
+        return Error::Msg::WrongFormatError;
+    if (header.size < sizeof(DataRecHeader))
+        return Error::Msg::SizeError;
+
     const auto calcSize = sizeof(S2BFileHeader) + sizeof(S2BFileTail) + header.size;
-    Q_ASSERT(file.size() == calcSize);
+    if (file.size() != calcSize)
+        return Error::Msg::SizeError;
+
     auto recordBytes = file.mid(sizeof(S2BFileHeader), header.size);
-    Q_ASSERT(recordBytes.size() == header.size);
     auto recHeaderBytes = recordBytes.left(sizeof(DataRecHeader));
     const auto recHeader = *reinterpret_cast<const DataRecHeader *>(recHeaderBytes.constData());
-    Q_ASSERT(header.size - sizeof(DataRecHeader) == recHeader.numByte);
-    auto fileBytes = recordBytes.mid(sizeof(DataRecHeader));
-    Q_ASSERT(recHeader.numByte == fileBytes.size());
+    if ((header.size - sizeof(DataRecHeader)) != recHeader.numByte)
+        return Error::Msg::SizeError;
+
+    auto fileBytes = recordBytes.mid(sizeof(DataRecHeader), recHeader.numByte);
+    if (recHeader.numByte != fileBytes.size())
+        return Error::Msg::SizeError;
+
+    constexpr quint32 tailEnd = 0xEEEE1111;
     auto tailBytes = file.right(sizeof(S2BFileTail));
-    Q_ASSERT(tailBytes.size() == sizeof(S2BFileTail));
     const auto tail = *reinterpret_cast<const S2BFileTail *>(tailBytes.constData());
-    return { header, { recHeader.id, fileBytes }, tail };
+    utils::CRC32 crc(recordBytes);
+    if (crc != tail.crc32)
+        return Error::Msg::CrcError;
+    if (tail.end != tailEnd)
+        return Error::Msg::WrongFormatError;
+
+    result.header = header;
+    result.file = DataTypes::FileStruct { recHeader.id, fileBytes };
+    result.tail = tail;
+    return Error::Msg::NoError;
 }
 
 quint32 S2::getTime32()

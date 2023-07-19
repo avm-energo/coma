@@ -21,19 +21,41 @@ JournalViewer::JournalViewer(const QString &filepath, QWidget *parent) : QDialog
     QByteArray fileData;
     if (Files::LoadFromFile(filepath, fileData) == Error::Msg::NoError)
     {
-        auto s2bFormat = S2::parseS2B(fileData);
-        auto type = JournalType(s2bFormat.file.ID);
-        auto jour = createJournal(type, s2bFormat.header.typeB, s2bFormat.header.typeM);
-        if (jour)
+        S2DataTypes::S2BFile s2bFile;
+        auto result = S2::parseS2B(fileData, s2bFile);
+        switch (result)
         {
-            journal.reset(jour);
-            setupUI(s2bFormat.file);
-            showMaximized();
+        case Error::Msg::NoError:
+            showJournal(s2bFile);
+            break;
+        case Error::Msg::SizeError:
+            EMessageBox::error(this, "Ошибка размера файла журнала");
+            break;
+        case Error::Msg::WrongFormatError:
+            EMessageBox::error(this,
+                "Неверный формат заголовка журнала\n"
+                "Файл не является журналом в формате S2B");
+            break;
+        case Error::Msg::CrcError:
+            EMessageBox::error(this, "Ошибка контрольной суммы");
+            break;
+        default:
+            break;
         }
     }
     else
-    {
         EMessageBox::error(this, "Ошибка открытия файла журнала");
+}
+
+void JournalViewer::showJournal(const S2DataTypes::S2BFile &s2bFile)
+{
+    auto type = JournalType(s2bFile.file.ID);
+    auto jour = createJournal(type, s2bFile.header.typeB, s2bFile.header.typeM);
+    if (jour)
+    {
+        journal.reset(jour);
+        setupUI(s2bFile.file);
+        showMaximized();
     }
 }
 
