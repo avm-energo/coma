@@ -36,8 +36,6 @@ public:
     QWidget *least();
     void disconnect();
     void setupConnection();
-    void loadOsc(const QString &filename);
-    void loadSwj(const QString &filename);
     //    static QPoint ComaPos();
     static QPoint ComaCenter();
 
@@ -45,14 +43,17 @@ public slots:
     void disconnectAndClear();
     void reconnect();
     void attemptToRec();
+    void loadOsc(const QString &filename);
+    void loadSwj(const QString &filename);
+    void loadJournal(const QString &filename);
 
 private slots:
     void prepareConnectDlg();
     void startWork(const ConnectStruct st);
     void loadOsc();
     void loadSwj();
-    void openXmlEditor();
     void openJournalViewer();
+    void openXmlEditor();
     void showAboutDialog();
     void closeEvent(QCloseEvent *event) override;
     void update(const QVariant &msg);

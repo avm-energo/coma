@@ -40,6 +40,8 @@ InfoAfterFile="..\AVM-Debug.NOTES"
 
 [Registry]
 Root: HKCR; Subkey: ".swj";                           ValueData: "{#EngName}";          Flags: uninsdeletevalue;    ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: ".osc";                           ValueData: "{#EngName}";          Flags: uninsdeletevalue;    ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: ".jn";                            ValueData: "{#EngName}";          Flags: uninsdeletevalue;    ValueType: string;  ValueName: ""
 Root: HKCR; Subkey: "{#EngName}";                     ValueData: "Program {#EngName}";  Flags: uninsdeletekey;      ValueType: string;  ValueName: ""
 Root: HKCR; Subkey: "{#EngName}\DefaultIcon";         ValueData: "{app}\{#ExeName},0";                              ValueType: string;  ValueName: ""
 Root: HKCR; Subkey: "{#EngName}\shell\open\command";  ValueData: """{app}\{#ExeName}"" ""%1""";                     ValueType: string;  ValueName: ""
