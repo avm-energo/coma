@@ -1,7 +1,6 @@
 #include "journalviewer.h"
 
 #include "../s2/s2.h"
-//#include "../widgets/epopup.h"
 #include "../xml/xmlparser/xmlmoduleparser.h"
 #include "measjournal.h"
 #include "sysjournal.h"
@@ -48,14 +47,14 @@ JournalViewer::JournalViewer(const QString &filepath, QWidget *parent) : QDialog
         QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла журнала");
 }
 
-void JournalViewer::showJournal(const S2DataTypes::S2BFile &s2bFile)
+void JournalViewer::showJournal(const S2DataTypes::S2BFile &file)
 {
-    auto type = JournalType(s2bFile.file.ID);
-    auto jour = createJournal(type, s2bFile.header.typeB, s2bFile.header.typeM);
+    auto type = JournalType(file.header.fname);
+    auto jour = createJournal(type, file.header.typeB, file.header.typeM);
     if (jour)
     {
         journal.reset(jour);
-        setupUI(s2bFile.file);
+        setupUI(file);
         showMaximized();
     }
 }
@@ -106,13 +105,13 @@ void JournalViewer::measDataReceived(const quint32 index, const QString &header,
     measSettings.append({ index, header, type, visib });
 }
 
-void JournalViewer::setupUI(const DataTypes::FileStruct &file)
+void JournalViewer::setupUI(const S2DataTypes::S2BFile &file)
 {
     auto layout = new QVBoxLayout;
     auto modelView = journal->createModelView(this);
     layout->addWidget(modelView);
     setLayout(layout);
-    journal->fill(file);
+    journal->fill(file.data);
 }
 
 }

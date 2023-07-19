@@ -67,7 +67,7 @@ public:
 
     /// \brief Заполняет модель данными, приходящими извне.
     /// \param file[in] - FileStruct, содержащий прочитанный бинарный файл журнала.
-    void fill(const DataTypes::FileStruct &file);
+    void fill(const QByteArray &data);
 
     /// \brief Сохраняет модель в Excel-файл с указанным именем.
     void save(const QString &filename);

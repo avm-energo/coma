@@ -19,7 +19,8 @@ private:
     ModuleTypes::WorkJourMap workSettings;
     ModuleTypes::MeasJourList measSettings;
 
-    void showJournal(const S2DataTypes::S2BFile &s2bFile);
+    /// \brief Парсинг и отображение полученного файла журнала.
+    void showJournal(const S2DataTypes::S2BFile &file);
 
     /// \brief Создание журнала в зависимости от его типа из файла журнала в формате S2B.
     /// \details Если получен рабочий журнал или журнал измерений, то следует распарсить
@@ -34,7 +35,7 @@ private:
     void parseSettings(const quint16 typeB, const quint16 typeM);
 
     /// \brief Метод для создания UI просмотрщика журналов.
-    void setupUI(const DataTypes::FileStruct &file);
+    void setupUI(const S2DataTypes::S2BFile &file);
 
 private slots:
     /// \brief Слот для сохранения настроек рабочего журнала.
