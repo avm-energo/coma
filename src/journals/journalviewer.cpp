@@ -65,13 +65,16 @@ BaseJournal *JournalViewer::createJournal(const JournalType type, const quint16 
     switch (type)
     {
     case JournalType::System:
+        setWindowTitle("[SYSTEM JOURNAL] " + windowTitle());
         retJournal = new SysJournal(this);
         break;
     case JournalType::Work:
+        setWindowTitle("[WORK JOURNAL] " + windowTitle());
         parseSettings(typeB, typeM);
         retJournal = new WorkJournal(workSettings, this);
         break;
     case JournalType::Meas:
+        setWindowTitle("[MEAS JOURNAL] " + windowTitle());
         parseSettings(typeB, typeM);
         retJournal = new MeasJournal(measSettings, this);
         break;

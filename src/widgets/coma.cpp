@@ -780,7 +780,7 @@ void ComaHelper::parserHelper(Coma *coma)
             coma->loadOsc(filepath);
         else if (ext == "swj")
             coma->loadSwj(filepath);
-        else if (ext == "jn")
+        else if (ext.contains("jn"))
             coma->loadJournal(filepath);
         // TODO
         // else if (filestail == "vrf")
