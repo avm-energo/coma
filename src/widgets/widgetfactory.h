@@ -9,8 +9,6 @@
 #include <bitset>
 #include <gen/std_ext.h>
 
-//#define DEBUG_FACTORY
-
 class ConfigV;
 
 class WidgetFactory

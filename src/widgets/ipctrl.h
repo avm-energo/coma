@@ -7,18 +7,9 @@ class QLineEdit;
 class IPCtrl : public QFrame
 {
     Q_OBJECT
-    //    enum
-    //    {
-    //        QTUTL_IP_SIZE = 4, // число октетов IP адресе
-    //        MAX_DIGITS = 3     // число символов в LineEdit
-    //    };
-
 public:
-    // typedef quint8 value_type;
-    // typedef std::array<quint8, QTUTL_IP_SIZE> container_type;
-
-    static constexpr auto QTUTL_IP_SIZE = 4;
-    static constexpr auto MAX_DIGITS = 3;
+    static constexpr auto QTUTL_IP_SIZE = 4; ///< число октетов IP адресе
+    static constexpr auto MAX_DIGITS = 3;    ///< число символов в LineEdit
     using ip_container = std::array<quint8, QTUTL_IP_SIZE>;
 
     IPCtrl(QWidget *parent = 0);

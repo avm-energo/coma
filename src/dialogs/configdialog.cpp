@@ -284,7 +284,7 @@ void ConfigDialog::setupUI()
 
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
-    std::set<delegate::WidgetGroup> currentCategories, intersection;
+    std::set<delegate::WidgetGroup> intersection;
     auto &tabs = ConfigStorage::GetInstance().getConfigTabs();
     for (const auto &record : qAsConst(m_defaultValues))
     {

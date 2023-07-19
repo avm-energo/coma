@@ -63,24 +63,24 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
     return widget;
 }
 
-template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] quint16 key)
-{
-    QWidget *widget = nullptr;
-    switch (arg.itemType)
-    {
-    case delegate::ItemType::ModbusItem:
-    {
-        widget = parent->findChild<QTableView *>(WidgetFactory::hashedName(arg.type, arg.parent));
-        if (!widget)
-        {
-            widget = createModbusView(parent);
-            widget->setObjectName(WidgetFactory::hashedName(arg.type, arg.parent));
-        }
-        return widget;
-    }
-    }
-    return nullptr;
-}
+// template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] quint16 key)
+//{
+//    QWidget *widget = nullptr;
+//    switch (arg.itemType)
+//    {
+//    case delegate::ItemType::ModbusItem:
+//    {
+//        widget = parent->findChild<QTableView *>(WidgetFactory::hashedName(arg.type, arg.parent));
+//        if (!widget)
+//        {
+//            widget = createModbusView(parent);
+//            widget->setObjectName(WidgetFactory::hashedName(arg.type, arg.parent));
+//        }
+//        return widget;
+//    }
+//    }
+//    return nullptr;
+//}
 
 template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey)
 {
@@ -102,8 +102,6 @@ WidgetFactory::WidgetFactory(ConfigV *config) : configV(config)
 
 QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
 {
-    //    if (key == S2::GetIdByName("timezone"))
-    //        qWarning() << "mTimezone";
     QWidget *widget = nullptr;
     auto &widgetMap = ConfigStorage::GetInstance().getWidgetMap();
     auto search = widgetMap.find(key);
@@ -117,9 +115,6 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
     std::visit(
         overloaded {
             [&](const delegate::DoubleSpinBoxGroup &arg) {
-#ifdef DEBUG_FACTORY
-                qDebug() << "DoubleSpinBoxGroupWidget" << key;
-#endif
                 widget = new QWidget(parent);
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
@@ -139,9 +134,6 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 widget->setLayout(lyout);
             },
             [&](const delegate::DoubleSpinBoxWidget &arg) {
-#ifdef DEBUG_FACTORY
-                qDebug() << "DoubleSpinBoxWidget" << key;
-#endif
                 widget = new QWidget(parent);
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
@@ -151,10 +143,6 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 widget->setLayout(lyout);
             },
             [&](const delegate::CheckBoxGroup &arg) {
-#ifdef DEBUG_FACTORY
-                qDebug() << "CheckBoxGroupWidget" << key;
-#endif
-
                 widget = new QWidget(parent);
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
@@ -168,10 +156,6 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 widget->setLayout(lyout);
             },
             [&](const delegate::QComboBox &arg) {
-#ifdef DEBUG_FACTORY
-                qDebug() << "QComboBox" << key;
-#endif
-
                 widget = new QWidget(parent);
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
@@ -181,19 +165,12 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 widget->setLayout(lyout);
             },
             [&](const delegate::QComboBoxGroup &arg) {
-#ifdef DEBUG_FACTORY
-                qDebug() << "QComboBoxGroup" << key;
-#endif
-
                 widget = new QWidget(parent);
-
                 QHBoxLayout *mainLyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
                 label->setToolTip(arg.toolTip);
                 mainLyout->addWidget(label);
-
                 auto count = getRealCount(key);
-
                 FlowLayout *flowLayout = new FlowLayout;
                 for (auto i = 0; i != count; ++i)
                 {
@@ -207,13 +184,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 mainLyout->addLayout(flowLayout);
                 widget->setLayout(mainLyout);
             },
-            [&](const auto &arg) {
-#ifdef DEBUG_FACTORY
-                qDebug() << "DefaultWidget" << key;
-#endif
-                using namespace delegate;
-                widget = helper(arg, parent, key);
-            },
+            [&](const auto &arg) { widget = helper(arg, parent, key); },
         },
         var);
     return widget;
@@ -231,79 +202,41 @@ bool WidgetFactory::fillBack(quint16 key, const QWidget *parent)
     }
 
     const auto var = search->second;
-    std::visit(overloaded {
-                   [&](const auto &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("DefaultWidget");
-#endif
-                       using namespace delegate;
-
-                       switch (arg.type.hash())
-                       {
-                       case ctti::unnamed_type_id<IPCtrl>().hash():
-                       {
-                           status = fillBackIpCtrl(key, parent);
-                           break;
-                       }
-                       case ctti::unnamed_type_id<QCheckBox>().hash():
-                       {
-                           status = fillBackCheckBox(key, parent);
-                           break;
-                       }
-                       case ctti::unnamed_type_id<QLineEdit>().hash():
-                       {
-                           status = fillBackLineEdit(key, parent);
-                           break;
-                       }
-
-                       default:
-                           Q_ASSERT(false && "False type");
-                           break;
-                       }
-                   },
-                   [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("DoubleSpinBoxGroupWidget");
-#endif
-                       status = fillBackSPBG(key, parent);
-                   },
-                   [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("DoubleSpinBoxWidget");
-#endif
-                       status = fillBackSPB(key, parent);
-                   },
-                   [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("CheckBoxGroupWidget");
-#endif
-                       status = fillBackChBG(key, parent);
-                   },
-                   [&](const delegate::QComboBox &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("QComboBox");
-#endif
-                       status = fillBackComboBox(key, parent, arg.primaryField);
-                   },
-                   [&](const delegate::QComboBoxGroup &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("QComboBoxGroup");
-#endif
-                       status = fillBackComboBoxGroup(key, parent, arg.count);
-                   },
-                   [&](const config::Item &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("Item");
-#endif
-                       auto record = configV->getRecord(key);
-                       std::visit(
-                           [&](auto &&type) {
-                               typedef std::remove_reference_t<decltype(type)> internalType;
-                               status = fillBackItem<internalType>(key, parent, arg.parent);
-                           },
-                           record.getData());
-                   },
-               },
+    std::visit(
+        overloaded {
+            [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) { status = fillBackSPBG(key, parent); },
+            [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) { status = fillBackSPB(key, parent); },
+            [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) { status = fillBackChBG(key, parent); },
+            [&](const delegate::QComboBox &arg) { status = fillBackComboBox(key, parent, arg.primaryField); },
+            [&](const delegate::QComboBoxGroup &arg) { status = fillBackComboBoxGroup(key, parent, arg.count); },
+            [&](const config::Item &arg) {
+                auto record = configV->getRecord(key);
+                std::visit(
+                    [&](auto &&type) {
+                        typedef std::remove_reference_t<decltype(type)> internalType;
+                        status = fillBackItem<internalType>(key, parent, arg.parent);
+                    },
+                    record.getData());
+            },
+            [&](const auto &arg) {
+                using namespace delegate;
+                switch (arg.type.hash())
+                {
+                case ctti::unnamed_type_id<IPCtrl>().hash():
+                    status = fillBackIpCtrl(key, parent);
+                    break;
+                case ctti::unnamed_type_id<QCheckBox>().hash():
+                    status = fillBackCheckBox(key, parent);
+                    break;
+                case ctti::unnamed_type_id<QLineEdit>().hash():
+                    status = fillBackLineEdit(key, parent);
+                    break;
+                default:
+                    Q_ASSERT(false && "False type");
+                    break;
+                }
+            },
+        },
         var);
     return status;
 }
@@ -323,17 +256,9 @@ QList<QStandardItem *> WidgetFactory::createItem(
 
     const auto var = search->second;
     std::visit(overloaded {
-                   [&]([[maybe_unused]] const auto &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("DefaultWidget");
-#endif
-                       using namespace delegate;
-                   },
+                   [&]([[maybe_unused]] const auto &arg) { using namespace delegate; },
 
                    [&](const config::Item &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug("Item");
-#endif
                        switch (arg.itemType)
                        {
                        case delegate::ItemType::ModbusItem:
