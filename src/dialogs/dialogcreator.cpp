@@ -31,6 +31,7 @@ void DialogCreator::createDialogs(const AppConfiguration appCfg)
     // if (board.interfaceType() == Board::InterfaceType::USB)
     createConfigDialogs();
     createCheckDialogs();
+    createJournalDialog();
     createSpecificDialogs(appCfg);
     createCommonDialogs(appCfg);
 }
@@ -180,7 +181,6 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
         // TODO: Временно выключено для модбаса, надо допилить журналы
         if (board.interfaceType() == Board::InterfaceType::USB)
         {
-            createJournalDialog();            // Добавляем диалог журналов
             createStartupDialog(moduleModel); // Добавляем диалог начальных значений
         }
         // TODO: Fix it
