@@ -195,31 +195,29 @@ quint64 S2::GetFileSize(const QByteArray &bain)
     return fh.size + sizeof(S2DataTypes::S2FileHeader);
 }
 
-S2DataTypes::S2BFile S2::emulateS2B(const DataTypes::FileStruct &journal, quint16 fname, quint16 typeB, quint16 typeM)
+S2DataTypes::S2BFile S2::emulateS2B(const QByteArray &data, quint16 fname, quint16 typeB, quint16 typeM)
 {
     using namespace S2DataTypes;
     constexpr quint32 tailEnd = 0xEEEE1111;
     utils::CRC32 crc;
     S2BFileHeader header;
-    DataRecHeader recHeader { journal.ID, quint32(journal.data.size()) };
-    crc.update(reinterpret_cast<quint8 *>(&recHeader), sizeof(recHeader));
-    crc.update(journal.data);
+    crc.update(data);
     header.fname = fname;
     header.types2b = 0;
-    header.size = journal.data.size() + sizeof(recHeader);
     header.typeB = typeB;
     header.typeM = typeM;
     header.thetime = getTime32();
     S2BFileTail tail;
     tail.crc32 = crc;
     tail.end = tailEnd;
-    return { header, journal, tail };
+    header.size = data.size() + sizeof(tail);
+    return { header, data, tail };
 }
 
 Error::Msg S2::parseS2B(const QByteArray &file, S2DataTypes::S2BFile &result)
 {
     using namespace S2DataTypes;
-    constexpr auto minSize = sizeof(S2BFileHeader) + sizeof(S2BFileTail) + sizeof(DataRecHeader);
+    constexpr auto minSize = sizeof(S2BFileHeader) + sizeof(S2BFileTail);
     if (file.size() < minSize)
         return Error::Msg::SizeError;
 
@@ -230,31 +228,25 @@ Error::Msg S2::parseS2B(const QByteArray &file, S2DataTypes::S2BFile &result)
     if (header.size < sizeof(DataRecHeader))
         return Error::Msg::SizeError;
 
-    const auto calcSize = sizeof(S2BFileHeader) + sizeof(S2BFileTail) + header.size;
+    const auto calcSize = sizeof(S2BFileHeader) + header.size;
     if (file.size() != calcSize)
         return Error::Msg::SizeError;
 
-    auto recordBytes = file.mid(sizeof(S2BFileHeader), header.size);
-    auto recHeaderBytes = recordBytes.left(sizeof(DataRecHeader));
-    const auto recHeader = *reinterpret_cast<const DataRecHeader *>(recHeaderBytes.constData());
-    if ((header.size - sizeof(DataRecHeader)) != recHeader.numByte)
-        return Error::Msg::SizeError;
-
-    auto fileBytes = recordBytes.mid(sizeof(DataRecHeader), recHeader.numByte);
-    if (recHeader.numByte != fileBytes.size())
+    auto fileBytes = file.mid(sizeof(S2BFileHeader), header.size - sizeof(S2BFileTail));
+    if (fileBytes.size() != (header.size - sizeof(S2BFileTail)))
         return Error::Msg::SizeError;
 
     constexpr quint32 tailEnd = 0xEEEE1111;
     auto tailBytes = file.right(sizeof(S2BFileTail));
     const auto tail = *reinterpret_cast<const S2BFileTail *>(tailBytes.constData());
-    utils::CRC32 crc(recordBytes);
+    utils::CRC32 crc(fileBytes);
     if (crc != tail.crc32)
         return Error::Msg::CrcError;
     if (tail.end != tailEnd)
         return Error::Msg::WrongFormatError;
 
     result.header = header;
-    result.file = DataTypes::FileStruct { recHeader.id, fileBytes };
+    result.data = fileBytes;
     result.tail = tail;
     return Error::Msg::NoError;
 }

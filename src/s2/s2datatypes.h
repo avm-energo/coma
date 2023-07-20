@@ -104,7 +104,7 @@ struct S2BFileTail
 struct S2BFile
 {
     S2BFileHeader header;
-    DataTypes::FileStruct file;
+    QByteArray data;
     S2BFileTail tail;
 };
 
