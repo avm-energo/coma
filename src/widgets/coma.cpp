@@ -40,6 +40,7 @@
 #include "../xml/xmlparser/xmlconfigparser.h"
 #include "alarmwidget.h"
 #include "epopup.h"
+#include "gascompositionwidget.h"
 #include "splashscreen.h"
 #include "styleloader.h"
 #include "waitwidget.h"
@@ -232,6 +233,10 @@ void Coma::setupMenubar()
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
     menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
+    menu->addAction("Test", this, []() {
+        auto gasWidget = new GasCompositionWidget();
+        gasWidget->show();
+    });
     menubar->addMenu(menu);
     setMenuBar(menubar);
 }
