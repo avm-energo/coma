@@ -374,7 +374,7 @@ void Coma::loadJournal(const QString &filename)
 
 void Coma::openJournalViewer()
 {
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Journal files (*.jn)");
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Journal files (*.jn*)");
     if (!filepath.isEmpty())
         loadJournal(filepath);
 }
