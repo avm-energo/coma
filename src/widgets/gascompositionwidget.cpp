@@ -5,9 +5,106 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QRadioButton>
 #include <gen/std_ext.h>
 
-GasCompositionWidget::GasCompositionWidget(QWidget *parent) : QWidget(parent)
+bool GasWidgetRow::isActive() const noexcept
+{
+    return (massInput->isEnabled() || moleFracInput->isEnabled());
+}
+
+float GasWidgetRow::getLineEditData(const QLineEdit *lineEdit) const noexcept
+{
+    bool convertStatus = false;
+    const auto dataStr = lineEdit->text();
+    auto data = QLocale::system().toFloat(dataStr, &convertStatus);
+    if (convertStatus)
+        return data;
+    else
+        return 0;
+}
+
+void GasWidgetRow::setLineEditData(const float data, QLineEdit *lineEdit) noexcept
+{
+    const auto dataString = QLocale::system().toString(data);
+    lineEdit->setText(dataString);
+}
+
+void GasWidgetRow::layoutAction(const GasType gasType, const InputMode inputMode) noexcept
+{
+    if (gasType == GasType::NotChosen)
+    {
+        molarMassInput->setEnabled(false);
+        massInput->setEnabled(false);
+        moleFracInput->setEnabled(false);
+    }
+    else
+    {
+        if (gasType == GasType::Other)
+            molarMassInput->setEnabled(true);
+        else
+            molarMassInput->setEnabled(false);
+        if (inputMode == InputMode::InputMass)
+            massInput->setEnabled(true);
+        else
+            massInput->setEnabled(false);
+        if (inputMode == InputMode::InputMoleFrac)
+            moleFracInput->setEnabled(true);
+        else
+            moleFracInput->setEnabled(false);
+    }
+}
+
+float GasWidgetRow::getMolarMass() const noexcept
+{
+    return getLineEditData(molarMassInput);
+}
+
+float GasWidgetRow::getMass() const noexcept
+{
+    return getLineEditData(massInput);
+}
+
+float GasWidgetRow::getMoleFrac() const noexcept
+{
+    return getLineEditData(moleFracInput);
+}
+
+float GasWidgetRow::getMoles() const noexcept
+{
+    const auto molarMass = getMolarMass();
+    const auto mass = getMass();
+    constexpr float kilo = 1000;
+    if (molarMass != 0)
+        return (mass * 1000) / molarMass;
+    else
+        return 0;
+}
+
+void GasWidgetRow::setMolarMass(const float molarMass) noexcept
+{
+    setLineEditData(molarMass, molarMassInput);
+}
+
+void GasWidgetRow::setMass(const float mass) noexcept
+{
+    setLineEditData(mass, massInput);
+}
+
+void GasWidgetRow::setMoleFrac(const float moleFrac) noexcept
+{
+    setLineEditData(moleFrac, moleFracInput);
+}
+
+void GasWidgetRow::setTotalMoles(const float totalMoles) noexcept
+{
+    constexpr float one_hundred = 100;
+    const auto moles = getMoles();
+    const auto moleFrac = (moles / totalMoles) * one_hundred;
+    setMoleFrac(moleFrac);
+}
+
+GasCompositionWidget::GasCompositionWidget(QWidget *parent) : QWidget(parent), workMode(InputMode::InputMass)
 {
     setupUI();
 }
@@ -52,47 +149,25 @@ QComboBox *GasCompositionWidget::createGasTypeWidget(std::size_t index)
     return gasTypeWidget;
 }
 
-QLineEdit *GasCompositionWidget::createMolarMassWidget(std::size_t index)
+QLineEdit *GasCompositionWidget::createMolarMassWidget()
 {
-    auto molarMassWidget = new QLineEdit("0,0", this);
-    auto validator = new QDoubleValidator(this);
-    validator->setNotation(QDoubleValidator::Notation::StandardNotation);
-    validator->setRange(0.0, 500.0, 10);
-    molarMassWidget->setValidator(validator);
+    auto molarMassWidget = createLineEdit(0, 500);
     connect(molarMassWidget, &QLineEdit::textEdited, this, //
-        [this, index](const QString &newValue) {
-            bool convertStatus = false;
-            auto newMolarMass = newValue.toFloat(&convertStatus);
-            if (convertStatus)
-                molarMassChanged(index, newMolarMass);
-        });
+        [this]([[maybe_unused]] const QString &newValue) { recalc(); });
     return molarMassWidget;
 }
 
-QLineEdit *GasCompositionWidget::createMassWidget(std::size_t index)
+QLineEdit *GasCompositionWidget::createMassWidget()
 {
-    auto massWidget = new QLineEdit("0,0", this);
-    auto validator = new QDoubleValidator(this);
-    validator->setNotation(QDoubleValidator::Notation::StandardNotation);
-    validator->setRange(0.0, 500.0, 10);
-    massWidget->setValidator(validator);
+    auto massWidget = createLineEdit(0, 100);
     connect(massWidget, &QLineEdit::textEdited, this, //
-        [this, index](const QString &newValue) {
-            bool convertStatus = false;
-            auto newMass = newValue.toFloat(&convertStatus);
-            if (convertStatus)
-                massChanged(index, newMass);
-        });
+        [this]([[maybe_unused]] const QString &newValue) { recalc(); });
     return massWidget;
 }
 
 QLineEdit *GasCompositionWidget::createMoleFracWidget(std::size_t index)
 {
-    auto moleFracWidget = new QLineEdit("0,0", this);
-    auto validator = new QDoubleValidator(this);
-    validator->setNotation(QDoubleValidator::Notation::StandardNotation);
-    validator->setRange(0.0, 100.0, 4);
-    moleFracWidget->setValidator(validator);
+    auto moleFracWidget = createLineEdit(0, 100, 3);
     connect(moleFracWidget, &QLineEdit::textEdited, this, //
         [this, index](const QString &newValue) {
             bool convertStatus = false;
@@ -108,6 +183,14 @@ void GasCompositionWidget::setupUI()
     // Начальное создание
     auto layout = new QGridLayout;
     std::size_t row = 0, column = 1;
+
+    auto gasMassModeBtn = new QRadioButton("Задание масс газов", this);
+    gasMassModeBtn->setChecked(true);
+    connect(gasMassModeBtn, &QRadioButton::clicked, this, [this] { inputModeChanged(InputMode::InputMass); });
+    layout->addWidget(gasMassModeBtn, row, 0, 1, 3, Qt::AlignCenter);
+    auto moleFracModeBtn = new QRadioButton("Задание молярных долей газов", this);
+    connect(moleFracModeBtn, &QRadioButton::clicked, this, [this] { inputModeChanged(InputMode::InputMoleFrac); });
+    layout->addWidget(moleFracModeBtn, row++, 3, 1, 2, Qt::AlignCenter);
     auto gasTypeLabel = new QLabel("Тип газа", this);
     layout->addWidget(gasTypeLabel, row, column++, Qt::AlignCenter);
     auto molarMassLabel = new QLabel("Молярная масса, г/моль", this);
@@ -121,41 +204,92 @@ void GasCompositionWidget::setupUI()
     std::size_t index = 0;
     for (auto &widgetRow : widgetRows)
     {
-        column = 1;
-        row = index + 1;
+        column = 0;
+        row = index + 2;
+        auto gasLabel = new QLabel("Газ " + QString::number(row - 1), this);
+        layout->addWidget(gasLabel, row, column++, Qt::AlignCenter);
         widgetRow.gasTypeInput = createGasTypeWidget(index);
         layout->addWidget(widgetRow.gasTypeInput, row, column++, Qt::AlignCenter);
-        widgetRow.molarMassInput = createMolarMassWidget(index);
+        widgetRow.molarMassInput = createMolarMassWidget();
+        widgetRow.molarMassInput->setEnabled(false);
         layout->addWidget(widgetRow.molarMassInput, row, column++, Qt::AlignCenter);
-        widgetRow.massInput = createMassWidget(index);
+        widgetRow.massInput = createMassWidget();
+        widgetRow.massInput->setEnabled(false);
         layout->addWidget(widgetRow.massInput, row, column++, Qt::AlignCenter);
         widgetRow.moleFracInput = createMoleFracWidget(index);
+        widgetRow.moleFracInput->setEnabled(false);
         layout->addWidget(widgetRow.moleFracInput, row, column++, Qt::AlignCenter);
         ++index;
     }
     setLayout(layout);
 }
 
-void GasCompositionWidget::gasTypeChanged(std::size_t index, GasType newGasType)
+void GasCompositionWidget::inputModeChanged(const InputMode newInputMode)
 {
-    Q_UNUSED(index);
-    Q_UNUSED(newGasType);
+    if (newInputMode == InputMode::InputMass)
+    {
+        for (auto &widgetRow : widgetRows)
+        {
+            widgetRow.moleFracInput->setEnabled(false);
+            widgetRow.massInput->setEnabled(true);
+        }
+    }
+
+    if (newInputMode == InputMode::InputMoleFrac)
+    {
+        for (auto &widgetRow : widgetRows)
+        {
+            widgetRow.massInput->setEnabled(false);
+            widgetRow.massInput->setText("Нет");
+            widgetRow.moleFracInput->setEnabled(true);
+        }
+    }
+    workMode = newInputMode;
 }
 
-void GasCompositionWidget::molarMassChanged(std::size_t index, float newMolarMass)
+void GasCompositionWidget::gasTypeChanged(const std::size_t index, const GasType newGasType)
 {
-    Q_UNUSED(index);
-    Q_UNUSED(newMolarMass);
+    static const std::map<GasType, float> molarMassMap {
+        { GasType::SulfurHexafluoride, 146.06 },  //
+        { GasType::CarbonTetrafluoride, 88.004 }, //
+        { GasType::Hexafluoroethane, 138.0118 },  //
+        { GasType::Nitrogen, 28.0134 },           //
+        { GasType::Oxygen, 31.9988 },             //
+        { GasType::Argon, 39.948 },               //
+        { GasType::HydrogenFluoride, 20.00634 }   //
+    };
+
+    auto &widgetRow = widgetRows[index];
+    widgetRow.layoutAction(newGasType, workMode);
+    if (newGasType != GasType::NotChosen && newGasType != GasType::Other)
+    {
+        // molarMassInput изменяет содержимое в соответствии с
+        // molarMassMap без ручного ввода от пользователя
+        auto search = molarMassMap.find(newGasType);
+        if (search != molarMassMap.cend())
+            widgetRow.setMolarMass(search->second);
+        if (workMode == InputMode::InputMass)
+            widgetRow.setMass(1);
+    }
+    if (workMode == InputMode::InputMass)
+        recalc();
 }
 
-void GasCompositionWidget::massChanged(std::size_t index, float newMass)
+void GasCompositionWidget::recalc()
 {
-    Q_UNUSED(index);
-    Q_UNUSED(newMass);
+    float totalMoles = 0;
+    for (auto &widgetRow : widgetRows)
+        if (widgetRow.isActive())
+            totalMoles += widgetRow.getMoles();
+
+    for (auto &widgetRow : widgetRows)
+        if (widgetRow.isActive())
+            widgetRow.setTotalMoles(totalMoles);
 }
 
-void GasCompositionWidget::moleFracChanged(std::size_t index, float newMoleFrac)
+void GasCompositionWidget::moleFracChanged(const std::size_t index, const float newMoleFrac)
 {
-    Q_UNUSED(index);
+    [[maybe_unused]] auto &currentWidgetRow = widgetRows[index];
     Q_UNUSED(newMoleFrac);
+    ///
 }
