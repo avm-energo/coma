@@ -226,22 +226,33 @@ void GasCompositionWidget::setupUI()
 
 void GasCompositionWidget::inputModeChanged(const InputMode newInputMode)
 {
+    // Если вводим массы газов
     if (newInputMode == InputMode::InputMass)
     {
         for (auto &widgetRow : widgetRows)
         {
+            auto typeIndex = widgetRow.gasTypeInput->currentIndex();
+            // Отключаем ввод мольной доли, только отображаем
             widgetRow.moleFracInput->setEnabled(false);
-            widgetRow.massInput->setEnabled(true);
+            // Включаем поля ввода массы газа, если выбран тип газа
+            if (typeIndex != std_ext::to_underlying(GasType::NotChosen))
+                widgetRow.massInput->setEnabled(true);
+            widgetRow.setMass(1);
         }
+        recalc();
     }
-
+    // Если вводим мольные доли газов
     if (newInputMode == InputMode::InputMoleFrac)
     {
         for (auto &widgetRow : widgetRows)
         {
+            auto typeIndex = widgetRow.gasTypeInput->currentIndex();
+            // Отключаем ввод массы газа, отображаем всегда "Нет"
             widgetRow.massInput->setEnabled(false);
             widgetRow.massInput->setText("Нет");
-            widgetRow.moleFracInput->setEnabled(true);
+            // Включаем поля ввода мольной доли газа, если выбран тип газа
+            if (typeIndex != std_ext::to_underlying(GasType::NotChosen))
+                widgetRow.moleFracInput->setEnabled(true);
         }
     }
     workMode = newInputMode;
@@ -261,6 +272,7 @@ void GasCompositionWidget::gasTypeChanged(const std::size_t index, const GasType
 
     auto &widgetRow = widgetRows[index];
     widgetRow.layoutAction(newGasType, workMode);
+    // Если выбранный тип соответствует одному из molarMassMap
     if (newGasType != GasType::NotChosen && newGasType != GasType::Other)
     {
         // molarMassInput изменяет содержимое в соответствии с
@@ -270,6 +282,11 @@ void GasCompositionWidget::gasTypeChanged(const std::size_t index, const GasType
             widgetRow.setMolarMass(search->second);
         if (workMode == InputMode::InputMass)
             widgetRow.setMass(1);
+    }
+    if (newGasType == GasType::NotChosen)
+    {
+        widgetRow.moleFracInput->setText("Нет");
+        widgetRow.massInput->setText("Нет");
     }
     if (workMode == InputMode::InputMass)
         recalc();

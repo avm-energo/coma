@@ -73,10 +73,10 @@ private:
 private slots:
     void inputModeChanged(const InputMode newInputMode);
     /// \brief Вызывается при изменении типа газа у конкретного ряда виджетов.
-    void gasTypeChanged(const size_t index, const GasType newGasType);
+    void gasTypeChanged(const std::size_t index, const GasType newGasType);
     /// \brief Пересчитывает текущее содержимое виджетов.
     void recalc();
-    void moleFracChanged(const size_t index, const float newMoleFrac);
+    void moleFracChanged(const std::size_t index, const float newMoleFrac);
 
 public:
     explicit GasCompositionWidget(QWidget *parent = nullptr);
