@@ -1,12 +1,15 @@
 #include "gascompositionwidget.h"
 
 #include <QComboBox>
+#include <QDebug>
 #include <QDoubleSpinBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QRadioButton>
 #include <gen/std_ext.h>
+
+constexpr float one_hundred = 100.0f;
 
 bool GasWidgetRow::isActive() const noexcept
 {
@@ -98,13 +101,13 @@ void GasWidgetRow::setMoleFrac(const float moleFrac) noexcept
 
 void GasWidgetRow::setTotalMoles(const float totalMoles) noexcept
 {
-    constexpr float one_hundred = 100;
     const auto moles = getMoles();
     const auto moleFrac = (moles / totalMoles) * one_hundred;
     setMoleFrac(moleFrac);
 }
 
-GasCompositionWidget::GasCompositionWidget(QWidget *parent) : QWidget(parent), workMode(InputMode::InputMass)
+GasCompositionWidget::GasCompositionWidget(QWidget *parent)
+    : QWidget(parent), workMode(InputMode::InputMass), status(Status::Correct), statusWidget(new QLabel("", this))
 {
     setupUI();
 }
@@ -153,7 +156,10 @@ QLineEdit *GasCompositionWidget::createMolarMassWidget()
 {
     auto molarMassWidget = createLineEdit(0, 500);
     connect(molarMassWidget, &QLineEdit::textEdited, this, //
-        [this]([[maybe_unused]] const QString &newValue) { recalc(); });
+        [this](const auto &) {
+            if (workMode == InputMode::InputMass)
+                recalc();
+        });
     return molarMassWidget;
 }
 
@@ -161,20 +167,15 @@ QLineEdit *GasCompositionWidget::createMassWidget()
 {
     auto massWidget = createLineEdit(0, 100);
     connect(massWidget, &QLineEdit::textEdited, this, //
-        [this]([[maybe_unused]] const QString &newValue) { recalc(); });
+        [this](const auto &) { recalc(); });
     return massWidget;
 }
 
 QLineEdit *GasCompositionWidget::createMoleFracWidget(std::size_t index)
 {
-    auto moleFracWidget = createLineEdit(0, 100, 3);
+    auto moleFracWidget = createLineEdit(0, 100);
     connect(moleFracWidget, &QLineEdit::textEdited, this, //
-        [this, index](const QString &newValue) {
-            bool convertStatus = false;
-            auto newMoleFrac = newValue.toFloat(&convertStatus);
-            if (convertStatus)
-                moleFracChanged(index, newMoleFrac);
-        });
+        [this, index](const auto &) { recalc(index); });
     return moleFracWidget;
 }
 
@@ -200,7 +201,7 @@ void GasCompositionWidget::setupUI()
     auto moleFracLabel = new QLabel("Мольная доля, %", this);
     layout->addWidget(moleFracLabel, row, column++, Qt::AlignCenter);
 
-    // Создание активных виджетов для ввода данных
+    // Создание рядов виджетов для ввода данных
     std::size_t index = 0;
     for (auto &widgetRow : widgetRows)
     {
@@ -221,7 +222,61 @@ void GasCompositionWidget::setupUI()
         layout->addWidget(widgetRow.moleFracInput, row, column++, Qt::AlignCenter);
         ++index;
     }
+    setStatus(Status::Incorrect);
+    layout->addWidget(statusWidget, ++row, 0, 1, 5, Qt::AlignCenter);
     setLayout(layout);
+}
+
+void GasCompositionWidget::setStatus(const Status newStatus)
+{
+    if (status != newStatus)
+    {
+        status = newStatus;
+        if (status == Status::Incorrect)
+        {
+            statusWidget->setText("Incorrect data");
+            statusWidget->setStyleSheet("QLabel { color : red; }");
+        }
+        else
+        {
+            statusWidget->setText("Correct data");
+            statusWidget->setStyleSheet("QLabel { color : green; }");
+        }
+    }
+}
+
+Status GasCompositionWidget::checkValues()
+{
+    Status newStatus = Status::Correct;
+    float totalMoleFrac = 0;
+    for (auto &widgetRow : widgetRows)
+    {
+        if (widgetRow.isActive())
+        {
+            const auto moleFrac = widgetRow.getMoleFrac();
+            // Суммируем в totalMoleFrac
+            totalMoleFrac += moleFrac;
+            // Проверка, что каждое поле лежит в диапазоне от 0% до 100% и не является NaN
+            if (moleFrac < 0.0f || moleFrac > one_hundred || std::isnan(moleFrac))
+            {
+                newStatus = Status::Incorrect;
+                break;
+            }
+        }
+    }
+
+    // Если прошлая проверка прошла успешно
+    if (newStatus == Status::Correct)
+    {
+        // totalMoleFrac должен быть равен 100%
+        constexpr float epsilon = std::numeric_limits<float>::epsilon() * one_hundred * 8;
+        const float diff = std::fabs(totalMoleFrac - one_hundred);
+        // qWarning() << diff << " " << epsilon;
+        // Если большая погрешность
+        if (diff > epsilon)
+            newStatus = Status::Incorrect;
+    }
+    return newStatus;
 }
 
 void GasCompositionWidget::inputModeChanged(const InputMode newInputMode)
@@ -290,6 +345,12 @@ void GasCompositionWidget::gasTypeChanged(const std::size_t index, const GasType
     }
     if (workMode == InputMode::InputMass)
         recalc();
+    else
+    {
+        if (newGasType != GasType::NotChosen)
+            widgetRow.setMoleFrac(0);
+        recalc(index);
+    }
 }
 
 void GasCompositionWidget::recalc()
@@ -302,11 +363,93 @@ void GasCompositionWidget::recalc()
     for (auto &widgetRow : widgetRows)
         if (widgetRow.isActive())
             widgetRow.setTotalMoles(totalMoles);
+
+    setStatus(checkValues());
 }
 
-void GasCompositionWidget::moleFracChanged(const std::size_t index, const float newMoleFrac)
+void GasCompositionWidget::recalc(const std::size_t indexChanged)
 {
-    [[maybe_unused]] auto &currentWidgetRow = widgetRows[index];
-    Q_UNUSED(newMoleFrac);
-    ///
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     *                       ОЧЕНЬ ИНТЕРЕСНАЯ И ВАЖНАЯ ИНФОРМАЦИЯ                        *
+     * Ряд виджетов (widget row) считается активным, если выбран тип газа или определён  *
+     * другой газ с заданной пользователем молярной массой. Если газ не выбран, то ряд   *
+     * виджетов считается неактивным. Описанное поведение реализуется методом isActive.  *
+     * Поведение всего виджета (GasCompositionWidget) при изменении мольной доли газа    *
+     * зависит от количества активных рядов виджетов:                                    *
+     * - имеется 1 активный ряд виджетов: его мольная доля всегда равна 100%, и          *
+     * пользователь пытается редактировать это значение. В таком случае автоматически    *
+     * подставляются 100%;                                                               *
+     * - имеется 2 активных ряда виджетов: если меняются данные 1ого ряда, то данные     *
+     * во 2ом ряде должна подставиться автоматически и равняться:                        *
+     * 100% - данные мольной доли газа из 1ого ряда;                                     *
+     * - имеется 3 активных ряда виджетов: данные 1ого ряда являются статическими и при  *
+     * их изменении не происходит автоматического перерасчёта данных для 2ого и 3го      *
+     * рядов. Если изменились данные 2ого ряда, то происходит активтоматически           *
+     * перерасчёт данных для 3го ряда; если изменились данные 3го ряда, то автоматически *
+     * перерасчитываются данные 2ого ряда.                                               *
+     *      ПРИ ИЗМЕНЕНИИ АЛГОРИТМА БУДЬ ГОТОВ ВНЕСТИ ПОПРАВКИ В ЭТОТ КОММЕНТАРИЙ!       *
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    std::vector<quint16> activeIndexes;
+    activeIndexes.reserve(numGases);
+    for (quint16 index = 0; index < widgetRows.size(); index++)
+        if (widgetRows[index].isActive())
+            activeIndexes.push_back(index);
+    auto activeCount = activeIndexes.size();
+
+    // Имеется 1 активный ряд виджетов
+    if (activeCount == 1)
+    {
+        // Индекс активного ряда и изменяемого совпадают
+        if (activeIndexes[0] == indexChanged)
+            widgetRows[indexChanged].setMoleFrac(one_hundred);
+        // Ряд виджетов с индексом indexChanged был отключён
+        else
+        {
+            widgetRows[activeIndexes[0]].setMoleFrac(one_hundred);
+            widgetRows[indexChanged].moleFracInput->setText("Нет");
+        }
+    }
+    // Имеется 2 активных ряда виджетов
+    else if (activeCount == 2)
+    {
+        auto &first = widgetRows[activeIndexes[0]];
+        auto &second = widgetRows[activeIndexes[1]];
+        if (activeIndexes[0] == indexChanged)
+            second.setMoleFrac(one_hundred - first.getMoleFrac());
+        else if (activeIndexes[1] == indexChanged)
+            first.setMoleFrac(one_hundred - second.getMoleFrac());
+        // Ряд виджетов с индексом indexChanged был отключён
+        else
+        {
+            widgetRows[indexChanged].moleFracInput->setText("Нет");
+            second.setMoleFrac(one_hundred - first.getMoleFrac());
+        }
+    }
+    // Имеется 3 активных ряда виджетов
+    else if (activeCount == 3)
+    {
+        // Данные изменились в 1ом ряде
+        if (indexChanged == 0)
+        {
+            // ignore, нет автоматического перерасчёта
+        }
+        // Данные изменились во 2ом ряде, перерасчёт 3го активного ряда виджетов
+        else if (indexChanged == 1)
+        {
+            auto recalc = one_hundred - (widgetRows[0].getMoleFrac() + widgetRows[1].getMoleFrac());
+            widgetRows[2].setMoleFrac(recalc);
+        }
+        // Данные изменились во 3ем ряде, перерасчёт 2ого активного ряда виджетов
+        else if (indexChanged == 2)
+        {
+            auto recalc = one_hundred - (widgetRows[0].getMoleFrac() + widgetRows[2].getMoleFrac());
+            widgetRows[1].setMoleFrac(recalc);
+        }
+        // Данные изменились в несуществующем ряде виджетов (???)
+        else
+            assert(false && "Unknown widget");
+    }
+
+    setStatus(checkValues());
 }
