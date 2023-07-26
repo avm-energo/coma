@@ -1,4 +1,4 @@
-#include "gascompositionwidget.h"
+#include "gasdensitywidget.h"
 
 #include <QComboBox>
 #include <QDebug>
@@ -106,13 +106,13 @@ void GasWidgetRow::setTotalMoles(const float totalMoles) noexcept
     setMoleFrac(moleFrac);
 }
 
-GasCompositionWidget::GasCompositionWidget(QWidget *parent)
+GasDensityWidget::GasDensityWidget(QWidget *parent)
     : QWidget(parent), workMode(InputMode::InputMass), status(Status::Correct), statusWidget(new QLabel("", this))
 {
     setupUI();
 }
 
-QLineEdit *GasCompositionWidget::createLineEdit(float min, float max, int decimals, const QString &text)
+QLineEdit *GasDensityWidget::createLineEdit(float min, float max, int decimals, const QString &text)
 {
     auto lineEdit = new QLineEdit(text, this);
     auto validator = new QDoubleValidator(this);
@@ -122,7 +122,7 @@ QLineEdit *GasCompositionWidget::createLineEdit(float min, float max, int decima
     return lineEdit;
 }
 
-QComboBox *GasCompositionWidget::createGasTypeWidget(std::size_t index)
+QComboBox *GasDensityWidget::createGasTypeWidget(std::size_t index)
 {
     static const std::vector<std::pair<GasType, QString>> typeItems {
         { GasType::NotChosen, "Не выбран" },                      //
@@ -152,7 +152,7 @@ QComboBox *GasCompositionWidget::createGasTypeWidget(std::size_t index)
     return gasTypeWidget;
 }
 
-QLineEdit *GasCompositionWidget::createMolarMassWidget()
+QLineEdit *GasDensityWidget::createMolarMassWidget()
 {
     auto molarMassWidget = createLineEdit(0, 500);
     connect(molarMassWidget, &QLineEdit::textEdited, this, //
@@ -163,7 +163,7 @@ QLineEdit *GasCompositionWidget::createMolarMassWidget()
     return molarMassWidget;
 }
 
-QLineEdit *GasCompositionWidget::createMassWidget()
+QLineEdit *GasDensityWidget::createMassWidget()
 {
     auto massWidget = createLineEdit(0, 100);
     connect(massWidget, &QLineEdit::textEdited, this, //
@@ -171,7 +171,7 @@ QLineEdit *GasCompositionWidget::createMassWidget()
     return massWidget;
 }
 
-QLineEdit *GasCompositionWidget::createMoleFracWidget(std::size_t index)
+QLineEdit *GasDensityWidget::createMoleFracWidget(std::size_t index)
 {
     auto moleFracWidget = createLineEdit(0, 100);
     connect(moleFracWidget, &QLineEdit::textEdited, this, //
@@ -179,7 +179,7 @@ QLineEdit *GasCompositionWidget::createMoleFracWidget(std::size_t index)
     return moleFracWidget;
 }
 
-void GasCompositionWidget::setupUI()
+void GasDensityWidget::setupUI()
 {
     // Начальное создание
     auto layout = new QGridLayout;
@@ -227,7 +227,7 @@ void GasCompositionWidget::setupUI()
     setLayout(layout);
 }
 
-void GasCompositionWidget::setStatus(const Status newStatus)
+void GasDensityWidget::setStatus(const Status newStatus)
 {
     if (status != newStatus)
     {
@@ -245,7 +245,7 @@ void GasCompositionWidget::setStatus(const Status newStatus)
     }
 }
 
-Status GasCompositionWidget::checkValues()
+Status GasDensityWidget::checkValues()
 {
     Status newStatus = Status::Correct;
     float totalMoleFrac = 0;
@@ -279,7 +279,7 @@ Status GasCompositionWidget::checkValues()
     return newStatus;
 }
 
-void GasCompositionWidget::inputModeChanged(const InputMode newInputMode)
+void GasDensityWidget::inputModeChanged(const InputMode newInputMode)
 {
     // Если вводим массы газов
     if (newInputMode == InputMode::InputMass)
@@ -313,7 +313,7 @@ void GasCompositionWidget::inputModeChanged(const InputMode newInputMode)
     workMode = newInputMode;
 }
 
-void GasCompositionWidget::gasTypeChanged(const std::size_t index, const GasType newGasType)
+void GasDensityWidget::gasTypeChanged(const std::size_t index, const GasType newGasType)
 {
     static const std::map<GasType, float> molarMassMap {
         { GasType::SulfurHexafluoride, 146.06 },  //
@@ -353,7 +353,7 @@ void GasCompositionWidget::gasTypeChanged(const std::size_t index, const GasType
     }
 }
 
-void GasCompositionWidget::recalc()
+void GasDensityWidget::recalc()
 {
     float totalMoles = 0;
     for (auto &widgetRow : widgetRows)
@@ -367,7 +367,7 @@ void GasCompositionWidget::recalc()
     setStatus(checkValues());
 }
 
-void GasCompositionWidget::recalc(const std::size_t indexChanged)
+void GasDensityWidget::recalc(const std::size_t indexChanged)
 {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *                       ОЧЕНЬ ИНТЕРЕСНАЯ И ВАЖНАЯ ИНФОРМАЦИЯ                        *

@@ -58,6 +58,10 @@
 			<name>Пустая группа</name>
 		</tab>
 		<tab>
+			<id>7</id>
+			<name>Газовая смесь</name>
+		</tab>
+		<tab>
 			<id>300</id>
 			<name>Остальные</name>
 		</tab>
@@ -4938,6 +4942,17 @@
 			<min>0</min>
 			<max>1000</max>
 			<decimals>1</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1390</id>
+		<name>Density</name>
+		<description>Виджет для передачи данных о газах</description>
+		<type>CONF_DENS[3]</type>
+		<widget>
+			<type>GasDensityWidget</type>
+			<group>7</group>
+			<string>Виджет для передачи данных о газах</string>
 		</widget>
 	</record>
 	<record>

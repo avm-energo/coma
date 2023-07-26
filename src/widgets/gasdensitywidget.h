@@ -11,7 +11,7 @@ class QLabel;
 constexpr inline std::size_t numGases = 3;
 
 /// \brief Перечисление типов газов для выбора пользователем.
-enum class GasType : quint8
+enum class GasType : quint32
 {
     NotChosen = 0,       ///< Не выбран.
     SulfurHexafluoride,  ///< Элегаз (гексафторид  серы).
@@ -82,7 +82,7 @@ struct GasWidgetRow
 };
 
 /// \brief Виджет для задания информации о смеси газов в конфигурации устройства.
-class GasCompositionWidget : public QWidget
+class GasDensityWidget : public QWidget
 {
     Q_OBJECT
 private:
@@ -120,7 +120,7 @@ private:
     void recalc(const std::size_t indexChanged);
 
 public:
-    explicit GasCompositionWidget(QWidget *parent = nullptr);
+    explicit GasDensityWidget(QWidget *parent = nullptr);
     // void fill();
     // void fillBack();
 };
