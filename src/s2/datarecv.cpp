@@ -82,6 +82,9 @@ DataRecV::DataRecV(const S2DataTypes::DataRec &record, const char *rawdata) : id
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
         helper<FLOAT_8t>(record.header.numByte, rawdata);
         break;
+    case ctti::unnamed_type_id<CONF_DENS_3t>().hash():
+        helper<CONF_DENS_3t>(record.header.numByte, rawdata);
+        break;
     default:
         assert(false && "Unknown type id");
     }
@@ -171,6 +174,9 @@ DataRecV::DataRecV(quint16 _id, const QString &str) : id(_id)
         break;
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
         helper<FLOAT_8t>(str);
+        break;
+    case ctti::unnamed_type_id<CONF_DENS_3t>().hash():
+        helper<CONF_DENS_3t>(str);
         break;
     default:
         assert(false && "Unknown type id");

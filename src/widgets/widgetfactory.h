@@ -4,6 +4,7 @@
 #include "../widgets/delegate_common.h"
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
+#include "gasdensitywidget.h"
 
 #include <QStandardItemModel>
 #include <bitset>
@@ -37,7 +38,6 @@ private:
 
     template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::ip_container>::value, bool> = true>
     bool fillIpCtrl(const QWidget *parent, quint16 key, const T &value);
-    bool fillCheckBox(const QWidget *parent, quint16 key, bool value);
     template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true>
     bool fillLineEdit(const QWidget *parent, quint16 key, const T &value);
     template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool> = true>
@@ -45,6 +45,8 @@ private:
     template <typename T>
     bool fillTableView(const QWidget *parent, quint16 key, quint16 parentKey, //
         ctti::unnamed_type_id_t type, const T &value);
+    bool fillCheckBox(const QWidget *parent, quint16 key, bool value);
+    bool fillGasWidget(const QWidget *parent, quint16 key, const DataTypes::CONF_DENS_3t &value);
 
     template <typename T> bool fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey);
 
@@ -58,6 +60,7 @@ private:
     bool fillBackChBG(quint16 key, const QWidget *parent);
     bool fillBackComboBox(quint16 key, const QWidget *parent, delegate::QComboBox::PrimaryField field);
     bool fillBackComboBoxGroup(quint16 key, const QWidget *parent, int count);
+    bool fillBackGasWidget(quint16 key, const QWidget *parent);
 
     ConfigV *configV;
 };
@@ -157,6 +160,14 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                            if (arg.type == ctti::unnamed_type_id<QCheckBox>())
                            {
                                status = fillCheckBox(parent, key, value);
+                               return;
+                           }
+                       }
+                       if constexpr (std::is_same_v<T, DataTypes::CONF_DENS_3t>)
+                       {
+                           if (arg.type == ctti::unnamed_type_id<GasDensityWidget>())
+                           {
+                               status = fillGasWidget(parent, key, value);
                                return;
                            }
                        }

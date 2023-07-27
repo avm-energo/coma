@@ -14,6 +14,7 @@ class QTableView;
 class CheckBoxGroup;
 class IPCtrl;
 class QLineEdit;
+class GasDensityWidget;
 
 const QHash<QString, std::uint64_t> Xml::S2Parser::nameTypeMap = {
     { "M_SP", ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash() }, //
@@ -29,6 +30,7 @@ const QHash<QString, std::uint64_t> Xml::S2Parser::nameTypeMap = {
     { "QComboBox", ctti::unnamed_type_id<QComboBox>().hash() },                       //
     { "QLineEdit", ctti::unnamed_type_id<QLineEdit>().hash() },                       //
     { "QTableView", ctti::unnamed_type_id<QTableView>().hash() },                     //
+    { "GasDensityWidget", ctti::unnamed_type_id<GasDensityWidget>().hash() },         //
     { "BYTE", ctti::unnamed_type_id<DataTypes::BYTE>().hash() },                      //
     { "BYTE[4]", ctti::unnamed_type_id<DataTypes::BYTE_4t>().hash() },                //
     { "BYTE[6]", ctti::unnamed_type_id<DataTypes::BYTE_6t>().hash() },                //
@@ -53,7 +55,8 @@ const QHash<QString, std::uint64_t> Xml::S2Parser::nameTypeMap = {
     { "FLOAT[4]", ctti::unnamed_type_id<DataTypes::FLOAT_4t>().hash() },              //
     { "FLOAT[6]", ctti::unnamed_type_id<DataTypes::FLOAT_6t>().hash() },              //
     { "FLOAT[8]", ctti::unnamed_type_id<DataTypes::FLOAT_8t>().hash() },              //
-    { "INT32", ctti::unnamed_type_id<DataTypes::INT32>().hash() }                     //
+    { "INT32", ctti::unnamed_type_id<DataTypes::INT32>().hash() },                    //
+    { "CONF_DENS[3]", ctti::unnamed_type_id<DataTypes::CONF_DENS_3t>().hash() }       //
 }; ///< Хэш-мапа для идентификации типа в рантайме
 
 Xml::S2Parser::S2Parser(QObject *parent) : BaseParser(parent)

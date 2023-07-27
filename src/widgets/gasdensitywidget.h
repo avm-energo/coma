@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <array>
+#include <gen/datatypes.h>
 
 class QComboBox;
 class QDoubleSpinBox;
@@ -11,7 +12,7 @@ class QLabel;
 constexpr inline std::size_t numGases = 3;
 
 /// \brief Перечисление типов газов для выбора пользователем.
-enum class GasType : quint32
+enum class GasType : qint32
 {
     NotChosen = 0,       ///< Не выбран.
     SulfurHexafluoride,  ///< Элегаз (гексафторид  серы).
@@ -21,7 +22,7 @@ enum class GasType : quint32
     Oxygen,              ///< Кислород.
     Argon,               ///< Аргон.
     HydrogenFluoride,    ///< Фтороводород (фторид водорда).
-    Other = 0xff         ///< Другой газ.
+    Other = 0xffff       ///< Другой газ.
 };
 
 /// \brief Перечисление, определяющее тип ввода информации в виджете.
@@ -43,7 +44,7 @@ struct GasWidgetRow
 {
     QComboBox *gasTypeInput = nullptr;   ///< Поле "тип газа".
     QLineEdit *molarMassInput = nullptr; ///< Поле "молярная масса".
-    QLineEdit *massInput = nullptr;      ///< Поле "масса".
+    QLineEdit *weightInput = nullptr;    ///< Поле "масса".
     QLineEdit *moleFracInput = nullptr;  ///< Поле "мольная доля".
 
     /// \brief Является ли текущий ряд активным (выбран ли тип газа).
@@ -58,21 +59,24 @@ struct GasWidgetRow
     /// активирует и деактивирует виджеты для текущего ряда.
     void layoutAction(const GasType gasType, const InputMode inputMode) noexcept;
 
+    /// \brief Возвращает выбранный тип газа.
+    GasType getGasType() const noexcept;
     /// \brief Возвращает молярную массу текущего газа.
     float getMolarMass() const noexcept;
     /// \brief Возвращает массу текущего газа.
-    float getMass() const noexcept;
+    float getWeight() const noexcept;
     /// \brief Возвращает мольную долю текущего газа.
     float getMoleFrac() const noexcept;
     /// \brief Возвращает количество молей текущего газа.
-    /// \details
     /// \see getMolarMass, getMass
     float getMoles() const noexcept;
 
+    /// \brief Устанавливает новый тип газа.
+    void setGasType(const GasType type) noexcept;
     /// \brief Устанавливает молярную массу для текущего газа.
     void setMolarMass(const float molarMass) noexcept;
     /// \brief Устанавливает новую массу для текущего газа.
-    void setMass(const float mass) noexcept;
+    void setWeight(const float weight) noexcept;
     /// \brief Устанавливает новую мольную долю для текущего газа.
     void setMoleFrac(const float moleFrac) noexcept;
     /// \brief Передаёт общее количество молей всех газов.
@@ -121,6 +125,6 @@ private:
 
 public:
     explicit GasDensityWidget(QWidget *parent = nullptr);
-    // void fill();
-    // void fillBack();
+    void fill(const DataTypes::CONF_DENS_3t &value);
+    DataTypes::CONF_DENS_3t fillBack() const;
 };

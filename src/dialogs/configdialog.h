@@ -14,15 +14,18 @@ public:
     explicit ConfigDialog(ConfigV *config, const QList<DataTypes::RecordPair> &defaultConfig, bool prereadConf = true,
         QWidget *parent = nullptr);
     void prereadConfig();
-    void fillBack() const;
     void setDefaultConfig();
 
 private:
     QWidget *ConfButtons();
 
-    void setupUI();
+    quint32 tabForId(quint16 id);
     void createTabs(QTabWidget *tabWidget);
+    void setupUI();
+
     void fill();
+    void fillBack() const;
+
     bool prepareConfigToWrite();
     void uponInterfaceSetting() override;
     void checkConfig();

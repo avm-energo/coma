@@ -36,6 +36,13 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
         lyout->addWidget(control);
         break;
     }
+    case ctti::unnamed_type_id<GasDensityWidget>().hash():
+    {
+        auto gasWidget = new GasDensityWidget(parent);
+        gasWidget->setObjectName(QString::number(key));
+        lyout->addWidget(gasWidget);
+        break;
+    }
     case ctti::unnamed_type_id<QCheckBox>().hash():
     {
         auto checkbox = new QCheckBox(parent);
@@ -225,6 +232,9 @@ bool WidgetFactory::fillBack(quint16 key, const QWidget *parent)
                 case ctti::unnamed_type_id<IPCtrl>().hash():
                     status = fillBackIpCtrl(key, parent);
                     break;
+                case ctti::unnamed_type_id<GasDensityWidget>().hash():
+                    status = fillBackGasWidget(key, parent);
+                    break;
                 case ctti::unnamed_type_id<QCheckBox>().hash():
                     status = fillBackCheckBox(key, parent);
                     break;
@@ -239,6 +249,24 @@ bool WidgetFactory::fillBack(quint16 key, const QWidget *parent)
         },
         var);
     return status;
+}
+
+bool WidgetFactory::fillCheckBox(const QWidget *parent, quint16 key, bool value)
+{
+    auto widget = parent->findChild<QCheckBox *>(QString::number(key));
+    if (!widget)
+        return false;
+    widget->setChecked(bool(value));
+    return true;
+}
+
+bool WidgetFactory::fillGasWidget(const QWidget *parent, quint16 key, const DataTypes::CONF_DENS_3t &value)
+{
+    auto widget = parent->findChild<GasDensityWidget *>(QString::number(key));
+    if (!widget)
+        return false;
+    widget->fill(value);
+    return true;
 }
 
 template <>
@@ -696,11 +724,11 @@ bool WidgetFactory::fillBackComboBoxGroup(quint16 key, const QWidget *parent, in
     return status;
 }
 
-bool WidgetFactory::fillCheckBox(const QWidget *parent, quint16 key, bool value)
+bool WidgetFactory::fillBackGasWidget(quint16 key, const QWidget *parent)
 {
-    auto widget = parent->findChild<QCheckBox *>(QString::number(key));
+    auto widget = parent->findChild<GasDensityWidget *>(QString::number(key));
     if (!widget)
         return false;
-    widget->setChecked(bool(value));
+    configV->setRecordValue(key, widget->fillBack());
     return true;
 }
