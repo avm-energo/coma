@@ -172,7 +172,7 @@ struct S2BFileTail
 struct S2BFile
 {
     S2BFileHeader header;
-    FileStruct file;
+    QByteArray data;
     S2BFileTail tail;
 };
 

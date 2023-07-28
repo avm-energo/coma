@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../module/modulesettings.h"
+#include "../s2/s2datatypes.h"
 #include "basejournal.h"
 
 #include <QDialog>
@@ -18,6 +19,9 @@ private:
     ModuleTypes::WorkJourMap workSettings;
     ModuleTypes::MeasJourList measSettings;
 
+    /// \brief Парсинг и отображение полученного файла журнала.
+    void showJournal(const S2::S2BFile &file);
+
     /// \brief Создание журнала в зависимости от его типа из файла журнала в формате S2B.
     /// \details Если получен рабочий журнал или журнал измерений, то следует распарсить
     /// настройки журналов из XML-конфигурации (узел <journals>) для соответствующего модуля.
@@ -31,7 +35,7 @@ private:
     void parseSettings(const quint16 typeB, const quint16 typeM);
 
     /// \brief Метод для создания UI просмотрщика журналов.
-    void setupUI(const S2::FileStruct &file);
+    void setupUI(const S2::S2BFile &file);
 
 private slots:
     /// \brief Слот для сохранения настроек рабочего журнала.

@@ -54,12 +54,12 @@ const JournalType BaseJournal::getType() const
     return type;
 }
 
-void BaseJournal::fill(const S2::FileStruct &file)
+void BaseJournal::fill(const QByteArray &data)
 {
     if (!dataModel->isEmpty())
         dataModel->clearModel();
     dataModel->setHorizontalHeaderLabels(headers);
-    fillModel(file.data);
+    fillModel(data);
     proxyModel->setSourceModel(dataModel.get());
     emit done("Прочитано успешно");
 }

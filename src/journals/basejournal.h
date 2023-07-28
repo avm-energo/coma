@@ -66,8 +66,8 @@ public:
     const JournalType getType() const;
 
     /// \brief Заполняет модель данными, приходящими извне.
-    /// \param file[in] - FileStruct, содержащий прочитанный бинарный файл журнала.
-    void fill(const S2::FileStruct &file);
+    /// \param data[in] - массив байт, содержащий прочитанный бинарный файл журнала.
+    void fill(const QByteArray &data);
 
     /// \brief Сохраняет модель в Excel-файл с указанным именем.
     void save(const QString &filename);

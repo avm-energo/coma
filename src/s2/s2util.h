@@ -38,9 +38,9 @@ public:
 
     static quint64 GetFileSize(const QByteArray &data);
 
-    static S2::S2BFile emulateS2B(const S2::FileStruct &journal, //
+    static S2::S2BFile emulateS2B(const QByteArray &data, //
         quint16 fname, quint16 typeB, quint16 typeM);
-    static S2::S2BFile parseS2B(const QByteArray &file);
+    static Error::Msg parseS2B(const QByteArray &file, S2::S2BFile &result);
 
 private:
     static quint32 getTime32();

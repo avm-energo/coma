@@ -60,7 +60,7 @@ void JournalDialog::receivedJournalFile(const QVariant &jourData)
     if (jourData.canConvert<S2::S2BFile>())
     {
         auto s2bFile = jourData.value<S2::S2BFile>();
-        auto jourType = static_cast<JournalType>(s2bFile.file.ID);
+        auto jourType = static_cast<JournalType>(s2bFile.header.fname);
         auto search = journals.find(jourType);
         if (search != journals.end())
             search->second->setJournalFile(s2bFile);

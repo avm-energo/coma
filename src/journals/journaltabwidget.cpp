@@ -147,9 +147,7 @@ void JournalTabWidget::saveBinaryJournal()
         {
             auto &fileHeader = journalFile.header;
             auto file = QByteArray::fromRawData(reinterpret_cast<const char *>(&fileHeader), sizeof(fileHeader));
-            auto recHeader = journalFile.file.serialize().header;
-            file.append(QByteArray::fromRawData(reinterpret_cast<const char *>(&recHeader), sizeof(recHeader)));
-            file.append(journalFile.file.data);
+            file.append(journalFile.data);
             auto &fileTail = journalFile.tail;
             file.append(QByteArray::fromRawData(reinterpret_cast<const char *>(&fileTail), sizeof(fileTail)));
             Files::SaveToFile(filename, file);
@@ -172,10 +170,10 @@ void JournalTabWidget::error(const QString &message)
 void JournalTabWidget::setJournalFile(const S2::S2BFile &jourFile)
 {
     auto storedType = quint32(journal->getType());
-    if (storedType == jourFile.file.ID)
+    if (storedType == jourFile.header.fname)
     {
         journalFile = jourFile;
-        journal->fill(journalFile.file);
+        journal->fill(journalFile.data);
     }
 }
 

@@ -1,12 +1,13 @@
 #include "journalviewer.h"
 
 #include "../s2/s2util.h"
-#include "../widgets/epopup.h"
+//#include "../widgets/epopup.h"
 #include "../xml/xmlparser/xmlmoduleparser.h"
 #include "measjournal.h"
 #include "sysjournal.h"
 #include "workjournal.h"
 
+#include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <gen/files.h>
@@ -21,19 +22,41 @@ JournalViewer::JournalViewer(const QString &filepath, QWidget *parent) : QDialog
     QByteArray fileData;
     if (Files::LoadFromFile(filepath, fileData) == Error::Msg::NoError)
     {
-        auto s2bFormat = S2Util::parseS2B(fileData);
-        auto type = JournalType(s2bFormat.file.ID);
-        auto jour = createJournal(type, s2bFormat.header.typeB, s2bFormat.header.typeM);
-        if (jour)
+        S2::S2BFile s2bFile;
+        auto result = S2Util::parseS2B(fileData, s2bFile);
+        switch (result)
         {
-            journal.reset(jour);
-            setupUI(s2bFormat.file);
-            showMaximized();
+        case Error::Msg::NoError:
+            showJournal(s2bFile);
+            break;
+        case Error::Msg::SizeError:
+            QMessageBox::critical(this, "Ошибка", "Ошибка размера файла журнала");
+            break;
+        case Error::Msg::WrongFormatError:
+            QMessageBox::critical(this, "Ошибка",
+                "Неверный формат заголовка журнала\n"
+                "Файл не является журналом в формате S2B");
+            break;
+        case Error::Msg::CrcError:
+            QMessageBox::critical(this, "Ошибка", "Ошибка контрольной суммы");
+            break;
+        default:
+            break;
         }
     }
     else
+        QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла журнала");
+}
+
+void JournalViewer::showJournal(const S2::S2BFile &file)
+{
+    auto type = JournalType(file.header.fname);
+    auto jour = createJournal(type, file.header.typeB, file.header.typeM);
+    if (jour)
     {
-        EMessageBox::error(this, "Ошибка открытия файла журнала");
+        journal.reset(jour);
+        setupUI(file);
+        showMaximized();
     }
 }
 
@@ -43,18 +66,21 @@ BaseJournal *JournalViewer::createJournal(const JournalType type, const quint16 
     switch (type)
     {
     case JournalType::System:
+        setWindowTitle("[SYSTEM JOURNAL] " + windowTitle());
         retJournal = new SysJournal(this);
         break;
     case JournalType::Work:
+        setWindowTitle("[WORK JOURNAL] " + windowTitle());
         parseSettings(typeB, typeM);
         retJournal = new WorkJournal(workSettings, this);
         break;
     case JournalType::Meas:
+        setWindowTitle("[MEAS JOURNAL] " + windowTitle());
         parseSettings(typeB, typeM);
         retJournal = new MeasJournal(measSettings, this);
         break;
     default:
-        EMessageBox::error(this, "Получен журнал неизвестного формата");
+        QMessageBox::critical(this, "Ошибка", "Получен журнал неизвестного формата");
         break;
     }
     return retJournal;
@@ -80,13 +106,13 @@ void JournalViewer::measDataReceived(const quint32 index, const QString &header,
     measSettings.append({ index, header, type, visib });
 }
 
-void JournalViewer::setupUI(const S2::FileStruct &file)
+void JournalViewer::setupUI(const S2::S2BFile &file)
 {
     auto layout = new QVBoxLayout;
     auto modelView = journal->createModelView(this);
     layout->addWidget(modelView);
     setLayout(layout);
-    journal->fill(file);
+    journal->fill(file.data);
 }
 
 }

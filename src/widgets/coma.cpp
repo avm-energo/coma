@@ -307,6 +307,11 @@ void Coma::initInterfaceConnection()
     BaseInterface::setIface(std::move(device));
 }
 
+QPoint Coma::ComaCenter()
+{
+    return Coma::s_comaCenter;
+}
+
 void Coma::loadOsc(const QString &filename)
 {
     fileVector = oscManager.loadFromFile(filename);
@@ -353,9 +358,31 @@ void Coma::loadSwj(const QString &filename)
     dialog->adjustSize();
 }
 
-QPoint Coma::ComaCenter()
+void Coma::loadOsc()
 {
-    return Coma::s_comaCenter;
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
+    if (!filepath.isEmpty())
+        loadOsc(filepath);
+}
+
+void Coma::loadSwj()
+{
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
+    if (!filepath.isEmpty())
+        loadSwj(filepath);
+}
+
+void Coma::loadJournal(const QString &filename)
+{
+    auto jourViewer = new journals::JournalViewer(filename, this);
+    jourViewer->exec();
+}
+
+void Coma::openJournalViewer()
+{
+    auto filepath = WDFunc::ChooseFileForOpen(this, "Journal files (*.jn*)");
+    if (!filepath.isEmpty())
+        loadJournal(filepath);
 }
 
 void Coma::openXmlEditor()
@@ -364,17 +391,6 @@ void Coma::openXmlEditor()
         editor = new XmlEditor(this);
     else
         editor->exec();
-}
-
-void Coma::openJournalViewer()
-{
-    using namespace journals;
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Journal files (*.jn)");
-    if (!filepath.isEmpty())
-    {
-        auto jourViewer = new JournalViewer(filepath, this);
-        jourViewer->exec();
-    }
 }
 
 void Coma::showAboutDialog()
@@ -675,20 +691,6 @@ void Coma::setupConnection()
     connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::nativeEvent);
 }
 
-void Coma::loadOsc()
-{
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
-    if (!filepath.isEmpty())
-        loadOsc(filepath);
-}
-
-void Coma::loadSwj()
-{
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
-    if (!filepath.isEmpty())
-        loadSwj(filepath);
-}
-
 void Coma::disconnectAndClear()
 {
     qDebug(__PRETTY_FUNCTION__);
@@ -777,16 +779,15 @@ void ComaHelper::parserHelper(Coma *coma)
     const QStringList files = parser.positionalArguments();
     if (!files.isEmpty())
     {
-        auto &param = files.at(0);
-        auto filestail = param.right(3);
-        if (filestail == "osc")
-        {
-            coma->loadOsc(param);
-        }
-        else if (filestail == "swj")
-        {
-            coma->loadSwj(param);
-        }
+        auto &filepath = files.at(0);
+        QFileInfo fileInfo(filepath);
+        auto ext = fileInfo.suffix();
+        if (ext == "osc")
+            coma->loadOsc(filepath);
+        else if (ext == "swj")
+            coma->loadSwj(filepath);
+        else if (ext.contains("jn"))
+            coma->loadJournal(filepath);
         // TODO
         // else if (filestail == "vrf")
         else

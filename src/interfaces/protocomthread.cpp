@@ -467,7 +467,7 @@ void ProtocomThread::processFileFromDisk(S2::FilesEnum fileNum)
     QByteArray ba = file.readAll();
     if (!boardType.isEmpty())
     {
-        auto s2bFile = S2Util::emulateS2B({ fileNum, ba }, quint16(fileNum), boardType.mTypeB, boardType.mTypeM);
+        auto s2bFile = S2Util::emulateS2B(ba, quint16(fileNum), boardType.mTypeB, boardType.mTypeM);
         auto &dataManager = DataManager::GetInstance();
         DataTypes::GeneralResponseStruct genResp {
             DataTypes::GeneralResponseTypes::Ok,      //
