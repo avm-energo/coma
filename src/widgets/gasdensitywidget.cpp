@@ -291,7 +291,7 @@ Status GasDensityWidget::checkValues()
     if (newStatus == Status::Correct)
     {
         // totalMoleFrac должен быть равен 100%
-        constexpr float epsilon = std::numeric_limits<float>::epsilon() * one_hundred * 8;
+        constexpr float epsilon = std::numeric_limits<float>::epsilon() * one_hundred * 10;
         const float diff = std::fabs(totalMoleFrac - one_hundred);
         // qWarning() << diff << " " << epsilon;
         // Если большая погрешность

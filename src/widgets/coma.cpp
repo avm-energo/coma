@@ -233,10 +233,6 @@ void Coma::setupMenubar()
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
     menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
-    menu->addAction("Test", this, []() {
-        auto gasWidget = new GasDensityWidget();
-        gasWidget->show();
-    });
     menubar->addMenu(menu);
     setMenuBar(menubar);
 }
