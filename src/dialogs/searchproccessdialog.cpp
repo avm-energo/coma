@@ -49,7 +49,7 @@ void SearchProccessDialog::setupUI()
     setMinimumSize(700, 600);
 }
 
-void SearchProccessDialog::errorHandler(QSerialPort::SerialPortError error)
+void SearchProccessDialog::errorHandler(const QSerialPort::SerialPortError error)
 {
     timeoutTimer->stop();
     switch (error)
@@ -60,12 +60,8 @@ void SearchProccessDialog::errorHandler(QSerialPort::SerialPortError error)
     case QSerialPort::SerialPortError::TimeoutError:
         timeout = true;
         break;
-    case QSerialPort::SerialPortError::OpenError:
-    case QSerialPort::SerialPortError::NotOpenError:
-    case QSerialPort::SerialPortError::ResourceError:
-        portError = true;
-        break;
     default:
+        portError = true;
         qWarning() << QVariant::fromValue(error).toString();
         break;
     }
@@ -81,10 +77,7 @@ void SearchProccessDialog::receiveResponse(QSerialPort *port)
             response.append(port->readAll());
             QCoreApplication::processEvents();
         }
-        // For debug
-        // qWarning() << response.toHex() << " ; byte  count: " << response.size();
-
-        if (response.size() == expectedResponseSize)
+        if (response.size() >= expectedResponseSize)
         {
             timeoutTimer->stop();
             responseReceived = true;
@@ -101,7 +94,7 @@ QByteArray SearchProccessDialog::createRequest(int address)
     auto request = QByteArray::fromRawData(&body[0], sizeof(body));
     request = request.prepend(oneByteAddr);
     utils::CRC16 crc(request);
-    crc.appendTo(request);
+    request.append(crc.toByteArray());
     expectedResponseSize = (request.at(5) * 2) + 4;
     return request;
 }
@@ -144,8 +137,10 @@ void SearchProccessDialog::sendRequest(QSerialPort *port, int addr)
         auto request = createRequest(addr);
         port->write(request);
         timeoutTimer->start();
-        while (!timeout && !responseReceived)
+        while (!timeout && !responseReceived && !portError)
             QCoreApplication::processEvents();
+        if (portError)
+            timeout = false;
     }
     else
         portError = true;
@@ -156,15 +151,24 @@ void SearchProccessDialog::updateTable(quint32 row)
 {
     auto model = static_cast<QStandardItemModel *>(tableView->model());
     QColor red(0xf96f6f);
-    QColor green(0x00cc66);
+    QColor green(0x029939);
 
     auto statusIndex = model->index(row, 5);
     if (portError)
+    {
         model->setData(statusIndex, "Error", Qt::DisplayRole);
+        model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
+    }
     else if (timeout)
+    {
         model->setData(statusIndex, "Timeout", Qt::DisplayRole);
+        model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
+    }
     else if (responseReceived)
+    {
         model->setData(statusIndex, "Ok", Qt::DisplayRole);
+        model->setData(statusIndex, QIcon(":/icons/tnyes.svg"), Qt::DecorationRole);
+    }
 
     for (int col = 0; col < model->columnCount(); col++)
     {
@@ -175,7 +179,7 @@ void SearchProccessDialog::updateTable(quint32 row)
             model->setData(itemIndex, green, Qt::BackgroundRole);
     }
 
-    portError = false;
+    // portError = false;
     timeout = false;
     responseReceived = false;
     QCoreApplication::processEvents();
@@ -196,13 +200,22 @@ void SearchProccessDialog::updateProgressBar()
     progressBar->setValue(progressBar->value() + 1);
 }
 
+void SearchProccessDialog::portErrorFinish(QSerialPort *port)
+{
+    port->flush();
+    port->close();
+    port->deleteLater();
+    progressBar->setValue(progressBar->maximum());
+    EMessageBox::error(this, "Произошла ошибка COM-порта!");
+}
+
 void SearchProccessDialog::search()
 {
     constexpr auto bufferSize = 1024;
     auto port = new QSerialPort(params.port, this);
     QObject::connect(port, &QSerialPort::errorOccurred, this, &SearchProccessDialog::errorHandler);
     QObject::connect(port, &QIODevice::readyRead, this, [this, port] { receiveResponse(port); });
-    port->setFlowControl(QSerialPort::FlowControl::SoftwareControl);
+    port->setFlowControl(QSerialPort::FlowControl::NoFlowControl);
     port->setDataBits(QSerialPort::Data8);
     port->setReadBufferSize(bufferSize);
 
@@ -228,6 +241,12 @@ void SearchProccessDialog::search()
                     updateTable(row);
                     updateProgressBar();
                     row++;
+                    // При неожиданной ошибке порта закрываем соединение
+                    if (portError)
+                    {
+                        portErrorFinish(port);
+                        return;
+                    }
                 }
                 port->flush();
                 port->close();

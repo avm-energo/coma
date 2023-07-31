@@ -35,13 +35,28 @@ private:
     bool responseReceived;
     bool portError;
 
+    /// \brief Функция для построения UI диалогового окна.
     void setupUI();
-    void errorHandler(QSerialPort::SerialPortError error);
-    void receiveResponse(QSerialPort *port);
+
+    /// \brief Функция для обработки ошибок последовательного порта.
+    void errorHandler(const QSerialPort::SerialPortError error);
+    /// \brief Возвращает запрос BSI по протоколу Modbus в виде массива байт.
     QByteArray createRequest(int address);
-    void createModelItem(quint32 row, int addr, int baud, QSerialPort::Parity parity, QSerialPort::StopBits stopBit);
+    /// \brief Функция для отправки запроса BSI устройству с указанным адресом.
+    /// \param port - канал связи с утройством.
+    /// \param addr - адрес устройства.
     void sendRequest(QSerialPort *port, int addr);
+    /// \brief Вызывается при получении ответа от устройства.
+    /// \param port - канал связи с утройством.
+    void receiveResponse(QSerialPort *port);
+    /// \brief Функция для прекращения процесса поиска устройств.
+    /// \details Вызывается, если в ходе выполнения поиска были
+    /// обнаружены ошибки, связанные с работой последовательного порта.
+    void portErrorFinish(QSerialPort *port);
+
+    void createModelItem(quint32 row, int addr, int baud, QSerialPort::Parity parity, QSerialPort::StopBits stopBit);
     void updateTable(quint32 row);
+
     void setMaxProgressBar();
     void updateProgressBar();
 
