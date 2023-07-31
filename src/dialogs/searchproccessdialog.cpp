@@ -18,8 +18,10 @@ SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *pa
     , tableView(nullptr)
     , progressBar(nullptr)
     , expectedResponseSize(0)
+    , currentAddress(0)
     , timeout(false)
     , responseReceived(false)
+    , responseError(false)
     , portError(false)
 {
     timeoutTimer->setSingleShot(true);
@@ -71,7 +73,6 @@ void SearchProccessDialog::receiveResponse(QSerialPort *port)
 {
     if (port->isOpen())
     {
-        // TODO: Можно анализировать ответ от устройства
         while (port->bytesAvailable() && (!timeout))
         {
             response.append(port->readAll());
@@ -80,22 +81,46 @@ void SearchProccessDialog::receiveResponse(QSerialPort *port)
         if (response.size() >= expectedResponseSize)
         {
             timeoutTimer->stop();
-            responseReceived = true;
+            // Анализируем ответ от устройства
+            if (analyzeResponse(response))
+                responseReceived = true;
+            else
+                responseError = true;
         }
     }
     else
         portError = true;
 }
 
-QByteArray SearchProccessDialog::createRequest(int address)
+bool SearchProccessDialog::analyzeResponse(const QByteArray &actualResponse)
+{
+    constexpr auto expectedSize = (0x1e * 2) + 5;
+    if (actualResponse.size() == expectedSize)
+    {
+        const auto addr = static_cast<quint8>(actualResponse[0]);
+        const auto funcCode = static_cast<quint8>(actualResponse[1]);
+        const auto size = static_cast<quint8>(actualResponse[2]);
+        if (addr == currentAddress && funcCode == 0x04 && size == (0x1e * 2))
+        {
+            auto crcBytes = actualResponse.right(sizeof(quint16));
+            auto dataBytes = actualResponse.left(actualResponse.size() - sizeof(quint16));
+            quint16 actualCrc = ((crcBytes[0] << 8) | crcBytes[1]);
+            utils::CRC16 expectedCrc(dataBytes);
+            if (expectedCrc == actualCrc)
+                return true;
+        }
+    }
+    return false;
+}
+
+QByteArray SearchProccessDialog::createRequest()
 {
     constexpr char body[] = { 0x04, 0x00, 0x01, 0x00, 0x1e };
-    const auto oneByteAddr = static_cast<char>(address);
     auto request = QByteArray::fromRawData(&body[0], sizeof(body));
-    request = request.prepend(oneByteAddr);
+    request = request.prepend(currentAddress);
     utils::CRC16 crc(request);
     request.append(crc.toByteArray());
-    expectedResponseSize = (request.at(5) * 2) + 4;
+    expectedResponseSize = (0x1e * 2) + 5;
     return request;
 }
 
@@ -129,15 +154,15 @@ void SearchProccessDialog::createModelItem(quint32 row, int addr, int baud, //
     QCoreApplication::processEvents();
 }
 
-void SearchProccessDialog::sendRequest(QSerialPort *port, int addr)
+void SearchProccessDialog::sendRequest(QSerialPort *port)
 {
     response.clear();
     if (port->isOpen())
     {
-        auto request = createRequest(addr);
+        auto request = createRequest();
         port->write(request);
         timeoutTimer->start();
-        while (!timeout && !responseReceived && !portError)
+        while (!timeout && !responseReceived && !responseError && !portError)
             QCoreApplication::processEvents();
         if (portError)
             timeout = false;
@@ -151,6 +176,7 @@ void SearchProccessDialog::updateTable(quint32 row)
 {
     auto model = static_cast<QStandardItemModel *>(tableView->model());
     QColor red(0xf96f6f);
+    QColor yellow(0xfffd99);
     QColor green(0x029939);
 
     auto statusIndex = model->index(row, 5);
@@ -164,6 +190,11 @@ void SearchProccessDialog::updateTable(quint32 row)
         model->setData(statusIndex, "Timeout", Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
+    else if (responseError)
+    {
+        model->setData(statusIndex, "Response error", Qt::DisplayRole);
+        model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
+    }
     else if (responseReceived)
     {
         model->setData(statusIndex, "Ok", Qt::DisplayRole);
@@ -175,12 +206,14 @@ void SearchProccessDialog::updateTable(quint32 row)
         auto itemIndex = model->index(row, col);
         if (portError || timeout)
             model->setData(itemIndex, red, Qt::BackgroundRole);
+        else if (responseError)
+            model->setData(itemIndex, yellow, Qt::BackgroundRole);
         else if (responseReceived)
             model->setData(itemIndex, green, Qt::BackgroundRole);
     }
 
-    // portError = false;
     timeout = false;
+    responseError = false;
     responseReceived = false;
     QCoreApplication::processEvents();
 }
@@ -233,9 +266,10 @@ void SearchProccessDialog::search()
                 auto openStatus = port->open(QIODevice::ReadWrite);
                 for (auto addr = params.startAddr; addr <= params.endAddr; addr++)
                 {
+                    currentAddress = static_cast<quint8>(addr);
                     createModelItem(row, addr, baud, parity, stopBit);
                     if (openStatus)
-                        sendRequest(port, addr);
+                        sendRequest(port);
                     else
                         portError = true;
                     updateTable(row);
