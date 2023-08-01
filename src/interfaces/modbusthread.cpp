@@ -316,7 +316,7 @@ void ModbusThread::setDelay(quint8 newDelay)
 void ModbusThread::calcCRCAndSend(QByteArray &ba)
 {
     utils::CRC16 crc(ba);
-    crc.appendTo(ba);
+    ba.append(crc.toByteArray());
     send(ba);
 }
 
@@ -533,6 +533,6 @@ QByteArray ModbusThread::createADU(const QByteArray &pdu) const
     ba.append(m_deviceAddress);
     ba.append(pdu);
     utils::CRC16 crc(ba);
-    crc.appendTo(ba);
+    ba.append(crc.toByteArray());
     return ba;
 }
