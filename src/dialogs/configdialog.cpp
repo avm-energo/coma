@@ -23,6 +23,8 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char name[] = "confHash";
 }
 
+constexpr auto confType = std_ext::to_underlying(S2::FilesEnum::Config);
+
 ConfigDialog::ConfigDialog(S2BoardConfig &boardConf, bool prereadConf, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent)
     , boardConfig(boardConf)
@@ -40,7 +42,7 @@ ConfigDialog::ConfigDialog(S2BoardConfig &boardConf, bool prereadConf, QWidget *
 void ConfigDialog::readConfig()
 {
     setSuccessMsg(tr("Конфигурация прочитана успешно"));
-    BaseInterface::iface()->reqFile(quint32(S2::FilesEnum::Config), DataTypes::FileFormat::DefaultS2);
+    BaseInterface::iface()->reqFile(confType, DataTypes::FileFormat::DefaultS2);
 }
 
 void ConfigDialog::writeConfig()
@@ -51,8 +53,7 @@ void ConfigDialog::writeConfig()
         if (prepareConfigToWrite())
         {
             auto s2file = boardConfig.workingConfig.toByteArray();
-            auto fileType = std_ext::to_underlying(S2::FilesEnum::Config);
-            BaseInterface::iface()->writeFile(fileType, s2file);
+            BaseInterface::iface()->writeFile(confType, s2file);
         }
         else
             qCritical("Ошибка чтения конфигурации");
@@ -120,9 +121,10 @@ void ConfigDialog::saveConfigToFile()
         return;
     }
     QByteArray file = boardConfig.workingConfig.toByteArray();
+    Q_ASSERT(file.size() > 8);
     quint32 length = *reinterpret_cast<quint32 *>(&file.data()[4]);
     length += sizeof(S2::S2FileHeader);
-    Q_ASSERT(length == quint32(file.size()));
+    Q_ASSERT(length == static_cast<quint32>(file.size()));
 
     Error::Msg res = Files::SaveToFile(filepath, file);
     switch (res)

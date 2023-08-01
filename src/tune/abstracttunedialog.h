@@ -87,7 +87,7 @@ public:
     Error::Msg writeTuneCoefs();
     Error::Msg writeTuneCoefs(bool isUserChoosingRequired);
     Error::Msg readTuneCoefs();
-    Error::Msg updateConfigAndSend(const std::vector<std::pair<QString, S2::valueType>> &changes) const;
+    Error::Msg sendChangedConfig(const std::vector<std::pair<QString, S2::valueType>> &changes) const;
 
 private:
     QMap<int, DataBlock *> AbsBac;

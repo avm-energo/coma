@@ -78,7 +78,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_ReqBitStrings:
     {
         quint8 block = blockByReg(cmdStr.arg1.toUInt());
-        ba = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::ArrayFromNumber(block));
+        ba = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::toByteArray(block));
         emit sendDataToPort(ba);
         break;
     }
@@ -111,8 +111,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     {
         if (protoCommandMap.contains(cmdStr.command))
         {
-            ba = prepareBlock(
-                protoCommandMap.value(cmdStr.command), StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>()));
+            ba = prepareBlock(protoCommandMap.value(cmdStr.command), StdFunc::toByteArray(cmdStr.arg1.value<quint8>()));
             emit sendDataToPort(ba);
         }
         break;
@@ -132,7 +131,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
             processFileFromDisk(filetype);
             break;
         default:
-            ba = prepareBlock(Proto::Commands::ReadFile, StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint16>()));
+            ba = prepareBlock(Proto::Commands::ReadFile, StdFunc::toByteArray(cmdStr.arg1.value<quint16>()));
             emit sendDataToPort(ba);
             break;
         }
@@ -164,7 +163,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         else
 #endif
         {
-            tba = StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint32>());
+            tba = StdFunc::toByteArray(cmdStr.arg1.value<quint32>());
         }
         ba = prepareBlock(Proto::Commands::WriteTime, tba);
         emit sendDataToPort(ba);
@@ -180,7 +179,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         if (cmdStr.arg1.canConvert<DataTypes::BlockStruct>())
         {
             DataTypes::BlockStruct bs = cmdStr.arg1.value<DataTypes::BlockStruct>();
-            ba = StdFunc::ArrayFromNumber(static_cast<quint8>(bs.ID)); // сужающий каст
+            ba = StdFunc::toByteArray(static_cast<quint8>(bs.ID)); // сужающий каст
             ba.append(bs.data);
             writeBlock(protoCommandMap.value(cmdStr.command), ba);
         }
@@ -195,11 +194,11 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
             QVariantList vl = cmdStr.arg1.value<QVariantList>();
             const quint16 start_addr = vl.first().value<DataTypes::FloatStruct>().sigAdr;
             const auto blockNum = static_cast<quint8>(blockByReg(start_addr)); // сужающий каст
-            ba = StdFunc::ArrayFromNumber(blockNum);
+            ba = StdFunc::toByteArray(blockNum);
             for (const auto &i : vl)
             {
                 const float value = i.value<DataTypes::FloatStruct>().sigVal;
-                ba.append(StdFunc::ArrayFromNumber(value));
+                ba.append(StdFunc::toByteArray(value));
             }
             writeBlock(protoCommandMap.value(cmdStr.command), ba);
         }
@@ -212,7 +211,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         if (cmdStr.arg1.canConvert<DataTypes::SingleCommand>())
         {
             DataTypes::SingleCommand scmd = cmdStr.arg1.value<DataTypes::SingleCommand>();
-            ba = StdFunc::ArrayFromNumber((scmd.addr)) + StdFunc::ArrayFromNumber(scmd.value);
+            ba = scmd.addr.toByteArray() + StdFunc::toByteArray(scmd.value);
             ba = prepareBlock(Proto::WriteSingleCommand, ba);
             emit sendDataToPort(ba);
         }
@@ -231,8 +230,10 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_StartWorkingChannel:
     case Commands::C_SetTransOff:
     {
-        ba = StdFunc::ArrayFromNumber(static_cast<uint24>(WSCommandMap[cmdStr.command]));
-        ba.append(StdFunc::ArrayFromNumber(cmdStr.arg1.value<quint8>()));
+        uint24 converted(WSCommandMap[cmdStr.command]);
+        ba = converted.toByteArray();
+        // ba = StdFunc::toByteArray(static_cast<uint24>(WSCommandMap[cmdStr.command]));
+        ba.append(StdFunc::toByteArray(cmdStr.arg1.value<quint8>()));
         ba = prepareBlock(Proto::WriteSingleCommand, ba);
         emit sendDataToPort(ba);
         break;

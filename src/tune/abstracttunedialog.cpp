@@ -355,7 +355,7 @@ Error::Msg AbstractTuneDialog::readTuneCoefs()
     return Error::Msg::NoError;
 }
 
-Error::Msg AbstractTuneDialog::updateConfigAndSend(const std::vector<std::pair<QString, S2::valueType>> &changes) const
+Error::Msg AbstractTuneDialog::sendChangedConfig(const std::vector<std::pair<QString, S2::valueType>> &changes) const
 {
     S2::Configuration configCopy(config);
     for (const auto &[name, value] : changes)
