@@ -4956,6 +4956,26 @@
 		</widget>
 	</record>
 	<record>
+		<id>1391</id>
+		<name>Press</name>
+		<description>Давление газа</description>
+		<type>FLOAT[3]</type>
+		<widget>
+			<type>DoubleSpinBoxGroup</type>
+			<group>7</group>
+			<string>Давление газа</string>
+			<count>3</count>
+			<string-array>
+				<item>Номинальное (давление заполнения)</item>
+				<item>Давление предупредительной уставки</item>
+				<item>Давление аварийной уставки</item>
+			</string-array>
+			<min>0</min>
+			<max>100</max>
+			<decimals>2</decimals>
+		</widget>
+	</record>
+	<record>
 		<id>110</id>
 		<name>osc_IDB</name>
 		<description>Признаки источника запуска осциллограмм</description>

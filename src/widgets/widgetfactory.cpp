@@ -558,7 +558,7 @@ bool WidgetFactory::fillBackSPBG(quint16 key, const QWidget *parent)
     auto record = configV->getRecord(key);
     std::visit(
         [&](auto &&arg) {
-            using internalType = std_ext::remove_cvref<decltype(arg)>;
+            typedef std::remove_reference_t<decltype(arg)> internalType;
             if constexpr (std_ext::is_container<internalType>())
             {
                 using container_type = typename internalType::value_type;

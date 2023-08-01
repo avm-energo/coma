@@ -49,6 +49,12 @@
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
+            <record>
+                <id>1391</id>
+                <defaultValue>0, 0, 0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104"/>
         <journals desc="Журналы">
@@ -105,7 +111,7 @@
                 <sgroup header="Датчик HDC1080" tab="1">
                     <mwidget view="float" desc="Температура от датчика HDC1080">
                         <start-addr>120</start-addr>
-                        <toolTip>Температура от датчика HDC1080</toolTip>
+                        <toolTip>Температура от датчика HDC1080, °С</toolTip>
                     </mwidget>
                     <mwidget view="float" desc="Влажность от датчика HDC1080">
                         <start-addr>121</start-addr>
@@ -115,7 +121,7 @@
                 <sgroup header="Датчик MS5803" tab="1">
                     <mwidget view="float" desc="Температура от датчика MS5803">
                         <start-addr>140</start-addr>
-                        <toolTip>Температура от датчика MS5803</toolTip>
+                        <toolTip>Температура от датчика MS5803, °С</toolTip>
                     </mwidget>
                     <mwidget view="float" desc="Давление от датчика MS5803">
                         <start-addr>141</start-addr>
