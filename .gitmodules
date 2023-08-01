@@ -7,9 +7,3 @@
 [submodule "src/widgets/styles/QDarkStyleSheet"]
 	path = src/widgets/styles/QDarkStyleSheet
 	url = https://github.com/ColinDuquesnoy/QDarkStyleSheet
-[submodule "src/protos/protos"]
-	path = src/protos/protos
-	url = ../../avm-energo/protos.git
-[submodule "src/alise"]
-	path = src/alise
-	url = ../../avm-energo/alise.git
