@@ -195,15 +195,7 @@ QWidget *ConfigDialog::ConfButtons()
     return wdgt;
 }
 
-QWidget *widgetAt(QTabWidget *tabWidget, int index)
-{
-    for (int i = 0; i != tabWidget->count(); ++i)
-        if (tabWidget->widget(i)->objectName().toInt() == index)
-            return tabWidget->widget(i);
-    return nullptr;
-}
-
-delegate::WidgetGroup groupForId(quint16 id)
+quint32 ConfigDialog::tabForId(quint16 id)
 {
     auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto search = widgetMap.find(id);
@@ -213,45 +205,9 @@ delegate::WidgetGroup groupForId(quint16 id)
         return 0;
     }
     const auto var = search->second;
-
-    delegate::WidgetGroup group = 0;
-    std::visit([&](const auto &arg) { group = arg.group; }, var);
-    return group;
-}
-
-void ConfigDialog::setupUI()
-{
-    auto vlyout = new QVBoxLayout;
-    auto ConfTW = new QTabWidget(this);
-    createTabs(ConfTW);
-
-    for (const auto &record : boardConfig.defaultConfig)
-    {
-        const auto id = record.first;
-        if (isVisible(id))
-        {
-            auto widget = factory.createWidget(id, this);
-            if (widget)
-            {
-                auto group = groupForId(id);
-                auto child = widgetAt(ConfTW, group);
-                QGroupBox *subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
-                Q_ASSERT(subBox);
-                if (!subBox)
-                    widget->deleteLater();
-                else
-                {
-                    auto lyout = subBox->layout();
-                    lyout->addWidget(widget);
-                }
-            }
-            else
-                qWarning() << "Bad config widget for item: " << id;
-        }
-    }
-    vlyout->addWidget(ConfTW);
-    vlyout->addWidget(ConfButtons());
-    setLayout(vlyout);
+    delegate::WidgetGroup tab = 0;
+    std::visit([&](const auto &arg) { tab = arg.group; }, var);
+    return tab;
 }
 
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
@@ -261,9 +217,10 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
 
     for (const auto &record : boardConfig.defaultConfig)
     {
-        auto tab = groupForId(record.first);
+        auto tab = tabForId(record.first);
         auto search = tabs.find(tab);
         if (search != tabs.cend())
+
             intersection.insert(tab);
         else
             qDebug() << "Undefined tab ID" << tab;
@@ -287,6 +244,49 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
     }
 }
 
+QWidget *widgetAt(QTabWidget *tabWidget, int tab)
+{
+    for (int i = 0; i != tabWidget->count(); ++i)
+        if (tabWidget->widget(i)->objectName().toInt() == tab)
+            return tabWidget->widget(i);
+    return nullptr;
+}
+
+void ConfigDialog::setupUI()
+{
+    auto vlyout = new QVBoxLayout;
+    auto ConfTW = new QTabWidget(this);
+    createTabs(ConfTW);
+
+    for (const auto &record : boardConfig.defaultConfig)
+    {
+        const auto id = record.first;
+        if (isVisible(id))
+        {
+            auto widget = factory.createWidget(id, this);
+            if (widget)
+            {
+                auto group = tabForId(id);
+                auto child = widgetAt(ConfTW, group);
+                QGroupBox *subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
+                Q_ASSERT(subBox);
+                if (!subBox)
+                    widget->deleteLater();
+                else
+                {
+                    auto lyout = subBox->layout();
+                    lyout->addWidget(widget);
+                }
+            }
+            else
+                qWarning() << "Bad config widget for item: " << id;
+        }
+    }
+    vlyout->addWidget(ConfTW);
+    vlyout->addWidget(ConfButtons());
+    setLayout(vlyout);
+}
+
 void ConfigDialog::fill()
 {
     for (const auto &defRecord : boardConfig.workingConfig)
@@ -306,17 +306,6 @@ void ConfigDialog::fill()
     }
 }
 
-void ConfigDialog::prereadConfig()
-{
-    if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
-    {
-        setDefaultConfig();
-        EMessageBox::information(this, "Задана конфигурация по умолчанию");
-    }
-    else
-        readConfig();
-}
-
 void ConfigDialog::fillBack() const
 {
     for (const auto &record : boardConfig.workingConfig)
@@ -329,6 +318,17 @@ void ConfigDialog::fillBack() const
                 qWarning() << "Couldnt fill back item from widget: " << id;
         }
     }
+}
+
+void ConfigDialog::prereadConfig()
+{
+    if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
+    {
+        setDefaultConfig();
+        EMessageBox::information(this, "Задана конфигурация по умолчанию");
+    }
+    else
+        readConfig();
 }
 
 void ConfigDialog::setDefaultConfig()

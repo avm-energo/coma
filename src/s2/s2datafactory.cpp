@@ -103,6 +103,9 @@ DataItem DataFactory::create(const DataRec &record) const
         return { id, helper<FLOAT_6t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
         return { id, helper<FLOAT_8t>(record.header.numByte, rawdata) };
+    case ctti::unnamed_type_id<CONF_DENS_3t>().hash():
+        return { id, helper<CONF_DENS_3t>(record.header.numByte, rawdata) };
+        break;
     default:
         assert(false && "Unknown type id");
         return { id };
@@ -170,6 +173,8 @@ DataItem DataFactory::create(const quint32 id, const QString &str) const
         return { id, helper<FLOAT_6t>(str) };
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
         return { id, helper<FLOAT_8t>(str) };
+    case ctti::unnamed_type_id<CONF_DENS_3t>().hash():
+        return { id, helper<CONF_DENS_3t>(str) };
     default:
         assert(false && "Unknown type id");
         return { id };

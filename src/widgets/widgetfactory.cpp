@@ -34,6 +34,13 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
         lyout->addWidget(control);
         break;
     }
+    case ctti::unnamed_type_id<GasDensityWidget>().hash():
+    {
+        auto gasWidget = new GasDensityWidget(parent);
+        gasWidget->setObjectName(QString::number(key));
+        lyout->addWidget(gasWidget);
+        break;
+    }
     case ctti::unnamed_type_id<QCheckBox>().hash():
     {
         auto checkbox = new QCheckBox(parent);
@@ -61,24 +68,24 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
     return widget;
 }
 
-template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] quint16 key)
-{
-    QWidget *widget = nullptr;
-    switch (arg.itemType)
-    {
-    case delegate::ItemType::ModbusItem:
-    {
-        widget = parent->findChild<QTableView *>(WidgetFactory::hashedName(arg.type, arg.parent));
-        if (!widget)
-        {
-            widget = createModbusView(parent);
-            widget->setObjectName(WidgetFactory::hashedName(arg.type, arg.parent));
-        }
-        return widget;
-    }
-    }
-    return nullptr;
-}
+// template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] quint16 key)
+//{
+//    QWidget *widget = nullptr;
+//    switch (arg.itemType)
+//    {
+//    case delegate::ItemType::ModbusItem:
+//    {
+//        widget = parent->findChild<QTableView *>(WidgetFactory::hashedName(arg.type, arg.parent));
+//        if (!widget)
+//        {
+//            widget = createModbusView(parent);
+//            widget->setObjectName(WidgetFactory::hashedName(arg.type, arg.parent));
+//        }
+//        return widget;
+//    }
+//    }
+//    return nullptr;
+//}
 
 template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey) const
 {
@@ -164,14 +171,11 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
             },
             [&](const delegate::QComboBoxGroup &arg) {
                 widget = new QWidget(parent);
-
                 QHBoxLayout *mainLyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
                 label->setToolTip(arg.toolTip);
                 mainLyout->addWidget(label);
-
                 auto count = getRealCount(key);
-
                 FlowLayout *flowLayout = new FlowLayout;
                 for (auto i = 0; i != count; ++i)
                 {
@@ -185,10 +189,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 mainLyout->addLayout(flowLayout);
                 widget->setLayout(mainLyout);
             },
-            [&](const auto &arg) {
-                using namespace delegate;
-                widget = helper(arg, parent, key);
-            },
+            [&](const auto &arg) { widget = helper(arg, parent, key); },
         },
         var);
     return widget;
@@ -208,31 +209,6 @@ bool WidgetFactory::fillBack(quint16 key, const QWidget *parent) const
     const auto var = search->second;
     std::visit(
         overloaded {
-            [&](const auto &arg) {
-                using namespace delegate;
-                switch (arg.type.hash())
-                {
-                case ctti::unnamed_type_id<IPCtrl>().hash():
-                {
-                    status = fillBackIpCtrl(key, parent);
-                    break;
-                }
-                case ctti::unnamed_type_id<QCheckBox>().hash():
-                {
-                    status = fillBackCheckBox(key, parent);
-                    break;
-                }
-                case ctti::unnamed_type_id<QLineEdit>().hash():
-                {
-                    status = fillBackLineEdit(key, parent);
-                    break;
-                }
-
-                default:
-                    Q_ASSERT(false && "False type");
-                    break;
-                }
-            },
             [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) { status = fillBackSPBG(key, parent); },
             [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) { status = fillBackSPB(key, parent); },
             [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) { status = fillBackChBG(key, parent); },
@@ -248,9 +224,48 @@ bool WidgetFactory::fillBack(quint16 key, const QWidget *parent) const
                     },
                     record.getData());
             },
+            [&](const auto &arg) {
+                using namespace delegate;
+                switch (arg.type.hash())
+                {
+                case ctti::unnamed_type_id<IPCtrl>().hash():
+                    status = fillBackIpCtrl(key, parent);
+                    break;
+                case ctti::unnamed_type_id<GasDensityWidget>().hash():
+                    status = fillBackGasWidget(key, parent);
+                    break;
+                case ctti::unnamed_type_id<QCheckBox>().hash():
+                    status = fillBackCheckBox(key, parent);
+                    break;
+                case ctti::unnamed_type_id<QLineEdit>().hash():
+                    status = fillBackLineEdit(key, parent);
+                    break;
+                default:
+                    Q_ASSERT(false && "False type");
+                    break;
+                }
+            },
         },
         var);
     return status;
+}
+
+bool WidgetFactory::fillCheckBox(const QWidget *parent, quint16 key, bool value)
+{
+    auto widget = parent->findChild<QCheckBox *>(QString::number(key));
+    if (!widget)
+        return false;
+    widget->setChecked(bool(value));
+    return true;
+}
+
+bool WidgetFactory::fillGasWidget(const QWidget *parent, quint16 key, const S2::CONF_DENS_3t &value)
+{
+    auto widget = parent->findChild<GasDensityWidget *>(QString::number(key));
+    if (!widget)
+        return false;
+    widget->fill(value);
+    return true;
 }
 
 template <>
@@ -547,8 +562,11 @@ bool WidgetFactory::fillBackSPBG(quint32 id, const QWidget *parent) const
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
             if constexpr (std_ext::is_container<internalType>())
-                if constexpr (sizeof(typename internalType::value_type) != 1
-                    && !std_ext::is_container<typename internalType::value_type>())
+            {
+                using container_type = typename internalType::value_type;
+                if constexpr (sizeof(container_type) != 1 &&    //
+                    !std_ext::is_container<container_type>() && //
+                    !std::is_same_v<container_type, S2::CONF_DENS>)
                 {
                     internalType buffer {};
                     status = WDFunc::SPBGData(parent, QString::number(id), buffer);
@@ -556,6 +574,7 @@ bool WidgetFactory::fillBackSPBG(quint32 id, const QWidget *parent) const
                         // configV->setRecordValue({ id, buffer });
                         record.setData(buffer);
                 }
+            }
         },
         record.getData());
     return status;
@@ -720,11 +739,12 @@ bool WidgetFactory::fillBackComboBoxGroup(quint32 id, const QWidget *parent, int
     return status;
 }
 
-bool WidgetFactory::fillCheckBox(const QWidget *parent, quint16 key, bool value)
+bool WidgetFactory::fillBackGasWidget(quint32 id, const QWidget *parent) const
 {
-    auto widget = parent->findChild<QCheckBox *>(QString::number(key));
+    auto widget = parent->findChild<GasDensityWidget *>(QString::number(id));
     if (!widget)
         return false;
-    widget->setChecked(bool(value));
+    auto &record = config[id];
+    record.setData(widget->fillBack());
     return true;
 }

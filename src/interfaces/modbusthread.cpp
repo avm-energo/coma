@@ -284,8 +284,8 @@ void ModbusThread::processReadBytes(QByteArray ba)
     }
     if (m_currentCommand.command == C_ReqFile)
     {
-        if (m_readData.size() >= 8)                // [8] = section length
-            m_bytesToReceive = m_readData[7] + 10; // дополнительные данные
+        if (m_readData.size() >= 8)                                     // [8] = section length
+            m_bytesToReceive = static_cast<quint8>(m_readData[7]) + 10; // дополнительные данные
         else
             return; // не получили ещё длину, рано продолжать
     }
@@ -293,8 +293,9 @@ void ModbusThread::processReadBytes(QByteArray ba)
     {
         m_log->info("<- " + m_readData.toHex());
         int rdsize = m_readData.size();
-
-        quint16 receivedCRC = (quint8(m_readData[rdsize - 2]) << 8) | quint8(m_readData[rdsize - 1]);
+        quint16 receivedCRC =                                    //
+            (static_cast<quint8>(m_readData[rdsize - 2]) << 8) | //
+            (static_cast<quint8>(m_readData[rdsize - 1]));       //
         m_readData.chop(2);
         utils::CRC16 calculatedCRC(m_readData);
         if (calculatedCRC != receivedCRC)
@@ -442,7 +443,7 @@ bool ModbusThread::processReadFile()
     // проверяем, что номер файла тот, что мы ожидаем
     Q_ASSERT(fileNum == m_currentCommand.arg1.value<quint16>());
     // проверка, прочитали ли мы столько байт, сколько заявлено в шапке
-    auto size1 = m_readData.at(7);
+    auto size1 = static_cast<quint8>(m_readData.at(7));
     auto size2 = m_readData.size() - 8;
     Q_ASSERT(size1 == size2);
     if (m_readData.size() > 8) // если в секции вообще что-то есть, может быть и нулевая

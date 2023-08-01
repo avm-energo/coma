@@ -4,6 +4,7 @@
 #include "../widgets/delegate_common.h"
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
+#include "gasdensitywidget.h"
 
 #include <QStandardItemModel>
 #include <bitset>
@@ -35,7 +36,6 @@ private:
 
     template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::ip_container>::value, bool> = true>
     bool fillIpCtrl(const QWidget *parent, quint16 key, const T &value);
-    bool fillCheckBox(const QWidget *parent, quint16 key, bool value);
     template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true>
     bool fillLineEdit(const QWidget *parent, quint16 key, const T &value);
     template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool> = true>
@@ -43,6 +43,8 @@ private:
     template <typename T>
     bool fillTableView(const QWidget *parent, quint16 key, quint16 parentKey, //
         ctti::unnamed_type_id_t type, const T &value);
+    bool fillCheckBox(const QWidget *parent, quint16 key, bool value);
+    bool fillGasWidget(const QWidget *parent, quint16 key, const S2::CONF_DENS_3t &value);
 
     template <typename T> bool fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey) const;
 
@@ -56,6 +58,7 @@ private:
     bool fillBackChBG(quint32 id, const QWidget *parent) const;
     bool fillBackComboBox(quint32 id, const QWidget *parent, delegate::QComboBox::PrimaryField field) const;
     bool fillBackComboBoxGroup(quint32 id, const QWidget *parent, int count) const;
+    bool fillBackGasWidget(quint32 id, const QWidget *parent) const;
 };
 
 // Template specialisation
@@ -139,9 +142,6 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
     const auto var = search->second;
     std::visit(overloaded {
                    [&](const auto &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug() << "DefaultWidget" << key;
-#endif
                        using namespace delegate;
                        if constexpr (std::is_same<T, IPCtrl::ip_container>::value)
                        {
@@ -159,38 +159,43 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                                return;
                            }
                        }
+                       if constexpr (std::is_same_v<T, S2::CONF_DENS_3t>)
+                       {
+                           if (arg.type == ctti::unnamed_type_id<GasDensityWidget>())
+                           {
+                               status = fillGasWidget(parent, key, value);
+                               return;
+                           }
+                       }
                        if (arg.type == ctti::unnamed_type_id<QLineEdit>())
                        {
                            status = fillLineEdit(parent, key, value);
                            return;
                        }
                    },
+
                    [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) {
                        if constexpr (std_ext::is_container<T>())
-                           if constexpr (sizeof(typename T::value_type) != 1
-                               && !std_ext::is_container<typename T::value_type>())
+                       {
+                           using container_type = typename T::value_type;
+                           if constexpr (sizeof(container_type) != 1 &&    //
+                               !std_ext::is_container<container_type>() && //
+                               !std::is_same_v<container_type, S2::CONF_DENS>)
                            {
-#ifdef DEBUG_FACTORY
-                               qDebug() << "DoubleSpinBoxGroupWidget" << key;
-#endif
                                status = WDFunc::SetSPBGData(parent, QString::number(key), value);
                            }
+                       }
                    },
+
                    [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) {
                        if constexpr (!std_ext::is_container<T>())
                        {
-#ifdef DEBUG_FACTORY
-                           qDebug() << "DoubleSpinBoxWidget" << key;
-#endif
                            status = WDFunc::SetSPBData(parent, QString::number(key), value);
                        }
                    },
                    [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) {
                        if constexpr (std::is_unsigned_v<T>)
                        {
-#ifdef DEBUG_FACTORY
-                           qDebug() << "CheckBoxGroupWidget" << key;
-#endif
                            status = WDFunc::SetChBGData(parent, QString::number(key), value);
                        }
                        else if constexpr (std_ext::is_container<T>())
@@ -198,9 +203,6 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                            typedef std::remove_reference_t<typename T::value_type> internalType;
                            if constexpr (std::is_unsigned_v<internalType>)
                            {
-#ifdef DEBUG_FACTORY
-                               qDebug() << "CheckBoxGroupWidget" << key;
-#endif
                                status = WDFunc::SetChBGData(parent, QString::number(key), value);
                            }
                        }
@@ -208,9 +210,6 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                    [&](const delegate::QComboBox &arg) {
                        if constexpr (!std_ext::is_container<T>())
                        {
-#ifdef DEBUG_FACTORY
-                           qDebug() << "QComboBox" << key;
-#endif
                            switch (arg.primaryField)
                            {
                            case delegate::QComboBox::data:
@@ -232,9 +231,6 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                    [&](const delegate::QComboBoxGroup &arg) {
                        if constexpr (!std_ext::is_container<T>())
                        {
-#ifdef DEBUG_FACTORY
-                           qDebug() << "QComboBoxGroup" << key;
-#endif
                            std::bitset<sizeof(T) *CHAR_BIT> bitset = value;
                            auto count = getRealCount(key);
                            bool flag = false;
@@ -257,9 +253,6 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                            typedef std::remove_reference_t<typename T::value_type> internalType;
                            if constexpr (std::is_unsigned_v<internalType>)
                            {
-#ifdef DEBUG_FACTORY
-                               qDebug() << "QComboBoxGroup" << key;
-#endif
                                auto count = std::min(std::size_t(arg.count), value.size());
                                bool flag = false;
                                for (auto i = 0; i != count; ++i)
@@ -278,12 +271,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                            }
                        }
                    },
-                   [&](const config::Item &arg) {
-#ifdef DEBUG_FACTORY
-                       qDebug() << "Item" << key;
-#endif
-                       status = fillTableView(parent, key, arg.parent, arg.type, value);
-                   },
+                   [&](const config::Item &arg) { status = fillTableView(parent, key, arg.parent, arg.type, value); },
                },
         var);
     return status;

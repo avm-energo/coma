@@ -41,6 +41,7 @@
 #include "../s2/s2util.h"
 #include "alarmwidget.h"
 #include "epopup.h"
+#include "gasdensitywidget.h"
 #include "splashscreen.h"
 #include "styleloader.h"
 #include "waitwidget.h"
