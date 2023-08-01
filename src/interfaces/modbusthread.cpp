@@ -77,7 +77,7 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
             MBS::Commands::ReadFileSection, //
             cmdStr.arg1.value<quint16>(), // номер файла - нехорошо, т.к. кладём туда quint32
             0,                            // номер секции
-            StdFunc::ArrayFromNumber(MBS::FileSectionLength) //
+            StdFunc::toByteArray(MBS::FileSectionLength) //
         };
         m_fileData.clear();
         m_fileSectionNum = 0;
@@ -164,9 +164,9 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
             DataTypes::SingleCommand scmd = cmdStr.arg1.value<DataTypes::SingleCommand>();
             MBS::CommandStruct inp {
                 MBS::Commands::WriteMultipleRegisters, //
-                scmd.addr.toU16(),                     //
+                scmd.addr,                             //
                 1,                                     // количество регистров типа int16
-                StdFunc::ArrayFromNumber(scmd.value)   //
+                StdFunc::toByteArray(scmd.value)       //
             };
             writeMultipleRegisters(inp);
         }
@@ -232,7 +232,7 @@ void ModbusThread::parseResponse()
             MBS::CommandStruct inp { MBS::Commands::ReadFileSection, //
                 m_currentCommand.arg1.value<quint16>(), // номер файла - нехорошо, т.к. кладём туда quint32
                 ++m_fileSectionNum,                     // номер секции
-                StdFunc::ArrayFromNumber(MBS::FileSectionLength) };
+                StdFunc::toByteArray(MBS::FileSectionLength) };
             readRegisters(inp);
             return; // продолжаем, пока не получим весь файл
         }
@@ -494,10 +494,10 @@ bool ModbusThread::writeFile(quint16 fileNum)
     m_fileData = m_fileData.mid(ba.size()); // удаляем секцию из массива
     if (m_fileData.isEmpty())
         lastSection = 1;
-    ba.prepend(StdFunc::ArrayFromNumber(static_cast<quint8>(ba.size())));
-    ba.prepend(StdFunc::ArrayFromNumber(qToBigEndian(m_fileSectionNum++)));
-    ba.prepend(StdFunc::ArrayFromNumber(qToBigEndian(fileNum)));
-    ba.prepend(StdFunc::ArrayFromNumber(lastSection));
+    ba.prepend(StdFunc::toByteArray(static_cast<quint8>(ba.size())));
+    ba.prepend(StdFunc::toByteArray(qToBigEndian(m_fileSectionNum++)));
+    ba.prepend(StdFunc::toByteArray(qToBigEndian(fileNum)));
+    ba.prepend(StdFunc::toByteArray(lastSection));
     ba.prepend(MBS::Commands::WriteFileSection);
     ba.prepend(m_deviceAddress);
     m_bytesToReceive = 10; // address, function code, last section, numFile (2), numSection (2), secLength, crc (2)
@@ -512,9 +512,9 @@ void ModbusThread::setQueryStartBytes(MBS::CommandStruct &cms, QByteArray &ba)
     ba.append(m_deviceAddress); // адрес устройства
     ba.append(cms.cmd);         // аналоговый выход
     QByteArray bigEndArray;
-    bigEndArray = StdFunc::ArrayFromNumber(qToBigEndian(cms.adr));
+    bigEndArray = StdFunc::toByteArray(qToBigEndian(cms.adr));
     ba.append(bigEndArray);
-    bigEndArray = StdFunc::ArrayFromNumber(qToBigEndian(cms.quantity));
+    bigEndArray = StdFunc::toByteArray(qToBigEndian(cms.quantity));
     ba.append(bigEndArray);
 }
 
@@ -522,8 +522,8 @@ QByteArray ModbusThread::createReadPDU(const MBS::CommandStruct &cms) const
 {
     QByteArray ba;
     ba.append(cms.cmd);
-    ba.append(StdFunc::ArrayFromNumber(qToBigEndian(cms.adr)));
-    ba.append(StdFunc::ArrayFromNumber(qToBigEndian(cms.quantity)));
+    ba.append(StdFunc::toByteArray(qToBigEndian(cms.adr)));
+    ba.append(StdFunc::toByteArray(qToBigEndian(cms.quantity)));
     return ba;
 }
 

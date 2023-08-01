@@ -4,29 +4,14 @@
 
 #include <QDateTime>
 #include <QDebug>
+#include <gen/stdfunc.h>
 #include <gen/utils/crc32.h>
-
-namespace helper
-{
-/// \brief Декларация для определния простых (POD) типов.
-/// \see https://en.cppreference.com/w/cpp/types/is_pod
-template <typename T> //
-constexpr static auto is_simple_v = std::is_standard_layout_v<T> &&std::is_trivial_v<T>;
-
-/// \brief Создаёт из инстансов простых типов QByteArray.
-template <typename T, std::enable_if_t<is_simple_v<T>, bool> = true> //
-inline QByteArray convert(const T &value)
-{
-    return QByteArray::fromRawData(reinterpret_cast<const char *>(&value), sizeof(T));
-}
-
-}
 
 QByteArray S2Util::convert(const quint32 id, const S2::DataItem &item) const
 {
     const auto bytes = item.toByteArray();
     S2::DataRecHeader header { id, static_cast<quint32>(bytes.size()) };
-    QByteArray retValue = helper::convert(header);
+    QByteArray retValue = StdFunc::toByteArray(header);
     if (!bytes.isEmpty())
         retValue.append(bytes);
     return retValue;
@@ -39,17 +24,16 @@ QByteArray S2Util::convert(const S2::Configuration &config, quint32 fileType) co
     QByteArray retValue, temp;
     header.size = 0;
     // Append data from configuration
-    for (const auto &iter : config)
+    for (const auto &[id, value] : config)
     {
-        const auto id = iter.first;
-        temp = convert(id, iter.second);
+        temp = convert(id, value);
         header.size += temp.size();
         crc.update(temp);
         retValue.append(temp);
     }
     // Append file tail
     S2::DataRecHeader tail { S2::dummyElement, 0 };
-    temp = helper::convert(tail);
+    temp = StdFunc::toByteArray(tail);
     header.size += temp.size();
     crc.update(temp);
     retValue.append(temp);
@@ -58,7 +42,7 @@ QByteArray S2Util::convert(const S2::Configuration &config, quint32 fileType) co
     header.thetime = getTime32();
     header.service = 0xFFFF;
     header.fname = static_cast<quint16>(fileType);
-    temp = helper::convert(header);
+    temp = StdFunc::toByteArray(header);
     retValue.prepend(temp);
     return retValue;
 }

@@ -87,7 +87,7 @@ Error::Msg TuneKIVCheck::check()
         { "Unom1", float(220) }                             //
     };
 
-    if (updateConfigAndSend(recordList) != Error::NoError)
+    if (sendChangedConfig(recordList) != Error::NoError)
     {
         EMessageBox::error(this, "Ошибка при записи конфигурации");
         return Error::GeneralError;
