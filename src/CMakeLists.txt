@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(coma)
+
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
 
-message(STATUS "Local App Data path: $ENV{HOME}/.local/share/AVM-Debug")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)

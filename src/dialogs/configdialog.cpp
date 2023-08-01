@@ -289,14 +289,14 @@ void ConfigDialog::setupUI()
 
 void ConfigDialog::fill()
 {
-    for (const auto &defRecord : boardConfig.workingConfig)
+    for (const auto &[id, record] : boardConfig.workingConfig)
     {
-        const auto id = defRecord.first;
         if (isVisible(id))
         {
-            const auto record = defRecord.second;
             std::visit(
-                [=](const auto &&value) {
+                // thanx to https://stackoverflow.com/a/46115028
+                // in C++20 lambdas could capture structured binding
+                [=, id = id](const auto &&value) {
                     bool status = factory.fillWidget(this, id, value);
                     if (!status)
                         qWarning() << "Couldnt fill widget for item: " << id;
@@ -308,9 +308,8 @@ void ConfigDialog::fill()
 
 void ConfigDialog::fillBack() const
 {
-    for (const auto &record : boardConfig.workingConfig)
+    for (const auto &[id, _] : boardConfig.workingConfig)
     {
-        const auto id = record.first;
         if (isVisible(id))
         {
             auto status = factory.fillBack(id, this);

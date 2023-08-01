@@ -85,7 +85,7 @@ private:
         { C_ReqOscInfo, Proto::ReadBlkTech },                // 12
         { C_WriteBlkDataTech, Proto::WriteBlkTech },         // 12
         { C_Reboot, Proto::WriteBlkCmd },                    // 12
-        { C_GetMode, Proto::ReadMode },                      // 1
+        { C_GetMode, Proto::ReadMode },                      // 12
         { C_SetMode, Proto::WriteMode },                     // 12
         { C_WriteHardware, Proto::WriteHardware }            // 12
     };

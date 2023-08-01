@@ -25,6 +25,10 @@ public:
     Error::Msg convert(const QByteArray &rawFile, const S2::DataFactory &factory, //
         std::map<quint32, S2::DataItem> &result) const;
 
+    std::size_t getFileSize(const QByteArray &s2file);
+    S2::S2BFile emulateS2B(const QByteArray &data, quint16 fname, quint16 typeB, quint16 typeM);
+    Error::Msg parseS2B(const QByteArray &file, S2::S2BFile &result);
+
     // S2: Сборщик в память:
     // 0 - успешно, иначе код ошибки S2: получение размера:
     static void StoreDataMem(QByteArray &mem, const std::vector<S2::FileStruct> &dr, int fname);
@@ -32,15 +36,7 @@ public:
     // restore IDs and contents in ConfParameters list
     static bool RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist);
 
-    [[deprecated]] static bool RestoreData(QByteArray bain, QList<S2::DataItem> &outlist);
-    [[deprecated]] static void tester(const S2::S2ConfigType &buffer);
     [[deprecated]] static quint16 GetIdByName(const QString &name);
-
-    static quint64 GetFileSize(const QByteArray &data);
-
-    static S2::S2BFile emulateS2B(const QByteArray &data, //
-        quint16 fname, quint16 typeB, quint16 typeM);
-    static Error::Msg parseS2B(const QByteArray &file, S2::S2BFile &result);
 
 private:
     static quint32 getTime32();

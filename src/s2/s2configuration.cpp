@@ -119,13 +119,13 @@ void Configuration::setRecord(const quint32 id, const DataItem &record)
 
 void Configuration::setRecord(const quint32 id, const valueType &value)
 {
-    data.insert_or_assign(id, DataItem { id, value });
+    data.insert_or_assign(id, DataItem { value });
 }
 
 void Configuration::setRecord(const QString &name, const valueType &value)
 {
     auto id = getIdByName(name);
-    data.insert_or_assign(id, DataItem { id, value });
+    data.insert_or_assign(id, DataItem { value });
 }
 
 QByteArray Configuration::toByteArray() const

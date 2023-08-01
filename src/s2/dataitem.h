@@ -1,5 +1,4 @@
-#ifndef DATAITEM_H
-#define DATAITEM_H
+#pragma once
 
 #include "s2datatypes.h"
 
@@ -8,27 +7,19 @@ namespace S2
 
 class DataItem
 {
-public:
-    DataItem() = default;
-    DataItem(quint32 _id);
-    DataItem(quint32 _id, const valueType &value);
+private:
+    valueType data;
 
-    template <typename T, std::enable_if_t<isValueType<T>::value, bool> = true>
-    DataItem(quint32 _id, T _data) : id(_id), data(_data)
-    {
-    }
+public:
+    DataItem();
+    DataItem(const valueType &value);
 
     friend bool operator==(const DataItem &lhs, const DataItem &rhs);
     friend bool operator!=(const DataItem &lhs, const DataItem &rhs);
 
-    DataRec serialize() const;
     QByteArray toByteArray() const;
-
-    quint32 getId() const;
     valueType getData() const;
     void setData(const valueType &value);
-
-    size_t typeIndex() const;
 
     template <typename T, std::enable_if_t<isValueType<T>::value, bool> = true> //
     T value() const
@@ -52,23 +43,11 @@ public:
         else
             data = value;
     }
-
-private:
-    quint32 id;
-    valueType data;
 };
 
 bool operator==(const DataItem &lhs, const DataItem &rhs);
 bool operator!=(const DataItem &lhs, const DataItem &rhs);
 
-struct RecordPair
-{
-    DataItem record;
-    bool visibility = true;
-};
-
 }
 
 Q_DECLARE_METATYPE(S2::DataItem)
-
-#endif // DATAITEM_H

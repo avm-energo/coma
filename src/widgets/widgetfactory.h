@@ -18,7 +18,7 @@ private:
 public:
     WidgetFactory(S2Configuration &workingConfig);
     QWidget *createWidget(quint16 key, QWidget *parent = nullptr);
-    template <typename T> bool fillWidget(const QWidget *parent, quint16 key, const T &value);
+    template <typename T> bool fillWidget(const QWidget *parent, quint32 key, const T &value);
     bool fillBack(quint16 key, const QWidget *parent) const;
     static QString hashedName(ctti::unnamed_type_id_t type, quint16 key);
     static const QString widgetName(int group, int item);
@@ -123,7 +123,7 @@ bool WidgetFactory::fillTableView(
     return true;
 }
 
-template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quint16 key, const T &value)
+template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quint32 key, const T &value)
 {
     bool status = false;
     auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
