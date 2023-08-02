@@ -9,7 +9,7 @@
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
 
-constexpr qint64 RECONNECTINTERVAL = 2000;
+constexpr qint64 RECONNECTINTERVAL = 5000;
 
 class BasePort : public QObject
 {

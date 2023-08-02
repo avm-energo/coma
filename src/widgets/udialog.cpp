@@ -13,19 +13,18 @@ UDialog::UDialog(QWidget *parent) : UWidget(parent), proxyGRS(new DataTypesProxy
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
-    connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &UDialog::updateGeneralResponse);
+    QObject::connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &UDialog::updateGeneralResponse);
 }
 
-UDialog::UDialog(const QString hash, const QString key, QWidget *parent) : UDialog(parent)
+UDialog::UDialog(const QString &hash, const QString &key, QWidget *parent) : UDialog(parent)
 {
-    auto sets = std::make_unique<QSettings>();
-    auto value = sets->value(key, "").toString();
+    QSettings settings;
+    auto value = settings.value(key, "").toString();
     if (value.isEmpty())
-        sets->setValue(key, hash);
-    m_hash = sets->value(key, "").toString();
+        settings.setValue(key, hash);
+    m_hash = settings.value(key, "").toString();
 }
 
-// void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
 void UDialog::updateGeneralResponse(const QVariant &msg)
 {
     if (!updatesEnabled())
@@ -38,7 +37,6 @@ void UDialog::updateGeneralResponse(const QVariant &msg)
     {
         if (successMsg().isEmpty())
             break;
-        //        QMessageBox::information(this, "Information", successMsg());
         EMessageBox::information(this, successMsg());
         break;
     }
@@ -61,7 +59,6 @@ void UDialog::updateGeneralResponse(const QVariant &msg)
             msg = Error::MsgStr[Error::Msg(response.data)];
             break;
         }
-        //        QMessageBox::critical(this, "Error", errorMsg() + " : " + msg);
         EMessageBox::error(this, errorMsg() + " : " + msg);
         break;
     }
@@ -80,6 +77,16 @@ void UDialog::disableSuccessMessage()
 void UDialog::enableSuccessMessage()
 {
     showSuccessMessageFlag = true;
+}
+
+bool UDialog::disableMessages()
+{
+    return QObject::disconnect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &UDialog::updateGeneralResponse);
+}
+
+bool UDialog::enableMessages()
+{
+    return QObject::connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &UDialog::updateGeneralResponse);
 }
 
 QString UDialog::successMsg() const
