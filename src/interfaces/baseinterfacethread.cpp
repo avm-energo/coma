@@ -14,10 +14,17 @@ BaseInterfaceThread::BaseInterfaceThread(QObject *parent) : QObject(parent), m_l
 
 void BaseInterfaceThread::clear()
 {
-    QMutexLocker locker(&_mutex);
+    // QMutexLocker locker(&_mutex);
     m_progress = 0;
     m_currentCommand = CommandStruct();
     finishCommand();
+}
+
+void BaseInterfaceThread::finishCommand()
+{
+    m_isCommandRequested = false;
+    m_readData.clear();
+    wakeUp();
 }
 
 void BaseInterfaceThread::wakeUp()
@@ -76,13 +83,6 @@ void BaseInterfaceThread::checkQueue()
     m_progress = 0;
     m_currentCommand = inp;
     parseRequest(inp);
-}
-
-void BaseInterfaceThread::finishCommand()
-{
-    m_isCommandRequested = false;
-    m_readData.clear();
-    wakeUp();
 }
 
 void BaseInterfaceThread::run()

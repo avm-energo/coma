@@ -9,7 +9,7 @@
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
 
-constexpr qint64 RECONNECTINTERVAL = 5000;
+constexpr qint64 RECONNECTINTERVAL = 10000;
 
 class BasePort : public QObject
 {
@@ -31,6 +31,7 @@ signals:
     void finished();
     void error(BasePort::PortErrors error);
     void stateChanged(Interface::State);
+    void clearQueries();
 
 private:
     Interface::State m_state;
