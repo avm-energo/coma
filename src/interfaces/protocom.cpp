@@ -61,7 +61,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     connect(port, &BasePort::dataReceived, parser, &BaseInterfaceThread::processReadBytes, Qt::DirectConnection);
     connect(parser, &BaseInterfaceThread::sendDataToPort, port, &BasePort::writeDataSync, Qt::DirectConnection);
     // Прерывание
-    connect(port, &UsbHidPort::clearQueries, parser, &BaseInterfaceThread::clear, Qt::DirectConnection);
+    connect(port, &BasePort::clearQueries, parser, &BaseInterfaceThread::clear, Qt::DirectConnection);
     // Остановка
     connect(port, &BasePort::finished, parser, &BaseInterfaceThread::wakeUp, Qt::DirectConnection);
     connect(port, &BasePort::finished, [=] {

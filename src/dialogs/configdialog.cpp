@@ -212,33 +212,31 @@ quint32 ConfigDialog::tabForId(quint16 id)
 
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
-    std::set<delegate::WidgetGroup> currentCategories, intersection;
+    std::set<delegate::WidgetGroup> uniqueTabs;
     auto &tabs = S2::ConfigStorage::GetInstance().getConfigTabs();
-
     for (const auto &record : boardConfig.defaultConfig)
     {
         auto tab = tabForId(record.first);
         auto search = tabs.find(tab);
         if (search != tabs.cend())
-
-            intersection.insert(tab);
+            uniqueTabs.insert(tab);
         else
             qDebug() << "Undefined tab ID" << tab;
     }
 
-    for (const auto &group : intersection)
+    for (const auto &tab : uniqueTabs)
     {
-        auto &tabName = tabs.at(group);
-        auto subBox = new QGroupBox("Группа " + tabName, this);
-        auto subvlyout = new QVBoxLayout;
-        subvlyout->setAlignment(Qt::AlignTop);
-        subvlyout->setSpacing(0);
-        subvlyout->setContentsMargins(0, 0, 0, 0);
-        subBox->setLayout(subvlyout);
-        auto scrollArea = new QScrollArea;
-        scrollArea->setObjectName(QString::number(group));
+        auto &tabName = tabs.at(tab);
+        auto scrollArea = new QScrollArea(this);
+        scrollArea->setObjectName(QString::number(tab));
         scrollArea->setFrameShape(QFrame::NoFrame);
         scrollArea->setWidgetResizable(true);
+        auto subBox = new QGroupBox(scrollArea);
+        auto subLayout = new QVBoxLayout;
+        subLayout->setAlignment(Qt::AlignTop);
+        subLayout->setSpacing(0);
+        subLayout->setContentsMargins(0, 0, 0, 0);
+        subBox->setLayout(subLayout);
         scrollArea->setWidget(subBox);
         tabWidget->addTab(scrollArea, tabName);
     }
@@ -266,16 +264,20 @@ void ConfigDialog::setupUI()
             auto widget = factory.createWidget(id, this);
             if (widget)
             {
-                auto group = tabForId(id);
-                auto child = widgetAt(ConfTW, group);
-                QGroupBox *subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
-                Q_ASSERT(subBox);
-                if (!subBox)
-                    widget->deleteLater();
-                else
+                auto tab = tabForId(id);
+                auto child = widgetAt(ConfTW, tab);
+                Q_ASSERT(child);
+                if (child)
                 {
-                    auto lyout = subBox->layout();
-                    lyout->addWidget(widget);
+                    auto subBox = child->findChild<QGroupBox *>();
+                    Q_ASSERT(subBox);
+                    if (!subBox)
+                        widget->deleteLater();
+                    else
+                    {
+                        auto subLayout = subBox->layout();
+                        subLayout->addWidget(widget);
+                    }
                 }
             }
             else

@@ -14,6 +14,7 @@ void BasePort::setState(Interface::State state)
 {
     QMutexLocker locker(&m_stateGuard);
     m_state = state;
+    locker.unlock();
     emit stateChanged(m_state);
 }
 
@@ -56,6 +57,7 @@ bool BasePort::reconnect()
     timer.start();
     while (timer.elapsed() < RECONNECTINTERVAL)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
+    emit clearQueries();
     return connect();
 }
 

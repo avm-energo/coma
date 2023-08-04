@@ -28,10 +28,7 @@ public slots:
     bool clear();
 
 private slots:
-    void errorOccurred(QSerialPort::SerialPortError err);
-
-signals:
-    void clearQueries();
+    void errorOccurred(const QSerialPort::SerialPortError err);
 };
 
 #endif // SERIALPORT_H

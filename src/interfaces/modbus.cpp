@@ -50,7 +50,7 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     connect(port, &BasePort::dataReceived, parser, &BaseInterfaceThread::processReadBytes, Qt::DirectConnection);
     connect(parser, &ModbusThread::sendDataToPort, port, &BasePort::writeDataSync, Qt::QueuedConnection);
     connect(parser, &ModbusThread::clearBuffer, port, &SerialPort::clear, Qt::DirectConnection);
-    connect(port, &SerialPort::clearQueries, parser, &BaseInterfaceThread::clear, Qt::DirectConnection);
+    connect(port, &BasePort::clearQueries, parser, &BaseInterfaceThread::clear, Qt::DirectConnection);
     // connect(port, &SerialPort::error, this, &ModBus::sendReconnectSignal, Qt::DirectConnection);
     connect(this, &BaseInterface::reconnect, port, &BasePort::reconnect, Qt::DirectConnection);
     connect(port, &BasePort::stateChanged, this, &BaseInterface::stateChanged, Qt::QueuedConnection);

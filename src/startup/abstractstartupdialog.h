@@ -34,19 +34,23 @@ public:
     QWidget *buttonWidget();
 
 protected:
-    virtual void WriteCor();
-    virtual void SetupCor();
-    virtual void ResetCor();
-    virtual void GetCorBd();
-
     void updateFloatData(const DataTypes::FloatStruct &fl) override;
+    void uponInterfaceSetting() override;
+
+    void WriteCor();
+    void SetupCor();
+    void ResetCor();
+    void GetCorBd();
+    void FillCor();
+    void FillBackCor();
+
+    void sendCommand(Commands cmd, bool value = true);
+    bool addReg(quint16 regW, quint16 regR, float *ptr);
+
     virtual void SaveToFile() = 0;
     virtual void ReadFromFile() = 0;
-    void ErrorRead();
-    void uponInterfaceSetting() override;
-    bool addReg(quint16 regW, quint16 regR, float *ptr);
-    virtual void FillCor();
-    virtual void FillBackCor();
+    virtual bool checkStartupValues() = 0;
+    // void ErrorRead();
 
 private:
     UpdateStates m_updateState;
@@ -64,11 +68,11 @@ private:
 public slots:
     void reqUpdate() override;
 
-signals:
-    void corWasChecked(int uncheckedRegCount);
+    // signals:
+    //    void corWasChecked(int uncheckedRegCount);
 
-private slots:
-    void setMessageUponCheck(int uncheckedRegCount);
+    // private slots:
+    // void setMessageUponCheck(int uncheckedRegCount);
 };
 
 #endif // ABSTRACTCORDIALOG_H

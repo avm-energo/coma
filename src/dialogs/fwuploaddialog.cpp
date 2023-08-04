@@ -1,22 +1,13 @@
 #include "fwuploaddialog.h"
 
-#include "../dialogs/keypressdialog.h"
-#include "../module/board.h"
 #include "../s2/s2util.h"
 #include "../widgets/epopup.h"
-#include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
 #include <QDebug>
-#include <QGridLayout>
-#include <QMessageBox>
 #include <QVBoxLayout>
-#include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/files.h>
-#include <gen/stdfunc.h>
-#include <gen/timefunc.h>
-#include <gen/utils/crc32.h>
 #include <map>
 
 namespace crypto
@@ -26,29 +17,29 @@ static constexpr char name[] = "fwHash";
 }
 
 FWUploadDialog::FWUploadDialog(QWidget *parent)
-    : UDialog(crypto::hash, crypto::name, parent), uploadStatus(true), parser(new S2Dev::HexParser(this))
+    : UDialog(crypto::hash, crypto::name, parent)
+    , uploadStatus(FirmwareUploadStatus::Start)
+    , parser(new S2Dev::HexParser(this))
 {
-    SetupUI();
     QObject::connect(parser, &S2Dev::HexParser::error, this, &FWUploadDialog::errorHandle);
+    setSuccessMsg("Переход на новое ПО выполнен успешно");
+    setupUI();
 }
 
-void FWUploadDialog::SetupUI()
+void FWUploadDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    QPushButton *pb = WDFunc::NewPB(this, "", "Записать ПО в память " + tmps, this, &FWUploadDialog::LoadFW);
-    glyout->addWidget(pb, 1, 1, 1, 1);
-    pb = WDFunc::NewPB(this, "", "Перейти на новое ПО", this, &FWUploadDialog::RunSoft);
-    glyout->addWidget(pb, 2, 1, 1, 1);
-    lyout->addLayout(glyout, Qt::AlignTop);
+    QPushButton *pb = WDFunc::NewPB(this, "", "Записать ПО в память модуля", this, &FWUploadDialog::loadFirmware);
+    lyout->addWidget(pb);
     setLayout(lyout);
 }
 
-void FWUploadDialog::LoadFW()
+void FWUploadDialog::loadFirmware()
 {
+    uploadStatus = FirmwareUploadStatus::Start;
     if (!checkPassword())
     {
+        uploadStatus = FirmwareUploadStatus::Error;
         qCritical() << Error::GeneralError;
         return;
     }
@@ -58,22 +49,22 @@ void FWUploadDialog::LoadFW()
         return;
 
     QByteArray ba;
-    Error::Msg res = Files::LoadFromFile(filepath, ba);
-    if (res != Error::Msg::NoError)
+    auto status = Files::LoadFromFile(filepath, ba);
+    if (status != Error::Msg::NoError)
     {
-        qCritical() << "Ошибка файла ПО" << res;
+        uploadStatus = FirmwareUploadStatus::Error;
+        qCritical() << "Ошибка файла ПО" << status;
         return;
     }
 
-    uploadStatus = true;
     parser->parseFile(ba);
-    if (!uploadStatus)
+    if (uploadStatus == FirmwareUploadStatus::Error)
     {
         EMessageBox::error(this, errorMsg());
         return;
     }
     auto s2array = parser->getS2Format();
-    if (!uploadStatus)
+    if (uploadStatus == FirmwareUploadStatus::Error)
     {
         EMessageBox::error(this, errorMsg());
         return;
@@ -88,19 +79,37 @@ void FWUploadDialog::LoadFW()
         EMessageBox::error(this, "Получен некорректный размер файла.");
         return;
     }
-    setSuccessMsg("ПО записано успешно");
     BaseInterface::iface()->writeFile(fileType, firmware);
+    uploadStatus = FirmwareUploadStatus::Written;
 }
 
-void FWUploadDialog::RunSoft()
+void FWUploadDialog::updateGeneralResponse(const QVariant &msg)
 {
-    if (!checkPassword())
+    if (!updatesEnabled())
         return;
-    setSuccessMsg("Переход на новое ПО выполнен успешно");
-    BaseInterface::iface()->writeCommand(Commands::C_StartFirmwareUpgrade);
+
+    auto response = msg.value<DataTypes::GeneralResponseStruct>();
+    if (response.type == DataTypes::GeneralResponseTypes::Ok)
+    {
+        if (uploadStatus == FirmwareUploadStatus::Written)
+        {
+            BaseInterface::iface()->writeCommand(Commands::C_StartFirmwareUpgrade);
+            uploadStatus = FirmwareUploadStatus::Upgraded;
+        }
+        else if (uploadStatus == FirmwareUploadStatus::Upgraded)
+        {
+            uploadStatus = FirmwareUploadStatus::End;
+            EMessageBox::information(this, successMsg());
+        }
+    }
+    else if (response.type == DataTypes::GeneralResponseTypes::Error)
+    {
+        uploadStatus = FirmwareUploadStatus::Error;
+        EMessageBox::error(this, Error::MsgStr[Error::Msg(response.data)]);
+    }
 }
 
-void FWUploadDialog::errorHandle(S2Dev::HexParseError error)
+void FWUploadDialog::errorHandle(const S2Dev::HexParseError error)
 {
     using namespace S2Dev;
     static const std::map<HexParseError, QString> errMessages {
@@ -115,5 +124,5 @@ void FWUploadDialog::errorHandle(S2Dev::HexParseError error)
         setErrorMsg(valueIterator->second);
     else
         setErrorMsg("Получен повреждённый HEX-файл.");
-    uploadStatus = false;
+    uploadStatus = FirmwareUploadStatus::Error;
 }

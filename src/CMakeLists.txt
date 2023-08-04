@@ -34,6 +34,7 @@ find_package(QT NAMES Qt6 Qt5)
 if(NOT QT_VERSION_MAJOR)
   string(SUBSTRING ${QT_VERSION} 0 1 QT_VERSION_MAJOR)
 endif()
+message(STATUS "Qt major version: ${QT_VERSION_MAJOR}")
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
   Core Gui PrintSupport Widgets REQUIRED)
 

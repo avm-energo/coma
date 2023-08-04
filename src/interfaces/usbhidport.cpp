@@ -36,7 +36,7 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent)
     , m_shouldBeStopped(false)
 {
     using namespace settings;
-    QObject::connect(this, &UsbHidPort::clearQueries, &UsbHidPort::clear);
+    QObject::connect(this, &BasePort::clearQueries, this, &UsbHidPort::clear);
     QSettings sets;
     missingCounterMax = sets.value(regMap[hidTimeout].name, "50").toInt();
 }

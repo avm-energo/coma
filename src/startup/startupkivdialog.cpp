@@ -43,19 +43,24 @@ bool StartupKIVDialog::checkSpinBoxes(QList<QDoubleSpinBox *> spinBoxes)
             QString message(tr("Сбросьте начальные значения и подождите 30 секунд\n"
                                "После чего повторите операцию задания начальных значений"));
             EMessageBox::warning(this, message);
-            // QMessageBox::warning(this, tr("Начальные значения"), message);
             return false;
         }
     }
     return true;
 }
 
-void StartupKIVDialog::SetupCor()
+bool StartupKIVDialog::checkStartupValues()
 {
     auto spinBoxes = findChildren<QDoubleSpinBox *>();
-    if (checkSpinBoxes(spinBoxes))
-        AbstractStartupDialog::SetupCor();
+    return checkSpinBoxes(spinBoxes);
 }
+
+// void StartupKIVDialog::SetupCor()
+//{
+//    auto spinBoxes = findChildren<QDoubleSpinBox *>();
+//    if (checkSpinBoxes(spinBoxes))
+//        AbstractStartupDialog::SetupCor();
+//}
 
 QWidget *StartupKIVDialog::uiValuesTab(QWidget *parent)
 {
@@ -67,24 +72,24 @@ QWidget *StartupKIVDialog::uiValuesTab(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        glyout->addWidget(
-            WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + i), 0, 10000, 1), row, 2 + i, 1, 1);
+        auto spinBox = WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + i), 0, 10000, 1);
+        glyout->addWidget(spinBox, row, 2 + i, 1, 1);
     }
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Начальные значения tg δ вводов, %:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        glyout->addWidget(
-            WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 3 + i), -10, 10, 2), row, 2 + i, 1, 1);
+        auto spinBox = WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 3 + i), -10, 10, 2);
+        glyout->addWidget(spinBox, row, 2 + i, 1, 1);
     }
     row++;
 
     glyout->addWidget(WDFunc::NewLBL2(this, "Коррекция  tg δ вводов,%:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        glyout->addWidget(
-            WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 6 + i), -10, 10, 2), row, 2 + i, 1, 1);
+        auto spinBox = WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 6 + i), -10, 10, 2);
+        glyout->addWidget(spinBox, row, 2 + i, 1, 1);
     }
     row++;
 
@@ -118,7 +123,10 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
         auto setupCmd = std::get<0>(step);
         auto &phase = std::get<1>(step);
         auto setupValues = new QPushButton(QString("Задать начальные значения по фазе %1").arg(phase), widget);
-        connect(setupValues, &QPushButton::clicked, this, [this, setupCmd]() { sendCommand(setupCmd); });
+        connect(setupValues, &QPushButton::clicked, this, [this, setupCmd]() {
+            setSuccessMsg("Начальные значения записаны успешно");
+            sendCommand(setupCmd);
+        });
         layout->addWidget(setupValues);
     }
 
@@ -129,43 +137,47 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
             [this]() {
                 auto assocFields = findChildren<QDoubleSpinBox *>(QString::number(KIVSTARTUPINITREGR + 9));
                 assocFields.append(findChildren<QDoubleSpinBox *>(QString::number(KIVSTARTUPINITREGR + 10)));
+                setSuccessMsg("Начальные значения записаны успешно");
                 if (checkSpinBoxes(assocFields))
                     sendCommand(Commands::C_SetStartupUnbounced);
             });
         layout->addWidget(setupValues);
 
         auto clearValues = new QPushButton("Сбросить начальные значения небаланса токов", widget);
-        connect(clearValues, &QPushButton::clicked, this, [this]() { sendCommand(Commands::C_ClearStartupUnbounced); });
+        connect(clearValues, &QPushButton::clicked, this, [this]() {
+            setSuccessMsg("Начальные значения сброшены успешно");
+            sendCommand(Commands::C_ClearStartupUnbounced);
+        });
         layout->addWidget(clearValues);
     }
 
     // Create UI commands trans off and reset starup init error
     {
         auto resetStartupErr = new QPushButton("Сброс ошибки задания начальных значений", widget);
-        connect(resetStartupErr, &QPushButton::clicked, this, [this]() { sendCommand(Commands::C_ClearStartupError); });
+        connect(resetStartupErr, &QPushButton::clicked, this, [this]() {
+            setSuccessMsg("Ошибка сброшена успешно");
+            sendCommand(Commands::C_ClearStartupError);
+        });
         layout->addWidget(resetStartupErr);
 
         auto setTransOff = new QPushButton("Послать команду \"Трансформатор включён\"", widget);
-        connect(setTransOff, &QPushButton::clicked, this, [this]() { sendCommand(Commands::C_SetTransOff, false); });
+        connect(setTransOff, &QPushButton::clicked, this, [this]() {
+            setSuccessMsg("Начальные значения записаны успешно");
+            sendCommand(Commands::C_SetTransOff, false);
+        });
         layout->addWidget(setTransOff);
 
         auto setTransOn = new QPushButton("Послать команду \"Трансформатор отключён\"", widget);
-        connect(setTransOn, &QPushButton::clicked, this, [this]() { sendCommand(Commands::C_SetTransOff); });
+        connect(setTransOn, &QPushButton::clicked, this, [this]() {
+            setSuccessMsg("Начальные значения записаны успешно");
+            sendCommand(Commands::C_SetTransOff);
+        });
         layout->addWidget(setTransOn);
     }
 
     widget->setLayout(layout);
     widget->setObjectName("commandsTab");
     return widget;
-}
-
-void StartupKIVDialog::sendCommand(Commands cmd, bool value)
-{
-    if (checkPassword())
-    {
-        BaseInterface::iface()->writeCommand(cmd, value);
-        GetCorBd();
-    }
 }
 
 void StartupKIVDialog::SetupUI()
@@ -191,19 +203,15 @@ void StartupKIVDialog::SaveToFile()
     {
     case Error::Msg::NoError:
         EMessageBox::information(this, "Файл коэффициентов коррекции записан успешно!");
-        // QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
         break;
     case Error::Msg::FileWriteError:
         EMessageBox::error(this, "Ошибка при записи файла!");
-        // QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
     case Error::Msg::FileOpenError:
         EMessageBox::error(this, "Ошибка открытия файла!");
-        // QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
         break;
     case Error::Msg::FileNameError:
         EMessageBox::warning(this, "Задано пустое имя файла!");
-        // QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
     default:
         break;
@@ -222,16 +230,18 @@ void StartupKIVDialog::ReadFromFile()
     if (res != Error::Msg::NoError)
     {
         EMessageBox::error(this, "Ошибка при загрузке файла!");
-        // QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла!");
         qCritical("Ошибка при загрузке файла");
         return;
     }
     // CorBlock = reinterpret_cast<CorData *>(ba.data());
-    memcpy(CorBlock, &(ba.data()[0]), sizeof(CorData));
+    auto dstBegin = reinterpret_cast<quint8 *>(CorBlock);
+    const auto srcBegin = reinterpret_cast<quint8 *>(ba.data());
+    const auto srcEnd = srcBegin + sizeof(CorData);
+    std::copy(srcBegin, srcEnd, dstBegin);
+    // memcpy(CorBlock, &(ba.data()[0]), sizeof(CorData));
 
     FillCor();
     EMessageBox::information(this, "Загрузка прошла успешно!");
-    // QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
 // void StartupKIVDialog::ErrorRead()
