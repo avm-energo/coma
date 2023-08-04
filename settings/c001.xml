@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypeb="c0" mtypem="01">
     <name>АВМ-МПЭ</name>
-    <version>0.0-0000</version>
+    <version>0.6-0000</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">
@@ -10,6 +10,7 @@
                     <string>Аварийная сигнализация по давлению</string>
                     <highlights>
                         <item>100</item>
+                        <item>141</item>
                     </highlights>
                 </item>
             </critical>
@@ -20,6 +21,7 @@
                     <string>Предупредительная сигнализация по давлению</string>
                     <highlights>
                         <item>100</item>
+                        <item>141</item>
                     </highlights>
                 </item>
             </warning>
@@ -109,23 +111,23 @@
         <sections desc="Разделы">
             <section header="Текущие данные">
                 <sgroup header="Датчик HDC1080" tab="1">
-                    <mwidget view="float" desc="Температура от датчика HDC1080">
+                    <mwidget view="float" desc="Температура от датчика HDC1080, °С">
                         <start-addr>120</start-addr>
                         <toolTip>Температура от датчика HDC1080, °С</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Влажность от датчика HDC1080">
+                    <mwidget view="float" desc="Влажность от датчика HDC1080, %">
                         <start-addr>121</start-addr>
-                        <toolTip>Влажность от датчика HDC1080</toolTip>
+                        <toolTip>Влажность от датчика HDC1080, %</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Датчик MS5803" tab="1">
-                    <mwidget view="float" desc="Температура от датчика MS5803">
+                    <mwidget view="float" desc="Температура от датчика MS5803, °С">
                         <start-addr>140</start-addr>
                         <toolTip>Температура от датчика MS5803, °С</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Давление от датчика MS5803">
+                    <mwidget view="float" desc="Давление от датчика MS5803, МПа">
                         <start-addr>141</start-addr>
-                        <toolTip>Давление от датчика MS5803</toolTip>
+                        <toolTip>Давление от датчика MS5803, МПа</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Общие" tab="1">
