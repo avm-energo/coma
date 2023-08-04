@@ -42,30 +42,17 @@ void UDialog::updateGeneralResponse(const QVariant &msg)
     }
     case DataTypes::Error:
     {
-        auto code = Error::Msg(response.data);
         QString msg {};
-        switch (code)
-        {
-        case Error::FlashError:
-        {
-            if (!Board::GetInstance().isCrcValid())
-            {
-                msg = tr("Запрошенный файл отсутствует");
-                break;
-            }
-            [[fallthrough]];
-        }
-        default:
-            msg = Error::MsgStr[Error::Msg(response.data)];
-            break;
-        }
+        auto errorCode = Error::Msg(response.data);
+        if (errorCode == Error::Msg::FlashError && !Board::GetInstance().isCrcValid())
+            msg = tr("Запрошенный файл отсутствует");
+        else
+            msg = Error::MsgStr.value(errorCode, "Неизвестная ошибка");
         EMessageBox::error(this, errorMsg() + " : " + msg);
         break;
     }
     default:
-    {
         break;
-    }
     }
 }
 

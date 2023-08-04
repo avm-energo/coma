@@ -11,7 +11,7 @@ public:
     explicit StartupKTFDialog(QWidget *parent = nullptr);
     ~StartupKTFDialog();
 
-    void GetCorBd() override;
+    // void GetCorBd() override;
 
 private:
     struct WBd7
@@ -30,8 +30,8 @@ private:
     Bd9 *Bd9Block;
     WBd7 *WBd7Block;
 
-    void FillCor() override;
-    void FillBackCor() override;
+    // void FillCor() override;
+    // void FillBackCor() override;
 
     void SetupUI() override;
     void FillBd(QWidget *parent, QString Name, QString Value);
@@ -40,11 +40,12 @@ signals:
 
 public slots:
 
-    void WriteCor() override;
-    void SetupCor() override;
-    void ResetCor() override;
+    // void WriteCor() override;
+    // void SetupCor() override;
+    // void ResetCor() override;
     void SaveToFile() override;
     void ReadFromFile() override;
+    bool checkStartupValues() override;
 
 private slots:
 };

@@ -85,6 +85,9 @@ void FWUploadDialog::loadFirmware()
 
 void FWUploadDialog::updateGeneralResponse(const QVariant &msg)
 {
+    if (!updatesEnabled())
+        return;
+
     auto response = msg.value<DataTypes::GeneralResponseStruct>();
     if (response.type == DataTypes::GeneralResponseTypes::Ok)
     {
