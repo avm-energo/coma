@@ -6,7 +6,6 @@
 
 class QComboBox;
 class QDoubleSpinBox;
-class QLineEdit;
 class QLabel;
 
 constexpr inline std::size_t numGases = 3;
@@ -21,7 +20,7 @@ enum class GasType : qint32
     Nitrogen,            ///< Азот.
     Oxygen,              ///< Кислород.
     Argon,               ///< Аргон.
-    HydrogenFluoride,    ///< Фтороводород (фторид водорда).
+    HydrogenFluoride,    ///< Фтороводород (фторид водорода).
     Other = 0xffff       ///< Другой газ.
 };
 
@@ -42,19 +41,13 @@ enum class Status : bool
 /// \brief Ряд виджетов для ввода данных об одном газе.
 struct GasWidgetRow
 {
-    QComboBox *gasTypeInput = nullptr;   ///< Поле "тип газа".
-    QLineEdit *molarMassInput = nullptr; ///< Поле "молярная масса".
-    QLineEdit *weightInput = nullptr;    ///< Поле "масса".
-    QLineEdit *moleFracInput = nullptr;  ///< Поле "мольная доля".
+    QComboBox *m_gasTypeInput = nullptr;        ///< Поле "тип газа".
+    QDoubleSpinBox *m_molarMassInput = nullptr; ///< Поле "молярная масса".
+    QDoubleSpinBox *m_weightInput = nullptr;    ///< Поле "масса".
+    QDoubleSpinBox *m_moleFracInput = nullptr;  ///< Поле "мольная доля".
 
     /// \brief Является ли текущий ряд активным (выбран ли тип газа).
     bool isActive() const noexcept;
-    /// \brief Возвращает значение с плавающей точкой из содержимого QLineEdit.
-    float getLineEditData(const QLineEdit *lineEdit) const noexcept;
-    /// \brief Устанавливает значение с плавающей точкой в качестве содержимого QLineEdit.
-    /// \param data - усьанавливаемое значение с плавающей точкой.
-    /// \param lineEdit - QLineEdit, содержимое которого будет изменено.
-    void setLineEditData(const float data, QLineEdit *lineEdit) noexcept;
     /// \brief В зависимости от указанного типа газа и текущего режима ввода данных,
     /// активирует и деактивирует виджеты для текущего ряда.
     void layoutAction(const GasType gasType, const InputMode inputMode) noexcept;
@@ -90,21 +83,21 @@ class GasDensityWidget : public QWidget
 {
     Q_OBJECT
 private:
-    std::array<GasWidgetRow, numGases> widgetRows;
-    InputMode workMode;
-    Status status;
-    QLabel *statusWidget;
+    std::array<GasWidgetRow, numGases> m_widgetRows;
+    InputMode m_workMode;
+    Status m_status;
+    QLabel *m_statusWidget;
 
     /// \brief Создаёт и возвращает указатель на QLineEdit для ввода чисел с плавающей точкой.
-    QLineEdit *createLineEdit(float min = 0, float max = 100, int decimals = 10, const QString &text = "0,0");
+    QDoubleSpinBox *createSpinBox(float min = 0, float max = 100, int decimals = 2, float defaultValue = 0);
     /// \brief Создаёт и возвращает указатель на виджет для выбора типа газа.
     QComboBox *createGasTypeWidget(std::size_t index);
     /// \brief Создаёт и возвращает указатель на виджет для ввода молярной массы.
-    QLineEdit *createMolarMassWidget();
+    QDoubleSpinBox *createMolarMassWidget();
     /// \brief Создаёт и возвращает указатель на виджет для ввода массы газа.
-    QLineEdit *createMassWidget();
+    QDoubleSpinBox *createMassWidget();
     /// \brief Создаёт и возвращает указатель на виджет для ввода мольной доли газа.
-    QLineEdit *createMoleFracWidget(std::size_t index);
+    QDoubleSpinBox *createMoleFracWidget(const size_t index);
     /// \brief Создаёт и настраивает пользовательский интерфейс для виджета.
     void setupUI();
 
@@ -118,13 +111,16 @@ private:
     /// \brief Вызывается при изменении типа газа у конкретного ряда виджетов.
     void gasTypeChanged(const std::size_t index, const GasType newGasType);
 
-    /// \brief Перерассчёт данных при режиме ввода масс газов.
+    /// \brief Перерасчёт данных при режиме ввода масс газов.
     void recalc();
-    /// \brief Перерассчёт данных при режиме ввода мольных долей газов.
+    /// \brief Перерасчёт данных при режиме ввода мольных долей газов.
     void recalc(const std::size_t indexChanged);
 
 public:
     explicit GasDensityWidget(QWidget *parent = nullptr);
+
+    /// \brief Заполнить виджет данными в формате S2.
     void fill(const DataTypes::CONF_DENS_3t &value);
+    /// \brief Получить данные от виджета в формате S2.
     DataTypes::CONF_DENS_3t fillBack() const;
 };
