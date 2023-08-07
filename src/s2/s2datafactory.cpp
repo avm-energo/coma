@@ -34,18 +34,18 @@ S2::valueType helper(const QString &str)
     return QVariant(str).value<T>();
 }
 
-}
+} // namespace detail
 
 namespace S2
 {
 
-DataFactory::DataFactory(const S2ConfigStorage &confStorage) : s2confStorage(confStorage)
+DataFactory::DataFactory(const S2ConfigStorage &confStorage) : m_storage(confStorage)
 {
 }
 
 ctti::unnamed_type_id_t DataFactory::getType(const quint32 id) const
 {
-    auto &typeMap = s2confStorage.getTypeByIdMap();
+    auto &typeMap = m_storage.getTypeByIdMap();
     auto search = typeMap.find(id);
     assert(search != typeMap.cend());
     return search->second;
@@ -180,4 +180,4 @@ DataItem DataFactory::create(const quint32 id, const QString &str) const
     }
 }
 
-}
+} // namespace S2

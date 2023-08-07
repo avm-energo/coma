@@ -43,7 +43,6 @@ private:
 
     S2BoardConfig &boardConfig;
     bool m_prereadConf;
-    // ConfigV *configV;
     WidgetFactory factory;
     UniquePointer<DataTypesProxy> proxyDRL;
     ErrConfState *errConfState;

@@ -5,61 +5,61 @@
 namespace S2
 {
 
-DataManager::DataManager(QObject *parent) : QObject(parent), storage(S2ConfigStorage::GetInstance())
+DataManager::DataManager(QObject *parent) : QObject(parent), m_storage(S2ConfigStorage::GetInstance())
 {
 }
 
 S2ConfigStorage &DataManager::getStorage() noexcept
 {
-    return storage;
+    return m_storage;
 }
 
 const S2ConfigStorage &DataManager::getStorage() const noexcept
 {
-    return storage;
+    return m_storage;
 }
 
 BoardConfiguration &DataManager::getCurrentConfiguration() noexcept
 {
-    return data.at(currentParseTarget);
+    return m_data.at(m_currentParseTarget);
 }
 
 const BoardConfiguration &DataManager::getCurrentConfiguration() const noexcept
 {
-    return data.at(currentParseTarget);
+    return m_data.at(m_currentParseTarget);
 }
 
 void DataManager::clear() noexcept
 {
-    data.clear();
-    storage.clearDetailData();
+    m_data.clear();
+    m_storage.clearDetailData();
 }
 
 bool DataManager::isOneBoard() const noexcept
 {
     // Если в парсинге использовался один XML-файл, то модуль
     // состоит из одной платы и имеет один диалог для конфигурации.
-    return currentParseTarget == BoardConfig::Base;
+    return m_currentParseTarget == BoardConfig::Base;
 }
 
 DataManager::Iter DataManager::begin() noexcept
 {
-    return data.begin();
+    return m_data.begin();
 }
 
 DataManager::Iter DataManager::end() noexcept
 {
-    return data.end();
+    return m_data.end();
 }
 
 DataManager::ConstIter DataManager::begin() const noexcept
 {
-    return data.cbegin();
+    return m_data.cbegin();
 }
 
 DataManager::ConstIter DataManager::end() const noexcept
 {
-    return data.cend();
+    return m_data.cend();
 }
 
 void DataManager::startNewConfig()
@@ -67,11 +67,11 @@ void DataManager::startNewConfig()
     constexpr std::array<BoardConfig, 2> boardTypes { BoardConfig::Base, BoardConfig::Mezz };
     for (const auto &boardType : boardTypes)
     {
-        auto search = data.find(boardType);
-        if (search == data.end())
+        auto search = m_data.find(boardType);
+        if (search == m_data.end())
         {
-            data.insert({ boardType, BoardConfiguration { S2Configuration(storage), S2Configuration(storage) } });
-            currentParseTarget = boardType;
+            m_data.insert({ boardType, BoardConfiguration { S2Configuration(m_storage), S2Configuration(m_storage) } });
+            m_currentParseTarget = boardType;
             break;
         }
     }
@@ -81,8 +81,8 @@ void DataManager::configDataReceive(const quint16 id, const QString &defVal, con
 {
     // Перед вызовом configDataReceive гарантированно будет вызван startNewConfig,
     // поэтому currentParseTarget будет гарантированно инициализирован значением.
-    data.at(currentParseTarget).defaultConfig.append(id, defVal);
-    storage.widgetDetailsReceive(id, visib, count);
+    m_data.at(m_currentParseTarget).m_defaultConfig.append(id, defVal);
+    m_storage.widgetDetailsReceive(id, visib, count);
 }
 
 } // namespace S2

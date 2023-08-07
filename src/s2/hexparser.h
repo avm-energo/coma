@@ -5,12 +5,12 @@
 #include <QObject>
 #include <vector>
 
-namespace S2Dev
+namespace S2
 {
 
 /// \brief Enumeration to represent the HEX record types.
 /// \see https://en.wikipedia.org/wiki/Intel_HEX
-enum RecordType : quint8
+enum class RecordType : quint8
 {
     BinaryData = 0x00,       ///< Binary Data.
     EndOfFile = 0x01,        ///< End Of File.
@@ -36,7 +36,7 @@ constexpr auto maxRecordSize = 0xff + minRecordSize; ///< Max HEX record size.
 constexpr quint16 idNotFound = 0xffff;               ///< ID for the invalid block address.
 
 /// \brief Enumeration to represent the error type of the HEX parser.
-enum HexParseError : quint8
+enum class HexParseError : quint8
 {
     InvalidHexRecord = 0, ///< An invalid HEX record in the binary file.
     InvalidRecordSize,    ///< Invalid size of the HEX record.
@@ -49,7 +49,7 @@ class HexParser final : public QObject
 {
     Q_OBJECT
 private:
-    std::vector<HexRecord> records;
+    std::vector<HexRecord> m_records;
 
     /// \brief Verifying the checksum of the HEX record.
     /// \details A record's checksum byte is the two's complement of the least significant byte (LSB)
@@ -87,7 +87,7 @@ public:
 
 signals:
     /// \brief The signal for the parsing error information.
-    void error(S2Dev::HexParseError error);
+    void error(S2::HexParseError error);
 };
 
 }

@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <algorithm>
 
-namespace S2Dev
+namespace S2
 {
 
 HexParser::HexParser(QObject *parent) : QObject(parent)
@@ -60,15 +60,15 @@ void HexParser::parseFile(const QByteArray &binaryFile)
 {
     QString fileString = binaryFile;
     auto strRecords = fileString.split("\r\n");
-    records.clear();
-    records.reserve(strRecords.size());
+    m_records.clear();
+    m_records.reserve(strRecords.size());
     for (const auto &strRecord : strRecords)
     {
         if (strRecord.length() > 0)
         {
             HexRecord record;
             if (parseASCII(strRecord, record))
-                records.push_back(record);
+                m_records.push_back(record);
             else
                 break;
         }
@@ -95,14 +95,14 @@ std::vector<S2::FileStruct> HexParser::getS2Format()
     QByteArray data;
     quint16 prevBlockId = idNotFound, currBlockId = idNotFound;
 
-    for (auto &record : records)
+    for (auto &record : m_records)
     {
         if (record.recordType == RecordType::LinearAddr)
         {
             currBlockId = getIdByAddress(record.data);
             if (currBlockId == idNotFound)
             {
-                emit error(InvalidBlockAddress);
+                emit error(HexParseError::InvalidBlockAddress);
                 data.clear();
                 break;
             }

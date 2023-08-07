@@ -104,7 +104,7 @@ void DialogCreator::createCheckDialogs()
 /// \brief Creating tune dialogs for KIV, KTF and KDV.
 void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
 {
-    auto &workConfig = s2manager.getCurrentConfiguration().workingConfig;
+    auto &workConfig = s2manager.getCurrentConfiguration().m_workingConfig;
     if (boxModel == Modules::Model::KIV)
     {
         // TODO: Реанимировать регулировку для КИВ, временно не работает :(
@@ -141,7 +141,7 @@ void DialogCreator::createStartupDialog(const Modules::Model boxModel)
 void DialogCreator::createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem)
 {
     using namespace Modules;
-    auto &workConfig = s2manager.getCurrentConfiguration().workingConfig;
+    auto &workConfig = s2manager.getCurrentConfiguration().m_workingConfig;
     if (typeb == BaseBoard::MTB_80)
     {
         if ((typem == MezzanineBoard::MTM_81) || (typem == MezzanineBoard::MTM_82) || (typem == MezzanineBoard::MTM_83))

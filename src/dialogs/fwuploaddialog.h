@@ -11,7 +11,7 @@ class FWUploadDialog : public UDialog
     Q_OBJECT
 private:
     bool uploadStatus;
-    S2Dev::HexParser *parser;
+    S2::HexParser *parser;
 
 public:
     explicit FWUploadDialog(QWidget *parent = nullptr);
@@ -21,7 +21,7 @@ public:
 public slots:
     void LoadFW();
     void RunSoft();
-    void errorHandle(S2Dev::HexParseError error);
+    void errorHandle(S2::HexParseError error);
 };
 
 #endif // FWUPDIALOG_H
