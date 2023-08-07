@@ -7,63 +7,44 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QRadioButton>
+#include <cmath>
 #include <gen/std_ext.h>
-
-constexpr float one_hundred = 100.0f;
 
 bool GasWidgetRow::isActive() const noexcept
 {
-    return (weightInput->isEnabled() || moleFracInput->isEnabled());
-}
-
-float GasWidgetRow::getLineEditData(const QLineEdit *lineEdit) const noexcept
-{
-    bool convertStatus = false;
-    const auto dataStr = lineEdit->text();
-    auto data = QLocale::system().toFloat(dataStr, &convertStatus);
-    if (convertStatus)
-        return data;
-    else
-        return 0;
-}
-
-void GasWidgetRow::setLineEditData(const float data, QLineEdit *lineEdit) noexcept
-{
-    const auto dataString = QLocale::system().toString(data);
-    lineEdit->setText(dataString);
+    return (m_weightInput->isEnabled() || m_moleFracInput->isEnabled());
 }
 
 void GasWidgetRow::layoutAction(const GasType gasType, const InputMode inputMode) noexcept
 {
     if (gasType == GasType::NotChosen)
     {
-        molarMassInput->setEnabled(false);
-        weightInput->setEnabled(false);
-        moleFracInput->setEnabled(false);
+        m_molarMassInput->setEnabled(false);
+        m_weightInput->setEnabled(false);
+        m_moleFracInput->setEnabled(false);
     }
     else
     {
         if (gasType == GasType::Other)
-            molarMassInput->setEnabled(true);
+            m_molarMassInput->setEnabled(true);
         else
-            molarMassInput->setEnabled(false);
+            m_molarMassInput->setEnabled(false);
         if (inputMode == InputMode::InputMass)
-            weightInput->setEnabled(true);
+            m_weightInput->setEnabled(true);
         else
-            weightInput->setEnabled(false);
+            m_weightInput->setEnabled(false);
         if (inputMode == InputMode::InputMoleFrac)
-            moleFracInput->setEnabled(true);
+            m_moleFracInput->setEnabled(true);
         else
-            moleFracInput->setEnabled(false);
+            m_moleFracInput->setEnabled(false);
     }
 }
 
 GasType GasWidgetRow::getGasType() const noexcept
 {
-    // Костыль :)
-    auto index = gasTypeInput->currentIndex();
-    constexpr int otherIndex = std_ext::to_underlying(GasType::HydrogenFluoride) + 1;
-    if (index == otherIndex)
+    // Костыль, "Другой газ" - всегда последний в combo box
+    auto index = m_gasTypeInput->currentIndex();
+    if (index == (m_gasTypeInput->count() - 1))
         return GasType::Other;
     else
         return GasType(index);
@@ -71,77 +52,79 @@ GasType GasWidgetRow::getGasType() const noexcept
 
 float GasWidgetRow::getMolarMass() const noexcept
 {
-    return getLineEditData(molarMassInput);
+    return static_cast<float>(m_molarMassInput->value());
 }
 
 float GasWidgetRow::getWeight() const noexcept
 {
-    return getLineEditData(weightInput);
+    return static_cast<float>(m_weightInput->value());
 }
 
 float GasWidgetRow::getMoleFrac() const noexcept
 {
-    return getLineEditData(moleFracInput);
+    return static_cast<float>(m_moleFracInput->value());
 }
 
 float GasWidgetRow::getMoles() const noexcept
 {
     const auto molarMass = getMolarMass();
     const auto weight = getWeight();
-    constexpr float kilo = 1000;
+    constexpr float kilo = 1000.0f;
     if (molarMass != 0)
-        return (weight * 1000) / molarMass;
+        return (weight * kilo) / molarMass;
     else
         return 0;
 }
 
 void GasWidgetRow::setGasType(const GasType type) noexcept
 {
-    // Костыль :)
+    // Костыль, "Другой газ" - всегда последний в combo box
     quint32 index = 0;
     if (type == GasType::Other)
-        index = std_ext::to_underlying(GasType::HydrogenFluoride) + 1;
+        index = (m_gasTypeInput->count() - 1);
     else
         index = std_ext::to_underlying(type);
-    gasTypeInput->setCurrentIndex(index);
+    m_gasTypeInput->setCurrentIndex(index);
 }
 
 void GasWidgetRow::setMolarMass(const float molarMass) noexcept
 {
-    setLineEditData(molarMass, molarMassInput);
+    m_molarMassInput->setValue(molarMass);
 }
 
-void GasWidgetRow::setWeight(const float mass) noexcept
+void GasWidgetRow::setWeight(const float weight) noexcept
 {
-    setLineEditData(mass, weightInput);
+    m_weightInput->setValue(weight);
 }
 
 void GasWidgetRow::setMoleFrac(const float moleFrac) noexcept
 {
-    setLineEditData(moleFrac, moleFracInput);
+    m_moleFracInput->setValue(moleFrac);
 }
 
 void GasWidgetRow::setTotalMoles(const float totalMoles) noexcept
 {
     const auto moles = getMoles();
-    const auto moleFrac = (moles / totalMoles) * one_hundred;
+    float moleFrac = 0.0f;
+    if (totalMoles != 0)
+        moleFrac = (moles / totalMoles) * 100.0f;
     setMoleFrac(moleFrac);
 }
 
 GasDensityWidget::GasDensityWidget(QWidget *parent)
-    : QWidget(parent), workMode(InputMode::InputMass), status(Status::Correct), statusWidget(new QLabel("", this))
+    : QWidget(parent), m_workMode(InputMode::InputMass), m_status(Status::Correct), m_statusWidget(new QLabel("", this))
 {
     setupUI();
 }
 
-QLineEdit *GasDensityWidget::createLineEdit(float min, float max, int decimals, const QString &text)
+QDoubleSpinBox *GasDensityWidget::createSpinBox(float min, float max, int decimals, float defaultValue)
 {
-    auto lineEdit = new QLineEdit(text, this);
-    auto validator = new QDoubleValidator(this);
-    validator->setNotation(QDoubleValidator::Notation::StandardNotation);
-    validator->setRange(min, max, decimals);
-    lineEdit->setValidator(validator);
-    return lineEdit;
+    auto spinBox = new QDoubleSpinBox(this);
+    spinBox->setMinimum(min);
+    spinBox->setMaximum(max);
+    spinBox->setDecimals(decimals);
+    spinBox->setValue(defaultValue);
+    return spinBox;
 }
 
 QComboBox *GasDensityWidget::createGasTypeWidget(std::size_t index)
@@ -163,40 +146,36 @@ QComboBox *GasDensityWidget::createGasTypeWidget(std::size_t index)
         gasTypeWidget->insertItem(std_ext::to_underlying(type), name);
     gasTypeWidget->setCurrentIndex(std_ext::to_underlying(GasType::NotChosen));
     connect(gasTypeWidget, qOverload<int>(&QComboBox::currentIndexChanged), this, //
-        [this, index](const int newIndex) {
-            /// TODO: Костыль, убрать ;)
-            constexpr int otherIndex = std_ext::to_underlying(GasType::HydrogenFluoride) + 1;
-            if (newIndex == otherIndex)
-                gasTypeChanged(index, GasType::Other);
-            else
-                gasTypeChanged(index, GasType(newIndex));
+        [this, index]([[maybe_unused]] const auto _) {
+            auto newGasType = m_widgetRows[index].getGasType();
+            gasTypeChanged(index, newGasType);
         });
     return gasTypeWidget;
 }
 
-QLineEdit *GasDensityWidget::createMolarMassWidget()
+QDoubleSpinBox *GasDensityWidget::createMolarMassWidget()
 {
-    auto molarMassWidget = createLineEdit(0, 500);
-    connect(molarMassWidget, &QLineEdit::textEdited, this, //
+    auto molarMassWidget = createSpinBox(0, 500);
+    connect(molarMassWidget, &QDoubleSpinBox::textChanged, this, //
         [this](const auto &) {
-            if (workMode == InputMode::InputMass)
+            if (m_workMode == InputMode::InputMass)
                 recalc();
         });
     return molarMassWidget;
 }
 
-QLineEdit *GasDensityWidget::createMassWidget()
+QDoubleSpinBox *GasDensityWidget::createMassWidget()
 {
-    auto massWidget = createLineEdit(0, 100);
-    connect(massWidget, &QLineEdit::textEdited, this, //
+    auto massWidget = createSpinBox(0, 100);
+    connect(massWidget, &QDoubleSpinBox::textChanged, this, //
         [this](const auto &) { recalc(); });
     return massWidget;
 }
 
-QLineEdit *GasDensityWidget::createMoleFracWidget(std::size_t index)
+QDoubleSpinBox *GasDensityWidget::createMoleFracWidget(const std::size_t index)
 {
-    auto moleFracWidget = createLineEdit(0, 100);
-    connect(moleFracWidget, &QLineEdit::textEdited, this, //
+    auto moleFracWidget = createSpinBox(0, 100);
+    connect(moleFracWidget, &QDoubleSpinBox::textChanged, this, //
         [this, index](const auto &) { recalc(index); });
     return moleFracWidget;
 }
@@ -225,44 +204,44 @@ void GasDensityWidget::setupUI()
 
     // Создание рядов виджетов для ввода данных
     std::size_t index = 0;
-    for (auto &widgetRow : widgetRows)
+    for (auto &widgetRow : m_widgetRows)
     {
         column = 0;
         row = index + 2;
         auto gasLabel = new QLabel("Газ " + QString::number(row - 1), this);
         layout->addWidget(gasLabel, row, column++, Qt::AlignCenter);
-        widgetRow.gasTypeInput = createGasTypeWidget(index);
-        layout->addWidget(widgetRow.gasTypeInput, row, column++, Qt::AlignCenter);
-        widgetRow.molarMassInput = createMolarMassWidget();
-        widgetRow.molarMassInput->setEnabled(false);
-        layout->addWidget(widgetRow.molarMassInput, row, column++, Qt::AlignCenter);
-        widgetRow.weightInput = createMassWidget();
-        widgetRow.weightInput->setEnabled(false);
-        layout->addWidget(widgetRow.weightInput, row, column++, Qt::AlignCenter);
-        widgetRow.moleFracInput = createMoleFracWidget(index);
-        widgetRow.moleFracInput->setEnabled(false);
-        layout->addWidget(widgetRow.moleFracInput, row, column++, Qt::AlignCenter);
+        widgetRow.m_gasTypeInput = createGasTypeWidget(index);
+        layout->addWidget(widgetRow.m_gasTypeInput, row, column++, Qt::AlignCenter);
+        widgetRow.m_molarMassInput = createMolarMassWidget();
+        widgetRow.m_molarMassInput->setEnabled(false);
+        layout->addWidget(widgetRow.m_molarMassInput, row, column++, Qt::AlignCenter);
+        widgetRow.m_weightInput = createMassWidget();
+        widgetRow.m_weightInput->setEnabled(false);
+        layout->addWidget(widgetRow.m_weightInput, row, column++, Qt::AlignCenter);
+        widgetRow.m_moleFracInput = createMoleFracWidget(index);
+        widgetRow.m_moleFracInput->setEnabled(false);
+        layout->addWidget(widgetRow.m_moleFracInput, row, column++, Qt::AlignCenter);
         ++index;
     }
     setStatus(Status::Incorrect);
-    layout->addWidget(statusWidget, ++row, 0, 1, 5, Qt::AlignCenter);
+    layout->addWidget(m_statusWidget, ++row, 0, 1, 5, Qt::AlignCenter);
     setLayout(layout);
 }
 
 void GasDensityWidget::setStatus(const Status newStatus)
 {
-    if (status != newStatus)
+    if (m_status != newStatus)
     {
-        status = newStatus;
-        if (status == Status::Incorrect)
+        m_status = newStatus;
+        if (m_status == Status::Incorrect)
         {
-            statusWidget->setText("Incorrect data");
-            statusWidget->setStyleSheet("QLabel { color : red; }");
+            m_statusWidget->setText("Incorrect data");
+            m_statusWidget->setStyleSheet("QLabel { color : red; }");
         }
         else
         {
-            statusWidget->setText("Correct data");
-            statusWidget->setStyleSheet("QLabel { color : green; }");
+            m_statusWidget->setText("Correct data");
+            m_statusWidget->setStyleSheet("QLabel { color : green; }");
         }
     }
 }
@@ -270,8 +249,8 @@ void GasDensityWidget::setStatus(const Status newStatus)
 Status GasDensityWidget::checkValues()
 {
     Status newStatus = Status::Correct;
-    float totalMoleFrac = 0;
-    for (auto &widgetRow : widgetRows)
+    float totalMoleFrac = 0.0f;
+    for (auto &widgetRow : m_widgetRows)
     {
         if (widgetRow.isActive())
         {
@@ -279,7 +258,7 @@ Status GasDensityWidget::checkValues()
             // Суммируем в totalMoleFrac
             totalMoleFrac += moleFrac;
             // Проверка, что каждое поле лежит в диапазоне от 0% до 100% и не является NaN
-            if (moleFrac < 0.0f || moleFrac > one_hundred || std::isnan(moleFrac))
+            if (moleFrac < 0.0f || moleFrac > 100.0f || std::isnan(moleFrac))
             {
                 newStatus = Status::Incorrect;
                 break;
@@ -291,9 +270,9 @@ Status GasDensityWidget::checkValues()
     if (newStatus == Status::Correct)
     {
         // totalMoleFrac должен быть равен 100%
-        constexpr float epsilon = std::numeric_limits<float>::epsilon() * one_hundred * 10;
-        const float diff = std::fabs(totalMoleFrac - one_hundred);
-        // qWarning() << diff << " " << epsilon;
+        constexpr float ten = 10.0f;
+        constexpr float epsilon = std::numeric_limits<float>::epsilon() * 100.0f * 10;
+        const float diff = std::fabs(totalMoleFrac - 100.0f);
         // Если большая погрешность
         if (diff > epsilon)
             newStatus = Status::Incorrect;
@@ -306,14 +285,14 @@ void GasDensityWidget::inputModeChanged(const InputMode newInputMode)
     // Если вводим массы газов
     if (newInputMode == InputMode::InputMass)
     {
-        for (auto &widgetRow : widgetRows)
+        for (auto &widgetRow : m_widgetRows)
         {
-            auto typeIndex = widgetRow.gasTypeInput->currentIndex();
+            auto typeIndex = widgetRow.m_gasTypeInput->currentIndex();
             // Отключаем ввод мольной доли, только отображаем
-            widgetRow.moleFracInput->setEnabled(false);
+            widgetRow.m_moleFracInput->setEnabled(false);
             // Включаем поля ввода массы газа, если выбран тип газа
             if (typeIndex != std_ext::to_underlying(GasType::NotChosen))
-                widgetRow.weightInput->setEnabled(true);
+                widgetRow.m_weightInput->setEnabled(true);
             widgetRow.setWeight(1);
         }
         recalc();
@@ -321,18 +300,21 @@ void GasDensityWidget::inputModeChanged(const InputMode newInputMode)
     // Если вводим мольные доли газов
     if (newInputMode == InputMode::InputMoleFrac)
     {
-        for (auto &widgetRow : widgetRows)
+        for (auto &widgetRow : m_widgetRows)
         {
-            auto typeIndex = widgetRow.gasTypeInput->currentIndex();
+            auto typeIndex = widgetRow.m_gasTypeInput->currentIndex();
             // Отключаем ввод массы газа, отображаем всегда "Нет"
-            widgetRow.weightInput->setEnabled(false);
-            widgetRow.weightInput->setText("Нет");
+            widgetRow.m_weightInput->setEnabled(false);
+            widgetRow.m_weightInput->setValue(0);
             // Включаем поля ввода мольной доли газа, если выбран тип газа
             if (typeIndex != std_ext::to_underlying(GasType::NotChosen))
-                widgetRow.moleFracInput->setEnabled(true);
+            {
+                widgetRow.m_moleFracInput->setEnabled(true);
+                widgetRow.m_moleFracInput->setValue(0);
+            }
         }
     }
-    workMode = newInputMode;
+    m_workMode = newInputMode;
 }
 
 void GasDensityWidget::gasTypeChanged(const std::size_t index, const GasType newGasType)
@@ -347,8 +329,8 @@ void GasDensityWidget::gasTypeChanged(const std::size_t index, const GasType new
         { GasType::HydrogenFluoride, 20.00634 }   //
     };
 
-    auto &widgetRow = widgetRows[index];
-    widgetRow.layoutAction(newGasType, workMode);
+    auto &widgetRow = m_widgetRows[index];
+    widgetRow.layoutAction(newGasType, m_workMode);
     // Если выбранный тип соответствует одному из molarMassMap
     if (newGasType != GasType::NotChosen && newGasType != GasType::Other)
     {
@@ -357,15 +339,15 @@ void GasDensityWidget::gasTypeChanged(const std::size_t index, const GasType new
         auto search = molarMassMap.find(newGasType);
         if (search != molarMassMap.cend())
             widgetRow.setMolarMass(search->second);
-        if (workMode == InputMode::InputMass)
+        if (m_workMode == InputMode::InputMass)
             widgetRow.setWeight(1);
     }
     if (newGasType == GasType::NotChosen)
     {
-        widgetRow.moleFracInput->setText("Нет");
-        widgetRow.weightInput->setText("Нет");
+        widgetRow.m_moleFracInput->setValue(0);
+        widgetRow.m_weightInput->setValue(0);
     }
-    if (workMode == InputMode::InputMass)
+    if (m_workMode == InputMode::InputMass)
         recalc();
     else
     {
@@ -378,11 +360,11 @@ void GasDensityWidget::gasTypeChanged(const std::size_t index, const GasType new
 void GasDensityWidget::recalc()
 {
     float totalMoles = 0;
-    for (auto &widgetRow : widgetRows)
+    for (auto &widgetRow : m_widgetRows)
         if (widgetRow.isActive())
             totalMoles += widgetRow.getMoles();
 
-    for (auto &widgetRow : widgetRows)
+    for (auto &widgetRow : m_widgetRows)
         if (widgetRow.isActive())
             widgetRow.setTotalMoles(totalMoles);
 
@@ -414,8 +396,8 @@ void GasDensityWidget::recalc(const std::size_t indexChanged)
 
     std::vector<quint16> activeIndexes;
     activeIndexes.reserve(numGases);
-    for (quint16 index = 0; index < widgetRows.size(); index++)
-        if (widgetRows[index].isActive())
+    for (quint16 index = 0; index < m_widgetRows.size(); index++)
+        if (m_widgetRows[index].isActive())
             activeIndexes.push_back(index);
     auto activeCount = activeIndexes.size();
 
@@ -424,28 +406,28 @@ void GasDensityWidget::recalc(const std::size_t indexChanged)
     {
         // Индекс активного ряда и изменяемого совпадают
         if (activeIndexes[0] == indexChanged)
-            widgetRows[indexChanged].setMoleFrac(one_hundred);
+            m_widgetRows[indexChanged].setMoleFrac(100.0f);
         // Ряд виджетов с индексом indexChanged был отключён
         else
         {
-            widgetRows[activeIndexes[0]].setMoleFrac(one_hundred);
-            widgetRows[indexChanged].moleFracInput->setText("Нет");
+            m_widgetRows[activeIndexes[0]].setMoleFrac(100.0f);
+            m_widgetRows[indexChanged].m_moleFracInput->setValue(0);
         }
     }
     // Имеется 2 активных ряда виджетов
     else if (activeCount == 2)
     {
-        auto &first = widgetRows[activeIndexes[0]];
-        auto &second = widgetRows[activeIndexes[1]];
+        auto &first = m_widgetRows[activeIndexes[0]];
+        auto &second = m_widgetRows[activeIndexes[1]];
         if (activeIndexes[0] == indexChanged)
-            second.setMoleFrac(one_hundred - first.getMoleFrac());
+            second.setMoleFrac(100.0f - first.getMoleFrac());
         else if (activeIndexes[1] == indexChanged)
-            first.setMoleFrac(one_hundred - second.getMoleFrac());
+            first.setMoleFrac(100.0f - second.getMoleFrac());
         // Ряд виджетов с индексом indexChanged был отключён
         else
         {
-            widgetRows[indexChanged].moleFracInput->setText("Нет");
-            second.setMoleFrac(one_hundred - first.getMoleFrac());
+            m_widgetRows[indexChanged].m_moleFracInput->setValue(0);
+            second.setMoleFrac(100.0f - first.getMoleFrac());
         }
     }
     // Имеется 3 активных ряда виджетов
@@ -459,14 +441,14 @@ void GasDensityWidget::recalc(const std::size_t indexChanged)
         // Данные изменились во 2ом ряде, перерасчёт 3го активного ряда виджетов
         else if (indexChanged == 1)
         {
-            auto recalc = one_hundred - (widgetRows[0].getMoleFrac() + widgetRows[1].getMoleFrac());
-            widgetRows[2].setMoleFrac(recalc);
+            auto recalc = 100.0f - (m_widgetRows[0].getMoleFrac() + m_widgetRows[1].getMoleFrac());
+            m_widgetRows[2].setMoleFrac(recalc);
         }
         // Данные изменились во 3ем ряде, перерасчёт 2ого активного ряда виджетов
         else if (indexChanged == 2)
         {
-            auto recalc = one_hundred - (widgetRows[0].getMoleFrac() + widgetRows[2].getMoleFrac());
-            widgetRows[1].setMoleFrac(recalc);
+            auto recalc = 100.0f - (m_widgetRows[0].getMoleFrac() + m_widgetRows[2].getMoleFrac());
+            m_widgetRows[1].setMoleFrac(recalc);
         }
         // Данные изменились в несуществующем ряде виджетов (???)
         else
@@ -478,10 +460,10 @@ void GasDensityWidget::recalc(const std::size_t indexChanged)
 
 void GasDensityWidget::fill(const S2::CONF_DENS_3t &value)
 {
-    for (auto index = 0; index < widgetRows.size(); index++)
+    for (auto index = 0; index < m_widgetRows.size(); index++)
     {
         const auto &elem = value[index];
-        auto &widgetRow = widgetRows[index];
+        auto &widgetRow = m_widgetRows[index];
         widgetRow.setGasType(GasType(elem.TypeGaz));
         widgetRow.setWeight(elem.Weight);
         widgetRow.setMolarMass(elem.MolW);
@@ -492,10 +474,10 @@ void GasDensityWidget::fill(const S2::CONF_DENS_3t &value)
 S2::CONF_DENS_3t GasDensityWidget::fillBack() const
 {
     S2::CONF_DENS_3t retData;
-    for (auto index = 0; index < widgetRows.size(); index++)
+    for (auto index = 0; index < m_widgetRows.size(); index++)
     {
         auto &elem = retData[index];
-        const auto &widgetRow = widgetRows[index];
+        const auto &widgetRow = m_widgetRows[index];
         elem.TypeGaz = std_ext::to_underlying(widgetRow.getGasType());
         elem.Weight = widgetRow.getWeight();
         elem.MolW = widgetRow.getMolarMass();

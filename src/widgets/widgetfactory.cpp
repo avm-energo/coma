@@ -283,7 +283,7 @@ QList<QStandardItem *> WidgetFactory::createItem(
 
     const auto var = search->second;
     std::visit(overloaded {
-                   [&]([[maybe_unused]] const auto &arg) { using namespace delegate; },
+                   []([[maybe_unused]] const auto &_) { ; },
                    [&](const config::Item &arg) {
                        switch (arg.itemType)
                        {
