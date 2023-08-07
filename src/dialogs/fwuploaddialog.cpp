@@ -19,9 +19,9 @@ static constexpr char name[] = "fwHash";
 FWUploadDialog::FWUploadDialog(QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent)
     , uploadStatus(FirmwareUploadStatus::Start)
-    , parser(new S2Dev::HexParser(this))
+    , parser(new S2::HexParser(this))
 {
-    QObject::connect(parser, &S2Dev::HexParser::error, this, &FWUploadDialog::errorHandle);
+    QObject::connect(parser, &S2::HexParser::error, this, &FWUploadDialog::errorHandle);
     setSuccessMsg("Переход на новое ПО выполнен успешно");
     setupUI();
 }
@@ -109,9 +109,9 @@ void FWUploadDialog::updateGeneralResponse(const QVariant &msg)
     }
 }
 
-void FWUploadDialog::errorHandle(const S2Dev::HexParseError error)
+void FWUploadDialog::errorHandle(S2::HexParseError error)
 {
-    using namespace S2Dev;
+    using namespace S2;
     static const std::map<HexParseError, QString> errMessages {
         { HexParseError::InvalidHexRecord, "Битый HEX-файл: некорректная запись." },                         //
         { HexParseError::InvalidRecordSize, "Битый HEX-файл: некорректный размер записи." },                 //

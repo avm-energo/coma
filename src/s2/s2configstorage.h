@@ -18,16 +18,17 @@ enum class ParseStatus : bool
 /// TODO: отдельная структура для детализированной информации о виджете?
 using WidgetDetail = std::pair<bool, quint32>;
 
+/// \brief Класс для хранения XML конфигурации, необходимой для работы с данными в формате S2.
 class ConfigStorage : public QObject, public Singleton<ConfigStorage>
 {
     Q_OBJECT
 private:
-    std::map<QString, quint32> idByName;
-    std::map<quint32, ctti::unnamed_type_id_t> typeById;
-    config::widgetMap widgetMap;
-    std::map<quint32, QString> configTabs;
-    std::map<quint32, WidgetDetail> widgetDetailMap;
-    ParseStatus status;
+    std::map<QString, quint32> m_idByName;
+    std::map<quint32, ctti::unnamed_type_id_t> m_typeById;
+    config::widgetMap m_widgetMap;
+    std::map<quint32, QString> m_configTabs;
+    std::map<quint32, WidgetDetail> m_widgetDetailMap;
+    ParseStatus m_status;
 
 public:
     explicit ConfigStorage(token token, QObject *parent = nullptr);
@@ -74,6 +75,6 @@ public slots:
     void widgetDetailsReceive(const quint32 id, const bool visib, const quint16 count);
 };
 
-}
+} // namespace S2
 
 using S2ConfigStorage = S2::ConfigStorage;
