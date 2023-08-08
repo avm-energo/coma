@@ -6,9 +6,11 @@
 #include <QCoreApplication>
 #include <QHeaderView>
 #include <QProgressBar>
+#include <QPushButton>
 #include <QStandardItemModel>
 #include <QThread>
 #include <QTimer>
+#include <gen/stdfunc.h>
 #include <gen/utils/crc16.h>
 
 SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *parent)
@@ -23,6 +25,7 @@ SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *pa
     , responseReceived(false)
     , responseError(false)
     , portError(false)
+    , stop(false)
 {
     timeoutTimer->setSingleShot(true);
     timeoutTimer->setInterval(params.timeout);
@@ -47,6 +50,15 @@ void SearchProccessDialog::setupUI()
     progressBar = new QProgressBar(this);
     progressBar->setOrientation(Qt::Horizontal);
     mainLayout->addWidget(progressBar);
+    auto stopButton = new QPushButton("Остановить поиск", this);
+    QObject::connect(stopButton, &QPushButton::clicked, this, [this]() {
+        if (!stop)
+        {
+            stop = true;
+            EMessageBox::information(this, "Поиск остановлен!");
+        }
+    });
+    mainLayout->addWidget(stopButton);
     setLayout(mainLayout);
     setMinimumSize(700, 600);
 }
@@ -73,7 +85,7 @@ void SearchProccessDialog::receiveResponse(QSerialPort *port)
 {
     if (port->isOpen())
     {
-        while (port->bytesAvailable() && (!timeout))
+        while (port->bytesAvailable() && !timeout && !stop)
         {
             response.append(port->readAll());
             QCoreApplication::processEvents();
@@ -162,7 +174,7 @@ void SearchProccessDialog::sendRequest(QSerialPort *port)
         auto request = createRequest();
         port->write(request);
         timeoutTimer->start();
-        while (!timeout && !responseReceived && !responseError && !portError)
+        while (!timeout && !responseReceived && !responseError && !portError && !stop)
             QCoreApplication::processEvents();
         if (portError)
             timeout = false;
@@ -233,13 +245,12 @@ void SearchProccessDialog::updateProgressBar()
     progressBar->setValue(progressBar->value() + 1);
 }
 
-void SearchProccessDialog::portErrorFinish(QSerialPort *port)
+void SearchProccessDialog::searchFinish(QSerialPort *port)
 {
     port->flush();
     port->close();
     port->deleteLater();
     progressBar->setValue(progressBar->maximum());
-    EMessageBox::error(this, "Произошла ошибка COM-порта!");
 }
 
 void SearchProccessDialog::search()
@@ -266,6 +277,13 @@ void SearchProccessDialog::search()
                 auto openStatus = port->open(QIODevice::ReadWrite);
                 for (auto addr = params.startAddr; addr <= params.endAddr; addr++)
                 {
+                    // При закрытии окна или остановке поиска через кнопку
+                    if (stop)
+                    {
+                        searchFinish(port);
+                        return;
+                    }
+
                     currentAddress = static_cast<quint8>(addr);
                     createModelItem(row, addr, baud, parity, stopBit);
                     if (openStatus)
@@ -275,10 +293,12 @@ void SearchProccessDialog::search()
                     updateTable(row);
                     updateProgressBar();
                     row++;
+
                     // При неожиданной ошибке порта закрываем соединение
                     if (portError)
                     {
-                        portErrorFinish(port);
+                        searchFinish(port);
+                        EMessageBox::error(this, "Произошла ошибка COM-порта!");
                         return;
                     }
                 }
@@ -288,6 +308,23 @@ void SearchProccessDialog::search()
             }
         }
     }
+    // Поиск закончился
+    stop = true;
     port->deleteLater();
     EMessageBox::information(this, "Сканирование завершено!");
+}
+
+void SearchProccessDialog::done(int r)
+{
+    // Если поиск не закончился
+    if (!stop)
+    {
+        stop = true;
+        auto closeTimer = new QTimer(this);
+        closeTimer->setSingleShot(true);
+        QObject::connect(closeTimer, &QTimer::timeout, this, [this, r](const auto) { QDialog::done(r); });
+        closeTimer->start(params.timeout);
+    }
+    else
+        QDialog::done(r);
 }
