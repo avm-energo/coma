@@ -13,17 +13,17 @@
 
 StartupKDVDialog::StartupKDVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
-    // int i;
-
     Bd9Block = new Bd9;
     WBd7Block = new WBd7;
     WBd8Block = new WBd8;
-
     // SetupUI();
 }
 
 StartupKDVDialog::~StartupKDVDialog()
 {
+    delete Bd9Block;
+    delete WBd7Block;
+    delete WBd8Block;
 }
 
 void StartupKDVDialog::SetupUI()

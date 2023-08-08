@@ -14,7 +14,7 @@ class StartupKIVDialog : public AbstractStartupDialog
 
 public:
     explicit StartupKIVDialog(QWidget *parent = nullptr);
-    ~StartupKIVDialog();
+    virtual ~StartupKIVDialog();
     // void SetupCor() override;
 
 private:

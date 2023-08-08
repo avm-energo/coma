@@ -90,7 +90,6 @@ void AbstractStartupDialog::GetCorBd()
     m_uncheckedRegCount = m_regCountToCheck = m_startupBlockDescription.size / sizeof(float);
     BaseInterface::iface()->reqStartup(m_startupBlockDescription.initStartRegAdr,
         m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
-    // EMessageBox::information(this, "Начальные значения прочитаны успешно");
 }
 
 void AbstractStartupDialog::SetupCor()
@@ -126,28 +125,15 @@ void AbstractStartupDialog::sendCommand(Commands cmd, bool value)
     }
 }
 
-float AbstractStartupDialog::ToFloat(QString text)
-{
-    bool ok;
-    float tmpf;
-    tmpf = text.toFloat(&ok);
-    if (!ok)
-    {
-        qCritical() << "Значение " << text << " не может быть переведено во float";
-        return 0;
-    }
-    return tmpf;
-}
-
 void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
     if (fl.sigAdr >= m_regMapR.firstKey() && fl.sigAdr <= m_regMapR.lastKey())
     {
         if (fl.sigQuality != 192)
-            FillBd(this, QString::number(fl.sigAdr), "***");
+            FillBd(QString::number(fl.sigAdr), "***");
         else
-            FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
+            FillBd(QString::number(fl.sigAdr), fl.sigVal);
         float valueToCheck = (m_corNeedsToCheck == CheckForRegMap) ? *(m_regMapR.value(fl.sigAdr)) : 0;
         if (m_corNeedsToCheck != NoChecks)
         {
@@ -165,32 +151,26 @@ void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
     }
 }
 
-void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, QString Value)
+void AbstractStartupDialog::FillBd(const QString &name, const QString &value)
 {
     bool ok;
-    double d = Value.toDouble(&ok);
+    double d = value.toDouble(&ok);
     if (ok)
     {
-        if (!WDFunc::SetSPBData(parent, Name, d))
+        if (!WDFunc::SetSPBData(this, name, d))
             qDebug() << "Failed to find SpinBox";
     }
     else
-        qDebug() << "Failed to convert" << Value.toFloat();
+        qDebug() << "Failed to convert" << value.toFloat();
 }
 
-void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, float Value)
+void AbstractStartupDialog::FillBd(const QString &name, const float value)
 {
-    if (!WDFunc::SetSPBData(parent, Name, Value))
+    if (!WDFunc::SetSPBData(this, name, value))
     {
-        qDebug() << "Failed to find SpinBox with name:" << Name << "and parent:" << parent->objectName()
-                 << "to setup value: " << Value;
+        qDebug() << "Failed to find SpinBox with name: " << name << " to setup value: " << value;
     }
 }
-
-// void AbstractStartupDialog::ErrorRead()
-//{
-//    QMessageBox::information(this, "Ошибка", "Ошибка чтения");
-//}
 
 void AbstractStartupDialog::uponInterfaceSetting()
 {
@@ -242,6 +222,24 @@ void AbstractStartupDialog::reqUpdate()
     else
         m_updateState = ThereWasNoUpdatesRecently;
 }
+
+// float AbstractStartupDialog::ToFloat(QString text)
+//{
+//    bool ok;
+//    float tmpf;
+//    tmpf = text.toFloat(&ok);
+//    if (!ok)
+//    {
+//        qCritical() << "Значение " << text << " не может быть переведено во float";
+//        return 0;
+//    }
+//    return tmpf;
+//}
+
+// void AbstractStartupDialog::ErrorRead()
+//{
+//    QMessageBox::information(this, "Ошибка", "Ошибка чтения");
+//}
 
 // void AbstractStartupDialog::setMessageUponCheck(int uncheckedRegCount)
 //{
