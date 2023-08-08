@@ -50,7 +50,11 @@ protected:
     virtual void SaveToFile() = 0;
     virtual void ReadFromFile() = 0;
     virtual bool checkStartupValues() = 0;
+
     // void ErrorRead();
+    // float ToFloat(QString text);
+    // void corWasChecked(int uncheckedRegCount);
+    // void setMessageUponCheck(int uncheckedRegCount);
 
 private:
     UpdateStates m_updateState;
@@ -60,19 +64,12 @@ private:
                                   // equal to these stored in m_regMap
     int m_regCountToCheck, m_uncheckedRegCount;
 
-    float ToFloat(QString text);
     virtual void SetupUI() = 0;
-    void FillBd(QWidget *parent, QString Name, QString Value);
-    void FillBd(QWidget *parent, QString Name, float Value);
+    void FillBd(const QString &name, const QString &value);
+    void FillBd(const QString &name, const float value);
 
 public slots:
     void reqUpdate() override;
-
-    // signals:
-    //    void corWasChecked(int uncheckedRegCount);
-
-    // private slots:
-    // void setMessageUponCheck(int uncheckedRegCount);
 };
 
 #endif // ABSTRACTCORDIALOG_H

@@ -15,13 +15,14 @@
 
 StartupKTFDialog::StartupKTFDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
-
     Bd9Block = new Bd9;
     WBd7Block = new WBd7;
 }
 
 StartupKTFDialog::~StartupKTFDialog()
 {
+    delete Bd9Block;
+    delete WBd7Block;
 }
 
 void StartupKTFDialog::SetupUI()
