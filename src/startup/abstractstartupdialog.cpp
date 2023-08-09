@@ -22,9 +22,9 @@ AbstractStartupDialog::AbstractStartupDialog(QWidget *parent)
     , m_updateState(ThereWasNoUpdatesRecently)
 {
     m_updateState = ThereWasNoUpdatesRecently;
-    //    setSuccessMsg("Стартовые значения записаны успешно");
     m_corNeedsToCheck = NoChecks;
-    connect(this, &AbstractStartupDialog::corWasChecked, this, &AbstractStartupDialog::setMessageUponCheck);
+    // connect(this, &AbstractStartupDialog::corWasChecked, this, &AbstractStartupDialog::setMessageUponCheck);
+    // disableMessages();
 }
 
 void AbstractStartupDialog::SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr)
@@ -38,12 +38,12 @@ QWidget *AbstractStartupDialog::buttonWidget()
     auto layout = new QVBoxLayout;
     auto group = new QDialogButtonBox(widget);
 
-    const QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
+    // const QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     using VoidFunction = std::function<void()>;
     const QList<std::tuple<QString, QString, VoidFunction>> funcs {
         { "Задать все начальные значения", ":/icons/tnapprove.svg", [this]() { SetupCor(); } }, //
         { "Сбросить все начальные значения", ":/icons/tnreset.svg", [this]() { ResetCor(); } }, //
-        { "Получить из " + tmps, ":/icons/tnread.svg", [this]() { GetCorBd(); } },              //
+        { "Получить из модуля", ":/icons/tnread.svg", [this]() { GetCorBd(); } },               //
         { "Записать в модуль", ":/icons/tnwrite.svg", [this]() { WriteCor(); } },               //
         { "Прочитать значения из файла", ":/icons/tnload.svg", [this]() { ReadFromFile(); } },  //
         { "Сохранить значения в файл", ":/icons/tnsave.svg", [this]() { SaveToFile(); } }       //
@@ -92,27 +92,37 @@ void AbstractStartupDialog::GetCorBd()
         m_startupBlockDescription.size / sizeof(float)); // /4 => float by default
 }
 
+void AbstractStartupDialog::SetupCor()
+{
+    if (checkPassword())
+    {
+        if (checkStartupValues())
+        {
+            setSuccessMsg("Начальные значения записаны успешно");
+            BaseInterface::iface()->writeCommand(Commands::C_SetStartupValues);
+            GetCorBd();
+        }
+    }
+}
+
 void AbstractStartupDialog::ResetCor()
 {
     if (checkPassword())
     {
+        setSuccessMsg("Начальные значения сброшены успешно");
         BaseInterface::iface()->writeCommand(Commands::C_ClearStartupValues);
         m_corNeedsToCheck = CheckForZeroes; // we should check regs for equality at the next sigs receive
         GetCorBd();
     }
 }
 
-float AbstractStartupDialog::ToFloat(QString text)
+void AbstractStartupDialog::sendCommand(Commands cmd, bool value)
 {
-    bool ok;
-    float tmpf;
-    tmpf = text.toFloat(&ok);
-    if (!ok)
+    if (checkPassword())
     {
-        qCritical() << "Значение " << text << " не может быть переведено во float";
-        return 0;
+        BaseInterface::iface()->writeCommand(cmd, value);
+        GetCorBd();
     }
-    return tmpf;
 }
 
 void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
@@ -121,9 +131,9 @@ void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
     if (fl.sigAdr >= m_regMapR.firstKey() && fl.sigAdr <= m_regMapR.lastKey())
     {
         if (fl.sigQuality != 192)
-            FillBd(this, QString::number(fl.sigAdr), "***");
+            FillBd(QString::number(fl.sigAdr), "***");
         else
-            FillBd(this, QString::number(fl.sigAdr), fl.sigVal);
+            FillBd(QString::number(fl.sigAdr), fl.sigVal);
         float valueToCheck = (m_corNeedsToCheck == CheckForRegMap) ? *(m_regMapR.value(fl.sigAdr)) : 0;
         if (m_corNeedsToCheck != NoChecks)
         {
@@ -134,46 +144,32 @@ void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
             if (--m_regCountToCheck <= 0)
             {
                 m_corNeedsToCheck = NoChecks;
-                emit corWasChecked(m_uncheckedRegCount);
+                // emit corWasChecked(m_uncheckedRegCount);
+                // setMessageUponCheck(m_uncheckedRegCount);
             }
         }
     }
 }
 
-void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, QString Value)
+void AbstractStartupDialog::FillBd(const QString &name, const QString &value)
 {
     bool ok;
-    double d = Value.toDouble(&ok);
+    double d = value.toDouble(&ok);
     if (ok)
     {
-        if (!WDFunc::SetSPBData(parent, Name, d))
+        if (!WDFunc::SetSPBData(this, name, d))
             qDebug() << "Failed to find SpinBox";
     }
     else
-        qDebug() << "Failed to convert" << Value.toFloat();
+        qDebug() << "Failed to convert" << value.toFloat();
 }
 
-void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, float Value)
+void AbstractStartupDialog::FillBd(const QString &name, const float value)
 {
-    if (!WDFunc::SetSPBData(parent, Name, Value))
+    if (!WDFunc::SetSPBData(this, name, value))
     {
-        qDebug() << "Failed to find SpinBox with name:" << Name << "and parent:" << parent->objectName()
-                 << "to setup value: " << Value;
+        qDebug() << "Failed to find SpinBox with name: " << name << " to setup value: " << value;
     }
-}
-
-void AbstractStartupDialog::SetupCor()
-{
-    if (checkPassword())
-    {
-        BaseInterface::iface()->writeCommand(Commands::C_SetStartupValues);
-        GetCorBd();
-    }
-}
-
-void AbstractStartupDialog::ErrorRead()
-{
-    QMessageBox::information(this, "Ошибка", "Ошибка чтения");
 }
 
 void AbstractStartupDialog::uponInterfaceSetting()
@@ -217,15 +213,9 @@ void AbstractStartupDialog::reqUpdate()
             m_updateState = QueryWasInitiated;
             break;
         case QueryWasInitiated:
-        {
-            //            updateFloatData();
             m_updateState = AnswerWasReceived;
             break;
-        }
-        break;
         case AnswerWasReceived:
-            //            FillCor();
-            //            m_updateState = ThereWasNoUpdatesRecently;
             break;
         }
     }
@@ -233,10 +223,28 @@ void AbstractStartupDialog::reqUpdate()
         m_updateState = ThereWasNoUpdatesRecently;
 }
 
-void AbstractStartupDialog::setMessageUponCheck(int uncheckedRegCount)
-{
-    if (uncheckedRegCount == 0)
-        EMessageBox::information(this, "Записано успешно");
-    else
-        EMessageBox::warning(this, "Запись не состоялась");
-}
+// float AbstractStartupDialog::ToFloat(QString text)
+//{
+//    bool ok;
+//    float tmpf;
+//    tmpf = text.toFloat(&ok);
+//    if (!ok)
+//    {
+//        qCritical() << "Значение " << text << " не может быть переведено во float";
+//        return 0;
+//    }
+//    return tmpf;
+//}
+
+// void AbstractStartupDialog::ErrorRead()
+//{
+//    QMessageBox::information(this, "Ошибка", "Ошибка чтения");
+//}
+
+// void AbstractStartupDialog::setMessageUponCheck(int uncheckedRegCount)
+//{
+//    if (uncheckedRegCount == 0)
+//        EMessageBox::information(this, "Записано успешно");
+//    else
+//        EMessageBox::warning(this, "Запись не состоялась");
+//}

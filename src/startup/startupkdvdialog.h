@@ -8,9 +8,7 @@ class StartupKDVDialog : public AbstractStartupDialog
     Q_OBJECT
 public:
     StartupKDVDialog(QWidget *parent = nullptr);
-    ~StartupKDVDialog();
-
-    void GetCorBd() override;
+    virtual ~StartupKDVDialog();
 
 private:
     struct WBd7
@@ -38,18 +36,21 @@ private:
     WBd7 *WBd7Block;
     WBd8 *WBd8Block;
 
-    void FillBackCor() override;
-    void FillCor() override;
-    void FillBackWBd8();
+    // void GetCorBd() override;
+    // void FillBackCor() override;
+    // void FillCor() override;
+    // void FillBackWBd8();
+    // void WriteCor() override;
+    // void SetupCor() override;
+    // void ResetCor() override;
+
     void SetupUI() override;
     void FillBd(QWidget *parent, QString Name, QString Value);
 
 public slots:
-    void WriteCor() override;
-    void SetupCor() override;
-    void ResetCor() override;
     void SaveToFile() override;
     void ReadFromFile() override;
+    bool checkStartupValues() override;
 };
 
 #endif // CORDIALOGKDV_H

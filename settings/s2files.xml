@@ -54,7 +54,6 @@
 			<name>Гистерезис сигнализации</name>
 		</tab>
 		<tab>
-		<tab>
 			<id>7</id>
 			<name>Газовая смесь</name>
 		</tab>
@@ -4952,7 +4951,7 @@
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>7</group>
-			<string>Давление газа</string>
+			<string>&lt;br&gt;Давление газа, МПа &lt;br&bsol;&gt; &lt;br&gt;(1МПа = 10,19716 кгс/см^2)&lt;br&bsol;&gt;</string>
 			<count>3</count>
 			<string-array>
 				<item>Номинальное (давление заполнения)</item>
@@ -4960,7 +4959,7 @@
 				<item>Давление аварийной уставки</item>
 			</string-array>
 			<min>0</min>
-			<max>100</max>
+			<max>5000</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>

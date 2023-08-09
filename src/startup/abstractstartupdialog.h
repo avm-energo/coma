@@ -34,19 +34,27 @@ public:
     QWidget *buttonWidget();
 
 protected:
-    virtual void WriteCor();
-    virtual void SetupCor();
-    virtual void ResetCor();
-    virtual void GetCorBd();
-
     void updateFloatData(const DataTypes::FloatStruct &fl) override;
+    void uponInterfaceSetting() override;
+
+    void WriteCor();
+    void SetupCor();
+    void ResetCor();
+    void GetCorBd();
+    void FillCor();
+    void FillBackCor();
+
+    void sendCommand(Commands cmd, bool value = true);
+    bool addReg(quint16 regW, quint16 regR, float *ptr);
+
     virtual void SaveToFile() = 0;
     virtual void ReadFromFile() = 0;
-    void ErrorRead();
-    void uponInterfaceSetting() override;
-    bool addReg(quint16 regW, quint16 regR, float *ptr);
-    virtual void FillCor();
-    virtual void FillBackCor();
+    virtual bool checkStartupValues() = 0;
+
+    // void ErrorRead();
+    // float ToFloat(QString text);
+    // void corWasChecked(int uncheckedRegCount);
+    // void setMessageUponCheck(int uncheckedRegCount);
 
 private:
     UpdateStates m_updateState;
@@ -56,19 +64,12 @@ private:
                                   // equal to these stored in m_regMap
     int m_regCountToCheck, m_uncheckedRegCount;
 
-    float ToFloat(QString text);
     virtual void SetupUI() = 0;
-    void FillBd(QWidget *parent, QString Name, QString Value);
-    void FillBd(QWidget *parent, QString Name, float Value);
+    void FillBd(const QString &name, const QString &value);
+    void FillBd(const QString &name, const float value);
 
 public slots:
     void reqUpdate() override;
-
-signals:
-    void corWasChecked(int uncheckedRegCount);
-
-private slots:
-    void setMessageUponCheck(int uncheckedRegCount);
 };
 
 #endif // ABSTRACTCORDIALOG_H

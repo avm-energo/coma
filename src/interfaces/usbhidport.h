@@ -39,9 +39,6 @@ public:
     bool shouldBeStopped() const;
     void shouldBeStopped(bool isShouldBeStopped);
 
-signals:
-    void clearQueries();
-
 public slots:
     bool connect() override;
     void disconnect() override;

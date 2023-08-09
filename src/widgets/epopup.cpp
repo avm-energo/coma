@@ -6,7 +6,7 @@
 
 #include <QApplication>
 #include <QCryptographicHash>
-#include <QDesktopWidget>
+//#include <QDesktopWidget>
 #include <QEventLoop>
 #include <QGuiApplication>
 #include <QPropertyAnimation>

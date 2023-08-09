@@ -2,8 +2,10 @@
 
 #include "filestruct.h"
 
+#include <QDebug>
 #include <array>
 #include <gen/std_ext.h>
+#include <gen/timefunc.h>
 #include <variant>
 #include <vector>
 
@@ -120,8 +122,15 @@ struct OscInfo
     quint64 unixtime; ///< Время начала записи осциллограммы
     quint32 idOsc0; ///< ID первой осциллограммы в файле (определяет структуру точки и номер канала)
 
-    friend QDebug operator<<(QDebug debug, const S2::OscInfo &st);
+    friend inline QDebug operator<<(QDebug debug, const S2::OscInfo &st);
 };
+
+inline QDebug operator<<(QDebug debug, const S2::OscInfo &st)
+{
+    debug.nospace() << st.typeHeader.id << ":" << st.typeHeader.numByte << ":" << st.id << ":"
+                    << TimeFunc::UnixTime64ToString(st.unixtime) << ":" << st.idOsc0;
+    return debug.maybeSpace();
+}
 
 struct SwitchJourInfo
 {

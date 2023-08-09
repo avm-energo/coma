@@ -29,8 +29,7 @@ ConfigDialog::ConfigDialog(S2BoardConfig &boardConf, bool prereadConf, QWidget *
     : UDialog(crypto::hash, crypto::name, parent)
     , boardConfig(boardConf)
     , m_prereadConf(prereadConf)
-    // , configV(nullptr)
-    , factory(boardConfig.workingConfig)
+    , factory(boardConfig.m_workingConfig)
     , proxyDRL(new DataTypesProxy)
     , errConfState(new ErrConfState())
 {
@@ -52,7 +51,7 @@ void ConfigDialog::writeConfig()
     {
         if (prepareConfigToWrite())
         {
-            auto s2file = boardConfig.workingConfig.toByteArray();
+            auto s2file = boardConfig.m_workingConfig.toByteArray();
             BaseInterface::iface()->writeFile(confType, s2file);
         }
         else
@@ -62,7 +61,7 @@ void ConfigDialog::writeConfig()
 
 void ConfigDialog::checkForDiff()
 {
-    const auto diffItems = boardConfig.defaultConfig.checkDiff(boardConfig.workingConfig);
+    const auto diffItems = boardConfig.m_defaultConfig.checkDiff(boardConfig.m_workingConfig);
     if (!diffItems.empty())
         qDebug() << diffItems;
 }
@@ -80,26 +79,39 @@ bool ConfigDialog::isVisible(const quint16 id) const
 void ConfigDialog::configReceived(const QByteArray &rawData)
 {
     using namespace S2;
-    auto &workConfig = boardConfig.workingConfig;
+    auto &workConfig = boardConfig.m_workingConfig;
     if (workConfig.updateByRawData(rawData))
     {
-        const auto s2typeB = workConfig["MTypeB_ID"].value<DWORD>();
-        const auto typeB = Board::GetInstance().typeB();
-        if (s2typeB != typeB)
-        {
-            qCritical() << "Conflict typeB, module: " << QString::number(typeB, 16)
-                        << " config: " << QString::number(s2typeB, 16);
-            workConfig["MTypeB_ID"].setData(DWORD(typeB));
-        }
+        constexpr auto typeB_Id = "MTypeB_ID";
+        constexpr auto typeE_Id = "MTypeE_ID";
+        const DWORD typeB = Board::GetInstance().typeB();
+        const DWORD typeM = Board::GetInstance().typeM();
 
-        const auto s2typeM = workConfig["MTypeE_ID"].value<DWORD>();
-        const auto typeM = Board::GetInstance().typeM();
-        if (s2typeM != typeM)
+        if (workConfig.contains(typeB_Id))
         {
-            qCritical() << "Conflict typeB, module: " << QString::number(typeM, 16)
-                        << " config: " << QString::number(s2typeM, 16);
-            workConfig["MTypeE_ID"].setData(DWORD(typeM));
+            const auto s2typeB = workConfig[typeB_Id].value<DWORD>();
+            if (s2typeB != typeB)
+            {
+                qCritical() << "Conflict typeB, module: " << QString::number(typeB, 16)
+                            << " config: " << QString::number(s2typeB, 16);
+                workConfig[typeB_Id].setData(typeB);
+            }
         }
+        else
+            workConfig.setRecord(typeB_Id, typeB);
+
+        if (workConfig.contains(typeE_Id))
+        {
+            const auto s2typeM = workConfig[typeE_Id].value<DWORD>();
+            if (s2typeM != typeM)
+            {
+                qCritical() << "Conflict typeB, module: " << QString::number(typeM, 16)
+                            << " config: " << QString::number(s2typeM, 16);
+                workConfig[typeE_Id].setData(typeM);
+            }
+        }
+        else
+            workConfig.setRecord(typeE_Id, typeM);
 
         checkForDiff();
         fill();
@@ -120,7 +132,7 @@ void ConfigDialog::saveConfigToFile()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    QByteArray file = boardConfig.workingConfig.toByteArray();
+    QByteArray file = boardConfig.m_workingConfig.toByteArray();
     Q_ASSERT(file.size() > 8);
     quint32 length = *reinterpret_cast<quint32 *>(&file.data()[4]);
     length += sizeof(S2::S2FileHeader);
@@ -212,33 +224,31 @@ quint32 ConfigDialog::tabForId(quint16 id)
 
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
-    std::set<delegate::WidgetGroup> currentCategories, intersection;
+    std::set<delegate::WidgetGroup> uniqueTabs;
     auto &tabs = S2::ConfigStorage::GetInstance().getConfigTabs();
-
-    for (const auto &record : boardConfig.defaultConfig)
+    for (const auto &record : boardConfig.m_defaultConfig)
     {
         auto tab = tabForId(record.first);
         auto search = tabs.find(tab);
         if (search != tabs.cend())
-
-            intersection.insert(tab);
+            uniqueTabs.insert(tab);
         else
             qDebug() << "Undefined tab ID" << tab;
     }
 
-    for (const auto &group : intersection)
+    for (const auto &tab : uniqueTabs)
     {
-        auto &tabName = tabs.at(group);
-        auto subBox = new QGroupBox("Группа " + tabName, this);
-        auto subvlyout = new QVBoxLayout;
-        subvlyout->setAlignment(Qt::AlignTop);
-        subvlyout->setSpacing(0);
-        subvlyout->setContentsMargins(0, 0, 0, 0);
-        subBox->setLayout(subvlyout);
-        auto scrollArea = new QScrollArea;
-        scrollArea->setObjectName(QString::number(group));
+        auto &tabName = tabs.at(tab);
+        auto scrollArea = new QScrollArea(this);
+        scrollArea->setObjectName(QString::number(tab));
         scrollArea->setFrameShape(QFrame::NoFrame);
         scrollArea->setWidgetResizable(true);
+        auto subBox = new QGroupBox(scrollArea);
+        auto subLayout = new QVBoxLayout;
+        subLayout->setAlignment(Qt::AlignTop);
+        subLayout->setSpacing(0);
+        subLayout->setContentsMargins(0, 0, 0, 0);
+        subBox->setLayout(subLayout);
         scrollArea->setWidget(subBox);
         tabWidget->addTab(scrollArea, tabName);
     }
@@ -258,7 +268,7 @@ void ConfigDialog::setupUI()
     auto ConfTW = new QTabWidget(this);
     createTabs(ConfTW);
 
-    for (const auto &record : boardConfig.defaultConfig)
+    for (const auto &record : boardConfig.m_defaultConfig)
     {
         const auto id = record.first;
         if (isVisible(id))
@@ -266,16 +276,20 @@ void ConfigDialog::setupUI()
             auto widget = factory.createWidget(id, this);
             if (widget)
             {
-                auto group = tabForId(id);
-                auto child = widgetAt(ConfTW, group);
-                QGroupBox *subBox = qobject_cast<QGroupBox *>(child->findChild<QGroupBox *>());
-                Q_ASSERT(subBox);
-                if (!subBox)
-                    widget->deleteLater();
-                else
+                auto tab = tabForId(id);
+                auto child = widgetAt(ConfTW, tab);
+                Q_ASSERT(child);
+                if (child)
                 {
-                    auto lyout = subBox->layout();
-                    lyout->addWidget(widget);
+                    auto subBox = child->findChild<QGroupBox *>();
+                    Q_ASSERT(subBox);
+                    if (!subBox)
+                        widget->deleteLater();
+                    else
+                    {
+                        auto subLayout = subBox->layout();
+                        subLayout->addWidget(widget);
+                    }
                 }
             }
             else
@@ -289,14 +303,14 @@ void ConfigDialog::setupUI()
 
 void ConfigDialog::fill()
 {
-    for (const auto &defRecord : boardConfig.workingConfig)
+    for (const auto &[id, record] : boardConfig.m_workingConfig)
     {
-        const auto id = defRecord.first;
         if (isVisible(id))
         {
-            const auto record = defRecord.second;
             std::visit(
-                [=](const auto &&value) {
+                // thanx to https://stackoverflow.com/a/46115028
+                // in C++20 lambdas could capture structured binding
+                [=, id = id](const auto &&value) {
                     bool status = factory.fillWidget(this, id, value);
                     if (!status)
                         qWarning() << "Couldnt fill widget for item: " << id;
@@ -308,9 +322,8 @@ void ConfigDialog::fill()
 
 void ConfigDialog::fillBack() const
 {
-    for (const auto &record : boardConfig.workingConfig)
+    for (const auto &[id, _] : boardConfig.m_workingConfig)
     {
-        const auto id = record.first;
         if (isVisible(id))
         {
             auto status = factory.fillBack(id, this);
@@ -333,7 +346,7 @@ void ConfigDialog::prereadConfig()
 
 void ConfigDialog::setDefaultConfig()
 {
-    boardConfig.workingConfig = boardConfig.defaultConfig;
+    boardConfig.m_workingConfig = boardConfig.m_defaultConfig;
     fill();
 }
 

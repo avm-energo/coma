@@ -84,13 +84,23 @@ private:
     void setupUI();
     void setupConnections();
     void prepare();
-    virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
     QToolBar *createToolBar();
     void keyPressEvent(QKeyEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     void moveEvent(QMoveEvent *event) override;
     void showEvent(QShowEvent *event) override;
     void prepareDialogs();
+    bool nativeEventHandler(const QByteArray &eventType, void *message);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    virtual bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override
+#else
+    virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override
+#endif
+    {
+        Q_UNUSED(result);
+        return nativeEventHandler(eventType, message);
+    }
 
 signals:
     void sendMessage(void *);

@@ -15,13 +15,14 @@
 
 StartupKTFDialog::StartupKTFDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
-
     Bd9Block = new Bd9;
     WBd7Block = new WBd7;
 }
 
 StartupKTFDialog::~StartupKTFDialog()
 {
+    delete Bd9Block;
+    delete WBd7Block;
 }
 
 void StartupKTFDialog::SetupUI()
@@ -65,45 +66,39 @@ void StartupKTFDialog::SetupUI()
     setLayout(lyout);
 }
 
-void StartupKTFDialog::FillBackCor()
-{
-    WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
-}
+// void StartupKTFDialog::FillBackCor()
+//{
+//    WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
+//}
 
-void StartupKTFDialog::FillCor()
-{
-    WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
-}
+// void StartupKTFDialog::FillCor()
+//{
+//    WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
+//}
 
-void StartupKTFDialog::GetCorBd()
-{
-    //    if (index == corDIndex)
-
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::USB:
-
-        // if (MainInterface == I_USB)
-        {
-            //            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
-            //            {
-            //                FillCor();
-            //                QMessageBox::information(this, "INFO", "Прочитано успешно");
-            //            }
-            break;
-        }
-    case Board::InterfaceType::Ethernet:
-    {
-    }
-        // else if (MainInterface == I_ETHERNET)
-        //        {
-        //            emit CorReadRequest();
-        //            break;
-        //        }
-    default:
-        break;
-    }
-}
+// void StartupKTFDialog::GetCorBd()
+//{
+//    if (index == corDIndex)
+//        switch (Board::GetInstance().interfaceType())
+//        {
+//        case Board::InterfaceType::USB:
+//        {
+//            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
+//            {
+//                FillCor();
+//                QMessageBox::information(this, "INFO", "Прочитано успешно");
+//            }
+//            break;
+//        }
+//        case Board::InterfaceType::Ethernet:
+//        {
+//            emit CorReadRequest();
+//            break;
+//        }
+//        default:
+//            break;
+//        }
+//}
 
 // void StartupKTFDialog::GetCorBdButton()
 //{
@@ -137,62 +132,55 @@ void StartupKTFDialog::GetCorBd()
 //    }
 //}
 
-void StartupKTFDialog::WriteCor()
-{
-    // int i;
-    //    quint32 adr = 907;
+// void StartupKTFDialog::WriteCor()
+//{
+//    int i;
+//    quint32 adr = 907;
+//    FillBackCor();
+//    if (!checkPassword())
+//        return;
+//    switch (Board::GetInstance().interfaceType())
+//    {
+//    case Board::InterfaceType::Ethernet:
+//    {
+//        float corblocki;
+//        memcpy(&corblocki, reinterpret_cast<float *>(WBd7Block), sizeof(float));
+//        emit SendCom50(adr, corblocki);
+//        TimeFunc::Wait(300);
+//        break;
+//    }
+//    case Board::InterfaceType::RS485:
+//    {
+//        ModBus::Information info;
+//        info.size = (sizeof(WBd7) / 4);
+//        info.adr = adr;
+//        emit RS485WriteCorBd(info, (float *)WBd7Block);
+//        break;
+//    }
+//    case Board::InterfaceType::USB:
+//    {
+//        if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == Error::Msg::NoError)
+//            QMessageBox::information(this, "INFO", "Записано успешно");
+//        else
+//            QMessageBox::information(this, "INFO", "Ошибка");
+//        //......
+//        QThread::sleep(1);
+//        if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == Error::Msg::NoError)
+//            FillCor();
+//        break;
+//    }
+//    default:
+//        break;
+//    }
+//}
 
-    FillBackCor();
+// void StartupKTFDialog::SetupCor()
+//{
+//}
 
-    if (!checkPassword())
-        return;
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::Ethernet:
-        // if (MainInterface == I_ETHERNET)
-        {
-
-            float corblocki;
-            memcpy(&corblocki, reinterpret_cast<float *>(WBd7Block), sizeof(float));
-            //                emit SendCom50(adr, corblocki);
-            TimeFunc::Wait(300);
-            break;
-        }
-    case Board::InterfaceType::RS485:
-        // else if (MainInterface == I_RS485)
-        {
-            //                ModBus::Information info;
-            //                info.size = (sizeof(WBd7) / 4);
-            //                info.adr = adr;
-            //                emit RS485WriteCorBd(info, (float *)WBd7Block);
-            break;
-        }
-    case Board::InterfaceType::USB:
-        // else if (MainInterface == I_USB)
-        {
-            //                if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == Error::Msg::NoError)
-            //                    QMessageBox::information(this, "INFO", "Записано успешно");
-            //                else
-            //                    QMessageBox::information(this, "INFO", "Ошибка");
-
-            //                //......
-            //                //            QThread::sleep(1);
-            //                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == Error::Msg::NoError)
-            //                    FillCor();
-            break;
-        }
-    default:
-        break;
-    }
-}
-
-void StartupKTFDialog::SetupCor()
-{
-}
-
-void StartupKTFDialog::ResetCor()
-{
-}
+// void StartupKTFDialog::ResetCor()
+//{
+//}
 
 void StartupKTFDialog::SaveToFile()
 {
@@ -244,4 +232,9 @@ void StartupKTFDialog::ReadFromFile()
     memcpy(&Bd9Block->Age, &(ba.data()[0]), sizeof(float));
     FillCor();
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
+}
+
+bool StartupKTFDialog::checkStartupValues()
+{
+    return true;
 }

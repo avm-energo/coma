@@ -34,18 +34,18 @@ S2::valueType helper(const QString &str)
     return QVariant(str).value<T>();
 }
 
-}
+} // namespace detail
 
 namespace S2
 {
 
-DataFactory::DataFactory(const S2ConfigStorage &confStorage) : s2confStorage(confStorage)
+DataFactory::DataFactory(const S2ConfigStorage &confStorage) : m_storage(confStorage)
 {
 }
 
 ctti::unnamed_type_id_t DataFactory::getType(const quint32 id) const
 {
-    auto &typeMap = s2confStorage.getTypeByIdMap();
+    auto &typeMap = m_storage.getTypeByIdMap();
     auto search = typeMap.find(id);
     assert(search != typeMap.cend());
     return search->second;
@@ -60,55 +60,54 @@ DataItem DataFactory::create(const DataRec &record) const
     switch (type.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
-        return { id, helper<BYTE>(record.header.numByte, rawdata) };
+        return DataItem { helper<BYTE>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<WORD>().hash():
-        return { id, helper<WORD>(record.header.numByte, rawdata) };
+        return DataItem { helper<WORD>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<DWORD>().hash():
-        return { id, helper<DWORD>(record.header.numByte, rawdata) };
+        return DataItem { helper<DWORD>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<INT32>().hash():
-        return { id, helper<INT32>(record.header.numByte, rawdata) };
+        return DataItem { helper<INT32>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<BYTE_4t>().hash():
-        return { id, helper<BYTE_4t>(record.header.numByte, rawdata) };
+        return DataItem { helper<BYTE_4t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<WORD_4t>().hash():
-        return { id, helper<WORD_4t>(record.header.numByte, rawdata) };
+        return DataItem { helper<WORD_4t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<DWORD_4t>().hash():
-        return { id, helper<DWORD_4t>(record.header.numByte, rawdata) };
+        return DataItem { helper<DWORD_4t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<BYTE_8t>().hash():
-        return { id, helper<BYTE_8t>(record.header.numByte, rawdata) };
+        return DataItem { helper<BYTE_8t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<WORD_8t>().hash():
-        return { id, helper<WORD_8t>(record.header.numByte, rawdata) };
+        return DataItem { helper<WORD_8t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<DWORD_8t>().hash():
-        return { id, helper<DWORD_8t>(record.header.numByte, rawdata) };
+        return DataItem { helper<DWORD_8t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<BYTE_16t>().hash():
-        return { id, helper<BYTE_16t>(record.header.numByte, rawdata) };
+        return DataItem { helper<BYTE_16t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<WORD_16t>().hash():
-        return { id, helper<WORD_16t>(record.header.numByte, rawdata) };
+        return DataItem { helper<WORD_16t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<DWORD_16t>().hash():
-        return { id, helper<DWORD_16t>(record.header.numByte, rawdata) };
+        return DataItem { helper<DWORD_16t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<BYTE_32t>().hash():
-        return { id, helper<BYTE_32t>(record.header.numByte, rawdata) };
+        return DataItem { helper<BYTE_32t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<WORD_32t>().hash():
-        return { id, helper<WORD_32t>(record.header.numByte, rawdata) };
+        return DataItem { helper<WORD_32t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<DWORD_32t>().hash():
-        return { id, helper<DWORD_32t>(record.header.numByte, rawdata) };
+        return DataItem { helper<DWORD_32t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<FLOAT>().hash():
-        return { id, helper<FLOAT>(record.header.numByte, rawdata) };
+        return DataItem { helper<FLOAT>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<FLOAT_2t>().hash():
-        return { id, helper<FLOAT_2t>(record.header.numByte, rawdata) };
+        return DataItem { helper<FLOAT_2t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
-        return { id, helper<FLOAT_3t>(record.header.numByte, rawdata) };
+        return DataItem { helper<FLOAT_3t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<FLOAT_4t>().hash():
-        return { id, helper<FLOAT_4t>(record.header.numByte, rawdata) };
+        return DataItem { helper<FLOAT_4t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<FLOAT_6t>().hash():
-        return { id, helper<FLOAT_6t>(record.header.numByte, rawdata) };
+        return DataItem { helper<FLOAT_6t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
-        return { id, helper<FLOAT_8t>(record.header.numByte, rawdata) };
+        return DataItem { helper<FLOAT_8t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<CONF_DENS_3t>().hash():
-        return { id, helper<CONF_DENS_3t>(record.header.numByte, rawdata) };
-        break;
+        return DataItem { helper<CONF_DENS_3t>(record.header.numByte, rawdata) };
     default:
         assert(false && "Unknown type id");
-        return { id };
+        return DataItem {};
     }
 }
 
@@ -124,61 +123,61 @@ DataItem DataFactory::create(const quint32 id, const QString &str) const
     switch (type.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
-        return { id, helper<BYTE>(str) };
+        return DataItem { helper<BYTE>(str) };
     case ctti::unnamed_type_id<WORD>().hash():
-        return { id, helper<WORD>(str) };
+        return DataItem { helper<WORD>(str) };
     case ctti::unnamed_type_id<DWORD>().hash():
-        return { id, helper<DWORD>(str) };
+        return DataItem { helper<DWORD>(str) };
     case ctti::unnamed_type_id<INT32>().hash():
-        return { id, helper<INT32>(str) };
+        return DataItem { helper<INT32>(str) };
     case ctti::unnamed_type_id<BYTE_4t>().hash():
-        return { id, helper<BYTE_4t>(str) };
+        return DataItem { helper<BYTE_4t>(str) };
     case ctti::unnamed_type_id<WORD_4t>().hash():
-        return { id, helper<WORD_4t>(str) };
+        return DataItem { helper<WORD_4t>(str) };
     case ctti::unnamed_type_id<DWORD_4t>().hash():
-        return { id, helper<DWORD_4t>(str) };
+        return DataItem { helper<DWORD_4t>(str) };
     case ctti::unnamed_type_id<BYTE_6t>().hash():
-        return { id, helper<BYTE_6t>(str) };
+        return DataItem { helper<BYTE_6t>(str) };
     case ctti::unnamed_type_id<WORD_6t>().hash():
-        return { id, helper<WORD_6t>(str) };
+        return DataItem { helper<WORD_6t>(str) };
     case ctti::unnamed_type_id<DWORD_6t>().hash():
-        return { id, helper<DWORD_6t>(str) };
+        return DataItem { helper<DWORD_6t>(str) };
     case ctti::unnamed_type_id<BYTE_8t>().hash():
-        return { id, helper<BYTE_8t>(str) };
+        return DataItem { helper<BYTE_8t>(str) };
     case ctti::unnamed_type_id<WORD_8t>().hash():
-        return { id, helper<WORD_8t>(str) };
+        return DataItem { helper<WORD_8t>(str) };
     case ctti::unnamed_type_id<DWORD_8t>().hash():
-        return { id, helper<DWORD_8t>(str) };
+        return DataItem { helper<DWORD_8t>(str) };
     case ctti::unnamed_type_id<BYTE_16t>().hash():
-        return { id, helper<BYTE_16t>(str) };
+        return DataItem { helper<BYTE_16t>(str) };
     case ctti::unnamed_type_id<WORD_16t>().hash():
-        return { id, helper<WORD_16t>(str) };
+        return DataItem { helper<WORD_16t>(str) };
     case ctti::unnamed_type_id<DWORD_16t>().hash():
-        return { id, helper<DWORD_16t>(str) };
+        return DataItem { helper<DWORD_16t>(str) };
     case ctti::unnamed_type_id<BYTE_32t>().hash():
-        return { id, helper<BYTE_32t>(str) };
+        return DataItem { helper<BYTE_32t>(str) };
     case ctti::unnamed_type_id<WORD_32t>().hash():
-        return { id, helper<WORD_32t>(str) };
+        return DataItem { helper<WORD_32t>(str) };
     case ctti::unnamed_type_id<DWORD_32t>().hash():
-        return { id, helper<DWORD_32t>(str) };
+        return DataItem { helper<DWORD_32t>(str) };
     case ctti::unnamed_type_id<FLOAT>().hash():
-        return { id, helper<FLOAT>(str) };
+        return DataItem { helper<FLOAT>(str) };
     case ctti::unnamed_type_id<FLOAT_2t>().hash():
-        return { id, helper<FLOAT_2t>(str) };
+        return DataItem { helper<FLOAT_2t>(str) };
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
-        return { id, helper<FLOAT_3t>(str) };
+        return DataItem { helper<FLOAT_3t>(str) };
     case ctti::unnamed_type_id<FLOAT_4t>().hash():
-        return { id, helper<FLOAT_4t>(str) };
+        return DataItem { helper<FLOAT_4t>(str) };
     case ctti::unnamed_type_id<FLOAT_6t>().hash():
-        return { id, helper<FLOAT_6t>(str) };
+        return DataItem { helper<FLOAT_6t>(str) };
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
-        return { id, helper<FLOAT_8t>(str) };
+        return DataItem { helper<FLOAT_8t>(str) };
     case ctti::unnamed_type_id<CONF_DENS_3t>().hash():
-        return { id, helper<CONF_DENS_3t>(str) };
+        return DataItem { helper<CONF_DENS_3t>(str) };
     default:
         assert(false && "Unknown type id");
-        return { id };
+        return DataItem {};
     }
 }
 
-}
+} // namespace S2

@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(coma)
+
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
 
-message(STATUS "Local App Data path: $ENV{HOME}/.local/share/AVM-Debug")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
@@ -31,8 +31,19 @@ find_package(QT NAMES Qt6 Qt5)
 if(NOT QT_VERSION_MAJOR)
   string(SUBSTRING ${QT_VERSION} 0 1 QT_VERSION_MAJOR)
 endif()
+message(STATUS "Qt major version: ${QT_VERSION_MAJOR}")
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
   Core Gui PrintSupport Widgets REQUIRED)
+
+# Using Qt6: finding Qt6 QmlIntegration library
+# Q: Why?
+# A: LimeReport use Qml and if we want use LimeReport,
+# we must find QmlIntegration for using its private headers.
+if (${QT_VERSION_MAJOR} EQUAL 6)
+    find_package(Qt${QT_VERSION_MAJOR}
+        COMPONENTS QmlIntegration REQUIRED
+    )
+endif()
 
 # Determine target's architecture and name. Then installing dependencies with conan
 if(NOT DEFINED PROJECT_ARCHITECTURE)

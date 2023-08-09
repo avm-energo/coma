@@ -65,8 +65,8 @@ bool WDFunc::SetLEData(QObject *parent, const QString &lename, const QString &le
     le->setText(levalue);
     if (!restring.isEmpty())
     {
-        auto val = new QRegExpValidator(QRegExp(restring), parent);
-        le->setValidator(val);
+        auto validator = StdFunc::getRegExpValidator(restring, parent);
+        le->setValidator(validator);
     }
     return true;
 }

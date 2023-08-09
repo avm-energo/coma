@@ -14,8 +14,8 @@ class StartupKIVDialog : public AbstractStartupDialog
 
 public:
     explicit StartupKIVDialog(QWidget *parent = nullptr);
-    ~StartupKIVDialog();
-    void SetupCor() override;
+    virtual ~StartupKIVDialog();
+    // void SetupCor() override;
 
 private:
     struct CorData
@@ -33,12 +33,12 @@ private:
     QWidget *uiValuesTab(QWidget *parent = nullptr);
     QWidget *uiCommandsTab(QWidget *parent = nullptr);
     bool checkSpinBoxes(QList<QDoubleSpinBox *> spinBoxes);
-    void sendCommand(Commands cmd, bool value = true);
     void SetupUI() override;
 
 public slots:
     void SaveToFile() override;
     void ReadFromFile() override;
+    bool checkStartupValues() override;
     // void ErrorRead();
 };
 

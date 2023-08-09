@@ -36,6 +36,7 @@ private:
     bool responseReceived;
     bool responseError;
     bool portError;
+    bool stop;
 
     /// \brief Функция для построения UI диалогового окна.
     void setupUI();
@@ -56,7 +57,7 @@ private:
     /// \brief Функция для прекращения процесса поиска устройств.
     /// \details Вызывается, если в ходе выполнения поиска были
     /// обнаружены ошибки, связанные с работой последовательного порта.
-    void portErrorFinish(QSerialPort *port);
+    void searchFinish(QSerialPort *port);
 
     /// \brief Функция для добавления элемента в модель отображения данных.
     void createModelItem(quint32 row, int addr, int baud, QSerialPort::Parity parity, QSerialPort::StopBits stopBit);
@@ -73,4 +74,7 @@ public:
     explicit SearchProccessDialog(const SearchParams &data, QWidget *parent = nullptr);
     /// \brief Функция для запуска поиска устройств.
     void search();
+
+private slots:
+    virtual void done(int r) override;
 };

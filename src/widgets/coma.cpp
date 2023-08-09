@@ -443,9 +443,8 @@ void Coma::prepare()
     msgModel->setText(board.moduleName());
 }
 
-bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
+bool Coma::nativeEventHandler(const QByteArray &eventType, void *message)
 {
-    Q_UNUSED(result)
 #ifdef __linux
     Q_UNUSED(eventType);
     Q_UNUSED(message);

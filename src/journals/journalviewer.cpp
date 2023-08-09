@@ -23,7 +23,8 @@ JournalViewer::JournalViewer(const QString &filepath, QWidget *parent) : QDialog
     if (Files::LoadFromFile(filepath, fileData) == Error::Msg::NoError)
     {
         S2::S2BFile s2bFile;
-        auto result = S2Util::parseS2B(fileData, s2bFile);
+        S2Util util;
+        auto result = util.parseS2B(fileData, s2bFile);
         switch (result)
         {
         case Error::Msg::NoError:

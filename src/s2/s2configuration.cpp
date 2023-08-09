@@ -12,23 +12,23 @@ auto setInserter(Set &set)
     return std::inserter(set, std::end(set));
 }
 
-}
+} // namespace detail
 
 namespace S2
 {
 
-Configuration::Configuration(const S2ConfigStorage &storage) : s2confStorage(storage), factory(storage)
+Configuration::Configuration(const S2ConfigStorage &storage) : m_storage(storage), m_factory(storage)
 {
 }
 
 Configuration::Configuration(const Configuration &rhs)
-    : s2confStorage(rhs.s2confStorage), factory(s2confStorage), data(rhs.data)
+    : m_storage(rhs.m_storage), m_factory(m_storage), m_data(rhs.m_data)
 {
 }
 
 quint32 Configuration::getIdByName(const QString &name) const noexcept
 {
-    const auto &nameMap = s2confStorage.getIdByNameMap();
+    const auto &nameMap = m_storage.getIdByNameMap();
     auto search = nameMap.find(name);
     Q_ASSERT(search != nameMap.cend());
     if (search != nameMap.cend())
@@ -40,107 +40,119 @@ quint32 Configuration::getIdByName(const QString &name) const noexcept
 const Configuration &Configuration::operator=(const Configuration &rhs)
 {
     // Не копируем data factory
-    data = rhs.data;
+    m_data = rhs.m_data;
     return *this;
 }
 
 const DataItem &Configuration::operator[](const quint32 id) const
 {
-    return data.at(id);
+    return m_data.at(id);
 }
 
 DataItem &Configuration::operator[](const quint32 id)
 {
-    return data.at(id);
+    return m_data.at(id);
 }
 
 const DataItem &Configuration::operator[](const QString &name) const
 {
     auto id = getIdByName(name);
-    return data.at(id);
+    return m_data.at(id);
 }
 
 DataItem &Configuration::operator[](const QString &name)
 {
     auto id = getIdByName(name);
-    return data.at(id);
+    return m_data.at(id);
 }
 
 Configuration::Iter Configuration::begin() noexcept
 {
-    return data.begin();
+    return m_data.begin();
 }
 
 Configuration::Iter Configuration::end() noexcept
 {
-    return data.end();
+    return m_data.end();
 }
 
 Configuration::ConstIter Configuration::begin() const noexcept
 {
-    return data.cbegin();
+    return m_data.cbegin();
 }
 
 Configuration::ConstIter Configuration::end() const noexcept
 {
-    return data.cend();
+    return m_data.cend();
 }
 
 const S2ConfigStorage &Configuration::getConfigStorage() const noexcept
 {
-    return s2confStorage;
+    return m_storage;
 }
 
 bool Configuration::append(const S2::DataRec &record)
 {
-    const auto [it, success] = data.insert({ record.header.id, factory.create(record) });
-    Q_UNUSED(it);
+    const auto [_, success] = m_data.insert({ record.header.id, m_factory.create(record) });
+    Q_UNUSED(_);
     return success;
 }
 
 bool Configuration::append(const quint32 id, const QByteArray &bytes)
 {
-    const auto [it, success] = data.insert({ id, factory.create(id, bytes) });
-    Q_UNUSED(it);
+    const auto [_, success] = m_data.insert({ id, m_factory.create(id, bytes) });
+    Q_UNUSED(_);
     return success;
 }
 
 bool Configuration::append(const quint32 id, const QString &str)
 {
-    const auto [it, success] = data.insert({ id, factory.create(id, str) });
-    Q_UNUSED(it);
+    const auto [_, success] = m_data.insert({ id, m_factory.create(id, str) });
+    Q_UNUSED(_);
     return success;
 }
 
 void Configuration::setRecord(const quint32 id, const DataItem &record)
 {
-    data.insert_or_assign(id, record);
+    m_data.insert_or_assign(id, record);
 }
 
 void Configuration::setRecord(const quint32 id, const valueType &value)
 {
-    data.insert_or_assign(id, DataItem { id, value });
+    m_data.insert_or_assign(id, DataItem { value });
 }
 
 void Configuration::setRecord(const QString &name, const valueType &value)
 {
     auto id = getIdByName(name);
-    data.insert_or_assign(id, DataItem { id, value });
+    m_data.insert_or_assign(id, DataItem { value });
+}
+
+bool Configuration::contains(const quint32 id) const noexcept
+{
+    const auto search = m_data.find(id);
+    return (search != m_data.cend());
+}
+
+bool Configuration::contains(const QString &name) const noexcept
+{
+    auto id = getIdByName(name);
+    return contains(id);
 }
 
 QByteArray Configuration::toByteArray() const
 {
-    return util.convert(*this, std_ext::to_underlying(FilesEnum::Config));
+    return m_util.convert(*this, std_ext::to_underlying(FilesEnum::Config));
 }
 
 bool Configuration::updateByRawData(const QByteArray &rawData)
 {
     std::map<quint32, DataItem> dataFromFile;
-    auto result = util.convert(rawData, factory, dataFromFile);
+    auto result = m_util.convert(rawData, m_factory, dataFromFile);
     switch (result)
     {
     case Error::Msg::NoError:
-        data = dataFromFile;
+        m_data = dataFromFile;
         return true;
     case Error::Msg::HeaderSizeError:
         qWarning() << "Размер файла меньше установленного размера заголовка.";
@@ -163,9 +175,9 @@ bool Configuration::updateByRawData(const QByteArray &rawData)
 std::vector<quint32> Configuration::checkDiff(const Configuration &rhs) const
 {
     std::set<quint32> currentItems, receivedtItems;
-    std::transform(data.cbegin(), data.cend(), detail::setInserter(currentItems), //
+    std::transform(m_data.cbegin(), m_data.cend(), detail::setInserter(currentItems), //
         [](const auto &iter) { return iter.first; });
-    std::transform(rhs.data.cbegin(), rhs.data.cend(), detail::setInserter(receivedtItems), //
+    std::transform(rhs.m_data.cbegin(), rhs.m_data.cend(), detail::setInserter(receivedtItems), //
         [](const auto &iter) { return iter.first; });
 
     std::vector<quint32> diffItems;

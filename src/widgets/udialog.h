@@ -10,11 +10,13 @@ class UDialog : public UWidget
     Q_OBJECT
 public:
     UDialog(QWidget *parent = nullptr);
-    UDialog(const QString hash, const QString key, QWidget *parent = nullptr);
+    UDialog(const QString &hash, const QString &key, QWidget *parent = nullptr);
     virtual void updateGeneralResponse(const QVariant &msg);
 
     void disableSuccessMessage();
     void enableSuccessMessage();
+    bool disableMessages();
+    bool enableMessages();
 
 protected:
     QString successMsg() const;

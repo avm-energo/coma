@@ -15,8 +15,6 @@ public:
         QString color;
     };
 
-    //    bool m_withGUI;
-
     explicit UWidget(QWidget *parent = nullptr);
     bool updatesEnabled();
     const QString getCaption();

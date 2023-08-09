@@ -6,22 +6,31 @@
 
 #include <gen/error.h>
 
+enum class FirmwareUploadStatus : quint8
+{
+    Start = 0,
+    Error,
+    Written,
+    Upgraded,
+    End,
+};
+
 class FWUploadDialog : public UDialog
 {
     Q_OBJECT
 private:
-    bool uploadStatus;
-    S2Dev::HexParser *parser;
+    FirmwareUploadStatus uploadStatus;
+    S2::HexParser *parser;
 
 public:
     explicit FWUploadDialog(QWidget *parent = nullptr);
-    void SetupUI();
-    bool WriteCheckPassword();
+    void setupUI();
+    bool writeCheckPassword();
+    virtual void updateGeneralResponse(const QVariant &msg) override;
 
 public slots:
-    void LoadFW();
-    void RunSoft();
-    void errorHandle(S2Dev::HexParseError error);
+    void loadFirmware();
+    void errorHandle(S2::HexParseError error);
 };
 
 #endif // FWUPDIALOG_H

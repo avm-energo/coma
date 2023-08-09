@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <QBitmap>
 #include <QDateTime>
-#include <QDesktopWidget>
+//#include <QDesktopWidget>
 #include <QFontMetrics>
 #include <QImage>
 #include <QLabel>
