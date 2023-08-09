@@ -21,7 +21,8 @@ QDomDocument Xml::BaseParser::getFileContent(const QString &filename)
             auto line = 0, column = 0;
             if (!doc.setContent(&file, &errMsg, &line, &column))
             {
-                errMsg = "File: " + file.fileName() + " Error: " + errMsg + " Line: " + line + " Column: " + column;
+                errMsg = "File: " + file.fileName() + " Error: " + errMsg + //
+                    " Line: " + QString::number(line) + " Column: " + QString::number(column);
                 emit parseError(errMsg);
             }
             else if (doc.isNull())

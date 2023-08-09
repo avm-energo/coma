@@ -61,7 +61,7 @@ CheckBoxGroup::CheckBoxGroup(const QStringList &desc, int count, QWidget *parent
     d->setDescription(desc);
     FlowLayout *flowLayout = new FlowLayout;
 
-    for (auto i = 0; i != std::min(d->description().size(), count); ++i)
+    for (auto i = 0; i != std::min(int(d->description().size()), count); ++i)
     {
         const QString name = d->description().at(i);
         QCheckBox *checkBox = new QCheckBox(name, this);

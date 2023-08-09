@@ -3,7 +3,8 @@ include(FetchContent)
 FetchContent_Declare(
   limereport-qt${QT_VERSION_MAJOR}
   GIT_REPOSITORY https://github.com/fralx/LimeReport.git
-  GIT_TAG        b1c67651c8d90ee822893990574eb112ec76d575
+  GIT_TAG        6a623a9ecbf8083fb01ae08f00aaa81f70720d03  # v1.7.4
+#  GIT_TAG        b1c67651c8d90ee822893990574eb112ec76d575
 )
 # If we want use Qt6
 if (${QT_VERSION_MAJOR} EQUAL 6)

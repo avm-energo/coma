@@ -23,7 +23,7 @@ bool HexParser::verifyChecksum(const quint8 *data, int size)
 bool HexParser::parseASCII(const QString &strRecord, HexRecord &record)
 {
     // Verifying the start code of the given HEX record.
-    if (strRecord[0] != startCode)
+    if (strRecord[0] != QChar(startCode))
     {
         emit error(HexParseError::InvalidHexRecord);
         return false;

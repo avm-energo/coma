@@ -6,7 +6,6 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QRegExpValidator>
 #include <QSpinBox>
 #include <variant>
 

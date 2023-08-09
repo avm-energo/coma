@@ -200,11 +200,11 @@ QString GeneralTuneDialog::getAttrValue(const QString &string, const QString &at
     index += attrname.size();
     if (index >= string.size())
         return QString();
-    if (string.at(index++) == ":")
+    if (string.at(index++) == ':')
     {
-        while ((index < string.size()) && (string.at(index) == " "))
+        while ((index < string.size()) && (string.at(index) == ' '))
             index++;
-        while ((index < string.size()) && (string.at(index) != ";") && (string.at(index) != "\""))
+        while ((index < string.size()) && (string.at(index) != ';') && (string.at(index) != '\"'))
         {
             tmps += string.at(index++);
         }

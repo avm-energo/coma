@@ -70,7 +70,11 @@ void DataController::writeToFile(const QDomDocument &doc, const QString &oldName
     if (file->open(QIODevice::WriteOnly))
     {
         QTextStream out(file);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         out.setCodec(QTextCodec::codecForName("UTF-8"));
+#else
+        out.setEncoding(QStringConverter::Utf8);
+#endif
         doc.save(out, 4);
         // out << doc->toString(4);
         file->close();

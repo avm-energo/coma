@@ -23,7 +23,6 @@ target_link_libraries(${PROJECT_NAME}
   oscillograms
   widgets
   dialogs
-  models
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Xml
   Qt${QT_VERSION_MAJOR}::Widgets

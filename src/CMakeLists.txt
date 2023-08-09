@@ -38,6 +38,16 @@ message(STATUS "Qt major version: ${QT_VERSION_MAJOR}")
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
   Core Gui PrintSupport Widgets REQUIRED)
 
+# Using Qt6: finding Qt6 QmlIntegration library
+# Q: Why?
+# A: LimeReport use Qml and if we want use LimeReport,
+# we must find QmlIntegration for using its private headers.
+if (${QT_VERSION_MAJOR} EQUAL 6)
+    find_package(Qt${QT_VERSION_MAJOR}
+        COMPONENTS QmlIntegration REQUIRED
+    )
+endif()
+
 # Determine target's architecture and name. Then installing dependencies with conan
 if(NOT DEFINED PROJECT_ARCHITECTURE)
   target_architecture(PROJECT_ARCHITECTURE)

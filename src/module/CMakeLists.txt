@@ -19,7 +19,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   comaversion
   widgets
   dialogs
-  models
   s2
   xml
   Qt${QT_VERSION_MAJOR}::Core

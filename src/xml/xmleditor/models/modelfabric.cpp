@@ -15,7 +15,7 @@ void ModelFabric::CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
     if (iter != XmlModel::headers.cend())
     {
         auto labels = iter->second;
-        auto cols = labels.count(), rows = ElementsCount(root) + 1;
+        int cols = labels.count(), rows = ElementsCount(root) + 1;
         switch (mNode.modelType)
         {
         case ModelType::SGroup:
@@ -67,7 +67,7 @@ XmlModel *ModelFabric::CreateRootModel(QDomNode &root, QObject *parent)
                 if (iter != XmlModel::headers.cend())
                 {
                     auto labels = iter->second;
-                    auto cols = labels.count(), rows = ElementsCount(res);
+                    int cols = labels.count(), rows = ElementsCount(res);
                     auto model = new XmlContainerModel(rows, cols, type, parent);
                     model->setHorizontalHeaderLabels(labels);
                     model->setDataNode(false, res);

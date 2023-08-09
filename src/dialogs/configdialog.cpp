@@ -83,7 +83,7 @@ void ConfigDialog::configReceived(const QByteArray &rawData)
     if (workConfig.updateByRawData(rawData))
     {
         constexpr auto typeB_Id = "MTypeB_ID";
-        constexpr auto typeE_Id = "MTypeB_ID";
+        constexpr auto typeE_Id = "MTypeE_ID";
         const DWORD typeB = Board::GetInstance().typeB();
         const DWORD typeM = Board::GetInstance().typeM();
 
