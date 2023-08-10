@@ -29,7 +29,7 @@ class Coma : public QMainWindow
 
 public:
     Coma(const AppConfiguration &appCfg, QWidget *parent = nullptr);
-    ~Coma();
+    virtual ~Coma();
 
     void go();
     void connectSB();

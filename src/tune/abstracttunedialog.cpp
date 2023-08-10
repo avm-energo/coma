@@ -215,13 +215,13 @@ void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int ms
     switch (type)
     {
     case OkMsg:
-        pm = new QPixmap("images/ok.png");
+        pm = new QPixmap(":/tunes/ok.png");
         break;
     case ErMsg:
-        pm = new QPixmap("images/cross.png");
+        pm = new QPixmap(":/tunes/cross.png");
         break;
     case SkMsg:
-        pm = new QPixmap("images/hr.png");
+        pm = new QPixmap(":/tunes/hr.png");
         break;
     case NoMsg:
         WDFunc::SetVisible(this, "tunemsg" + QString::number(msg), Visible);

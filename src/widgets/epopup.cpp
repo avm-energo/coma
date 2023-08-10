@@ -34,12 +34,12 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
     };
 
     QMap<MessageTypes, msgsStruct> map = {
-        { INFOMESSAGE, { "images/info-hex.svg", "c8fcff" } },
-        { WARNMESSAGE, { "images/warn-hex.svg", "ffffc3" } },
-        { QUESTMSG, { "images/question-hex.svg", "b5b6ff" } },
-        { ERMESSAGE, { "images/err-hex.svg", "ffd4d4" } },
-        { NEXTMSG, { "images/next-hex.svg", "d6ffce" } },
-        { WITHOUTANYBUTTONS, { "images/ordinary-hex.svg", "f3ffc5" } },
+        { INFOMESSAGE, { ":/icons/info-hex.svg", "c8fcff" } },
+        { WARNMESSAGE, { ":/icons/warn-hex.svg", "ffffc3" } },
+        { QUESTMSG, { ":/icons/question-hex.svg", "b5b6ff" } },
+        { ERMESSAGE, { ":/icons/err-hex.svg", "ffd4d4" } },
+        { NEXTMSG, { ":/icons/next-hex.svg", "d6ffce" } },
+        { WITHOUTANYBUTTONS, { ":/icons/ordinary-hex.svg", "f3ffc5" } },
     };
     setAttribute(Qt::WA_DeleteOnClose);
     setStyleSheet("QDialog {background-color: #" + map[type].bgrdColor + ";}");
@@ -289,7 +289,7 @@ EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(pa
     isAboutToClose = false;
     m_hash = hash;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL2(parent, "", "", new QPixmap("images/psw-hex.svg")));
+    hlyout->addWidget(WDFunc::NewLBL2(parent, "", "", new QPixmap(":/icons/psw-hex.svg")));
     hlyout->addWidget(
         WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
     QVBoxLayout *vlyout = new QVBoxLayout;

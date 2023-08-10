@@ -128,7 +128,7 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
+    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
@@ -156,7 +156,7 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
     if (!EMessageBox::next(this, w))
         CancelTune();
 
-    //    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
+    //    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
     //    lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых
     //    картинок;")); lyout->addWidget(WDFunc::NewLBL2(this,
     //        "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"

@@ -46,12 +46,12 @@ if (ENABLE_EMULATOR)
 endif()
 
 # Copying images folder to executable file after building
-add_custom_command(
-  TARGET ${PROJECT_NAME} POST_BUILD
-  COMMAND
-    ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../images
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>/images/)
+#add_custom_command(
+#  TARGET ${PROJECT_NAME} POST_BUILD
+#  COMMAND
+#    ${CMAKE_COMMAND} -E copy_directory
+#    ${CMAKE_CURRENT_SOURCE_DIR}/../../images
+#    $<TARGET_FILE_DIR:${PROJECT_NAME}>/images/)
 
 # Getting appdata directory path
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")

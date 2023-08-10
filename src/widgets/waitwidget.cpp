@@ -99,7 +99,7 @@ void WaitWidget::UpdateSeconds()
 
 void WaitWidget::paintEvent(QPaintEvent *e)
 {
-    QPixmap rotatedPixmap("images/Koma.png");
+    QPixmap rotatedPixmap(":/images/Koma.png");
     QSize size = rotatedPixmap.size();
     QSize wsize = QSize(310, 380);
     int left = wsize.width() / 2 - size.width() / 2;
