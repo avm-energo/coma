@@ -122,8 +122,8 @@ void DialogCreator::createJournalDialog()
     using namespace journals;
     // TODO: Только для USB
     // Делаем проверку и создаём диалог для журналов
-    if (board.interfaceType() != Board::InterfaceType::RS485)
-        addDialogToList(new JournalDialog(settings, mParent), "Журналы", "jours");
+    // if (board.interfaceType() != Board::InterfaceType::RS485)
+    addDialogToList(new JournalDialog(settings, mParent), "Журналы", "jours");
 }
 
 /// \brief Creating startup dialog for KIV, KTF and KDV.
