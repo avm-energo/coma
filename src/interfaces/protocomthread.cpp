@@ -157,8 +157,8 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
         if (cmdStr.arg1.canConvert<timespec>())
         {
             timespec time = cmdStr.arg1.value<timespec>();
-            tba.push_back(StdFunc::ArrayFromNumber(quint32(time.tv_sec)));
-            tba.push_back(StdFunc::ArrayFromNumber(quint32(time.tv_nsec)));
+            tba.push_back(StdFunc::toByteArray(quint32(time.tv_sec)));
+            tba.push_back(StdFunc::toByteArray(quint32(time.tv_nsec)));
         }
         else
 #endif

@@ -6,10 +6,6 @@ FetchContent_Declare(
   GIT_TAG        origin/develop
 )
 
-if(BUILD_WITH_ALISE)
-  set(GEN_STATIC ON)
-else()
-  set(GEN_STATIC OFF)
-endif()
+set(GEN_STATIC OFF)
 
 FetchContent_MakeAvailable(gen)
