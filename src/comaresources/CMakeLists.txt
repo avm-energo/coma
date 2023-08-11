@@ -38,8 +38,11 @@ endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core)
+
+set(COMARES_BINDIR "${CMAKE_CURRENT_BINARY_DIR}")
+message(STATUS "Coma resources binary dir: ${CMAKE_CURRENT_BINARY_DIR}")
+install(CODE "set(COMARES_BINDIR \"${COMARES_BINDIR}\")")
