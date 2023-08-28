@@ -63,6 +63,12 @@ if(NOT EXISTS ${SVC_CHECK_PATH})
         ${APPDATA})
 endif()
 
+# Cross-platform deploy target
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+    message(STATUS "Deploy ${PROJECT_NAME} for Windows")
   include(WinDeployService)
+elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
+  # TODO: Make deploy for linux with cpack
+  message(STATUS "Deploy ${PROJECT_NAME} for Linux")
+  include(LinuxDeployService)
 endif()

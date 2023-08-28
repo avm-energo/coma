@@ -39,10 +39,8 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
 # Q: Why?
 # A: LimeReport use Qml and if we want use LimeReport,
 # we must find QmlIntegration for using its private headers.
-if (${QT_VERSION_MAJOR} EQUAL 6)
-    find_package(Qt${QT_VERSION_MAJOR}
-        COMPONENTS QmlIntegration REQUIRED
-    )
+if(${QT_VERSION_MAJOR} EQUAL 6)
+  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS QmlIntegration REQUIRED)
 endif()
 
 # Determine target's architecture and name. Then installing dependencies with conan
@@ -60,7 +58,7 @@ string(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Visual Studio compilation flags
-if (MSVC)
+if(MSVC)
   add_compile_options(/permissive-)
   string(APPEND CMAKE_CXX_FLAGS " /w14456 /w14189 /w14458 /w14100 /w14996")
 # GCC / Clang compilation flags

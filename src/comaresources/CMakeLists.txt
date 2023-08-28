@@ -43,6 +43,14 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core)
 
-set(COMARES_BINDIR "${CMAKE_CURRENT_BINARY_DIR}")
-message(STATUS "Coma resources binary dir: ${CMAKE_CURRENT_BINARY_DIR}")
-install(CODE "set(COMARES_BINDIR \"${COMARES_BINDIR}\")")
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+  set(COMARES_BINDIR "${CMAKE_CURRENT_BINARY_DIR}")
+  message(STATUS "Coma resources binary dir: ${CMAKE_CURRENT_BINARY_DIR}")
+  install(CODE "set(COMARES_BINDIR \"${COMARES_BINDIR}\")")
+elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
+  # --- Install libs and binaries ---
+  install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib)
+endif()

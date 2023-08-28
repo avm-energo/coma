@@ -762,10 +762,6 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setApplicationName(appName);
     QCoreApplication::setOrganizationName(orgName);
     QCoreApplication::setApplicationVersion(version);
-    // Q_INIT_RESOURCE(darkstyle);
-    // Q_INIT_RESOURCE(lightstyle);
-    // Q_INIT_RESOURCE(styles);
-    // Q_INIT_RESOURCE(vectorIcons);
     initResources();
     Logger::writeStart(StdFunc::GetSystemHomeDir() + "coma.log");
     qInstallMessageHandler(Logger::messageHandler);

@@ -41,7 +41,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Widgets)
 
-if (ENABLE_EMULATOR)
+if(ENABLE_EMULATOR)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_EMULATOR)
 endif()
 
@@ -68,6 +68,11 @@ if(NOT EXISTS ${DBG_CHECK_PATH})
         ${APPDATA})
 endif()
 
+# Cross-platform deploy target
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+  message(STATUS "Deploy ${PROJECT_NAME} for Windows")
   include(WinDeployDebug)
+elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
+  message(STATUS "Deploy ${PROJECT_NAME} for Linux")
+  include(LinuxDeployDebug)
 endif()
