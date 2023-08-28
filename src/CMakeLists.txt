@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(coma)
+project(coma VERSION 2.5.1)
 
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
@@ -56,6 +56,17 @@ string(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
 # Export compile commands. See:
 # - https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Getting appdata directory path
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+    # On windows
+    set(APPDATA_STR "$ENV{LOCALAPPDATA}/${PROJECT_NAME}")
+    string(REPLACE "\\" "/" APPDATA ${APPDATA_STR})
+else()
+    # On linux
+    set(APPDATA $ENV{HOME}/.local/share/${PROJECT_NAME})
+endif()
+message(STATUS "Local appdata path: ${APPDATA}")
 
 # Visual Studio compilation flags
 if(MSVC)
@@ -146,6 +157,13 @@ endif()
 # Step 3: Build executable targets
 add_subdirectory(AVM-Debug)
 add_subdirectory(AVM-Service)
+
+# Linux deploy with cpack
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
+  # Copy XML configuration files to cpack deb package
+  install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../settings" DESTINATION "${APPDATA}")
+  include(LinuxDeploy)
+endif()
 
 # Running PVS Studio static analyzer
 if(ENABLE_PVS)
