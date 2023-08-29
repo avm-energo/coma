@@ -1,3 +1,7 @@
+# Debug purposes
+message(STATUS "Components to pack: ${CPACK_COMPONENTS_ALL}")
+set(VERBOSE_LOGGING FALSE)
+
 # Package settings
 set(CPACK_GENERATOR "DEB")
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
@@ -8,33 +12,15 @@ set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 set(CPACK_PACKAGE_CONTACT "info@avmenergo.ru") # TODO: change to support email?
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${SOFTDEVELOPER} <${CPACK_PACKAGE_CONTACT}>") #required
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "COMplex for Avtuk")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../license.txt")
+set(CPACK_RESOURCE_FILE_README  "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-set(CPACK_PACKAGE_RELEASE 1)
+set(CPACK_DEB_COMPONENT_INSTALL ON) # magic required for separate packaging components
 
-# Strip binary files if we have release build
-#if(CMAKE_BUILD_TYPE STREQUAL "Release")
-#  set(CPACK_STRIP_FILES YES)
-#  message(STATUS "Strip binary files for release package")
-#endif()
-
-# Debug purposes
-message(STATUS "Components to pack: ${CPACK_COMPONENTS_ALL}")
-
+# Extra Debian package settings
+set(POSTINST "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/postinst")
+set(POSTRM   "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/postrm")
+set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA  "${POSTINST};${POSTRM}")
+set(CPACK_DEB_POST_INSTALL_SCRIPT_FILE   ${POSTINST})
+set(CPACK_DEB_POST_UNINSTALL_SCRIPT_FILE ${POSTRM})
 include(CPack)
-
-# Add a component for AVM-Service
-cpack_add_component(AVM-Service
-    DISPLAY_NAME  "AVM-Service"
-    DESCRIPTION   "COMplex for Avtuk"
-    GROUP AVM_Service)
-# Add a group for AVM-Service
-cpack_add_component_group(AVM_Service)
-
-# Add a component for AVM-Debug
-cpack_add_component(AVM-Debug
-    DISPLAY_NAME  "AVM-Debug"
-    DESCRIPTION   "COMplex for Avtuk"
-    GROUP AVM_Debug)
-# Add a group for AVM_Debug
-cpack_add_component_group(AVM_Debug)
-

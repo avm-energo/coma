@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Folders for XML configuration files
+avm_debug_path=$HOME/.local/share/AVM-Debug
+avm_service_path=$HOME/.local/share/AVM-Service
+
+# Remove folder for AVM-Debug XML configuration files
+if [ -d "$avm_debug_path" ]; then
+  rm -rf "$avm_debug_path"
+fi
+
+# Remove folder for AVM-Service XML configuration files
+if [ -d "$avm_service_path" ]; then
+  rm -rf "$avm_service_path"
+fi

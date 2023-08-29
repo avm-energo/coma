@@ -160,9 +160,10 @@ add_subdirectory(AVM-Service)
 
 # Linux deploy with cpack
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
-  # Copy XML configuration files to cpack deb package
-  install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../settings" DESTINATION "${APPDATA}")
-  include(LinuxDeploy)
+  if(NOT DEFINED CPACK_GENERATOR)
+    set(CPACK_GENERATOR "DEB")
+  endif()
+  set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 endif()
 
 # Running PVS Studio static analyzer
