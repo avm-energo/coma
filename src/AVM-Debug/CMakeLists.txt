@@ -63,20 +63,6 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   include(WinDeployDebug)
 elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
   message(STATUS "Deploy ${PROJECT_NAME} for Linux")
-  set(COMPONENT_NAME "AVMDebug")
-  set(DEPLOY_IN  "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/LinuxDeploy.cmake.in")
-  set(DEPLOY_OUT "${CMAKE_CURRENT_BINARY_DIR}/LinuxDeployDebug.cmake")
-  configure_file(${DEPLOY_IN} ${DEPLOY_OUT} @ONLY)
-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  include(LinuxDeployDebug)
-
-#  install(
-#    TARGETS ${PROJECT_NAME} gen QXlsx limereport-qt${QT_VERSION_MAJOR} qcustomplot
-#    RUNTIME DESTINATION bin COMPONENT ${COMPONENT_NAME}
-#    LIBRARY DESTINATION lib COMPONENT ${COMPONENT_NAME}
-#    ARCHIVE DESTINATION lib COMPONENT ${COMPONENT_NAME})
-#  install(
-#    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../settings"
-#    DESTINATION share/coma
-#    COMPONENT ${COMPONENT_NAME})
+  set(COMPONENT_NAME "avm_debug")
+  include(LinuxDeploy)
 endif()

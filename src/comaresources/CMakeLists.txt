@@ -48,9 +48,7 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   message(STATUS "Coma resources binary dir: ${CMAKE_CURRENT_BINARY_DIR}")
   install(CODE "set(COMARES_BINDIR \"${COMARES_BINDIR}\")")
 elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
-  # --- Install libs and binaries ---
-  install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib)
+  # --- Install target ---
+  install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib COMPONENT avm_debug)
+  install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib COMPONENT avm_service)
 endif()
