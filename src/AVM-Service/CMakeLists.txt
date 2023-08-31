@@ -27,8 +27,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  interfaces
   s2
+  interfaces
   module
   widgets
   dialogs
@@ -58,6 +58,6 @@ if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
   include(WinDeployService)
 elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
   message(STATUS "Deploy ${PROJECT_NAME} for Linux")
-  set(COMPONENT_NAME "avm_service")
-  include(LinuxDeploy)
+  set(COMPONENT_NAME "AVMSERVICE")
+  include(ComponentDeploy)
 endif()

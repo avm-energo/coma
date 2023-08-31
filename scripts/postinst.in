@@ -11,10 +11,10 @@ if [ -d "$xml_config_path" ]; then
 fi
 
 # Copying XML configuration files in appdata folder
-for xml_file in /usr/share/coma/settings/*.xml
+for xml_file in /usr/local/share/coma/settings/*.xml
 do
     cp "$xml_file" "$xml_config_path"
 done
 
 # Remove source folder
-rm -rf /usr/share/coma
+rm -rf /usr/local/share/coma
