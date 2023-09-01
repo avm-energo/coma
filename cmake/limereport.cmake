@@ -13,3 +13,12 @@ endif()
 FetchContent_MakeAvailable(limereport-qt${QT_VERSION_MAJOR})
 
 add_library(limereport ALIAS limereport-qt${QT_VERSION_MAJOR})
+
+# Create install component for deb packages
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
+  install(
+    TARGETS limereport-qt${QT_VERSION_MAJOR}
+    LIBRARY       DESTINATION "/usr/local/lib"     COMPONENT LIMEREPORT
+#    PUBLIC_HEADER DESTINATION "/usr/local/include" COMPONENT LIMEREPORT
+  )
+endif()

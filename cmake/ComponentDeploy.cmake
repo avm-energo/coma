@@ -1,9 +1,5 @@
 # Adding targets to cpack component
-install(
-  TARGETS ${PROJECT_NAME} gen comaresources QXlsx limereport-qt${QT_VERSION_MAJOR} qcustomplot
-  RUNTIME DESTINATION "/usr/local/bin" COMPONENT ${COMPONENT_NAME}
-  LIBRARY DESTINATION "/usr/local/lib" COMPONENT ${COMPONENT_NAME}
-  ARCHIVE DESTINATION "/usr/local/lib" COMPONENT ${COMPONENT_NAME})
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "/usr/local/bin" COMPONENT ${COMPONENT_NAME})
 
 # Adding XML files to cpack component
 install(

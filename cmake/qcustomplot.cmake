@@ -6,3 +6,8 @@ FetchContent_Declare(
   GIT_TAG        origin/develop
 )
 FetchContent_MakeAvailable(qcustomplot)
+
+# Create install component for deb packages
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
+  install(TARGETS qcustomplot LIBRARY DESTINATION "/usr/local/lib" COMPONENT QCUSTOMPLOT)
+endif()

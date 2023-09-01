@@ -7,8 +7,8 @@ xml_config_path=$HOME/.local/share/@PROJECT_NAME@
 if [ -d "$xml_config_path" ]; then
   echo "$xml_config_path does exist, cleanup."
   rm -rf "$xml_config_path"
-  mkdir "$xml_config_path"
 fi
+mkdir "$xml_config_path"
 
 # Copying XML configuration files in appdata folder
 for xml_file in /usr/local/share/coma/settings/*.xml
