@@ -18,7 +18,6 @@ add_library(limereport ALIAS limereport-qt${QT_VERSION_MAJOR})
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
   install(
     TARGETS limereport-qt${QT_VERSION_MAJOR}
-    LIBRARY       DESTINATION "/usr/local/lib"     COMPONENT LIMEREPORT
-#    PUBLIC_HEADER DESTINATION "/usr/local/include" COMPONENT LIMEREPORT
+    LIBRARY       DESTINATION "${CPACK_PACKAGING_INSTALL_PREFIX}/lib"     COMPONENT LIMEREPORT
   )
 endif()

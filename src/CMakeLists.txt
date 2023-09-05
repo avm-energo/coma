@@ -129,6 +129,12 @@ conan_cmake_install(
   REMOTE conancenter
   SETTINGS ${settings})
 
+# Setup packaging install prefix for DEB generator
+if(NOT DEFINED CPACK_PACKAGING_INSTALL_PREFIX)
+  set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+endif()
+message(STATUS "Packaging install prefix: ${CPACK_PACKAGING_INSTALL_PREFIX}")
+
 # Building libraries and targets
 # Step 1: Build dependencies
 include(gen)
@@ -150,7 +156,7 @@ add_subdirectory(models)
 add_subdirectory(xml)
 add_subdirectory(journals)
 # Step 2: Build tests
-if (BUILD_TESTS)
+if(BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 # Step 3: Build executable targets

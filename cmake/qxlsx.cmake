@@ -12,10 +12,5 @@ FetchContent_MakeAvailable(QXlsx)
 
 # Create install component for deb packages
 if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
-  install(
-    TARGETS QXlsx
-    LIBRARY DESTINATION       "/usr/local/lib"     COMPONENT QXLSX
-    ARCHIVE DESTINATION       "/usr/local/lib"     COMPONENT QXLSX
-#    PUBLIC_HEADER DESTINATION "/usr/local/include" COMPONENT QXLSX
-  )
+  install(TARGETS QXlsx LIBRARY DESTINATION "${CPACK_PACKAGING_INSTALL_PREFIX}/lib" COMPONENT QXLSX)
 endif()

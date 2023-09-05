@@ -1,10 +1,10 @@
 # Adding targets to cpack component
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "/usr/local/bin" COMPONENT ${COMPONENT_NAME})
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "${CPACK_PACKAGING_INSTALL_PREFIX}/bin" COMPONENT ${COMPONENT_NAME})
 
 # Adding XML files to cpack component
 install(
   DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../settings"
-  DESTINATION "/usr/local/share/coma"
+  DESTINATION "${CPACK_PACKAGING_INSTALL_PREFIX}/share/coma"
   COMPONENT ${COMPONENT_NAME})
 
 # Generating postinst and postrm files
