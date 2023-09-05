@@ -194,6 +194,7 @@ void Coma::prepareDialogs()
         }
     }
     AlarmW->configure();
+    // TODO: где-то тут должны запрашивать s2 конфигурацию от модуля
     mDlgManager->setupUI(mAppConfig, size());
     connect(BdaTimer, &QTimer::timeout, mDlgManager.get(), &DialogManager::reqUpdate);
 }

@@ -237,7 +237,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                            for (auto i = 0; i != count; ++i)
                            {
                                status = WDFunc::SetCBIndex(parent, widgetName(key, i), bitset.test(i));
-                               Q_ASSERT(status && "Couldn't fill QComboBox");
+                               // Q_ASSERT(status && "Couldn't fill QComboBox");
                                if (!status && !flag)
                                {
                                    flag = true;

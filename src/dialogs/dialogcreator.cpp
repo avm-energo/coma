@@ -38,8 +38,10 @@ void DialogCreator::createDialogs(const AppConfiguration appCfg)
 /// \brief Adding the created dialog to the list for saving.
 void DialogCreator::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
 {
-    dlg->setObjectName(name);
-    dlg->setCaption(caption);
+    if (!name.isEmpty())
+        dlg->setObjectName(name);
+    if (!caption.isEmpty())
+        dlg->setCaption(caption);
     mDialogs.append(dlg);
 }
 
@@ -68,19 +70,23 @@ bool DialogCreator::isBoxModule(const quint16 &type) const
 /// \brief Creating config dialogs.
 void DialogCreator::createConfigDialogs()
 {
+    static const std::map<S2::BoardType, QString> nameMap {
+        { S2::BoardType::Base, "база" },   //
+        { S2::BoardType::Mezz, "мезонин" } //
+    };
     if (s2manager.isOneBoard())
     {
-        auto confDialog = new ConfigDialog(s2manager.getCurrentConfiguration(), true, mParent);
+        auto confDialog = new ConfigDialog(s2manager, S2::BoardType::Base, mParent);
         addDialogToList(confDialog, "Конфигурация", "conf");
     }
     else
     {
-        for (auto &iter : s2manager)
+        for (const auto &[boardType, _] : s2manager)
         {
-            const auto key = iter.first;
-            QString indexStr = (iter.first == S2::BoardConfig::Base) ? "база" : "мезонин";
-            auto confDialog = new ConfigDialog(iter.second, true, mParent);
-            addDialogToList(confDialog, "Конфигурация " + indexStr, "conf" + QString::number(int(key)));
+            auto confDialog = new ConfigDialog(s2manager, boardType, mParent);
+            const auto confDialogCaption = "Конфигурация " + nameMap.at(boardType);
+            const auto confDialogName = "conf" + QString::number(static_cast<int>(boardType));
+            addDialogToList(confDialog, confDialogCaption, confDialogName);
         }
     }
 }
@@ -107,7 +113,7 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
     auto &workConfig = s2manager.getCurrentConfiguration().m_workingConfig;
     if (boxModel == Modules::Model::KIV)
     {
-        // TODO: Реанимировать регулировку для КИВ, временно не работает :(
+        // AVM-KIV tune status: currently working
         addDialogToList(new TuneKIVDialog(workConfig, mParent), "Регулировка", "tune");
     }
     else

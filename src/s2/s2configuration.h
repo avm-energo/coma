@@ -93,7 +93,9 @@ public:
     /// \details Если элемент с указанным id уже существует, то его данные заменяются переданными.
     void setRecord(const QString &name, const valueType &value);
 
+    /// \brief Функция для проверки на наличие данных с указанным id в конфигурации.
     bool contains(const quint32 id) const noexcept;
+    /// \brief Функция для проверки на наличие данных с указанным именем в конфигурации.
     bool contains(const QString &name) const noexcept;
 
     /// \brief Конвертация хранимых данных согласно формату S2 в массив байт.

@@ -14,7 +14,7 @@ class QTabWidget;
 class ConfigDialog : public UDialog
 {
 public:
-    explicit ConfigDialog(S2BoardConfig &boardConf, bool prereadConf = true, QWidget *parent = nullptr);
+    explicit ConfigDialog(S2DataManager &s2manager, const S2BoardType boardType, QWidget *parent = nullptr);
     void prereadConfig();
     void setDefaultConfig();
 
@@ -41,10 +41,10 @@ private:
 
     void showConfigErrState();
 
-    S2BoardConfig &boardConfig;
-    bool m_prereadConf;
-    WidgetFactory factory;
-    UniquePointer<DataTypesProxy> proxyDRL;
-    ErrConfState *errConfState;
-    QStringList CheckConfErrors;
+    S2DataManager &m_datamanager;
+    S2BoardConfig &m_boardConfig;
+    WidgetFactory m_factory;
+    UniquePointer<DataTypesProxy> m_proxyDRL;
+    ErrConfState *m_errConfState;
+    QStringList m_confErrors;
 };

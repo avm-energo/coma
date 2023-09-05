@@ -25,16 +25,16 @@ static constexpr char name[] = "confHash";
 
 constexpr auto confType = std_ext::to_underlying(S2::FilesEnum::Config);
 
-ConfigDialog::ConfigDialog(S2BoardConfig &boardConf, bool prereadConf, QWidget *parent)
+ConfigDialog::ConfigDialog(S2DataManager &s2manager, const S2BoardType boardType, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent)
-    , boardConfig(boardConf)
-    , m_prereadConf(prereadConf)
-    , factory(boardConfig.m_workingConfig)
-    , proxyDRL(new DataTypesProxy)
-    , errConfState(new ErrConfState())
+    , m_datamanager(s2manager)
+    , m_boardConfig(m_datamanager.getConfiguration(boardType))
+    , m_factory(m_boardConfig.m_workingConfig)
+    , m_proxyDRL(new DataTypesProxy(this))
+    , m_errConfState(new ErrConfState)
 {
-    proxyDRL->RegisterType<QByteArray>();
-    connect(proxyDRL.get(), &DataTypesProxy::DataStorable, this, //
+    m_proxyDRL->RegisterType<QByteArray>();
+    connect(m_proxyDRL.get(), &DataTypesProxy::DataStorable, this, //
         [this](const QVariant &var) { configReceived(var.value<QByteArray>()); });
 }
 
@@ -51,7 +51,7 @@ void ConfigDialog::writeConfig()
     {
         if (prepareConfigToWrite())
         {
-            auto s2file = boardConfig.m_workingConfig.toByteArray();
+            auto s2file = m_boardConfig.m_workingConfig.toByteArray();
             BaseInterface::iface()->writeFile(confType, s2file);
         }
         else
@@ -61,7 +61,7 @@ void ConfigDialog::writeConfig()
 
 void ConfigDialog::checkForDiff()
 {
-    const auto diffItems = boardConfig.m_defaultConfig.checkDiff(boardConfig.m_workingConfig);
+    const auto diffItems = m_boardConfig.m_defaultConfig.checkDiff(m_boardConfig.m_workingConfig);
     if (!diffItems.empty())
         qDebug() << diffItems;
 }
@@ -79,7 +79,7 @@ bool ConfigDialog::isVisible(const quint16 id) const
 void ConfigDialog::configReceived(const QByteArray &rawData)
 {
     using namespace S2;
-    auto &workConfig = boardConfig.m_workingConfig;
+    auto &workConfig = m_boardConfig.m_workingConfig;
     if (workConfig.updateByRawData(rawData))
     {
         constexpr auto typeB_Id = "MTypeB_ID";
@@ -113,7 +113,7 @@ void ConfigDialog::configReceived(const QByteArray &rawData)
         else
             workConfig.setRecord(typeE_Id, typeM);
 
-        checkForDiff();
+        // checkForDiff();
         fill();
         EMessageBox::information(this, "Конфигурация прочитана успешно");
     }
@@ -132,7 +132,7 @@ void ConfigDialog::saveConfigToFile()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    QByteArray file = boardConfig.m_workingConfig.toByteArray();
+    QByteArray file = m_boardConfig.m_workingConfig.toByteArray();
     Q_ASSERT(file.size() > 8);
     quint32 length = *reinterpret_cast<quint32 *>(&file.data()[4]);
     length += sizeof(S2::S2FileHeader);
@@ -226,7 +226,7 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
     std::set<delegate::WidgetGroup> uniqueTabs;
     auto &tabs = S2::ConfigStorage::GetInstance().getConfigTabs();
-    for (const auto &record : boardConfig.m_defaultConfig)
+    for (const auto &record : m_boardConfig.m_defaultConfig)
     {
         auto tab = tabForId(record.first);
         auto search = tabs.find(tab);
@@ -268,12 +268,12 @@ void ConfigDialog::setupUI()
     auto ConfTW = new QTabWidget(this);
     createTabs(ConfTW);
 
-    for (const auto &record : boardConfig.m_defaultConfig)
+    for (const auto &record : m_boardConfig.m_defaultConfig)
     {
         const auto id = record.first;
         if (isVisible(id))
         {
-            auto widget = factory.createWidget(id, this);
+            auto widget = m_factory.createWidget(id, this);
             if (widget)
             {
                 auto tab = tabForId(id);
@@ -303,7 +303,7 @@ void ConfigDialog::setupUI()
 
 void ConfigDialog::fill()
 {
-    for (const auto &[id, record] : boardConfig.m_workingConfig)
+    for (const auto &[id, record] : m_boardConfig.m_workingConfig)
     {
         if (isVisible(id))
         {
@@ -311,7 +311,7 @@ void ConfigDialog::fill()
                 // thanx to https://stackoverflow.com/a/46115028
                 // in C++20 lambdas could capture structured binding
                 [=, id = id](const auto &&value) {
-                    bool status = factory.fillWidget(this, id, value);
+                    bool status = m_factory.fillWidget(this, id, value);
                     if (!status)
                         qWarning() << "Couldnt fill widget for item: " << id;
                 },
@@ -322,11 +322,11 @@ void ConfigDialog::fill()
 
 void ConfigDialog::fillBack() const
 {
-    for (const auto &[id, _] : boardConfig.m_workingConfig)
+    for (const auto &[id, _] : m_boardConfig.m_workingConfig)
     {
         if (isVisible(id))
         {
-            auto status = factory.fillBack(id, this);
+            auto status = m_factory.fillBack(id, this);
             if (!status)
                 qWarning() << "Couldnt fill back item from widget: " << id;
         }
@@ -346,20 +346,20 @@ void ConfigDialog::prereadConfig()
 
 void ConfigDialog::setDefaultConfig()
 {
-    boardConfig.m_workingConfig = boardConfig.m_defaultConfig;
+    m_boardConfig.m_workingConfig = m_boardConfig.m_defaultConfig;
     fill();
 }
 
 void ConfigDialog::showConfigErrState()
 {
-    errConfState->show();
+    m_errConfState->show();
 }
 
 bool ConfigDialog::prepareConfigToWrite()
 {
     fillBack();
     checkConfig();
-    if (CheckConfErrors.isEmpty())
+    if (m_confErrors.isEmpty())
         return true;
     else
     {
@@ -386,12 +386,11 @@ bool ConfigDialog::prepareConfigToWrite()
 void ConfigDialog::uponInterfaceSetting()
 {
     setupUI();
-    if (m_prereadConf)
-        prereadConfig();
+    prereadConfig();
 }
 
 void ConfigDialog::checkConfig()
 {
-    CheckConfErrors.clear();
+    m_confErrors.clear();
     /// TODO: А как проверять конфигурацию?
 }
