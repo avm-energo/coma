@@ -1,6 +1,7 @@
 #pragma once
 
 #include "s2configuration.h"
+#include "s2util.h"
 
 namespace S2
 {
@@ -21,12 +22,13 @@ struct BoardConfiguration
 
 /// \brief Класс, который используется в качестве контейнера
 /// для хранения конфигураций плат подключённого устройства.
-class DataManager : public QObject
+class DataManager final : public QObject
 {
     Q_OBJECT
 private:
     S2ConfigStorage &m_storage;
     std::map<BoardType, BoardConfiguration> m_data;
+    S2Util m_util;
     BoardType m_currentParseTarget;
 
 public:
@@ -68,13 +70,16 @@ public:
     /// \details Нужно для range-based циклов for.
     [[nodiscard]] ConstIter end() const noexcept;
 
-    void parseS2File(const QByteArray &file);
+    void parseS2File(const QByteArray &rawFile);
 
 public slots:
     /// \brief Слот, при вызове которого создаётся новая конфигурация для другого типа платы.
     void startNewConfig();
     /// \brief Слот, который сохраняет данные от XML парсера о конфигурации по умолчанию для текущей платы.
     void configDataReceive(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
+
+signals:
+    void parseStatus(const Error::Msg status);
 };
 
 }

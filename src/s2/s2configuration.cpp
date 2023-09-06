@@ -145,32 +145,32 @@ QByteArray Configuration::toByteArray() const
     return m_util.convert(*this, std_ext::to_underlying(FilesEnum::Config));
 }
 
-bool Configuration::updateByRawData(const QByteArray &rawData)
-{
-    std::map<quint32, DataItem> dataFromFile;
-    auto result = m_util.convert(rawData, m_factory, dataFromFile);
-    switch (result)
-    {
-    case Error::Msg::NoError:
-        m_data = dataFromFile;
-        return true;
-    case Error::Msg::HeaderSizeError:
-        qWarning() << "Размер файла меньше установленного размера заголовка.";
-        break;
-    case Error::Msg::WrongFileError:
-        qWarning() << "Передан файл, не являющийся конфигурацией.";
-        break;
-    case Error::Msg::SizeError:
-        qWarning() << "Ошибка размера: выход за границу принятых байт.";
-        break;
-    case Error::Msg::CrcError:
-        qWarning() << "Получена некорректная контрольная сумма.";
-        break;
-    default:
-        break;
-    }
-    return false;
-}
+// bool Configuration::updateByRawData(const QByteArray &rawData)
+//{
+//    std::map<quint32, DataItem> dataFromFile;
+//    auto result = m_util.convert(rawData, m_factory, dataFromFile);
+//    switch (result)
+//    {
+//    case Error::Msg::NoError:
+//        m_data = dataFromFile;
+//        return true;
+//    case Error::Msg::HeaderSizeError:
+//        qWarning() << "Размер файла меньше установленного размера заголовка.";
+//        break;
+//    case Error::Msg::WrongFileError:
+//        qWarning() << "Передан файл, не являющийся конфигурацией.";
+//        break;
+//    case Error::Msg::SizeError:
+//        qWarning() << "Ошибка размера: выход за границу принятых байт.";
+//        break;
+//    case Error::Msg::CrcError:
+//        qWarning() << "Получена некорректная контрольная сумма.";
+//        break;
+//    default:
+//        break;
+//    }
+//    return false;
+//}
 
 std::vector<quint32> Configuration::checkDiff(const Configuration &rhs) const
 {

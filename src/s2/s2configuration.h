@@ -6,11 +6,13 @@
 namespace S2
 {
 
+class DataManager;
+
 /// \brief Класс для хранения конфигурации устройства/модуля/платы в формате S2.
 /// \details Конфигурация представляет собой контейнер, в котором по идентификаторам
 /// хранятся отдельные элементы данных, представляющие собой записи в формате S2.
 /// \see S2::DataItem.
-class Configuration
+class Configuration final
 {
 private:
     const S2ConfigStorage &m_storage;
@@ -99,10 +101,10 @@ public:
     bool contains(const QString &name) const noexcept;
 
     /// \brief Конвертация хранимых данных согласно формату S2 в массив байт.
-    [[nodiscard]] QByteArray toByteArray() const;
+    [[deprecated]] [[nodiscard]] QByteArray toByteArray() const;
     /// \brief Парсинг бинарного файла согласно формату S2 в хранилище данных.
     /// \param rawData[in] - полученный бинарный файл.
-    bool updateByRawData(const QByteArray &rawData);
+    // bool updateByRawData(const QByteArray &rawData);
 
     /// \brief Сравнение двух конфигураций
     /// \returns Возвращает вектор с ID элементов, которые отличаются в

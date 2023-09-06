@@ -72,9 +72,20 @@ DataManager::ConstIter DataManager::end() const noexcept
     return m_data.cend();
 }
 
-void DataManager::parseS2File(const QByteArray &file)
+void DataManager::parseS2File(const QByteArray &rawFile)
 {
-    ;
+    S2DataFactory factory { m_storage };
+    std::map<quint32, DataItem> dataFromFile;
+    auto result = m_util.convert(rawFile, factory, dataFromFile);
+    if (result == Error::Msg::NoError)
+    {
+        // Для конфигурации каждой платы находим соответствие
+        for (const auto &[id, value] : dataFromFile)
+            for (auto &[_, boardConfig] : m_data)
+                if (boardConfig.m_defaultConfig.contains(id))
+                    boardConfig.m_workingConfig.setRecord(id, value);
+    }
+    emit parseStatus(result);
 }
 
 void DataManager::startNewConfig()

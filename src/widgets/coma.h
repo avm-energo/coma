@@ -4,6 +4,7 @@
 #include "../dialogs/dialogmanager.h"
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
+#include "../module/s2requestservice.h"
 #include "../oscillograms/oscmanager.h"
 #include "../s2/s2datamanager.h"
 #include "../xml/xmleditor/xmleditor.h"
@@ -62,6 +63,7 @@ private slots:
 private:
     UniquePointer<Module> module;
     UniquePointer<S2DataManager> s2dataManager;
+    UniquePointer<S2RequestService> s2requestService;
 
     QTimer *BdaTimer, *AlrmTimer;
     AlarmWidget *AlarmW;

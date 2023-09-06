@@ -1,9 +1,10 @@
 #include "dialogmanager.h"
 
-DialogManager::DialogManager(const ModuleSettings &settings, S2DataManager &s2DataManager, QWidget *parent)
+DialogManager::DialogManager(const ModuleSettings &settings, //
+    S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent)
     : UDialog(parent)
     , curDialogIndex(0)
-    , mDlgCreator(new DialogCreator(settings, Board::GetInstance(), s2DataManager, this))
+    , mDlgCreator(new DialogCreator(settings, Board::GetInstance(), s2DataManager, s2ReqService, this))
     , mWorkspace(new QStackedWidget(this))
     , mSidebar(new QListWidget(this))
 {

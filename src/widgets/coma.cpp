@@ -93,14 +93,21 @@ QPoint Coma::s_comaCenter = QPoint(0, 0);
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
     , s2dataManager(new S2DataManager(this))
-    , proxyBS(new DataTypesProxy)
-    , proxyGRS(new DataTypesProxy)
+    , s2requestService(new S2RequestService(this))
+    , proxyBS(new DataTypesProxy(this))
+    , proxyGRS(new DataTypesProxy(this))
     , editor(nullptr)
     , mAppConfig(appCfg)
-    , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), *s2dataManager, this))
+    , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), //
+          *s2dataManager, *s2requestService, this))
 {
     proxyBS->RegisterType<DataTypes::BitStringStruct>();
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
+    // connections
+    QObject::connect(                                        //
+        s2requestService.get(), &S2RequestService::response, //
+        s2dataManager.get(), &S2DataManager::parseS2File     //
+    );
 }
 
 Coma::~Coma()
@@ -194,8 +201,9 @@ void Coma::prepareDialogs()
         }
     }
     AlarmW->configure();
-    // TODO: где-то тут должны запрашивать s2 конфигурацию от модуля
     mDlgManager->setupUI(mAppConfig, size());
+    // Запрашиваем s2 конфигурацию от модуля
+    s2requestService->request(S2::FilesEnum::Config, true);
     connect(BdaTimer, &QTimer::timeout, mDlgManager.get(), &DialogManager::reqUpdate);
 }
 
@@ -297,13 +305,13 @@ void Coma::initInterfaceConnection()
         break;
 #endif
     case Board::InterfaceType::USB:
-        device.reset(new Protocom());
+        device.reset(new Protocom(this));
         break;
     case Board::InterfaceType::Ethernet:
-        device.reset(new IEC104());
+        device.reset(new IEC104(this));
         break;
     case Board::InterfaceType::RS485:
-        device.reset(new ModBus());
+        device.reset(new ModBus(this));
         break;
     default:
         qFatal("Connection type error");

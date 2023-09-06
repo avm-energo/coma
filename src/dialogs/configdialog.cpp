@@ -25,23 +25,29 @@ static constexpr char name[] = "confHash";
 
 constexpr auto confType = std_ext::to_underlying(S2::FilesEnum::Config);
 
-ConfigDialog::ConfigDialog(S2DataManager &s2manager, const S2BoardType boardType, QWidget *parent)
+ConfigDialog::ConfigDialog(S2RequestService &s2service, //
+    S2DataManager &s2manager, const S2BoardType boardType, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent)
+    , m_requestService(s2service)
     , m_datamanager(s2manager)
     , m_boardConfig(m_datamanager.getConfiguration(boardType))
     , m_factory(m_boardConfig.m_workingConfig)
-    , m_proxyDRL(new DataTypesProxy(this))
+    //, m_proxyDRL(new DataTypesProxy(this))
     , m_errConfState(new ErrConfState)
 {
-    m_proxyDRL->RegisterType<QByteArray>();
-    connect(m_proxyDRL.get(), &DataTypesProxy::DataStorable, this, //
-        [this](const QVariant &var) { configReceived(var.value<QByteArray>()); });
+    connect(&m_datamanager, &S2DataManager::parseStatus, this, &ConfigDialog::parseStatusHandle);
+    connect(&m_requestService, &S2RequestService::noConfigurationError, this, &ConfigDialog::noConfigurationHandle);
+
+    //    m_proxyDRL->RegisterType<QByteArray>();
+    //    connect(m_proxyDRL.get(), &DataTypesProxy::DataStorable, this, //
+    //        [this](const QVariant &var) { configReceived(var.value<QByteArray>()); });
 }
 
 void ConfigDialog::readConfig()
 {
     setSuccessMsg(tr("Конфигурация прочитана успешно"));
-    BaseInterface::iface()->reqFile(confType, DataTypes::FileFormat::DefaultS2);
+    // BaseInterface::iface()->reqFile(confType, DataTypes::FileFormat::DefaultS2);
+    m_requestService.request(S2::FilesEnum::Config);
 }
 
 void ConfigDialog::writeConfig()
@@ -51,8 +57,8 @@ void ConfigDialog::writeConfig()
     {
         if (prepareConfigToWrite())
         {
-            auto s2file = m_boardConfig.m_workingConfig.toByteArray();
-            BaseInterface::iface()->writeFile(confType, s2file);
+            // auto s2file = m_boardConfig.m_workingConfig.toByteArray();
+            // BaseInterface::iface()->writeFile(confType, s2file);
         }
         else
             qCritical("Ошибка чтения конфигурации");
@@ -76,50 +82,48 @@ bool ConfigDialog::isVisible(const quint16 id) const
         return false;
 }
 
-void ConfigDialog::configReceived(const QByteArray &rawData)
-{
-    using namespace S2;
-    auto &workConfig = m_boardConfig.m_workingConfig;
-    if (workConfig.updateByRawData(rawData))
-    {
-        constexpr auto typeB_Id = "MTypeB_ID";
-        constexpr auto typeE_Id = "MTypeE_ID";
-        const DWORD typeB = Board::GetInstance().typeB();
-        const DWORD typeM = Board::GetInstance().typeM();
-
-        if (workConfig.contains(typeB_Id))
-        {
-            const auto s2typeB = workConfig[typeB_Id].value<DWORD>();
-            if (s2typeB != typeB)
-            {
-                qCritical() << "Conflict typeB, module: " << QString::number(typeB, 16)
-                            << " config: " << QString::number(s2typeB, 16);
-                workConfig[typeB_Id].setData(typeB);
-            }
-        }
-        else
-            workConfig.setRecord(typeB_Id, typeB);
-
-        if (workConfig.contains(typeE_Id))
-        {
-            const auto s2typeM = workConfig[typeE_Id].value<DWORD>();
-            if (s2typeM != typeM)
-            {
-                qCritical() << "Conflict typeB, module: " << QString::number(typeM, 16)
-                            << " config: " << QString::number(s2typeM, 16);
-                workConfig[typeE_Id].setData(typeM);
-            }
-        }
-        else
-            workConfig.setRecord(typeE_Id, typeM);
-
-        // checkForDiff();
-        fill();
-        EMessageBox::information(this, "Конфигурация прочитана успешно");
-    }
-    else
-        EMessageBox::warning(this, "Ошибка чтения конфигурации, проверьте лог");
-}
+// void ConfigDialog::configReceived(const QByteArray &rawData)
+//{
+//    using namespace S2;
+//    auto &workConfig = m_boardConfig.m_workingConfig;
+//    // if (workConfig.updateByRawData(rawData))
+//    if (true)
+//    {
+//        constexpr auto typeB_Id = "MTypeB_ID";
+//        constexpr auto typeE_Id = "MTypeE_ID";
+//        const DWORD typeB = Board::GetInstance().typeB();
+//        const DWORD typeM = Board::GetInstance().typeM();
+//        if (workConfig.contains(typeB_Id))
+//        {
+//            const auto s2typeB = workConfig[typeB_Id].value<DWORD>();
+//            if (s2typeB != typeB)
+//            {
+//                qCritical() << "Conflict typeB, module: " << QString::number(typeB, 16)
+//                            << " config: " << QString::number(s2typeB, 16);
+//                workConfig[typeB_Id].setData(typeB);
+//            }
+//        }
+//        else
+//            workConfig.setRecord(typeB_Id, typeB);
+//        if (workConfig.contains(typeE_Id))
+//        {
+//            const auto s2typeM = workConfig[typeE_Id].value<DWORD>();
+//            if (s2typeM != typeM)
+//            {
+//                qCritical() << "Conflict typeB, module: " << QString::number(typeM, 16)
+//                            << " config: " << QString::number(s2typeM, 16);
+//                workConfig[typeE_Id].setData(typeM);
+//            }
+//        }
+//        else
+//            workConfig.setRecord(typeE_Id, typeM);
+//        // checkForDiff();
+//        fill();
+//        EMessageBox::information(this, "Конфигурация прочитана успешно");
+//    }
+//    else
+//        EMessageBox::warning(this, "Ошибка чтения конфигурации, проверьте лог");
+//}
 
 void ConfigDialog::saveConfigToFile()
 {
@@ -132,7 +136,7 @@ void ConfigDialog::saveConfigToFile()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    QByteArray file = m_boardConfig.m_workingConfig.toByteArray();
+    QByteArray file /*= m_boardConfig.m_workingConfig.toByteArray() */;
     Q_ASSERT(file.size() > 8);
     quint32 length = *reinterpret_cast<quint32 *>(&file.data()[4]);
     length += sizeof(S2::S2FileHeader);
@@ -171,7 +175,8 @@ void ConfigDialog::loadConfigFromFile()
         qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
-    configReceived(file);
+    // configReceived(file);
+    m_datamanager.parseS2File(file);
     EMessageBox::information(this, "Загрузка прошла успешно!");
 }
 
@@ -333,16 +338,16 @@ void ConfigDialog::fillBack() const
     }
 }
 
-void ConfigDialog::prereadConfig()
-{
-    if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
-    {
-        setDefaultConfig();
-        EMessageBox::information(this, "Задана конфигурация по умолчанию");
-    }
-    else
-        readConfig();
-}
+// void ConfigDialog::prereadConfig()
+//{
+//    if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
+//    {
+//        setDefaultConfig();
+//        EMessageBox::information(this, "Задана конфигурация по умолчанию");
+//    }
+//    else
+//        readConfig();
+//}
 
 void ConfigDialog::setDefaultConfig()
 {
@@ -386,11 +391,48 @@ bool ConfigDialog::prepareConfigToWrite()
 void ConfigDialog::uponInterfaceSetting()
 {
     setupUI();
-    prereadConfig();
+    // prereadConfig();
 }
 
 void ConfigDialog::checkConfig()
 {
     m_confErrors.clear();
     /// TODO: А как проверять конфигурацию?
+}
+
+void ConfigDialog::parseStatusHandle(const Error::Msg status)
+{
+    if (status != Error::Msg::NoError)
+    {
+        EMessageBox::warning(this, "Ошибка чтения конфигурации, проверьте лог");
+        switch (status)
+        {
+        case Error::Msg::HeaderSizeError:
+            qWarning() << "Размер файла меньше установленного размера заголовка.";
+            break;
+        case Error::Msg::WrongFileError:
+            qWarning() << "Получен файл, не являющийся конфигурацией.";
+            break;
+        case Error::Msg::SizeError:
+            qWarning() << "Ошибка размера: выход за границу принятых байт.";
+            break;
+        case Error::Msg::CrcError:
+            qWarning() << "Получена некорректная контрольная сумма.";
+            break;
+        default:
+            // ignore other cases
+            break;
+        }
+    }
+    else
+    {
+        EMessageBox::information(this, "Конфигурация прочитана успешно");
+        fill();
+    }
+}
+
+void ConfigDialog::noConfigurationHandle()
+{
+    EMessageBox::warning(this, "Задана конфигурация по умолчанию");
+    setDefaultConfig();
 }
