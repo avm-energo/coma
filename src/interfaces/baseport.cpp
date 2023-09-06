@@ -87,7 +87,7 @@ void BasePort::poll()
     } while (state != Interface::State::Disconnect);
 
     // Finish thread
-    QMutexLocker locker(&m_dataGuard);
+    // QMutexLocker locker(&m_dataGuard);
     disconnect();
     m_log->info(QString(metaObject()->className()) + " is finished\n");
     emit finished();

@@ -172,6 +172,15 @@ QByteArray Configuration::toByteArray() const
 //    return false;
 //}
 
+void Configuration::merge(const Configuration &rhs)
+{
+    // Copying data from rhs container
+    auto rhs_data_copy { rhs.m_data };
+    // Extract nodes from rhs_data_copy
+    // and merge them to current container
+    m_data.merge(rhs_data_copy);
+}
+
 std::vector<quint32> Configuration::checkDiff(const Configuration &rhs) const
 {
     std::set<quint32> currentItems, receivedtItems;

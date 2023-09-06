@@ -88,6 +88,17 @@ void DataManager::parseS2File(const QByteArray &rawFile)
     emit parseStatus(result);
 }
 
+QByteArray DataManager::getBinaryConfiguration() const
+{
+    // Обновляем данные из UI каждого конфигурационного диалога
+    emit updateDataFromUI();
+    // В новую конфигурацию копируем данные из всех имеющихся
+    S2Configuration all { m_storage };
+    for (auto &[_, boardConfig] : m_data)
+        all.merge(boardConfig.m_workingConfig);
+    return all.toByteArray();
+}
+
 void DataManager::startNewConfig()
 {
     constexpr std::array<BoardType, 2> boardTypes { BoardType::Base, BoardType::Mezz };

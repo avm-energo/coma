@@ -71,6 +71,7 @@ public:
     [[nodiscard]] ConstIter end() const noexcept;
 
     void parseS2File(const QByteArray &rawFile);
+    [[nodiscard]] QByteArray getBinaryConfiguration() const;
 
 public slots:
     /// \brief Слот, при вызове которого создаётся новая конфигурация для другого типа платы.
@@ -80,6 +81,7 @@ public slots:
 
 signals:
     void parseStatus(const Error::Msg status);
+    void updateDataFromUI() const;
 };
 
 }

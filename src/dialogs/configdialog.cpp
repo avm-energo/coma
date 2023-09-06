@@ -32,21 +32,16 @@ ConfigDialog::ConfigDialog(S2RequestService &s2service, //
     , m_datamanager(s2manager)
     , m_boardConfig(m_datamanager.getConfiguration(boardType))
     , m_factory(m_boardConfig.m_workingConfig)
-    //, m_proxyDRL(new DataTypesProxy(this))
     , m_errConfState(new ErrConfState)
 {
     connect(&m_datamanager, &S2DataManager::parseStatus, this, &ConfigDialog::parseStatusHandle);
+    connect(&m_datamanager, &S2DataManager::updateDataFromUI, this, &ConfigDialog::fillBack);
     connect(&m_requestService, &S2RequestService::noConfigurationError, this, &ConfigDialog::noConfigurationHandle);
-
-    //    m_proxyDRL->RegisterType<QByteArray>();
-    //    connect(m_proxyDRL.get(), &DataTypesProxy::DataStorable, this, //
-    //        [this](const QVariant &var) { configReceived(var.value<QByteArray>()); });
 }
 
 void ConfigDialog::readConfig()
 {
     setSuccessMsg(tr("Конфигурация прочитана успешно"));
-    // BaseInterface::iface()->reqFile(confType, DataTypes::FileFormat::DefaultS2);
     m_requestService.request(S2::FilesEnum::Config);
 }
 
@@ -58,7 +53,8 @@ void ConfigDialog::writeConfig()
         if (prepareConfigToWrite())
         {
             // auto s2file = m_boardConfig.m_workingConfig.toByteArray();
-            // BaseInterface::iface()->writeFile(confType, s2file);
+            auto s2file = m_datamanager.getBinaryConfiguration();
+            BaseInterface::iface()->writeFile(confType, s2file);
         }
         else
             qCritical("Ошибка чтения конфигурации");
@@ -82,6 +78,7 @@ bool ConfigDialog::isVisible(const quint16 id) const
         return false;
 }
 
+/*
 // void ConfigDialog::configReceived(const QByteArray &rawData)
 //{
 //    using namespace S2;
@@ -124,6 +121,7 @@ bool ConfigDialog::isVisible(const quint16 id) const
 //    else
 //        EMessageBox::warning(this, "Ошибка чтения конфигурации, проверьте лог");
 //}
+*/
 
 void ConfigDialog::saveConfigToFile()
 {
@@ -136,7 +134,7 @@ void ConfigDialog::saveConfigToFile()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
-    QByteArray file /*= m_boardConfig.m_workingConfig.toByteArray() */;
+    QByteArray file = m_datamanager.getBinaryConfiguration();
     Q_ASSERT(file.size() > 8);
     quint32 length = *reinterpret_cast<quint32 *>(&file.data()[4]);
     length += sizeof(S2::S2FileHeader);
@@ -175,7 +173,6 @@ void ConfigDialog::loadConfigFromFile()
         qCritical("Ошибка при загрузке файла конфигурации");
         return;
     }
-    // configReceived(file);
     m_datamanager.parseS2File(file);
     EMessageBox::information(this, "Загрузка прошла успешно!");
 }
@@ -325,7 +322,7 @@ void ConfigDialog::fill()
     }
 }
 
-void ConfigDialog::fillBack() const
+void ConfigDialog::fillBack()
 {
     for (const auto &[id, _] : m_boardConfig.m_workingConfig)
     {
@@ -336,18 +333,8 @@ void ConfigDialog::fillBack() const
                 qWarning() << "Couldnt fill back item from widget: " << id;
         }
     }
+    checkConfig();
 }
-
-// void ConfigDialog::prereadConfig()
-//{
-//    if (Board::GetInstance().noConfig()) // если в модуле нет конфигурации, заполнить поля по умолчанию
-//    {
-//        setDefaultConfig();
-//        EMessageBox::information(this, "Задана конфигурация по умолчанию");
-//    }
-//    else
-//        readConfig();
-//}
 
 void ConfigDialog::setDefaultConfig()
 {
@@ -362,8 +349,6 @@ void ConfigDialog::showConfigErrState()
 
 bool ConfigDialog::prepareConfigToWrite()
 {
-    fillBack();
-    checkConfig();
     if (m_confErrors.isEmpty())
         return true;
     else
@@ -391,7 +376,6 @@ bool ConfigDialog::prepareConfigToWrite()
 void ConfigDialog::uponInterfaceSetting()
 {
     setupUI();
-    // prereadConfig();
 }
 
 void ConfigDialog::checkConfig()

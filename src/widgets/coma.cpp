@@ -637,7 +637,6 @@ void Coma::disconnect()
     qInfo(__PRETTY_FUNCTION__);
     BdaTimer->stop();
     AlarmW->clear();
-    BaseInterface::iface()->disconnect();
 
     //     emit StopCommunications();
     // while (ActiveThreads) // wait for all threads to finish
@@ -710,11 +709,11 @@ void Coma::disconnectAndClear()
     {
         disconnect();
         mDlgManager->clearDialogs();
-
         ConfigStorage::GetInstance().clearModuleSettings();
         s2dataManager->clear();
         Board::GetInstance().reset();
         BaseInterface::iface()->close();
+        BaseInterface::iface()->disconnect();
         // BUG Segfault
         //    if (Reconnect)
         //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);

@@ -267,6 +267,7 @@ void BaseInterface::close()
     DataManager::GetInstance().clearQueue();
     if (ifacePort)
         ifacePort->closeConnection();
+    setState(State::Disconnect);
 }
 
 // ===============================================================================
