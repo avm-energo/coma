@@ -34,6 +34,7 @@ ConfigDialog::ConfigDialog(S2RequestService &s2service, //
     , m_factory(m_boardConfig.m_workingConfig)
     , m_errConfState(new ErrConfState)
 {
+    // disableMessages();
     connect(&m_datamanager, &S2DataManager::parseStatus, this, &ConfigDialog::parseStatusHandle);
     connect(&m_datamanager, &S2DataManager::updateDataFromUI, this, &ConfigDialog::fillBack);
     connect(&m_requestService, &S2RequestService::noConfigurationError, this, &ConfigDialog::noConfigurationHandle);

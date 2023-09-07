@@ -38,7 +38,6 @@ public:
     QWidget *least();
     void disconnect();
     void setupConnection();
-    //    static QPoint ComaPos();
     static QPoint ComaCenter();
 
 public slots:
@@ -84,7 +83,6 @@ private:
     void setProgressBarCount(int prbnum, int count);
     void newTimers();
     void setupUI();
-    void setupConnections();
     void prepare();
     QToolBar *createToolBar();
     void keyPressEvent(QKeyEvent *event) override;
