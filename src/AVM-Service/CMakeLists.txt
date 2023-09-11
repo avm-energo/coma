@@ -30,6 +30,7 @@ endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC
   s2
   interfaces
+  comaresources
   module
   widgets
   dialogs
