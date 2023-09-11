@@ -17,7 +17,6 @@ install(
 
 # Runtime dependencies installation
 install(CODE [[
-  message("Project name: ${PROJECT_NAME}")
   message("Comaresources: ${COMARES_BINDIR}")
   file(GET_RUNTIME_DEPENDENCIES
     PRE_EXCLUDE_REGEXES "api-ms-*"
@@ -27,6 +26,7 @@ install(CODE [[
       "${CMAKE_INSTALL_PREFIX}/bin"
       "${hidapi_BIN_DIRS}"
       "${COMARES_BINDIR}"
+      "${COMARES_BINDIR}/Release"
     RESOLVED_DEPENDENCIES_VAR RES
     UNRESOLVED_DEPENDENCIES_VAR UNRES
     CONFLICTING_DEPENDENCIES_PREFIX CONFLICTING_DEPENDENCIES
