@@ -74,7 +74,7 @@ void ConfigStorage::measJourDataReceive(const quint32 index, const QString &head
 /// \brief Slot for saving module's protocol groups
 void ConfigStorage::protocolDescriptionReceived(const parseXChangeStruct &str)
 {
-    auto &sigMap = getModuleSettings().getSignals();
+    auto &sigMap = mSettings->getSignals();
     if (sigMap.contains(str.sigId))
     {
         auto signal = sigMap.value(str.sigId);

@@ -16,6 +16,7 @@ enum class BoardType : std::uint8_t
 /// \brief Структура для хранения конфигурации платы.
 struct BoardConfiguration
 {
+    QString m_tabName;
     S2Configuration m_defaultConfig; ///< Конфигурация по умолчанию (из XML файла).
     S2Configuration m_workingConfig; ///< Рабочая конфигурация платы.
 };
@@ -78,6 +79,8 @@ public slots:
     void startNewConfig();
     /// \brief Слот, который сохраняет данные от XML парсера о конфигурации по умолчанию для текущей платы.
     void configDataReceive(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
+    /// \brief aboba
+    void configNameReceive(const QString &tabName);
 
 signals:
     void parseStatus(const Error::Msg status);

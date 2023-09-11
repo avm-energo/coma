@@ -22,10 +22,10 @@ struct Signal
 };
 
 /// \brief Перечисление для хранения типа отображения мультивиджета.
-enum ViewType : quint8
+enum class ViewType : quint8
 {
     Float = 0,
-    Bitset = 1
+    Bitset
 };
 
 /// \brief Структура для хранения информации узла <mwidget> из XML.
@@ -56,7 +56,7 @@ struct Section
 };
 
 /// \brief Перечисление для хранение типа, читаемого из бинарного файла.
-enum BinaryType : quint8
+enum class BinaryType : quint8
 {
     uint32 = 0,
     float32,

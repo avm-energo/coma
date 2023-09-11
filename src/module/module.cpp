@@ -71,6 +71,10 @@ void Module::loadModuleSettings(ConfigStorage &mStorage, S2::DataManager &s2mana
     auto moduleParser = new Xml::ModuleParser(typeB, typeM, checks, this);
     QObject::connect(moduleParser, &Xml::ModuleParser::startNewConfig, //
         &s2manager, &S2::DataManager::startNewConfig);
+    QObject::connect(moduleParser, &Xml::ModuleParser::configDataSending, //
+        &s2manager, &S2::DataManager::configDataReceive);
+    QObject::connect(moduleParser, &Xml::ModuleParser::configNameSending, //
+        &s2manager, &S2::DataManager::configNameReceive);
     QObject::connect(moduleParser, &Xml::ModuleParser::signalDataSending, //
         &mStorage, &ConfigStorage::signalDataReceive);
     QObject::connect(moduleParser, &Xml::ModuleParser::tabDataSending, //
@@ -83,8 +87,6 @@ void Module::loadModuleSettings(ConfigStorage &mStorage, S2::DataManager &s2mana
         &mStorage, &ConfigStorage::workJourDataReceive);
     QObject::connect(moduleParser, &Xml::ModuleParser::measJourDataSending, //
         &mStorage, &ConfigStorage::measJourDataReceive);
-    QObject::connect(moduleParser, &Xml::ModuleParser::configDataSending, //
-        &s2manager, &S2::DataManager::configDataReceive);
     QObject::connect(moduleParser, &Xml::ModuleParser::protocolGroupSending, //
         &mStorage, &ConfigStorage::protocolDescriptionReceived);
     QObject::connect(moduleParser, &Xml::ModuleParser::parseError, this, &Module::parseErrorHandle);

@@ -32,6 +32,7 @@ signals:
     void interfaceSettingsSending(const ProtocolDescription &iSettings, const Board::InterfaceType iType);
     void protocolGroupSending(const parseXChangeStruct &str);
     void configDataSending(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
+    void configNameSending(const QString &tabName);
 
 private:
     QString getFileName(const quint16 typeB, const quint16 typeM);

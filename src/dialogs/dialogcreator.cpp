@@ -75,26 +75,13 @@ bool DialogCreator::isBoxModule(const quint16 &type) const
 /// \brief Creating config dialogs.
 void DialogCreator::createConfigDialogs()
 {
-    // TODO: вынести в XML конфигурацию
-    static const std::map<S2::BoardType, QString> nameMap {
-        { S2::BoardType::Base, "база" },   //
-        { S2::BoardType::Mezz, "мезонин" } //
-    };
-    //    if (s2manager.isOneBoard())
-    //    {
-    //        auto confDialog = new ConfigDialog(s2service, s2manager, S2::BoardType::Base, mParent);
-    //        addDialogToList(confDialog, "Конфигурация", "conf");
-    //    }
-    //    else
-    //    {
-    for (const auto &[boardType, _] : s2manager)
+    for (const auto &[boardType, boardConf] : s2manager)
     {
         auto confDialog = new ConfigDialog(s2service, s2manager, boardType, mParent);
-        const auto confDialogCaption = "Конфигурация " + nameMap.at(boardType);
+        const auto &confDialogCaption = boardConf.m_tabName;
         const auto confDialogName = "conf" + QString::number(static_cast<int>(boardType));
         addDialogToList(confDialog, confDialogCaption, confDialogName);
     }
-    //}
 }
 
 /// \brief Creating check dialogs.

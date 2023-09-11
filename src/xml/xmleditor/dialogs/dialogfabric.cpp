@@ -9,6 +9,7 @@
 #include "xmlmodbusdialog.h"
 #include "xmlmwidgetdialog.h"
 #include "xmlprotocomdialog.h"
+#include "xmlresdialog.h"
 #include "xmlsectiondialog.h"
 #include "xmlsgroupdialog.h"
 #include "xmlsignaldialog.h"
@@ -72,6 +73,12 @@ void XmlDialogFabric::CreateOrEditDialog(BaseEditorModel *model, int row, QWidge
             break;
         case ModelType::SGroup:
             dialog = new XmlMWidgetDialog(parent);
+            break;
+        case ModelType::Resources:
+            if (row == createId)
+                EMessageBox::warning(parent, "В данном разделе запрещено создание новых элементов");
+            else
+                dialog = new XmlResDialog(parent);
             break;
         default:
             if (row == createId)

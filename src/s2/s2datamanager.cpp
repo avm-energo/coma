@@ -107,7 +107,8 @@ void DataManager::startNewConfig()
         auto search = m_data.find(boardType);
         if (search == m_data.end())
         {
-            m_data.insert({ boardType, BoardConfiguration { S2Configuration(m_storage), S2Configuration(m_storage) } });
+            m_data.insert(
+                { boardType, BoardConfiguration { "", S2Configuration(m_storage), S2Configuration(m_storage) } });
             m_currentParseTarget = boardType;
             break;
         }
@@ -120,6 +121,15 @@ void DataManager::configDataReceive(const quint16 id, const QString &defVal, con
     // поэтому currentParseTarget будет гарантированно инициализирован значением.
     m_data.at(m_currentParseTarget).m_defaultConfig.append(id, defVal);
     m_storage.widgetDetailsReceive(id, visib, count);
+}
+
+void DataManager::configNameReceive(const QString &tabName)
+{
+    auto &currentName = m_data.at(m_currentParseTarget).m_tabName;
+    if (!tabName.isEmpty())
+        currentName = tabName;
+    else
+        currentName = "Конфигурация";
 }
 
 } // namespace S2
