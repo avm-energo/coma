@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="33" mtypeb="00">
+<module mtypeb="00" mtypem="33">
     <name>AVTUK-0033</name>
     <resources>
         <alarms desc="Сигнализация">
@@ -7,7 +7,7 @@
             <warning desc="Предупреждения"/>
             <info desc="Информационные"/>
         </alarms>
-        <config desc="Конфигурация">
+        <config desc="Конфигурация мезонин">
             <record>
                 <id>235</id>
                 <defaultValue>0</defaultValue>
@@ -63,7 +63,7 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные мезонин">
-                <sgroup tab="101" header="Текущее состояние входов">
+                <sgroup header="Текущее состояние входов" tab="101">
                     <mwidget desc="" view="bitset">
                         <start-addr>3002</start-addr>
                         <count>30</count>

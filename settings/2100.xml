@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="00" mtypeb="21">
+<module mtypeb="21" mtypem="00">
     <name>AVTUK-2100</name>
     <version>3.2-0000</version>
     <resources>
@@ -138,7 +138,7 @@
                 </item>
             </warning>
         </alarms>
-        <config desc="Конфигурация">
+        <config desc="Конфигурация базовая">
             <record>
                 <id>10</id>
                 <defaultValue>8</defaultValue>
@@ -333,44 +333,44 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные базовая">
-                <sgroup tab="1" header="Значение по каналу, инж. единицы">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Значение по каналу, инж. единицы" tab="1">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>1001</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение по каналу %1, инж. единицы</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="2" header="Макс. значение по каналу, инж. единицы">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Макс. значение по каналу, инж. единицы" tab="2">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>1033</start-addr>
                         <count>8</count>
                         <toolTip>Макс. значение по каналу %1, инж. единицы</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="2" header="Мин. значение по каналу, инж. единицы">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Мин. значение по каналу, инж. единицы" tab="2">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>1025</start-addr>
                         <count>8</count>
                         <toolTip>Мин. значение по каналу %1</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Общие">
-                    <mwidget view="float" desc="Температура микроконтроллера, °С">
+                <sgroup header="Общие" tab="1">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
                         <start-addr>101</start-addr>
                     </mwidget>
-                    <mwidget view="float" desc="Напряжение на батарейке, В">
+                    <mwidget desc="Напряжение на батарейке, В" view="float">
                         <start-addr>102</start-addr>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Текущее значение напряжения по каналу, В">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Текущее значение напряжения по каналу, В" tab="1">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>1017</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение напряжения по каналу %1, В</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Текущее значение тока по каналу, мА">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Текущее значение тока по каналу, мА" tab="1">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>1009</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение тока по каналу %1, мА</toolTip>
