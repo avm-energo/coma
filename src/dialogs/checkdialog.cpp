@@ -215,7 +215,7 @@ QVBoxLayout *CheckDialog::setupGroup(const ModuleTypes::SGroup &arg, UWidget *uw
         // Float
         if (mwidget.view == ModuleTypes::ViewType::Float)
         {
-            auto widgetLayout = setupFloatWidget(mwidget, arg.widgets.count());
+            auto widgetLayout = setupFloatWidget(mwidget, arg.widgets.size());
             if (widgetLayout != nullptr)
                 groupLayout->addLayout(widgetLayout);
         }

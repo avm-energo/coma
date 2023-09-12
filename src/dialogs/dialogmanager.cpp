@@ -3,100 +3,93 @@
 DialogManager::DialogManager(const ModuleSettings &settings, //
     S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent)
     : UDialog(parent)
-    , curDialogIndex(0)
-    , mDlgCreator(new DialogCreator(settings, Board::GetInstance(), s2DataManager, s2ReqService, this))
-    , mWorkspace(new QStackedWidget(this))
-    , mSidebar(new QListWidget(this))
+    , m_currentDialogIndex(0)
+    , m_dlgCreator(new DialogCreator(settings, Board::GetInstance(), s2DataManager, s2ReqService, this))
+    , m_workspace(new QStackedWidget(this))
+    , m_sidebar(new QListWidget(this))
 {
     // Init settings for sidebar and main workspace.
-    auto sizePolizy = mWorkspace->sizePolicy();
+    auto sizePolizy = m_workspace->sizePolicy();
     sizePolizy.setRetainSizeWhenHidden(true);
-    mWorkspace->setSizePolicy(sizePolizy);
-    sizePolizy = mSidebar->sizePolicy();
+    m_workspace->setSizePolicy(sizePolizy);
+    sizePolizy = m_sidebar->sizePolicy();
     sizePolizy.setRetainSizeWhenHidden(true);
-    mSidebar->setSizePolicy(sizePolizy);
-    connect(mSidebar.get(), &QListWidget::currentRowChanged, mWorkspace.get(), &QStackedWidget::setCurrentIndex);
+    m_sidebar->setSizePolicy(sizePolizy);
+    connect(m_sidebar.get(), &QListWidget::currentRowChanged, m_workspace.get(), &QStackedWidget::setCurrentIndex);
     hideUI();
 }
 
-/// \brief Hiding sidebar and main workspace.
 void DialogManager::hideUI()
 {
-    mSidebar->hide();
-    mWorkspace->hide();
+    m_sidebar->hide();
+    m_workspace->hide();
 }
 
-/// \brief Showing sidebar and main workspace.
 void DialogManager::showUI()
 {
-    mSidebar->show();
-    mWorkspace->show();
+    m_sidebar->show();
+    m_workspace->show();
 }
 
-/// \brief Returns pointers to UI elements (sidebar and main workspace) in QPair struct.
 QPair<QListWidget *, QStackedWidget *> DialogManager::getUI()
 {
-    return { mSidebar.get(), mWorkspace.get() };
+    return { m_sidebar.get(), m_workspace.get() };
 }
 
-/// \brief Changing dialog in the sidebar.
 void DialogManager::dialogChanged(int newIndex)
 {
-    auto &dialogs = mDlgCreator->getDialogs();
+    auto &dialogs = m_dlgCreator->getDialogs();
     if (newIndex >= 0 && newIndex < dialogs.size())
     {
-        auto oldDialog = dialogs[curDialogIndex];
+        auto oldDialog = dialogs[m_currentDialogIndex];
         oldDialog->engine()->setUpdatesEnabled(false);
         auto newDialog = dialogs[newIndex];
         newDialog->engine()->setUpdatesEnabled(true);
         newDialog->setEnabled(true);
-        curDialogIndex = newIndex;
+        m_currentDialogIndex = newIndex;
     }
     // Индекс -1 норма, когда удаляются диалоги
     // else
     //    qWarning() << "Неправильный индекс диалога: " << newIndex;
 }
 
-/// \brief Overloaded virtual function for update request.
 void DialogManager::reqUpdate()
 {
-    auto currentDialog = mDlgCreator->getDialogs()[curDialogIndex];
+    auto currentDialog = m_dlgCreator->getDialogs()[m_currentDialogIndex];
     currentDialog->reqUpdate();
 }
 
-/// \brief Setup UI using DialogCreator for creating dialogs for current device.
 void DialogManager::setupUI(const AppConfiguration appCfg, const QSize size)
 {
-    Q_ASSERT(mWorkspace->count() == 0);
-    mDlgCreator->createDialogs(appCfg);
-    for (auto &dialog : mDlgCreator->getDialogs())
+    Q_ASSERT(m_workspace->count() == 0);
+    m_dlgCreator->createDialogs(appCfg);
+    for (auto &dialog : m_dlgCreator->getDialogs())
     {
         dialog->engine()->setUpdatesEnabled(false);
         dialog->uponInterfaceSetting();
-        auto item = new QListWidgetItem(dialog->getCaption(), mSidebar.get());
+        auto item = new QListWidgetItem(dialog->getCaption(), m_sidebar.get());
         item->setSizeHint(QSize(0, size.height() / 20));
         item->setTextAlignment(Qt::AlignCenter);
-        mSidebar->addItem(item);
-        mWorkspace->addWidget(dialog);
+        m_sidebar->addItem(item);
+        m_workspace->addWidget(dialog);
     }
-    curDialogIndex = 0;
-    mDlgCreator->getDialogs()[curDialogIndex]->engine()->setUpdatesEnabled(true);
-    connect(mWorkspace.get(), &QStackedWidget::currentChanged, this, &DialogManager::dialogChanged);
-    mSidebar->setMinimumWidth(size.width() / 6);
-    mSidebar->setMaximumWidth(size.width() / 5);
+    m_currentDialogIndex = 0;
+    m_dlgCreator->getDialogs()[m_currentDialogIndex]->engine()->setUpdatesEnabled(true);
+    connect(m_workspace.get(), &QStackedWidget::currentChanged, this, &DialogManager::dialogChanged);
+    m_sidebar->setMinimumWidth(size.width() / 6);
+    m_sidebar->setMaximumWidth(size.width() / 5);
     showUI();
 }
 
-/// \brief Removing dialogs, clear and hide UI elements.
 void DialogManager::clearDialogs()
 {
     hideUI();
-    while (mWorkspace->count())
+    while (m_workspace->count())
     {
-        auto widget = mWorkspace->widget(0);
-        mWorkspace->removeWidget(widget);
+        auto widget = m_workspace->widget(0);
+        m_workspace->removeWidget(widget);
         widget->deleteLater();
     }
-    mSidebar->clear();
-    mDlgCreator->deleteDialogs();
+    m_sidebar->clear();
+    m_dlgCreator->deleteDialogs();
 }

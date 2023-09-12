@@ -35,7 +35,7 @@ int TestModule::getWidgetsCount(const ModuleTypes::SectionList &list)
             const auto &map = section.sgMap;                               //
             auto innerCount = std::accumulate(map.cbegin(), map.cend(), 0, //
                 [](int inner, auto &&group) {                              //
-                    return inner + group.widgets.count();                  //
+                    return inner + group.widgets.size();                   //
                 });                                                        //
             return value + innerCount;                                     //
         });                                                                //
