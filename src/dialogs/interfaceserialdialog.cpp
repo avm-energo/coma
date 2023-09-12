@@ -256,7 +256,7 @@ void InterfaceSerialDialog::acceptedInterface()
 
 void InterfaceSerialDialog::removeConnection(const QString &name)
 {
-    if (settings.childGroups().contains(name))
+    if (isNameExist(name))
         settings.remove(name);
 }
 

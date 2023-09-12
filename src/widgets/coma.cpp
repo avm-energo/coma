@@ -29,12 +29,15 @@
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/switchjournaldialog.h"
+#include "../interfaces/connectionmanager.h"
 #include "../interfaces/iec104.h"
 #include "../interfaces/modbus.h"
 #include "../interfaces/protocom.h"
 #include "../interfaces/settingstypes.h"
 #include "../journals/journalviewer.h"
 #include "../module/board.h"
+#include "../module/module.h"
+#include "../module/s2requestservice.h"
 #include "../oscillograms/swjmanager.h"
 #include "../s2/s2configstorage.h"
 #include "../s2/s2datafactory.h"
@@ -65,33 +68,33 @@
 #include <iostream>
 #include <memory>
 
-#ifdef Q_OS_WINDOWS
-// clang-format off
-#include <windows.h>
-// Header dbt must be the last header, thanx to microsoft
-#include <dbt.h>
-// clang-format on
-
-void registerForDeviceNotification(QWidget *ptr)
-{
-    DEV_BROADCAST_DEVICEINTERFACE devInt;
-    ZeroMemory(&devInt, sizeof(devInt));
-    GUID _guid = { 0xa5dcbf10, 0x6530, 0x11d2, { 0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed } };
-    devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-    devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-    // With DEVICE_NOTIFY_ALL_INTERFACE_CLASSES this property ignores
-    devInt.dbcc_classguid = _guid;
-    HDEVNOTIFY blub;
-    // NOTE Проверить со всеми модулями
-    blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt,
-        DEVICE_NOTIFY_ALL_INTERFACE_CLASSES /*DBT_DEVTYP_OEM*/ /*DEVICE_NOTIFY_WINDOW_HANDLE*/);
-}
-#endif
+//#ifdef Q_OS_WINDOWS
+//// clang-format off
+//#include <windows.h>
+//// Header dbt must be the last header, thanx to microsoft
+//#include <dbt.h>
+//// clang-format on
+// void registerForDeviceNotification(QWidget *ptr)
+//{
+//    DEV_BROADCAST_DEVICEINTERFACE devInt;
+//    ZeroMemory(&devInt, sizeof(devInt));
+//    GUID _guid = { 0xa5dcbf10, 0x6530, 0x11d2, { 0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed } };
+//    devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
+//    devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+//    // With DEVICE_NOTIFY_ALL_INTERFACE_CLASSES this property ignores
+//    devInt.dbcc_classguid = _guid;
+//    HDEVNOTIFY blub;
+//    // NOTE Проверить со всеми модулями
+//    blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt,
+//        DEVICE_NOTIFY_ALL_INTERFACE_CLASSES /*DBT_DEVTYP_OEM*/ /*DEVICE_NOTIFY_WINDOW_HANDLE*/);
+//}
+//#endif
 
 QPoint Coma::s_comaCenter = QPoint(0, 0);
 
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
+    , connectionManager(new IfaceConnManager(this))
     , s2dataManager(new S2DataManager(this))
     , s2requestService(new S2RequestService(this))
     , proxyBS(new DataTypesProxy(this))
@@ -105,10 +108,14 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
     connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &Coma::update);
     // connections
-    QObject::connect(                                        //
-        s2requestService.get(), &S2RequestService::response, //
-        s2dataManager.get(), &S2DataManager::parseS2File     //
-    );
+    connect(                                                     //
+        s2requestService.get(), &S2RequestService::response,     //
+        s2dataManager.get(), &S2DataManager::parseS2File         //
+    );                                                           //
+    connect(                                                     //
+        connectionManager.get(), &IfaceConnManager::sendMessage, //
+        this, qOverload<void *>(&Coma::nativeEvent)              //
+    );                                                           //
 }
 
 Coma::~Coma()
@@ -268,15 +275,14 @@ void Coma::prepareConnectDlg()
     }
     if (!Reconnect)
     {
-        // QEventLoop loop;
         auto dlg = new ConnectDialog(this);
         connect(dlg, &ConnectDialog::accepted, this, [=](const ConnectStruct st) {
             dlg->close();
             startWork(st);
         });
-        dlg->adjustSize();
-        dlg->show();
         connect(dlg, &QDialog::destroyed, this, [=] { action->setEnabled(true); });
+        dlg->adjustSize();
+        dlg->exec();
     }
     else
         action->setEnabled(true);
@@ -449,33 +455,47 @@ void Coma::prepare()
     msgModel->setText(board.moduleName());
 }
 
-bool Coma::nativeEventHandler(const QByteArray &eventType, void *message)
-{
-#ifdef __linux
-    Q_UNUSED(eventType);
-    Q_UNUSED(message);
-#endif
-#ifdef Q_OS_WINDOWS
-    if (eventType == "windows_generic_MSG")
-    {
-        auto msg = static_cast<MSG *>(message);
-        int msgType = msg->message;
-        if (msgType != WM_DEVICECHANGE)
-            return false;
-        emit sendMessage(message);
+// bool Coma::nativeEventHandler(const QByteArray &eventType, void *message)
+//{
+//#ifdef __linux
+//    Q_UNUSED(eventType);
+//    Q_UNUSED(message);
+//#endif
+//#ifdef Q_OS_WINDOWS
+//    if (eventType == "windows_generic_MSG")
+//    {
+//        auto msg = static_cast<MSG *>(message);
+//        int msgType = msg->message;
+//        if (msgType != WM_DEVICECHANGE)
+//            return false;
+//        emit sendMessage(message);
 
-        if (BdaTimer->isActive())
-            BdaTimer->stop();
-        if (AlrmTimer->isActive())
-            AlrmTimer->stop();
-        if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-        {
-            BdaTimer->start();
-            AlrmTimer->start();
-        }
+//        if (BdaTimer->isActive())
+//            BdaTimer->stop();
+//        if (AlrmTimer->isActive())
+//            AlrmTimer->stop();
+//        if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
+//        {
+//            BdaTimer->start();
+//            AlrmTimer->start();
+//        }
+//    }
+//#endif
+//    return false;
+//}
+
+void Coma::nativeEvent(void *message)
+{
+    Q_UNUSED(message);
+    if (BdaTimer->isActive())
+        BdaTimer->stop();
+    if (AlrmTimer->isActive())
+        AlrmTimer->stop();
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
+    {
+        BdaTimer->start();
+        AlrmTimer->start();
     }
-#endif
-    return false;
 }
 
 void Coma::go()
@@ -489,15 +509,16 @@ void Coma::go()
         dir.mkpath(".");
     StdFunc::Init();
     qInfo("=== Log started ===\n");
-#ifdef Q_OS_LINUX
-    // TODO: linux code goes here
-#endif
-#ifdef Q_OS_WINDOWS
-    // Listen to device events
-    registerForDeviceNotification(this);
-#else
 
-#endif
+    //#ifdef Q_OS_LINUX
+    //    // TODO: linux code goes here
+    //#endif
+    //#ifdef Q_OS_WINDOWS
+    //    // Listen to device events
+    //    registerForDeviceNotification(this);
+    //#else
+    //#endif
+    connectionManager->registerForDeviceNotification(this);
 
     Reconnect = false;
     newTimers();
@@ -632,7 +653,6 @@ void Coma::disconnect()
 
 void Coma::setupConnection()
 {
-    // XmlConfigParser::ParseS2ConfigToMap(S2Util::NameIdMap);
     auto const &board = Board::GetInstance();
     connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const State state) {
         switch (state)
@@ -683,7 +703,11 @@ void Coma::setupConnection()
 
     DataManager::GetInstance().clearQueue();
     BaseInterface::iface()->reqBSI();
-    connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::nativeEvent);
+    // connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::nativeEvent);
+    connect(                                                     //
+        connectionManager.get(), &IfaceConnManager::sendMessage, //
+        BaseInterface::iface(), &BaseInterface::nativeEvent      //
+    );
 }
 
 void Coma::disconnectAndClear()

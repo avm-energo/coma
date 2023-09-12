@@ -78,7 +78,7 @@ public:
     quint16 typeM() const;
 
     quint16 type() const;
-    quint16 type(Types type) const;
+    // quint16 type(Types type) const;
 
     bool isCrcValid() const
     {

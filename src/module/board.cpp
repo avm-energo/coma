@@ -46,20 +46,20 @@ quint16 Board::type() const
     return quint16(Mtypeb + Mtypem);
 }
 
-quint16 Board::type(Board::Types type) const
-{
-    switch (type)
-    {
-    case Base:
-        return typeB();
-    case Mezzanine:
-        return typeM();
-    case None:
-        return 0;
-    default:
-        return Board::type();
-    }
-}
+// quint16 Board::type(Board::Types type) const
+//{
+//    switch (type)
+//    {
+//    case Base:
+//        return typeB();
+//    case Mezzanine:
+//        return typeM();
+//    case None:
+//        return 0;
+//    default:
+//        return Board::type();
+//    }
+//}
 
 QString Board::moduleName() const
 {

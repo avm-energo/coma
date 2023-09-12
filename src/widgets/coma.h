@@ -2,9 +2,8 @@
 #define COMA_H
 
 #include "../dialogs/dialogmanager.h"
+#include "../interfaces/connectionmanager.h"
 #include "../interfaces/settingstypes.h"
-#include "../module/module.h"
-#include "../module/s2requestservice.h"
 #include "../oscillograms/oscmanager.h"
 #include "../s2/s2datamanager.h"
 #include "../xml/xmleditor/xmleditor.h"
@@ -16,13 +15,15 @@
 #include <gen/datamanager/typesproxy.h>
 
 class AlarmWidget;
+class Module;
+class S2RequestService;
 
-enum THREAD
-{
-    USB = 0x01,
-    P104 = 0x02,
-    MODBUS = 0x04
-};
+// enum THREAD
+//{
+//    USB = 0x01,
+//    P104 = 0x02,
+//    MODBUS = 0x04
+//};
 
 class Coma : public QMainWindow
 {
@@ -58,8 +59,10 @@ private slots:
     void showAboutDialog();
     void closeEvent(QCloseEvent *event) override;
     void update(const QVariant &msg);
+    void nativeEvent(void *message);
 
 private:
+    UniquePointer<IfaceConnManager> connectionManager;
     UniquePointer<Module> module;
     UniquePointer<S2DataManager> s2dataManager;
     UniquePointer<S2RequestService> s2requestService;
@@ -90,7 +93,7 @@ private:
     void moveEvent(QMoveEvent *event) override;
     void showEvent(QShowEvent *event) override;
     void prepareDialogs();
-    bool nativeEventHandler(const QByteArray &eventType, void *message);
+    // bool nativeEventHandler(const QByteArray &eventType, void *message);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     virtual bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override
@@ -99,7 +102,8 @@ private:
 #endif
     {
         Q_UNUSED(result);
-        return nativeEventHandler(eventType, message);
+        // return nativeEventHandler(eventType, message);
+        return connectionManager->nativeEventHandler(eventType, message);
     }
 
 signals:
