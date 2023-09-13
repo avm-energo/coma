@@ -1,5 +1,7 @@
 #pragma once
 
+#include "settingstypes.h"
+
 #include <QByteArray>
 #include <QWidget>
 
@@ -9,10 +11,19 @@ namespace Interface
 class ConnectionManager : public QObject
 {
     Q_OBJECT
+private:
+    bool m_reconnect;
+
 public:
     explicit ConnectionManager(QObject *parent = nullptr);
 
-    bool registerForDeviceNotification(QWidget *widget);
+    void createConnection(const ConnectStruct &connectionData);
+
+    /// \brief Registering device's notifications for an incoming widget.
+    /// \details Current implementation is ready only for Windows.
+    bool registerDeviceNotifications(QWidget *widget);
+    /// \brief Handling native events from OS.
+    /// \details Current implementation is ready only for Windows.
     bool nativeEventHandler(const QByteArray &eventType, void *message);
 
 signals:

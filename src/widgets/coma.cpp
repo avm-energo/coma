@@ -68,28 +68,6 @@
 #include <iostream>
 #include <memory>
 
-//#ifdef Q_OS_WINDOWS
-//// clang-format off
-//#include <windows.h>
-//// Header dbt must be the last header, thanx to microsoft
-//#include <dbt.h>
-//// clang-format on
-// void registerForDeviceNotification(QWidget *ptr)
-//{
-//    DEV_BROADCAST_DEVICEINTERFACE devInt;
-//    ZeroMemory(&devInt, sizeof(devInt));
-//    GUID _guid = { 0xa5dcbf10, 0x6530, 0x11d2, { 0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed } };
-//    devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-//    devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-//    // With DEVICE_NOTIFY_ALL_INTERFACE_CLASSES this property ignores
-//    devInt.dbcc_classguid = _guid;
-//    HDEVNOTIFY blub;
-//    // NOTE Проверить со всеми модулями
-//    blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt,
-//        DEVICE_NOTIFY_ALL_INTERFACE_CLASSES /*DBT_DEVTYP_OEM*/ /*DEVICE_NOTIFY_WINDOW_HANDLE*/);
-//}
-//#endif
-
 QPoint Coma::s_comaCenter = QPoint(0, 0);
 
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
@@ -142,21 +120,21 @@ void convertPixmap(size_t size, QAction *jourAct)
 
 QToolBar *Coma::createToolBar()
 {
-    auto tb = new QToolBar(this);
-    tb->setContextMenuPolicy(Qt::PreventContextMenu);
-    tb->setIconSize(QSize(40, 40));
-    tb->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::prepareConnectDlg);
-    tb->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::disconnectAndClear);
-    tb->addSeparator();
-    tb->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки", [this]() {
+    auto toolbar = new QToolBar(this);
+    toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
+    toolbar->setIconSize(QSize(40, 40));
+    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::connectDialog);
+    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::disconnectAndClear);
+    toolbar->addSeparator();
+    toolbar->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки", [this]() {
         auto dialog = new SettingsDialog(this);
         dialog->setMinimumSize(this->size() / 4);
         connect(dialog, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarms);
         dialog->exec();
         this->saveSettings();
     });
-    const QIcon jourIcon(":/icons/tnfrosya.svg");
 
+    const QIcon jourIcon(":/icons/tnfrosya.svg");
     auto jourAct = new QAction(jourIcon, tr("&Журнал..."), this);
     jourAct->setShortcuts(QKeySequence::Open);
     jourAct->setStatusTip(tr("Открыть протокол работы"));
@@ -171,8 +149,8 @@ QToolBar *Coma::createToolBar()
     const auto &queue = ErrorQueue::GetInstance();
     connect(&queue, &ErrorQueue::errCounts, this, std::bind(&convertPixmap, std::placeholders::_1, jourAct),
         Qt::QueuedConnection);
-    tb->addAction(jourAct);
-    return tb;
+    toolbar->addAction(jourAct);
+    return toolbar;
 }
 
 void Coma::setupUI()
@@ -246,7 +224,7 @@ void Coma::setupMenubar()
     auto menu = new QMenu(menubar);
     menu->setTitle("Главное");
     menu->addAction("Выход", this, &Coma::close);
-    menu->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::prepareConnectDlg);
+    menu->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::connectDialog);
     menu->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::disconnectAndClear);
     menubar->addMenu(menu);
     menubar->addAction("О программе", this, &Coma::showAboutDialog);
@@ -260,70 +238,6 @@ void Coma::setupMenubar()
     menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
     menubar->addMenu(menu);
     setMenuBar(menubar);
-}
-
-void Coma::prepareConnectDlg()
-{
-    auto action = qobject_cast<QAction *>(sender());
-    Q_ASSERT(action);
-    action->setDisabled(true);
-    auto const &board = Board::GetInstance();
-    if (board.connectionState() != Board::ConnectionState::Closed)
-    {
-        action->setEnabled(true);
-        return;
-    }
-    if (!Reconnect)
-    {
-        auto dlg = new ConnectDialog(this);
-        connect(dlg, &ConnectDialog::accepted, this, [=](const ConnectStruct st) {
-            dlg->close();
-            startWork(st);
-        });
-        connect(dlg, &QDialog::destroyed, this, [=] { action->setEnabled(true); });
-        dlg->adjustSize();
-        dlg->exec();
-    }
-    else
-        action->setEnabled(true);
-    // Stage3
-    disconnectAndClear();
-}
-
-void Coma::startWork(const ConnectStruct st)
-{
-    ConnectSettings = st;
-    saveSettings();
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    initInterfaceConnection();
-    setupConnection();
-}
-
-void Coma::initInterfaceConnection()
-{
-    auto const &board = Board::GetInstance();
-    connect(proxyBS.get(), &DataTypesProxy::DataStorable, &board, &Board::update);
-    BaseInterface::InterfacePointer device;
-    switch (board.interfaceType())
-    {
-#ifdef ENABLE_EMULATOR
-    case Board::InterfaceType::Emulator:
-        device = BaseInterface::InterfacePointer(new Emulator());
-        break;
-#endif
-    case Board::InterfaceType::USB:
-        device.reset(new Protocom(this));
-        break;
-    case Board::InterfaceType::Ethernet:
-        device.reset(new IEC104(this));
-        break;
-    case Board::InterfaceType::RS485:
-        device.reset(new ModBus(this));
-        break;
-    default:
-        qFatal("Connection type error");
-    }
-    BaseInterface::setIface(std::move(device));
 }
 
 QPoint Coma::ComaCenter()
@@ -428,9 +342,9 @@ void Coma::newTimers()
 {
     BdaTimer = new QTimer(this);
     BdaTimer->setInterval(1000);
-    AlrmTimer = new QTimer(this);
-    AlrmTimer->setInterval(5000);
-    AlrmTimer->start();
+    // AlrmTimer = new QTimer(this);
+    // AlrmTimer->setInterval(5000);
+    // AlrmTimer->start();
 }
 
 void Coma::prepare()
@@ -447,7 +361,7 @@ void Coma::prepare()
     if (board.noRegPars())
         qCritical() << Error::Msg::NoTuneError;
 
-    AlrmTimer->start();
+    // AlrmTimer->start();
     BdaTimer->start();
     auto msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
     msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
@@ -455,46 +369,17 @@ void Coma::prepare()
     msgModel->setText(board.moduleName());
 }
 
-// bool Coma::nativeEventHandler(const QByteArray &eventType, void *message)
-//{
-//#ifdef __linux
-//    Q_UNUSED(eventType);
-//    Q_UNUSED(message);
-//#endif
-//#ifdef Q_OS_WINDOWS
-//    if (eventType == "windows_generic_MSG")
-//    {
-//        auto msg = static_cast<MSG *>(message);
-//        int msgType = msg->message;
-//        if (msgType != WM_DEVICECHANGE)
-//            return false;
-//        emit sendMessage(message);
-
-//        if (BdaTimer->isActive())
-//            BdaTimer->stop();
-//        if (AlrmTimer->isActive())
-//            AlrmTimer->stop();
-//        if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-//        {
-//            BdaTimer->start();
-//            AlrmTimer->start();
-//        }
-//    }
-//#endif
-//    return false;
-//}
-
 void Coma::nativeEvent(void *message)
 {
     Q_UNUSED(message);
     if (BdaTimer->isActive())
         BdaTimer->stop();
-    if (AlrmTimer->isActive())
-        AlrmTimer->stop();
+    // if (AlrmTimer->isActive())
+    //    AlrmTimer->stop();
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
     {
         BdaTimer->start();
-        AlrmTimer->start();
+        // AlrmTimer->start();
     }
 }
 
@@ -510,16 +395,7 @@ void Coma::go()
     StdFunc::Init();
     qInfo("=== Log started ===\n");
 
-    //#ifdef Q_OS_LINUX
-    //    // TODO: linux code goes here
-    //#endif
-    //#ifdef Q_OS_WINDOWS
-    //    // Listen to device events
-    //    registerForDeviceNotification(this);
-    //#else
-    //#endif
-    connectionManager->registerForDeviceNotification(this);
-
+    connectionManager->registerDeviceNotifications(this);
     Reconnect = false;
     newTimers();
     loadSettings();
@@ -593,7 +469,7 @@ void Coma::attemptToRec()
     QApplication::setOverrideCursor(Qt::WaitCursor);
     saveSettings();
     QApplication::restoreOverrideCursor();
-    prepareConnectDlg();
+    connectDialog();
 }
 
 void Coma::loadSettings()
@@ -638,17 +514,74 @@ void Coma::setProgressBarCount(int prbnum, int count)
     }
 }
 
-void Coma::disconnect()
-{
-    qInfo(__PRETTY_FUNCTION__);
-    BdaTimer->stop();
-    AlarmW->clear();
+// void Coma::disconnect()
+//{
+//    qInfo(__PRETTY_FUNCTION__);
+//}
 
-    //     emit StopCommunications();
-    // while (ActiveThreads) // wait for all threads to finish
-    //    QCoreApplication::processEvents();
-    //  }
-    // Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
+void Coma::connectDialog()
+{
+    auto action = qobject_cast<QAction *>(sender());
+    Q_ASSERT(action);
+    action->setDisabled(true);
+    auto const &board = Board::GetInstance();
+    if (board.connectionState() != Board::ConnectionState::Closed)
+    {
+        action->setEnabled(true);
+        return;
+    }
+    // if (!Reconnect)
+    //{
+    auto connDialog = new ConnectDialog(this);
+    connect(connDialog, &ConnectDialog::accepted, this, //
+        [=](const ConnectStruct &st) {
+            ConnectSettings = st;
+            // connDialog->close();
+            startWork();
+        });
+    connect(connDialog, &QDialog::destroyed, this, [=] { action->setEnabled(true); });
+    connDialog->adjustSize();
+    connDialog->exec();
+    //}
+    // else
+    //    action->setEnabled(true);
+    // Stage3
+    // disconnectAndClear();
+}
+
+void Coma::startWork()
+{
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    saveSettings();
+    initInterfaceConnection();
+    setupConnection();
+}
+
+void Coma::initInterfaceConnection()
+{
+    auto const &board = Board::GetInstance();
+    connect(proxyBS.get(), &DataTypesProxy::DataStorable, &board, &Board::update);
+    BaseInterface::InterfacePointer device;
+    switch (board.interfaceType())
+    {
+#ifdef ENABLE_EMULATOR
+    case Board::InterfaceType::Emulator:
+        device = BaseInterface::InterfacePointer(new Emulator());
+        break;
+#endif
+    case Board::InterfaceType::USB:
+        device.reset(new Protocom(this));
+        break;
+    case Board::InterfaceType::Ethernet:
+        device.reset(new IEC104(this));
+        break;
+    case Board::InterfaceType::RS485:
+        device.reset(new ModBus(this));
+        break;
+    default:
+        qFatal("Connection type error");
+    }
+    BaseInterface::setIface(std::move(device));
 }
 
 void Coma::setupConnection()
@@ -703,7 +636,6 @@ void Coma::setupConnection()
 
     DataManager::GetInstance().clearQueue();
     BaseInterface::iface()->reqBSI();
-    // connect(this, &Coma::sendMessage, BaseInterface::iface(), &BaseInterface::nativeEvent);
     connect(                                                     //
         connectionManager.get(), &IfaceConnManager::sendMessage, //
         BaseInterface::iface(), &BaseInterface::nativeEvent      //
@@ -716,7 +648,9 @@ void Coma::disconnectAndClear()
     const auto &board = Board::GetInstance();
     if (board.connectionState() != Board::ConnectionState::Closed)
     {
-        disconnect();
+        // disconnect();
+        BdaTimer->stop();
+        AlarmW->clear();
         mDlgManager->clearDialogs();
         ConfigStorage::GetInstance().clearModuleSettings();
         s2dataManager->clear();
@@ -739,7 +673,6 @@ void Coma::resizeEvent(QResizeEvent *event)
 
 void Coma::moveEvent(QMoveEvent *event)
 {
-    //    Coma::s_comaPos = event->pos();
     s_comaCenter = geometry().center();
     QMainWindow::moveEvent(event);
 }

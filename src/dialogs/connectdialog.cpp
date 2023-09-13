@@ -15,6 +15,7 @@
 ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
 {
     QStringList intersl { "USB" };
+    // TODO: использовать AppConfiguration::Service и AppConfiguration::Debug
     if (QCoreApplication::applicationName().contains("service", Qt::CaseInsensitive))
         //        intersl += QStringList { "Ethernet", "RS485" };
         intersl += QStringList { "RS485" };
@@ -47,44 +48,42 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
 
 void ConnectDialog::setInterface()
 {
+    auto &board = Board::GetInstance();
     auto comboBox = this->findChild<QComboBox *>();
     if (comboBox != nullptr)
     {
         auto connectionType = comboBox->currentText();
-        Board::GetInstance().setProperty("interface", connectionType);
+        // TODO: это не должно тут происходить...
+        board.setProperty("interface", connectionType);
         settings.setValue("LastConnectionType", connectionType);
     }
 
-    switch (Board::GetInstance().interfaceType())
+    switch (board.interfaceType())
     {
     case Board::InterfaceType::USB:
-    {
         m_idialog = new InterfaceUSBDialog(this);
         break;
-    }
     case Board::InterfaceType::Ethernet:
-    {
         m_idialog = new InterfaceEthernetDialog(this);
         break;
-    }
     case Board::InterfaceType::RS485:
-    {
         m_idialog = new InterfaceSerialDialog(this);
         break;
-    }
 #ifdef ENABLE_EMULATOR
     case Board::InterfaceType::Emulator:
-    {
         m_idialog = new InterfaceEmuDialog(this);
         break;
-    }
 #endif
     default:
-    {
         return;
     }
-    }
     connect(m_idialog, &AbstractInterfaceDialog::accepted, this, &ConnectDialog::accepted);
+    // closing dialogs after selecting device
+    connect(m_idialog, &AbstractInterfaceDialog::accepted, this, //
+        [this](const ConnectStruct &) {
+            m_idialog->close();
+            close();
+        });
 
     m_idialog->setupUI();
     if (m_idialog->updateModel())

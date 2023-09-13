@@ -30,5 +30,5 @@ protected:
 
     QTableView *tableView;
 signals:
-    void accepted(ConnectStruct);
+    void accepted(const ConnectStruct &st);
 };

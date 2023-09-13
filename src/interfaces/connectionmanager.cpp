@@ -11,11 +11,16 @@
 namespace Interface
 {
 
-ConnectionManager::ConnectionManager(QObject *parent) : QObject(parent)
+ConnectionManager::ConnectionManager(QObject *parent) : QObject(parent), m_reconnect(false)
 {
 }
 
-bool ConnectionManager::registerForDeviceNotification(QWidget *widget)
+void ConnectionManager::createConnection(const ConnectStruct &connectionData)
+{
+    ;
+}
+
+bool ConnectionManager::registerDeviceNotifications(QWidget *widget)
 {
     if (widget != nullptr)
     {
@@ -47,9 +52,8 @@ bool ConnectionManager::nativeEventHandler(const QByteArray &eventType, void *me
     {
         auto msg = static_cast<MSG *>(message);
         int msgType = msg->message;
-        if (msgType != WM_DEVICECHANGE)
-            return false;
-        emit sendMessage(message);
+        if (msgType == WM_DEVICECHANGE)
+            emit sendMessage(message);
     }
 #elif defined(Q_OS_LINUX)
     Q_UNUSED(eventType);

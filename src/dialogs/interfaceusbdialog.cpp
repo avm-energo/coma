@@ -17,6 +17,7 @@ void InterfaceUSBDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     tableView = WDFunc::NewQTV(this, "usbtv", nullptr);
+    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers); // no editable view
     lyout->addWidget(tableView);
     connect(tableView, &QTableView::doubleClicked, this, &InterfaceUSBDialog::setInterface);
     setLayout(lyout);
