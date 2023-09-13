@@ -12,8 +12,6 @@ find_package(Boost
   COMPONENTS headers
   REQUIRED)
 
-set(QDARKSTYLESHEET_PATH ${CMAKE_CURRENT_SOURCE_DIR}/styles/QDarkStyleSheet/qdarkstyle)
-
 file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
@@ -21,7 +19,7 @@ add_library(
   ${PROJECT_NAME} STATIC
   ${files_cpp} ${files_h})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::Widgets
@@ -30,10 +28,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   QXlsx
   dialogs
   module
-  oscillograms
   s2
-  xml
-  PUBLIC comaresources
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

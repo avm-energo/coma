@@ -20,35 +20,33 @@
  *
  */
 
-#include "coma.h"
-
-#include "../comaversion/comaversion.h"
-#include "../dialogs/aboutdialog.h"
-#include "../dialogs/connectdialog.h"
-#include "../dialogs/errordialog.h"
-#include "../dialogs/keypressdialog.h"
-#include "../dialogs/settingsdialog.h"
-#include "../dialogs/switchjournaldialog.h"
-#include "../interfaces/connectionmanager.h"
-#include "../interfaces/iec104.h"
-#include "../interfaces/modbus.h"
-#include "../interfaces/protocom.h"
-#include "../interfaces/settingstypes.h"
-#include "../journals/journalviewer.h"
-#include "../module/board.h"
-#include "../module/module.h"
-#include "../module/s2requestservice.h"
-#include "../oscillograms/swjmanager.h"
-#include "../s2/s2configstorage.h"
-#include "../s2/s2datafactory.h"
-#include "../s2/s2util.h"
-#include "alarmwidget.h"
-#include "epopup.h"
-#include "gasdensitywidget.h"
-#include "splashscreen.h"
-#include "styleloader.h"
-#include "waitwidget.h"
-#include "wd_func.h"
+#include "../../comaversion/comaversion.h"
+#include "../../dialogs/aboutdialog.h"
+#include "../../dialogs/connectdialog.h"
+#include "../../dialogs/errordialog.h"
+#include "../../dialogs/keypressdialog.h"
+#include "../../dialogs/settingsdialog.h"
+#include "../../dialogs/switchjournaldialog.h"
+#include "../../interfaces/iec104.h"
+#include "../../interfaces/modbus.h"
+#include "../../interfaces/protocom.h"
+#include "../../interfaces/settingstypes.h"
+#include "../../journals/journalviewer.h"
+#include "../../module/board.h"
+#include "../../module/module.h"
+#include "../../module/s2requestservice.h"
+#include "../../oscillograms/swjmanager.h"
+#include "../../s2/s2configstorage.h"
+#include "../../s2/s2datafactory.h"
+#include "../../s2/s2util.h"
+#include "../../widgets/alarmwidget.h"
+#include "../../widgets/epopup.h"
+#include "../../widgets/gasdensitywidget.h"
+#include "../../widgets/splashscreen.h"
+#include "../../widgets/styleloader.h"
+#include "../../widgets/waitwidget.h"
+#include "../../widgets/wd_func.h"
+#include "../../xml/xmleditor/xmleditor.h"
 
 #include <QApplication>
 #include <QDir>
@@ -58,6 +56,7 @@
 #include <QProgressBar>
 #include <QToolBar>
 #include <QtGlobal>
+#include <coma_core/coma.h>
 #include <comaresources/manage.h>
 #include <functional>
 #include <gen/errorqueue.h>
@@ -68,7 +67,10 @@
 #include <iostream>
 #include <memory>
 
-QPoint Coma::s_comaCenter = QPoint(0, 0);
+namespace Core
+{
+
+// QPoint Coma::s_comaCenter = QPoint(0, 0);
 
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
@@ -94,6 +96,9 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
         connectionManager.get(), &IfaceConnManager::sendMessage, //
         this, qOverload<void *>(&Coma::nativeEvent)              //
     );                                                           //
+    // registering center of coma main window for epopup message boxes
+    auto pointContainer = new PointContainer(this);
+    connect(this, &Coma::positionChanged, pointContainer, &PointContainer::receivePoint);
 }
 
 Coma::~Coma()
@@ -240,10 +245,10 @@ void Coma::setupMenubar()
     setMenuBar(menubar);
 }
 
-QPoint Coma::ComaCenter()
-{
-    return Coma::s_comaCenter;
-}
+// QPoint Coma::ComaCenter()
+//{
+//    return Coma::s_comaCenter;
+//}
 
 void Coma::loadOsc(const QString &filename)
 {
@@ -342,9 +347,6 @@ void Coma::newTimers()
 {
     BdaTimer = new QTimer(this);
     BdaTimer->setInterval(1000);
-    // AlrmTimer = new QTimer(this);
-    // AlrmTimer->setInterval(5000);
-    // AlrmTimer->start();
 }
 
 void Coma::prepare()
@@ -361,7 +363,6 @@ void Coma::prepare()
     if (board.noRegPars())
         qCritical() << Error::Msg::NoTuneError;
 
-    // AlrmTimer->start();
     BdaTimer->start();
     auto msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
     msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
@@ -374,13 +375,8 @@ void Coma::nativeEvent(void *message)
     Q_UNUSED(message);
     if (BdaTimer->isActive())
         BdaTimer->stop();
-    // if (AlrmTimer->isActive())
-    //    AlrmTimer->stop();
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-    {
         BdaTimer->start();
-        // AlrmTimer->start();
-    }
 }
 
 void Coma::go()
@@ -514,11 +510,6 @@ void Coma::setProgressBarCount(int prbnum, int count)
     }
 }
 
-// void Coma::disconnect()
-//{
-//    qInfo(__PRETTY_FUNCTION__);
-//}
-
 void Coma::connectDialog()
 {
     auto action = qobject_cast<QAction *>(sender());
@@ -530,29 +521,21 @@ void Coma::connectDialog()
         action->setEnabled(true);
         return;
     }
-    // if (!Reconnect)
-    //{
     auto connDialog = new ConnectDialog(this);
-    connect(connDialog, &ConnectDialog::accepted, this, //
-        [=](const ConnectStruct &st) {
-            ConnectSettings = st;
-            // connDialog->close();
-            startWork();
-        });
+    connect(connDialog, &ConnectDialog::accepted, this, &Coma::startWork);
     connect(connDialog, &QDialog::destroyed, this, [=] { action->setEnabled(true); });
     connDialog->adjustSize();
     connDialog->exec();
-    //}
-    // else
-    //    action->setEnabled(true);
-    // Stage3
-    // disconnectAndClear();
 }
 
-void Coma::startWork()
+void Coma::startWork(const ConnectStruct &st)
 {
+    ConnectSettings = st;
     QApplication::setOverrideCursor(Qt::WaitCursor);
     saveSettings();
+
+    // connectionManager->createConnection(st);
+
     initInterfaceConnection();
     setupConnection();
 }
@@ -580,6 +563,7 @@ void Coma::initInterfaceConnection()
         break;
     default:
         qFatal("Connection type error");
+        break;
     }
     BaseInterface::setIface(std::move(device));
 }
@@ -667,19 +651,22 @@ void Coma::disconnectAndClear()
 
 void Coma::resizeEvent(QResizeEvent *event)
 {
-    s_comaCenter = geometry().center();
+    emit positionChanged(geometry().center());
+    // s_comaCenter = geometry().center();
     QMainWindow::resizeEvent(event);
 }
 
 void Coma::moveEvent(QMoveEvent *event)
 {
-    s_comaCenter = geometry().center();
+    emit positionChanged(geometry().center());
+    // s_comaCenter = geometry().center();
     QMainWindow::moveEvent(event);
 }
 
 void Coma::showEvent(QShowEvent *event)
 {
-    s_comaCenter = geometry().center();
+    emit positionChanged(geometry().center());
+    // s_comaCenter = geometry().center();
     QMainWindow::showEvent(event);
 }
 
@@ -744,4 +731,6 @@ void ComaHelper::parserHelper(Coma *coma)
             std::exit(0);
         }
     }
+}
+
 }

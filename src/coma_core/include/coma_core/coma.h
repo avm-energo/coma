@@ -1,22 +1,24 @@
-#ifndef COMA_H
-#define COMA_H
+#pragma once
 
-#include "../dialogs/dialogmanager.h"
-#include "../interfaces/connectionmanager.h"
-#include "../interfaces/settingstypes.h"
-#include "../oscillograms/oscmanager.h"
-#include "../s2/s2datamanager.h"
-#include "../xml/xmleditor/xmleditor.h"
+#include "../../dialogs/dialogmanager.h"
+#include "../../interfaces/settingstypes.h"
+#include "../../oscillograms/oscmanager.h"
+#include "../../s2/s2datamanager.h"
 
 #include <QApplication>
 #include <QListWidget>
 #include <QMainWindow>
 #include <QStackedWidget>
+#include <coma_core/connectionmanager.h>
 #include <gen/datamanager/typesproxy.h>
 
 class AlarmWidget;
 class Module;
 class S2RequestService;
+class XmlEditor;
+
+namespace Core
+{
 
 class Coma : public QMainWindow
 {
@@ -30,7 +32,6 @@ public:
     void connectSB();
     void setupMenubar();
     QWidget *least();
-    // void disconnect();
     void setupConnection();
     static QPoint ComaCenter();
 
@@ -44,7 +45,7 @@ public slots:
 
 private slots:
     void connectDialog();
-    void startWork();
+    void startWork(const ConnectStruct &st);
     void loadOsc();
     void loadSwj();
     void openJournalViewer();
@@ -55,13 +56,12 @@ private slots:
     void nativeEvent(void *message);
 
 private:
-    UniquePointer<IfaceConnManager> connectionManager;
+    UniquePointer<ConnectionManager> connectionManager;
     UniquePointer<Module> module;
     UniquePointer<S2DataManager> s2dataManager;
     UniquePointer<S2RequestService> s2requestService;
 
     QTimer *BdaTimer;
-    // QTimer *AlrmTimer;
     AlarmWidget *AlarmW;
     UniquePointer<DataTypesProxy> proxyBS, proxyGRS;
     OscManager oscManager;
@@ -71,7 +71,7 @@ private:
     ConnectStruct ConnectSettings;
     AppConfiguration mAppConfig;
     UniquePointer<DialogManager> mDlgManager;
-    static QPoint s_comaCenter;
+    // static QPoint s_comaCenter;
 
     void initInterfaceConnection();
     void loadSettings();
@@ -100,6 +100,7 @@ private:
 
 signals:
     void sendMessage(void *);
+    void positionChanged(const QPoint &center);
 };
 
 class ComaHelper
@@ -109,4 +110,4 @@ public:
     static void parserHelper(Coma *coma);
 };
 
-#endif // COMA_H
+}

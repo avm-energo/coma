@@ -155,6 +155,7 @@ add_subdirectory(tune)
 add_subdirectory(models)
 add_subdirectory(xml)
 add_subdirectory(journals)
+add_subdirectory(coma_core)
 # Step 2: Build tests
 if(BUILD_TESTS)
   add_subdirectory(tests)

@@ -9,6 +9,20 @@
 #include <QShowEvent>
 #include <map>
 
+class PointContainer : public QObject
+{
+    Q_OBJECT
+private:
+    static QPoint s_point;
+    friend class EPopup;
+
+public:
+    explicit PointContainer(QObject *parent = nullptr);
+
+public slots:
+    void receivePoint(const QPoint &point);
+};
+
 class EPopup : public QDialog
 {
     Q_OBJECT
@@ -25,9 +39,6 @@ signals:
 public slots:
     virtual void acceptSlot();
     void cancelSlot();
-
-private:
-    //    QWidget *m_parent;
 
 protected:
     void showEvent(QShowEvent *e);

@@ -1,8 +1,5 @@
 project(AVM-Service VERSION 2.5.1)
 
-find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Widgets REQUIRED)
-
 configure_file(
   ${CMAKE_SOURCE_DIR}/cconfig.h.in
   ${CMAKE_CURRENT_BINARY_DIR}/config.h
@@ -27,20 +24,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC
-  s2
-  interfaces
-  comaresources
-  module
-  widgets
-  dialogs
-  models
-  startup
-  datablocks
-  comaversion
-  oscillograms
-  Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(${PROJECT_NAME} PUBLIC coma_core)
 
 # Copy settings one time at first build
 set(SVC_CHECK_PATH "${CMAKE_CURRENT_BINARY_DIR}/check.txt")

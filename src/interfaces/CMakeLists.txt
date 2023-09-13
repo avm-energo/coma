@@ -15,7 +15,6 @@ set(files_h
     baseinterface.h
     baseinterfacethread.h
     baseport.h
-    connectionmanager.h
     emulator.h
     ethernet.h
     iec104.h
@@ -40,7 +39,6 @@ set(files_cpp
     baseinterface.cpp
     baseinterfacethread.cpp
     baseport.cpp
-    connectionmanager.cpp
     emulator.cpp
     ethernet.cpp
     iec104.cpp

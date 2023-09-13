@@ -1,4 +1,11 @@
-#include "connectionmanager.h"
+#include "../../interfaces/baseinterface.h"
+#include "../../interfaces/emulator.h"
+#include "../../interfaces/iec104.h"
+#include "../../interfaces/modbus.h"
+#include "../../interfaces/protocom.h"
+
+#include <coma_core/connectionmanager.h>
+#include <gen/std_ext.h>
 
 #ifdef Q_OS_WINDOWS
 // clang-format off
@@ -8,7 +15,7 @@
 // clang-format on
 #endif
 
-namespace Interface
+namespace Core
 {
 
 ConnectionManager::ConnectionManager(QObject *parent) : QObject(parent), m_reconnect(false)
@@ -17,7 +24,27 @@ ConnectionManager::ConnectionManager(QObject *parent) : QObject(parent), m_recon
 
 void ConnectionManager::createConnection(const ConnectStruct &connectionData)
 {
-    ;
+    BaseInterface::InterfacePointer device;
+    std::visit( //
+        overloaded {
+            [&]([[maybe_unused]] const UsbHidSettings &settings) {
+                device.reset(new Protocom(this));
+                ;
+            },
+            [&]([[maybe_unused]] const SerialPortSettings &settings) {
+                device.reset(new ModBus(this));
+                ;
+            },
+            [&]([[maybe_unused]] const IEC104Settings &settings) {
+                device.reset(new IEC104(this));
+                ;
+            },
+            [&]([[maybe_unused]] const EmulatorSettings &settings) {
+                device.reset(new Emulator(this));
+                ;
+            } //
+        },
+        connectionData.settings);
 }
 
 bool ConnectionManager::registerDeviceNotifications(QWidget *widget)

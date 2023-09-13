@@ -1,6 +1,5 @@
 #include "epopup.h"
 
-#include "coma.h"
 #include "passwordlineedit.h"
 #include "wd_func.h"
 
@@ -12,6 +11,17 @@
 #include <QPropertyAnimation>
 #include <QScreen>
 #include <QTimer>
+
+QPoint PointContainer::s_point = { 0, 0 };
+
+PointContainer::PointContainer(QObject *parent) : QObject(parent)
+{
+}
+
+void PointContainer::receivePoint(const QPoint &point)
+{
+    s_point = point;
+}
 
 ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent) : EPopup(parent)
 {
@@ -180,8 +190,8 @@ void EPopup::adjustPosition()
     int globalHeight = globalGeometry.height();
     int width2 = width() * 0.5;
     int height2 = height() * 0.5;
-    QPoint centerPoint;
-    centerPoint = Coma::ComaCenter();
+    QPoint centerPoint = PointContainer::s_point;
+    // centerPoint = Coma::ComaCenter();
     int right = centerPoint.x() + width2;
     int down = centerPoint.y() + height2;
     if ((right > globalWidth) || (down > globalHeight))

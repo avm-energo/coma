@@ -1,11 +1,11 @@
 #pragma once
 
-#include "settingstypes.h"
+#include "../../interfaces/settingstypes.h"
 
 #include <QByteArray>
 #include <QWidget>
 
-namespace Interface
+namespace Core
 {
 
 class ConnectionManager : public QObject
@@ -32,4 +32,4 @@ signals:
 
 } // namespace Interface
 
-using IfaceConnManager = Interface::ConnectionManager;
+using IfaceConnManager = Core::ConnectionManager;
