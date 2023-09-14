@@ -3,8 +3,17 @@
 #include <QMap>
 #include <QObject>
 #include <QVector>
+#include <bitset>
 
-constexpr int MAXGRAPHSPERPLOT = 14;
+constexpr int MAXGRAPHSPERPLOT = 15;
+
+struct TrendData
+{
+    QString name;
+    QString desc;
+    QString color;
+    bool isVisible;
+};
 
 class TrendViewModel : public QObject
 {
@@ -57,6 +66,16 @@ public:
     virtual void addAnalogValue(const QString &value)
     {
         Q_UNUSED(value)
+    }
+
+    virtual std::bitset<32> analogEnableFlags() const
+    {
+        return { 0xffffffff };
+    }
+
+    virtual std::bitset<32> digitalEnableFlags() const
+    {
+        return { 0xffffffff };
     }
 
     float xmin() const;
