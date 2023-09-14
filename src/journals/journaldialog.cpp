@@ -1,6 +1,5 @@
 #include "journaldialog.h"
 
-#include "../s2/s2datatypes.h"
 #include "measjournal.h"
 #include "sysjournal.h"
 #include "workjournal.h"
@@ -8,6 +7,7 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 #include <gen/datamanager/typesproxy.h>
+#include <s2/s2datatypes.h>
 
 namespace journals
 {

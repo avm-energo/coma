@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../../interfaces/settingstypes.h"
-
 #include <QByteArray>
 #include <QWidget>
+#include <interfaces/settingstypes.h>
 
 namespace Core
 {

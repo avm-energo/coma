@@ -1,7 +1,6 @@
 #include "abstracttunedialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../interfaces/protocom.h"
 #include "../module/board.h"
 #include "../module/modules.h"
 #include "../widgets/epopup.h"
@@ -22,6 +21,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
+#include <interfaces/protocom.h>
 
 namespace crypto
 {

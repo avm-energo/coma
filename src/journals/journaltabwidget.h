@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../s2/s2datatypes.h"
 #include "../widgets/QProgressIndicator.h"
 #include "basejournal.h"
 
 #include <QDialog>
 #include <QProgressDialog>
 #include <QWidget>
+#include <s2/s2datatypes.h>
 
 namespace journals
 {

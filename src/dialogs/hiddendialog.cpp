@@ -1,6 +1,5 @@
 #include "hiddendialog.h"
 
-#include "../interfaces/baseinterface.h"
 #include "../module/board.h"
 #include "../module/modules.h"
 #include "../widgets/wd_func.h"
@@ -19,6 +18,7 @@
 #include <QtSvg/QSvgRenderer>
 #include <gen/datatypes.h>
 #include <gen/error.h>
+#include <interfaces/baseinterface.h>
 
 namespace crypto
 {

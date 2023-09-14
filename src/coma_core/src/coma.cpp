@@ -27,18 +27,11 @@
 #include "../../dialogs/keypressdialog.h"
 #include "../../dialogs/settingsdialog.h"
 #include "../../dialogs/switchjournaldialog.h"
-#include "../../interfaces/iec104.h"
-#include "../../interfaces/modbus.h"
-#include "../../interfaces/protocom.h"
-#include "../../interfaces/settingstypes.h"
 #include "../../journals/journalviewer.h"
 #include "../../module/board.h"
 #include "../../module/module.h"
 #include "../../module/s2requestservice.h"
 #include "../../oscillograms/swjmanager.h"
-#include "../../s2/s2configstorage.h"
-#include "../../s2/s2datafactory.h"
-#include "../../s2/s2util.h"
 #include "../../widgets/alarmwidget.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/gasdensitywidget.h"
@@ -64,8 +57,15 @@
 #include <gen/logger.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
+#include <interfaces/iec104.h>
+#include <interfaces/modbus.h>
+#include <interfaces/protocom.h>
+#include <interfaces/settingstypes.h>
 #include <iostream>
 #include <memory>
+#include <s2/s2configstorage.h>
+#include <s2/s2datafactory.h>
+#include <s2/s2util.h>
 
 namespace Core
 {

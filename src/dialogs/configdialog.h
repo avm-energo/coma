@@ -3,9 +3,10 @@
 #include "../module/errconfstate.h"
 #include "../module/modules.h"
 #include "../module/s2requestservice.h"
-#include "../s2/s2datamanager.h"
 #include "../widgets/udialog.h"
 #include "../widgets/widgetfactory.h"
+
+#include <s2/s2datamanager.h>
 
 //#define MAXBYTEARRAY 65535
 //#define MAXCONFSIZE 4096 // максимальный размер файла конфигурации

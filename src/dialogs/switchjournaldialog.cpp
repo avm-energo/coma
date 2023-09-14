@@ -3,7 +3,6 @@
 #include "../models/etablemodel.h"
 #include "../module/board.h"
 #include "../oscillograms/swjmanager.h"
-#include "../s2/s2util.h"
 #include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
 
@@ -12,6 +11,7 @@
 #include <gen/datamanager/typesproxy.h>
 #include <gen/files.h>
 #include <gen/timefunc.h>
+#include <s2/s2util.h>
 // constexpr int MAXSWJNUM = 262144;
 
 constexpr unsigned char TECH_SWJ = 0x04;
@@ -171,8 +171,7 @@ void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
     quint32 size = swjMap.value(reqSwJNum).fileLength;
 
     if (!loadIfExist(size))
-        BaseInterface::iface()->reqFile(
-            fileNum, DataTypes::FileFormat::CustomS2, size + 2 * sizeof(S2::DataRecHeader));
+        BaseInterface::iface()->reqFile(fileNum, DataTypes::FileFormat::CustomS2, size + 2 * sizeof(S2::DataRecHeader));
 }
 
 void SwitchJournalDialog::exportSwJ(uint32_t swjNum)

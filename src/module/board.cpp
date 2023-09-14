@@ -1,11 +1,11 @@
 #include "board.h"
 
-#include "../interfaces/baseinterface.h"
 #include "modules.h"
 
 #include <QDebug>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <interfaces/baseinterface.h>
 
 using namespace Interface;
 

@@ -2,44 +2,44 @@ cmake_minimum_required(VERSION 3.15)
 
 project(s2 LANGUAGES CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network Xml Widgets
   REQUIRED)
 
-#file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
-#file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/s2")
+set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 set(headers
-    dataitem.h
-    filestruct.h
-    hexparser.h
-    s2util.h
-    s2configstorage.h
-    s2datatypes.h
-    s2datafactory.h
-    s2configuration.h
-    s2datamanager.h
+  "${INCLUDE_PATH}/dataitem.h"
+  "${INCLUDE_PATH}/delegate_common.h"
+  "${INCLUDE_PATH}/filestruct.h"
+  "${INCLUDE_PATH}/hexparser.h"
+  "${INCLUDE_PATH}/s2configstorage.h"
+  "${INCLUDE_PATH}/s2configuration.h"
+  "${INCLUDE_PATH}/s2datafactory.h"
+  "${INCLUDE_PATH}/s2datamanager.h"
+  "${INCLUDE_PATH}/s2datatypes.h"
+  "${INCLUDE_PATH}/s2util.h"
 )
 
 set(sources
-    dataitem.cpp
-    filestruct.cpp
-    hexparser.cpp
-    s2util.cpp
-    s2configstorage.cpp
-    s2datafactory.cpp
-    s2configuration.cpp
-    s2datamanager.cpp
+  "${SRC_PATH}/dataitem.cpp"
+  "${SRC_PATH}/filestruct.cpp"
+  "${SRC_PATH}/hexparser.cpp"
+  "${SRC_PATH}/s2configstorage.cpp"
+  "${SRC_PATH}/s2configuration.cpp"
+  "${SRC_PATH}/s2datafactory.cpp"
+  "${SRC_PATH}/s2datamanager.cpp"
+  "${SRC_PATH}/s2util.cpp"
 )
-
 
 add_library(${PROJECT_NAME} STATIC ${sources} ${headers})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-  Qt${QT_VERSION_MAJOR}::Core
-  PUBLIC gen
-)
+# Including directories for library
+target_include_directories(${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  Qt${QT_VERSION_MAJOR}::Core gen
+)

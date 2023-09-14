@@ -1,7 +1,6 @@
 #include "tunekivcheck.h"
 
 #include "../../datablocks/kiv/bda.h"
-#include "../../interfaces/protocom.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -15,6 +14,7 @@
 #include <QVBoxLayout>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
+#include <interfaces/protocom.h>
 
 TuneKIVCheck::TuneKIVCheck(S2::Configuration &config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)

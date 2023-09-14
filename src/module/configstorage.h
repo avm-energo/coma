@@ -1,13 +1,13 @@
 #ifndef CONFIGSTORAGE_H
 #define CONFIGSTORAGE_H
 
-#include "../s2/s2datafactory.h"
-#include "../widgets/delegate_common.h"
 #include "board.h"
 #include "modulesettings.h"
 
 #include <QObject>
 #include <gen/singleton.h>
+#include <s2/delegate_common.h>
+#include <s2/s2datafactory.h>
 
 /// \brief Class for storaging XML settings for a selected device in ConnectionDialog.
 class ConfigStorage : public QObject, public Singleton<ConfigStorage>

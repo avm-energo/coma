@@ -1,11 +1,10 @@
-#include "../../interfaces/baseinterface.h"
-#include "../../interfaces/emulator.h"
-#include "../../interfaces/iec104.h"
-#include "../../interfaces/modbus.h"
-#include "../../interfaces/protocom.h"
-
 #include <coma_core/connectionmanager.h>
 #include <gen/std_ext.h>
+#include <interfaces/baseinterface.h>
+#include <interfaces/emulator.h>
+#include <interfaces/iec104.h>
+#include <interfaces/modbus.h>
+#include <interfaces/protocom.h>
 
 #ifdef Q_OS_WINDOWS
 // clang-format off

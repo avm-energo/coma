@@ -1,8 +1,8 @@
 #include "s2requestservice.h"
 
-#include "../interfaces/baseinterface.h"
-#include "../widgets/epopup.h"
 #include "board.h"
+
+#include <interfaces/baseinterface.h>
 
 S2RequestService::S2RequestService(QObject *parent)
     : QObject(parent), m_proxy(new DataTypesProxy(this)), m_lastRequestedFile(0xffff)

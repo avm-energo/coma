@@ -15,9 +15,9 @@ add_library(
   ${PROJECT_NAME} STATIC
   ${files_cpp} ${files_h})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Widgets
-  PUBLIC gen)
+  PUBLIC gen interfaces)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE INTERFACES_LIBRARY)

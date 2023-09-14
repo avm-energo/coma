@@ -1,7 +1,8 @@
 #include "relaydialog.h"
 
-#include "../interfaces/baseinterface.h"
 #include "../widgets/wd_func.h"
+
+#include <interfaces/baseinterface.h>
 
 RelayDialog::RelayDialog(int relayCount, QWidget *parent) : UDialog(parent)
 {

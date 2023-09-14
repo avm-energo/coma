@@ -1,7 +1,7 @@
 #include "configstorage.h"
 
-#include "../interfaces/baseinterface.h"
-#include "../interfaces/interfacesettings.h"
+#include <interfaces/baseinterface.h>
+#include <interfaces/interfacesettings.h>
 
 ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent)
 {

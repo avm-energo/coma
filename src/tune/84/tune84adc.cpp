@@ -3,13 +3,13 @@
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
-#include "../interfaces/baseinterface.h"
 #include "../tunesteps.h"
 
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
+#include <interfaces/baseinterface.h>
 
 using namespace Interface;
 

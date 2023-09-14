@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../interfaces/settingstypes.h"
-
 #include <QDialog>
 #include <QTableView>
+#include <interfaces/settingstypes.h>
 
 class AbstractInterfaceDialog : public QDialog
 {

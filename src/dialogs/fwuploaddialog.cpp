@@ -1,6 +1,5 @@
 #include "fwuploaddialog.h"
 
-#include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -9,6 +8,7 @@
 #include <gen/error.h>
 #include <gen/files.h>
 #include <map>
+#include <s2/s2util.h>
 
 namespace crypto
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../interfaces/modbusprivate.h"
+#include <interfaces/modbusprivate.h>
 
 namespace ModbusItem
 {

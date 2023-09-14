@@ -1,16 +1,16 @@
 #include "testmodule.h"
 
-#include "../../interfaces/iec104.h"
-#include "../../interfaces/modbus.h"
-#include "../../interfaces/modbusprivate.h"
-#include "../../interfaces/protocom.h"
-#include "../../interfaces/protocomprivate.h"
 #include "../../module/board.h"
-#include "../../s2/s2datamanager.h"
 #include "testdata.h"
 
 #include <QtXml>
 #include <gen/stdfunc.h>
+#include <interfaces/iec104.h>
+#include <interfaces/modbus.h>
+#include <interfaces/modbusprivate.h>
+#include <interfaces/protocom.h>
+#include <interfaces/protocomprivate.h>
+#include <s2/s2datamanager.h>
 
 TestModule::TestModule(QObject *parent)
     : QObject(parent), storage(ConfigStorage::GetInstance()), s2Manager(new S2::DataManager(this))

@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../s2/s2datatypes.h"
-
 #include <QByteArray>
 #include <QObject>
 #include <gen/datamanager/typesproxy.h>
 #include <gen/stdfunc.h>
+#include <s2/s2datatypes.h>
 
 /// \brief Class for providing requests in S2 data format from device.
 class S2RequestService final : public QObject

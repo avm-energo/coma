@@ -1,6 +1,5 @@
 #include "oscmanager.h"
 
-#include "../s2/s2util.h"
 #include "../widgets/wd_func.h"
 #include "parseid10001.h"
 #include "parseid10020.h"
@@ -10,6 +9,7 @@
 
 #include <gen/files.h>
 #include <gen/timefunc.h>
+#include <s2/s2util.h>
 
 OscManager::~OscManager()
 {

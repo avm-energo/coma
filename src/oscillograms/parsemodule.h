@@ -1,6 +1,7 @@
 #ifndef PARSEMODULE_H
 #define PARSEMODULE_H
-#include "../s2/s2datatypes.h"
+
+#include <s2/s2datatypes.h>
 
 class TrendViewModel;
 

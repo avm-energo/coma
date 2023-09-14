@@ -1,9 +1,8 @@
 #ifndef UWIDGET_H
 #define UWIDGET_H
 
-#include "../interfaces/moduledataupdater.h"
-
 #include <QWidget>
+#include <interfaces/moduledataupdater.h>
 
 class UWidget : public QWidget
 {

@@ -18,10 +18,8 @@ add_executable(${PROJECT_NAME}
   console.cpp
   console.h)
 
-target_link_libraries(${PROJECT_NAME}
-  interfaces
-  gen
-  s2
+target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Xml
-  Qt${QT_VERSION_MAJOR}::Test)
+  Qt${QT_VERSION_MAJOR}::Test
+  gen s2 interfaces)

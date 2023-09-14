@@ -1,6 +1,5 @@
 #include "mip.h"
 
-#include "../interfaces/settingstypes.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -9,6 +8,7 @@
 #include <gen/datamanager/typesproxy.h>
 #include <gen/settings.h>
 #include <gen/stdfunc.h>
+#include <interfaces/settingstypes.h>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent) : QObject()
 {

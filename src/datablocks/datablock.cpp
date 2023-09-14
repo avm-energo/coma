@@ -25,7 +25,6 @@
 
 #include "datablock.h"
 
-#include "../interfaces/baseinterface.h"
 #include "../widgets/wd_func.h"
 
 #include <QDialogButtonBox>
@@ -33,6 +32,7 @@
 #include <QScrollBar>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
+#include <interfaces/baseinterface.h>
 
 using namespace Interface;
 

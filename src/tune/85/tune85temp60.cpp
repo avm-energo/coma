@@ -1,6 +1,5 @@
 #include "tune85temp60.h"
 
-#include "../../interfaces/baseinterface.h"
 #include "../../module/board.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
@@ -13,6 +12,7 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
+#include <interfaces/baseinterface.h>
 
 using namespace Interface;
 

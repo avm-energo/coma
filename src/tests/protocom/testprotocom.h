@@ -1,10 +1,11 @@
 #ifndef TESTPROTOCOM_H
 #define TESTPROTOCOM_H
-#include "../../interfaces/protocom.h"
-#include "../../interfaces/usbhidportinfo.h"
 
 #include <QObject>
 #include <QtTest>
+#include <interfaces/protocom.h>
+#include <interfaces/usbhidportinfo.h>
+
 class TestProtocom : public QObject
 {
     Q_OBJECT

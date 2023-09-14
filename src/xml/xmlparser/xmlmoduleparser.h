@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../../interfaces/interfacesettings.h"
 #include "../../module/board.h"
 #include "../../module/modulesettings.h"
 #include "xmlbaseparser.h"
+
+#include <interfaces/interfacesettings.h>
 
 namespace Xml
 {

@@ -1,6 +1,5 @@
 #include "interfaceserialdialog.h"
 
-#include "../interfaces/settingstypes.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 #include "searchmodbusdevicesdialog.h"
@@ -10,6 +9,7 @@
 #include <QVBoxLayout>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <interfaces/settingstypes.h>
 
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {

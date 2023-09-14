@@ -2,68 +2,70 @@ cmake_minimum_required(VERSION 3.14)
 
 project(interfaces LANGUAGES CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network SerialPort
   REQUIRED)
 
-#file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp EXCLUDE ethernet.cpp)
-#file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h EXCLUDE ethernet.h)
+set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/interfaces")
+set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 set(files_h
-    baseinterface.h
-    baseinterfacethread.h
-    baseport.h
-    emulator.h
-    ethernet.h
-    iec104.h
-    iec104private.h
-    iec104thread.h
-    interfacesettings.h
-    modbus.h
-    modbusprivate.h
-    modbusthread.h
-    moduledataupdater.h
-    protocom.h
-    protocomprivate.h
-    protocomthread.h
-    serialport.h
-    settingstypes.h
-    usbhidport.h
-    usbhidportinfo.h
-    usbhidsettings.h
+    "${INCLUDE_PATH}/baseinterface.h"
+    "${INCLUDE_PATH}/baseinterfacethread.h"
+    "${INCLUDE_PATH}/baseport.h"
+    "${INCLUDE_PATH}/emulator.h"
+    "${INCLUDE_PATH}/ethernet.h"
+    "${INCLUDE_PATH}/iec104.h"
+    "${INCLUDE_PATH}/iec104private.h"
+    "${INCLUDE_PATH}/iec104thread.h"
+    "${INCLUDE_PATH}/interfacesettings.h"
+    "${INCLUDE_PATH}/modbus.h"
+    "${INCLUDE_PATH}/modbusprivate.h"
+    "${INCLUDE_PATH}/modbusthread.h"
+    "${INCLUDE_PATH}/moduledataupdater.h"
+    "${INCLUDE_PATH}/protocom.h"
+    "${INCLUDE_PATH}/protocomprivate.h"
+    "${INCLUDE_PATH}/protocomthread.h"
+    "${INCLUDE_PATH}/serialport.h"
+    "${INCLUDE_PATH}/settingstypes.h"
+    "${INCLUDE_PATH}/usbhidport.h"
+    "${INCLUDE_PATH}/usbhidportinfo.h"
+    "${INCLUDE_PATH}/usbhidsettings.h"
 )
 
 set(files_cpp
-    baseinterface.cpp
-    baseinterfacethread.cpp
-    baseport.cpp
-    emulator.cpp
-    ethernet.cpp
-    iec104.cpp
-    iec104thread.cpp
-    modbus.cpp
-    modbusprivate.cpp
-    modbusthread.cpp
-    moduledataupdater.cpp
-    protocom.cpp
-    protocomthread.cpp
-    serialport.cpp
-    usbhidport.cpp
-    usbhidportinfo.cpp
-    usbhidsettings.cpp
+    "${SRC_PATH}/baseinterface.cpp"
+    "${SRC_PATH}/baseinterfacethread.cpp"
+    "${SRC_PATH}/baseport.cpp"
+    "${SRC_PATH}/emulator.cpp"
+    "${SRC_PATH}/ethernet.cpp"
+    "${SRC_PATH}/iec104.cpp"
+    "${SRC_PATH}/iec104thread.cpp"
+    "${SRC_PATH}/modbus.cpp"
+    "${SRC_PATH}/modbusprivate.cpp"
+    "${SRC_PATH}/modbusthread.cpp"
+    "${SRC_PATH}/moduledataupdater.cpp"
+    "${SRC_PATH}/protocom.cpp"
+    "${SRC_PATH}/protocomthread.cpp"
+    "${SRC_PATH}/serialport.cpp"
+    "${SRC_PATH}/usbhidport.cpp"
+    "${SRC_PATH}/usbhidportinfo.cpp"
+    "${SRC_PATH}/usbhidsettings.cpp"
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+# Including directories for library
+target_include_directories(${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+
+target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::SerialPort
   Qt${QT_VERSION_MAJOR}::Widgets
   s2
-  PUBLIC gen
 )
 
 if(UNIX)
@@ -73,7 +75,6 @@ if(WIN32)
   find_package(hidapi REQUIRED)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi::hidapi)
 endif()
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
 
 message(STATUS "Interfaces import dirs: ${hidapi_LIB_DIRS}/../bin")
 install(CODE "set(hidapi_BIN_DIRS \"${hidapi_LIB_DIRS}/../bin\")")
