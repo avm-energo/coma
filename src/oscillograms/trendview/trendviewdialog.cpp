@@ -58,6 +58,7 @@ TrendViewDialog::TrendViewDialog(QWidget *parent)
 SignalChooseWidget *TrendViewDialog::setupHelper(const TrendViewDialog::Signals &sig)
 {
     auto scw = new SignalChooseWidget(sig.description.names, sig.description.descriptions, this);
+    scw->adjustSize();
     scw->setObjectName(QVariant::fromValue(sig.type).toString());
     connect(scw, &SignalChooseWidget::signalChoosed, this, &TrendViewDialog::signalChoosed);
     connect(scw, &SignalChooseWidget::signalToggled, this, &TrendViewDialog::signalToggled);
@@ -196,6 +197,7 @@ void TrendViewDialog::PlotOverloadMessage(SignalChooseWidget *scw, QString &snam
 void TrendViewDialog::setupUI()
 {
     auto vlyout = new QVBoxLayout;
+
     if (!digital.noSignals())
     {
         vlyout->addWidget(createToolBar(ST_DIGITAL));
@@ -206,11 +208,21 @@ void TrendViewDialog::setupUI()
         vlyout->addWidget(createToolBar(ST_ANALOG));
         vlyout->addWidget(setupHelper(analog));
     }
+    auto sidebarWidget = new QWidget(this);
+    sidebarWidget->setLayout(vlyout);
 
     auto hlyout = new QHBoxLayout;
-    hlyout->addLayout(vlyout);
-    hlyout->addWidget(mainPlot.get(), 100);
+    auto splitter = new QSplitter(Qt::Horizontal, this);
+    splitter->insertWidget(0, sidebarWidget);
+    splitter->insertWidget(1, mainPlot.get());
+    hlyout->addWidget(splitter);
     setLayout(hlyout);
+
+    //    auto hlyout = new QHBoxLayout;
+    //    hlyout->addLayout(vlyout, 1);
+    //    hlyout->addWidget(mainPlot.get(), 15);
+    //    setLayout(hlyout);
+
     auto rect = QGuiApplication::primaryScreen()->size();
     setGeometry(0, 0, rect.width() / 2, rect.height() / 2);
     setWindowState(Qt::WindowMaximized);
@@ -484,7 +496,18 @@ void TrendViewDialog::showPlot()
 
 void TrendViewDialog::setModel(TrendViewModel *model)
 {
-    m_trendModel = model;
+    if (model != nullptr)
+    {
+        m_trendModel = model;
+        digital.description.names = m_trendModel->digitalValues();
+        analog.description.names = m_trendModel->analogValues();
+        digital.description.descriptions = m_trendModel->digitalDescriptions();
+        analog.description.descriptions = m_trendModel->analogDescriptions();
+        digital.description.enableFlags = m_trendModel->digitalEnableFlags();
+        analog.description.enableFlags = m_trendModel->analogEnableFlags();
+        setDigitalColors(m_trendModel->digitalColors());
+        setAnalogColors(m_trendModel->analogColors());
+    }
 }
 
 void TrendViewDialog::setRange(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax)
@@ -493,31 +516,6 @@ void TrendViewDialog::setRange(float XRangeMin, float XRangeMax, float YRangeMin
     sizeX.max = XRangeMax;
     sizeY.min = YRangeMin;
     sizeY.max = YRangeMax;
-}
-
-void TrendViewDialog::setDigitalNames(const QStringList &names)
-{
-    digital.description.names = names;
-}
-
-void TrendViewDialog::setAnalogNames(const QStringList &names)
-{
-    analog.description.names = names;
-}
-
-void TrendViewDialog::setAnalogDescriptions(const QStringList &descr)
-{
-    analog.description.descriptions = descr;
-}
-
-void TrendViewDialog::setDigitalDescriptions(const QStringList &descr)
-{
-    digital.description.descriptions = descr;
-}
-
-void TrendViewDialog::setTrendModel(TrendViewModel *mdl)
-{
-    m_trendModel = mdl;
 }
 
 void TrendViewDialog::setDigitalColors(const QStringList &colors)
@@ -571,13 +569,16 @@ void TrendViewDialog::analogAxisDefault(int graphNum, QCPAxisRect *axisRect)
     QPen pen;
     SignalOscPropertiesStruct SignalOscProperties;
     SignalOscProperties.type = ST_ANALOG;
-    for (auto count = 0; count < graphNum; count++)
+    int count = 0;
+    for (auto index = 0; index < graphNum; index++)
     {
-        auto tmps = analog.description.names.at(count);
-        auto firstChar = tmps.at(0);
+        auto bitsetIndex = analog.description.enableFlags.size() - index - 1;
+        auto flag = analog.description.enableFlags.test(bitsetIndex);
+        auto name = analog.description.names.at(index);
+        auto firstChar = name.at(0);
         auto axisIndex = (firstChar == 'I') ? CURRENT_AXIS_INDEX : VOLTAGE_AXIS_INDEX;
         SignalOscProperties.leftAxisIndex = axisIndex;
-        if (count < MAXGRAPHSPERPLOT)
+        if (flag && count < MAXGRAPHSPERPLOT)
         {
             auto leftAxis = axisRect->axis(QCPAxis::atLeft, axisIndex);
             auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
@@ -591,28 +592,29 @@ void TrendViewDialog::analogAxisDefault(int graphNum, QCPAxisRect *axisRect)
             // Creating new graph for plot
             auto graph = mainPlot->addGraph(bottomAxis, leftAxis);
             // Graph settings
-            if (!analog.description.colors[tmps].isEmpty())
-                pen.setColor(QColor(analog.description.colors[tmps]));
+            if (!analog.description.colors[name].isEmpty())
+                pen.setColor(QColor(analog.description.colors[name]));
             else
-                pen.setColor(QColor(qSin(count * 1 + 1.2) * 80 + 80, qSin(count * 0.3 + 0) * 80 + 80,
-                    qSin(count * 0.3 + 1.5) * 80 + 80));
+                pen.setColor(QColor(qSin(index * 1 + 1.2) * 80 + 80, qSin(index * 0.3 + 0) * 80 + 80,
+                    qSin(index * 0.3 + 1.5) * 80 + 80));
             graph->valueAxis()->setLabel(QString(firstChar));
             graph->setPen(pen);
             graph->valueAxis()->setRange(sizeY.min, sizeY.max);
             graph->keyAxis()->setLabel(m_trendModel->xAxisDescription());
             graph->keyAxis()->setRange(sizeX.min, sizeX.max);
-            graph->setName(tmps);
+            graph->setName(name);
             // Adding graph in legend of plot
             analog.legend->addItem(new QCPPlottableLegendItem(analog.legend, graph));
             SignalOscProperties.graph = graph;
             SignalOscProperties.isVisible = true;
+            count++;
         }
         else
         {
             SignalOscProperties.graph = nullptr;
             SignalOscProperties.isVisible = false;
         }
-        signalOscPropertiesMap[tmps] = SignalOscProperties;
+        signalOscPropertiesMap[name] = SignalOscProperties;
     }
 }
 
@@ -629,11 +631,14 @@ void TrendViewDialog::digitalAxis(int &MainPlotLayoutRow)
 
     mainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, DigitalAxisRect);
     digital.legend = createLegend(MainPlotLayoutRow++);
+    int count = 0;
     SignalOscPropertiesStruct SignalOscProperties { ST_DIGITAL, 0, nullptr, false };
-    for (auto count = 0; count < graphNum; count++)
+    for (auto index = 0; index < graphNum; index++)
     {
-        auto tmps = digital.description.names.at(count);
-        if (count < MAXGRAPHSPERPLOT)
+        auto bitsetIndex = digital.description.enableFlags.size() - index - 1;
+        auto flag = digital.description.enableFlags.test(bitsetIndex);
+        auto name = digital.description.names.at(index);
+        if (flag && count < MAXGRAPHSPERPLOT)
         {
             auto leftAxis = DigitalAxisRect->axis(QCPAxis::atLeft);
             auto bottomAxis = DigitalAxisRect->axis(QCPAxis::atBottom);
@@ -645,29 +650,28 @@ void TrendViewDialog::digitalAxis(int &MainPlotLayoutRow)
                 return;
             }
             auto graph = mainPlot->addGraph(bottomAxis, leftAxis);
-            if (!digital.description.colors[tmps].isEmpty())
-                pen.setColor(QColor(digital.description.colors[tmps]));
+            if (!digital.description.colors[name].isEmpty())
+                pen.setColor(QColor(digital.description.colors[name]));
             else
-                pen.setColor(QColor(qSin(count * 1 + 1.2) * 80 + 80, qSin(count * 0.3 + 0) * 80 + 80,
-                    qSin(count * 0.3 + 1.5) * 80 + 80));
+                pen.setColor(QColor(qSin(index * 1 + 1.2) * 80 + 80, qSin(index * 0.3 + 0) * 80 + 80,
+                    qSin(index * 0.3 + 1.5) * 80 + 80));
             graph->setPen(pen);
             graph->valueAxis()->setRange(-1, 2);
-            graph->keyAxis()->setLabel("Time, ms");
+            // graph->keyAxis()->setLabel("Time, ms");
             graph->keyAxis()->setRange(sizeX.min, sizeX.max);
-
-            graph->setName(tmps);
+            graph->setName(name);
             digital.legend->addItem(new QCPPlottableLegendItem(digital.legend, graph));
             SignalOscProperties.graph = graph;
             SignalOscProperties.isVisible = true;
-
             graph->setLineStyle(QCPGraph::lsStepLeft); // импульсы
+            count++;
         }
         else
         {
             SignalOscProperties.graph = nullptr;
             SignalOscProperties.isVisible = false;
         }
-        signalOscPropertiesMap[tmps] = SignalOscProperties;
+        signalOscPropertiesMap[name] = SignalOscProperties;
     }
     auto axis = DigitalAxisRect->axis(QCPAxis::atBottom);
     Q_CHECK_PTR(axis);
