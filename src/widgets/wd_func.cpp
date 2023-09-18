@@ -695,6 +695,23 @@ QString WDFunc::ChooseFileForSave(QWidget *parent, const QString &mask, const QS
     return filename;
 }
 
+QString WDFunc::ChooseDirectoryForOpen(QWidget *parent)
+{
+    auto workPath = StdFunc::GetHomeDir();
+    auto dlg = new QFileDialog(parent);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setFileMode(QFileDialog::Directory);
+    dlg->setViewMode(QFileDialog::Detail);
+    auto dirPath = dlg->getExistingDirectory(parent, "Выбрать папку с файлами", workPath);
+    if (!dirPath.isEmpty())
+    {
+        QFileInfo info(dirPath);
+        StdFunc::SetHomeDir(info.absolutePath());
+    }
+    dlg->close();
+    return dirPath;
+}
+
 QPushButton *WDFunc::NewPBCommon(
     QWidget *parent, const QString &pbname, const QString &text, const QString &icon, const QString &pbtooltip)
 {
