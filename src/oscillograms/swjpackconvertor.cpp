@@ -45,8 +45,7 @@ void SwjPackConvertor::sortData()
 void SwjPackConvertor::writeHeader(QXlsx::Worksheet *sheet)
 {
     const static QStringList header {
-        "Дата",                                                         //
-        "Время",                                                        //
+        "Дата и время",                                                 //
         "Переключение",                                                 //
         "Действующее значение тока в момент коммутации ф. A, А",        //
         "Действующее значение тока в момент коммутации ф. B, А",        //
@@ -100,8 +99,10 @@ void SwjPackConvertor::writeData(QXlsx::Worksheet *sheet)
 
         auto dateStrList = common->data(common->index(1, 1)).toString().split(" ");
         auto switchType = common->data(common->index(3, 1)).toString();
-        sheet->writeString(QXlsx::CellReference { row, column++ }, dateStrList[0]);
-        sheet->writeString(QXlsx::CellReference { row, column++ }, dateStrList[1]);
+        dateStrList[0].replace("/", "-");
+        dateStrList[1].replace(".", ",");
+        auto dateStr = dateStrList.join(' ');
+        sheet->writeString(QXlsx::CellReference { row, column++ }, dateStr);
         sheet->writeString(QXlsx::CellReference { row, column++ }, switchType);
 
         for (int indexRow = 1; indexRow < 32; indexRow++)
@@ -109,6 +110,7 @@ void SwjPackConvertor::writeData(QXlsx::Worksheet *sheet)
             for (int indexCol = 1; indexCol < 4; indexCol++)
             {
                 auto detailData = detail->data(detail->index(indexRow, indexCol)).toString();
+                detailData.replace(".", ",");
                 sheet->writeString(QXlsx::CellReference { row, column++ }, detailData);
             }
         }
