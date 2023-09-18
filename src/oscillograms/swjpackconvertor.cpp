@@ -32,24 +32,12 @@ void SwjPackConvertor::readFile(const QString &swjfilepath)
 void SwjPackConvertor::sortData()
 {
     std::sort(m_data.begin(), m_data.end(), [](SwjModel &lhs, SwjModel &rhs) -> bool {
-        static auto timezone = TimeFunc::userTimeZone();
         auto commonLhs = lhs.commonModel.get();
         auto commonRhs = rhs.commonModel.get();
         auto dateLhsStr = commonLhs->data(commonLhs->index(1, 1)).toString();
         auto dateRhsStr = commonRhs->data(commonRhs->index(1, 1)).toString();
-
-        auto lhsList = dateLhsStr.split(" ");
-        auto lhsDate = QDate::fromString(lhsList[0], "dd/MM/yyyy");
-        lhsList = lhsList[1].split(".");
-        auto lhsTime = QTime::fromString(lhsList[0], "hh:mm:ss");
-        QDateTime lhsDateTime { lhsDate, lhsTime };
-
-        auto rhsList = dateRhsStr.split(" ");
-        auto rhsDate = QDate::fromString(rhsList[0], "dd/MM/yyyy");
-        rhsList = rhsList[1].split(".");
-        auto rhsTime = QTime::fromString(rhsList[0], "hh:mm:ss");
-        QDateTime rhsDateTime { rhsDate, rhsTime };
-
+        auto lhsDateTime = QDateTime::fromString(dateLhsStr, "yyyy/MM/dd hh:mm:ss.zzz");
+        auto rhsDateTime = QDateTime::fromString(dateRhsStr, "yyyy/MM/dd hh:mm:ss.zzz");
         return lhsDateTime < rhsDateTime;
     });
 }
@@ -112,7 +100,6 @@ void SwjPackConvertor::writeData(QXlsx::Worksheet *sheet)
 
         auto dateStrList = common->data(common->index(1, 1)).toString().split(" ");
         auto switchType = common->data(common->index(3, 1)).toString();
-
         sheet->writeString(QXlsx::CellReference { row, column++ }, dateStrList[0]);
         sheet->writeString(QXlsx::CellReference { row, column++ }, dateStrList[1]);
         sheet->writeString(QXlsx::CellReference { row, column++ }, switchType);
