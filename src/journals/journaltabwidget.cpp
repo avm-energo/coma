@@ -137,7 +137,6 @@ void JournalTabWidget::saveExcelJournal()
 
 void JournalTabWidget::saveBinaryJournal()
 {
-
     auto suggestedFilename = getSuggestedFilename();
     if (!suggestedFilename.isEmpty())
     {
