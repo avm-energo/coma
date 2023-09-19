@@ -113,8 +113,8 @@ void DialogCreator::createJournalDialog()
     using namespace journals;
     // TODO: Только для USB
     // Делаем проверку и создаём диалог для журналов
-    if (m_board.interfaceType() != Board::InterfaceType::RS485)
-        addDialogToList(new JournalDialog(m_settings, m_parent), "Журналы", "jours");
+    // if (board.interfaceType() != Board::InterfaceType::RS485)
+    addDialogToList(new JournalDialog(m_settings, m_parent), "Журналы", "jours");
 }
 
 void DialogCreator::createStartupDialog(const Modules::Model boxModel)

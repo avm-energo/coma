@@ -28,6 +28,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   QXlsx
   s2
   interfaces
+  dialogs
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

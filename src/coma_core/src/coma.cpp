@@ -20,6 +20,8 @@
  *
  */
 
+#include "coma_core/coma.h"
+
 #include "../../comaversion/comaversion.h"
 #include "../../dialogs/aboutdialog.h"
 #include "../../dialogs/connectdialog.h"
@@ -32,6 +34,7 @@
 #include "../../module/module.h"
 #include "../../module/s2requestservice.h"
 #include "../../oscillograms/swjmanager.h"
+#include "../../oscillograms/swjpackconvertor.h"
 #include "../../widgets/alarmwidget.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/gasdensitywidget.h"
@@ -49,7 +52,6 @@
 #include <QProgressBar>
 #include <QToolBar>
 #include <QtGlobal>
-#include <coma_core/coma.h>
 #include <comaresources/manage.h>
 #include <functional>
 #include <gen/errorqueue.h>
@@ -239,6 +241,7 @@ void Coma::setupMenubar()
     menu->setTitle("Автономная работа");
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
+    menu->addAction("Конвертация файлов переключений", this, &Coma::loadSwjPackConvertor);
     menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
     menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
     menubar->addMenu(menu);
@@ -308,6 +311,12 @@ void Coma::loadSwj()
     auto filepath = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
     if (!filepath.isEmpty())
         loadSwj(filepath);
+}
+
+void Coma::loadSwjPackConvertor()
+{
+    auto convertor = new SwjPackConvertor(this);
+    convertor->selectDirectory();
 }
 
 void Coma::loadJournal(const QString &filename)

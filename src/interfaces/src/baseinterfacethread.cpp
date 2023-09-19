@@ -33,20 +33,45 @@ void BaseInterfaceThread::wakeUp()
 
 void BaseInterfaceThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataTypes::FileFormat format)
 {
+    auto &manager = DataManager::GetInstance();
     switch (format)
     {
     case FileFormat::Binary:
     {
-        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
-            static_cast<quint64>(ba.size()) };
-        DataManager::GetInstance().addSignalToOutList(genResp);
-        S2::FileStruct resp { addr, ba };
-        DataManager::GetInstance().addSignalToOutList(resp);
+        DataTypes::GeneralResponseStruct genResp {
+            DataTypes::GeneralResponseTypes::Ok, //
+            static_cast<quint64>(ba.size())      //
+        };
+        manager.addSignalToOutList(genResp);
+        switch (addr)
+        {
+        // По модбасу уже получили файл в формате S2B
+        case S2::FilesEnum::JourSys:
+        case S2::FilesEnum::JourWork:
+        case S2::FilesEnum::JourMeas:
+        {
+            if (!ba.isEmpty())
+            {
+                S2Util util;
+                S2::S2BFile s2bFile {};
+                auto errCode = util.parseS2B(ba, s2bFile);
+                if (errCode == Error::Msg::NoError)
+                    manager.addSignalToOutList(s2bFile);
+            }
+            break;
+        }
+        default:
+        {
+            S2::FileStruct resp { addr, ba };
+            manager.addSignalToOutList(resp);
+            break;
+        }
+        }
         break;
     }
     case FileFormat::DefaultS2:
     {
-        DataManager::GetInstance().addSignalToOutList(ba);
+        manager.addSignalToOutList(ba);
         break;
     }
     case FileFormat::CustomS2:
@@ -56,16 +81,16 @@ void BaseInterfaceThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataT
         {
             DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
                 static_cast<quint64>(ba.size()) };
-            DataManager::GetInstance().addSignalToOutList(resp);
+            manager.addSignalToOutList(resp);
             return;
         }
         DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
             static_cast<quint64>(ba.size()) };
-        DataManager::GetInstance().addSignalToOutList(genResp);
+        manager.addSignalToOutList(genResp);
         for (auto &&file : outlist)
         {
             S2::FileStruct resp { S2::FilesEnum(file.ID), file.data };
-            DataManager::GetInstance().addSignalToOutList(resp);
+            manager.addSignalToOutList(resp);
         }
         break;
     }

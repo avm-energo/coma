@@ -14,4 +14,5 @@ public:
     QStringList digitalDescriptions() const override;
     QStringList analogValues() const override;
     QStringList digitalValues() const override;
+    std::bitset<32> digitalEnableFlags() const override;
 };

@@ -196,6 +196,9 @@ void EPopup::adjustPosition()
     int down = centerPoint.y() + height2;
     if ((right > globalWidth) || (down > globalHeight))
         move(0, 0);
+    // Если главное окно отсутствует или прекратило своё существование
+    else if ((centerPoint.x() == 0) || (centerPoint.y() == 0))
+        move(globalGeometry.center() - QPoint { width2, height2 });
     else
         move(centerPoint.x() - width2, centerPoint.y() - height2);
 }
