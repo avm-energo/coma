@@ -58,7 +58,6 @@ TrendViewDialog::TrendViewDialog(QWidget *parent)
 SignalChooseWidget *TrendViewDialog::setupHelper(const TrendViewDialog::Signals &sig)
 {
     auto scw = new SignalChooseWidget(sig.description.names, sig.description.descriptions, this);
-    scw->adjustSize();
     scw->setObjectName(QVariant::fromValue(sig.type).toString());
     connect(scw, &SignalChooseWidget::signalChoosed, this, &TrendViewDialog::signalChoosed);
     connect(scw, &SignalChooseWidget::signalToggled, this, &TrendViewDialog::signalToggled);
@@ -209,20 +208,17 @@ void TrendViewDialog::setupUI()
         vlyout->addWidget(setupHelper(analog));
     }
     auto sidebarWidget = new QWidget(this);
+    sidebarWidget->setMinimumWidth(350);
     sidebarWidget->setLayout(vlyout);
 
     auto hlyout = new QHBoxLayout;
     auto splitter = new QSplitter(Qt::Horizontal, this);
     splitter->insertWidget(0, sidebarWidget);
     splitter->insertWidget(1, mainPlot.get());
+    // splitter->setStretchFactor(0, 10);
+    // splitter->setStretchFactor(1, 11);
     hlyout->addWidget(splitter);
     setLayout(hlyout);
-
-    //    auto hlyout = new QHBoxLayout;
-    //    hlyout->addLayout(vlyout, 1);
-    //    hlyout->addWidget(mainPlot.get(), 15);
-    //    setLayout(hlyout);
-
     auto rect = QGuiApplication::primaryScreen()->size();
     setGeometry(0, 0, rect.width() / 2, rect.height() / 2);
     setWindowState(Qt::WindowMaximized);
