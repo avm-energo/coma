@@ -2,7 +2,7 @@
 
 #include "board.h"
 
-#include <interfaces/baseinterface.h>
+#include <interfaces/conn/baseconnection.h>
 
 S2RequestService::S2RequestService(QObject *parent)
     : QObject(parent), m_proxy(new DataTypesProxy(this)), m_lastRequestedFile(0xffff)
@@ -31,5 +31,5 @@ void S2RequestService::request(const S2::FilesEnum filenum, bool withCheck)
     }
 
     m_lastRequestedFile = std_ext::to_underlying(filenum);
-    Interface::BaseInterface::iface()->reqFile(m_lastRequestedFile, DataTypes::FileFormat::DefaultS2);
+    Interface::BaseConnection::iface()->reqFile(m_lastRequestedFile, DataTypes::FileFormat::DefaultS2);
 }

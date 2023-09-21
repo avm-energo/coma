@@ -1,6 +1,6 @@
 #include "interfaces/moduledataupdater.h"
 
-ModuleDataUpdater::ModuleDataUpdater(BaseInterface *iface, QObject *parent) : QObject(parent)
+ModuleDataUpdater::ModuleDataUpdater(BaseConnection *iface, QObject *parent) : QObject(parent)
 {
     m_iface = iface;
     proxyFS = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));

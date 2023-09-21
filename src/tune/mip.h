@@ -5,7 +5,7 @@
 #include "../widgets/udialog.h"
 
 #include <gen/stdfunc.h>
-#include <interfaces/iec104.h>
+#include <interfaces/conn/iec104.h>
 
 class Mip : public QObject
 {

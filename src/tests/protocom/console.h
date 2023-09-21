@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QObject>
 #include <gen/helper.h>
-#include <interfaces/usbhidsettings.h>
+#include <interfaces/types/usbhidsettings.h>
 #include <s2/filestruct.h>
 #include <s2/s2datatypes.h>
 

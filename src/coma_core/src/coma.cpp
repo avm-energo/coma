@@ -59,10 +59,10 @@
 #include <gen/logger.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <interfaces/iec104.h>
-#include <interfaces/modbus.h>
-#include <interfaces/protocom.h>
-#include <interfaces/settingstypes.h>
+#include <interfaces/conn/iec104.h>
+#include <interfaces/conn/modbus.h>
+#include <interfaces/conn/protocom.h>
+#include <interfaces/types/settingstypes.h>
 #include <iostream>
 #include <memory>
 #include <s2/s2configstorage.h>
@@ -553,7 +553,7 @@ void Coma::initInterfaceConnection()
 {
     auto const &board = Board::GetInstance();
     connect(proxyBS.get(), &DataTypesProxy::DataStorable, &board, &Board::update);
-    BaseInterface::InterfacePointer device;
+    BaseConnection::InterfacePointer device;
     switch (board.interfaceType())
     {
 #ifdef ENABLE_EMULATOR
@@ -574,13 +574,13 @@ void Coma::initInterfaceConnection()
         qFatal("Connection type error");
         break;
     }
-    BaseInterface::setIface(std::move(device));
+    BaseConnection::setIface(std::move(device));
 }
 
 void Coma::setupConnection()
 {
     auto const &board = Board::GetInstance();
-    connect(BaseInterface::iface(), &BaseInterface::stateChanged, [](const State state) {
+    connect(BaseConnection::iface(), &BaseConnection::stateChanged, [](const State state) {
         switch (state)
         {
         case State::Run:
@@ -599,7 +599,7 @@ void Coma::setupConnection()
 
     auto connectionReady = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     auto connectionTimeout = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    *connectionTimeout = connect(BaseInterface::iface(), &BaseInterface::disconnected, this, [=] {
+    *connectionTimeout = connect(BaseConnection::iface(), &BaseConnection::disconnected, this, [=] {
         QObject::disconnect(*connectionReady);
         QObject::disconnect(*connectionTimeout);
         if (Board::GetInstance().type() != 0)
@@ -617,7 +617,7 @@ void Coma::setupConnection()
         prepare();
     });
 
-    if (!BaseInterface::iface()->start(ConnectSettings))
+    if (!BaseConnection::iface()->start(ConnectSettings))
     {
         QObject::disconnect(*connectionReady);
         QObject::disconnect(*connectionTimeout);
@@ -628,10 +628,10 @@ void Coma::setupConnection()
     }
 
     DataManager::GetInstance().clearQueue();
-    BaseInterface::iface()->reqBSI();
+    BaseConnection::iface()->reqBSI();
     connect(                                                     //
         connectionManager.get(), &IfaceConnManager::sendMessage, //
-        BaseInterface::iface(), &BaseInterface::nativeEvent      //
+        BaseConnection::iface(), &BaseConnection::nativeEvent    //
     );
 }
 
@@ -648,7 +648,7 @@ void Coma::disconnectAndClear()
         ConfigStorage::GetInstance().clearModuleSettings();
         s2dataManager->clear();
         Board::GetInstance().reset();
-        BaseInterface::iface()->close();
+        BaseConnection::iface()->close();
         // BUG Segfault
         //    if (Reconnect)
         //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);

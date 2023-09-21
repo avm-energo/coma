@@ -9,7 +9,7 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <interfaces/baseinterface.h>
+#include <interfaces/conn/baseconnection.h>
 
 using namespace Interface;
 
@@ -111,7 +111,7 @@ Error::Msg Tune84ADC::checkTuneCoefs()
 
 Error::Msg Tune84ADC::setSMode2()
 {
-    BaseInterface::iface()->writeCommand(Commands::C_SetMode, 0x02);
+    BaseConnection::iface()->writeCommand(Commands::C_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 
@@ -246,7 +246,7 @@ Error::Msg Tune84ADC::setADCCoef(int coef)
     const auto adcCoef = adcCoefMap.value(coef);
     config.setRecord("C_Pasp_ID", S2::FLOAT_3t { adcCoef, adcCoef, adcCoef });
     const auto s2file = config.toByteArray();
-    return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+    return BaseConnection::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
 }
 
 Error::Msg Tune84ADC::showRetomDialog(int coef)

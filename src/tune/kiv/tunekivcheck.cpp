@@ -14,7 +14,7 @@
 #include <QVBoxLayout>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-#include <interfaces/protocom.h>
+#include <interfaces/conn/protocom.h>
 
 TuneKIVCheck::TuneKIVCheck(S2::Configuration &config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
@@ -33,7 +33,7 @@ void TuneKIVCheck::setTuneFunctions()
 
 Error::Msg TuneKIVCheck::setSMode2()
 {
-    BaseInterface::iface()->writeCommand(Interface::C_SetMode, 0x02);
+    BaseConnection::iface()->writeCommand(Interface::C_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 
@@ -117,10 +117,10 @@ Error::Msg TuneKIVCheck::check()
     if (!WDFunc::floatIsWithinLimits("частоты", bda->data()->Frequency, 51.0, 0.05))
         goto FaultLabel;
 #endif
-    BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+    BaseConnection::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
     return Error::Msg::NoError;
 FaultLabel:
-    BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+    BaseConnection::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
     return Error::Msg::GeneralError;
 }
 

@@ -2,7 +2,7 @@
 
 #include <QByteArray>
 #include <QWidget>
-#include <interfaces/settingstypes.h>
+#include <interfaces/types/settingstypes.h>
 
 namespace Core
 {

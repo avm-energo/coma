@@ -4,7 +4,7 @@
 #include "../../module/modulesettings.h"
 #include "xmlbaseparser.h"
 
-#include <interfaces/interfacesettings.h>
+#include <interfaces/types/interfacesettings.h>
 
 namespace Xml
 {

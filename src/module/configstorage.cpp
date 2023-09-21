@@ -1,7 +1,7 @@
 #include "configstorage.h"
 
-#include <interfaces/baseinterface.h>
-#include <interfaces/interfacesettings.h>
+#include <interfaces/conn/baseconnection.h>
+#include <interfaces/types/interfacesettings.h>
 
 ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent)
 {
@@ -70,7 +70,7 @@ void ConfigStorage::protocolDescriptionReceived(const parseXChangeStruct &str)
     {
         auto signal = sigMap.value(str.sigId);
         Board::InterfaceType ifaceType = str.interfaceType.value<Board::InterfaceType>();
-        ProtocolDescription *descr = Interface::BaseInterface::iface()->settings();
+        ProtocolDescription *descr = Interface::BaseConnection::iface()->settings();
         switch (ifaceType)
         {
         case Board::USB:

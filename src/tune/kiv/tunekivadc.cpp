@@ -9,7 +9,7 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <interfaces/baseinterface.h>
+#include <interfaces/conn/baseconnection.h>
 
 using namespace Interface;
 
@@ -120,7 +120,7 @@ Error::Msg TuneKIVADC::checkTuneCoefs()
 
 Error::Msg TuneKIVADC::setSMode2()
 {
-    BaseInterface::iface()->writeCommand(Commands::C_SetMode, 0x02);
+    BaseConnection::iface()->writeCommand(Commands::C_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 
@@ -258,7 +258,7 @@ Error::Msg TuneKIVADC::setADCCoef(const int coef)
     const auto adcCoef = adcCoefMap.value(coef);
     config.setRecord("C_Pasp_ID", S2::FLOAT_3t { adcCoef, adcCoef, adcCoef });
     const auto s2file = config.toByteArray();
-    return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+    return BaseConnection::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
 }
 
 Error::Msg TuneKIVADC::showRetomDialog(int coef)

@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <gen/datatypes.h>
-#include <interfaces/baseinterface.h>
+#include <interfaces/conn/baseconnection.h>
 
 using namespace Interface;
 class ModuleDataUpdater : public QObject
@@ -16,7 +16,7 @@ public:
         quint32 sigQuantity;
     };
 
-    explicit ModuleDataUpdater(BaseInterface *iface, QObject *parent = nullptr);
+    explicit ModuleDataUpdater(BaseConnection *iface, QObject *parent = nullptr);
     void requestUpdates();
     bool updatesEnabled();
     void setUpdatesEnabled(bool enabled = true);
@@ -25,7 +25,7 @@ public:
     void addBs(const BdQuery &query);
 
 private:
-    BaseInterface *m_iface;
+    BaseConnection *m_iface;
     UniquePointer<DataTypesProxy> proxyFS, proxySP, proxyBS;
 
     void setFloatQuery(const QList<BdQuery> &list);

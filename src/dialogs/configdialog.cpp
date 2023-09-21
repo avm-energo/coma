@@ -55,7 +55,7 @@ void ConfigDialog::writeConfig()
         {
             // auto s2file = m_boardConfig.m_workingConfig.toByteArray();
             auto s2file = m_datamanager.getBinaryConfiguration();
-            BaseInterface::iface()->writeFile(confType, s2file);
+            BaseConnection::iface()->writeFile(confType, s2file);
         }
         else
             qCritical("Ошибка чтения конфигурации");

@@ -48,7 +48,7 @@ void OscDialog::setupUI()
         tableModel->setHorizontalHeaderLabels({ "#", "Дата/Время", "ИД", "Длина", "Скачать" });
 
         tv->setModel(tableModel.get());
-        BaseInterface::iface()->writeCommand(Commands::C_ReqOscInfo, 1);
+        BaseConnection::iface()->writeCommand(Commands::C_ReqOscInfo, 1);
     });
 
     hlyout->addWidget(getButton);
@@ -81,13 +81,13 @@ void OscDialog::getOsc(const QModelIndex &idx)
         return;
     }
     if (!loadIfExist(size))
-        BaseInterface::iface()->reqFile(reqOscNum, DataTypes::FileFormat::CustomS2, size + sizeof(S2::DataRecHeader));
+        BaseConnection::iface()->reqFile(reqOscNum, DataTypes::FileFormat::CustomS2, size + sizeof(S2::DataRecHeader));
 }
 
 void OscDialog::eraseOsc()
 {
     if (checkPassword())
-        BaseInterface::iface()->writeCommand(Commands::C_EraseTechBlock, 1);
+        BaseConnection::iface()->writeCommand(Commands::C_EraseTechBlock, 1);
 }
 
 QString OscDialog::filename(quint64 time, quint32 oscNum) const

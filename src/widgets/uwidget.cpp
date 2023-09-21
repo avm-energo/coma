@@ -11,7 +11,7 @@
 
 UWidget::UWidget(QWidget *parent) : QWidget(parent)
 {
-    m_dataUpdater = new ModuleDataUpdater(BaseInterface::iface());
+    m_dataUpdater = new ModuleDataUpdater(BaseConnection::iface());
     // Отключим обновление виджета по умолчанию
     m_dataUpdater->setUpdatesEnabled(false);
     connect(m_dataUpdater, &ModuleDataUpdater::itsTimeToUpdateSinglePointSignal, this, &UWidget::updateSPData);

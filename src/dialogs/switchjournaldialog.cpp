@@ -44,7 +44,7 @@ void SwitchJournalDialog::setupUI()
             { "#", "Номер переключения", "Дата/Время", "Аппарат", "Переключение", "Скачать" });
         swjTableView->setModel(tableModel.get());
 
-        BaseInterface::iface()->writeCommand(Commands::C_ReqBlkDataTech, TECH_SWJ);
+        BaseConnection::iface()->writeCommand(Commands::C_ReqBlkDataTech, TECH_SWJ);
     });
 
     hlyout->addWidget(pb);
@@ -171,7 +171,7 @@ void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
     quint32 size = swjMap.value(reqSwJNum).fileLength;
 
     if (!loadIfExist(size))
-        BaseInterface::iface()->reqFile(fileNum, DataTypes::FileFormat::CustomS2, size + 2 * sizeof(S2::DataRecHeader));
+        BaseConnection::iface()->reqFile(fileNum, DataTypes::FileFormat::CustomS2, size + 2 * sizeof(S2::DataRecHeader));
 }
 
 void SwitchJournalDialog::exportSwJ(uint32_t swjNum)
@@ -202,7 +202,7 @@ void SwitchJournalDialog::exportSwJ(uint32_t swjNum)
 void SwitchJournalDialog::eraseJournals()
 {
     if (checkPassword())
-        BaseInterface::iface()->writeCommand(Commands::C_EraseTechBlock, TECH_SWJ);
+        BaseConnection::iface()->writeCommand(Commands::C_EraseTechBlock, TECH_SWJ);
 }
 
 bool SwitchJournalDialog::loadIfExist(quint32 size)

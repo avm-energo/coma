@@ -9,7 +9,7 @@
 #include <QVBoxLayout>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <interfaces/settingstypes.h>
+#include <interfaces/types/settingstypes.h>
 
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {

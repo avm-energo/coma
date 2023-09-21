@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <interfaces/baseinterface.h>
+#include <interfaces/conn/baseconnection.h>
 
 using namespace Interface;
 

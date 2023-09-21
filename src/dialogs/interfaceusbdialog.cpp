@@ -6,8 +6,8 @@
 #include <QStandardItem>
 #include <QVBoxLayout>
 #include <gen/error.h>
-#include <interfaces/settingstypes.h>
-#include <interfaces/usbhidportinfo.h>
+#include <interfaces/types/settingstypes.h>
+#include <interfaces/types/usbhidportinfo.h>
 
 InterfaceUSBDialog::InterfaceUSBDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {

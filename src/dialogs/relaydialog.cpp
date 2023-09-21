@@ -2,7 +2,7 @@
 
 #include "../widgets/wd_func.h"
 
-#include <interfaces/baseinterface.h>
+#include <interfaces/conn/baseconnection.h>
 
 RelayDialog::RelayDialog(int relayCount, QWidget *parent) : UDialog(parent)
 {
@@ -63,7 +63,7 @@ void RelayDialog::changeRelay(int number)
 
 void RelayDialog::changeRelay(int number, bool state)
 {
-    const auto &interface = BaseInterface::iface();
+    const auto &interface = BaseConnection::iface();
     DataTypes::SingleCommand cmd;
     cmd.addr = quint32(number);
     cmd.value = state;

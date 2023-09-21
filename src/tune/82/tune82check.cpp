@@ -12,7 +12,6 @@
 #include <QVBoxLayout>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-#include <interfaces/protocom.h>
 
 Tune82Check::Tune82Check(S2::Configuration &config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)

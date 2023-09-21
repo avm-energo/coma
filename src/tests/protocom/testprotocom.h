@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QtTest>
-#include <interfaces/protocom.h>
-#include <interfaces/usbhidportinfo.h>
+#include <interfaces/conn/protocom.h>
+#include <interfaces/types/usbhidportinfo.h>
 
 class TestProtocom : public QObject
 {
@@ -15,11 +15,11 @@ private slots:
     // вызывается перед первой тестовой функцией
     void initTestCase()
     {
-        BaseInterface::InterfacePointer device;
-        device = BaseInterface::InterfacePointer(new Protocom());
-        BaseInterface::setIface(std::move(device));
+        BaseConnection::InterfacePointer device;
+        device = BaseConnection::InterfacePointer(new Protocom());
+        BaseConnection::setIface(std::move(device));
 
-        auto usbdevice = BaseInterface::iface();
+        auto usbdevice = BaseConnection::iface();
         protocom = static_cast<Protocom *>(usbdevice);
     }
     // вызывается перед каждой тестовой функцией

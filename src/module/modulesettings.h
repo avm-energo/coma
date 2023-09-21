@@ -4,7 +4,7 @@
 
 #include <QHash>
 #include <gen/datatypes.h>
-#include <interfaces/interfacesettings.h>
+#include <interfaces/types/interfacesettings.h>
 #include <s2/dataitem.h>
 
 constexpr auto baseConfigIndex = 0;

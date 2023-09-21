@@ -32,7 +32,7 @@
 #include <QScrollBar>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-#include <interfaces/baseinterface.h>
+#include <interfaces/conn/baseconnection.h>
 
 using namespace Interface;
 
@@ -225,7 +225,7 @@ Error::Msg DataBlock::writeBlockToModule()
     case DataTypes::DataBlockTypes::BacBlock:
     {
         updateFromWidget();
-        if (BaseInterface::iface()->writeBlockSync(
+        if (BaseConnection::iface()->writeBlockSync(
                 m_block.blocknum, DataTypes::DataBlockTypes::BacBlock, m_block.block, m_block.blocksize)
             != Error::Msg::NoError)
         {
@@ -258,7 +258,7 @@ void DataBlock::readBlockFromModule()
     case DataTypes::DataBlockTypes::BdBlock:
     case DataTypes::DataBlockTypes::BdaBlock:
     {
-        const auto err = BaseInterface::iface()->reqBlockSync(
+        const auto err = BaseConnection::iface()->reqBlockSync(
             m_block.blocknum, m_block.blocktype, m_block.block, m_block.blocksize);
         if (err != Error::Msg::NoError)
             qCritical("Не удалось прочитать блок");
@@ -266,7 +266,7 @@ void DataBlock::readBlockFromModule()
     }
     case DataTypes::DataBlockTypes::BciBlock:
     {
-        const auto err = BaseInterface::iface()->readS2FileSync(S2::FilesEnum::Config);
+        const auto err = BaseConnection::iface()->readS2FileSync(S2::FilesEnum::Config);
         if (err != Error::Msg::NoError)
             qCritical("Не удалось прочитать блок");
     }

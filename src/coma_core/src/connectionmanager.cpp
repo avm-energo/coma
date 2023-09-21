@@ -1,10 +1,10 @@
 #include <coma_core/connectionmanager.h>
 #include <gen/std_ext.h>
-#include <interfaces/baseinterface.h>
-#include <interfaces/emulator.h>
-#include <interfaces/iec104.h>
-#include <interfaces/modbus.h>
-#include <interfaces/protocom.h>
+#include <interfaces/conn/baseconnection.h>
+#include <interfaces/conn/emulator.h>
+#include <interfaces/conn/iec104.h>
+#include <interfaces/conn/modbus.h>
+#include <interfaces/conn/protocom.h>
 
 #ifdef Q_OS_WINDOWS
 // clang-format off
@@ -23,7 +23,7 @@ ConnectionManager::ConnectionManager(QObject *parent) : QObject(parent), m_recon
 
 void ConnectionManager::createConnection(const ConnectStruct &connectionData)
 {
-    BaseInterface::InterfacePointer device;
+    BaseConnection::InterfacePointer device;
     std::visit( //
         overloaded {
             [&]([[maybe_unused]] const UsbHidSettings &settings) {

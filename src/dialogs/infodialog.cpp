@@ -16,10 +16,10 @@ InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
     connect(&Board::GetInstance(), &Board::readyRead, this, &InfoDialog::sync);
     connect(&Board::GetInstance(), &Board::readyReadExt, this, &InfoDialog::syncExt);
 
-    connect(this, &InfoDialog::fetchBsi, BaseInterface::iface(), &BaseInterface::reqBSI);
-    if (BaseInterface::iface()->supportBSIExt())
+    connect(this, &InfoDialog::fetchBsi, BaseConnection::iface(), &BaseConnection::reqBSI);
+    if (BaseConnection::iface()->supportBSIExt())
     {
-        connect(this, &InfoDialog::fetchBsi, BaseInterface::iface(), &BaseInterface::reqBSIExt);
+        connect(this, &InfoDialog::fetchBsi, BaseConnection::iface(), &BaseConnection::reqBSIExt);
     }
     else
     {

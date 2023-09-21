@@ -10,7 +10,7 @@
 #include <QVBoxLayout>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-#include <interfaces/protocom.h>
+//#include <interfaces/conn/protocom.h>
 
 Tune85Check::Tune85Check(S2::Configuration &config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)

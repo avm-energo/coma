@@ -2,7 +2,7 @@
 
 #include <QDialog>
 #include <QTableView>
-#include <interfaces/settingstypes.h>
+#include <interfaces/types/settingstypes.h>
 
 class AbstractInterfaceDialog : public QDialog
 {

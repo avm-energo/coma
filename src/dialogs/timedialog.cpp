@@ -129,7 +129,7 @@ void TimeDialog::writePCDate()
 void TimeDialog::writeTime(QDateTime &myDateTime)
 {
     uint time = myDateTime.toSecsSinceEpoch();
-    BaseInterface::iface()->writeTime(time);
+    BaseConnection::iface()->writeTime(time);
 }
 
 void TimeDialog::writeDate()
@@ -160,7 +160,7 @@ void TimeDialog::reqUpdate()
 {
     if (updatesEnabled())
     {
-        BaseInterface::iface()->reqTime();
+        BaseConnection::iface()->reqTime();
     }
 }
 
