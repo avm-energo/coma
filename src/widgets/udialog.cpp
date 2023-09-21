@@ -5,7 +5,7 @@
 
 #include <QMessageBox>
 #include <QSettings>
-#include <gen/datamanager/typesproxy.h>
+#include <interfaces/utils/typesproxy.h>
 
 UDialog::UDialog(QWidget *parent) : UWidget(parent), proxyGRS(new DataTypesProxy())
 {

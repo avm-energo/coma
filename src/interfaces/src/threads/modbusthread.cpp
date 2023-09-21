@@ -6,7 +6,7 @@
 #include <QThread>
 #include <QtEndian>
 #include <algorithm>
-#include <gen/datamanager/datamanager.h>
+#include <interfaces/utils/datamanager.h>
 #include <gen/helper.h>
 #include <gen/pch.h>
 #include <gen/stdfunc.h>

@@ -31,6 +31,8 @@ set(files_h
     "${INCLUDE_PATH}/types/settingstypes.h"
     "${INCLUDE_PATH}/types/usbhidportinfo.h"
     "${INCLUDE_PATH}/types/usbhidsettings.h"
+    "${INCLUDE_PATH}/utils/datamanager.h"
+    "${INCLUDE_PATH}/utils/typesproxy.h"
 )
 
 set(files_cpp

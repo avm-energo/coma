@@ -5,7 +5,7 @@
 
 #include <QScrollArea>
 #include <QVBoxLayout>
-#include <gen/datamanager/typesproxy.h>
+#include <interfaces/utils/typesproxy.h>
 
 const std::map<Modules::AlarmType, QColor> ModuleAlarm::s_colors = {
     { Modules::AlarmType::Critical, Qt::red },   //

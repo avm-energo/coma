@@ -1,6 +1,6 @@
 #include "infodialog.h"
 
-// #include <gen/datamanager/datamanager.h>
+// #include <interfaces/utils/datamanager.h>
 #include "../module/board.h"
 #include "../widgets/wd_func.h"
 

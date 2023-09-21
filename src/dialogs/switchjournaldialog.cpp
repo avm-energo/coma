@@ -8,7 +8,7 @@
 
 #include <QHeaderView>
 #include <QMessageBox>
-#include <gen/datamanager/typesproxy.h>
+#include <interfaces/utils/typesproxy.h>
 #include <gen/files.h>
 #include <gen/timefunc.h>
 #include <s2/s2util.h>

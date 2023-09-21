@@ -1,7 +1,7 @@
 #include "testprotocom.h"
 
 #include <QSignalSpy>
-#include <gen/datamanager/datamanager.h>
+#include <interfaces/utils/datamanager.h>
 #include <gen/stdfunc.h>
 
 TestProtocom::TestProtocom(QObject *parent) : QObject(parent)

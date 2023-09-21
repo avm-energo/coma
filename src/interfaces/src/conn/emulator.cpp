@@ -1,6 +1,6 @@
 #include "interfaces/conn/emulator.h"
 
-#include <gen/datamanager/datamanager.h>
+#include <interfaces/utils/datamanager.h>
 //#include <interfaces/types/protocom_types.h>
 
 using namespace Interface;

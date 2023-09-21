@@ -2,7 +2,7 @@
 
 #include <QByteArray>
 #include <QObject>
-#include <gen/datamanager/typesproxy.h>
+#include <interfaces/utils/typesproxy.h>
 #include <gen/stdfunc.h>
 #include <s2/s2datatypes.h>
 

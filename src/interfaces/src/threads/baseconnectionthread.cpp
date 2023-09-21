@@ -1,7 +1,7 @@
 #include "interfaces/threads/baseconnectionthread.h"
 
 #include <QCoreApplication>
-#include <gen/datamanager/typesproxy.h>
+#include <interfaces/utils/typesproxy.h>
 #include <s2/s2util.h>
 #include <thread>
 

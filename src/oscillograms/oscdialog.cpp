@@ -6,7 +6,7 @@
 #include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
 
-#include <gen/datamanager/typesproxy.h>
+#include <interfaces/utils/typesproxy.h>
 #include <gen/datatypes.h>
 #include <gen/files.h>
 #include <gen/timefunc.h>

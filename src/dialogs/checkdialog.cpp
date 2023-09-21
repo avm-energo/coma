@@ -7,7 +7,7 @@
 #include <QGroupBox>
 #include <QTabWidget>
 #include <gen/colors.h>
-#include <gen/datamanager/typesproxy.h>
+#include <interfaces/utils/typesproxy.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <set>

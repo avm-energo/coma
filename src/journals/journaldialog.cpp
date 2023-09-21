@@ -6,7 +6,7 @@
 
 #include <QTabWidget>
 #include <QVBoxLayout>
-#include <gen/datamanager/typesproxy.h>
+#include <interfaces/utils/typesproxy.h>
 #include <s2/s2datatypes.h>
 
 namespace journals

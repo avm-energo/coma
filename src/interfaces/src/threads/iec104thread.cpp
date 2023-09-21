@@ -4,7 +4,7 @@
 #include <QDateTime>
 #include <QThread>
 #include <QTimer>
-#include <gen/datamanager/datamanager.h>
+#include <interfaces/utils/datamanager.h>
 #include <gen/pch.h>
 #include <interfaces/types/iec104_types.h>
 #include <s2/s2util.h>

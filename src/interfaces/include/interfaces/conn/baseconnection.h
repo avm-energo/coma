@@ -4,7 +4,7 @@
 #include "../../module/modulesettings.h"
 
 #include <QTimer>
-#include <gen/datamanager/typesproxy.h>
+#include <interfaces/utils/typesproxy.h>
 #include <gen/datatypes.h>
 #include <gen/error.h>
 #include <gen/logclass.h>
