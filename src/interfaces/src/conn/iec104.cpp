@@ -35,11 +35,11 @@ bool IEC104::start(const ConnectStruct &st)
     EthThreadWorking = false;
     ParseThreadWorking = false;
 
-    auto parser = new IEC104Thread();
+    auto parser = new IEC104Thread(m_queue);
     auto parserThread = new QThread;
     parserThread->setObjectName("parserThread");
 
-    connect(parserThread, &QThread::started, [&] { ParseThreadWorking = true; });
+    connect(parserThread, &QThread::started, this, [this] { ParseThreadWorking = true; });
     connect(this, &IEC104::StopAll, parser, &IEC104Thread::Stop);
     connect(this, &IEC104::StopAll, [=] {
         if (sock->isOpen())

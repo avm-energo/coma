@@ -4,9 +4,9 @@
 #include <QDateTime>
 #include <QThread>
 #include <QTimer>
-#include <interfaces/utils/datamanager.h>
 #include <gen/pch.h>
 #include <interfaces/types/iec104_types.h>
+#include <interfaces/utils/datamanager.h>
 #include <s2/s2util.h>
 
 using namespace Interface;
@@ -16,7 +16,7 @@ QMutex IEC104Thread::s_ParseWriteMutex;
 
 using namespace Commands104;
 
-IEC104Thread::IEC104Thread(QObject *parent) : BaseConnectionThread(parent)
+IEC104Thread::IEC104Thread(RequestQueue &queue, QObject *parent) : BaseConnectionThread(queue, parent)
 {
     m_writingToPortBlocked = true;
     m_isFirstParse = true;
@@ -78,7 +78,8 @@ void IEC104Thread::Run()
         if (!m_isFileSending && !m_writingToPortBlocked)
         {
             Commands104::CommandStruct inp;
-            if (DataManager::GetInstance().deQueue(inp) == Error::Msg::NoError)
+            // if (DataManager::GetInstance().deQueue(inp) == Error::Msg::NoError)
+            if (true)
             {
                 switch (inp.cmd)
                 {

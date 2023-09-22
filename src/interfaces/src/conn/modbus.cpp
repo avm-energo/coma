@@ -37,7 +37,7 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     auto parseThread = new QThread;
     auto port = new SerialPort;
     ifacePort = port;
-    auto parser = new ModbusThread;
+    auto parser = new ModbusThread(m_queue);
     parser->setDelay(obtainDelay(st.Baud));
     parser->setDeviceAddress(st.Address);
     parseThread->setObjectName("Modbus thread");
@@ -58,7 +58,8 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     connect(
         port, &BasePort::error, this,
         [this, parser, port](BasePort::PortErrors error) {
-            if (error == BasePort::PortErrors::Timeout && parser->m_currentCommand.command == C_ReqBSI)
+            if (error == BasePort::PortErrors::Timeout
+                && parser->m_currentCommand.command == Interface::Commands::C_ReqBSI)
             {
                 port->closeConnection();
                 qCritical() << "Превышено время ожидания блока BSI. Disconnect...";

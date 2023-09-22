@@ -49,8 +49,8 @@ void BaseConnection::reqAlarms(quint32 sigAdr, quint32 sigCount)
 {
     if (isValidRegs(sigAdr, sigCount))
     {
-        CommandStruct bi { C_ReqAlarms, sigAdr, sigCount };
-        setToQueue(bi);
+        // CommandStruct bi { C_ReqAlarms, sigAdr, sigCount };
+        setToQueue(CommandStruct { Commands::C_ReqAlarms, sigAdr, sigCount });
     }
 }
 
@@ -58,8 +58,8 @@ void BaseConnection::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
     if (isValidRegs(sigAdr, sigCount))
     {
-        CommandStruct bi { C_ReqFloats, sigAdr, sigCount };
-        setToQueue(bi);
+        // CommandStruct bi { C_ReqFloats, sigAdr, sigCount };
+        setToQueue(CommandStruct { Commands::C_ReqFloats, sigAdr, sigCount });
     }
 }
 
@@ -67,8 +67,8 @@ void BaseConnection::reqBitStrings(quint32 sigAdr, quint32 sigCount)
 {
     if (isValidRegs(sigAdr, sigCount))
     {
-        CommandStruct bi { C_ReqBitStrings, sigAdr, sigCount };
-        setToQueue(bi);
+        // CommandStruct bi { C_ReqBitStrings, sigAdr, sigCount };
+        setToQueue(CommandStruct { Commands::C_ReqBitStrings, sigAdr, sigCount });
     }
 }
 
@@ -119,21 +119,21 @@ bool BaseConnection::supportBSIExt()
 
 void BaseConnection::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
-    CommandStruct bi { C_ReqStartup, sigAdr, sigCount };
-    setToQueue(bi);
+    // CommandStruct bi { C_ReqStartup, sigAdr, sigCount };
+    setToQueue(CommandStruct { Commands::C_ReqStartup, sigAdr, sigCount });
 }
 
 void BaseConnection::reqBSI()
 {
-    CommandStruct bi { C_ReqBSI, Regs::bsiStartReg, Regs::bsiCountRegs };
-    setToQueue(bi);
+    // CommandStruct bi { C_ReqBSI, Regs::bsiStartReg, Regs::bsiCountRegs };
+    setToQueue(CommandStruct { Commands::C_ReqBSI, Regs::bsiStartReg, Regs::bsiCountRegs });
 }
 
 void BaseConnection::reqBSIExt()
 {
     quint32 regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
-    CommandStruct bi { C_ReqBSIExt, Regs::bsiExtStartReg, regCount };
-    setToQueue(bi);
+    // CommandStruct bi { C_ReqBSIExt, Regs::bsiExtStartReg, regCount };
+    setToQueue(CommandStruct { Commands::C_ReqBSIExt, Regs::bsiExtStartReg, regCount });
 }
 
 void BaseConnection::reqFile(quint32 id, FileFormat format, quint32 expectedSize)
@@ -143,30 +143,30 @@ void BaseConnection::reqFile(quint32 id, FileFormat format, quint32 expectedSize
         DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, expectedSize };
         (&DataManager::GetInstance())->addSignalToOutList(resp);
     }
-    CommandStruct bi { C_ReqFile, id, format };
-    setToQueue(bi);
+    // CommandStruct bi { C_ReqFile, id, format };
+    setToQueue(CommandStruct { Commands::C_ReqFile, id, format });
 }
 
 void BaseConnection::writeFile(quint32 id, const QByteArray &ba)
 {
-    CommandStruct bi { C_WriteFile, id, ba };
-    setToQueue(bi);
+    // CommandStruct bi { C_WriteFile, id, ba };
+    setToQueue(CommandStruct { Commands::C_WriteFile, id, ba });
 }
 
 void BaseConnection::reqTime()
 {
-    CommandStruct bi { C_ReqTime, 0, 0 };
-    setToQueue(bi);
+    // CommandStruct bi { C_ReqTime, 0, 0 };
+    setToQueue(CommandStruct { Commands::C_ReqTime, 0, 0 });
 }
 
 void BaseConnection::writeTime(quint32 time)
 {
-    CommandStruct bi { C_WriteTime, time, 0 };
-    setToQueue(bi);
+    // CommandStruct bi { C_WriteTime, time, 0 };
+    setToQueue(CommandStruct { Commands::C_WriteTime, time, 0 });
 }
 
 #ifdef __linux__
-void BaseInterface::writeTime(const timespec &time)
+void BaseConnection::writeTime(const timespec &time)
 {
     CommandStruct bi { C_WriteTime, QVariant::fromValue(time), QVariant() };
     setToQueue(bi);
@@ -175,8 +175,8 @@ void BaseInterface::writeTime(const timespec &time)
 
 void BaseConnection::writeCommand(Commands cmd, QVariant value)
 {
-    CommandStruct bi { cmd, value, QVariant() };
-    setToQueue(bi);
+    // CommandStruct bi { cmd, value, QVariant() };
+    setToQueue(CommandStruct { cmd, value, QVariant() });
 }
 
 void Interface::BaseConnection::writeCommand(Commands cmd, const QVariantList &list)
@@ -184,8 +184,8 @@ void Interface::BaseConnection::writeCommand(Commands cmd, const QVariantList &l
     const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
     if (isValidRegs(start_addr, list.size()))
     {
-        CommandStruct bi { cmd, list, QVariant() };
-        setToQueue(bi);
+        // CommandStruct bi { cmd, list, QVariant() };
+        setToQueue(CommandStruct { cmd, list, QVariant() });
     }
 }
 
@@ -221,9 +221,10 @@ void BaseConnection::timeout()
     m_busy = false;
 }
 
-void BaseConnection::setToQueue(CommandStruct &cmd)
+void BaseConnection::setToQueue(CommandStruct &&cmd)
 {
-    DataManager::GetInstance().addToInQueue(cmd);
+    // DataManager::GetInstance().addToInQueue(cmd);
+    m_queue.addToQueue(std::move(cmd));
     emit wakeUpParser();
 }
 
@@ -263,7 +264,7 @@ void BaseConnection::setState(const State &state)
 
 void BaseConnection::close()
 {
-    DataManager::GetInstance().clearQueue();
+    // DataManager::GetInstance().clearQueue();
     if (ifacePort)
         ifacePort->closeConnection();
     setState(State::Disconnect);
@@ -284,9 +285,9 @@ Error::Msg BaseConnection::reqBlockSync(
     m_timeout = false;
     connect(proxyBS.get(), &DataTypesProxy::DataStorable, this, &BaseConnection::resultReady);
     QMap<DataTypes::DataBlockTypes, Commands> blockmap;
-    blockmap[DataTypes::DataBlockTypes::BacBlock] = C_ReqTuningCoef;
-    blockmap[DataTypes::DataBlockTypes::BdaBlock] = C_ReqBlkDataA;
-    blockmap[DataTypes::DataBlockTypes::BdBlock] = C_ReqBlkData;
+    blockmap[DataTypes::DataBlockTypes::BacBlock] = Commands::C_ReqTuningCoef;
+    blockmap[DataTypes::DataBlockTypes::BdaBlock] = Commands::C_ReqBlkDataA;
+    blockmap[DataTypes::DataBlockTypes::BdBlock] = Commands::C_ReqBlkData;
 
     Q_ASSERT(blockmap.contains(blocktype));
     writeCommand(blockmap.value(blocktype), blocknum);
@@ -316,7 +317,7 @@ Error::Msg BaseConnection::writeBlockSync(
     connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &BaseConnection::responseReceived);
     if (blocktype == DataTypes::DataBlockTypes::BacBlock)
     {
-        writeCommand(C_WriteTuningCoef, QVariant::fromValue(bs));
+        writeCommand(Commands::C_WriteTuningCoef, QVariant::fromValue(bs));
         m_timeoutTimer->start();
         while (m_busy)
         {

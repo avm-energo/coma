@@ -7,7 +7,21 @@
 
 using namespace Interface;
 
-BaseConnectionThread::BaseConnectionThread(QObject *parent) : QObject(parent), m_log(new LogClass(this))
+const QMap<Interface::Commands, CommandRegisters> BaseConnectionThread::WSCommandMap {
+    { Commands::C_StartWorkingChannel, StartWorkingChannel },
+    { Commands::C_SetStartupValues, SetStartupValues },
+    { Commands::C_SetStartupPhaseA, SetStartupPhaseA },
+    { Commands::C_SetStartupPhaseB, SetStartupPhaseB },
+    { Commands::C_SetStartupPhaseC, SetStartupPhaseC },
+    { Commands::C_SetStartupUnbounced, SetStartupUnbounced },
+    { Commands::C_SetTransOff, SetTransOff },
+    { Commands::C_ClearStartupValues, ClearStartupValues },
+    { Commands::C_ClearStartupUnbounced, ClearStartupUnbounced },
+    { Commands::C_ClearStartupError, ClearStartupSetError },
+};
+
+BaseConnectionThread::BaseConnectionThread(RequestQueue &queue, QObject *parent)
+    : QObject(parent), m_log(new LogClass(this)), m_queue(queue)
 {
 }
 
@@ -28,7 +42,12 @@ void BaseConnectionThread::finishCommand()
 
 void BaseConnectionThread::wakeUp()
 {
-    _waiter.wakeOne();
+    m_waiter.wakeOne();
+}
+
+quint16 BaseConnectionThread::blockByReg(const quint32 regAddr)
+{
+    return BaseConnection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
 }
 
 void BaseConnectionThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataTypes::FileFormat format)
@@ -99,14 +118,14 @@ void BaseConnectionThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, Data
 
 void BaseConnectionThread::checkQueue()
 {
-    CommandStruct inp;
-    if (DataManager::GetInstance().deQueue(inp) != Error::Msg::NoError)
-        return;
-
-    m_isCommandRequested = true;
-    m_progress = 0;
-    m_currentCommand = inp;
-    parseRequest(inp);
+    auto opt = m_queue.deQueue();
+    if (opt.has_value())
+    {
+        m_isCommandRequested = true;
+        m_progress = 0;
+        m_currentCommand = opt.value();
+        parseRequest(opt.value());
+    }
 }
 
 void BaseConnectionThread::run()
@@ -118,10 +137,10 @@ void BaseConnectionThread::run()
     m_log->info(logStart);
     while (BaseConnection::iface()->state() != State::Disconnect)
     {
-        QMutexLocker locker(&_mutex);
+        QMutexLocker locker(&m_mutex);
         if (!m_isCommandRequested)
             checkQueue();
-        _waiter.wait(&_mutex, 100);
+        m_waiter.wait(&m_mutex, 100);
         if (m_parsingDataReady)
         {
             parseResponse();

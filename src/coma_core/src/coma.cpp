@@ -627,7 +627,7 @@ void Coma::setupConnection()
         return;
     }
 
-    DataManager::GetInstance().clearQueue();
+    // DataManager::GetInstance().clearQueue();
     BaseConnection::iface()->reqBSI();
     connect(                                                     //
         connectionManager.get(), &IfaceConnManager::sendMessage, //

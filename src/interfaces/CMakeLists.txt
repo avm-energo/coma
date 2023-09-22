@@ -24,6 +24,7 @@ set(files_h
     "${INCLUDE_PATH}/threads/iec104thread.h"
     "${INCLUDE_PATH}/threads/modbusthread.h"
     "${INCLUDE_PATH}/threads/protocomthread.h"
+    "${INCLUDE_PATH}/types/common_types.h"
     "${INCLUDE_PATH}/types/iec104_types.h"
     "${INCLUDE_PATH}/types/interfacesettings.h"
     "${INCLUDE_PATH}/types/modbus_types.h"
@@ -32,6 +33,7 @@ set(files_h
     "${INCLUDE_PATH}/types/usbhidportinfo.h"
     "${INCLUDE_PATH}/types/usbhidsettings.h"
     "${INCLUDE_PATH}/utils/datamanager.h"
+    "${INCLUDE_PATH}/utils/request_queue.h"
     "${INCLUDE_PATH}/utils/typesproxy.h"
 )
 
@@ -52,6 +54,7 @@ set(files_cpp
     "${SRC_PATH}/threads/protocomthread.cpp"
     "${SRC_PATH}/types/usbhidportinfo.cpp"
     "${SRC_PATH}/types/usbhidsettings.cpp"
+    "${SRC_PATH}/utils/request_queue.cpp"
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})

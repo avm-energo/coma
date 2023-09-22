@@ -35,7 +35,7 @@ public:
             int SigNumber;
         } BS104Signals; */
 
-    IEC104Thread(QObject *parent = nullptr);
+    IEC104Thread(RequestQueue &queue, QObject *parent = nullptr);
     ~IEC104Thread();
 
     void SetBaseAdr(quint16 adr);

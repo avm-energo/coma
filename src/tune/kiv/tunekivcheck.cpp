@@ -33,7 +33,7 @@ void TuneKIVCheck::setTuneFunctions()
 
 Error::Msg TuneKIVCheck::setSMode2()
 {
-    BaseConnection::iface()->writeCommand(Interface::C_SetMode, 0x02);
+    BaseConnection::iface()->writeCommand(Interface::Commands::C_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 

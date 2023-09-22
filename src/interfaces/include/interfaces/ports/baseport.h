@@ -4,9 +4,10 @@
 #include <QMutex>
 #include <QObject>
 #include <QTimer>
+#include <gen/error.h>
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
-#include <interfaces/conn/baseconnection.h>
+#include <interfaces/types/common_types.h>
 
 constexpr qint64 RECONNECTINTERVAL = 10000;
 

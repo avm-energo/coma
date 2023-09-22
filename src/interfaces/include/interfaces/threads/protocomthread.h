@@ -12,7 +12,7 @@ class ProtocomThread : public BaseConnectionThread
 {
     Q_OBJECT
 public:
-    explicit ProtocomThread(QObject *parent = nullptr);
+    explicit ProtocomThread(RequestQueue &queue, QObject *parent = nullptr);
     ~ProtocomThread();
 
 public slots:
@@ -66,28 +66,28 @@ private:
     void processTechBlock(const QByteArray &ba, quint32 blkNum);
 
     const QMap<Interface::Commands, Proto::Commands> protoCommandMap {
-        { C_ReqTime, Proto::ReadTime },                      // 12
-        { C_ReqBSI, Proto::ReadBlkStartInfo },               // 12
-        { C_ReqBSIExt, Proto::ReadBlkStartInfoExt },         // 12
-        { C_StartFirmwareUpgrade, Proto::WriteUpgrade },     // 12
-        { C_SetNewConfiguration, Proto::WriteBlkTech },      // 12
-        { C_WriteUserValues, Proto::WriteBlkData },          // 12
-        { C_EraseJournals, Proto::EraseTech },               // 12
-        { C_ReqProgress, Proto::ReadProgress },              // 12
-        { C_EraseTechBlock, Proto::EraseTech },              // 12
-        { C_Test, Proto::Test },                             // 12
-        { C_WriteSingleCommand, Proto::WriteSingleCommand }, // 12
-        { C_ReqTuningCoef, Proto::ReadBlkAC },               // 12
-        { C_WriteTuningCoef, Proto::WriteBlkAC },            // 12
-        { C_ReqBlkData, Proto::ReadBlkData },                // 12
-        { C_ReqBlkDataA, Proto::ReadBlkDataA },              // 12
-        { C_ReqBlkDataTech, Proto::ReadBlkTech },            // 12
-        { C_ReqOscInfo, Proto::ReadBlkTech },                // 12
-        { C_WriteBlkDataTech, Proto::WriteBlkTech },         // 12
-        { C_Reboot, Proto::WriteBlkCmd },                    // 12
-        { C_GetMode, Proto::ReadMode },                      // 12
-        { C_SetMode, Proto::WriteMode },                     // 12
-        { C_WriteHardware, Proto::WriteHardware }            // 12
+        { Commands::C_ReqTime, Proto::ReadTime },                      // 12
+        { Commands::C_ReqBSI, Proto::ReadBlkStartInfo },               // 12
+        { Commands::C_ReqBSIExt, Proto::ReadBlkStartInfoExt },         // 12
+        { Commands::C_StartFirmwareUpgrade, Proto::WriteUpgrade },     // 12
+        { Commands::C_SetNewConfiguration, Proto::WriteBlkTech },      // 12
+        { Commands::C_WriteUserValues, Proto::WriteBlkData },          // 12
+        { Commands::C_EraseJournals, Proto::EraseTech },               // 12
+        { Commands::C_ReqProgress, Proto::ReadProgress },              // 12
+        { Commands::C_EraseTechBlock, Proto::EraseTech },              // 12
+        { Commands::C_Test, Proto::Test },                             // 12
+        { Commands::C_WriteSingleCommand, Proto::WriteSingleCommand }, // 12
+        { Commands::C_ReqTuningCoef, Proto::ReadBlkAC },               // 12
+        { Commands::C_WriteTuningCoef, Proto::WriteBlkAC },            // 12
+        { Commands::C_ReqBlkData, Proto::ReadBlkData },                // 12
+        { Commands::C_ReqBlkDataA, Proto::ReadBlkDataA },              // 12
+        { Commands::C_ReqBlkDataTech, Proto::ReadBlkTech },            // 12
+        { Commands::C_ReqOscInfo, Proto::ReadBlkTech },                // 12
+        { Commands::C_WriteBlkDataTech, Proto::WriteBlkTech },         // 12
+        { Commands::C_Reboot, Proto::WriteBlkCmd },                    // 12
+        { Commands::C_GetMode, Proto::ReadMode },                      // 12
+        { Commands::C_SetMode, Proto::WriteMode },                     // 12
+        { Commands::C_WriteHardware, Proto::WriteHardware }            // 12
     };
 };
 

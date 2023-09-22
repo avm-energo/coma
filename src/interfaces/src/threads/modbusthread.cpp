@@ -6,17 +6,17 @@
 #include <QThread>
 #include <QtEndian>
 #include <algorithm>
-#include <interfaces/utils/datamanager.h>
 #include <gen/helper.h>
 #include <gen/pch.h>
 #include <gen/stdfunc.h>
 #include <gen/utils/crc16.h>
+#include <interfaces/utils/datamanager.h>
 
 constexpr auto RECONNECTTIME = 10000;
 
 using namespace Interface;
 
-ModbusThread::ModbusThread(QObject *parent) : BaseConnectionThread(parent)
+ModbusThread::ModbusThread(RequestQueue &queue, QObject *parent) : BaseConnectionThread(queue, parent)
 {
 }
 
@@ -280,7 +280,7 @@ void ModbusThread::processReadBytes(QByteArray ba)
             return;
         }
     }
-    if (m_currentCommand.command == C_ReqFile)
+    if (m_currentCommand.command == Commands::C_ReqFile)
     {
         if (m_readData.size() >= 8)                                     // [8] = section length
             m_bytesToReceive = static_cast<quint8>(m_readData[7]) + 10; // дополнительные данные

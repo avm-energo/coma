@@ -14,7 +14,7 @@ public:
     {
     }
 
-    template <typename T> void addSignalToOutList(T &signal)
+    template <typename T> [[deprecated]] void addSignalToOutList(T &signal)
     {
         QVariant data;
         data.setValue(signal);
@@ -22,44 +22,44 @@ public:
         emit DataReceived(hash, data);
     }
 
-    template <typename T> void addToInQueue(T data)
-    {
-        QVariant var;
-        var.setValue(data);
-        QMutexLocker locker(&s_inQueueMutex);
-        s_inputQueue.push(var);
-    }
+    //    template <typename T> [[deprecated]] void addToInQueue(T data)
+    //    {
+    //        QVariant var;
+    //        var.setValue(data);
+    //        QMutexLocker locker(&s_inQueueMutex);
+    //        s_inputQueue.push(var);
+    //    }
 
-    template <typename T> Error::Msg deQueue(T &cmd)
-    {
-        QMutexLocker locker(&s_inQueueMutex);
-        if (!s_inputQueue.empty())
-        {
-            QVariant inp = s_inputQueue.front();
-            if (inp.canConvert<T>())
-            {
-                s_inputQueue.pop();
-                cmd = qvariant_cast<T>(inp);
-                return Error::Msg::NoError;
-            }
-        }
-        return Error::Msg::ResEmpty;
-    }
+    //    template <typename T> [[deprecated]] Error::Msg deQueue(T &cmd)
+    //    {
+    //        QMutexLocker locker(&s_inQueueMutex);
+    //        if (!s_inputQueue.empty())
+    //        {
+    //            QVariant inp = s_inputQueue.front();
+    //            if (inp.canConvert<T>())
+    //            {
+    //                s_inputQueue.pop();
+    //                cmd = qvariant_cast<T>(inp);
+    //                return Error::Msg::NoError;
+    //            }
+    //        }
+    //        return Error::Msg::ResEmpty;
+    //    }
 
-    const size_t queueSize() const
-    {
-        return s_inputQueue.size();
-    }
+    //    [[deprecated]] const size_t queueSize() const
+    //    {
+    //        return s_inputQueue.size();
+    //    }
 
-    void clearQueue()
-    {
-        decltype(s_inputQueue) empty;
-        std::swap(s_inputQueue, empty);
-    }
+    //    [[deprecated]] void clearQueue()
+    //    {
+    //        decltype(s_inputQueue) empty;
+    //        std::swap(s_inputQueue, empty);
+    //    }
 
-private:
-    std::queue<QVariant> s_inputQueue;
-    QMutex s_inQueueMutex;
+    // private:
+    //    std::queue<QVariant> s_inputQueue;
+    //    QMutex s_inQueueMutex;
 
 signals:
     void DataReceived(const std::size_t &, const QVariant &);

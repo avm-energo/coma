@@ -15,7 +15,7 @@ class ModbusThread : public BaseConnectionThread
 {
     Q_OBJECT
 public:
-    explicit ModbusThread(QObject *parent = nullptr);
+    explicit ModbusThread(RequestQueue &queue, QObject *parent = nullptr);
     ~ModbusThread();
     void parseRequest(const CommandStruct &cmdStr) override;
     void parseResponse() override;

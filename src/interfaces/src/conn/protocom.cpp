@@ -44,7 +44,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
 {
     auto port = new UsbHidPort(usbhid);
     ifacePort = port;
-    auto parser = new ProtocomThread;
+    auto parser = new ProtocomThread(m_queue);
     auto portThread = new QThread;
     auto parseThread = new QThread;
 

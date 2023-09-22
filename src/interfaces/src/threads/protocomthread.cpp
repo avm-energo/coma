@@ -16,7 +16,7 @@ using Proto::CommandStruct;
 using Proto::Starters;
 using namespace Interface;
 
-ProtocomThread::ProtocomThread(QObject *parent) : BaseConnectionThread(parent)
+ProtocomThread::ProtocomThread(RequestQueue &queue, QObject *parent) : BaseConnectionThread(queue, parent)
 {
     isFirstBlock = true;
     m_longBlockChunks.clear();
@@ -28,7 +28,7 @@ ProtocomThread::~ProtocomThread()
 
 void ProtocomThread::processReadBytes(QByteArray ba)
 {
-    QMutexLocker locker(&_mutex);
+    QMutexLocker locker(&m_mutex);
     if (!isValidIncomingData(ba))
     {
         finishCommand();
@@ -254,14 +254,14 @@ void ProtocomThread::parseResponse()
     {
     case ResultOk:
     {
-        if (m_currentCommand.command == C_WriteFile)
+        if (m_currentCommand.command == Commands::C_WriteFile)
             setProgressCount(m_sentBytesCount);
         if (!m_longBlockChunks.isEmpty())
         {
             QByteArray ba = m_longBlockChunks.takeFirst();
             m_sentBytesCount += ba.size();
             emit sendDataToPort(ba);
-            _waiter.wakeOne();
+            m_waiter.wakeOne();
             return;
         }
         processOk();
@@ -305,14 +305,14 @@ void ProtocomThread::parseResponse()
     case ReadBlkData:
         switch (m_currentCommand.command)
         {
-        case C_ReqStartup:
-        case C_ReqFloats:
+        case Commands::C_ReqStartup:
+        case Commands::C_ReqFloats:
             processFloat(m_readData, addr);
             break;
-        case C_ReqAlarms:
+        case Commands::C_ReqAlarms:
             processSinglePoint(m_readData, addr);
             break;
-        case C_ReqBitStrings:
+        case Commands::C_ReqBitStrings:
             processU32(m_readData, addr);
             break;
         default:
