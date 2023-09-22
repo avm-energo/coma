@@ -4,16 +4,14 @@
 #include "../../module/modulesettings.h"
 
 #include <QTimer>
-#include <gen/datatypes.h>
 #include <gen/error.h>
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/common_types.h>
 #include <interfaces/types/interfacesettings.h>
 #include <interfaces/utils/request_queue.h>
+#include <interfaces/utils/slot_trait.h>
 #include <interfaces/utils/typesproxy.h>
-#include <s2/dataitem.h>
-#include <s2/filestruct.h>
 
 enum INTERVAL
 {
@@ -87,7 +85,7 @@ public:
     void writeFile(quint32 id, const QByteArray &ba);
     void reqTime();
     void writeTime(quint32 time);
-#ifdef __linux__
+#ifdef Q_OS_LINUX
     void writeTime(const timespec &time);
 #endif
     void writeCommand(Commands cmd, QVariant value = 0);
@@ -113,19 +111,34 @@ signals:
     void disconnected();
     void reconnect();
     void nativeEvent(void *const message);
-    void stateChanged(State m_state);
+    void stateChanged(Interface::State m_state);
     void wakeUpParser() const;
 
+    // Response signals
+    // clazy:excludeall=overloaded-signal
+    void response(const QByteArray &resp);
+    void response(const DataTypes::GeneralResponseStruct &resp);
+    void response(const DataTypes::BitStringStruct &resp);
+    void response(const DataTypes::FloatStruct &resp);
+    void response(const DataTypes::SinglePointWithTimeStruct &resp);
+    void response(const DataTypes::FloatWithTimeStruct &resp);
+    void response(const DataTypes::BlockStruct &resp);
+    void response(const QList<S2::DataItem> &resp);
+    void response(const S2::FileStruct &resp);
+    void response(const S2::S2BFile &resp);
+    void response(const S2::OscInfo &resp);
+    void response(const S2::SwitchJourInfo &resp);
+
 private:
+    static InterfacePointer s_connection;
     bool m_busy, m_timeout;
     QByteArray m_byteArrayResult;
     bool m_responseResult;
     QTimer *m_timeoutTimer;
-    static InterfacePointer s_connection;
     State m_state;
-    QMutex _stateMutex;
+    QMutex m_stateMutex;
     UniquePointer<DataTypesProxy> proxyBS, proxyGRS, proxyFS, proxyDRL, proxyBStr;
-#ifdef __linux__
+#ifdef Q_OS_LINUX
     UniquePointer<DataTypesProxy> proxyTS;
 #endif
     void ProxyInit();
@@ -133,11 +146,23 @@ private:
 protected:
     BasePort *ifacePort;
 
+public slots:
+    void responseHandle(const Interface::DeviceResponse &response);
+
 private slots:
     void resultReady(const QVariant &msg);
+    void aboba(const DataTypes::BlockStruct &msg);
     void responseReceived(const QVariant &msg);
     void fileReceived(const QVariant &msg);
     void timeout();
+
+public:
+    template <typename Class, typename Slot, std::enable_if_t<slot_checks<Class, Slot, DeviceResponse>, bool> = true> //
+    inline QMetaObject::Connection connection(Class *object, Slot slot)
+    {
+        using slot_type = typename slot_trait<Slot>::arg_type;
+        return QObject::connect(this, qOverload<const slot_type &>(&BaseConnection::response), object, slot);
+    }
 };
 
 }

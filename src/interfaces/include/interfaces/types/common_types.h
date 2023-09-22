@@ -1,6 +1,12 @@
 #pragma once
 
+#include <QByteArray>
 #include <QVariant>
+#include <gen/datatypes.h>
+#include <s2/dataitem.h>
+#include <s2/filestruct.h>
+#include <s2/s2datatypes.h>
+#include <variant>
 
 namespace Interface
 {
@@ -96,5 +102,11 @@ struct CommandStruct
     QVariant arg1; // reqFile, writeFile: id, reqStartup: sigAddr, WriteTime: time, WriteCommand: command
     QVariant arg2; // reqFile: format, reqStartup: sigCount, WriteFile: &bytearray, WriteCommand: value
 };
+
+using DeviceResponse = std::variant<QByteArray, DataTypes::BitStringStruct,   //
+    DataTypes::GeneralResponseStruct, DataTypes::FloatStruct, S2::FileStruct, //
+    DataTypes::SinglePointWithTimeStruct, DataTypes::BlockStruct,             //
+    QList<S2::DataItem>, S2::S2BFile, S2::OscInfo, S2::SwitchJourInfo,        //
+    DataTypes::FloatWithTimeStruct>;
 
 } // namespace Interface

@@ -52,7 +52,7 @@ quint16 BaseConnectionThread::blockByReg(const quint32 regAddr)
 
 void BaseConnectionThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataTypes::FileFormat format)
 {
-    auto &manager = DataManager::GetInstance();
+    // auto &manager = DataManager::GetInstance();
     switch (format)
     {
     case FileFormat::Binary:
@@ -61,7 +61,8 @@ void BaseConnectionThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, Data
             DataTypes::GeneralResponseTypes::Ok, //
             static_cast<quint64>(ba.size())      //
         };
-        manager.addSignalToOutList(genResp);
+        // manager.addSignalToOutList(genResp);
+        emit responseSend(genResp);
         switch (addr)
         {
         // По модбасу уже получили файл в формате S2B
@@ -75,14 +76,18 @@ void BaseConnectionThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, Data
                 S2::S2BFile s2bFile {};
                 auto errCode = util.parseS2B(ba, s2bFile);
                 if (errCode == Error::Msg::NoError)
-                    manager.addSignalToOutList(s2bFile);
+                {
+                    // manager.addSignalToOutList(s2bFile);
+                    emit responseSend(s2bFile);
+                }
             }
             break;
         }
         default:
         {
             S2::FileStruct resp { addr, ba };
-            manager.addSignalToOutList(resp);
+            // manager.addSignalToOutList(resp);
+            emit responseSend(resp);
             break;
         }
         }
@@ -90,7 +95,8 @@ void BaseConnectionThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, Data
     }
     case FileFormat::DefaultS2:
     {
-        manager.addSignalToOutList(ba);
+        // manager.addSignalToOutList(ba);
+        emit responseSend(ba);
         break;
     }
     case FileFormat::CustomS2:
@@ -100,16 +106,19 @@ void BaseConnectionThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, Data
         {
             DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
                 static_cast<quint64>(ba.size()) };
-            manager.addSignalToOutList(resp);
+            // manager.addSignalToOutList(resp);
+            emit responseSend(resp);
             return;
         }
         DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
             static_cast<quint64>(ba.size()) };
-        manager.addSignalToOutList(genResp);
+        // manager.addSignalToOutList(genResp);
+        emit responseSend(genResp);
         for (auto &&file : outlist)
         {
             S2::FileStruct resp { S2::FilesEnum(file.ID), file.data };
-            manager.addSignalToOutList(resp);
+            // manager.addSignalToOutList(resp);
+            emit responseSend(resp);
         }
         break;
     }
@@ -155,11 +164,13 @@ void BaseConnectionThread::run()
 void BaseConnectionThread::setProgressCount(const quint64 count)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, count };
-    DataManager::GetInstance().addSignalToOutList(resp);
+    // DataManager::GetInstance().addSignalToOutList(resp);
+    emit responseSend(resp);
 }
 
 void BaseConnectionThread::setProgressRange(const quint64 count)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, count };
-    DataManager::GetInstance().addSignalToOutList(resp);
+    // DataManager::GetInstance().addSignalToOutList(resp);
+    emit responseSend(resp);
 }

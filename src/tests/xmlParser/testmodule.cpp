@@ -27,19 +27,19 @@ int TestModule::getGroupsCount(const ModuleTypes::SectionList &list)
     return groupCount;                                               //
 }
 
-int TestModule::getWidgetsCount(const ModuleTypes::SectionList &list)
+std::size_t TestModule::getWidgetsCount(const ModuleTypes::SectionList &list)
 {
-    auto widgetCount = std::accumulate(list.cbegin(), list.cend(), 0,      //
-        [](int value, const ModuleTypes::Section &section)                 //
-        {                                                                  //
-            const auto &map = section.sgMap;                               //
-            auto innerCount = std::accumulate(map.cbegin(), map.cend(), 0, //
-                [](int inner, auto &&group) {                              //
-                    return inner + group.widgets.size();                   //
-                });                                                        //
-            return value + innerCount;                                     //
-        });                                                                //
-    return widgetCount;                                                    //
+    auto widgetCount = std::accumulate(list.cbegin(), list.cend(), 0ll,      //
+        [](std::size_t value, const ModuleTypes::Section &section)           //
+        {                                                                    //
+            const auto &map = section.sgMap;                                 //
+            auto innerCount = std::accumulate(map.cbegin(), map.cend(), 0ll, //
+                [](std::size_t inner, auto &&group) {                        //
+                    return inner + group.widgets.size();                     //
+                });                                                          //
+            return value + innerCount;                                       //
+        });                                                                  //
+    return widgetCount;                                                      //
 }
 
 int TestModule::getAlarmsCount(const ModuleTypes::AlarmMap &map)

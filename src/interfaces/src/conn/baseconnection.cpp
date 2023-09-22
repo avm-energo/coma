@@ -2,10 +2,8 @@
 
 #include <QCoreApplication>
 #include <QMutexLocker>
-#include <QTimer>
-#include <gen/stdfunc.h>
+#include <gen/std_ext.h>
 #include <interfaces/ports/baseport.h>
-#include <memory>
 #include <s2/s2util.h>
 
 namespace Interface
@@ -39,7 +37,7 @@ void BaseConnection::ProxyInit()
     proxyDRL->RegisterType<QList<S2::DataItem>>();
     proxyBStr->RegisterType<DataTypes::BitStringStruct>();
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
     proxyTS = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
     proxyTS->RegisterType<timespec>();
 #endif
@@ -48,28 +46,19 @@ void BaseConnection::ProxyInit()
 void BaseConnection::reqAlarms(quint32 sigAdr, quint32 sigCount)
 {
     if (isValidRegs(sigAdr, sigCount))
-    {
-        // CommandStruct bi { C_ReqAlarms, sigAdr, sigCount };
         setToQueue(CommandStruct { Commands::C_ReqAlarms, sigAdr, sigCount });
-    }
 }
 
 void BaseConnection::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
     if (isValidRegs(sigAdr, sigCount))
-    {
-        // CommandStruct bi { C_ReqFloats, sigAdr, sigCount };
         setToQueue(CommandStruct { Commands::C_ReqFloats, sigAdr, sigCount });
-    }
 }
 
 void BaseConnection::reqBitStrings(quint32 sigAdr, quint32 sigCount)
 {
     if (isValidRegs(sigAdr, sigCount))
-    {
-        // CommandStruct bi { C_ReqBitStrings, sigAdr, sigCount };
         setToQueue(CommandStruct { Commands::C_ReqBitStrings, sigAdr, sigCount });
-    }
 }
 
 bool BaseConnection::supportBSIExt()
@@ -79,6 +68,15 @@ bool BaseConnection::supportBSIExt()
     bool status = false;
     auto connBitString = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     auto connError = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+
+    constexpr auto val = slot_checks<decltype(*this), decltype(&BaseConnection::aboba), DeviceResponse>;
+    constexpr auto val_a = is_arg_variant_type<decltype(&BaseConnection::aboba), DeviceResponse>;
+    constexpr auto val_b = is_void_ret_type<decltype(&BaseConnection::aboba)>;
+    constexpr auto val_c = is_qobject<decltype(*this)>;
+    constexpr auto val_d = is_same_class<decltype(*this), decltype(&BaseConnection::aboba)>;
+
+    auto lambda = [](DataTypes::GeneralResponseStruct &ok) { ; };
+    constexpr auto val_e = detail::is_invocable_with_variant<decltype(lambda), DeviceResponse>();
 
     *connBitString = connect(
         proxyBStr.get(), &DataTypesProxy::DataStorable, this, [=, &busy = m_busy, &status](const QVariant &data) {
@@ -119,20 +117,17 @@ bool BaseConnection::supportBSIExt()
 
 void BaseConnection::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
-    // CommandStruct bi { C_ReqStartup, sigAdr, sigCount };
     setToQueue(CommandStruct { Commands::C_ReqStartup, sigAdr, sigCount });
 }
 
 void BaseConnection::reqBSI()
 {
-    // CommandStruct bi { C_ReqBSI, Regs::bsiStartReg, Regs::bsiCountRegs };
     setToQueue(CommandStruct { Commands::C_ReqBSI, Regs::bsiStartReg, Regs::bsiCountRegs });
 }
 
 void BaseConnection::reqBSIExt()
 {
     quint32 regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
-    // CommandStruct bi { C_ReqBSIExt, Regs::bsiExtStartReg, regCount };
     setToQueue(CommandStruct { Commands::C_ReqBSIExt, Regs::bsiExtStartReg, regCount });
 }
 
@@ -141,41 +136,36 @@ void BaseConnection::reqFile(quint32 id, FileFormat format, quint32 expectedSize
     if (expectedSize != 0)
     {
         DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, expectedSize };
-        (&DataManager::GetInstance())->addSignalToOutList(resp);
+        //(&DataManager::GetInstance())->addSignalToOutList(resp);
+        emit response(resp);
     }
-    // CommandStruct bi { C_ReqFile, id, format };
     setToQueue(CommandStruct { Commands::C_ReqFile, id, format });
 }
 
 void BaseConnection::writeFile(quint32 id, const QByteArray &ba)
 {
-    // CommandStruct bi { C_WriteFile, id, ba };
     setToQueue(CommandStruct { Commands::C_WriteFile, id, ba });
 }
 
 void BaseConnection::reqTime()
 {
-    // CommandStruct bi { C_ReqTime, 0, 0 };
     setToQueue(CommandStruct { Commands::C_ReqTime, 0, 0 });
 }
 
 void BaseConnection::writeTime(quint32 time)
 {
-    // CommandStruct bi { C_WriteTime, time, 0 };
     setToQueue(CommandStruct { Commands::C_WriteTime, time, 0 });
 }
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 void BaseConnection::writeTime(const timespec &time)
 {
-    CommandStruct bi { C_WriteTime, QVariant::fromValue(time), QVariant() };
-    setToQueue(bi);
+    setToQueue(CommandStruct { Commands::C_WriteTime, QVariant::fromValue(time), QVariant() });
 }
 #endif
 
 void BaseConnection::writeCommand(Commands cmd, QVariant value)
 {
-    // CommandStruct bi { cmd, value, QVariant() };
     setToQueue(CommandStruct { cmd, value, QVariant() });
 }
 
@@ -183,10 +173,19 @@ void Interface::BaseConnection::writeCommand(Commands cmd, const QVariantList &l
 {
     const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
     if (isValidRegs(start_addr, list.size()))
-    {
-        // CommandStruct bi { cmd, list, QVariant() };
         setToQueue(CommandStruct { cmd, list, QVariant() });
-    }
+}
+
+void Interface::BaseConnection::responseHandle(const Interface::DeviceResponse &resp)
+{
+    using f_type = decltype(&BaseConnection::responseHandle);
+    std::visit([this](auto &&var) { emit response(var); }, resp);
+}
+
+// const DataTypes::BlockStruct &msg
+void BaseConnection::aboba(const DataTypes::BlockStruct &msg)
+{
+    ;
 }
 
 void BaseConnection::resultReady(const QVariant &msg)
@@ -251,13 +250,13 @@ ProtocolDescription *BaseConnection::settings()
 
 State BaseConnection::state()
 {
-    QMutexLocker locker(&_stateMutex);
+    QMutexLocker locker(&m_stateMutex);
     return m_state;
 }
 
 void BaseConnection::setState(const State &state)
 {
-    QMutexLocker locker(&_stateMutex);
+    QMutexLocker locker(&m_stateMutex);
     m_state = state;
     emit stateChanged(m_state);
 }

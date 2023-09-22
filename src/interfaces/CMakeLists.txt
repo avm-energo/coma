@@ -34,6 +34,7 @@ set(files_h
     "${INCLUDE_PATH}/types/usbhidsettings.h"
     "${INCLUDE_PATH}/utils/datamanager.h"
     "${INCLUDE_PATH}/utils/request_queue.h"
+    "${INCLUDE_PATH}/utils/slot_trait.h"
     "${INCLUDE_PATH}/utils/typesproxy.h"
 )
 

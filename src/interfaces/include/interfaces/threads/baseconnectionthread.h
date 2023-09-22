@@ -47,6 +47,7 @@ protected:
 
 signals:
     void finished();
+    void responseSend(const Interface::DeviceResponse &resp);
     void sendDataToPort(const QByteArray &ba);
 
 public slots:

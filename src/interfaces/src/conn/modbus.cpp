@@ -45,6 +45,7 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     connect(portThread, &QThread::started, port, &BasePort::poll, Qt::QueuedConnection);
     connect(parseThread, &QThread::started, parser, &ModbusThread::run);
     connect(parser, &ModbusThread::finished, parseThread, &QThread::quit);
+    connect(parser, &BaseConnectionThread::responseSend, this, &BaseConnection::responseHandle, Qt::DirectConnection);
     connect(this, &BaseConnection::wakeUpParser, parser, &BaseConnectionThread::wakeUp, Qt::DirectConnection);
     connect(port, &BasePort::dataReceived, parser, &BaseConnectionThread::processReadBytes, Qt::DirectConnection);
     connect(parser, &ModbusThread::sendDataToPort, port, &BasePort::writeDataSync, Qt::QueuedConnection);

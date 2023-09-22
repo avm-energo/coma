@@ -49,6 +49,7 @@ bool IEC104::start(const ConnectStruct &st)
             sock->deleteLater();
         }
     });
+    connect(parser, &BaseConnectionThread::responseSend, this, &BaseConnection::responseHandle, Qt::DirectConnection);
     //    connect(sock, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError error) {
     //        Log->info("Error: " + QVariant::fromValue(error).toString());
     //        sock->disconnectFromHost();
