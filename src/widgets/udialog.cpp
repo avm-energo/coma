@@ -7,13 +7,12 @@
 #include <QSettings>
 #include <interfaces/utils/typesproxy.h>
 
-UDialog::UDialog(QWidget *parent) : UWidget(parent), proxyGRS(new DataTypesProxy())
+UDialog::UDialog(QWidget *parent)
+    : UWidget(parent), m_genRespConn(m_conn->connection(this, &UDialog::updateGeneralResponse))
 {
     showSuccessMessageFlag = true;
-    proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
-    QObject::connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &UDialog::updateGeneralResponse);
 }
 
 UDialog::UDialog(const QString &hash, const QString &key, QWidget *parent) : UDialog(parent)
@@ -25,12 +24,11 @@ UDialog::UDialog(const QString &hash, const QString &key, QWidget *parent) : UDi
     m_hash = settings.value(key, "").toString();
 }
 
-void UDialog::updateGeneralResponse(const QVariant &msg)
+void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
 {
     if (!updatesEnabled())
         return;
 
-    auto response = msg.value<DataTypes::GeneralResponseStruct>();
     switch (response.type)
     {
     case DataTypes::Ok:
@@ -68,12 +66,13 @@ void UDialog::enableSuccessMessage()
 
 bool UDialog::disableMessages()
 {
-    return QObject::disconnect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &UDialog::updateGeneralResponse);
+    return QObject::disconnect(m_genRespConn);
 }
 
 bool UDialog::enableMessages()
 {
-    return QObject::connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &UDialog::updateGeneralResponse);
+    m_genRespConn = m_conn->connection(this, &UDialog::updateGeneralResponse);
+    return m_genRespConn;
 }
 
 QString UDialog::successMsg() const

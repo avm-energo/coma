@@ -1,17 +1,20 @@
 #include "interfaces/moduledataupdater.h"
 
-ModuleDataUpdater::ModuleDataUpdater(BaseConnection *iface, QObject *parent) : QObject(parent)
+ModuleDataUpdater::ModuleDataUpdater(BaseConnection *connection, QObject *parent) : QObject(parent), m_conn(connection)
 {
-    m_iface = iface;
-    proxyFS = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
-    proxySP = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
-    proxyBS = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
-    proxyFS->RegisterType<DataTypes::FloatStruct>();
-    proxySP->RegisterType<DataTypes::SinglePointWithTimeStruct>();
-    proxyBS->RegisterType<DataTypes::BitStringStruct>();
-    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &ModuleDataUpdater::updateFloatData);
-    connect(proxySP.get(), &DataTypesProxy::DataStorable, this, &ModuleDataUpdater::updateSinglePointData);
-    connect(proxyBS.get(), &DataTypesProxy::DataStorable, this, &ModuleDataUpdater::updateBitStringData);
+    // m_conn = connection;
+    //    proxyFS = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
+    //    proxySP = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
+    //    proxyBS = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
+    //    proxyFS->RegisterType<DataTypes::FloatStruct>();
+    //    proxySP->RegisterType<DataTypes::SinglePointWithTimeStruct>();
+    //    proxyBS->RegisterType<DataTypes::BitStringStruct>();
+    //    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &ModuleDataUpdater::updateFloatData);
+    //    connect(proxySP.get(), &DataTypesProxy::DataStorable, this, &ModuleDataUpdater::updateSinglePointData);
+    //    connect(proxyBS.get(), &DataTypesProxy::DataStorable, this, &ModuleDataUpdater::updateBitStringData);
+    m_conn->connection(this, &ModuleDataUpdater::updateFloatData);
+    m_conn->connection(this, &ModuleDataUpdater::updateSinglePointData);
+    m_conn->connection(this, &ModuleDataUpdater::updateBitStringData);
 }
 
 void ModuleDataUpdater::requestUpdates()
@@ -20,11 +23,11 @@ void ModuleDataUpdater::requestUpdates()
     if (!m_updatesEnabled)
         return;
     for (const auto &query : qAsConst(m_floatQueryList))
-        m_iface->reqFloats(query.sigAdr, query.sigQuantity);
+        m_conn->reqFloats(query.sigAdr, query.sigQuantity);
     for (const auto &query : qAsConst(m_spQueryList))
-        m_iface->reqAlarms(query.sigAdr, query.sigQuantity);
+        m_conn->reqAlarms(query.sigAdr, query.sigQuantity);
     for (const auto &query : qAsConst(m_bsQueryList))
-        m_iface->reqBitStrings(query.sigAdr, query.sigQuantity);
+        m_conn->reqBitStrings(query.sigAdr, query.sigQuantity);
 }
 
 bool ModuleDataUpdater::updatesEnabled()
@@ -67,38 +70,20 @@ void ModuleDataUpdater::addBs(const BdQuery &query)
     m_bsQueryList.push_back(query);
 }
 
-void ModuleDataUpdater::updateFloatData(const QVariant &msg)
+void ModuleDataUpdater::updateFloatData(const DataTypes::FloatStruct &fl)
 {
-    if (msg.canConvert<DataTypes::FloatStruct>())
-    {
-        if (m_updatesEnabled)
-        {
-            auto fl = msg.value<DataTypes::FloatStruct>();
-            emit itsTimeToUpdateFloatSignal(fl);
-        }
-    }
+    if (m_updatesEnabled)
+        emit itsTimeToUpdateFloatSignal(fl);
 }
 
-void ModuleDataUpdater::updateSinglePointData(const QVariant &msg)
+void ModuleDataUpdater::updateSinglePointData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
-    if (msg.canConvert<DataTypes::SinglePointWithTimeStruct>())
-    {
-        if (m_updatesEnabled)
-        {
-            auto sp = msg.value<DataTypes::SinglePointWithTimeStruct>();
-            emit itsTimeToUpdateSinglePointSignal(sp);
-        }
-    }
+    if (m_updatesEnabled)
+        emit itsTimeToUpdateSinglePointSignal(sp);
 }
 
-void ModuleDataUpdater::updateBitStringData(const QVariant &msg)
+void ModuleDataUpdater::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
-    if (msg.canConvert<DataTypes::BitStringStruct>())
-    {
-        if (m_updatesEnabled)
-        {
-            auto bs = msg.value<DataTypes::BitStringStruct>();
-            emit itsTimeToUpdateBitStringSignal(bs);
-        }
-    }
+    if (m_updatesEnabled)
+        emit itsTimeToUpdateBitStringSignal(bs);
 }

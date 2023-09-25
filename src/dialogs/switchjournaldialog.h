@@ -6,6 +6,7 @@
 #include "../widgets/udialog.h"
 
 #include <QModelIndex>
+#include <interfaces/utils/typesproxy.h>
 
 class ETableView;
 

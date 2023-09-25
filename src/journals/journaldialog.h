@@ -3,6 +3,7 @@
 #include "../widgets/udialog.h"
 #include "journaltabwidget.h"
 
+#include <interfaces/utils/typesproxy.h>
 #include <map>
 
 namespace journals

@@ -7,6 +7,7 @@
 #include <QList>
 #include <QPair>
 #include <gen/datatypes.h>
+#include <interfaces/utils/typesproxy.h>
 
 /// \brief The class for alarm dialog, that displaying critical,
 /// warning and info alarms from XML configuration files.

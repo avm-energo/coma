@@ -11,7 +11,7 @@
 #include <interfaces/types/interfacesettings.h>
 #include <interfaces/utils/request_queue.h>
 #include <interfaces/utils/slot_trait.h>
-#include <interfaces/utils/typesproxy.h>
+//#include <interfaces/utils/typesproxy.h>
 
 enum INTERVAL
 {
@@ -123,6 +123,9 @@ signals:
     void response(const DataTypes::SinglePointWithTimeStruct &resp);
     void response(const DataTypes::FloatWithTimeStruct &resp);
     void response(const DataTypes::BlockStruct &resp);
+#ifdef Q_OS_LINUX
+    void response(const timespec &resp);
+#endif
     void response(const QList<S2::DataItem> &resp);
     void response(const S2::FileStruct &resp);
     void response(const S2::S2BFile &resp);
@@ -137,11 +140,6 @@ private:
     QTimer *m_timeoutTimer;
     State m_state;
     QMutex m_stateMutex;
-    UniquePointer<DataTypesProxy> proxyBS, proxyGRS, proxyFS, proxyDRL, proxyBStr;
-#ifdef Q_OS_LINUX
-    UniquePointer<DataTypesProxy> proxyTS;
-#endif
-    void ProxyInit();
 
 protected:
     BasePort *ifacePort;
@@ -150,29 +148,32 @@ public slots:
     void responseHandle(const Interface::DeviceResponse &response);
 
 private slots:
-    void resultReady(const QVariant &msg);
-    void aboba(const DataTypes::BlockStruct &msg);
-    void responseReceived(const QVariant &msg);
-    void fileReceived(const QVariant &msg);
+    void resultReady(const DataTypes::BlockStruct &result);
+    void responseReceived(const DataTypes::GeneralResponseStruct &response);
+    void fileReceived(const S2::FileStruct &file);
     void timeout();
 
 public:
-    template <typename Class, typename Slot, std::enable_if_t<slot_checks<Class, Slot, DeviceResponse>, bool> = true> //
-    inline QMetaObject::Connection connection(Class *object, Slot slot)
+    template <typename Class, typename Slot, std::enable_if_t<std::is_member_function_pointer_v<Slot>, bool> = true> //
+    inline QMetaObject::Connection connection(Class *receiver, Slot slot, Qt::ConnectionType type = Qt::AutoConnection)
     {
-        using slot_type = typename slot_trait<Slot>::arg_type;
-        return QObject::connect(this, qOverload<const slot_type &>(&BaseConnection::response), object, slot);
+        constexpr static bool check = slot_checks<Class, Slot, DeviceResponse>;
+        static_assert(check, "False type in receiver's slot");
+        if constexpr (check)
+        {
+            using slot_type = typename slot_trait<Slot>::arg_type;
+            return QObject::connect(
+                this, qOverload<const slot_type &>(&BaseConnection::response), receiver, slot, type);
+        }
     }
 
-    template <typename Class, typename Lambda,
-        std::enable_if_t<lambda_checks<Class, Lambda, DeviceResponse>, bool> = true> //
-    inline QMetaObject::Connection connection(Class *object, Lambda lambda)
+    template <typename Class, typename L, std::enable_if_t<lambda_checks<Class, L, DeviceResponse>, bool> = true> //
+    inline QMetaObject::Connection connection(Class *receiver, L lambda, Qt::ConnectionType type = Qt::AutoConnection)
     {
-        // using slot_type = typename slot_trait<Slot>::arg_type;
-        // return QObject::connect(this, qOverload<const slot_type &>(&BaseConnection::response), object, slot);
+        using l_type = typename lambda_trait<L, DeviceResponse>::arg_type;
+        return QObject::connect(this, qOverload<const l_type &>(&BaseConnection::response), receiver, lambda, type);
     }
 };
-
 }
 
 Q_DECLARE_METATYPE(Interface::State)

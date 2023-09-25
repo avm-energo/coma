@@ -105,8 +105,11 @@ struct CommandStruct
 
 using DeviceResponse = std::variant<QByteArray, DataTypes::BitStringStruct,   //
     DataTypes::GeneralResponseStruct, DataTypes::FloatStruct, S2::FileStruct, //
-    DataTypes::SinglePointWithTimeStruct, DataTypes::BlockStruct,             //
-    QList<S2::DataItem>, S2::S2BFile, S2::OscInfo, S2::SwitchJourInfo,        //
+#ifdef Q_OS_LINUX
+    timespec,
+#endif
+    DataTypes::SinglePointWithTimeStruct, DataTypes::BlockStruct,      //
+    QList<S2::DataItem>, S2::S2BFile, S2::OscInfo, S2::SwitchJourInfo, //
     DataTypes::FloatWithTimeStruct>;
 
 } // namespace Interface

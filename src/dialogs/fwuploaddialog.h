@@ -26,7 +26,7 @@ public:
     explicit FWUploadDialog(QWidget *parent = nullptr);
     void setupUI();
     bool writeCheckPassword();
-    virtual void updateGeneralResponse(const QVariant &msg) override;
+    virtual void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response) override;
 
 public slots:
     void loadFirmware();

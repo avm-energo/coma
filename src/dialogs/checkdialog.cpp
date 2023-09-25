@@ -7,9 +7,9 @@
 #include <QGroupBox>
 #include <QTabWidget>
 #include <gen/colors.h>
-#include <interfaces/utils/typesproxy.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <interfaces/utils/typesproxy.h>
 #include <set>
 
 constexpr auto maxIndicatorCountInRow = 10;
@@ -256,7 +256,8 @@ QGridLayout *CheckDialog::setupFloatWidget(const ModuleTypes::MWidget &mwidget, 
     return gridLayout;
 }
 
-void CheckDialog::updatePixmap(const ModuleTypes::MWidget &mwidget, DataTypes::BitStringStruct &bs, UWidget *uwidget)
+void CheckDialog::updatePixmap(
+    const ModuleTypes::MWidget &mwidget, const DataTypes::BitStringStruct &bs, UWidget *uwidget)
 {
     if (bs.sigAdr == mwidget.startAddr && bs.sigQuality == DataTypes::Quality::Good)
     {
@@ -318,7 +319,7 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget,
 
     auto dataUpdater = widget->engine();
     connect(dataUpdater, &ModuleDataUpdater::itsTimeToUpdateBitStringSignal, this,
-        [mwidget, widget, this](DataTypes::BitStringStruct &bs) -> void //
+        [mwidget, widget, this](const DataTypes::BitStringStruct &bs) -> void //
         { updatePixmap(mwidget, bs, widget); });
 
     bitsetWidget->setLayout(gridLayout);

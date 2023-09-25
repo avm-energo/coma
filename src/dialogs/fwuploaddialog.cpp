@@ -83,12 +83,11 @@ void FWUploadDialog::loadFirmware()
     uploadStatus = FirmwareUploadStatus::Written;
 }
 
-void FWUploadDialog::updateGeneralResponse(const QVariant &msg)
+void FWUploadDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
 {
     if (!updatesEnabled())
         return;
 
-    auto response = msg.value<DataTypes::GeneralResponseStruct>();
     if (response.type == DataTypes::GeneralResponseTypes::Ok)
     {
         if (uploadStatus == FirmwareUploadStatus::Written)

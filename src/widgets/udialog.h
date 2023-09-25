@@ -11,7 +11,7 @@ class UDialog : public UWidget
 public:
     UDialog(QWidget *parent = nullptr);
     UDialog(const QString &hash, const QString &key, QWidget *parent = nullptr);
-    virtual void updateGeneralResponse(const QVariant &msg);
+    virtual void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response);
 
     void disableSuccessMessage();
     void enableSuccessMessage();
@@ -25,12 +25,11 @@ protected:
     QString errorMsg() const;
     void setErrorMsg(const QString errorMsg);
 
-    UniquePointer<DataTypesProxy> proxyGRS;
-
 private:
     QString m_successMsg;
     QString m_errorMsg;
     bool showSuccessMessageFlag;
+    QMetaObject::Connection m_genRespConn;
 };
 
 #endif // UDIALOG_H

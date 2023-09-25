@@ -3,6 +3,7 @@
 #include <QObject>
 #include <gen/std_ext.h>
 #include <type_traits>
+#include <utility>
 
 // Default calling convention is CDECL
 #if !defined(_M_X64) && !defined(__amd64__)
@@ -76,18 +77,18 @@ struct slot_trait_impl<Ret (CVECTORCALL Class::*)(Arg)> : base_slot_trait<Ret, C
 #endif // defined(CVECTORCALL)
 
 template <typename F, typename Variant, std::size_t I = std::variant_size<Variant>::value>
-static constexpr bool is_invocable_with_variant()
+static constexpr std::pair<bool, std::size_t> is_invocable_with_variant()
 {
     if constexpr (I > 0)
     {
         constexpr auto index = I - 1;
         if constexpr (std::is_invocable_v<F, std::variant_alternative_t<index, Variant>>)
-            return true;
+            return { true, index };
         else
             return is_invocable_with_variant<F, Variant, I - 1>();
     }
     else
-        return false;
+        return { false, -1 };
 }
 
 } // namespace detail
@@ -135,7 +136,17 @@ template <typename Class, typename Slot, typename Variant> //
 inline constexpr bool slot_checks = is_qobject<Class> &&is_void_ret_type<Slot> &&is_same_class<Class, Slot>
     &&is_arg_variant_type<Slot, Variant> &&is_arg_cref<Slot>;
 
+template <typename L, typename Variant, std::size_t index = detail::is_invocable_with_variant<L, Variant>().second> //
+struct lambda_trait
+{
+    static constexpr std::size_t variant_index = index;
+    typedef std::variant_alternative_t<index, Variant> arg_type;
+};
+
+template <typename L, typename Variant> //
+inline constexpr bool lambda_is_invocable = detail::is_invocable_with_variant<L, Variant>().first;
+
 template <typename Class, typename L, typename Variant> //
-inline constexpr bool lambda_checks = is_qobject<Class> &&detail::is_invocable_with_variant<L, Variant>();
+inline constexpr bool lambda_checks = is_qobject<Class> &&lambda_is_invocable<L, Variant>;
 
 } // namespace Interface

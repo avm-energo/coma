@@ -16,7 +16,7 @@ public:
         quint32 sigQuantity;
     };
 
-    explicit ModuleDataUpdater(BaseConnection *iface, QObject *parent = nullptr);
+    explicit ModuleDataUpdater(BaseConnection *connection, QObject *parent = nullptr);
     void requestUpdates();
     bool updatesEnabled();
     void setUpdatesEnabled(bool enabled = true);
@@ -25,33 +25,27 @@ public:
     void addBs(const BdQuery &query);
 
 private:
-    BaseConnection *m_iface;
-    UniquePointer<DataTypesProxy> proxyFS, proxySP, proxyBS;
+    BaseConnection *m_conn;
+    QList<BdQuery> m_floatQueryList; ///< float
+    QList<BdQuery> m_spQueryList;    ///< single-point
+    QList<BdQuery> m_bsQueryList;    ///< bit strings
+    bool m_updatesEnabled;
+    // UniquePointer<DataTypesProxy> proxyFS, proxySP, proxyBS;
 
     void setFloatQuery(const QList<BdQuery> &list);
     void setSpQuery(const QList<BdQuery> &list);
     void setBsQuery(const QList<BdQuery> &list);
 
-    /// float
-    QList<BdQuery> m_floatQueryList;
-    /// single-point
-    QList<BdQuery> m_spQueryList;
-    /// bit strings
-    QList<BdQuery> m_bsQueryList;
-
-    //    BaseInterface *m_iface;
-    bool m_updatesEnabled;
-
 signals:
-    void itsTimeToUpdateFloatSignal(DataTypes::FloatStruct &);
-    void itsTimeToUpdateSinglePointSignal(DataTypes::SinglePointWithTimeStruct &);
-    void itsTimeToUpdateBitStringSignal(DataTypes::BitStringStruct &);
+    void itsTimeToUpdateFloatSignal(const DataTypes::FloatStruct &fl);
+    void itsTimeToUpdateSinglePointSignal(const DataTypes::SinglePointWithTimeStruct &sp);
+    void itsTimeToUpdateBitStringSignal(const DataTypes::BitStringStruct &bs);
     void ifaceChanged();
 
 private slots:
-    void updateSinglePointData(const QVariant &msg);
-    void updateBitStringData(const QVariant &msg);
-    void updateFloatData(const QVariant &msg);
+    void updateSinglePointData(const DataTypes::SinglePointWithTimeStruct &sp);
+    void updateBitStringData(const DataTypes::BitStringStruct &bs);
+    void updateFloatData(const DataTypes::FloatStruct &fl);
 };
 
 #endif // MODULEDATAUPDATER_H

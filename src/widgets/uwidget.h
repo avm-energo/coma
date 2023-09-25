@@ -26,12 +26,13 @@ public:
     ModuleDataUpdater *engine();
 
 protected:
-    QString m_hash;
     bool checkPassword();
+    QString m_hash;
+    BaseConnection *m_conn;
+    ModuleDataUpdater *m_dataUpdater;
 
 private:
     QMap<int, QList<HighlightWarnAlarmStruct>> m_highlightMap;
-    ModuleDataUpdater *m_dataUpdater;
 };
 
 #endif // UWIDGET_H
