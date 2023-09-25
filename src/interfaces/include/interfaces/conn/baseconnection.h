@@ -163,6 +163,14 @@ public:
         using slot_type = typename slot_trait<Slot>::arg_type;
         return QObject::connect(this, qOverload<const slot_type &>(&BaseConnection::response), object, slot);
     }
+
+    template <typename Class, typename Lambda,
+        std::enable_if_t<lambda_checks<Class, Lambda, DeviceResponse>, bool> = true> //
+    inline QMetaObject::Connection connection(Class *object, Lambda lambda)
+    {
+        // using slot_type = typename slot_trait<Slot>::arg_type;
+        // return QObject::connect(this, qOverload<const slot_type &>(&BaseConnection::response), object, slot);
+    }
 };
 
 }

@@ -75,8 +75,9 @@ bool BaseConnection::supportBSIExt()
     constexpr auto val_c = is_qobject<decltype(*this)>;
     constexpr auto val_d = is_same_class<decltype(*this), decltype(&BaseConnection::aboba)>;
 
-    auto lambda = [](DataTypes::GeneralResponseStruct &ok) { ; };
+    auto lambda = [](const DataTypes::GeneralResponseStruct &ok) { ; };
     constexpr auto val_e = detail::is_invocable_with_variant<decltype(lambda), DeviceResponse>();
+    connection(this, &BaseConnection::aboba);
 
     *connBitString = connect(
         proxyBStr.get(), &DataTypesProxy::DataStorable, this, [=, &busy = m_busy, &status](const QVariant &data) {
