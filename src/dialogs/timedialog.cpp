@@ -11,8 +11,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <gen/colors.h>
-#include <interfaces/utils/datamanager.h>
-#include <interfaces/utils/typesproxy.h>
 #include <gen/error.h>
 #include <gen/timefunc.h>
 

@@ -5,7 +5,7 @@
 #include "../widgets/udialog.h"
 #include "oscmanager.h"
 
-#include <interfaces/utils/typesproxy.h>
+//#include <interfaces/utils/typesproxy.h>
 #include <optional>
 
 class OscDialog : public UDialog
@@ -25,8 +25,8 @@ public:
     explicit OscDialog(QWidget *parent = nullptr);
 
 public slots:
-    void fillOscInfo(const QVariant &msg);
-    void fillOsc(const QVariant &msg);
+    void fillOscInfo(const S2::OscInfo &info);
+    void fillOsc(const S2::FileStruct &file);
 
 private:
     void setupUI();
@@ -40,7 +40,6 @@ private:
     QMap<int, S2::OscInfo> oscMap;
     std::vector<S2::FileStruct> fileBuffer;
     UniquePointer<ETableModel> tableModel;
-    UniquePointer<DataTypesProxy> proxyOI, proxyFS;
     int reqOscNum;
 };
 

@@ -10,7 +10,6 @@
 #include <gen/pch.h>
 #include <gen/stdfunc.h>
 #include <gen/utils/crc16.h>
-#include <interfaces/utils/datamanager.h>
 
 constexpr auto RECONNECTTIME = 10000;
 
@@ -251,7 +250,6 @@ void ModbusThread::parseResponse()
             return;
         DataTypes::GeneralResponseStruct grs;
         grs.type = DataTypes::GeneralResponseTypes::Ok;
-        // DataManager::GetInstance().addSignalToOutList(grs);
         emit responseSend(grs);
         break;
     }
@@ -348,7 +346,6 @@ void ModbusThread::processFloatSignals()
         signal.sigVal = unpackReg<float>(ba.mid(i, sizeof(float)));
         signal.sigAdr = m_commandSent.adr + i / sizeof(float);
         signal.sigQuality = DataTypes::Quality::Good;
-        // DataManager::GetInstance().addSignalToOutList(signal);
         emit responseSend(signal);
     }
 }
@@ -374,7 +371,6 @@ void ModbusThread::processIntegerSignals()
         signal.sigVal = unpackReg<quint32>(ba.mid(i, sizeof(quint32)));
         signal.sigAdr = m_commandSent.adr + i / sizeof(quint32);
         signal.sigQuality = DataTypes::Quality::Good;
-        // DataManager::GetInstance().addSignalToOutList(signal);
         emit responseSend(signal);
     }
 }
@@ -398,7 +394,6 @@ void ModbusThread::processCommandResponse()
     }
     DataTypes::GeneralResponseStruct grs;
     grs.type = DataTypes::GeneralResponseTypes::Ok;
-    // DataManager::GetInstance().addSignalToOutList(grs);
     emit responseSend(grs);
 }
 
@@ -426,7 +421,6 @@ void ModbusThread::processSinglePointSignals()
             signal.sigAdr = m_commandSent.adr + i * 8 + j;
             signal.sigVal = ((0x01 << j) & ival) ? 1 : 0;
             signal.sigQuality = DataTypes::Quality::Good;
-            // DataManager::GetInstance().addSignalToOutList(signal);
             emit responseSend(signal);
         }
     }

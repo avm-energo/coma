@@ -5,7 +5,6 @@
 
 #include <QEventLoop>
 #include <QSettings>
-#include <interfaces/utils/typesproxy.h>
 #include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/settingstypes.h>

@@ -6,18 +6,15 @@
 
 #include <QTabWidget>
 #include <QVBoxLayout>
-#include <interfaces/utils/typesproxy.h>
 #include <s2/s2datatypes.h>
 
 namespace journals
 {
 
-JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent)
-    : UDialog(parent), proxy(&DataManager::GetInstance())
+JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent) : UDialog(parent)
 {
     disableSuccessMessage();
-    proxy.RegisterType<S2::S2BFile>();
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &JournalDialog::receivedJournalFile);
+    m_conn->connection(this, &JournalDialog::receivedJournalFile);
     createJournals(settings);
     setupUI();
 }
@@ -55,16 +52,12 @@ void JournalDialog::setupUI()
     setLayout(layout);
 }
 
-void JournalDialog::receivedJournalFile(const QVariant &jourData)
+void JournalDialog::receivedJournalFile(const S2::S2BFile &s2bFile)
 {
-    if (jourData.canConvert<S2::S2BFile>())
-    {
-        auto s2bFile = jourData.value<S2::S2BFile>();
-        auto jourType = static_cast<JournalType>(s2bFile.header.fname);
-        auto search = journals.find(jourType);
-        if (search != journals.end())
-            search->second->setJournalFile(s2bFile);
-    }
+    auto jourType = static_cast<JournalType>(s2bFile.header.fname);
+    auto search = journals.find(jourType);
+    if (search != journals.end())
+        search->second->setJournalFile(s2bFile);
 }
 
 }

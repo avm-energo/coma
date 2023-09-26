@@ -5,7 +5,6 @@
 
 #include <QMessageBox>
 #include <QSettings>
-#include <interfaces/utils/typesproxy.h>
 
 UDialog::UDialog(QWidget *parent) : UWidget(parent)
 {

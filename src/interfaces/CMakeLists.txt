@@ -32,10 +32,10 @@ set(files_h
     "${INCLUDE_PATH}/types/settingstypes.h"
     "${INCLUDE_PATH}/types/usbhidportinfo.h"
     "${INCLUDE_PATH}/types/usbhidsettings.h"
-    "${INCLUDE_PATH}/utils/datamanager.h"
     "${INCLUDE_PATH}/utils/request_queue.h"
     "${INCLUDE_PATH}/utils/slot_trait.h"
-    "${INCLUDE_PATH}/utils/typesproxy.h"
+    #"${INCLUDE_PATH}/utils/datamanager.h"
+    #"${INCLUDE_PATH}/utils/typesproxy.h"
 )
 
 set(files_cpp

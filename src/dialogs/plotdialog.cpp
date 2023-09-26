@@ -1,6 +1,5 @@
 #include "plotdialog.h"
 
-#include <interfaces/utils/typesproxy.h>
 #include <qcustomplot.h>
 
 constexpr double valueRadius = 0.9;
@@ -20,12 +19,8 @@ constexpr auto Ic = -150;
 
 PlotDialog::PlotDialog(QWidget *parent) : UDialog(parent)
 {
-    //    auto mngr = &DataManager::GetInstance();
-    //    static DataTypesProxy proxy(mngr);
-    //    proxy.RegisterType<DataTypes::FloatStruct>();
     setupUI();
     engine()->addFloat({ 2400, 7 });
-    //    connect(&proxy, &DataTypesProxy::DataStorable, this, &UWidget::updateFloatData, Qt::QueuedConnection);
 }
 
 static bool processPhase(GraphData &data, const DataTypes::FloatStruct &fl)

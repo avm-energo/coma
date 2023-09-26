@@ -243,11 +243,6 @@ void Coma::setupMenubar()
     setMenuBar(menubar);
 }
 
-// QPoint Coma::ComaCenter()
-//{
-//    return Coma::s_comaCenter;
-//}
-
 void Coma::loadOsc(const QString &filename)
 {
     fileVector = oscManager.loadFromFile(filename);
@@ -573,6 +568,7 @@ void Coma::initInterfaceConnection()
     conn->connection(&board, &Board::update);
     conn->connection(this, &Coma::update);
     mDlgManager->updateConnection(conn);
+    s2requestService->updateConnection(conn);
 }
 
 void Coma::setupConnection()

@@ -2,7 +2,6 @@
 
 #include <QDebug>
 #include <QMetaMethod>
-#include <interfaces/utils/datamanager.h>
 
 template <typename T> void print(const T &data)
 {

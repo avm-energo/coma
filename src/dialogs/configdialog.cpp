@@ -10,7 +10,6 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QScrollArea>
-#include <interfaces/utils/typesproxy.h>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>

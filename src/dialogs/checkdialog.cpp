@@ -9,7 +9,6 @@
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <interfaces/utils/typesproxy.h>
 #include <set>
 
 constexpr auto maxIndicatorCountInRow = 10;

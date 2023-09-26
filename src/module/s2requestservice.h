@@ -2,8 +2,8 @@
 
 #include <QByteArray>
 #include <QObject>
-#include <interfaces/utils/typesproxy.h>
 #include <gen/stdfunc.h>
+#include <interfaces/conn/baseconnection.h>
 #include <s2/s2datatypes.h>
 
 /// \brief Class for providing requests in S2 data format from device.
@@ -11,15 +11,16 @@ class S2RequestService final : public QObject
 {
     Q_OBJECT
 private:
-    UniquePointer<DataTypesProxy> m_proxy;
+    Interface::BaseConnection *m_conn;
     quint16 m_lastRequestedFile;
 
 private slots:
     /// \brief This slot is called when current service will receive a response from the device.
-    void responseReceived(const QVariant &var);
+    void responseReceived(const QByteArray &file);
 
 public:
     explicit S2RequestService(QObject *parent = nullptr);
+    void updateConnection(Interface::BaseConnection *connection);
 
 public slots:
     /// \brief This slot is called when an external subscriber will register request a data to the device.

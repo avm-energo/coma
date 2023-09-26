@@ -9,7 +9,6 @@
 #include <QStackedWidget>
 #include <coma_core/connectionmanager.h>
 #include <interfaces/types/settingstypes.h>
-//#include <interfaces/utils/typesproxy.h>
 #include <s2/s2datamanager.h>
 
 class AlarmWidget;

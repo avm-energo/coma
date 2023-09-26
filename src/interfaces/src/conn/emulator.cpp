@@ -1,8 +1,5 @@
 #include "interfaces/conn/emulator.h"
 
-#include <interfaces/utils/datamanager.h>
-//#include <interfaces/types/protocom_types.h>
-
 using namespace Interface;
 
 Emulator::Emulator(QObject *parent) : BaseConnection(parent)

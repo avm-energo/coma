@@ -608,7 +608,6 @@ void ProtocomThread::processFloat(const QByteArray &ba, quint32 startAddr)
         QByteArray tba = ba.mid(bapos, sizeof(float));
         float blk = *reinterpret_cast<const float *>(tba.data());
         DataTypes::FloatStruct resp { startAddr++, blk, DataTypes::Quality::Good };
-        // DataManager::GetInstance().addSignalToOutList(resp);
         emit responseSend(resp);
         bapos += sizeof(float);
     }
@@ -620,7 +619,6 @@ void ProtocomThread::processSinglePoint(const QByteArray &ba, const quint16 star
     {
         quint8 value = ba.at(i);
         DataTypes::SinglePointWithTimeStruct data { (startAddr + i), value, 0, DataTypes::Quality::Good };
-        // DataManager::GetInstance().addSignalToOutList(data);
         emit responseSend(data);
     }
 }
@@ -628,21 +626,18 @@ void ProtocomThread::processSinglePoint(const QByteArray &ba, const quint16 star
 void ProtocomThread::processInt(const byte num)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, num };
-    // DataManager::GetInstance().addSignalToOutList(resp);
     emit responseSend(resp);
 }
 
 void ProtocomThread::processOk()
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, 0 };
-    // DataManager::GetInstance().addSignalToOutList(resp);
     emit responseSend(resp);
 }
 
 void ProtocomThread::processError(int errorCode)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, static_cast<quint64>(errorCode) };
-    // DataManager::GetInstance().addSignalToOutList(resp);
     emit responseSend(resp);
     // Module error code
     qCritical() << "Error code: " << QString::number(errorCode, 16);
@@ -651,7 +646,6 @@ void ProtocomThread::processError(int errorCode)
 void ProtocomThread::processBlock(const QByteArray &ba, quint32 blkNum)
 {
     DataTypes::BlockStruct resp { blkNum, ba };
-    // DataManager::GetInstance().addSignalToOutList(resp);
     emit responseSend(resp);
 }
 
@@ -669,7 +663,6 @@ void ProtocomThread::processTechBlock(const QByteArray &ba, quint32 blkNum)
 
             S2::OscInfo oscInfo;
             memcpy(&oscInfo, buffer.constData(), sizeof(S2::OscInfo));
-            // DataManager::GetInstance().addSignalToOutList(oscInfo);
             emit responseSend(oscInfo);
         }
 
@@ -694,7 +687,6 @@ void ProtocomThread::processTechBlock(const QByteArray &ba, quint32 blkNum)
             QByteArray buffer = ba.mid(i, sizeof(S2::SwitchJourInfo));
             S2::SwitchJourInfo swjInfo;
             memcpy(&swjInfo, buffer.constData(), sizeof(S2::SwitchJourInfo));
-            // DataManager::GetInstance().addSignalToOutList(swjInfo);
             emit responseSend(swjInfo);
         }
         break;

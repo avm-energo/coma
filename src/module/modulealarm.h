@@ -7,7 +7,6 @@
 #include <QList>
 #include <QPair>
 #include <gen/datatypes.h>
-#include <interfaces/utils/typesproxy.h>
 
 /// \brief The class for alarm dialog, that displaying critical,
 /// warning and info alarms from XML configuration files.
@@ -17,7 +16,6 @@ class ModuleAlarm : public BaseAlarm
 private:
     static const std::map<Modules::AlarmType, QColor> s_colors;
     const ModuleTypes::AlarmValue m_alarms;
-    UniquePointer<DataTypesProxy> m_proxy;
     QList<QPair<QLabel *, bool>> m_labelStateStorage;
 
     /// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
@@ -36,5 +34,5 @@ public:
 
 public slots:
     /// \brief This slot called when a SinglePoint data is received from the device.
-    void update(const QVariant &msg);
+    void update(const DataTypes::SinglePointWithTimeStruct &sp);
 };

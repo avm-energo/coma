@@ -6,7 +6,6 @@
 #include <QTimer>
 #include <gen/pch.h>
 #include <interfaces/types/iec104_types.h>
-#include <interfaces/utils/datamanager.h>
 #include <s2/s2util.h>
 
 using namespace Interface;
@@ -78,7 +77,6 @@ void IEC104Thread::Run()
         if (!m_isFileSending && !m_writingToPortBlocked)
         {
             Commands104::CommandStruct inp;
-            // if (DataManager::GetInstance().deQueue(inp) == Error::Msg::NoError)
             if (true)
             {
                 switch (inp.cmd)
