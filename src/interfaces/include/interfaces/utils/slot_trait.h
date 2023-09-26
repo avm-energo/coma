@@ -149,4 +149,6 @@ inline constexpr bool lambda_is_invocable = detail::is_invocable_with_variant<L,
 template <typename Class, typename L, typename Variant> //
 inline constexpr bool lambda_checks = is_qobject<Class> &&lambda_is_invocable<L, Variant>;
 
+using MetaConnection = QMetaObject::Connection;
+
 } // namespace Interface

@@ -8,8 +8,8 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <coma_core/connectionmanager.h>
-#include <interfaces/utils/typesproxy.h>
 #include <interfaces/types/settingstypes.h>
+//#include <interfaces/utils/typesproxy.h>
 #include <s2/s2datamanager.h>
 
 class AlarmWidget;
@@ -53,7 +53,7 @@ private slots:
     void openXmlEditor();
     void showAboutDialog();
     void closeEvent(QCloseEvent *event) override;
-    void update(const QVariant &msg);
+    void update(const DataTypes::GeneralResponseStruct &rsp);
     void nativeEvent(void *message);
 
 private:
@@ -64,7 +64,6 @@ private:
 
     QTimer *BdaTimer;
     AlarmWidget *AlarmW;
-    UniquePointer<DataTypesProxy> proxyBS, proxyGRS;
     OscManager oscManager;
     XmlEditor *editor;
     File::Vector fileVector;
@@ -72,7 +71,6 @@ private:
     ConnectStruct ConnectSettings;
     AppConfiguration mAppConfig;
     UniquePointer<DialogManager> mDlgManager;
-    // static QPoint s_comaCenter;
 
     void initInterfaceConnection();
     void loadSettings();

@@ -11,6 +11,7 @@ class UDialog : public UWidget
 public:
     UDialog(QWidget *parent = nullptr);
     UDialog(const QString &hash, const QString &key, QWidget *parent = nullptr);
+    void updateConnection(BaseConnection *connection);
     virtual void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response);
 
     void disableSuccessMessage();

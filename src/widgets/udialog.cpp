@@ -7,12 +7,12 @@
 #include <QSettings>
 #include <interfaces/utils/typesproxy.h>
 
-UDialog::UDialog(QWidget *parent)
-    : UWidget(parent), m_genRespConn(m_conn->connection(this, &UDialog::updateGeneralResponse))
+UDialog::UDialog(QWidget *parent) : UWidget(parent)
 {
     showSuccessMessageFlag = true;
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
+    updateConnection(m_conn);
 }
 
 UDialog::UDialog(const QString &hash, const QString &key, QWidget *parent) : UDialog(parent)
@@ -22,6 +22,18 @@ UDialog::UDialog(const QString &hash, const QString &key, QWidget *parent) : UDi
     if (value.isEmpty())
         settings.setValue(key, hash);
     m_hash = settings.value(key, "").toString();
+}
+
+void UDialog::updateConnection(BaseConnection *connection)
+{
+    m_conn = connection;
+    m_dataUpdater->updateConnection(m_conn);
+    if (m_conn != nullptr)
+    {
+        if (m_genRespConn)
+            disconnect(m_genRespConn);
+        m_genRespConn = m_conn->connection(this, &UDialog::updateGeneralResponse);
+    }
 }
 
 void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)

@@ -154,8 +154,12 @@ private slots:
     void timeout();
 
 public:
+    /// \brief Функция для присоединения receiver и его слота к текущему соединению для получения данных.
+    /// \details Qt::QueuedConnection используется по умолчанию, чтобы
+    /// слот вызывался в контексте потока, в котором находится объект receiver.
+    /// \see https://qthub.com/static/doc/qt5/qtcore/qt.html#ConnectionType-enum
     template <typename Class, typename Slot, std::enable_if_t<std::is_member_function_pointer_v<Slot>, bool> = true> //
-    inline QMetaObject::Connection connection(Class *receiver, Slot slot, Qt::ConnectionType type = Qt::AutoConnection)
+    inline MetaConnection connection(Class *receiver, Slot slot, Qt::ConnectionType type = Qt::QueuedConnection)
     {
         constexpr static bool check = slot_checks<Class, Slot, DeviceResponse>;
         static_assert(check, "False type in receiver's slot");
@@ -167,8 +171,13 @@ public:
         }
     }
 
+    /// \brief Функция для присоединения receiver и ассоциированной с ним
+    /// лямбда-функцией к текущему соединению для получения данных.
+    /// \details Qt::QueuedConnection используется по умолчанию, чтобы
+    /// лямбда-функция вызывалась в контексте потока, в котором находится объект receiver.
+    /// \see https://qthub.com/static/doc/qt5/qtcore/qt.html#ConnectionType-enum
     template <typename Class, typename L, std::enable_if_t<lambda_checks<Class, L, DeviceResponse>, bool> = true> //
-    inline QMetaObject::Connection connection(Class *receiver, L lambda, Qt::ConnectionType type = Qt::AutoConnection)
+    inline MetaConnection connection(Class *receiver, L lambda, Qt::ConnectionType type = Qt::QueuedConnection)
     {
         using l_type = typename lambda_trait<L, DeviceResponse>::arg_type;
         return QObject::connect(this, qOverload<const l_type &>(&BaseConnection::response), receiver, lambda, type);

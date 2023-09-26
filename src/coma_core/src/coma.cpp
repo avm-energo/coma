@@ -79,16 +79,11 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     , connectionManager(new IfaceConnManager(this))
     , s2dataManager(new S2DataManager(this))
     , s2requestService(new S2RequestService(this))
-    , proxyBS(new DataTypesProxy(this))
-    , proxyGRS(new DataTypesProxy(this))
     , editor(nullptr)
     , mAppConfig(appCfg)
     , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), //
           *s2dataManager, *s2requestService, this))
 {
-    proxyBS->RegisterType<DataTypes::BitStringStruct>();
-    proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
-    connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &Coma::update);
     // connections
     connect(                                                     //
         s2requestService.get(), &S2RequestService::response,     //
@@ -552,7 +547,6 @@ void Coma::startWork(const ConnectStruct &st)
 void Coma::initInterfaceConnection()
 {
     auto const &board = Board::GetInstance();
-    connect(proxyBS.get(), &DataTypesProxy::DataStorable, &board, &Board::update);
     BaseConnection::InterfacePointer device;
     switch (board.interfaceType())
     {
@@ -575,22 +569,27 @@ void Coma::initInterfaceConnection()
         break;
     }
     BaseConnection::setIface(std::move(device));
+    auto conn = BaseConnection::iface();
+    conn->connection(&board, &Board::update);
+    conn->connection(this, &Coma::update);
+    mDlgManager->updateConnection(conn);
 }
 
 void Coma::setupConnection()
 {
-    auto const &board = Board::GetInstance();
-    connect(BaseConnection::iface(), &BaseConnection::stateChanged, [](const State state) {
+    auto &board = Board::GetInstance();
+    auto conn = BaseConnection::iface();
+    connect(conn, &BaseConnection::stateChanged, &board, [&board](const State state) {
         switch (state)
         {
         case State::Run:
-            Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+            board.setConnectionState(Board::ConnectionState::Connected);
             break;
         case State::Disconnect:
-            Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
+            board.setConnectionState(Board::ConnectionState::Closed);
             break;
         case State::Reconnect:
-            Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
+            board.setConnectionState(Board::ConnectionState::AboutToFinish);
             break;
         default:
             break;
@@ -599,7 +598,7 @@ void Coma::setupConnection()
 
     auto connectionReady = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
     auto connectionTimeout = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    *connectionTimeout = connect(BaseConnection::iface(), &BaseConnection::disconnected, this, [=] {
+    *connectionTimeout = connect(conn, &BaseConnection::disconnected, this, [=] {
         QObject::disconnect(*connectionReady);
         QObject::disconnect(*connectionTimeout);
         if (Board::GetInstance().type() != 0)
@@ -617,7 +616,7 @@ void Coma::setupConnection()
         prepare();
     });
 
-    if (!BaseConnection::iface()->start(ConnectSettings))
+    if (!conn->start(ConnectSettings))
     {
         QObject::disconnect(*connectionReady);
         QObject::disconnect(*connectionTimeout);
@@ -627,11 +626,10 @@ void Coma::setupConnection()
         return;
     }
 
-    // DataManager::GetInstance().clearQueue();
-    BaseConnection::iface()->reqBSI();
+    conn->reqBSI();
     connect(                                                     //
         connectionManager.get(), &IfaceConnManager::sendMessage, //
-        BaseConnection::iface(), &BaseConnection::nativeEvent    //
+        conn, &BaseConnection::nativeEvent                       //
     );
 }
 
@@ -661,21 +659,18 @@ void Coma::disconnectAndClear()
 void Coma::resizeEvent(QResizeEvent *event)
 {
     emit positionChanged(geometry().center());
-    // s_comaCenter = geometry().center();
     QMainWindow::resizeEvent(event);
 }
 
 void Coma::moveEvent(QMoveEvent *event)
 {
     emit positionChanged(geometry().center());
-    // s_comaCenter = geometry().center();
     QMainWindow::moveEvent(event);
 }
 
 void Coma::showEvent(QShowEvent *event)
 {
     emit positionChanged(geometry().center());
-    // s_comaCenter = geometry().center();
     QMainWindow::showEvent(event);
 }
 
@@ -686,9 +681,8 @@ void Coma::keyPressEvent(QKeyEvent *event)
     QMainWindow::keyPressEvent(event);
 }
 
-void Coma::update(const QVariant &msg)
+void Coma::update(const DataTypes::GeneralResponseStruct &rsp)
 {
-    auto rsp = msg.value<DataTypes::GeneralResponseStruct>();
     if (rsp.type == DataTypes::GeneralResponseTypes::DataCount)
         setProgressBarCount(1, rsp.data);
 

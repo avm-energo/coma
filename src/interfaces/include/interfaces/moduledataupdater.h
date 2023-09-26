@@ -17,6 +17,7 @@ public:
     };
 
     explicit ModuleDataUpdater(BaseConnection *connection, QObject *parent = nullptr);
+    void updateConnection(BaseConnection *connection);
     void requestUpdates();
     bool updatesEnabled();
     void setUpdatesEnabled(bool enabled = true);
@@ -30,7 +31,6 @@ private:
     QList<BdQuery> m_spQueryList;    ///< single-point
     QList<BdQuery> m_bsQueryList;    ///< bit strings
     bool m_updatesEnabled;
-    // UniquePointer<DataTypesProxy> proxyFS, proxySP, proxyBS;
 
     void setFloatQuery(const QList<BdQuery> &list);
     void setSpQuery(const QList<BdQuery> &list);

@@ -1,20 +1,19 @@
 #include "interfaces/moduledataupdater.h"
 
-ModuleDataUpdater::ModuleDataUpdater(BaseConnection *connection, QObject *parent) : QObject(parent), m_conn(connection)
+ModuleDataUpdater::ModuleDataUpdater(BaseConnection *connection, QObject *parent) : QObject(parent), m_conn(nullptr)
 {
-    // m_conn = connection;
-    //    proxyFS = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
-    //    proxySP = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
-    //    proxyBS = UniquePointer<DataTypesProxy>(new DataTypesProxy(&DataManager::GetInstance()));
-    //    proxyFS->RegisterType<DataTypes::FloatStruct>();
-    //    proxySP->RegisterType<DataTypes::SinglePointWithTimeStruct>();
-    //    proxyBS->RegisterType<DataTypes::BitStringStruct>();
-    //    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &ModuleDataUpdater::updateFloatData);
-    //    connect(proxySP.get(), &DataTypesProxy::DataStorable, this, &ModuleDataUpdater::updateSinglePointData);
-    //    connect(proxyBS.get(), &DataTypesProxy::DataStorable, this, &ModuleDataUpdater::updateBitStringData);
-    m_conn->connection(this, &ModuleDataUpdater::updateFloatData);
-    m_conn->connection(this, &ModuleDataUpdater::updateSinglePointData);
-    m_conn->connection(this, &ModuleDataUpdater::updateBitStringData);
+    updateConnection(connection);
+}
+
+void ModuleDataUpdater::updateConnection(BaseConnection *connection)
+{
+    m_conn = connection;
+    if (m_conn != nullptr)
+    {
+        m_conn->connection(this, &ModuleDataUpdater::updateFloatData);
+        m_conn->connection(this, &ModuleDataUpdater::updateSinglePointData);
+        m_conn->connection(this, &ModuleDataUpdater::updateBitStringData);
+    }
 }
 
 void ModuleDataUpdater::requestUpdates()
