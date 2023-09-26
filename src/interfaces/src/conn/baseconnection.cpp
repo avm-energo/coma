@@ -358,7 +358,7 @@ Error::Msg BaseConnection::reqTimeSync(void *block, quint32 blocksize)
 #ifdef Q_OS_LINUX
     else if (blocksize == sizeof(timespec))
     {
-        *conn = connection(this, [&](const timespec &ts) {
+        conn = connection(this, [&](const timespec &ts) {
             *static_cast<timespec *>(block) = ts;
             m_busy = false;
         });
