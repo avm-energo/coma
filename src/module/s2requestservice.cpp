@@ -29,5 +29,6 @@ void S2RequestService::request(const S2::FilesEnum filenum, bool withCheck)
     }
 
     m_lastRequestedFile = std_ext::to_underlying(filenum);
-    Interface::BaseConnection::iface()->reqFile(m_lastRequestedFile, DataTypes::FileFormat::DefaultS2);
+    if (m_conn != nullptr)
+        m_conn->reqFile(m_lastRequestedFile, DataTypes::FileFormat::DefaultS2);
 }

@@ -273,7 +273,7 @@ void ModbusThread::processReadBytes(QByteArray ba)
         quint8 receivedCommand = m_readData.at(1);
         if (receivedCommand & 0x80)
         {
-            m_log->error("Modbus error response: " + m_readData.toHex());
+            m_log.error("Modbus error response: " + m_readData.toHex());
             qCritical() << Error::ReadError << metaObject()->className();
             finishCommand();
             return;
@@ -288,7 +288,7 @@ void ModbusThread::processReadBytes(QByteArray ba)
     }
     if (m_readData.size() >= m_bytesToReceive)
     {
-        m_log->info("<- " + m_readData.toHex());
+        m_log.info("<- " + m_readData.toHex());
         int rdsize = m_readData.size();
         quint16 receivedCRC =                                    //
             (static_cast<quint8>(m_readData[rdsize - 2]) << 8) | //
@@ -297,7 +297,7 @@ void ModbusThread::processReadBytes(QByteArray ba)
         utils::CRC16 calculatedCRC(m_readData);
         if (calculatedCRC != receivedCRC)
         {
-            m_log->error("Crc error");
+            m_log.error("Crc error");
             qCritical() << Error::CrcError << metaObject()->className();
             m_readData.clear();
         }
@@ -321,7 +321,7 @@ void ModbusThread::calcCRCAndSend(QByteArray &ba)
 void ModbusThread::send(const QByteArray &ba)
 {
     m_readData.clear();
-    m_log->info("-> " + ba.toHex());
+    m_log.info("-> " + ba.toHex());
     emit sendDataToPort(ba);
 }
 
@@ -329,7 +329,7 @@ void ModbusThread::processFloatSignals()
 {
     if (m_readData.size() < 3)
     {
-        m_log->error("Wrong inbuf size");
+        m_log.error("Wrong inbuf size");
         qCritical() << Error::SizeError << metaObject()->className();
         return;
     }
@@ -354,7 +354,7 @@ void ModbusThread::processIntegerSignals()
 {
     if (m_readData.size() < 3)
     {
-        m_log->error("Wrong inbuf size");
+        m_log.error("Wrong inbuf size");
         qCritical() << Error::SizeError << metaObject()->className();
         return;
     }
@@ -380,7 +380,7 @@ void ModbusThread::processCommandResponse()
     if (m_readData.size() < 3)
     {
         qCritical() << Error::SizeError << metaObject()->className();
-        m_log->error("Wrong inbuf size");
+        m_log.error("Wrong inbuf size");
         return;
     }
     // ?
@@ -389,7 +389,7 @@ void ModbusThread::processCommandResponse()
     if (byteSize > ba.size())
     {
         qCritical() << Error::SizeError << metaObject()->className();
-        m_log->error("Wrong byte size in response");
+        m_log.error("Wrong byte size in response");
         return;
     }
     DataTypes::GeneralResponseStruct grs;

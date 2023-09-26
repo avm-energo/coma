@@ -108,7 +108,7 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     qInfo() << metaObject()->className() << "connected";
     port->moveToThread(portThread);
     parser->moveToThread(parseThread);
-    setState(Run);
+    setState(State::Run);
     portThread->start();
     parseThread->start();
     return true;

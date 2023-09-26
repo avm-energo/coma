@@ -201,15 +201,13 @@ ProtocolDescription *BaseConnection::settings()
 
 State BaseConnection::state()
 {
-    QMutexLocker locker(&m_stateMutex);
-    return m_state;
+    return m_state.load();
 }
 
-void BaseConnection::setState(const State &state)
+void BaseConnection::setState(const State state)
 {
-    QMutexLocker locker(&m_stateMutex);
-    m_state = state;
-    emit stateChanged(m_state);
+    m_state.store(state);
+    emit stateChanged(state);
 }
 
 void BaseConnection::close()

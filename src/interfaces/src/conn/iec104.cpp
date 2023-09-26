@@ -16,8 +16,7 @@ namespace Interface
 IEC104::IEC104(QObject *parent)
     : BaseConnection(parent), EthThreadWorking(false), ParseThreadWorking(false), sock(new QTcpSocket(this))
 {
-    Log = new LogClass;
-    Log->Init("ethernet.log");
+    m_log.init("ethernet.log");
 }
 
 IEC104::~IEC104()
@@ -64,7 +63,7 @@ bool IEC104::start(const ConnectStruct &st)
 
     connect(parser, &IEC104Thread::WriteData, sock, [=](const QByteArray ba) {
         qint64 res = sock->write(ba);
-        Log->info(QString::number(res) + " bytes written");
+        m_log.info(QString::number(res) + " bytes written");
     });
     connect(sock, &QAbstractSocket::disconnected, this, &IEC104::EthThreadFinished);
 
@@ -253,28 +252,28 @@ void IEC104::EthStateChanged(QAbstractSocket::SocketState state)
     switch (state)
     {
     case QAbstractSocket::UnconnectedState:
-        Log->info("Socket unconnected");
+        m_log.info("Socket unconnected");
         break;
     case QAbstractSocket::HostLookupState:
-        Log->info("Socket enters host lookup state");
+        m_log.info("Socket enters host lookup state");
         break;
     case QAbstractSocket::ConnectingState:
-        Log->info("Socket enters connecting state");
+        m_log.info("Socket enters connecting state");
         break;
     case QAbstractSocket::ConnectedState:
-        Log->info("Socket connected!");
+        m_log.info("Socket connected!");
         break;
     case QAbstractSocket::BoundState:
-        Log->info("Socket is bound to address and port");
+        m_log.info("Socket is bound to address and port");
         break;
     case QAbstractSocket::ClosingState:
-        Log->info("Socket is in closing state");
+        m_log.info("Socket is in closing state");
         break;
     case QAbstractSocket::ListeningState:
-        Log->info("Socket is in listening state");
+        m_log.info("Socket is in listening state");
         break;
     default:
-        Log->info("Unprocessed state");
+        m_log.info("Unprocessed state");
         break;
     }
 }

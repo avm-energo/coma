@@ -22,7 +22,7 @@ protected:
     QMutex m_mutex;
     QByteArray m_readData;
     QWaitCondition m_waiter;
-    UniquePointer<LogClass> m_log;
+    LogClass m_log;
     RequestQueue &m_queue;
 
 public:

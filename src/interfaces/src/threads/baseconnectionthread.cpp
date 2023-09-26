@@ -19,8 +19,7 @@ const QMap<Interface::Commands, CommandRegisters> BaseConnectionThread::WSComman
     { Commands::C_ClearStartupError, ClearStartupSetError },
 };
 
-BaseConnectionThread::BaseConnectionThread(RequestQueue &queue, QObject *parent)
-    : QObject(parent), m_log(new LogClass(this)), m_queue(queue)
+BaseConnectionThread::BaseConnectionThread(RequestQueue &queue, QObject *parent) : QObject(parent), m_queue(queue)
 {
 }
 
@@ -122,7 +121,7 @@ void BaseConnectionThread::checkQueue()
         m_isCommandRequested = true;
         m_progress = 0;
         m_currentCommand = opt.value();
-        parseRequest(opt.value());
+        parseRequest(m_currentCommand);
     }
 }
 
@@ -131,8 +130,8 @@ void BaseConnectionThread::run()
     auto classname = QString(metaObject()->className()) + ".log";
     if (classname.contains("::"))
         classname = classname.split("::").last();
-    m_log->Init(classname);
-    m_log->info(logStart);
+    m_log.init(classname);
+    m_log.info(logStart);
     while (BaseConnection::iface()->state() != State::Disconnect)
     {
         QMutexLocker locker(&m_mutex);

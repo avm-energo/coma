@@ -101,7 +101,7 @@ private:
     QByteArray m_cutPckt;
     bool m_isFirstParse;
     bool m_writingToPortBlocked;
-    LogClass *m_log;
+    // LogClass *m_log;
 
     void ParseIFormat(QByteArray &ba);
     Error::Msg isIncomeDataValid(QByteArray);

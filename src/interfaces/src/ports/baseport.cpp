@@ -3,25 +3,21 @@
 #include <QCoreApplication>
 #include <QElapsedTimer>
 
-BasePort::BasePort(const QString &logFilename, QObject *parent)
-    : QObject(parent), m_state(Interface::State::Connect), m_log(new LogClass(this))
+BasePort::BasePort(const QString &logFilename, QObject *parent) : QObject(parent), m_state(Interface::State::Connect)
 {
-    m_log->Init(logFilename + "." + ::logExt);
-    m_log->WriteRaw(::logStart);
+    m_log.init(logFilename + "." + ::logExt);
+    m_log.writeRaw(::logStart);
 }
 
 void BasePort::setState(Interface::State state)
 {
-    QMutexLocker locker(&m_stateGuard);
-    m_state = state;
-    locker.unlock();
-    emit stateChanged(m_state);
+    m_state.store(state);
+    emit stateChanged(state);
 }
 
 Interface::State BasePort::getState()
 {
-    QMutexLocker locker(&m_stateGuard);
-    return m_state;
+    return m_state.load();
 }
 
 void BasePort::writeLog(const QByteArray &ba, Interface::Direction dir)
@@ -40,7 +36,7 @@ void BasePort::writeLog(const QByteArray &ba, Interface::Direction dir)
         break;
     }
     tmpba.append(ba).append("\n");
-    m_log->WriteRaw(tmpba);
+    m_log.writeRaw(tmpba);
 }
 
 void BasePort::writeLog(const Error::Msg msg, Interface::Direction dir)
@@ -51,7 +47,7 @@ void BasePort::writeLog(const Error::Msg msg, Interface::Direction dir)
 bool BasePort::reconnect()
 {
     setState(Interface::State::Reconnect);
-    m_log->WriteRaw("!!! Restart connection !!!\n");
+    m_log.writeRaw("!!! Restart connection !!!\n");
     disconnect();
     QElapsedTimer timer;
     timer.start();
@@ -87,9 +83,8 @@ void BasePort::poll()
     } while (state != Interface::State::Disconnect);
 
     // Finish thread
-    // QMutexLocker locker(&m_dataGuard);
     disconnect();
-    m_log->info(QString(metaObject()->className()) + " is finished\n");
+    m_log.info(QString(metaObject()->className()) + " is finished\n");
     emit finished();
     QCoreApplication::processEvents();
 }

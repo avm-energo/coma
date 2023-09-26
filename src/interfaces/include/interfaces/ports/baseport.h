@@ -4,6 +4,7 @@
 #include <QMutex>
 #include <QObject>
 #include <QTimer>
+#include <atomic>
 #include <gen/error.h>
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
@@ -34,9 +35,8 @@ signals:
     void clearQueries();
 
 private:
-    Interface::State m_state;
-    UniquePointer<LogClass> m_log;
-    QMutex m_stateGuard;
+    std::atomic<Interface::State> m_state;
+    LogClass m_log;
 
 protected:
     QMutex m_dataGuard;

@@ -23,7 +23,7 @@ public:
     bool registerDeviceNotifications(QWidget *widget);
     /// \brief Handling native events from OS.
     /// \details Current implementation is ready only for Windows.
-    bool nativeEventHandler(const QByteArray &eventType, void *message);
+    bool nativeEventHandler(const QByteArray &eventType, void *msg);
 
 signals:
     void sendMessage(void *message);

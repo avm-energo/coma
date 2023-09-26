@@ -26,8 +26,7 @@ IEC104Thread::IEC104Thread(RequestQueue &queue, QObject *parent) : BaseConnectio
     m_APDUFormat = I104_WRONG;
     m_isFileSending = false;
     m_noAnswer = 0;
-    m_log = new LogClass;
-    m_log->Init("ethernetThread.log");
+    m_log.init("ethernetThread.log");
 }
 
 IEC104Thread::~IEC104Thread()
@@ -123,7 +122,7 @@ void IEC104Thread::Run()
 void IEC104Thread::processReadBytes(QByteArray ba)
 {
     if (m_isFirstParse)
-        m_log->info("<-- " + ba.toHex());
+        m_log.info("<-- " + ba.toHex());
     m_isFirstParse = false;
     quint32 basize = static_cast<quint32>(ba.size());
     if (m_cutPckt.size() > 1)
@@ -189,7 +188,7 @@ Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
             V_Rrcv >>= 1;
             if (V_Rrcv != m_V_R)
             {
-                m_log->error("V_Rrcv != V_R");
+                m_log.error("V_Rrcv != V_R");
                 return Error::Msg::GeneralError;
             }
             m_V_R++;
@@ -256,7 +255,6 @@ bool IEC104Thread::handleFile(QByteArray &ba, S2::FilesEnum addr, DataTypes::Fil
     {
     case FileFormat::DefaultS2:
     {
-        // DataManager::GetInstance().addSignalToOutList(ba);
         emit responseSend(ba);
         break;
     }
@@ -267,13 +265,11 @@ bool IEC104Thread::handleFile(QByteArray &ba, S2::FilesEnum addr, DataTypes::Fil
             return false;
         Q_ASSERT(outlist.size() == 1 && "Only one file supported");
         S2::FileStruct df { addr, outlist.first().data };
-        // DataManager::GetInstance().addSignalToOutList(df);
         emit responseSend(df);
         break;
     }
     }
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, static_cast<quint64>(ba.size()) };
-    // DataManager::GetInstance().addSignalToOutList(resp);
     emit responseSend(resp);
     return true;
 }
@@ -339,7 +335,6 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 memcpy(&time, &(ba.data()[index]), 7);
                 index += 7;
                 signal.CP56Time = time;
-                // DataManager::GetInstance().addSignalToOutList(signal);
                 emit responseSend(signal);
                 break;
             }
@@ -355,7 +350,6 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 memcpy(&signal.sigVal, &(ba.data()[index]), 4);
                 index += 4;
                 signal.sigQuality = ba.at(index++);
-                // DataManager::GetInstance().addSignalToOutList(signal);
                 emit responseSend(signal);
                 break;
             }
@@ -366,7 +360,6 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 DataTypes::SinglePointWithTimeStruct signal;
                 signal.sigAdr = objectAdr;
                 signal.sigVal = ba.at(index++);
-                // DataManager::GetInstance().addSignalToOutList(signal);
                 emit responseSend(signal);
                 break;
             }
@@ -379,7 +372,6 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 signal.sigVal = ba.at(index++);
                 memcpy(&signal.CP56Time, &(ba.data()[index]), 7);
                 index += 7;
-                // DataManager::GetInstance().addSignalToOutList(signal);
                 emit responseSend(signal);
                 break;
             }
@@ -392,7 +384,6 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 memcpy(&signal.sigVal, &(ba.data()[index]), 4);
                 index += 4;
                 memcpy(&signal.sigQuality, &(ba.data()[index++]), 1);
-                // DataManager::GetInstance().addSignalToOutList(signal);
                 emit responseSend(signal);
                 break;
             }
@@ -400,7 +391,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             case TypeId::F_SR_NA_1:
             {
                 Q_ASSERT(basize >= 11);
-                m_log->info("Section ready");
+                m_log.info("Section ready");
                 unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
                 GetSection(filenum);
                 break;
@@ -409,7 +400,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             case TypeId::F_FR_NA_1:
             {
                 Q_ASSERT(basize >= 14);
-                m_log->info("File ready");
+                m_log.info("File ready");
                 unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
                 m_readData.clear();
                 m_readSize = 0;
@@ -424,7 +415,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             case TypeId::F_SG_NA_1:
             {
                 Q_ASSERT(basize >= (m_readSize + 14));
-                m_log->info(
+                m_log.info(
                     "Segment ready: RDSize=" + QString::number(ba.at(12), 16) + ", num=" + QString::number(ba.at(13)));
                 m_readSize = static_cast<quint8>(ba.at(12));
                 m_readSize &= 0xFF;
@@ -440,7 +431,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             case TypeId::F_LS_NA_1:
             {
                 Q_ASSERT(basize >= 13);
-                m_log->info("Last section, ba[12] = " + QString::number(ba.at(12)));
+                m_log.info("Last section, ba[12] = " + QString::number(ba.at(12)));
                 switch (ba.at(12))
                 {
                 case 1:
@@ -449,10 +440,10 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     ConfirmFile(filenum);
                     m_sendTestTimer->start();
                     m_isFileSending = false;
-                    m_log->info("FileSending clear");
+                    m_log.info("FileSending clear");
                     auto filetype = S2::FilesEnum(ba.at(9));
                     if (!handleFile(m_readData, filetype, m_fileIsConfigFile))
-                        m_log->error("Error while income file S2 parsing");
+                        m_log.error("Error while income file S2 parsing");
                     m_readPos = 0;
                     m_readSize = 0;
                     break;
@@ -473,12 +464,12 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 Q_ASSERT(basize >= 13);
                 if (ba.at(12) == 0x02) //запрос файла
                 {
-                    m_log->info("File query");
+                    m_log.info("File query");
                     SectionReady();
                 }
                 if (ba.at(12) == 0x06)
                 {
-                    m_log->info("Segment query");
+                    m_log.info("Segment query");
                     SendSegments();
                 }
                 break;
@@ -487,12 +478,12 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             case TypeId::F_AF_NA_1:
             {
                 Q_ASSERT(basize >= 13);
-                m_log->info("Last section of file " + QString::number(ba[12]) + " confirm");
+                m_log.info("Last section of file " + QString::number(ba[12]) + " confirm");
                 if (ba.at(12) == 0x03) // подтверждение секции
                     LastSection();
                 if (ba.at(12) == 0x01) // подтверждение файла
                 {
-                    m_log->info("FileSending clear");
+                    m_log.info("FileSending clear");
                     m_isFileSending = false;
                     emit SendMessagefromParse();
                 }
@@ -505,7 +496,6 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 {
                     DataTypes::GeneralResponseStruct grs;
                     grs.type = DataTypes::GeneralResponseTypes::Ok;
-                    // DataManager::GetInstance().addSignalToOutList(grs);
                     emit responseSend(grs);
                 }
                 break;
@@ -539,14 +529,14 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
         }
     } catch (...)
     {
-        m_log->error("Catch exception");
+        m_log.error("Catch exception");
     }
 }
 
 void IEC104Thread::StartDT()
 {
     // qDebug() << QDateTime::currentMSecsSinceEpoch() << __PRETTY_FUNCTION__;
-    m_log->info("Start()");
+    m_log.info("Start()");
     APCI StartDT;
     StartDT.append(I104_START);
     StartDT.append(0x04);
@@ -559,7 +549,7 @@ void IEC104Thread::StartDT()
 
 void IEC104Thread::StopDT()
 {
-    m_log->info("Stop()");
+    m_log.info("Stop()");
     APCI StopDT;
     StopDT.append(I104_START);
     StopDT.append(0x04);
@@ -574,7 +564,7 @@ void IEC104Thread::Send(int inc, APCI apci, ASDU asdu)
 {
     QByteArray ba = apci;
     ba.append(asdu);
-    m_log->info("--> " + ba.toHex());
+    m_log.info("--> " + ba.toHex());
     emit WriteData(ba);
 
     if (inc)
@@ -701,9 +691,9 @@ void IEC104Thread::SelectFile(char numfile)
 {
     m_sectionNum = 1;
     m_isFileSending = true;
-    m_log->info("FileSending set");
+    m_log.info("FileSending set");
     m_sendTestTimer->stop();
-    m_log->info("SelectFile(" + QString::number(numfile) + ")");
+    m_log.info("SelectFile(" + QString::number(numfile) + ")");
     ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numfile, 0x00);
     cmd.append('\x01');
     APCI GI = CreateGI(0x11);
@@ -747,7 +737,7 @@ void IEC104Thread::ConfirmFile(unsigned char numFile)
 void IEC104Thread::FileReady(quint16 numfile)
 {
     m_isFileSending = true;
-    m_log->info("FileSending set");
+    m_log.info("FileSending set");
     //    DR = file;
     m_sectionNum = 1;
     ASDU cmd = ASDUFilePrefix(F_FR_NA_1, numfile, 0x00);
@@ -814,7 +804,6 @@ void IEC104Thread::SendSegments()
     m_KSS = 0;
     GI = CreateGI(0x12);
     Send(1, GI, cmd); // ASDU = QByteArray()
-    // DataManager::GetInstance().addSignalToOutList(resp);
     emit responseSend(resp);
 }
 
@@ -870,8 +859,5 @@ void IEC104Thread::Com51WriteTime(quint32 time)
 void IEC104Thread::setGeneralResponse(DataTypes::GeneralResponseTypes type, quint64 data)
 {
     DataTypes::GeneralResponseStruct resp { type, data };
-    // grs.type = type;
-    // grs.data = data;
-    // DataManager::GetInstance().addSignalToOutList(grs);
     emit responseSend(resp);
 }

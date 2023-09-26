@@ -71,16 +71,26 @@ bool ConnectionManager::registerDeviceNotifications(QWidget *widget)
     return false;
 }
 
-bool ConnectionManager::nativeEventHandler(const QByteArray &eventType, void *message)
+bool ConnectionManager::nativeEventHandler(const QByteArray &eventType, void *msg)
 {
 #if defined(Q_OS_WINDOWS)
-    if (eventType == "windows_generic_MSG")
+    do
     {
-        auto msg = static_cast<MSG *>(message);
-        int msgType = msg->message;
-        if (msgType == WM_DEVICECHANGE)
-            emit sendMessage(message);
-    }
+        if (eventType != "windows_generic_MSG")
+            break;
+        if (msg == nullptr)
+            break;
+        auto message = static_cast<MSG *>(msg);
+        int msgType = message->message;
+        if (msgType != WM_DEVICECHANGE)
+            break;
+        auto devint = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
+        if (devint == nullptr)
+            break;
+        QString guid = QString::fromStdWString(&devint->dbcc_name[0]);
+        quint32 type = devint->dbcc_devicetype;
+
+    } while (false);
 #elif defined(Q_OS_LINUX)
     Q_UNUSED(eventType);
     Q_UNUSED(message);

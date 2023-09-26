@@ -4,6 +4,7 @@
 #include "../../module/modulesettings.h"
 
 #include <QTimer>
+#include <atomic>
 #include <gen/error.h>
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
@@ -11,7 +12,6 @@
 #include <interfaces/types/interfacesettings.h>
 #include <interfaces/utils/request_queue.h>
 #include <interfaces/utils/slot_trait.h>
-//#include <interfaces/utils/typesproxy.h>
 
 enum INTERVAL
 {
@@ -74,7 +74,7 @@ public:
     bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0);
     ProtocolDescription *settings();
     State state();
-    void setState(const State &state);
+    void setState(const State state);
     void close();
 
     // commands to send
@@ -138,8 +138,7 @@ private:
     QByteArray m_byteArrayResult;
     bool m_responseResult;
     QTimer *m_timeoutTimer;
-    State m_state;
-    QMutex m_stateMutex;
+    std::atomic<State> m_state;
 
 protected:
     BasePort *ifacePort;

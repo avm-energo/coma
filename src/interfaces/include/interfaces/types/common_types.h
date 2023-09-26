@@ -11,7 +11,7 @@
 namespace Interface
 {
 
-enum State
+enum class State : quint32
 {
     Connect,
     Reconnect,

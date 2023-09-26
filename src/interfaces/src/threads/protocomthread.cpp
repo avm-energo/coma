@@ -362,7 +362,7 @@ void ProtocomThread::writeLog(const QByteArray &ba, Direction dir)
         break;
     }
     msg += ba.toHex();
-    m_log->info(msg);
+    m_log.info(msg);
 #else
     Q_UNUSED(ba);
     Q_UNUSED(dir);

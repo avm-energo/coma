@@ -190,7 +190,6 @@ void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
 
 void UsbHidPort::clear()
 {
-    // QMutexLocker locker(&_mutex);
     m_dataGuard.lock(); // lock port
     m_waitForReply = false;
     m_currCommand.clear();
@@ -204,10 +203,8 @@ void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
     qDebug() << message.guid << message.type;
     switch (type)
     {
-
     case DBT_DEVICEARRIVAL:
     {
-
         if (message.type != DBT_DEVTYP_DEVICEINTERFACE)
             break;
         QRegularExpression regex(HID::headerValidator);
@@ -230,16 +227,12 @@ void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
             shouldBeStopped(false);
             break;
         }
-
         break;
     }
     case DBT_DEVICEREMOVECOMPLETE:
     {
-
         if (message.type != DBT_DEVTYP_DEVICEINTERFACE)
-        {
-            return;
-        }
+            break;
         QRegularExpression regex(HID::headerValidator);
         QRegularExpressionMatch match = regex.match(message.guid);
         if (!match.hasMatch())
@@ -261,7 +254,6 @@ void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
             shouldBeStopped(true);
             break;
         }
-
         break;
     }
     case DBT_DEVNODES_CHANGED:
