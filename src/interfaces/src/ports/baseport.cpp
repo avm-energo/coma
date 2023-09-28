@@ -115,4 +115,5 @@ void BasePort::writeDataSync(const QByteArray &ba)
 void BasePort::closeConnection()
 {
     setState(Interface::State::Disconnect);
+    emit clearQueries();
 }

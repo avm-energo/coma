@@ -23,6 +23,6 @@ public:
 signals:
     void clearBuffer();
 
-private:
-    quint8 obtainDelay(const quint32 baudRate);
+    // private:
+    //    quint8 obtainDelay(const quint32 baudRate);
 };

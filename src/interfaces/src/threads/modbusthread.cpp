@@ -306,10 +306,10 @@ void ModbusThread::processReadBytes(QByteArray ba)
     }
 }
 
-void ModbusThread::setDelay(quint8 newDelay)
-{
-    m_delay = newDelay;
-}
+// void ModbusThread::setDelay(quint8 newDelay)
+//{
+//    m_delay = newDelay;
+//}
 
 void ModbusThread::calcCRCAndSend(QByteArray &ba)
 {

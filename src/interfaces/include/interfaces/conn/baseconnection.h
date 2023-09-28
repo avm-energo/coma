@@ -109,8 +109,8 @@ public:
 signals:
     void connected();
     void disconnected();
-    void reconnect();
-    void nativeEvent(void *const message);
+    // void reconnect();
+    // void nativeEvent(void *const message);
     void stateChanged(Interface::State m_state);
     void wakeUpParser() const;
 

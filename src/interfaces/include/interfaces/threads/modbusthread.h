@@ -21,18 +21,18 @@ public:
     void parseResponse() override;
 
     void setDeviceAddress(quint8 adr);
-    void setDelay(quint8 newDelay);
+    // void setDelay(quint8 newDelay);
 
 public slots:
     void processReadBytes(QByteArray ba) override;
 
-signals:
-    void clearBuffer();
+    // signals:
+    //    void clearBuffer();
 
 private:
     // bool m_busy;            ///< Port is busy with write/read operation
     quint8 m_deviceAddress; ///< Deivce address
-    quint8 m_delay;         ///< Delay in ms
+    // quint8 m_delay;         ///< Delay in ms
 
     quint16 m_fileSectionNum; // текущая считываемая / передаваемая секция файла
 

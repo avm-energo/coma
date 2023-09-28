@@ -39,6 +39,7 @@ public:
 public slots:
     bool connect() override;
     void disconnect() override;
+    void usbEvent(const QString &guid, quint32 msgType);
 
 private:
     virtual QByteArray read(bool *status = nullptr) override;

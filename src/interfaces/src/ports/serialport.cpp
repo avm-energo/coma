@@ -41,10 +41,10 @@ bool SerialPort::init(SerialPortSettings settings)
     return connect();
 }
 
-bool SerialPort::clear()
-{
-    return port->clear();
-}
+// bool SerialPort::clear()
+//{
+//    return port->clear();
+//}
 
 bool SerialPort::connect()
 {

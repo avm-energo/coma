@@ -23,8 +23,8 @@ private:
     QByteArray read(bool *status = nullptr) override;
     virtual bool write(const QByteArray &ba) override;
 
-public slots:
-    bool clear();
+    // public slots:
+    //    bool clear();
 
 private slots:
     void errorOccurred(const QSerialPort::SerialPortError err);

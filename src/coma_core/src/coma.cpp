@@ -85,14 +85,14 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
           *s2dataManager, *s2requestService, this))
 {
     // connections
-    connect(                                                     //
-        s2requestService.get(), &S2RequestService::response,     //
-        s2dataManager.get(), &S2DataManager::parseS2File         //
-    );                                                           //
-    connect(                                                     //
-        connectionManager.get(), &IfaceConnManager::sendMessage, //
-        this, qOverload<void *>(&Coma::nativeEvent)              //
-    );                                                           //
+    connect(                                                 //
+        s2requestService.get(), &S2RequestService::response, //
+        s2dataManager.get(), &S2DataManager::parseS2File     //
+    );                                                       //
+    //    connect(                                                     //
+    //        connectionManager.get(), &IfaceConnManager::sendMessage, //
+    //        this, qOverload<void *>(&Coma::nativeEvent)              //
+    //    );                                                           //
     // registering center of coma main window for epopup message boxes
     auto pointContainer = new PointContainer(this);
     connect(this, &Coma::positionChanged, pointContainer, &PointContainer::receivePoint);
@@ -133,7 +133,7 @@ QToolBar *Coma::createToolBar()
         dialog->setMinimumSize(this->size() / 4);
         connect(dialog, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarms);
         dialog->exec();
-        this->saveSettings();
+        saveSettings();
     });
 
     const QIcon jourIcon(":/icons/tnfrosya.svg");
@@ -443,43 +443,43 @@ void Coma::connectSB()
     }
 }
 
-void Coma::reconnect()
-{
-    qInfo(__PRETTY_FUNCTION__);
-    if (!Reconnect)
-        return;
+// void Coma::reconnect()
+//{
+//    qInfo(__PRETTY_FUNCTION__);
+//    if (!Reconnect)
+//        return;
 
-    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-    {
-        qDebug() << "call Disconnect";
-        disconnect();
-        mDlgManager->clearDialogs();
-    }
-    EMessageBox::infoWithoutButtons(this, "Связь разорвана.\nПопытка переподключения");
-    attemptToRec();
-}
+//    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
+//    {
+//        qDebug() << "call Disconnect";
+//        disconnect();
+//        mDlgManager->clearDialogs();
+//    }
+//    EMessageBox::infoWithoutButtons(this, "Связь разорвана.\nПопытка переподключения");
+//    attemptToRec();
+//}
 
-void Coma::attemptToRec()
-{
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    saveSettings();
-    QApplication::restoreOverrideCursor();
-    connectDialog();
-}
+// void Coma::attemptToRec()
+//{
+//    QApplication::setOverrideCursor(Qt::WaitCursor);
+//    saveSettings();
+//    QApplication::restoreOverrideCursor();
+//    connectDialog();
+//}
 
 void Coma::loadSettings()
 {
     auto homeDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"
         + QCoreApplication::applicationName() + "/";
-    auto sets = std::unique_ptr<QSettings>(new QSettings);
+    QSettings settings;
     StyleLoader::GetInstance().attach();
-    StdFunc::SetHomeDir(sets->value("Homedir", homeDirectory).toString());
+    StdFunc::SetHomeDir(settings.value("Homedir", homeDirectory).toString());
 }
 
 void Coma::saveSettings()
 {
-    auto sets = std::unique_ptr<QSettings>(new QSettings);
-    sets->setValue("Homedir", StdFunc::GetHomeDir());
+    QSettings settings;
+    settings.setValue("Homedir", StdFunc::GetHomeDir());
 }
 
 void Coma::setProgressBarSize(int prbnum, int size)
@@ -569,6 +569,10 @@ void Coma::initInterfaceConnection()
     conn->connection(this, &Coma::update);
     mDlgManager->updateConnection(conn);
     s2requestService->updateConnection(conn);
+    //    connect(                                                     //
+    //        connectionManager.get(), &IfaceConnManager::sendMessage, //
+    //        conn, &BaseConnection::nativeEvent                       //
+    //    );
 }
 
 void Coma::setupConnection()
@@ -623,10 +627,6 @@ void Coma::setupConnection()
     }
 
     conn->reqBSI();
-    connect(                                                     //
-        connectionManager.get(), &IfaceConnManager::sendMessage, //
-        conn, &BaseConnection::nativeEvent                       //
-    );
 }
 
 void Coma::disconnectAndClear()

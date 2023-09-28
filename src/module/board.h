@@ -133,15 +133,15 @@ private:
 
     void updateExt(const DataTypes::BitStringStruct &bs);
 
-    template <typename T> bool isSerialNumberSet(T value)
-    {
-        return value == 0xFFFFFFFF;
-    }
+    //    template <typename T> bool isSerialNumberSet(T value)
+    //    {
+    //        return value == 0xFFFFFFFF;
+    //    }
 
-    template <typename T, typename... Types> bool isSerialNumberSet(T value, Types... args)
-    {
-        return value || isSerialNumberSet(args...);
-    }
+    //    template <typename T, typename... Types> bool isSerialNumberSet(T value, Types... args)
+    //    {
+    //        return value || isSerialNumberSet(args...);
+    //    }
 
     int m_updateCounter = 0;
     int m_updateCounterExt = 0;

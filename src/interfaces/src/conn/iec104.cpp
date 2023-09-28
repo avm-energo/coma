@@ -242,9 +242,9 @@ void IEC104::ParseThreadFinished()
 
 void IEC104::EmitReconnectSignal()
 {
-    qDebug() << __PRETTY_FUNCTION__;
-    if (state() == State::Reconnect)
-        emit reconnect();
+    //    qDebug() << __PRETTY_FUNCTION__;
+    //    if (state() == State::Reconnect)
+    //        emit reconnect();
 }
 
 void IEC104::EthStateChanged(QAbstractSocket::SocketState state)

@@ -157,7 +157,7 @@ void UsbHidPort::deviceConnected()
     if (!connect())
         return;
     qInfo() << deviceInfo() << "connected";
-    emit stateChanged(State::Run);
+    // emit stateChanged(State::Run);
 }
 
 void UsbHidPort::deviceDisconnected()
@@ -165,7 +165,7 @@ void UsbHidPort::deviceDisconnected()
     // Отключено наше устройство
     emit stateChanged(State::Disconnect);
     qInfo() << deviceInfo() << "disconnected";
-    emit clearQueries();
+    // emit clearQueries();
 }
 
 bool UsbHidPort::shouldBeStopped() const
@@ -271,6 +271,34 @@ void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
 #else
     Q_UNUSED(message)
     Q_UNUSED(type)
+#endif
+}
+
+void UsbHidPort::usbEvent(const QString &guid, quint32 msgType)
+{
+#ifdef Q_OS_WINDOWS
+    if (m_deviceInfo.hasMatch(guid) || m_deviceInfo.hasPartialMatch(guid))
+    {
+        switch (msgType)
+        {
+        case DBT_DEVICEARRIVAL:
+            connect();
+            qInfo() << m_deviceInfo << " connected";
+            break;
+        case DBT_DEVICEREMOVECOMPLETE:
+            closeConnection();
+            qInfo() << m_deviceInfo << " disconnected";
+            break;
+        case DBT_DEVNODES_CHANGED:
+            // Ignore
+            break;
+        default:
+            qInfo() << "Unhadled case" << QString::number(msgType, 16);
+        }
+    }
+#else
+    Q_UNUSED(guid)
+    Q_UNUSED(msgType)
 #endif
 }
 

@@ -38,22 +38,31 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     auto port = new SerialPort;
     ifacePort = port;
     auto parser = new ModbusThread(m_queue);
-    parser->setDelay(obtainDelay(st.Baud));
+    // parser->setDelay(obtainDelay(st.Baud));
     parser->setDeviceAddress(st.Address);
-    parseThread->setObjectName("Modbus thread");
+    // parseThread->setObjectName("Modbus thread");
 
+    // Старт
     connect(portThread, &QThread::started, port, &BasePort::poll, Qt::QueuedConnection);
-    connect(parseThread, &QThread::started, parser, &ModbusThread::run);
-    connect(parser, &ModbusThread::finished, parseThread, &QThread::quit);
-    connect(parser, &BaseConnectionThread::responseSend, this, &BaseConnection::responseHandle, Qt::DirectConnection);
+    connect(parseThread, &QThread::started, parser, &BaseConnectionThread::run);
+    // Рабочий режим
     connect(this, &BaseConnection::wakeUpParser, parser, &BaseConnectionThread::wakeUp, Qt::DirectConnection);
     connect(port, &BasePort::dataReceived, parser, &BaseConnectionThread::processReadBytes, Qt::DirectConnection);
-    connect(parser, &ModbusThread::sendDataToPort, port, &BasePort::writeDataSync, Qt::QueuedConnection);
-    connect(parser, &ModbusThread::clearBuffer, port, &SerialPort::clear, Qt::DirectConnection);
-    connect(port, &BasePort::clearQueries, parser, &BaseConnectionThread::clear, Qt::DirectConnection);
-    // connect(port, &SerialPort::error, this, &ModBus::sendReconnectSignal, Qt::DirectConnection);
-    connect(this, &BaseConnection::reconnect, port, &BasePort::reconnect, Qt::DirectConnection);
+    connect(parser, &BaseConnectionThread::sendDataToPort, port, &BasePort::writeDataSync, Qt::QueuedConnection);
+    connect(parser, &BaseConnectionThread::responseSend, this, &BaseConnection::responseHandle, Qt::DirectConnection);
     connect(port, &BasePort::stateChanged, this, &BaseConnection::stateChanged, Qt::QueuedConnection);
+    // Очистка
+    connect(port, &BasePort::clearQueries, parser, &BaseConnectionThread::clear, Qt::DirectConnection);
+    // Остановка
+    connect(port, &BasePort::finished, parser, &BaseConnectionThread::wakeUp, Qt::DirectConnection);
+    connect(port, &BasePort::finished, portThread, &QThread::quit);
+    connect(port, &BasePort::finished, parseThread, &QThread::quit);
+    connect(portThread, &QThread::finished, port, &QObject::deleteLater);
+    connect(parseThread, &QThread::finished, parser, &QObject::deleteLater);
+    connect(portThread, &QThread::finished, &QObject::deleteLater);
+    connect(parseThread, &QThread::finished, &QObject::deleteLater);
+    connect(parser, &BaseConnectionThread::finished, parseThread, &QThread::quit);
+
     // TODO: Нужен полноценный обработчик ошибок от портов для каждого интерфейса
     // To Think: Можно сделать виртуальный слот в BaseInterface, а в потомках его переопределять
     connect(
@@ -68,13 +77,6 @@ bool ModBus::start(const ConnectStruct &connectStruct)
             }
         },
         Qt::DirectConnection);
-
-    connect(port, &BasePort::finished, portThread, &QThread::quit);
-    connect(port, &BasePort::finished, parseThread, &QThread::quit);
-    connect(portThread, &QThread::finished, port, &QObject::deleteLater);
-    connect(parseThread, &QThread::finished, parser, &QObject::deleteLater);
-    connect(portThread, &QThread::finished, &QObject::deleteLater);
-    connect(parseThread, &QThread::finished, &QObject::deleteLater);
 
     connect(port, &SerialPort::started, port, [=] {
         setState(State::Run);
@@ -93,19 +95,19 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     return true;
 }
 
-quint8 ModBus::obtainDelay(const quint32 baudRate)
-{
-    switch (baudRate)
-    {
-    case 2400:
-        return 16;
-    case 4800:
-        return 8;
-    case 9600:
-        return 4;
-    case 19200:
-        return 3;
-    default:
-        return 2;
-    }
-}
+// quint8 ModBus::obtainDelay(const quint32 baudRate)
+//{
+//    switch (baudRate)
+//    {
+//    case 2400:
+//        return 16;
+//    case 4800:
+//        return 8;
+//    case 9600:
+//        return 4;
+//    case 19200:
+//        return 3;
+//    default:
+//        return 2;
+//    }
+//}

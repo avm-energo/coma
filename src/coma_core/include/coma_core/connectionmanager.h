@@ -26,7 +26,9 @@ public:
     bool nativeEventHandler(const QByteArray &eventType, void *msg);
 
 signals:
-    void sendMessage(void *message);
+    void usbEvent(const QString &guid, quint32 msgType);
+
+    //    void sendMessage(void *message);
 };
 
 } // namespace Interface

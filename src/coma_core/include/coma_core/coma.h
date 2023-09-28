@@ -36,8 +36,8 @@ public:
 
 public slots:
     void disconnectAndClear();
-    void reconnect();
-    void attemptToRec();
+    // void reconnect();
+    // void attemptToRec();
     void loadOsc(const QString &filename);
     void loadSwj(const QString &filename);
     void loadJournal(const QString &filename);

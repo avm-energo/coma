@@ -1,10 +1,11 @@
 #include <coma_core/connectionmanager.h>
 #include <gen/std_ext.h>
-#include <interfaces/conn/baseconnection.h>
 #include <interfaces/conn/emulator.h>
 #include <interfaces/conn/iec104.h>
 #include <interfaces/conn/modbus.h>
 #include <interfaces/conn/protocom.h>
+#include <interfaces/ports/serialport.h>
+#include <interfaces/ports/usbhidport.h>
 
 #ifdef Q_OS_WINDOWS
 // clang-format off
@@ -28,11 +29,11 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
         overloaded {
             [&]([[maybe_unused]] const UsbHidSettings &settings) {
                 device.reset(new Protocom(this));
-                ;
+                auto port = new UsbHidPort(settings);
             },
             [&]([[maybe_unused]] const SerialPortSettings &settings) {
                 device.reset(new ModBus(this));
-                ;
+                auto port = new SerialPort();
             },
             [&]([[maybe_unused]] const IEC104Settings &settings) {
                 device.reset(new IEC104(this));
@@ -81,19 +82,28 @@ bool ConnectionManager::nativeEventHandler(const QByteArray &eventType, void *ms
         if (msg == nullptr)
             break;
         auto message = static_cast<MSG *>(msg);
-        int msgType = message->message;
-        if (msgType != WM_DEVICECHANGE)
+        int msgClass = message->message;
+        if (msgClass != WM_DEVICECHANGE)
             break;
-        auto devint = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
-        if (devint == nullptr)
+        auto devInterface = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
+        if (devInterface == nullptr)
             break;
-        QString guid = QString::fromStdWString(&devint->dbcc_name[0]);
-        quint32 type = devint->dbcc_devicetype;
-
+        QString guid = QString::fromStdWString(&devInterface->dbcc_name[0]);
+        quint32 deviceType = devInterface->dbcc_devicetype;
+        quint32 msgType = message->wParam;
+        if (deviceType != DBT_DEVTYP_DEVICEINTERFACE)
+            break;
+        QRegularExpression regex(HID::headerValidator);
+        QRegularExpressionMatch match = regex.match(guid);
+        if (!match.hasMatch())
+            break;
+        if (match.captured(0) != "USB" && match.captured(0) != "HID")
+            break;
+        emit usbEvent(guid, msgType);
     } while (false);
 #elif defined(Q_OS_LINUX)
     Q_UNUSED(eventType);
-    Q_UNUSED(message);
+    Q_UNUSED(msg);
 #endif
     return false;
 }
