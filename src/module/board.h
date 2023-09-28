@@ -7,6 +7,7 @@
 
 #include <gen/datatypes.h>
 #include <gen/singleton.h>
+#include <interfaces/types/common_types.h>
 
 class Board : public QObject, public Singleton<Board>
 {
@@ -24,18 +25,6 @@ public:
         High,
         Mid,
         Low
-    };
-
-    /**
-     *  Перечисление для хранения списка интерфейсов
-     */
-    enum InterfaceType
-    {
-        Unknown,
-        USB,
-        Ethernet,
-        RS485,
-        Emulator
     };
 
     // TODO: Здесь мог бы быть ваш рефакторинг ;)
@@ -62,11 +51,10 @@ public:
     };
 
     Q_ENUM(DeviceType)
-    Q_ENUM(InterfaceType)
     Q_ENUM(Types)
     Q_ENUM(ConnectionState)
 
-    Q_PROPERTY(InterfaceType interface READ interfaceType WRITE setInterfaceType NOTIFY interfaceTypeChanged)
+    Q_PROPERTY(Interface::IfaceType interface READ interfaceType WRITE setInterfaceType NOTIFY interfaceTypeChanged)
     Q_PROPERTY(DeviceType device READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
     Q_PROPERTY(Types board READ boardType WRITE setBoardType NOTIFY boardTypeChanged)
     Q_PROPERTY(ConnectionState connection READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
@@ -90,8 +78,8 @@ public:
     quint32 serialNumber(Types type) const;
     QString UID() const;
 
-    InterfaceType interfaceType() const;
-    void setInterfaceType(InterfaceType iface);
+    Interface::IfaceType interfaceType() const;
+    void setInterfaceType(Interface::IfaceType iface);
 
     DeviceType deviceType() const;
     void setDeviceType(const DeviceType &deviceType);
@@ -123,7 +111,7 @@ public:
 
 private:
     static constexpr int StartupInfoBlockMembers = sizeof(Modules::StartupInfoBlock) / sizeof(quint32);
-    InterfaceType m_interfaceType;
+    Interface::IfaceType m_interfaceType;
     DeviceType m_deviceType;
     Types m_boardType;
     ConnectionState m_connectionState;
@@ -148,7 +136,7 @@ private:
     bool m_updateType = false;
 
 signals:
-    void interfaceTypeChanged(Board::InterfaceType);
+    void interfaceTypeChanged(Interface::IfaceType);
     void deviceTypeChanged(Board::DeviceType);
     void boardTypeChanged(Board::Types);
     void typeChanged();

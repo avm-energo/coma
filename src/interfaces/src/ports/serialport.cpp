@@ -11,7 +11,7 @@ SerialPort::SerialPort(QObject *parent) : BasePort("ModbusPort", parent)
 {
 }
 
-bool SerialPort::init(SerialPortSettings settings)
+void SerialPort::init(SerialPortSettings settings)
 {
     port.reset(new QSerialPort(settings.Port, this));
     port->setBaudRate(settings.Baud);
@@ -38,7 +38,6 @@ bool SerialPort::init(SerialPortSettings settings)
         writeLog(Error::Timeout);
         emit clearQueries();
     });
-    return connect();
 }
 
 // bool SerialPort::clear()

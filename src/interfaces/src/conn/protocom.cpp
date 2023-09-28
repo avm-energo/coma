@@ -67,38 +67,21 @@ bool Protocom::start(const UsbHidSettings &usbhid)
     connect(parseThread, &QThread::finished, &QObject::deleteLater);
     connect(parser, &BaseConnectionThread::finished, parseThread, &QThread::quit);
 
+    connect(port, &BasePort::started, port, [=] {
+        qInfo() << metaObject()->className() << "connected";
+        parser->moveToThread(parseThread);
+        port->moveToThread(portThread);
+        parseThread->start();
+        portThread->start();
+    });
     if (!port->connect())
     {
+        port->closeConnection();
         port->deleteLater();
         parser->deleteLater();
         parseThread->deleteLater();
         portThread->deleteLater();
         return false;
     }
-    //#ifdef Q_OS_WINDOWS
-    //    connect(
-    //        this, &BaseConnection::nativeEvent, port,
-    //        [port](auto &&msg) {
-    //            auto message = static_cast<MSG *>(msg);
-    //            if (!msg)
-    //                return;
-    //            auto devint = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
-    //            if (!devint)
-    //                return;
-    //            USBMessage usbMessage;
-    //            usbMessage.guid = QString::fromStdWString(&devint->dbcc_name[0]);
-    //            usbMessage.type = devint->dbcc_devicetype;
-
-    //            QMetaObject::invokeMethod(
-    //                port, [=] { port->usbEvent(usbMessage, message->wParam); }, Qt::QueuedConnection);
-    //        },
-    //        Qt::DirectConnection);
-    //#endif
-    qInfo() << metaObject()->className() << "connected";
-    port->moveToThread(portThread);
-    parser->moveToThread(parseThread);
-    setState(State::Run);
-    portThread->start();
-    parseThread->start();
     return true;
 }

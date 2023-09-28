@@ -176,7 +176,7 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
         if (appCfg == AppConfiguration::Debug)
             createBoxTuneDialogs(moduleModel);
         // TODO: Временно выключено для модбаса
-        if (m_board.interfaceType() == Board::InterfaceType::USB)
+        if (m_board.interfaceType() == Interface::IfaceType::USB)
             createStartupDialog(moduleModel); // Добавляем диалог начальных значений
 
         // TODO: Fix it
@@ -201,7 +201,7 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
 
 void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
 {
-    if (m_board.interfaceType() != Board::InterfaceType::Ethernet)
+    if (m_board.interfaceType() != Interface::IfaceType::Ethernet)
         addDialogToList(new FWUploadDialog(m_parent), "Загрузка ВПО", "upload");
     addDialogToList(new TimeDialog(m_parent), "Время", "time");
     addDialogToList(new InfoDialog(m_parent), "О приборе", "info");

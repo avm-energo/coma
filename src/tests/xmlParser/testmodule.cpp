@@ -52,18 +52,18 @@ int TestModule::getAlarmsCount(const ModuleTypes::AlarmMap &map)
     return alarmCount;                                             //
 }
 
-void TestModule::createInterfaceContext(const Board::InterfaceType &ifaceType)
+void TestModule::createInterfaceContext(const Interface::IfaceType &ifaceType)
 {
     BaseConnection::InterfacePointer device;
     switch (ifaceType)
     {
-    case Board::InterfaceType::USB:
+    case Interface::IfaceType::USB:
         device = BaseConnection::InterfacePointer(new Protocom());
         break;
-    case Board::InterfaceType::Ethernet:
+    case Interface::IfaceType::Ethernet:
         device = BaseConnection::InterfacePointer(new IEC104());
         break;
-    case Board::InterfaceType::RS485:
+    case Interface::IfaceType::RS485:
         device = BaseConnection::InterfacePointer(new ModBus());
         break;
     default:
@@ -117,7 +117,7 @@ void TestModule::checkA284()
 void TestModule::checkA284USB()
 {
     // Interface settings
-    createInterfaceContext(Board::InterfaceType::USB);
+    createInterfaceContext(Interface::IfaceType::USB);
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings(storage, *s2Manager));
@@ -125,8 +125,8 @@ void TestModule::checkA284USB()
 
 void TestModule::checkA284Eth()
 {
-    createInterfaceContext(Board::InterfaceType::Ethernet);
-    Board::GetInstance().setInterfaceType(Board::InterfaceType::Ethernet);
+    createInterfaceContext(Interface::IfaceType::Ethernet);
+    Board::GetInstance().setInterfaceType(Interface::IfaceType::Ethernet);
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings(storage, *s2Manager));
@@ -134,8 +134,8 @@ void TestModule::checkA284Eth()
 
 void TestModule::checkA284Modbus()
 {
-    createInterfaceContext(Board::InterfaceType::RS485);
-    Board::GetInstance().setInterfaceType(Board::InterfaceType::RS485);
+    createInterfaceContext(Interface::IfaceType::RS485);
+    Board::GetInstance().setInterfaceType(Interface::IfaceType::RS485);
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings(storage, *s2Manager));

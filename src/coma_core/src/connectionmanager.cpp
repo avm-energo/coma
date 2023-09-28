@@ -27,13 +27,14 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
     BaseConnection::InterfacePointer device;
     std::visit( //
         overloaded {
-            [&]([[maybe_unused]] const UsbHidSettings &settings) {
+            [&](const UsbHidSettings &settings) {
                 device.reset(new Protocom(this));
                 auto port = new UsbHidPort(settings);
             },
-            [&]([[maybe_unused]] const SerialPortSettings &settings) {
+            [&](const SerialPortSettings &settings) {
                 device.reset(new ModBus(this));
                 auto port = new SerialPort();
+                port->init(settings);
             },
             [&]([[maybe_unused]] const IEC104Settings &settings) {
                 device.reset(new IEC104(this));
@@ -45,6 +46,11 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
             } //
         },
         connectionData.settings);
+}
+
+void ConnectionManager::reconnect()
+{
+    ;
 }
 
 bool ConnectionManager::registerDeviceNotifications(QWidget *widget)

@@ -60,13 +60,13 @@ void ConnectDialog::setInterface()
 
     switch (board.interfaceType())
     {
-    case Board::InterfaceType::USB:
+    case Interface::IfaceType::USB:
         m_idialog = new InterfaceUSBDialog(this);
         break;
-    case Board::InterfaceType::Ethernet:
+    case Interface::IfaceType::Ethernet:
         m_idialog = new InterfaceEthernetDialog(this);
         break;
-    case Board::InterfaceType::RS485:
+    case Interface::IfaceType::RS485:
         m_idialog = new InterfaceSerialDialog(this);
         break;
 #ifdef ENABLE_EMULATOR

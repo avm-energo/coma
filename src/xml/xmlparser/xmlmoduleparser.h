@@ -30,8 +30,7 @@ signals:
     void workJourDataSending(const quint32 id, const QString &desc);
     void measJourDataSending(const quint32 idx, const QString &header, //
         const ModuleTypes::BinaryType type, bool visib);
-    void interfaceSettingsSending(const ProtocolDescription &iSettings, const Board::InterfaceType iType);
-    void protocolGroupSending(const parseXChangeStruct &str);
+    void protocolGroupSending(const AbstractGroup &str);
     void configDataSending(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
     void configNameSending(const QString &tabName);
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QByteArray>
+#include <QMetaEnum>
 #include <QVariant>
 #include <gen/datatypes.h>
 #include <s2/dataitem.h>
@@ -10,6 +11,17 @@
 
 namespace Interface
 {
+Q_NAMESPACE
+
+enum class IfaceType : quint32
+{
+    Unknown,
+    USB,
+    Ethernet,
+    RS485,
+    Emulator
+};
+Q_ENUM_NS(IfaceType)
 
 enum class State : quint32
 {

@@ -57,6 +57,7 @@ bool UsbHidPort::connect()
             hid_set_nonblocking(m_hidDevice, 1);
             setState(State::Run);
             qInfo("HID opened successfully");
+            emit started();
             return true;
         }
         else

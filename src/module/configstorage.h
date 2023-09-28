@@ -40,7 +40,7 @@ public slots:
     void measJourDataReceive(const quint32 index, const QString &header, //
         const ModuleTypes::BinaryType type, bool visib);
     /// \brief Slot for saving module's protocol groups
-    void protocolDescriptionReceived(const parseXChangeStruct &str);
+    void protocolDescriptionReceived(const AbstractGroup &str);
 };
 
 #endif // CONFIGSTORAGE_H

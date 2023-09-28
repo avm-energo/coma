@@ -24,7 +24,7 @@ bool isKnownModule(quint16 mtypeb, quint16 mtypem)
 
 Board::Board(Singleton::token)
 {
-    m_interfaceType = Unknown;
+    m_interfaceType = Interface::IfaceType::Unknown;
     m_connectionState = ConnectionState::Closed;
     m_boardType = Types::None;
 }
@@ -90,12 +90,12 @@ QString Board::UID() const
         + QString::number(m_startupInfoBlock.UIDLow, 16);
 }
 
-Board::InterfaceType Board::interfaceType() const
+Interface::IfaceType Board::interfaceType() const
 {
     return m_interfaceType;
 }
 
-void Board::setInterfaceType(Board::InterfaceType iface)
+void Board::setInterfaceType(Interface::IfaceType iface)
 {
     m_interfaceType = iface;
     emit interfaceTypeChanged(iface);
@@ -153,7 +153,7 @@ void Board::update(const DataTypes::BitStringStruct &bs)
 
 void Board::reset()
 {
-    m_interfaceType = Unknown;
+    m_interfaceType = Interface::IfaceType::Unknown;
     m_connectionState = ConnectionState::Closed;
     m_boardType = Types::None;
     m_startupInfoBlock = {};

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QMetaEnum>
+#include <interfaces/types/common_types.h>
 #include <interfaces/types/iec104_types.h>
 #include <interfaces/types/modbus_types.h>
 #include <interfaces/types/protocom_types.h>
@@ -8,12 +8,12 @@
 ///< /brief Базовая группа сигналов для абстрактного протокола: код функции, тип данных, начальный адрес сигнала и
 ///< количество сигналов
 
-struct parseXChangeStruct
+struct AbstractGroup
 {
-    QVariant interfaceType;
+    Interface::IfaceType ifaceType;
     quint32 sigId;
-    QVariant par2;
-    QVariant par3;
+    quint16 arg1;
+    quint16 arg2;
 };
 
 struct BaseGroup
@@ -103,7 +103,3 @@ struct Iec104Group : BaseGroup
         Q_UNUSED(sigGroup);
     }
 };
-
-Q_DECLARE_METATYPE(ProtocomGroup)
-Q_DECLARE_METATYPE(ModbusGroup)
-Q_DECLARE_METATYPE(Iec104Group)

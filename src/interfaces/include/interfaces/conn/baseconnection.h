@@ -107,7 +107,7 @@ public:
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
 
 signals:
-    void connected();
+    // void connected();
     void disconnected();
     // void reconnect();
     // void nativeEvent(void *const message);

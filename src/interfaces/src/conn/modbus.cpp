@@ -36,11 +36,10 @@ bool ModBus::start(const ConnectStruct &connectStruct)
     auto portThread = new QThread;
     auto parseThread = new QThread;
     auto port = new SerialPort;
+    port->init(st);
     ifacePort = port;
     auto parser = new ModbusThread(m_queue);
-    // parser->setDelay(obtainDelay(st.Baud));
     parser->setDeviceAddress(st.Address);
-    // parseThread->setObjectName("Modbus thread");
 
     // Старт
     connect(portThread, &QThread::started, port, &BasePort::poll, Qt::QueuedConnection);
@@ -78,20 +77,23 @@ bool ModBus::start(const ConnectStruct &connectStruct)
         },
         Qt::DirectConnection);
 
-    connect(port, &SerialPort::started, port, [=] {
-        setState(State::Run);
+    connect(port, &BasePort::started, port, [=] {
+        qInfo() << metaObject()->className() << "connected";
         parser->moveToThread(parseThread);
         port->moveToThread(portThread);
         parseThread->start();
         portThread->start();
         StdFunc::Wait(1000);
     });
-    if (!port->init(st))
+    if (!port->connect())
     {
         port->closeConnection();
+        port->deleteLater();
+        parser->deleteLater();
+        parseThread->deleteLater();
+        portThread->deleteLater();
         return false;
     }
-    emit connected();
     return true;
 }
 

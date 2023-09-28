@@ -12,13 +12,13 @@ class SerialPort final : public BasePort
     Q_OBJECT
 public:
     explicit SerialPort(QObject *parent = nullptr);
-    bool init(SerialPortSettings settings);
+    void init(SerialPortSettings settings);
+    bool connect() override;
 
 private:
     UniquePointer<QSerialPort> port;
     QTimer *timeoutTimer;
 
-    bool connect() override;
     void disconnect() override;
     QByteArray read(bool *status = nullptr) override;
     virtual bool write(const QByteArray &ba) override;

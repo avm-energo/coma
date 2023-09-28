@@ -17,6 +17,7 @@ public:
     explicit ConnectionManager(QObject *parent = nullptr);
 
     void createConnection(const ConnectStruct &connectionData);
+    void reconnect();
 
     /// \brief Registering device's notifications for an incoming widget.
     /// \details Current implementation is ready only for Windows.
@@ -27,8 +28,6 @@ public:
 
 signals:
     void usbEvent(const QString &guid, quint32 msgType);
-
-    //    void sendMessage(void *message);
 };
 
 } // namespace Interface

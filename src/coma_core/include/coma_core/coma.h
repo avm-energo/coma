@@ -36,15 +36,13 @@ public:
 
 public slots:
     void disconnectAndClear();
-    // void reconnect();
-    // void attemptToRec();
     void loadOsc(const QString &filename);
     void loadSwj(const QString &filename);
     void loadJournal(const QString &filename);
 
 private slots:
     void connectDialog();
-    void startWork(const ConnectStruct &st);
+    void initConnection(const ConnectStruct &st);
     void loadOsc();
     void loadSwj();
     void loadSwjPackConvertor();

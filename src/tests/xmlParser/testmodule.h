@@ -19,7 +19,7 @@ private:
     /// \brief Returns alarms number from alarm map (list with all alarm types).
     int getAlarmsCount(const ModuleTypes::AlarmMap &map);
 
-    void createInterfaceContext(const Board::InterfaceType &ifaceType);
+    void createInterfaceContext(const Interface::IfaceType &ifaceType);
 
 public:
     explicit TestModule(QObject *parent = nullptr);

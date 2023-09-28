@@ -89,10 +89,6 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
         s2requestService.get(), &S2RequestService::response, //
         s2dataManager.get(), &S2DataManager::parseS2File     //
     );                                                       //
-    //    connect(                                                     //
-    //        connectionManager.get(), &IfaceConnManager::sendMessage, //
-    //        this, qOverload<void *>(&Coma::nativeEvent)              //
-    //    );                                                           //
     // registering center of coma main window for epopup message boxes
     auto pointContainer = new PointContainer(this);
     connect(this, &Coma::positionChanged, pointContainer, &PointContainer::receivePoint);
@@ -404,11 +400,11 @@ void Coma::go()
 
 void Coma::connectSB()
 {
-    static const QMap<Board::InterfaceType, QString> images {
-        { Board::InterfaceType::USB, ":/icons/usb.svg" },           //
-        { Board::InterfaceType::RS485, ":/icons/rs485.svg" },       //
-        { Board::InterfaceType::Ethernet, ":/icons/ethernet.svg" }, //
-        { Board::InterfaceType::Unknown, ":/icons/stop.svg" }       //
+    static const QMap<Interface::IfaceType, QString> images {
+        { IfaceType::USB, ":/icons/usb.svg" },           //
+        { IfaceType::RS485, ":/icons/rs485.svg" },       //
+        { IfaceType::Ethernet, ":/icons/ethernet.svg" }, //
+        { IfaceType::Unknown, ":/icons/stop.svg" }       //
     };
 
     auto msgModel = this->findChild<QLabel *>("Model");
@@ -431,41 +427,17 @@ void Coma::connectSB()
             },
             Qt::QueuedConnection);
         QObject::connect(board, &Board::interfaceTypeChanged, msgConnectionType, //
-            [=](const Board::InterfaceType &interfaceType) {
-                QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
+            [=](const Interface::IfaceType &interfaceType) {
+                QString connName = QVariant::fromValue(Interface::IfaceType(interfaceType)).toString();
                 msgConnectionType->setText(connName);
             });
         QObject::connect(
-            board, &Board::interfaceTypeChanged, msgConnectionImage, [=](const Board::InterfaceType &interfaceType) {
+            board, &Board::interfaceTypeChanged, msgConnectionImage, [=](const Interface::IfaceType &interfaceType) {
                 QPixmap pixmap = QIcon(QString(images.value(interfaceType))).pixmap(QSize(height, height));
                 msgConnectionImage->setPixmap(pixmap);
             });
     }
 }
-
-// void Coma::reconnect()
-//{
-//    qInfo(__PRETTY_FUNCTION__);
-//    if (!Reconnect)
-//        return;
-
-//    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-//    {
-//        qDebug() << "call Disconnect";
-//        disconnect();
-//        mDlgManager->clearDialogs();
-//    }
-//    EMessageBox::infoWithoutButtons(this, "Связь разорвана.\nПопытка переподключения");
-//    attemptToRec();
-//}
-
-// void Coma::attemptToRec()
-//{
-//    QApplication::setOverrideCursor(Qt::WaitCursor);
-//    saveSettings();
-//    QApplication::restoreOverrideCursor();
-//    connectDialog();
-//}
 
 void Coma::loadSettings()
 {
@@ -521,13 +493,13 @@ void Coma::connectDialog()
         return;
     }
     auto connDialog = new ConnectDialog(this);
-    connect(connDialog, &ConnectDialog::accepted, this, &Coma::startWork);
+    connect(connDialog, &ConnectDialog::accepted, this, &Coma::initConnection);
     connect(connDialog, &QDialog::destroyed, this, [=] { action->setEnabled(true); });
     connDialog->adjustSize();
     connDialog->exec();
 }
 
-void Coma::startWork(const ConnectStruct &st)
+void Coma::initConnection(const ConnectStruct &st)
 {
     ConnectSettings = st;
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -546,17 +518,17 @@ void Coma::initInterfaceConnection()
     switch (board.interfaceType())
     {
 #ifdef ENABLE_EMULATOR
-    case Board::InterfaceType::Emulator:
+    case Interface::IfaceType::Emulator:
         device = BaseInterface::InterfacePointer(new Emulator());
         break;
 #endif
-    case Board::InterfaceType::USB:
+    case Interface::IfaceType::USB:
         device.reset(new Protocom(this));
         break;
-    case Board::InterfaceType::Ethernet:
+    case Interface::IfaceType::Ethernet:
         device.reset(new IEC104(this));
         break;
-    case Board::InterfaceType::RS485:
+    case Interface::IfaceType::RS485:
         device.reset(new ModBus(this));
         break;
     default:
@@ -569,10 +541,6 @@ void Coma::initInterfaceConnection()
     conn->connection(this, &Coma::update);
     mDlgManager->updateConnection(conn);
     s2requestService->updateConnection(conn);
-    //    connect(                                                     //
-    //        connectionManager.get(), &IfaceConnManager::sendMessage, //
-    //        conn, &BaseConnection::nativeEvent                       //
-    //    );
 }
 
 void Coma::setupConnection()
@@ -635,7 +603,6 @@ void Coma::disconnectAndClear()
     const auto &board = Board::GetInstance();
     if (board.connectionState() != Board::ConnectionState::Closed)
     {
-        // disconnect();
         BdaTimer->stop();
         AlarmW->clear();
         mDlgManager->clearDialogs();
@@ -643,11 +610,6 @@ void Coma::disconnectAndClear()
         s2dataManager->clear();
         Board::GetInstance().reset();
         BaseConnection::iface()->close();
-        // BUG Segfault
-        //    if (Reconnect)
-        //        QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
-        //    else
-        //        QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
         Reconnect = false;
     }
 }
