@@ -7,7 +7,7 @@
 #include <QListWidget>
 #include <QMainWindow>
 #include <QStackedWidget>
-#include <coma_core/connectionmanager.h>
+#include <interfaces/connectionmanager.h>
 #include <interfaces/types/settingstypes.h>
 #include <s2/s2datamanager.h>
 
@@ -31,7 +31,7 @@ public:
     void connectSB();
     void setupMenubar();
     QWidget *least();
-    void setupConnection();
+    // void setupConnection();
     static QPoint ComaCenter();
 
 public slots:
@@ -54,7 +54,7 @@ private slots:
     void nativeEvent(void *message);
 
 private:
-    UniquePointer<ConnectionManager> connectionManager;
+    UniquePointer<Interface::ConnectionManager> connectionManager;
     UniquePointer<Module> module;
     UniquePointer<S2DataManager> s2dataManager;
     UniquePointer<S2RequestService> s2requestService;
@@ -95,7 +95,7 @@ private:
     }
 
 signals:
-    void sendMessage(void *);
+    // void sendMessage(void *);
     void positionChanged(const QPoint &center);
 };
 

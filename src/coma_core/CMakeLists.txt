@@ -6,12 +6,10 @@ set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/coma_core")
 set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 set(HEADERS_H
-  "${INCLUDE_PATH}/connectionmanager.h"
   "${INCLUDE_PATH}/coma.h"
 )
 
 set(SOURCES_CPP
-  "${SRC_PATH}/connectionmanager.cpp"
   "${SRC_PATH}/coma.cpp"
 )
 

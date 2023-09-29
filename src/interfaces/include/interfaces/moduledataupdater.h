@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <gen/datatypes.h>
-#include <interfaces/conn/baseconnection.h>
+#include <interfaces/connection.h>
 
 using namespace Interface;
 class ModuleDataUpdater : public QObject
@@ -16,8 +16,8 @@ public:
         quint32 sigQuantity;
     };
 
-    explicit ModuleDataUpdater(BaseConnection *connection, QObject *parent = nullptr);
-    void updateConnection(BaseConnection *connection);
+    explicit ModuleDataUpdater(Connection *connection, QObject *parent = nullptr);
+    void updateConnection(Connection *connection);
     void requestUpdates();
     bool updatesEnabled();
     void setUpdatesEnabled(bool enabled = true);
@@ -26,7 +26,7 @@ public:
     void addBs(const BdQuery &query);
 
 private:
-    BaseConnection *m_conn;
+    Connection *m_conn;
     QList<BdQuery> m_floatQueryList; ///< float
     QList<BdQuery> m_spQueryList;    ///< single-point
     QList<BdQuery> m_bsQueryList;    ///< bit strings

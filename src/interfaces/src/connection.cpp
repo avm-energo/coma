@@ -1,4 +1,4 @@
-#include "interfaces/conn/baseconnection.h"
+#include "interfaces/connection.h"
 
 #include <QCoreApplication>
 #include <QMutexLocker>
@@ -10,62 +10,51 @@ namespace Interface
 {
 
 // Static members
-BaseConnection::InterfacePointer BaseConnection::s_connection;
+Connection::InterfacePointer Connection::s_connection;
 
-BaseConnection::BaseConnection(QObject *parent) : QObject(parent), ifacePort(nullptr)
+Connection::Connection(QObject *parent) : QObject(parent), ifacePort(nullptr)
 {
     qRegisterMetaType<State>();
     m_timeoutTimer = new QTimer(this);
     m_timeoutTimer->setInterval(MAINTIMEOUT);
-    connect(m_timeoutTimer, &QTimer::timeout, this, &BaseConnection::timeout);
+    connect(m_timeoutTimer, &QTimer::timeout, this, &Connection::timeout);
     m_state = State::Connect;
     m_settings = std::unique_ptr<ProtocolDescription>(new ProtocolDescription());
 }
 
-void BaseConnection::reqAlarms(quint32 sigAdr, quint32 sigCount)
+void Connection::reqAlarms(quint32 sigAdr, quint32 sigCount)
 {
     if (isValidRegs(sigAdr, sigCount))
         setToQueue(CommandStruct { Commands::C_ReqAlarms, sigAdr, sigCount });
 }
 
-void BaseConnection::reqFloats(quint32 sigAdr, quint32 sigCount)
+void Connection::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
     if (isValidRegs(sigAdr, sigCount))
         setToQueue(CommandStruct { Commands::C_ReqFloats, sigAdr, sigCount });
 }
 
-void BaseConnection::reqBitStrings(quint32 sigAdr, quint32 sigCount)
+void Connection::reqBitStrings(quint32 sigAdr, quint32 sigCount)
 {
     if (isValidRegs(sigAdr, sigCount))
         setToQueue(CommandStruct { Commands::C_ReqBitStrings, sigAdr, sigCount });
 }
 
-bool BaseConnection::supportBSIExt()
+bool Connection::supportBSIExt()
 {
     m_busy = true;
     m_timeout = false;
     bool status = false;
-    auto connBitString = std::make_shared<QMetaObject::Connection>();
-    auto connError = std::make_shared<QMetaObject::Connection>();
-
-    *connBitString = connection(this, [=, &busy = m_busy, &status](const DataTypes::BitStringStruct &bs) {
+    auto connBitString = connection(this, [&, &busy = m_busy](const DataTypes::BitStringStruct &bs) {
         if (bs.sigAdr != Regs::bsiExtStartReg)
             return;
-        if (connBitString)
-            QObject::disconnect(*connBitString);
-        if (connError)
-            QObject::disconnect(*connError);
         busy = false;
         status = true;
     });
 
-    *connError = connection(this, [=, &busy = m_busy, &status](const DataTypes::GeneralResponseStruct &resp) {
+    auto connError = connection(this, [&, &busy = m_busy](const DataTypes::GeneralResponseStruct &resp) {
         if (resp.type == DataTypes::Error)
         {
-            if (connBitString)
-                QObject::disconnect(*connBitString);
-            if (connError)
-                QObject::disconnect(*connError);
             busy = false;
             status = false;
         }
@@ -76,28 +65,30 @@ bool BaseConnection::supportBSIExt()
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-        StdFunc::Wait(100);
+        StdFunc::Wait();
     }
+    QObject::disconnect(connBitString);
+    QObject::disconnect(connError);
     return status;
 }
 
-void BaseConnection::reqStartup(quint32 sigAdr, quint32 sigCount)
+void Connection::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
     setToQueue(CommandStruct { Commands::C_ReqStartup, sigAdr, sigCount });
 }
 
-void BaseConnection::reqBSI()
+void Connection::reqBSI()
 {
     setToQueue(CommandStruct { Commands::C_ReqBSI, Regs::bsiStartReg, Regs::bsiCountRegs });
 }
 
-void BaseConnection::reqBSIExt()
+void Connection::reqBSIExt()
 {
     quint32 regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
     setToQueue(CommandStruct { Commands::C_ReqBSIExt, Regs::bsiExtStartReg, regCount });
 }
 
-void BaseConnection::reqFile(quint32 id, FileFormat format, quint32 expectedSize)
+void Connection::reqFile(quint32 id, FileFormat format, quint32 expectedSize)
 {
     if (expectedSize != 0)
     {
@@ -107,17 +98,17 @@ void BaseConnection::reqFile(quint32 id, FileFormat format, quint32 expectedSize
     setToQueue(CommandStruct { Commands::C_ReqFile, id, format });
 }
 
-void BaseConnection::writeFile(quint32 id, const QByteArray &ba)
+void Connection::writeFile(quint32 id, const QByteArray &ba)
 {
     setToQueue(CommandStruct { Commands::C_WriteFile, id, ba });
 }
 
-void BaseConnection::reqTime()
+void Connection::reqTime()
 {
     setToQueue(CommandStruct { Commands::C_ReqTime, 0, 0 });
 }
 
-void BaseConnection::writeTime(quint32 time)
+void Connection::writeTime(quint32 time)
 {
     setToQueue(CommandStruct { Commands::C_WriteTime, time, 0 });
 }
@@ -129,30 +120,30 @@ void BaseConnection::writeTime(const timespec &time)
 }
 #endif
 
-void BaseConnection::writeCommand(Commands cmd, QVariant value)
+void Connection::writeCommand(Commands cmd, QVariant value)
 {
     setToQueue(CommandStruct { cmd, value, QVariant() });
 }
 
-void Interface::BaseConnection::writeCommand(Commands cmd, const QVariantList &list)
+void Interface::Connection::writeCommand(Commands cmd, const QVariantList &list)
 {
     const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
     if (isValidRegs(start_addr, list.size()))
         setToQueue(CommandStruct { cmd, list, QVariant() });
 }
 
-void Interface::BaseConnection::responseHandle(const Interface::DeviceResponse &resp)
+void Interface::Connection::responseHandle(const Interface::DeviceResponse &resp)
 {
     std::visit([this](auto &&var) { emit response(var); }, resp);
 }
 
-void BaseConnection::resultReady(const DataTypes::BlockStruct &result)
+void Connection::resultReady(const DataTypes::BlockStruct &result)
 {
     m_byteArrayResult = result.data;
     m_busy = false;
 }
 
-void BaseConnection::responseReceived(const DataTypes::GeneralResponseStruct &response)
+void Connection::responseReceived(const DataTypes::GeneralResponseStruct &response)
 {
     if ((response.type == DataTypes::GeneralResponseTypes::DataSize)
         || (response.type == DataTypes::GeneralResponseTypes::DataCount))
@@ -161,18 +152,18 @@ void BaseConnection::responseReceived(const DataTypes::GeneralResponseStruct &re
     m_busy = false;
 }
 
-void BaseConnection::fileReceived(const S2::FileStruct &file)
+void Connection::fileReceived(const S2::FileStruct &file)
 {
     m_byteArrayResult = file.data;
     m_busy = false;
 }
 
-void BaseConnection::timeout()
+void Connection::timeout()
 {
     m_busy = false;
 }
 
-void BaseConnection::setToQueue(CommandStruct &&cmd)
+void Connection::setToQueue(CommandStruct &&cmd)
 {
     m_queue.addToQueue(std::move(cmd));
     emit wakeUpParser();
@@ -180,7 +171,7 @@ void BaseConnection::setToQueue(CommandStruct &&cmd)
 
 // helper methods
 
-bool BaseConnection::isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command)
+bool Connection::isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command)
 {
     const auto &st = settings();
     if (!st->dictionary().contains(sigAdr))
@@ -194,23 +185,23 @@ bool BaseConnection::isValidRegs(const quint32 sigAdr, const quint32 sigCount, c
     return val.count == sigCount;
 }
 
-ProtocolDescription *BaseConnection::settings()
+ProtocolDescription *Connection::settings()
 {
     return m_settings.get();
 }
 
-State BaseConnection::state()
+State Connection::state()
 {
     return m_state.load();
 }
 
-void BaseConnection::setState(const State state)
+void Connection::setState(const State state)
 {
     m_state.store(state);
     emit stateChanged(state);
 }
 
-void BaseConnection::close()
+void Connection::close()
 {
     if (ifacePort)
         ifacePort->closeConnection();
@@ -225,12 +216,12 @@ void BaseConnection::close()
 // =============================== SYNC METHODS ==================================
 // ===============================================================================
 
-Error::Msg BaseConnection::reqBlockSync(
+Error::Msg Connection::reqBlockSync(
     quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize)
 {
     m_busy = true;
     m_timeout = false;
-    auto conn = connection(this, &BaseConnection::resultReady);
+    auto conn = connection(this, &Connection::resultReady);
     QMap<DataTypes::DataBlockTypes, Commands> blockmap;
     blockmap[DataTypes::DataBlockTypes::BacBlock] = Commands::C_ReqTuningCoef;
     blockmap[DataTypes::DataBlockTypes::BdaBlock] = Commands::C_ReqBlkDataA;
@@ -253,7 +244,7 @@ Error::Msg BaseConnection::reqBlockSync(
     return Error::Msg::NoError;
 }
 
-Error::Msg BaseConnection::writeBlockSync(
+Error::Msg Connection::writeBlockSync(
     quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize)
 {
     DataTypes::BlockStruct bs;
@@ -262,7 +253,7 @@ Error::Msg BaseConnection::writeBlockSync(
     memcpy(&bs.data.data()[0], block, blocksize);
     m_busy = true;
     m_timeout = false;
-    auto conn = connection(this, &BaseConnection::responseReceived);
+    auto conn = connection(this, &Connection::responseReceived);
     if (blocktype == DataTypes::DataBlockTypes::BacBlock)
     {
         writeCommand(Commands::C_WriteTuningCoef, QVariant::fromValue(bs));
@@ -284,11 +275,11 @@ Error::Msg BaseConnection::writeBlockSync(
     }
 }
 
-Error::Msg BaseConnection::writeFileSync(S2::FilesEnum filenum, const QByteArray &ba)
+Error::Msg Connection::writeFileSync(S2::FilesEnum filenum, const QByteArray &ba)
 {
     m_busy = true;
     m_timeout = false;
-    auto conn = connection(this, &BaseConnection::responseReceived);
+    auto conn = connection(this, &Connection::responseReceived);
     writeFile(quint32(filenum), ba);
     m_timeoutTimer->start();
     while (m_busy)
@@ -302,7 +293,7 @@ Error::Msg BaseConnection::writeFileSync(S2::FilesEnum filenum, const QByteArray
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
-Error::Msg BaseConnection::readS2FileSync(S2::FilesEnum filenum)
+Error::Msg Connection::readS2FileSync(S2::FilesEnum filenum)
 {
     m_busy = true;
     m_timeout = false;
@@ -321,11 +312,11 @@ Error::Msg BaseConnection::readS2FileSync(S2::FilesEnum filenum)
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
-Error::Msg BaseConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
+Error::Msg Connection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
 {
     m_busy = true;
     m_timeout = false;
-    auto conn = connection(this, &BaseConnection::fileReceived);
+    auto conn = connection(this, &Connection::fileReceived);
     reqFile(quint32(filenum), FileFormat::Binary);
     m_timeoutTimer->start();
     while (m_busy)
@@ -340,7 +331,7 @@ Error::Msg BaseConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
     return Error::Msg::NoError;
 }
 
-Error::Msg BaseConnection::reqTimeSync(void *block, quint32 blocksize)
+Error::Msg Connection::reqTimeSync(void *block, quint32 blocksize)
 {
     Q_ASSERT(blocksize == sizeof(timespec) || blocksize == sizeof(DataTypes::BitStringStruct));
     m_busy = true;

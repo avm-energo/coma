@@ -18,7 +18,7 @@
 #include <QtSvg/QSvgRenderer>
 #include <gen/datatypes.h>
 #include <gen/error.h>
-#include <interfaces/conn/baseconnection.h>
+#include <interfaces/connection.h>
 
 namespace crypto
 {
@@ -284,7 +284,7 @@ void HiddenDialog::sendBhb()
 
     auto buffer = QByteArray::fromRawData(static_cast<char *>(ptr), size);
     DataTypes::HardwareStruct block { static_cast<quint32>(m_type), buffer };
-    BaseConnection::iface()->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(block));
+    Connection::iface()->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(block));
 }
 
 void HiddenDialog::updateMode(bool status)

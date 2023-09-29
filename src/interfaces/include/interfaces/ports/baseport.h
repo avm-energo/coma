@@ -30,7 +30,7 @@ signals:
     void dataReceived(QByteArray ba);
     void started();
     void finished();
-    void error(BasePort::PortErrors error);
+    void error(const BasePort::PortErrors error);
     void stateChanged(Interface::State);
     void clearQueries();
 
@@ -47,12 +47,12 @@ protected:
     void writeLog(const QByteArray &ba, Interface::Direction dir = Interface::NoDirection);
     void writeLog(const Error::Msg msg, Interface::Direction dir = Interface::NoDirection);
 
-    virtual bool connect() = 0;
-    virtual void disconnect() = 0;
     virtual QByteArray read(bool *status = nullptr) = 0;
     virtual bool write(const QByteArray &ba) = 0;
 
 public slots:
+    virtual bool connect() = 0;
+    virtual void disconnect() = 0;
     void poll();
     void writeDataSync(const QByteArray &ba);
     void closeConnection();

@@ -8,7 +8,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <gen/files.h>
-#include <interfaces/conn/baseconnection.h>
+#include <interfaces/connection.h>
 #include <map>
 
 namespace journals
@@ -106,7 +106,7 @@ void JournalTabWidget::gettingJournal()
 {
     getProgressDialog->show();
     getProgressIndicator->startAnimation();
-    Interface::BaseConnection::iface()->reqFile(quint32(journal->getType()));
+    Interface::Connection::iface()->reqFile(quint32(journal->getType()));
     modelView->setUpdatesEnabled(false);
 }
 
@@ -117,7 +117,7 @@ void JournalTabWidget::eraseJournal()
     static constexpr auto hash = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
     auto kpd = new KeyPressDialog;
     if (kpd->CheckPassword(hash))
-        BaseConnection::iface()->writeCommand(Commands::C_EraseJournals, quint8(journal->getType()));
+        Connection::iface()->writeCommand(Commands::C_EraseJournals, quint8(journal->getType()));
 }
 
 void JournalTabWidget::saveExcelJournal()

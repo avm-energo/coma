@@ -1,11 +1,11 @@
 #include "interfaces/moduledataupdater.h"
 
-ModuleDataUpdater::ModuleDataUpdater(BaseConnection *connection, QObject *parent) : QObject(parent), m_conn(nullptr)
+ModuleDataUpdater::ModuleDataUpdater(Connection *connection, QObject *parent) : QObject(parent), m_conn(nullptr)
 {
     updateConnection(connection);
 }
 
-void ModuleDataUpdater::updateConnection(BaseConnection *connection)
+void ModuleDataUpdater::updateConnection(Connection *connection)
 {
     m_conn = connection;
     if (m_conn != nullptr)

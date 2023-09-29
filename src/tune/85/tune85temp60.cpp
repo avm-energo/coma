@@ -12,7 +12,7 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <interfaces/conn/baseconnection.h>
+#include <interfaces/connection.h>
 
 using namespace Interface;
 
@@ -66,7 +66,7 @@ Error::Msg Tune85Temp60::setNewConfAndTune()
     config.setRecord("C_Pasp_ID", S2::FLOAT_3t { 2250, 2250, 2250 });
     config.setRecord("Unom1", float(220));
     auto s2file = config.toByteArray();
-    auto status = BaseConnection::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+    auto status = Connection::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
     if (status != Error::Msg::NoError)
         return Error::Msg::GeneralError;
 

@@ -28,7 +28,7 @@ public:
 protected:
     bool checkPassword();
     QString m_hash;
-    BaseConnection *m_conn;
+    Connection *m_conn;
     ModuleDataUpdater *m_dataUpdater;
 
 private:

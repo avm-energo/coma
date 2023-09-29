@@ -1,5 +1,5 @@
-#ifndef BASECONNECTION_H
-#define BASECONNECTION_H
+#ifndef CONNECTION_H
+#define CONNECTION_H
 
 #include "../../module/modulesettings.h"
 
@@ -33,13 +33,13 @@ namespace Regs
     constexpr quint16 bsiCountRegs = 15;
 }
 
-class BaseConnection : public QObject
+class Connection : public QObject
 {
     Q_OBJECT
-
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
 
 protected:
+    friend class ConnectionManager;
     using FileFormat = DataTypes::FileFormat;
     RequestQueue m_queue;
 
@@ -47,16 +47,16 @@ public:
     /// BaseInterface has its own memory manager
     /// because it can be created and deleted
     /// multiple times in runtime
-    using InterfacePointer = UniquePointer<BaseConnection>;
+    using InterfacePointer = UniquePointer<Connection>;
 
     // protocol settings
     std::unique_ptr<ProtocolDescription> m_settings;
 
-    explicit BaseConnection(QObject *parent = nullptr);
-    ~BaseConnection() {};
+    explicit Connection(QObject *parent = nullptr);
+    ~Connection() {};
 
     /// Pointer to current interface
-    static BaseConnection *iface()
+    static Connection *iface()
     {
         return s_connection.get();
     }
@@ -67,8 +67,8 @@ public:
         s_connection = std::move(iface);
     }
 
-    virtual bool start(const ConnectStruct &) = 0;
-    virtual bool supportBSIExt();
+    // virtual bool start(const ConnectStruct &) = 0;
+    bool supportBSIExt();
 
     // helper methods
     bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0);
@@ -108,7 +108,7 @@ public:
 
 signals:
     // void connected();
-    void disconnected();
+    // void disconnected();
     // void reconnect();
     // void nativeEvent(void *const message);
     void stateChanged(Interface::State m_state);
@@ -139,8 +139,6 @@ private:
     bool m_responseResult;
     QTimer *m_timeoutTimer;
     std::atomic<State> m_state;
-
-protected:
     BasePort *ifacePort;
 
 public slots:
@@ -160,13 +158,19 @@ public:
     template <typename Class, typename Slot, std::enable_if_t<std::is_member_function_pointer_v<Slot>, bool> = true> //
     inline MetaConnection connection(Class *receiver, Slot slot, Qt::ConnectionType type = Qt::QueuedConnection)
     {
-        constexpr static bool check = slot_checks<Class, Slot, DeviceResponse>;
-        static_assert(check, "False type in receiver's slot");
-        if constexpr (check)
+        if constexpr (slot_checks<Class, Slot, DeviceResponse>)
         {
             using slot_type = typename slot_trait<Slot>::arg_type;
-            return QObject::connect(
-                this, qOverload<const slot_type &>(&BaseConnection::response), receiver, slot, type);
+            return QObject::connect(this, qOverload<const slot_type &>(&Connection::response), //
+                receiver, slot, type);
+        }
+        else
+        {
+            static_assert(is_qobject<Class>, "'receiver' isn't inherits QObject type");
+            static_assert(is_void_ret_type<Slot>, "'slot' must have 'void' return type");
+            static_assert(is_same_class<Class, Slot>, "'slot' isn't member function for 'receiver' type");
+            static_assert(is_arg_variant_type<Slot, DeviceResponse>, "Argument of 'slot' isn't type of DeviceResponse");
+            static_assert(is_arg_cref<Slot>, "Argument of 'slot' isn't constant reference");
         }
     }
 
@@ -179,7 +183,7 @@ public:
     inline MetaConnection connection(Class *receiver, L lambda, Qt::ConnectionType type = Qt::QueuedConnection)
     {
         using l_type = typename lambda_trait<L, DeviceResponse>::arg_type;
-        return QObject::connect(this, qOverload<const l_type &>(&BaseConnection::response), receiver, lambda, type);
+        return QObject::connect(this, qOverload<const l_type &>(&Connection::response), receiver, lambda, type);
     }
 };
 }
@@ -187,4 +191,4 @@ public:
 Q_DECLARE_METATYPE(Interface::State)
 Q_DECLARE_METATYPE(Interface::CommandStruct)
 
-#endif // BASECONNECTION_H
+#endif // CONNECTION_H

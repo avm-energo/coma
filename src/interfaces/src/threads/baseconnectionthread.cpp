@@ -45,7 +45,7 @@ void BaseConnectionThread::wakeUp()
 
 quint16 BaseConnectionThread::blockByReg(const quint32 regAddr)
 {
-    return BaseConnection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
+    return Connection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
 }
 
 void BaseConnectionThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataTypes::FileFormat format)
@@ -132,7 +132,7 @@ void BaseConnectionThread::run()
         classname = classname.split("::").last();
     m_log.init(classname);
     m_log.info(logStart);
-    while (BaseConnection::iface()->state() != State::Disconnect)
+    while (Connection::iface()->state() != State::Disconnect)
     {
         QMutexLocker locker(&m_mutex);
         if (!m_isCommandRequested)

@@ -23,7 +23,7 @@ UDialog::UDialog(const QString &hash, const QString &key, QWidget *parent) : UDi
     m_hash = settings.value(key, "").toString();
 }
 
-void UDialog::updateConnection(BaseConnection *connection)
+void UDialog::updateConnection(Connection *connection)
 {
     m_conn = connection;
     m_dataUpdater->updateConnection(m_conn);

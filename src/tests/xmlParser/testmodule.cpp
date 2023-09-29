@@ -5,9 +5,9 @@
 
 #include <QtXml>
 #include <gen/stdfunc.h>
-#include <interfaces/conn/iec104.h>
-#include <interfaces/conn/modbus.h>
-#include <interfaces/conn/protocom.h>
+//#include <interfaces/conn/iec104.h>
+//#include <interfaces/conn/modbus.h>
+//#include <interfaces/conn/protocom.h>
 #include <interfaces/types/modbus_types.h>
 #include <interfaces/types/protocom_types.h>
 #include <s2/s2datamanager.h>
@@ -54,24 +54,25 @@ int TestModule::getAlarmsCount(const ModuleTypes::AlarmMap &map)
 
 void TestModule::createInterfaceContext(const Interface::IfaceType &ifaceType)
 {
-    BaseConnection::InterfacePointer device;
-    switch (ifaceType)
-    {
-    case Interface::IfaceType::USB:
-        device = BaseConnection::InterfacePointer(new Protocom());
-        break;
-    case Interface::IfaceType::Ethernet:
-        device = BaseConnection::InterfacePointer(new IEC104());
-        break;
-    case Interface::IfaceType::RS485:
-        device = BaseConnection::InterfacePointer(new ModBus());
-        break;
-    default:
-        device = nullptr;
-        break;
-    }
-    BaseConnection::setIface(std::move(device));
-    Board::GetInstance().setInterfaceType(ifaceType);
+    //    Connection::InterfacePointer device;
+    //    switch (ifaceType)
+    //    {
+    //    case Interface::IfaceType::USB:
+    //        device = Connection::InterfacePointer(new Protocom());
+    //        break;
+    //    case Interface::IfaceType::Ethernet:
+    //        device = Connection::InterfacePointer(new IEC104());
+    //        break;
+    //    case Interface::IfaceType::RS485:
+    //        device = Connection::InterfacePointer(new ModBus());
+    //        break;
+    //    default:
+    //        device = nullptr;
+    //        break;
+    //    }
+    //    Connection::setIface(std::move(device));
+    //    Board::GetInstance().setInterfaceType(ifaceType);
+    Q_UNUSED(ifaceType);
 }
 
 void TestModule::initTestCase()

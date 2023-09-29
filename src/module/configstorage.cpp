@@ -1,6 +1,6 @@
 #include "configstorage.h"
 
-#include <interfaces/conn/baseconnection.h>
+#include <interfaces/connection.h>
 #include <interfaces/types/interfacesettings.h>
 
 ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent)
@@ -69,7 +69,7 @@ void ConfigStorage::protocolDescriptionReceived(const AbstractGroup &str)
     if (sigMap.contains(str.sigId))
     {
         auto signal = sigMap.value(str.sigId);
-        ProtocolDescription *descr = Interface::BaseConnection::iface()->settings();
+        ProtocolDescription *descr = Interface::Connection::iface()->settings();
         switch (str.ifaceType)
         {
         case Interface::IfaceType::USB:

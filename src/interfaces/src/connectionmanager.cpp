@@ -1,11 +1,9 @@
-#include <coma_core/connectionmanager.h>
 #include <gen/std_ext.h>
-#include <interfaces/conn/emulator.h>
-#include <interfaces/conn/iec104.h>
-#include <interfaces/conn/modbus.h>
-#include <interfaces/conn/protocom.h>
+#include <interfaces/connectionmanager.h>
 #include <interfaces/ports/serialport.h>
 #include <interfaces/ports/usbhidport.h>
+#include <interfaces/threads/modbusthread.h>
+#include <interfaces/threads/protocomthread.h>
 
 #ifdef Q_OS_WINDOWS
 // clang-format off
@@ -15,42 +13,69 @@
 // clang-format on
 #endif
 
-namespace Core
+namespace Interface
 {
 
-ConnectionManager::ConnectionManager(QObject *parent) : QObject(parent), m_reconnect(false)
+ConnectionManager::ConnectionManager(QWidget *parent) : QObject(parent), m_reconnect(false), m_parent(parent)
 {
 }
 
 void ConnectionManager::createConnection(const ConnectStruct &connectionData)
 {
-    BaseConnection::InterfacePointer device;
+    auto connection = new Connection(this);
     std::visit( //
         overloaded {
-            [&](const UsbHidSettings &settings) {
-                device.reset(new Protocom(this));
+            [this, connection](const UsbHidSettings &settings) {
                 auto port = new UsbHidPort(settings);
+                auto parser = new ProtocomThread(connection->m_queue);
+                m_context.init(port, parser, Strategy::Sync);
             },
-            [&](const SerialPortSettings &settings) {
-                device.reset(new ModBus(this));
+            [this, connection](const SerialPortSettings &settings) {
                 auto port = new SerialPort();
                 port->init(settings);
+                auto parser = new ModbusThread(connection->m_queue);
+                m_context.init(port, parser, Strategy::Sync);
             },
-            [&]([[maybe_unused]] const IEC104Settings &settings) {
-                device.reset(new IEC104(this));
+            [this, connection]([[maybe_unused]] const IEC104Settings &settings) {
+                ;
                 ;
             },
-            [&]([[maybe_unused]] const EmulatorSettings &settings) {
-                device.reset(new Emulator(this));
+            [this, connection]([[maybe_unused]] const EmulatorSettings &settings) {
+#ifdef ENABLE_EMULATOR
                 ;
+                ;
+#endif
             } //
         },
         connectionData.settings);
+    connect(m_context.m_port, &BasePort::error, this, &ConnectionManager::portErrorHadler, Qt::DirectConnection);
+    if (m_context.run(connection))
+        emit connectSuccesfull();
+    else
+        emit connectFailed();
+    Connection::setIface(Connection::InterfacePointer { connection });
 }
 
-void ConnectionManager::reconnect()
+void ConnectionManager::reconnectConnection()
 {
     ;
+    emit reconnect();
+}
+
+void ConnectionManager::breakConnection()
+{
+    ;
+    emit disconnectError();
+}
+
+void ConnectionManager::portErrorHadler(const BasePort::PortErrors error)
+{
+    if (error == BasePort::PortErrors::Timeout
+        && m_context.m_parser->m_currentCommand.command == Interface::Commands::C_ReqBSI)
+    {
+        qCritical() << "Превышено время ожидания блока BSI. Disconnect...";
+        breakConnection();
+    }
 }
 
 bool ConnectionManager::registerDeviceNotifications(QWidget *widget)
@@ -105,7 +130,7 @@ bool ConnectionManager::nativeEventHandler(const QByteArray &eventType, void *ms
             break;
         if (match.captured(0) != "USB" && match.captured(0) != "HID")
             break;
-        emit usbEvent(guid, msgType);
+        // emit usbEvent(guid, msgType);
     } while (false);
 #elif defined(Q_OS_LINUX)
     Q_UNUSED(eventType);

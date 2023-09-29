@@ -59,9 +59,6 @@
 #include <gen/logger.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <interfaces/conn/iec104.h>
-#include <interfaces/conn/modbus.h>
-#include <interfaces/conn/protocom.h>
 #include <interfaces/types/settingstypes.h>
 #include <iostream>
 #include <memory>
@@ -505,49 +502,41 @@ void Coma::initConnection(const ConnectStruct &st)
     QApplication::setOverrideCursor(Qt::WaitCursor);
     saveSettings();
 
-    // connectionManager->createConnection(st);
+    connectionManager->createConnection(st);
 
-    initInterfaceConnection();
-    setupConnection();
+    // initInterfaceConnection();
+    // setupConnection();
 }
 
 void Coma::initInterfaceConnection()
 {
-    auto const &board = Board::GetInstance();
-    BaseConnection::InterfacePointer device;
-    switch (board.interfaceType())
-    {
-#ifdef ENABLE_EMULATOR
-    case Interface::IfaceType::Emulator:
-        device = BaseInterface::InterfacePointer(new Emulator());
-        break;
-#endif
-    case Interface::IfaceType::USB:
-        device.reset(new Protocom(this));
-        break;
-    case Interface::IfaceType::Ethernet:
-        device.reset(new IEC104(this));
-        break;
-    case Interface::IfaceType::RS485:
-        device.reset(new ModBus(this));
-        break;
-    default:
-        qFatal("Connection type error");
-        break;
-    }
-    BaseConnection::setIface(std::move(device));
-    auto conn = BaseConnection::iface();
+    // Connection::InterfacePointer device;
+    //    switch (board.interfaceType())
+    //    {
+    //#ifdef ENABLE_EMULATOR
+    //    case Interface::IfaceType::Emulator:
+    //        device = BaseInterface::InterfacePointer(new Emulator());
+    //        break;
+    //#endif
+    //    case Interface::IfaceType::USB:
+    //        device.reset(new Protocom(this));
+    //        break;
+    //    case Interface::IfaceType::Ethernet:
+    //        device.reset(new IEC104(this));
+    //        break;
+    //    case Interface::IfaceType::RS485:
+    //        device.reset(new ModBus(this));
+    //        break;
+    //    default:
+    //        qFatal("Connection type error");
+    //        break;
+    //    }
+    // Connection::setIface(std::move(device));
+    auto &board = Board::GetInstance();
+    auto conn = Connection::iface();
     conn->connection(&board, &Board::update);
     conn->connection(this, &Coma::update);
-    mDlgManager->updateConnection(conn);
-    s2requestService->updateConnection(conn);
-}
-
-void Coma::setupConnection()
-{
-    auto &board = Board::GetInstance();
-    auto conn = BaseConnection::iface();
-    connect(conn, &BaseConnection::stateChanged, &board, [&board](const State state) {
+    connect(conn, &Connection::stateChanged, &board, [&board](const State state) {
         switch (state)
         {
         case State::Run:
@@ -563,39 +552,43 @@ void Coma::setupConnection()
             break;
         }
     });
-
-    auto connectionReady = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    auto connectionTimeout = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-    *connectionTimeout = connect(conn, &BaseConnection::disconnected, this, [=] {
-        QObject::disconnect(*connectionReady);
-        QObject::disconnect(*connectionTimeout);
-        if (Board::GetInstance().type() != 0)
-            return;
-
-        EMessageBox::error(this, "Не удалось соединиться с прибором");
-        disconnectAndClear();
-        qCritical() << "Cannot connect" << Error::Timeout;
-        QApplication::restoreOverrideCursor();
-    });
-    *connectionReady = connect(&board, &Board::readyRead, this, [=]() {
-        QObject::disconnect(*connectionTimeout);
-        QObject::disconnect(*connectionReady);
-        QApplication::restoreOverrideCursor();
-        prepare();
-    });
-
-    if (!conn->start(ConnectSettings))
-    {
-        QObject::disconnect(*connectionReady);
-        QObject::disconnect(*connectionTimeout);
-        EMessageBox::error(this, "Не удалось установить связь");
-        QApplication::restoreOverrideCursor();
-        qCritical() << "Cannot connect" << Error::GeneralError;
-        return;
-    }
-
+    mDlgManager->updateConnection(conn);
+    s2requestService->updateConnection(conn);
     conn->reqBSI();
 }
+
+// void Coma::setupConnection()
+//{
+// auto &board = Board::GetInstance();
+// auto conn = Connection::iface();
+//    auto connectionReady = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+//    auto connectionTimeout = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
+//    *connectionTimeout = connect(conn, &Connection::disconnected, this, [=] {
+//        QObject::disconnect(*connectionReady);
+//        QObject::disconnect(*connectionTimeout);
+//        if (Board::GetInstance().type() != 0)
+//            return;
+//        EMessageBox::error(this, "Не удалось соединиться с прибором");
+//        disconnectAndClear();
+//        qCritical() << "Cannot connect" << Error::Timeout;
+//        QApplication::restoreOverrideCursor();
+//    });
+//    *connectionReady = connect(&board, &Board::readyRead, this, [=]() {
+//        QObject::disconnect(*connectionTimeout);
+//        QObject::disconnect(*connectionReady);
+//        QApplication::restoreOverrideCursor();
+//        prepare();
+//    });
+//    if (!conn->start(ConnectSettings))
+//    {
+//        QObject::disconnect(*connectionReady);
+//        QObject::disconnect(*connectionTimeout);
+//        EMessageBox::error(this, "Не удалось установить связь");
+//        QApplication::restoreOverrideCursor();
+//        qCritical() << "Cannot connect" << Error::GeneralError;
+//        return;
+//    }
+//}
 
 void Coma::disconnectAndClear()
 {
@@ -609,7 +602,7 @@ void Coma::disconnectAndClear()
         ConfigStorage::GetInstance().clearModuleSettings();
         s2dataManager->clear();
         Board::GetInstance().reset();
-        BaseConnection::iface()->close();
+        Connection::iface()->close();
         Reconnect = false;
     }
 }

@@ -10,7 +10,7 @@
 #include <gen/stdfunc.h>
 
 UWidget::UWidget(QWidget *parent)
-    : QWidget(parent), m_conn(BaseConnection::iface()), m_dataUpdater(new ModuleDataUpdater(m_conn))
+    : QWidget(parent), m_conn(Connection::iface()), m_dataUpdater(new ModuleDataUpdater(m_conn))
 {
     // Отключим обновление виджета по умолчанию
     m_dataUpdater->setUpdatesEnabled(false);

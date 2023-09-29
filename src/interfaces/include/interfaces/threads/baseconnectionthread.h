@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QWaitCondition>
 #include <gen/datatypes.h>
-#include <interfaces/conn/baseconnection.h>
+#include <interfaces/connection.h>
 #include <s2/filestruct.h>
 
 namespace Interface
