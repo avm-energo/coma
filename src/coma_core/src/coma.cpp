@@ -343,7 +343,8 @@ void Coma::newTimers()
 
 void Coma::prepare()
 {
-    auto const &board = Board::GetInstance();
+    auto &board = Board::GetInstance();
+    disconnect(&board, &Board::readyRead, this, &Coma::prepare);
     EMessageBox::information(this, "Установлена связь с " + board.moduleName());
     Reconnect = true;
     prepareDialogs();
@@ -362,14 +363,14 @@ void Coma::prepare()
     msgModel->setText(board.moduleName());
 }
 
-void Coma::nativeEvent(void *message)
-{
-    Q_UNUSED(message);
-    if (BdaTimer->isActive())
-        BdaTimer->stop();
-    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-        BdaTimer->start();
-}
+// void Coma::nativeEvent(void *message)
+//{
+//    Q_UNUSED(message);
+//    if (BdaTimer->isActive())
+//        BdaTimer->stop();
+//    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
+//        BdaTimer->start();
+//}
 
 void Coma::go()
 {
@@ -414,6 +415,7 @@ void Coma::connectSB()
         auto board = &Board::GetInstance();
         QObject::connect(board, qOverload<>(&Board::typeChanged), msgModel, //
             [=]() { msgModel->setText(board->moduleName()); });
+        // TODO: Using connection state instead board
         QObject::connect(
             board, &Board::connectionStateChanged, msgConnectionState,
             [=](Board::ConnectionState state) {
@@ -484,6 +486,7 @@ void Coma::connectDialog()
     Q_ASSERT(action);
     action->setDisabled(true);
     auto const &board = Board::GetInstance();
+    // TODO: Using connection state instead board
     if (board.connectionState() != Board::ConnectionState::Closed)
     {
         action->setEnabled(true);
@@ -498,44 +501,21 @@ void Coma::connectDialog()
 
 void Coma::initConnection(const ConnectStruct &st)
 {
-    ConnectSettings = st;
     QApplication::setOverrideCursor(Qt::WaitCursor);
     saveSettings();
-
     connectionManager->createConnection(st);
-
-    // initInterfaceConnection();
-    // setupConnection();
+    initInterfaceConnection();
+    QApplication::restoreOverrideCursor();
 }
 
 void Coma::initInterfaceConnection()
 {
-    // Connection::InterfacePointer device;
-    //    switch (board.interfaceType())
-    //    {
-    //#ifdef ENABLE_EMULATOR
-    //    case Interface::IfaceType::Emulator:
-    //        device = BaseInterface::InterfacePointer(new Emulator());
-    //        break;
-    //#endif
-    //    case Interface::IfaceType::USB:
-    //        device.reset(new Protocom(this));
-    //        break;
-    //    case Interface::IfaceType::Ethernet:
-    //        device.reset(new IEC104(this));
-    //        break;
-    //    case Interface::IfaceType::RS485:
-    //        device.reset(new ModBus(this));
-    //        break;
-    //    default:
-    //        qFatal("Connection type error");
-    //        break;
-    //    }
-    // Connection::setIface(std::move(device));
     auto &board = Board::GetInstance();
     auto conn = Connection::iface();
     conn->connection(&board, &Board::update);
     conn->connection(this, &Coma::update);
+    connect(&board, &Board::readyRead, this, &Coma::prepare);
+    // TODO: Remove it?
     connect(conn, &Connection::stateChanged, &board, [&board](const State state) {
         switch (state)
         {
@@ -557,43 +537,11 @@ void Coma::initInterfaceConnection()
     conn->reqBSI();
 }
 
-// void Coma::setupConnection()
-//{
-// auto &board = Board::GetInstance();
-// auto conn = Connection::iface();
-//    auto connectionReady = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-//    auto connectionTimeout = std::shared_ptr<QMetaObject::Connection>(new QMetaObject::Connection);
-//    *connectionTimeout = connect(conn, &Connection::disconnected, this, [=] {
-//        QObject::disconnect(*connectionReady);
-//        QObject::disconnect(*connectionTimeout);
-//        if (Board::GetInstance().type() != 0)
-//            return;
-//        EMessageBox::error(this, "Не удалось соединиться с прибором");
-//        disconnectAndClear();
-//        qCritical() << "Cannot connect" << Error::Timeout;
-//        QApplication::restoreOverrideCursor();
-//    });
-//    *connectionReady = connect(&board, &Board::readyRead, this, [=]() {
-//        QObject::disconnect(*connectionTimeout);
-//        QObject::disconnect(*connectionReady);
-//        QApplication::restoreOverrideCursor();
-//        prepare();
-//    });
-//    if (!conn->start(ConnectSettings))
-//    {
-//        QObject::disconnect(*connectionReady);
-//        QObject::disconnect(*connectionTimeout);
-//        EMessageBox::error(this, "Не удалось установить связь");
-//        QApplication::restoreOverrideCursor();
-//        qCritical() << "Cannot connect" << Error::GeneralError;
-//        return;
-//    }
-//}
-
 void Coma::disconnectAndClear()
 {
     qDebug(__PRETTY_FUNCTION__);
     const auto &board = Board::GetInstance();
+    // TODO: Using connection state instead board
     if (board.connectionState() != Board::ConnectionState::Closed)
     {
         BdaTimer->stop();
@@ -602,7 +550,8 @@ void Coma::disconnectAndClear()
         ConfigStorage::GetInstance().clearModuleSettings();
         s2dataManager->clear();
         Board::GetInstance().reset();
-        Connection::iface()->close();
+        // Connection::iface()->close();
+        connectionManager->breakConnection();
         Reconnect = false;
     }
 }

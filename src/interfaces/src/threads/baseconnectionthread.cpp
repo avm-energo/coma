@@ -23,6 +23,16 @@ BaseConnectionThread::BaseConnectionThread(RequestQueue &queue, QObject *parent)
 {
 }
 
+State BaseConnectionThread::getState() const
+{
+    return m_state.load();
+}
+
+void BaseConnectionThread::setState(const State state)
+{
+    m_state.store(state);
+}
+
 void BaseConnectionThread::clear()
 {
     // QMutexLocker locker(&_mutex);
@@ -132,7 +142,7 @@ void BaseConnectionThread::run()
         classname = classname.split("::").last();
     m_log.init(classname);
     m_log.info(logStart);
-    while (Connection::iface()->state() != State::Disconnect)
+    while (getState() != State::Disconnect)
     {
         QMutexLocker locker(&m_mutex);
         if (!m_isCommandRequested)

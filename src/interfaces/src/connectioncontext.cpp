@@ -7,7 +7,8 @@ ConnectionContext::ConnectionContext() noexcept : m_port(nullptr), m_parser(null
 {
 }
 
-void ConnectionContext::init(BasePort *port, BaseConnectionThread *parser, Strategy strategy)
+void ConnectionContext::init(BasePort *port, BaseConnectionThread *parser, //
+    const Strategy strategy, const Qt::ConnectionType connPolicy)
 {
     m_port = port;
     m_parser = parser;
@@ -17,17 +18,13 @@ void ConnectionContext::init(BasePort *port, BaseConnectionThread *parser, Strat
     {
         // Обмен данными
         QObject::connect(m_port, &BasePort::dataReceived, //
-            m_parser, &BaseConnectionThread::processReadBytes, Qt::DirectConnection);
-        QObject::connect(m_parser, &BaseConnectionThread::sendDataToPort, //
-            m_port, &BasePort::writeDataSync, Qt::DirectConnection);
+            m_parser, &BaseConnectionThread::processReadBytes, connPolicy);
+        QObject::connect(m_parser, &BaseConnectionThread::sendDataToPort, m_port, &BasePort::writeDataSync, connPolicy);
         // Отмена команды
-        QObject::connect(m_port, &BasePort::clearQueries, //
-            m_parser, &BaseConnectionThread::clear, Qt::DirectConnection);
+        QObject::connect(m_port, &BasePort::clearQueries, m_parser, &BaseConnectionThread::clear, connPolicy);
         // Конец работы
-        QObject::connect(m_port, &BasePort::finished, m_parser, //
-            &BaseConnectionThread::wakeUp, Qt::DirectConnection);
-        QObject::connect(m_port, &BasePort::finished, m_parser, //
-            &BaseConnectionThread::finished, Qt::DirectConnection);
+        QObject::connect(m_port, &BasePort::finished, m_parser, &BaseConnectionThread::wakeUp, connPolicy);
+        QObject::connect(m_port, &BasePort::finished, m_parser, &BaseConnectionThread::finished, connPolicy);
 
         if (m_strategy == Strategy::Sync)
         {
@@ -37,6 +34,8 @@ void ConnectionContext::init(BasePort *port, BaseConnectionThread *parser, Strat
             QObject::connect(portThread, &QThread::started, m_port, &BasePort::poll);
             QObject::connect(parseThread, &QThread::started, m_parser, &BaseConnectionThread::run);
             // Остановка
+            QObject::connect(m_port, &BasePort::stateChanged, //
+                m_parser, &BaseConnectionThread::setState, Qt::DirectConnection);
             QObject::connect(m_port, &BasePort::finished, portThread, &QThread::quit);
             QObject::connect(m_port, &BasePort::finished, parseThread, &QThread::quit);
             QObject::connect(m_parser, &BaseConnectionThread::finished, parseThread, &QThread::quit);
@@ -95,12 +94,16 @@ bool ConnectionContext::run(Connection *connection)
 
 void ConnectionContext::reset()
 {
-    m_port->closeConnection();
-    if (m_strategy == Strategy::Sync)
+    if (m_port != nullptr && m_parser != nullptr)
     {
-        m_syncThreads.first->wait();
-        m_syncThreads.second->wait();
+        m_port->closeConnection();
+        m_parser->wakeUp();
+        if (m_strategy == Strategy::Sync)
+            StdFunc::Wait(20);
+        m_port = nullptr;
+        m_parser = nullptr;
     }
+    m_strategy = Strategy::None;
 }
 
 } // namespace Interface

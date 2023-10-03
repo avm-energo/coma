@@ -13,7 +13,7 @@ SerialPort::SerialPort(QObject *parent) : BasePort("ModbusPort", parent)
 
 void SerialPort::init(SerialPortSettings settings)
 {
-    port.reset(new QSerialPort(settings.Port, this));
+    port.reset(new QSerialPort(settings.Port));
     port->setBaudRate(settings.Baud);
     port->setDataBits(QSerialPort::Data8);
     if (settings.Parity == "Нет")

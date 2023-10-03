@@ -114,7 +114,7 @@ void Connection::writeTime(quint32 time)
 }
 
 #ifdef Q_OS_LINUX
-void BaseConnection::writeTime(const timespec &time)
+void Connection::writeTime(const timespec &time)
 {
     setToQueue(CommandStruct { Commands::C_WriteTime, QVariant::fromValue(time), QVariant() });
 }
@@ -161,6 +161,7 @@ void Connection::fileReceived(const S2::FileStruct &file)
 void Connection::timeout()
 {
     m_busy = false;
+    m_timeout = true;
 }
 
 void Connection::setToQueue(CommandStruct &&cmd)
@@ -190,27 +191,27 @@ ProtocolDescription *Connection::settings()
     return m_settings.get();
 }
 
-State Connection::state()
-{
-    return m_state.load();
-}
+// State Connection::state()
+//{
+//    return m_state.load();
+//}
 
-void Connection::setState(const State state)
-{
-    m_state.store(state);
-    emit stateChanged(state);
-}
+// void Connection::setState(const State state)
+//{
+//    m_state.store(state);
+//    emit stateChanged(state);
+//}
 
-void Connection::close()
-{
-    if (ifacePort)
-        ifacePort->closeConnection();
-    setState(State::Disconnect);
-    // TODO: dummy solution, maybe better to get signals from working threads
-    StdFunc::Wait(100);
-    disconnect();
-    s_connection.reset();
-}
+// void Connection::close()
+//{
+//    if (ifacePort)
+//        ifacePort->closeConnection();
+//    setState(State::Disconnect);
+//    // TODO: dummy solution, maybe better to get signals from working threads
+//    StdFunc::Wait(100);
+//    disconnect();
+//    s_connection.reset();
+//}
 
 // ===============================================================================
 // =============================== SYNC METHODS ==================================

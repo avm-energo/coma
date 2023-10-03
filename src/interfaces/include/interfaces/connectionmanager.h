@@ -2,6 +2,7 @@
 
 #include <QByteArray>
 #include <QWidget>
+#include <interfaces/connection.h>
 #include <interfaces/connectioncontext.h>
 #include <interfaces/types/settingstypes.h>
 
@@ -13,6 +14,7 @@ class ConnectionManager : public QObject
     Q_OBJECT
 private:
     ConnectionContext m_context;
+    Connection *m_currentConnection;
     bool m_reconnect;
     QWidget m_parent;
 
@@ -36,6 +38,7 @@ signals:
     void disconnectError();
 
 private slots:
+    /// \brief Handler for port errors.
     void portErrorHadler(const BasePort::PortErrors error);
 };
 

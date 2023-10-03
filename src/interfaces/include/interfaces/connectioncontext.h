@@ -30,7 +30,11 @@ private:
 public:
     explicit ConnectionContext() noexcept;
     /// \brief Инициализация контекста соединения с устройством.
-    void init(BasePort *port, BaseConnectionThread *parser, Strategy strategy);
+    /// \param connPolicy [in] - для взаимодействия порта и парсера используются
+    /// по USB и последовательному порту используются разные типы коммуникации.
+    /// Причина: использование QSerialPort, с которым нельзя работать из разных потоков.
+    void init(BasePort *port, BaseConnectionThread *parser, //
+        const Strategy strategy, const Qt::ConnectionType connPolicy);
     /// \brief Запускает активное соединение.
     bool run(Connection *connection);
     void reset();

@@ -1,5 +1,6 @@
+#include "interfaces/connectionmanager.h"
+
 #include <gen/std_ext.h>
-#include <interfaces/connectionmanager.h>
 #include <interfaces/ports/serialport.h>
 #include <interfaces/ports/usbhidport.h>
 #include <interfaces/threads/modbusthread.h>
@@ -16,31 +17,36 @@
 namespace Interface
 {
 
-ConnectionManager::ConnectionManager(QWidget *parent) : QObject(parent), m_reconnect(false), m_parent(parent)
+ConnectionManager::ConnectionManager(QWidget *parent)
+    : QObject(parent), m_currentConnection(nullptr), m_reconnect(false), m_parent(parent)
 {
 }
 
 void ConnectionManager::createConnection(const ConnectStruct &connectionData)
 {
-    auto connection = new Connection(this);
+    if (m_currentConnection != nullptr)
+        breakConnection();
+
+    m_currentConnection = new Connection(this);
     std::visit( //
         overloaded {
-            [this, connection](const UsbHidSettings &settings) {
+            [this](const UsbHidSettings &settings) {
                 auto port = new UsbHidPort(settings);
-                auto parser = new ProtocomThread(connection->m_queue);
-                m_context.init(port, parser, Strategy::Sync);
+                auto parser = new ProtocomThread(m_currentConnection->m_queue);
+                m_context.init(port, parser, Strategy::Sync, Qt::DirectConnection);
             },
-            [this, connection](const SerialPortSettings &settings) {
+            [this](const SerialPortSettings &settings) {
                 auto port = new SerialPort();
                 port->init(settings);
-                auto parser = new ModbusThread(connection->m_queue);
-                m_context.init(port, parser, Strategy::Sync);
+                auto parser = new ModbusThread(m_currentConnection->m_queue);
+                parser->setDeviceAddress(settings.Address);
+                m_context.init(port, parser, Strategy::Sync, Qt::QueuedConnection);
             },
-            [this, connection]([[maybe_unused]] const IEC104Settings &settings) {
+            [this]([[maybe_unused]] const IEC104Settings &settings) {
                 ;
                 ;
             },
-            [this, connection]([[maybe_unused]] const EmulatorSettings &settings) {
+            [this]([[maybe_unused]] const EmulatorSettings &settings) {
 #ifdef ENABLE_EMULATOR
                 ;
                 ;
@@ -49,11 +55,11 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
         },
         connectionData.settings);
     connect(m_context.m_port, &BasePort::error, this, &ConnectionManager::portErrorHadler, Qt::DirectConnection);
-    if (m_context.run(connection))
+    if (m_context.run(m_currentConnection))
         emit connectSuccesfull();
     else
         emit connectFailed();
-    Connection::setIface(Connection::InterfacePointer { connection });
+    Connection::setIface(Connection::InterfacePointer { m_currentConnection });
 }
 
 void ConnectionManager::reconnectConnection()
@@ -64,8 +70,9 @@ void ConnectionManager::reconnectConnection()
 
 void ConnectionManager::breakConnection()
 {
-    ;
-    emit disconnectError();
+    m_context.reset();
+    m_currentConnection = nullptr;
+    Connection::s_connection.reset();
 }
 
 void ConnectionManager::portErrorHadler(const BasePort::PortErrors error)

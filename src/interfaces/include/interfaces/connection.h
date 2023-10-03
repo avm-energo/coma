@@ -36,7 +36,7 @@ namespace Regs
 class Connection : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
+    // Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
 
 protected:
     friend class ConnectionManager;
@@ -73,9 +73,9 @@ public:
     // helper methods
     bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0);
     ProtocolDescription *settings();
-    State state();
-    void setState(const State state);
-    void close();
+    // State state();
+    // void setState(const State state);
+    // void close();
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);

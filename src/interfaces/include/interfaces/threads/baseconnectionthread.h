@@ -23,6 +23,7 @@ protected:
     QByteArray m_readData;
     QWaitCondition m_waiter;
     LogClass m_log;
+    std::atomic<State> m_state;
     RequestQueue &m_queue;
 
 public:
@@ -30,6 +31,8 @@ public:
 
     explicit BaseConnectionThread(RequestQueue &queue, QObject *parent = nullptr);
 
+    State getState() const;
+    void setState(const State state);
     void clear();
     void wakeUp();
 

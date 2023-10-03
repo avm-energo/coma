@@ -51,7 +51,7 @@ private slots:
     void showAboutDialog();
     void closeEvent(QCloseEvent *event) override;
     void update(const DataTypes::GeneralResponseStruct &rsp);
-    void nativeEvent(void *message);
+    // void nativeEvent(void *message);
 
 private:
     UniquePointer<Interface::ConnectionManager> connectionManager;
@@ -65,7 +65,6 @@ private:
     XmlEditor *editor;
     File::Vector fileVector;
     bool Reconnect;
-    ConnectStruct ConnectSettings;
     AppConfiguration mAppConfig;
     UniquePointer<DialogManager> mDlgManager;
 
