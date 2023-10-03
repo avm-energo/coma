@@ -12,13 +12,11 @@ namespace Interface
 // Static members
 Connection::InterfacePointer Connection::s_connection;
 
-Connection::Connection(QObject *parent) : QObject(parent), ifacePort(nullptr)
+Connection::Connection(QObject *parent) : QObject(parent), m_timeoutTimer(new QTimer(this))
 {
     qRegisterMetaType<State>();
-    m_timeoutTimer = new QTimer(this);
     m_timeoutTimer->setInterval(MAINTIMEOUT);
     connect(m_timeoutTimer, &QTimer::timeout, this, &Connection::timeout);
-    m_state = State::Connect;
     m_settings = std::unique_ptr<ProtocolDescription>(new ProtocolDescription());
 }
 
@@ -190,28 +188,6 @@ ProtocolDescription *Connection::settings()
 {
     return m_settings.get();
 }
-
-// State Connection::state()
-//{
-//    return m_state.load();
-//}
-
-// void Connection::setState(const State state)
-//{
-//    m_state.store(state);
-//    emit stateChanged(state);
-//}
-
-// void Connection::close()
-//{
-//    if (ifacePort)
-//        ifacePort->closeConnection();
-//    setState(State::Disconnect);
-//    // TODO: dummy solution, maybe better to get signals from working threads
-//    StdFunc::Wait(100);
-//    disconnect();
-//    s_connection.reset();
-//}
 
 // ===============================================================================
 // =============================== SYNC METHODS ==================================

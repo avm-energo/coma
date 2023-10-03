@@ -6,11 +6,11 @@
 #include <interfaces/types/protocom_types.h>
 #include <interfaces/types/settingstypes.h>
 
-struct USBMessage
-{
-    QString guid;
-    quint32 type;
-};
+// struct USBMessage
+//{
+//    QString guid;
+//    quint32 type;
+//};
 
 struct hid_device_;
 using hid_device = hid_device_; ///< opaque hidapi structure
@@ -29,32 +29,32 @@ public:
     explicit UsbHidPort(const UsbHidSettings &dev, QObject *parent = 0);
     ~UsbHidPort() = default;
 
-    UsbHidSettings deviceInfo() const;
-    void setDeviceInfo(const UsbHidSettings &deviceInfo);
-
-    void usbEvent(const USBMessage message, quint32 type);
-    bool shouldBeStopped() const;
-    void shouldBeStopped(bool isShouldBeStopped);
+    const UsbHidSettings &deviceInfo() const;
+    // void setDeviceInfo(const UsbHidSettings &deviceInfo);
+    // void usbEvent(const USBMessage message, quint32 type);
+    // bool shouldBeStopped() const;
+    // void shouldBeStopped(bool isShouldBeStopped);
 
 public slots:
     bool connect() override;
     void disconnect() override;
-    void usbEvent(const QString &guid, quint32 msgType);
+    // void usbEvent(const QString &guid, quint32 msgType);
 
 private:
     virtual QByteArray read(bool *status = nullptr) override;
     virtual bool write(const QByteArray &ba) override;
+    void hidErrorHandle();
 
     bool writeDataToPort(QByteArray &ba);
     void clear();
-    void deviceConnected(const UsbHidSettings &st);
-    void deviceDisconnected(const UsbHidSettings &st);
-    void deviceConnected();
-    void deviceDisconnected();
+    // void deviceConnected(const UsbHidSettings &st);
+    // void deviceDisconnected(const UsbHidSettings &st);
+    // void deviceConnected();
+    // void deviceDisconnected();
 
     bool m_waitForReply;
     hid_device *m_hidDevice;
-    bool m_shouldBeStopped;
+    // bool m_shouldBeStopped;
     // QMutex _mutex;
     QByteArray m_currCommand;
     UsbHidSettings m_deviceInfo;

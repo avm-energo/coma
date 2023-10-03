@@ -90,7 +90,9 @@ private:
 #endif
     {
         Q_UNUSED(result);
-        return connectionManager->nativeEventHandler(eventType, message);
+        if (connectionManager)
+            connectionManager->nativeEventHandler(eventType, message);
+        return false;
     }
 
 signals:

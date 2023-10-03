@@ -6,15 +6,6 @@
 #include <gen/helper.h>
 #include <gen/settings.h>
 #include <hidapi/hidapi.h>
-//#include <interfaces/baseconnection.h>
-
-#ifdef Q_OS_WINDOWS
-// clang-format off
-#include <windows.h>
-// Header dbt must be the last header, thanx to microsoft
-#include <dbt.h>
-// clang-format on
-#endif
 
 using Interface::Direction;
 using Proto::CommandStruct;
@@ -22,11 +13,7 @@ using Proto::Starters;
 using namespace Interface;
 
 UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent)
-    : BasePort("UsbHidPort", parent)
-    , m_deviceInfo(dev)
-    , m_hidDevice(nullptr)
-    , m_waitForReply(false)
-    , m_shouldBeStopped(false)
+    : BasePort("UsbHidPort", parent), m_deviceInfo(dev), m_hidDevice(nullptr), m_waitForReply(false)
 {
     using namespace settings;
     QObject::connect(this, &BasePort::clearQueries, this, &UsbHidPort::clear);
@@ -36,7 +23,7 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent)
 
 bool UsbHidPort::connect()
 {
-    if ((deviceInfo().vendor_id == 0) || (deviceInfo().product_id == 0))
+    if ((m_deviceInfo.vendor_id == 0) || (m_deviceInfo.product_id == 0))
     {
         qCritical() << Error::Msg::NoDeviceError;
         closeConnection();
@@ -46,6 +33,7 @@ bool UsbHidPort::connect()
         m_deviceInfo.serial.toStdWString().c_str());
     if (!m_hidDevice)
     {
+        hidErrorHandle();
         qCritical() << Error::Msg::OpenError;
         closeConnection();
         return false;
@@ -84,6 +72,7 @@ QByteArray UsbHidPort::read(bool *status)
     {
         // -1 is the only error value according to hidapi documentation.
         Q_ASSERT(bytes == -1);
+        hidErrorHandle();
         emit error(PortErrors::ReadError);
         reconnect();
         *status = false;
@@ -123,70 +112,16 @@ bool UsbHidPort::write(const QByteArray &ba)
     return status;
 }
 
-void UsbHidPort::deviceConnected(const UsbHidSettings &st)
+void UsbHidPort::hidErrorHandle()
 {
-    QElapsedTimer timer;
-    timer.start();
-    // Подключено другое устройство
-    if (st != deviceInfo())
-        return;
-    qDebug() << timer.elapsed();
-    // Устройство появляется не сразу после прихода события о его подключении
-    StdFunc::Wait(100);
-    emit clearQueries();
-    qDebug() << timer.elapsed();
-    if (!connect())
-        return;
-    qDebug() << timer.elapsed();
-    qInfo() << deviceInfo() << "connected";
-    emit stateChanged(State::Run);
-    qDebug() << timer.elapsed();
+    auto errString = "HID API Error: " + QString::fromStdWString(hid_error(m_hidDevice));
+    qCritical() << errString;
+    writeLog(errString.toLocal8Bit());
 }
 
-void UsbHidPort::deviceDisconnected(const UsbHidSettings &st)
-{
-    // Отключено другое устройство
-    if (st != deviceInfo())
-        return;
-    // Отключено наше устройство
-    emit stateChanged(State::Disconnect);
-    qInfo() << deviceInfo() << "disconnected";
-}
-
-void UsbHidPort::deviceConnected()
-{
-    if (!connect())
-        return;
-    qInfo() << deviceInfo() << "connected";
-    // emit stateChanged(State::Run);
-}
-
-void UsbHidPort::deviceDisconnected()
-{
-    // Отключено наше устройство
-    emit stateChanged(State::Disconnect);
-    qInfo() << deviceInfo() << "disconnected";
-    // emit clearQueries();
-}
-
-bool UsbHidPort::shouldBeStopped() const
-{
-    return m_shouldBeStopped;
-}
-
-void UsbHidPort::shouldBeStopped(bool isShouldBeStopped)
-{
-    m_shouldBeStopped = isShouldBeStopped;
-}
-
-UsbHidSettings UsbHidPort::deviceInfo() const
+const UsbHidSettings &UsbHidPort::deviceInfo() const
 {
     return m_deviceInfo;
-}
-
-void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
-{
-    m_deviceInfo = deviceInfo;
 }
 
 void UsbHidPort::clear()
@@ -198,110 +133,168 @@ void UsbHidPort::clear()
     m_dataGuard.unlock(); // unlock port
 }
 
-void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
-{
-#ifdef Q_OS_WINDOWS
-    qDebug() << message.guid << message.type;
-    switch (type)
-    {
-    case DBT_DEVICEARRIVAL:
-    {
-        if (message.type != DBT_DEVTYP_DEVICEINTERFACE)
-            break;
-        QRegularExpression regex(HID::headerValidator);
-        QRegularExpressionMatch match = regex.match(message.guid);
-        if (!match.hasMatch())
-            break;
-        if (match.captured(0) != "USB" && match.captured(0) != "HID")
-            break;
-        if (deviceInfo().hasMatch(message.guid))
-        {
-            if (!shouldBeStopped())
-                deviceConnected();
-            shouldBeStopped(false);
-            break;
-        }
-        if (deviceInfo().hasPartialMatch(message.guid))
-        {
-            if (!shouldBeStopped())
-                deviceConnected();
-            shouldBeStopped(false);
-            break;
-        }
-        break;
-    }
-    case DBT_DEVICEREMOVECOMPLETE:
-    {
-        if (message.type != DBT_DEVTYP_DEVICEINTERFACE)
-            break;
-        QRegularExpression regex(HID::headerValidator);
-        QRegularExpressionMatch match = regex.match(message.guid);
-        if (!match.hasMatch())
-            break;
-        if (match.captured(0) != "USB" && match.captured(0) != "HID")
-            break;
+// void UsbHidPort::deviceConnected(const UsbHidSettings &st)
+//{
+//    QElapsedTimer timer;
+//    timer.start();
+//    // Подключено другое устройство
+//    if (st != deviceInfo())
+//        return;
+//    qDebug() << timer.elapsed();
+//    // Устройство появляется не сразу после прихода события о его подключении
+//    StdFunc::Wait(100);
+//    emit clearQueries();
+//    qDebug() << timer.elapsed();
+//    if (!connect())
+//        return;
+//    qDebug() << timer.elapsed();
+//    qInfo() << deviceInfo() << "connected";
+//    emit stateChanged(State::Run);
+//    qDebug() << timer.elapsed();
+//}
 
-        if (deviceInfo().hasMatch(message.guid))
-        {
-            if (shouldBeStopped())
-                deviceDisconnected();
-            shouldBeStopped(true);
-            break;
-        }
-        if (deviceInfo().hasPartialMatch(message.guid))
-        {
-            if (shouldBeStopped())
-                deviceDisconnected();
-            shouldBeStopped(true);
-            break;
-        }
-        break;
-    }
-    case DBT_DEVNODES_CHANGED:
-    {
-        // NOTE Игнорируем события изменения состояния.
-        // Можно как-то обрабатывать.
-        // Приходят перед и после обрабатываемых событий.
-        // Внутри не содержат ничего, получаем только тип
-        // события.
-        break;
-    }
-    default:
-        qInfo() << "Unhadled case" << QString::number(type, 16);
-    }
-#else
-    Q_UNUSED(message)
-    Q_UNUSED(type)
-#endif
-}
+// void UsbHidPort::deviceDisconnected(const UsbHidSettings &st)
+//{
+//    // Отключено другое устройство
+//    if (st != deviceInfo())
+//        return;
+//    // Отключено наше устройство
+//    emit stateChanged(State::Disconnect);
+//    qInfo() << deviceInfo() << "disconnected";
+//}
 
-void UsbHidPort::usbEvent(const QString &guid, quint32 msgType)
-{
-#ifdef Q_OS_WINDOWS
-    if (m_deviceInfo.hasMatch(guid) || m_deviceInfo.hasPartialMatch(guid))
-    {
-        switch (msgType)
-        {
-        case DBT_DEVICEARRIVAL:
-            connect();
-            qInfo() << m_deviceInfo << " connected";
-            break;
-        case DBT_DEVICEREMOVECOMPLETE:
-            closeConnection();
-            qInfo() << m_deviceInfo << " disconnected";
-            break;
-        case DBT_DEVNODES_CHANGED:
-            // Ignore
-            break;
-        default:
-            qInfo() << "Unhadled case" << QString::number(msgType, 16);
-        }
-    }
-#else
-    Q_UNUSED(guid)
-    Q_UNUSED(msgType)
-#endif
-}
+// void UsbHidPort::deviceConnected()
+//{
+//    if (!connect())
+//        return;
+//    qInfo() << deviceInfo() << "connected";
+//}
+
+// void UsbHidPort::deviceDisconnected()
+//{
+//    // Отключено наше устройство
+//    emit stateChanged(State::Disconnect);
+//    qInfo() << deviceInfo() << "disconnected";
+//}
+
+// bool UsbHidPort::shouldBeStopped() const
+//{
+//    return m_shouldBeStopped;
+//}
+
+// void UsbHidPort::shouldBeStopped(bool isShouldBeStopped)
+//{
+//    m_shouldBeStopped = isShouldBeStopped;
+//}
+
+// void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
+//{
+//    m_deviceInfo = deviceInfo;
+//}
+
+// void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
+//{
+//#ifdef Q_OS_WINDOWS
+//    qDebug() << message.guid << message.type;
+//    switch (type)
+//    {
+//    case DBT_DEVICEARRIVAL:
+//    {
+//        if (message.type != DBT_DEVTYP_DEVICEINTERFACE)
+//            break;
+//        QRegularExpression regex(HID::headerValidator);
+//        QRegularExpressionMatch match = regex.match(message.guid);
+//        if (!match.hasMatch())
+//            break;
+//        if (match.captured(0) != "USB" && match.captured(0) != "HID")
+//            break;
+//        if (deviceInfo().hasMatch(message.guid))
+//        {
+//            if (!shouldBeStopped())
+//                deviceConnected();
+//            shouldBeStopped(false);
+//            break;
+//        }
+//        if (deviceInfo().hasPartialMatch(message.guid))
+//        {
+//            if (!shouldBeStopped())
+//                deviceConnected();
+//            shouldBeStopped(false);
+//            break;
+//        }
+//        break;
+//    }
+//    case DBT_DEVICEREMOVECOMPLETE:
+//    {
+//        if (message.type != DBT_DEVTYP_DEVICEINTERFACE)
+//            break;
+//        QRegularExpression regex(HID::headerValidator);
+//        QRegularExpressionMatch match = regex.match(message.guid);
+//        if (!match.hasMatch())
+//            break;
+//        if (match.captured(0) != "USB" && match.captured(0) != "HID")
+//            break;
+//        if (deviceInfo().hasMatch(message.guid))
+//        {
+//            if (shouldBeStopped())
+//                deviceDisconnected();
+//            shouldBeStopped(true);
+//            break;
+//        }
+//        if (deviceInfo().hasPartialMatch(message.guid))
+//        {
+//            if (shouldBeStopped())
+//                deviceDisconnected();
+//            shouldBeStopped(true);
+//            break;
+//        }
+//        break;
+//    }
+//    case DBT_DEVNODES_CHANGED:
+//    {
+//        // NOTE Игнорируем события изменения состояния.
+//        // Можно как-то обрабатывать.
+//        // Приходят перед и после обрабатываемых событий.
+//        // Внутри не содержат ничего, получаем только тип
+//        // события.
+//        break;
+//    }
+//    default:
+//        qInfo() << "Unhadled case" << QString::number(type, 16);
+//    }
+//#else
+//    Q_UNUSED(message)
+//    Q_UNUSED(type)
+//#endif
+//}
+
+// void UsbHidPort::usbEvent(const QString &guid, quint32 msgType)
+//{
+//#ifdef Q_OS_WINDOWS
+//    if (m_deviceInfo.hasMatch(guid) || m_deviceInfo.hasPartialMatch(guid))
+//    {
+//        switch (msgType)
+//        {
+//        case DBT_DEVICEARRIVAL:
+//            if (connect())
+//                qInfo() << m_deviceInfo << " connected";
+//            break;
+//        case DBT_DEVICEREMOVECOMPLETE:
+//            closeConnection();
+//            qInfo() << m_deviceInfo << " disconnected";
+//            break;
+//        case DBT_DEVNODES_CHANGED:
+//            // Ignore
+//            break;
+//        default:
+//            qInfo() << "Unhadled case" << QString::number(msgType, 16);
+//        }
+//    }
+//#else
+//    Q_UNUSED(guid)
+//    Q_UNUSED(msgType)
+//#endif
+//}
 
 bool UsbHidPort::writeDataToPort(QByteArray &ba)
 {
@@ -326,8 +319,10 @@ bool UsbHidPort::writeDataToPort(QByteArray &ba)
     auto tmpt = static_cast<size_t>(ba.size());
     int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt); // write
     if (errorCode == -1)
+    {
+        hidErrorHandle();
         return false;
-
+    }
     missingCounter = 0;
     return true;
 }

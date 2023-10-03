@@ -69,8 +69,6 @@
 namespace Core
 {
 
-// QPoint Coma::s_comaCenter = QPoint(0, 0);
-
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
     , connectionManager(new IfaceConnManager(this))
@@ -384,7 +382,7 @@ void Coma::go()
     StdFunc::Init();
     qInfo("=== Log started ===\n");
 
-    connectionManager->registerDeviceNotifications(this);
+    // connectionManager->registerDeviceNotifications(this);
     Reconnect = false;
     newTimers();
     loadSettings();

@@ -18,8 +18,9 @@ namespace Interface
 {
 
 ConnectionManager::ConnectionManager(QWidget *parent)
-    : QObject(parent), m_currentConnection(nullptr), m_reconnect(false), m_parent(parent)
+    : QObject(parent), m_currentConnection(nullptr), m_reconnect(false)
 {
+    registerDeviceNotifications(parent);
 }
 
 void ConnectionManager::createConnection(const ConnectStruct &connectionData)
@@ -28,7 +29,7 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
         breakConnection();
 
     m_currentConnection = new Connection(this);
-    std::visit( //
+    std::visit( // Инициализация контекста для обмена данными
         overloaded {
             [this](const UsbHidSettings &settings) {
                 auto port = new UsbHidPort(settings);
@@ -54,7 +55,7 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
             } //
         },
         connectionData.settings);
-    connect(m_context.m_port, &BasePort::error, this, &ConnectionManager::portErrorHadler, Qt::DirectConnection);
+    connect(m_context.m_port, &BasePort::error, this, &ConnectionManager::portErrorHandler, Qt::DirectConnection);
     if (m_context.run(m_currentConnection))
         emit connectSuccesfull();
     else
@@ -64,7 +65,6 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
 
 void ConnectionManager::reconnectConnection()
 {
-    ;
     emit reconnect();
 }
 
@@ -75,7 +75,7 @@ void ConnectionManager::breakConnection()
     Connection::s_connection.reset();
 }
 
-void ConnectionManager::portErrorHadler(const BasePort::PortErrors error)
+void ConnectionManager::portErrorHandler(const BasePort::PortErrors error)
 {
     if (error == BasePort::PortErrors::Timeout
         && m_context.m_parser->m_currentCommand.command == Interface::Commands::C_ReqBSI)
@@ -110,40 +110,64 @@ bool ConnectionManager::registerDeviceNotifications(QWidget *widget)
     return false;
 }
 
-bool ConnectionManager::nativeEventHandler(const QByteArray &eventType, void *msg)
+void ConnectionManager::nativeEventHandler(const QByteArray &eventType, void *msg)
 {
 #if defined(Q_OS_WINDOWS)
-    do
+    if (eventType != "windows_generic_MSG")
+        return;
+    if (msg == nullptr)
+        return;
+    auto message = static_cast<MSG *>(msg);
+    int msgClass = message->message;
+    if (msgClass != WM_DEVICECHANGE)
+        return;
+    auto devInterface = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
+    if (devInterface == nullptr)
+        return;
+    QString guid = QString::fromStdWString(&devInterface->dbcc_name[0]);
+    quint32 deviceType = devInterface->dbcc_devicetype;
+    quint32 msgType = message->wParam;
+    if (deviceType != DBT_DEVTYP_DEVICEINTERFACE)
+        return;
+    QRegularExpression regex(HID::headerValidator);
+    QRegularExpressionMatch match = regex.match(guid);
+    if (!match.hasMatch())
+        return;
+    if (match.captured(0) != "USB" && match.captured(0) != "HID")
+        return;
+    if (!m_context.isValid())
+        return;
+    auto usbPort = dynamic_cast<UsbHidPort *>(m_context.m_port);
+    if (usbPort == nullptr)
+        return;
+    auto &devInfo = usbPort->deviceInfo();
+    if (!devInfo.hasMatch(guid) && !devInfo.hasPartialMatch(guid))
+        return;
+    // Тип уведомления об устройстве, которое пришло от ОС.
+    switch (msgType)
     {
-        if (eventType != "windows_generic_MSG")
-            break;
-        if (msg == nullptr)
-            break;
-        auto message = static_cast<MSG *>(msg);
-        int msgClass = message->message;
-        if (msgClass != WM_DEVICECHANGE)
-            break;
-        auto devInterface = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
-        if (devInterface == nullptr)
-            break;
-        QString guid = QString::fromStdWString(&devInterface->dbcc_name[0]);
-        quint32 deviceType = devInterface->dbcc_devicetype;
-        quint32 msgType = message->wParam;
-        if (deviceType != DBT_DEVTYP_DEVICEINTERFACE)
-            break;
-        QRegularExpression regex(HID::headerValidator);
-        QRegularExpressionMatch match = regex.match(guid);
-        if (!match.hasMatch())
-            break;
-        if (match.captured(0) != "USB" && match.captured(0) != "HID")
-            break;
-        // emit usbEvent(guid, msgType);
-    } while (false);
+    // Устройство подключено
+    case DBT_DEVICEARRIVAL:
+        if (usbPort->connect())
+            qInfo() << devInfo << " connected";
+        break;
+    // Устройство отключено
+    case DBT_DEVICEREMOVECOMPLETE:
+        usbPort->reconnect();
+        qInfo() << devInfo << " disconnected";
+        break;
+    case DBT_DEVNODES_CHANGED:
+        // NOTE: Игнорируем события изменения состояния. Можно как-то обрабатывать.
+        // Приходят перед и после обрабатываемых событий.
+        // Внутри не содержат ничего, получаем только тип события.
+        break;
+    default:
+        qInfo() << "Unhandled case: " << QString::number(msgType, 16);
+    }
 #elif defined(Q_OS_LINUX)
     Q_UNUSED(eventType);
     Q_UNUSED(msg);
 #endif
-    return false;
 }
 
 } // namespace Interface

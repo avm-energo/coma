@@ -2,10 +2,18 @@
 
 #include <QRegularExpression>
 
-#ifdef Q_OS_WINDOWS
-bool UsbHidSettings::hasMatch(const QString &str)
+#ifdef QT_DEBUG
+UsbHidSettings::UsbHidSettings(unsigned short dev, unsigned short pid, const QString &arr, const QString &str)
+    : vendor_id(dev), product_id(pid), serial(arr), path(str)
+#else
+UsbHidSettings::UsbHidSettings(unsigned short dev, unsigned short pid, const QString &arr)
+    : vendor_id(dev), product_id(pid), serial(arr)
+#endif
 {
-    //(?<=[a-zA-Z]{3}.)[a-fA-F0-9]+
+}
+
+bool UsbHidSettings::hasMatch(const QString &str) const
+{
     if (!hasPartialMatch(str))
         return false;
     QRegularExpression regex("#((?>[a-zA-Z0-9_]+|(?R))*)#");
@@ -20,7 +28,7 @@ bool UsbHidSettings::hasMatch(const QString &str)
     return buffer == serial;
 }
 
-bool UsbHidSettings::hasPartialMatch(const QString &str)
+bool UsbHidSettings::hasPartialMatch(const QString &str) const
 {
     if (str.isEmpty())
         return false;
@@ -29,7 +37,6 @@ bool UsbHidSettings::hasPartialMatch(const QString &str)
     if (!match.hasMatch())
         return false;
     regex.setPattern("[a-zA-Z]{3}.[a-fA-F0-9]{4}");
-
     QString buffer = match.captured(0);
     QRegularExpressionMatchIterator i = regex.globalMatch(buffer);
     while (i.hasNext())
@@ -55,10 +62,8 @@ bool UsbHidSettings::hasPartialMatch(const QString &str)
                 return false;
         }
     }
-
     return true;
 }
-#endif
 
 QDebug operator<<(QDebug debug, const UsbHidSettings &settings)
 {
@@ -68,4 +73,15 @@ QDebug operator<<(QDebug debug, const UsbHidSettings &settings)
     debug.nospace() << ":" << settings.path;
 #endif
     return debug.maybeSpace();
+}
+
+bool operator==(const UsbHidSettings &lhs, const UsbHidSettings &rhs)
+{
+    // Не сравниваем path т.к. если переподключить устройство то path может сменится но остальные параметры - нет
+    return ((lhs.product_id == rhs.product_id) && (lhs.vendor_id == rhs.vendor_id) && (lhs.serial == rhs.serial));
+}
+
+bool operator!=(const UsbHidSettings &lhs, const UsbHidSettings &rhs)
+{
+    return !(lhs == rhs);
 }

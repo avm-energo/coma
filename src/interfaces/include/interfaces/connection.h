@@ -36,7 +36,6 @@ namespace Regs
 class Connection : public QObject
 {
     Q_OBJECT
-    // Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
 
 protected:
     friend class ConnectionManager;
@@ -67,15 +66,11 @@ public:
         s_connection = std::move(iface);
     }
 
-    // virtual bool start(const ConnectStruct &) = 0;
     bool supportBSIExt();
 
     // helper methods
     bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0);
     ProtocolDescription *settings();
-    // State state();
-    // void setState(const State state);
-    // void close();
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
@@ -107,10 +102,6 @@ public:
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
 
 signals:
-    // void connected();
-    // void disconnected();
-    // void reconnect();
-    // void nativeEvent(void *const message);
     void stateChanged(Interface::State m_state);
     void wakeUpParser() const;
 
@@ -138,8 +129,6 @@ private:
     QByteArray m_byteArrayResult;
     bool m_responseResult;
     QTimer *m_timeoutTimer;
-    std::atomic<State> m_state;
-    BasePort *ifacePort;
 
 public slots:
     void responseHandle(const Interface::DeviceResponse &response);

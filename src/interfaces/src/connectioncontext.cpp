@@ -7,6 +7,11 @@ ConnectionContext::ConnectionContext() noexcept : m_port(nullptr), m_parser(null
 {
 }
 
+bool ConnectionContext::isValid() const noexcept
+{
+    return (m_port != nullptr && m_parser != nullptr);
+}
+
 void ConnectionContext::init(BasePort *port, BaseConnectionThread *parser, //
     const Strategy strategy, const Qt::ConnectionType connPolicy)
 {
@@ -14,12 +19,14 @@ void ConnectionContext::init(BasePort *port, BaseConnectionThread *parser, //
     m_parser = parser;
     m_strategy = strategy;
 
-    if (m_port != nullptr && m_parser != nullptr && m_strategy != Strategy::None)
+    if (isValid() && m_strategy != Strategy::None)
     {
         // Обмен данными
         QObject::connect(m_port, &BasePort::dataReceived, //
             m_parser, &BaseConnectionThread::processReadBytes, connPolicy);
         QObject::connect(m_parser, &BaseConnectionThread::sendDataToPort, m_port, &BasePort::writeDataSync, connPolicy);
+        QObject::connect(m_port, &BasePort::stateChanged, //
+            m_parser, &BaseConnectionThread::setState, Qt::DirectConnection);
         // Отмена команды
         QObject::connect(m_port, &BasePort::clearQueries, m_parser, &BaseConnectionThread::clear, connPolicy);
         // Конец работы
@@ -34,8 +41,6 @@ void ConnectionContext::init(BasePort *port, BaseConnectionThread *parser, //
             QObject::connect(portThread, &QThread::started, m_port, &BasePort::poll);
             QObject::connect(parseThread, &QThread::started, m_parser, &BaseConnectionThread::run);
             // Остановка
-            QObject::connect(m_port, &BasePort::stateChanged, //
-                m_parser, &BaseConnectionThread::setState, Qt::DirectConnection);
             QObject::connect(m_port, &BasePort::finished, portThread, &QThread::quit);
             QObject::connect(m_port, &BasePort::finished, parseThread, &QThread::quit);
             QObject::connect(m_parser, &BaseConnectionThread::finished, parseThread, &QThread::quit);
@@ -64,6 +69,11 @@ void ConnectionContext::init(BasePort *port, BaseConnectionThread *parser, //
 
 bool ConnectionContext::run(Connection *connection)
 {
+    // Если нет порта, парсера или в качестве соединения передан
+    // nullptr, то прерываем выполнение контекста.
+    if (!isValid() || connection == nullptr)
+        return false;
+
     // Обмен данными для соединения
     QObject::connect(connection, &Connection::wakeUpParser, //
         m_parser, &BaseConnectionThread::wakeUp, Qt::DirectConnection);
@@ -94,7 +104,7 @@ bool ConnectionContext::run(Connection *connection)
 
 void ConnectionContext::reset()
 {
-    if (m_port != nullptr && m_parser != nullptr)
+    if (isValid())
     {
         m_port->closeConnection();
         m_parser->wakeUp();

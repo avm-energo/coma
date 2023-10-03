@@ -16,7 +16,6 @@ private:
     ConnectionContext m_context;
     Connection *m_currentConnection;
     bool m_reconnect;
-    QWidget m_parent;
 
 public:
     explicit ConnectionManager(QWidget *parent = nullptr);
@@ -29,7 +28,7 @@ public:
     bool registerDeviceNotifications(QWidget *widget);
     /// \brief Handling native events from OS.
     /// \details Current implementation is ready only for Windows.
-    bool nativeEventHandler(const QByteArray &eventType, void *msg);
+    void nativeEventHandler(const QByteArray &eventType, void *msg);
 
 signals:
     void connectSuccesfull();
@@ -39,7 +38,7 @@ signals:
 
 private slots:
     /// \brief Handler for port errors.
-    void portErrorHadler(const BasePort::PortErrors error);
+    void portErrorHandler(const BasePort::PortErrors error);
 };
 
 } // namespace Interface
