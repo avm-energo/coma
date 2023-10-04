@@ -53,6 +53,7 @@ private slots:
     void startWork(const ConnectStruct st);
     void loadOsc();
     void loadSwj();
+    void loadSwjPackConvertor();
     void openJournalViewer();
     void openXmlEditor();
     void showAboutDialog();

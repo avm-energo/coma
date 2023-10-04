@@ -330,6 +330,7 @@ public:
     /// QString ext - расширение по умолчанию Output: QString filename
     static QString ChooseFileForSave(
         QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr = "");
+    static QString ChooseDirectoryForOpen(QWidget *parent);
 
 private:
     static QPushButton *NewPBCommon(QWidget *parent, const QString &pbname, const QString &text,

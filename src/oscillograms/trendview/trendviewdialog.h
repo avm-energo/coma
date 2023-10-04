@@ -32,18 +32,11 @@ public:
     // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
     void showPlot();
     void setModel(TrendViewModel *model);
-    void setRange(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax);
-    void setDigitalNames(const QStringList &names);
-    void setAnalogNames(const QStringList &names);
     void setDigitalColors(const QStringList &colors);
     void setAnalogColors(const QStringList &colors);
+    void setRange(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax);
     void setupPlots();
     void setupUI();
-
-    // блока данных
-    void setAnalogDescriptions(const QStringList &descr);
-    void setDigitalDescriptions(const QStringList &descr);
-    void setTrendModel(TrendViewModel *mdl);
 
 private:
     struct DescriptionStruct
@@ -51,6 +44,7 @@ private:
         QStringList names;
         QStringList descriptions;
         QMap<QString, QString> colors;
+        std::bitset<32> enableFlags;
     };
 
     struct SignalOscPropertiesStruct

@@ -36,6 +36,7 @@
 #include "../journals/journalviewer.h"
 #include "../module/board.h"
 #include "../oscillograms/swjmanager.h"
+#include "../oscillograms/swjpackconvertor.h"
 #include "../s2/s2configstorage.h"
 #include "../s2/s2datafactory.h"
 #include "../s2/s2util.h"
@@ -239,6 +240,7 @@ void Coma::setupMenubar()
     menu->setTitle("Автономная работа");
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
+    menu->addAction("Конвертация файлов переключений", this, &Coma::loadSwjPackConvertor);
     menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
     menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
     menubar->addMenu(menu);
@@ -373,6 +375,12 @@ void Coma::loadSwj()
     auto filepath = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
     if (!filepath.isEmpty())
         loadSwj(filepath);
+}
+
+void Coma::loadSwjPackConvertor()
+{
+    auto convertor = new SwjPackConvertor(this);
+    convertor->selectDirectory();
 }
 
 void Coma::loadJournal(const QString &filename)
