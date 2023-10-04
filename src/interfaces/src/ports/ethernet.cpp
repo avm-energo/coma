@@ -43,7 +43,8 @@ bool Ethernet::init(IEC104Settings settings)
             emit dataReceived(ba);
         },
         Qt::QueuedConnection);
-    return reconnect();
+    reconnect();
+    return true;
 }
 
 // void Ethernet::poll()
@@ -117,7 +118,7 @@ void Ethernet::disconnect()
     setState(Interface::State::Disconnect);
 }
 
-bool Ethernet::reconnect()
+void Ethernet::reconnect()
 {
     bool result = false;
     disconnect();
@@ -140,7 +141,7 @@ bool Ethernet::reconnect()
     //        result = false;
     //    });
     loop.exec();
-    return result;
+    // return result;
 }
 
 void Ethernet::EthStateChanged(QAbstractSocket::SocketState state)

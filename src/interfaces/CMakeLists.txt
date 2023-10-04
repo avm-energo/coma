@@ -14,10 +14,6 @@ set(files_h
     "${INCLUDE_PATH}/connectioncontext.h"
     "${INCLUDE_PATH}/connectionmanager.h"
     "${INCLUDE_PATH}/moduledataupdater.h"
-    #"${INCLUDE_PATH}/conn/emulator.h"
-    #"${INCLUDE_PATH}/conn/iec104.h"
-    #"${INCLUDE_PATH}/conn/modbus.h"
-    #"${INCLUDE_PATH}/conn/protocom.h"
     "${INCLUDE_PATH}/ports/baseport.h"
     "${INCLUDE_PATH}/ports/ethernet.h"
     "${INCLUDE_PATH}/ports/serialport.h"
@@ -34,6 +30,7 @@ set(files_h
     "${INCLUDE_PATH}/types/settingstypes.h"
     "${INCLUDE_PATH}/types/usbhidportinfo.h"
     "${INCLUDE_PATH}/types/usbhidsettings.h"
+    "${INCLUDE_PATH}/utils/device_watcher.h"
     "${INCLUDE_PATH}/utils/request_queue.h"
     "${INCLUDE_PATH}/utils/slot_trait.h"
 )
@@ -43,10 +40,6 @@ set(files_cpp
     "${SRC_PATH}/connectioncontext.cpp"
     "${SRC_PATH}/connectionmanager.cpp"
     "${SRC_PATH}/moduledataupdater.cpp"
-    #"${SRC_PATH}/conn/emulator.cpp"
-    #"${SRC_PATH}/conn/iec104.cpp"
-    #"${SRC_PATH}/conn/modbus.cpp"
-    #"${SRC_PATH}/conn/protocom.cpp"
     "${SRC_PATH}/ports/baseport.cpp"
     "${SRC_PATH}/ports/ethernet.cpp"
     "${SRC_PATH}/ports/serialport.cpp"
@@ -57,6 +50,7 @@ set(files_cpp
     "${SRC_PATH}/threads/protocomthread.cpp"
     "${SRC_PATH}/types/usbhidportinfo.cpp"
     "${SRC_PATH}/types/usbhidsettings.cpp"
+    "${SRC_PATH}/utils/device_watcher.cpp"
     "${SRC_PATH}/utils/request_queue.cpp"
 )
 

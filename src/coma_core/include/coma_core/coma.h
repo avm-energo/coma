@@ -9,6 +9,7 @@
 #include <QStackedWidget>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/types/settingstypes.h>
+#include <interfaces/utils/device_watcher.h>
 #include <s2/s2datamanager.h>
 
 class AlarmWidget;
@@ -31,7 +32,6 @@ public:
     void connectSB();
     void setupMenubar();
     QWidget *least();
-    // void setupConnection();
     static QPoint ComaCenter();
 
 public slots:
@@ -51,10 +51,10 @@ private slots:
     void showAboutDialog();
     void closeEvent(QCloseEvent *event) override;
     void update(const DataTypes::GeneralResponseStruct &rsp);
-    // void nativeEvent(void *message);
 
 private:
     UniquePointer<Interface::ConnectionManager> connectionManager;
+    UniquePointer<Interface::DeviceWatcher> deviceWatcher;
     UniquePointer<Module> module;
     UniquePointer<S2DataManager> s2dataManager;
     UniquePointer<S2RequestService> s2requestService;
@@ -90,8 +90,8 @@ private:
 #endif
     {
         Q_UNUSED(result);
-        if (connectionManager)
-            connectionManager->nativeEventHandler(eventType, message);
+        if (deviceWatcher)
+            deviceWatcher->handleNativeEvent(eventType, message);
         return false;
     }
 

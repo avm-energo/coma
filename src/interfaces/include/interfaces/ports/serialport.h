@@ -14,6 +14,7 @@ public:
     explicit SerialPort(QObject *parent = nullptr);
     void init(SerialPortSettings settings);
     bool connect() override;
+    void reconnect() override;
 
 private:
     UniquePointer<QSerialPort> port;
@@ -22,9 +23,6 @@ private:
     void disconnect() override;
     QByteArray read(bool *status = nullptr) override;
     virtual bool write(const QByteArray &ba) override;
-
-    // public slots:
-    //    bool clear();
 
 private slots:
     void errorOccurred(const QSerialPort::SerialPortError err);

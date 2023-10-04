@@ -71,7 +71,8 @@ namespace Core
 
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
-    , connectionManager(new IfaceConnManager(this))
+    , connectionManager(new ConnectionManager(this))
+    , deviceWatcher(new DeviceWatcher(this))
     , s2dataManager(new S2DataManager(this))
     , s2requestService(new S2RequestService(this))
     , editor(nullptr)
@@ -80,10 +81,13 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
           *s2dataManager, *s2requestService, this))
 {
     // connections
-    connect(                                                 //
-        s2requestService.get(), &S2RequestService::response, //
-        s2dataManager.get(), &S2DataManager::parseS2File     //
-    );                                                       //
+    connect(s2requestService.get(), &S2RequestService::response, //
+        s2dataManager.get(), &S2DataManager::parseS2File);
+    connect(deviceWatcher.get(), &DeviceWatcher::deviceConnected, //
+        connectionManager.get(), &ConnectionManager::deviceConnected);
+    connect(deviceWatcher.get(), &DeviceWatcher::deviceDisconnected, //
+        connectionManager.get(), &ConnectionManager::deviceDisconnected);
+
     // registering center of coma main window for epopup message boxes
     auto pointContainer = new PointContainer(this);
     connect(this, &Coma::positionChanged, pointContainer, &PointContainer::receivePoint);

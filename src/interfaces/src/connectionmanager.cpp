@@ -6,21 +6,19 @@
 #include <interfaces/threads/modbusthread.h>
 #include <interfaces/threads/protocomthread.h>
 
-#ifdef Q_OS_WINDOWS
-// clang-format off
-#include <windows.h>
-// Header dbt must be the last header, thanx to microsoft
-#include <dbt.h>
-// clang-format on
-#endif
-
 namespace Interface
 {
 
 ConnectionManager::ConnectionManager(QWidget *parent)
-    : QObject(parent), m_currentConnection(nullptr), m_reconnect(false)
+    : QObject(parent)
+    , m_currentConnection(nullptr)
+    , m_silentTimer(new QTimer(this))
+    , m_reconnectMode(ReconnectMode::Loud)
 {
-    registerDeviceNotifications(parent);
+    // TODO: брать значение из настроек
+    m_silentTimer->setInterval(10000);
+    m_silentTimer->setSingleShot(true);
+    connect(m_silentTimer, &QTimer::timeout, this, [this] { emit reconnectUI(); });
 }
 
 void ConnectionManager::createConnection(const ConnectStruct &connectionData)
@@ -43,19 +41,22 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
                 parser->setDeviceAddress(settings.Address);
                 m_context.init(port, parser, Strategy::Sync, Qt::QueuedConnection);
             },
-            [this]([[maybe_unused]] const IEC104Settings &settings) {
-                ;
-                ;
+            [this](const IEC104Settings &settings) {
+                Q_UNUSED(settings);
+                Q_UNUSED(settings);
             },
-            [this]([[maybe_unused]] const EmulatorSettings &settings) {
+            [this](const EmulatorSettings &settings) {
 #ifdef ENABLE_EMULATOR
-                ;
-                ;
+                Q_UNUSED(settings);
 #endif
+                Q_UNUSED(settings);
             } //
         },
         connectionData.settings);
-    connect(m_context.m_port, &BasePort::error, this, &ConnectionManager::portErrorHandler, Qt::DirectConnection);
+    connect(m_context.m_port, &BasePort::error, this, &ConnectionManager::handlePortError, Qt::DirectConnection);
+    connect(this, &ConnectionManager::reconnectDevice, m_context.m_port, &BasePort::reconnect, Qt::QueuedConnection);
+    connect(this, &ConnectionManager::reconnectSuccess, m_context.m_port, //
+        &BasePort::finishReconnect, Qt::DirectConnection);
     if (m_context.run(m_currentConnection))
         emit connectSuccesfull();
     else
@@ -63,9 +64,19 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
     Connection::setIface(Connection::InterfacePointer { m_currentConnection });
 }
 
-void ConnectionManager::reconnectConnection()
+void ConnectionManager::setReconnectMode(const ReconnectMode newMode) noexcept
 {
-    emit reconnect();
+    m_reconnectMode = newMode;
+}
+
+void ConnectionManager::reconnect()
+{
+    m_context.m_port->restartConnection();
+    emit reconnectDevice();
+    if (m_reconnectMode == ReconnectMode::Loud)
+        emit reconnectUI();
+    else
+        m_silentTimer->start();
 }
 
 void ConnectionManager::breakConnection()
@@ -75,7 +86,7 @@ void ConnectionManager::breakConnection()
     Connection::s_connection.reset();
 }
 
-void ConnectionManager::portErrorHandler(const BasePort::PortErrors error)
+void ConnectionManager::handlePortError(const BasePort::PortErrors error)
 {
     if (error == BasePort::PortErrors::Timeout
         && m_context.m_parser->m_currentCommand.command == Interface::Commands::C_ReqBSI)
@@ -85,89 +96,35 @@ void ConnectionManager::portErrorHandler(const BasePort::PortErrors error)
     }
 }
 
-bool ConnectionManager::registerDeviceNotifications(QWidget *widget)
+bool ConnectionManager::isCurrentDevice(const QString &guid)
 {
-    if (widget != nullptr)
+    if (m_context.isValid())
     {
-#if defined(Q_OS_WINDOWS)
-        DEV_BROADCAST_DEVICEINTERFACE devInt;
-        ZeroMemory(&devInt, sizeof(devInt));
-        GUID _guid { 0xa5dcbf10, 0x6530, 0x11d2, { 0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed } };
-        devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-        devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-        // With DEVICE_NOTIFY_ALL_INTERFACE_CLASSES this property ignores
-        devInt.dbcc_classguid = _guid;
-        HANDLE widgetHandle { reinterpret_cast<HANDLE>(widget->winId()) };
-        // NOTE Проверить со всеми модулями
-        HDEVNOTIFY blub = RegisterDeviceNotification(widgetHandle, &devInt, //
-            DEVICE_NOTIFY_ALL_INTERFACE_CLASSES /*DBT_DEVTYP_OEM*/ /*DEVICE_NOTIFY_WINDOW_HANDLE*/);
-        return blub != NULL;
-#elif defined(Q_OS_LINUX)
-        // TODO: linux code goes here
-        return true;
-#endif
+        auto usbPort = dynamic_cast<UsbHidPort *>(m_context.m_port);
+        if (usbPort != nullptr)
+        {
+            const auto &devInfo = usbPort->deviceInfo();
+            return (devInfo.hasMatch(guid) || devInfo.hasPartialMatch(guid));
+        }
     }
     return false;
 }
 
-void ConnectionManager::nativeEventHandler(const QByteArray &eventType, void *msg)
+void ConnectionManager::deviceConnected(const QString &guid)
 {
-#if defined(Q_OS_WINDOWS)
-    if (eventType != "windows_generic_MSG")
-        return;
-    if (msg == nullptr)
-        return;
-    auto message = static_cast<MSG *>(msg);
-    int msgClass = message->message;
-    if (msgClass != WM_DEVICECHANGE)
-        return;
-    auto devInterface = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(message->lParam);
-    if (devInterface == nullptr)
-        return;
-    QString guid = QString::fromStdWString(&devInterface->dbcc_name[0]);
-    quint32 deviceType = devInterface->dbcc_devicetype;
-    quint32 msgType = message->wParam;
-    if (deviceType != DBT_DEVTYP_DEVICEINTERFACE)
-        return;
-    QRegularExpression regex(HID::headerValidator);
-    QRegularExpressionMatch match = regex.match(guid);
-    if (!match.hasMatch())
-        return;
-    if (match.captured(0) != "USB" && match.captured(0) != "HID")
-        return;
-    if (!m_context.isValid())
-        return;
-    auto usbPort = dynamic_cast<UsbHidPort *>(m_context.m_port);
-    if (usbPort == nullptr)
-        return;
-    auto &devInfo = usbPort->deviceInfo();
-    if (!devInfo.hasMatch(guid) && !devInfo.hasPartialMatch(guid))
-        return;
-    // Тип уведомления об устройстве, которое пришло от ОС.
-    switch (msgType)
+    if (isCurrentDevice(guid))
     {
-    // Устройство подключено
-    case DBT_DEVICEARRIVAL:
-        if (usbPort->connect())
-            qInfo() << devInfo << " connected";
-        break;
-    // Устройство отключено
-    case DBT_DEVICEREMOVECOMPLETE:
-        usbPort->reconnect();
-        qInfo() << devInfo << " disconnected";
-        break;
-    case DBT_DEVNODES_CHANGED:
-        // NOTE: Игнорируем события изменения состояния. Можно как-то обрабатывать.
-        // Приходят перед и после обрабатываемых событий.
-        // Внутри не содержат ничего, получаем только тип события.
-        break;
-    default:
-        qInfo() << "Unhandled case: " << QString::number(msgType, 16);
+        if (m_reconnectMode == ReconnectMode::Silent)
+            m_silentTimer->stop();
+        // TODO: тут мы должны вывести порт из реконнекта
+        emit reconnectSuccess();
     }
-#elif defined(Q_OS_LINUX)
-    Q_UNUSED(eventType);
-    Q_UNUSED(msg);
-#endif
+}
+
+void ConnectionManager::deviceDisconnected(const QString &guid)
+{
+    if (isCurrentDevice(guid))
+        reconnect();
 }
 
 } // namespace Interface

@@ -24,7 +24,7 @@ void ConnectionContext::init(BasePort *port, BaseConnectionThread *parser, //
         // Обмен данными
         QObject::connect(m_port, &BasePort::dataReceived, //
             m_parser, &BaseConnectionThread::processReadBytes, connPolicy);
-        QObject::connect(m_parser, &BaseConnectionThread::sendDataToPort, m_port, &BasePort::writeDataSync, connPolicy);
+        QObject::connect(m_parser, &BaseConnectionThread::sendDataToPort, m_port, &BasePort::writeData, connPolicy);
         QObject::connect(m_port, &BasePort::stateChanged, //
             m_parser, &BaseConnectionThread::setState, Qt::DirectConnection);
         // Отмена команды

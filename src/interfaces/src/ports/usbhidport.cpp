@@ -60,6 +60,14 @@ void UsbHidPort::disconnect()
     emit clearQueries();
 }
 
+void UsbHidPort::reconnect()
+{
+    while (getReconnectLoopFlag())
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    connect();
+    emit clearQueries();
+}
+
 QByteArray UsbHidPort::read(bool *status)
 {
     constexpr auto maxLength = HID::MaxSegmenthLength + 1; // +1 to ID
@@ -72,9 +80,10 @@ QByteArray UsbHidPort::read(bool *status)
     {
         // -1 is the only error value according to hidapi documentation.
         Q_ASSERT(bytes == -1);
+        writeLog(Error::Msg::ReadError);
         hidErrorHandle();
         emit error(PortErrors::ReadError);
-        reconnect();
+        // reconnectCycle();
         *status = false;
         data.clear();
     }
@@ -133,176 +142,13 @@ void UsbHidPort::clear()
     m_dataGuard.unlock(); // unlock port
 }
 
-// void UsbHidPort::deviceConnected(const UsbHidSettings &st)
-//{
-//    QElapsedTimer timer;
-//    timer.start();
-//    // Подключено другое устройство
-//    if (st != deviceInfo())
-//        return;
-//    qDebug() << timer.elapsed();
-//    // Устройство появляется не сразу после прихода события о его подключении
-//    StdFunc::Wait(100);
-//    emit clearQueries();
-//    qDebug() << timer.elapsed();
-//    if (!connect())
-//        return;
-//    qDebug() << timer.elapsed();
-//    qInfo() << deviceInfo() << "connected";
-//    emit stateChanged(State::Run);
-//    qDebug() << timer.elapsed();
-//}
-
-// void UsbHidPort::deviceDisconnected(const UsbHidSettings &st)
-//{
-//    // Отключено другое устройство
-//    if (st != deviceInfo())
-//        return;
-//    // Отключено наше устройство
-//    emit stateChanged(State::Disconnect);
-//    qInfo() << deviceInfo() << "disconnected";
-//}
-
-// void UsbHidPort::deviceConnected()
-//{
-//    if (!connect())
-//        return;
-//    qInfo() << deviceInfo() << "connected";
-//}
-
-// void UsbHidPort::deviceDisconnected()
-//{
-//    // Отключено наше устройство
-//    emit stateChanged(State::Disconnect);
-//    qInfo() << deviceInfo() << "disconnected";
-//}
-
-// bool UsbHidPort::shouldBeStopped() const
-//{
-//    return m_shouldBeStopped;
-//}
-
-// void UsbHidPort::shouldBeStopped(bool isShouldBeStopped)
-//{
-//    m_shouldBeStopped = isShouldBeStopped;
-//}
-
-// void UsbHidPort::setDeviceInfo(const UsbHidSettings &deviceInfo)
-//{
-//    m_deviceInfo = deviceInfo;
-//}
-
-// void UsbHidPort::usbEvent(const USBMessage message, quint32 type)
-//{
-//#ifdef Q_OS_WINDOWS
-//    qDebug() << message.guid << message.type;
-//    switch (type)
-//    {
-//    case DBT_DEVICEARRIVAL:
-//    {
-//        if (message.type != DBT_DEVTYP_DEVICEINTERFACE)
-//            break;
-//        QRegularExpression regex(HID::headerValidator);
-//        QRegularExpressionMatch match = regex.match(message.guid);
-//        if (!match.hasMatch())
-//            break;
-//        if (match.captured(0) != "USB" && match.captured(0) != "HID")
-//            break;
-//        if (deviceInfo().hasMatch(message.guid))
-//        {
-//            if (!shouldBeStopped())
-//                deviceConnected();
-//            shouldBeStopped(false);
-//            break;
-//        }
-//        if (deviceInfo().hasPartialMatch(message.guid))
-//        {
-//            if (!shouldBeStopped())
-//                deviceConnected();
-//            shouldBeStopped(false);
-//            break;
-//        }
-//        break;
-//    }
-//    case DBT_DEVICEREMOVECOMPLETE:
-//    {
-//        if (message.type != DBT_DEVTYP_DEVICEINTERFACE)
-//            break;
-//        QRegularExpression regex(HID::headerValidator);
-//        QRegularExpressionMatch match = regex.match(message.guid);
-//        if (!match.hasMatch())
-//            break;
-//        if (match.captured(0) != "USB" && match.captured(0) != "HID")
-//            break;
-//        if (deviceInfo().hasMatch(message.guid))
-//        {
-//            if (shouldBeStopped())
-//                deviceDisconnected();
-//            shouldBeStopped(true);
-//            break;
-//        }
-//        if (deviceInfo().hasPartialMatch(message.guid))
-//        {
-//            if (shouldBeStopped())
-//                deviceDisconnected();
-//            shouldBeStopped(true);
-//            break;
-//        }
-//        break;
-//    }
-//    case DBT_DEVNODES_CHANGED:
-//    {
-//        // NOTE Игнорируем события изменения состояния.
-//        // Можно как-то обрабатывать.
-//        // Приходят перед и после обрабатываемых событий.
-//        // Внутри не содержат ничего, получаем только тип
-//        // события.
-//        break;
-//    }
-//    default:
-//        qInfo() << "Unhadled case" << QString::number(type, 16);
-//    }
-//#else
-//    Q_UNUSED(message)
-//    Q_UNUSED(type)
-//#endif
-//}
-
-// void UsbHidPort::usbEvent(const QString &guid, quint32 msgType)
-//{
-//#ifdef Q_OS_WINDOWS
-//    if (m_deviceInfo.hasMatch(guid) || m_deviceInfo.hasPartialMatch(guid))
-//    {
-//        switch (msgType)
-//        {
-//        case DBT_DEVICEARRIVAL:
-//            if (connect())
-//                qInfo() << m_deviceInfo << " connected";
-//            break;
-//        case DBT_DEVICEREMOVECOMPLETE:
-//            closeConnection();
-//            qInfo() << m_deviceInfo << " disconnected";
-//            break;
-//        case DBT_DEVNODES_CHANGED:
-//            // Ignore
-//            break;
-//        default:
-//            qInfo() << "Unhadled case" << QString::number(msgType, 16);
-//        }
-//    }
-//#else
-//    Q_UNUSED(guid)
-//    Q_UNUSED(msgType)
-//#endif
-//}
-
 bool UsbHidPort::writeDataToPort(QByteArray &ba)
 {
     if (!m_hidDevice)
     {
         writeLog(Error::Msg::NoDeviceError);
         qCritical() << Error::Msg::NoDeviceError;
-        closeConnection();
+        // closeConnection();
         return false;
     }
     if (ba.size() > HID::MaxSegmenthLength)
@@ -320,7 +166,9 @@ bool UsbHidPort::writeDataToPort(QByteArray &ba)
     int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt); // write
     if (errorCode == -1)
     {
+        writeLog(Error::Msg::WriteError);
         hidErrorHandle();
+        emit error(PortErrors::WriteError);
         return false;
     }
     missingCounter = 0;

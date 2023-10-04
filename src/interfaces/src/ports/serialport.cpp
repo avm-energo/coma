@@ -40,11 +40,6 @@ void SerialPort::init(SerialPortSettings settings)
     });
 }
 
-// bool SerialPort::clear()
-//{
-//    return port->clear();
-//}
-
 bool SerialPort::connect()
 {
     if (!port->open(QIODevice::ReadWrite))
@@ -64,6 +59,11 @@ void SerialPort::disconnect()
 {
     if (port->isOpen())
         port->close();
+}
+
+void SerialPort::reconnect()
+{
+    ;
 }
 
 // blocking read from serial port with timeout implementation
@@ -102,7 +102,8 @@ bool SerialPort::write(const QByteArray &ba)
     if (bytes <= 0)
     {
         qCritical() << "Error with data writing";
-        reconnect();
+        emit error(PortErrors::WriteError);
+        // reconnectCycle();
         return false;
     }
     return true;
@@ -119,7 +120,7 @@ void SerialPort::errorOccurred(const QSerialPort::SerialPortError err)
     {
         qWarning() << QVariant::fromValue(err).toString();
         emit error(PortErrors::ReadError);
-        reconnect();
+        // reconnectCycle();
     }
     else
         qDebug() << QVariant::fromValue(err).toString();

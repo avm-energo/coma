@@ -16,15 +16,16 @@ class BasePort : public QObject
 {
     Q_OBJECT
 public:
-    enum class PortErrors
+    enum class PortErrors : quint16
     {
         Timeout,
         ReadError,
+        WriteError,
         NoData
     };
 
     explicit BasePort(const QString &logFilename, QObject *parent = nullptr);
-    bool reconnect();
+    bool reconnectCycle();
 
 signals:
     void dataReceived(QByteArray ba);
@@ -34,15 +35,17 @@ signals:
     void stateChanged(Interface::State);
     void clearQueries();
 
-private:
-    std::atomic<Interface::State> m_state;
-    LogClass m_log;
-
 protected:
+    std::atomic<Interface::State> m_state;
+    std::atomic<bool> m_reconnectLoopFlag;
+    LogClass m_log;
     QMutex m_dataGuard;
 
-    void setState(Interface::State state);
-    Interface::State getState();
+    void setState(const Interface::State state) noexcept;
+    Interface::State getState() noexcept;
+
+    bool getReconnectLoopFlag() noexcept;
+    void setReconnectLoopFlag(const bool flag) noexcept;
 
     void writeLog(const QByteArray &ba, Interface::Direction dir = Interface::NoDirection);
     void writeLog(const Error::Msg msg, Interface::Direction dir = Interface::NoDirection);
@@ -53,9 +56,12 @@ protected:
 public slots:
     virtual bool connect() = 0;
     virtual void disconnect() = 0;
+    virtual void reconnect() = 0;
     void poll();
-    void writeDataSync(const QByteArray &ba);
+    void writeData(const QByteArray &ba);
     void closeConnection();
+    void restartConnection();
+    void finishReconnect();
 };
 
 #endif // BASEPORT_H

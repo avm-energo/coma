@@ -3,21 +3,32 @@
 #include <QCoreApplication>
 #include <QElapsedTimer>
 
-BasePort::BasePort(const QString &logFilename, QObject *parent) : QObject(parent), m_state(Interface::State::Connect)
+BasePort::BasePort(const QString &logFilename, QObject *parent)
+    : QObject(parent), m_state(Interface::State::Connect), m_reconnectLoopFlag(true)
 {
     m_log.init(logFilename + "." + ::logExt);
     m_log.writeRaw(::logStart);
 }
 
-void BasePort::setState(Interface::State state)
+void BasePort::setState(const Interface::State state) noexcept
 {
     m_state.store(state);
     emit stateChanged(state);
 }
 
-Interface::State BasePort::getState()
+Interface::State BasePort::getState() noexcept
 {
     return m_state.load();
+}
+
+bool BasePort::getReconnectLoopFlag() noexcept
+{
+    return m_reconnectLoopFlag.load();
+}
+
+void BasePort::setReconnectLoopFlag(const bool flag) noexcept
+{
+    m_reconnectLoopFlag.store(flag);
 }
 
 void BasePort::writeLog(const QByteArray &ba, Interface::Direction dir)
@@ -44,7 +55,7 @@ void BasePort::writeLog(const Error::Msg msg, Interface::Direction dir)
     writeLog(QVariant::fromValue(msg).toByteArray(), dir);
 }
 
-bool BasePort::reconnect()
+bool BasePort::reconnectCycle()
 {
     setState(Interface::State::Reconnect);
     m_log.writeRaw("!!! Restart connection !!!\n");
@@ -77,7 +88,7 @@ void BasePort::poll()
         }
         else
         {
-            StdFunc::Wait(200);
+            QCoreApplication::processEvents();
             state = getState();
         }
     } while (state != Interface::State::Disconnect);
@@ -89,7 +100,7 @@ void BasePort::poll()
     QCoreApplication::processEvents();
 }
 
-void BasePort::writeDataSync(const QByteArray &ba)
+void BasePort::writeData(const QByteArray &ba)
 {
     auto status = Error::Msg::NoError;
     if (getState() == Interface::State::Run) // port is running
@@ -116,4 +127,15 @@ void BasePort::closeConnection()
 {
     setState(Interface::State::Disconnect);
     emit clearQueries();
+}
+
+void BasePort::restartConnection()
+{
+    setState(Interface::State::Reconnect);
+    // TODO: Эмитим сигнал, чтобы connection больше не клал запросы в очередь
+}
+
+void BasePort::finishReconnect()
+{
+    setReconnectLoopFlag(false);
 }

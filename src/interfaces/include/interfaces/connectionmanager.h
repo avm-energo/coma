@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QByteArray>
+#include <QTimer>
 #include <QWidget>
 #include <interfaces/connection.h>
 #include <interfaces/connectioncontext.h>
@@ -9,36 +9,58 @@
 namespace Interface
 {
 
+enum class ReconnectMode : quint8
+{
+    Loud,
+    Silent
+};
+
 class ConnectionManager : public QObject
 {
     Q_OBJECT
 private:
     ConnectionContext m_context;
     Connection *m_currentConnection;
-    bool m_reconnect;
+    QTimer *m_silentTimer;
+    ReconnectMode m_reconnectMode;
+
+    bool isCurrentDevice(const QString &guid);
+    void reconnect();
 
 public:
     explicit ConnectionManager(QWidget *parent = nullptr);
     void createConnection(const ConnectStruct &connectionData);
-    void reconnectConnection();
-    void breakConnection();
-
-    /// \brief Registering device's notifications for an incoming widget.
-    /// \details Current implementation is ready only for Windows.
-    bool registerDeviceNotifications(QWidget *widget);
-    /// \brief Handling native events from OS.
-    /// \details Current implementation is ready only for Windows.
-    void nativeEventHandler(const QByteArray &eventType, void *msg);
+    void setReconnectMode(const ReconnectMode newMode) noexcept;
 
 signals:
+    /// \brief Сигнал, который вызывается, если соединение к устройству произошло успешно.
     void connectSuccesfull();
+    /// \brief Сигнал, который вызывается, если соединение к устройству провалилось.
     void connectFailed();
-    void reconnect();
-    void disconnectError();
+    /// \brief Сигнал, который вызывается при переподключении к устройству.
+    /// \details Данный сигнал передаётся родительскому окну для отрисовки виджета
+    /// и информарования пользователя о проблемах связи с устройством.
+    void reconnectUI();
+    /// \brief Сигнал, который вызывается при переподключении к устройству.
+    /// \details Данный сигнал информирует порт о переходе в режим переподключения
+    /// к устройству. Зависит от конкректной реализации дочернего класса BasePort.
+    /// \see BasePort.
+    void reconnectDevice();
+    void reconnectSuccess();
 
 private slots:
-    /// \brief Handler for port errors.
-    void portErrorHandler(const BasePort::PortErrors error);
+    /// \brief Хэндл для принятия ошибок от порта.
+    void handlePortError(const BasePort::PortErrors error);
+
+public slots:
+    /// \brief Слот для разрыва текущего соединения с устройством.
+    void breakConnection();
+    /// \brief Слот для принятия уведомления о том, что
+    /// устройство с переданным GUID было подключено к компьютеру.
+    void deviceConnected(const QString &guid);
+    /// \brief Слот для принятия уведомления о том, что
+    /// устройство с переданным GUID было отключено от компьютера.
+    void deviceDisconnected(const QString &guid);
 };
 
 } // namespace Interface
