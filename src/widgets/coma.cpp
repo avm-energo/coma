@@ -56,6 +56,7 @@
 #include <QProgressBar>
 #include <QToolBar>
 #include <QtGlobal>
+#include <comaresources/manage.h>
 #include <functional>
 #include <gen/errorqueue.h>
 #include <gen/files.h>
@@ -105,6 +106,7 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
 
 Coma::~Coma()
 {
+    freeResources();
 }
 
 void convertPixmap(size_t size, QAction *jourAct)
@@ -483,7 +485,7 @@ bool Coma::nativeEventHandler(const QByteArray &eventType, void *message)
 void Coma::go()
 {
     // Load settings before anything
-    auto splash = new SplashScreen(QPixmap("images/surgery.png"));
+    auto splash = new SplashScreen();
     splash->show();
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
     QDir dir(StdFunc::GetHomeDir());
@@ -768,10 +770,7 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setApplicationName(appName);
     QCoreApplication::setOrganizationName(orgName);
     QCoreApplication::setApplicationVersion(version);
-    Q_INIT_RESOURCE(darkstyle);
-    Q_INIT_RESOURCE(lightstyle);
-    Q_INIT_RESOURCE(styles);
-    Q_INIT_RESOURCE(vectorIcons);
+    initResources();
     Logger::writeStart(StdFunc::GetSystemHomeDir() + "coma.log");
     qInstallMessageHandler(Logger::messageHandler);
 }

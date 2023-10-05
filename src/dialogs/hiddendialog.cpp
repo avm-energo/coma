@@ -53,25 +53,25 @@ HiddenDialog::HiddenDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name
 
     m_withMezzanine = false;
     if (m_bhb.BoardBBhb.MType == 0xA1)
-        m_BGImage = ":/icons/pkdn.svg";
+        m_BGImage = ":/images/pkdn.svg";
     else
     {
         switch (m_type)
         {
         case BYMY:
-            m_BGImage = ":/icons/BM.svg";
+            m_BGImage = ":/images/BM.svg";
             m_withMezzanine = true;
             break;
         case BNMY:
-            m_BGImage = ":/icons/BnM.svg";
+            m_BGImage = ":/images/BnM.svg";
             m_type = BYMY;
             m_withMezzanine = true;
             break;
         case BYMN:
-            m_BGImage = ":/icons/BMn.svg";
+            m_BGImage = ":/images/BMn.svg";
             break;
         case BNMN:
-            m_BGImage = ":/icons/BnMn.svg";
+            m_BGImage = ":/images/BnMn.svg";
             m_type = BYMN;
             break;
         default:

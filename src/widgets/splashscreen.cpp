@@ -4,9 +4,6 @@
 #include <QIcon>
 #include <QPainter>
 #include <QString>
-SplashScreen::SplashScreen() : QSplashScreen {}
-{
-}
 
 SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f) : QSplashScreen(pixmap, f)
 {

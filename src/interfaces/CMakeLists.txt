@@ -74,5 +74,5 @@ if(WIN32)
 endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
 
-message(STATUS "Interfaces import dirs" "${hidapi_LIB_DIRS}/../bin")
+message(STATUS "Interfaces import dirs: ${hidapi_LIB_DIRS}/../bin")
 install(CODE "set(hidapi_BIN_DIRS \"${hidapi_LIB_DIRS}/../bin\")")

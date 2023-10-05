@@ -21,10 +21,8 @@ class SplashScreen : public QSplashScreen
 {
     Q_OBJECT
 public:
-    SplashScreen();
-    SplashScreen(const QPixmap &pixmap = QPixmap(), Qt::WindowFlags f = Qt::WindowFlags());
+    SplashScreen(const QPixmap &pixmap = QPixmap(":images/surgery.png"), Qt::WindowFlags f = Qt::WindowFlags());
 
-    // QSplashScreen interface
 protected:
     void drawContents(QPainter *painter) override;
 };

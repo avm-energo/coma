@@ -1,15 +1,12 @@
-[submodule "src/widgets/styles/qss-dracula"]
-	path = src/widgets/styles/qss-dracula
-	url = https://github.com/Supremist/qss-dracula
-[submodule "src/widgets/styles/QSS"]
-	path = src/widgets/styles/QSS
-	url = https://github.com/GTRONICK/QSS
-[submodule "src/widgets/styles/QDarkStyleSheet"]
-	path = src/widgets/styles/QDarkStyleSheet
+[submodule "src/comaresources/styles/QDarkStyleSheet"]
+	path = src/comaresources/styles/QDarkStyleSheet
 	url = https://github.com/ColinDuquesnoy/QDarkStyleSheet
-[submodule "src/protos/protos"]
-	path = src/protos/protos
-	url = ../../avm-energo/protos.git
-[submodule "src/alise"]
-	path = src/alise
-	url = ../../avm-energo/alise.git
+	branch = 6ff5fdfd7b1e2a538b6f22bd85dd05a817d24c45
+[submodule "src/comaresources/styles/QSS"]
+	path = src/comaresources/styles/QSS
+	url = https://github.com/GTRONICK/QSS
+	branch = master
+[submodule "src/comaresources/styles/qss-dracula"]
+	path = src/comaresources/styles/qss-dracula
+	url = https://github.com/Supremist/qss-dracula
+	branch = master

@@ -9,3 +9,8 @@ FetchContent_Declare(
 # Building QXlsx as dynamic library
 set(BUILD_SHARED_LIBS ON)
 FetchContent_MakeAvailable(QXlsx)
+
+# Create install component for deb packages
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
+  install(TARGETS QXlsx LIBRARY DESTINATION "${CPACK_PACKAGING_INSTALL_PREFIX}/lib" COMPONENT QXLSX)
+endif()

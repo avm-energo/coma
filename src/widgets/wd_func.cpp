@@ -872,11 +872,12 @@ QVariant WDFunc::FloatValueWithCheck(float value)
     return tmps;
 }
 
+/// TODO: Функция не используется нигде, чем должны быть first и second - непонятно
 QImage *WDFunc::TwoImages(const QString &first, const QString &second)
 {
     auto image = new QImage;
-    auto FirstImage = "images/" + first + ".png";
-    auto SecondImage = "images/" + second + ".png";
+    auto FirstImage = ":/images/" + first + ".png";
+    auto SecondImage = ":/images/" + second + ".png";
     QImage FirstI(FirstImage);
     QImage SecondI(SecondImage);
     if ((first.isEmpty()) && (!SecondI.isNull()))
@@ -884,7 +885,7 @@ QImage *WDFunc::TwoImages(const QString &first, const QString &second)
     else if ((second.isEmpty()) && (!FirstI.isNull()))
         *image = FirstI;
     else if ((FirstI.isNull()) || (SecondI.isNull()))
-        image = new QImage("images/cross.png");
+        image = new QImage(":/tunes/cross.png");
     else
     {
         *image = QImage((FirstI.width() + SecondI.width()), qMax(FirstI.height(), SecondI.height()), FirstI.format());

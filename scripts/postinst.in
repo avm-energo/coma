@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Folders for XML configuration files
+xml_config_path=$HOME/.local/share/@PROJECT_NAME@
+
+# Clean folder for AVM-Debug if it's exist
+if [ -d "$xml_config_path" ]; then
+  echo "$xml_config_path does exist, cleanup."
+  rm -rf "$xml_config_path"
+fi
+mkdir "$xml_config_path"
+
+# Copying XML configuration files in appdata folder
+for xml_file in /usr/local/share/coma/settings/*.xml
+do
+    cp "$xml_file" "$xml_config_path"
+done
+
+# Remove source folder
+rm -rf /usr/local/share/coma

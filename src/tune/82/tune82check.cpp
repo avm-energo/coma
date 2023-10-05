@@ -37,17 +37,17 @@ Error::Msg Tune82Check::showScheme()
     {
     case Modules::MezzanineBoard::MTM_81: // 2t0n
     {
-        pmpfile = "images/tune81.png";
+        pmpfile = ":/tunes/tune81.png";
         break;
     }
     case Modules::MezzanineBoard::MTM_82:
     {
-        pmpfile = "images/tune82.png";
+        pmpfile = ":/tunes/tune82.png";
         break;
     }
     case Modules::MezzanineBoard::MTM_83:
     {
-        pmpfile = "images/tune83.png";
+        pmpfile = ":/tunes/tune83.png";
         break;
     }
     default:
