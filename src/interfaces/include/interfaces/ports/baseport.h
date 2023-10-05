@@ -10,6 +10,7 @@
 #include <gen/stdfunc.h>
 #include <interfaces/types/common_types.h>
 
+/// TODO: Вынести в настройки
 constexpr qint64 RECONNECTINTERVAL = 10000;
 
 class BasePort : public QObject
@@ -20,8 +21,7 @@ public:
     {
         Timeout,
         ReadError,
-        WriteError,
-        NoData
+        WriteError
     };
 
     explicit BasePort(const QString &logFilename, QObject *parent = nullptr);
@@ -42,9 +42,9 @@ protected:
     QMutex m_dataGuard;
 
     void setState(const Interface::State state) noexcept;
-    Interface::State getState() noexcept;
+    Interface::State getState() const noexcept;
 
-    bool getReconnectLoopFlag() noexcept;
+    bool getReconnectLoopFlag() const noexcept;
     void setReconnectLoopFlag(const bool flag) noexcept;
 
     void writeLog(const QByteArray &ba, Interface::Direction dir = Interface::NoDirection);
@@ -60,7 +60,6 @@ public slots:
     void poll();
     void writeData(const QByteArray &ba);
     void closeConnection();
-    void restartConnection();
     void finishReconnect();
 };
 

@@ -33,7 +33,7 @@ private:
     virtual QByteArray read(bool *status = nullptr) override;
     virtual bool write(const QByteArray &ba) override;
     void hidErrorHandle();
-    bool writeDataToPort(QByteArray &ba);
+    bool writeDataToPort(QByteArray &command);
     void clear();
 
     bool m_waitForReply;

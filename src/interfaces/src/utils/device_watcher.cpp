@@ -15,10 +15,10 @@ namespace Interface
 
 DeviceWatcher::DeviceWatcher(QWidget *parent) noexcept : QObject(parent)
 {
-    registerDeviceNotifications(parent);
+    registerForDeviceNotifications(parent);
 }
 
-bool DeviceWatcher::registerDeviceNotifications(QWidget *widget)
+bool DeviceWatcher::registerForDeviceNotifications(QWidget *widget)
 {
     if (widget != nullptr)
     {

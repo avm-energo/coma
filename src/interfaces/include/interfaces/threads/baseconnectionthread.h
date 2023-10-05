@@ -14,6 +14,7 @@ class BaseConnectionThread : public QObject
 {
     Q_OBJECT
 protected:
+    using FileFormat = DataTypes::FileFormat;
     static const QMap<Interface::Commands, CommandRegisters> WSCommandMap;
 
     bool m_isCommandRequested = false;
@@ -44,9 +45,6 @@ public:
 
     void setProgressCount(const quint64 count);
     void setProgressRange(const quint64 count);
-
-protected:
-    using FileFormat = DataTypes::FileFormat;
 
 signals:
     void finished();

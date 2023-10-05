@@ -51,6 +51,7 @@ private slots:
     void showAboutDialog();
     void closeEvent(QCloseEvent *event) override;
     void update(const DataTypes::GeneralResponseStruct &rsp);
+    void showReconnectDialog();
 
 private:
     UniquePointer<Interface::ConnectionManager> connectionManager;

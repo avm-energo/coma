@@ -255,7 +255,7 @@ void AbstractTuneDialog::startTune()
     readTuneCoefs();
     if (saveAllTuneCoefs() != Error::Msg::NoError)
     {
-        if (!EMessageBox::question("Сохранение настроечных коэффициентов не произведено, продолжать?"))
+        if (!EMessageBox::question(this, "Сохранение настроечных коэффициентов не произведено, продолжать?"))
             return;
     }
     StdFunc::ClearCancel();

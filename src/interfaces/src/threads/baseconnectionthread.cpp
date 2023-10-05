@@ -35,7 +35,6 @@ void BaseConnectionThread::setState(const State state)
 
 void BaseConnectionThread::clear()
 {
-    // QMutexLocker locker(&_mutex);
     m_progress = 0;
     m_currentCommand = CommandStruct();
     finishCommand();

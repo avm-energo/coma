@@ -62,10 +62,17 @@ void UsbHidPort::disconnect()
 
 void UsbHidPort::reconnect()
 {
-    while (getReconnectLoopFlag())
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    connect();
-    emit clearQueries();
+    if (getState() != State::Reconnect)
+    {
+        setState(State::Reconnect);
+        while (getReconnectLoopFlag())
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        setReconnectLoopFlag(true); // Восстанавливаем флаг цикла
+        disconnect();
+        StdFunc::Wait(1000); // Устройство не сразу появляется на связи
+        connect();
+        emit clearQueries();
+    }
 }
 
 QByteArray UsbHidPort::read(bool *status)
@@ -83,9 +90,9 @@ QByteArray UsbHidPort::read(bool *status)
         writeLog(Error::Msg::ReadError);
         hidErrorHandle();
         emit error(PortErrors::ReadError);
-        // reconnectCycle();
         *status = false;
         data.clear();
+        QCoreApplication::processEvents();
     }
     // timeout from module (if avtuk accidentally couldnt response)
     if ((bytes == 0) && (m_waitForReply) && (missingCounter == missingCounterMax))
@@ -104,7 +111,7 @@ QByteArray UsbHidPort::read(bool *status)
     else
     {
         data.clear();
-        emit error(PortErrors::NoData);
+        QCoreApplication::processEvents();
     }
 
     return data;
@@ -138,32 +145,24 @@ void UsbHidPort::clear()
     m_dataGuard.lock(); // lock port
     m_waitForReply = false;
     m_currCommand.clear();
-    m_hidDevice = nullptr;
     m_dataGuard.unlock(); // unlock port
 }
 
-bool UsbHidPort::writeDataToPort(QByteArray &ba)
+bool UsbHidPort::writeDataToPort(QByteArray &command)
 {
-    if (!m_hidDevice)
-    {
-        writeLog(Error::Msg::NoDeviceError);
-        qCritical() << Error::Msg::NoDeviceError;
-        // closeConnection();
-        return false;
-    }
-    if (ba.size() > HID::MaxSegmenthLength)
+    if (command.size() > HID::MaxSegmenthLength)
     {
         writeLog(Error::Msg::SizeError);
         qCritical() << Error::Msg::SizeError;
         return false;
     }
 
-    if (ba.size() < HID::MaxSegmenthLength)
-        ba.append(HID::MaxSegmenthLength - ba.size(), static_cast<char>(0x00));
-    ba.prepend(static_cast<char>(0x00)); // inserting ID field for HID protocol
+    if (command.size() < HID::MaxSegmenthLength)
+        command.append(HID::MaxSegmenthLength - command.size(), static_cast<char>(0x00));
+    command.prepend(static_cast<char>(0x00)); // inserting ID field for HID protocol
 
-    auto tmpt = static_cast<size_t>(ba.size());
-    int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt); // write
+    auto tmpt = static_cast<size_t>(command.size());
+    int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(command.data()), tmpt); // write
     if (errorCode == -1)
     {
         writeLog(Error::Msg::WriteError);

@@ -119,7 +119,7 @@ public:
     static bool m_result;
     static bool password(QWidget *parent, const QString &hash);
     static void information(QWidget *parent, const QString &msg);
-    static bool question(const QString &msg); // yes (1) / no (0)
+    static bool question(QWidget *parent, const QString &msg); // yes (1) / no (0)
     static void warning(QWidget *parent, const QString &msg);
     static void error(QWidget *parent, const QString &msg);
     static bool next(QWidget *parent, const QString &msg); // next (1) / cancel (0)

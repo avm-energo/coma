@@ -111,10 +111,10 @@ void EMessageBox::information(QWidget *parent, const QString &msg)
     popup->exec();
 }
 
-bool EMessageBox::question(const QString &msg)
+bool EMessageBox::question(QWidget *parent, const QString &msg)
 {
     m_result = false;
-    auto popup = new ESimplePopup(ESimplePopup::QUESTMSG, msg);
+    auto popup = new ESimplePopup(ESimplePopup::QUESTMSG, msg, parent);
     QObject::connect(popup, &ESimplePopup::accepted, [] { m_result = true; });
     QObject::connect(popup, &ESimplePopup::cancelled, [] { m_result = false; });
     popup->exec();

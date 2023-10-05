@@ -16,12 +16,12 @@ void BasePort::setState(const Interface::State state) noexcept
     emit stateChanged(state);
 }
 
-Interface::State BasePort::getState() noexcept
+Interface::State BasePort::getState() const noexcept
 {
     return m_state.load();
 }
 
-bool BasePort::getReconnectLoopFlag() noexcept
+bool BasePort::getReconnectLoopFlag() const noexcept
 {
     return m_reconnectLoopFlag.load();
 }
@@ -125,14 +125,10 @@ void BasePort::writeData(const QByteArray &ba)
 
 void BasePort::closeConnection()
 {
+    if (getState() == Interface::State::Reconnect && getReconnectLoopFlag())
+        setReconnectLoopFlag(false);
     setState(Interface::State::Disconnect);
     emit clearQueries();
-}
-
-void BasePort::restartConnection()
-{
-    setState(Interface::State::Reconnect);
-    // TODO: Эмитим сигнал, чтобы connection больше не клал запросы в очередь
 }
 
 void BasePort::finishReconnect()

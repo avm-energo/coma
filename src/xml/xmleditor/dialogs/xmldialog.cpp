@@ -73,7 +73,7 @@ void XmlDialog::reject()
     // Если есть изменения, то показываем пользователю MessageBox
     if (isChanged)
     {
-        if (EMessageBox::question("Сохранить изменения?"))
+        if (EMessageBox::question(this, "Сохранить изменения?"))
             saveData();
     }
     QDialog::reject();

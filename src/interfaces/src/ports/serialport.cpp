@@ -69,7 +69,6 @@ void SerialPort::reconnect()
 // blocking read from serial port with timeout implementation
 QByteArray SerialPort::read(bool *status)
 {
-    Q_UNUSED(status);
     QByteArray ba;
     bool readyRead = true;                      // enabling read flag
     if (!port->bytesAvailable())                // if no data
@@ -86,9 +85,11 @@ QByteArray SerialPort::read(bool *status)
     }
     if (ba.isEmpty())
     {
-        emit error(PortErrors::NoData);
+        *status = false;
         QCoreApplication::processEvents();
     }
+    else
+        *status = true;
     return ba;
 };
 
@@ -103,7 +104,6 @@ bool SerialPort::write(const QByteArray &ba)
     {
         qCritical() << "Error with data writing";
         emit error(PortErrors::WriteError);
-        // reconnectCycle();
         return false;
     }
     return true;
@@ -114,13 +114,10 @@ void SerialPort::errorOccurred(const QSerialPort::SerialPortError err)
     // NOTE: TimeoutError is ok due calling the waitForReadyRead function of the QSerialPort instance.
     if (err == QSerialPort::NoError)
         return;
-    // else if (err == QSerialPort::TimeoutError)
-    //    emit error(PortErrors::Timeout);
     else if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError)
     {
         qWarning() << QVariant::fromValue(err).toString();
         emit error(PortErrors::ReadError);
-        // reconnectCycle();
     }
     else
         qDebug() << QVariant::fromValue(err).toString();

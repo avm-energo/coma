@@ -12,7 +12,7 @@ class DeviceWatcher : public QObject
 private:
     /// \brief Registering device's notifications for a passed widget.
     /// \details The current implementation only supports Windows.
-    bool registerDeviceNotifications(QWidget *widget);
+    bool registerForDeviceNotifications(QWidget *widget);
 
 public:
     explicit DeviceWatcher(QWidget *parent) noexcept;

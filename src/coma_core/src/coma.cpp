@@ -27,6 +27,7 @@
 #include "../../dialogs/connectdialog.h"
 #include "../../dialogs/errordialog.h"
 #include "../../dialogs/keypressdialog.h"
+#include "../../dialogs/reconnectdialog.h"
 #include "../../dialogs/settingsdialog.h"
 #include "../../dialogs/switchjournaldialog.h"
 #include "../../journals/journalviewer.h"
@@ -87,6 +88,7 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
         connectionManager.get(), &ConnectionManager::deviceConnected);
     connect(deviceWatcher.get(), &DeviceWatcher::deviceDisconnected, //
         connectionManager.get(), &ConnectionManager::deviceDisconnected);
+    connect(connectionManager.get(), &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
 
     // registering center of coma main window for epopup message boxes
     auto pointContainer = new PointContainer(this);
@@ -590,6 +592,15 @@ void Coma::update(const DataTypes::GeneralResponseStruct &rsp)
 
     if (rsp.type == DataTypes::GeneralResponseTypes::DataSize)
         setProgressBarSize(1, rsp.data);
+}
+
+void Coma::showReconnectDialog()
+{
+    auto reconnectDialog = new ReconnectDialog(this);
+    connect(connectionManager.get(), &ConnectionManager::reconnectSuccess, //
+        reconnectDialog, &ReconnectDialog::reconnectSuccess);
+    connect(reconnectDialog, &ReconnectDialog::breakConnection, this, &Coma::disconnectAndClear);
+    reconnectDialog->open();
 }
 
 void Coma::closeEvent(QCloseEvent *event)

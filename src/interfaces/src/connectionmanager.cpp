@@ -71,7 +71,6 @@ void ConnectionManager::setReconnectMode(const ReconnectMode newMode) noexcept
 
 void ConnectionManager::reconnect()
 {
-    m_context.m_port->restartConnection();
     emit reconnectDevice();
     if (m_reconnectMode == ReconnectMode::Loud)
         emit reconnectUI();
@@ -104,7 +103,7 @@ bool ConnectionManager::isCurrentDevice(const QString &guid)
         if (usbPort != nullptr)
         {
             const auto &devInfo = usbPort->deviceInfo();
-            return (devInfo.hasMatch(guid) || devInfo.hasPartialMatch(guid));
+            return devInfo.hasMatch(guid);
         }
     }
     return false;
@@ -116,7 +115,7 @@ void ConnectionManager::deviceConnected(const QString &guid)
     {
         if (m_reconnectMode == ReconnectMode::Silent)
             m_silentTimer->stop();
-        // TODO: тут мы должны вывести порт из реконнекта
+        // Выводим порт из состояния реконнекта
         emit reconnectSuccess();
     }
 }
@@ -124,7 +123,10 @@ void ConnectionManager::deviceConnected(const QString &guid)
 void ConnectionManager::deviceDisconnected(const QString &guid)
 {
     if (isCurrentDevice(guid))
+    {
+        // Загоняем порт в состояние реконнекта
         reconnect();
+    }
 }
 
 } // namespace Interface
