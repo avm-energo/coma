@@ -1,4 +1,4 @@
-#include "interfaces/threads/modbusthread.h"
+#include "interfaces/parsers/modbusparser.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -15,15 +15,15 @@ constexpr auto RECONNECTTIME = 10000;
 
 using namespace Interface;
 
-ModbusThread::ModbusThread(RequestQueue &queue, QObject *parent) : BaseConnectionThread(queue, parent)
+ModbusParser::ModbusParser(RequestQueue &queue, QObject *parent) : BaseProtocolParser(queue, parent)
 {
 }
 
-ModbusThread::~ModbusThread()
+ModbusParser::~ModbusParser()
 {
 }
 
-void ModbusThread::parseRequest(const CommandStruct &cmdStr)
+void ModbusParser::parseRequest(const CommandStruct &cmdStr)
 {
     switch (cmdStr.command)
     {
@@ -204,7 +204,7 @@ void ModbusThread::parseRequest(const CommandStruct &cmdStr)
     }
 }
 
-void ModbusThread::parseResponse()
+void ModbusParser::parseResponse()
 {
     using namespace MBS;
     switch (m_currentCommand.command)
@@ -260,12 +260,12 @@ void ModbusThread::parseResponse()
     finishCommand();
 }
 
-void ModbusThread::setDeviceAddress(quint8 adr)
+void ModbusParser::setDeviceAddress(quint8 adr)
 {
     m_deviceAddress = adr;
 }
 
-void ModbusThread::processReadBytes(QByteArray ba)
+void ModbusParser::processReadBytes(QByteArray ba)
 {
     m_readData.append(ba);
     if (m_readData.size() >= 2)
@@ -311,21 +311,21 @@ void ModbusThread::processReadBytes(QByteArray ba)
 //    m_delay = newDelay;
 //}
 
-void ModbusThread::calcCRCAndSend(QByteArray &ba)
+void ModbusParser::calcCRCAndSend(QByteArray &ba)
 {
     utils::CRC16 crc(ba);
     ba.append(crc.toByteArray());
     send(ba);
 }
 
-void ModbusThread::send(const QByteArray &ba)
+void ModbusParser::send(const QByteArray &ba)
 {
     m_readData.clear();
     m_log.info("-> " + ba.toHex());
     emit sendDataToPort(ba);
 }
 
-void ModbusThread::processFloatSignals()
+void ModbusParser::processFloatSignals()
 {
     if (m_readData.size() < 3)
     {
@@ -350,7 +350,7 @@ void ModbusThread::processFloatSignals()
     }
 }
 
-void ModbusThread::processIntegerSignals()
+void ModbusParser::processIntegerSignals()
 {
     if (m_readData.size() < 3)
     {
@@ -375,7 +375,7 @@ void ModbusThread::processIntegerSignals()
     }
 }
 
-void ModbusThread::processCommandResponse()
+void ModbusParser::processCommandResponse()
 {
     if (m_readData.size() < 3)
     {
@@ -397,7 +397,7 @@ void ModbusThread::processCommandResponse()
     emit responseSend(grs);
 }
 
-void ModbusThread::processSinglePointSignals()
+void ModbusParser::processSinglePointSignals()
 {
     DataTypes::SinglePointWithTimeStruct signal;
 
@@ -426,7 +426,7 @@ void ModbusThread::processSinglePointSignals()
     }
 }
 
-bool ModbusThread::processReadFile()
+bool ModbusParser::processReadFile()
 {
     if (m_readData.size() < 8) // "шапка" секции
     {
@@ -450,7 +450,7 @@ bool ModbusThread::processReadFile()
     return true;
 }
 
-void ModbusThread::readRegisters(MBS::CommandStruct &cms)
+void ModbusParser::readRegisters(MBS::CommandStruct &cms)
 {
     m_commandSent = cms;
     QByteArray ba(createReadPDU(cms));
@@ -461,7 +461,7 @@ void ModbusThread::readRegisters(MBS::CommandStruct &cms)
     send(ba);
 }
 
-void ModbusThread::readCoils(MBS::CommandStruct &cms)
+void ModbusParser::readCoils(MBS::CommandStruct &cms)
 {
     m_commandSent = cms;
     QByteArray ba(createReadPDU(cms));
@@ -471,7 +471,7 @@ void ModbusThread::readCoils(MBS::CommandStruct &cms)
     send(ba);
 }
 
-void ModbusThread::writeMultipleRegisters(MBS::CommandStruct &cms)
+void ModbusParser::writeMultipleRegisters(MBS::CommandStruct &cms)
 {
     QByteArray ba;
     setQueryStartBytes(cms, ba);
@@ -482,7 +482,7 @@ void ModbusThread::writeMultipleRegisters(MBS::CommandStruct &cms)
     calcCRCAndSend(ba);
 }
 
-bool ModbusThread::writeFile(quint16 fileNum)
+bool ModbusParser::writeFile(quint16 fileNum)
 {
     quint8 lastSection = 0; // не последняя секция
     QByteArray ba = m_fileData.mid(0, MBS::FileSectionLength);
@@ -504,7 +504,7 @@ bool ModbusThread::writeFile(quint16 fileNum)
     return true;
 }
 
-void ModbusThread::setQueryStartBytes(MBS::CommandStruct &cms, QByteArray &ba)
+void ModbusParser::setQueryStartBytes(MBS::CommandStruct &cms, QByteArray &ba)
 {
     m_commandSent = cms;
     ba.append(m_deviceAddress); // адрес устройства
@@ -516,7 +516,7 @@ void ModbusThread::setQueryStartBytes(MBS::CommandStruct &cms, QByteArray &ba)
     ba.append(bigEndArray);
 }
 
-QByteArray ModbusThread::createReadPDU(const MBS::CommandStruct &cms) const
+QByteArray ModbusParser::createReadPDU(const MBS::CommandStruct &cms) const
 {
     QByteArray ba;
     ba.append(cms.cmd);
@@ -525,7 +525,7 @@ QByteArray ModbusThread::createReadPDU(const MBS::CommandStruct &cms) const
     return ba;
 }
 
-QByteArray ModbusThread::createADU(const QByteArray &pdu) const
+QByteArray ModbusParser::createADU(const QByteArray &pdu) const
 {
     QByteArray ba;
     ba.append(m_deviceAddress);

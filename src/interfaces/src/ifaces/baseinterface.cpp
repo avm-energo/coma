@@ -1,37 +1,37 @@
-#include "interfaces/ports/baseport.h"
+#include "interfaces/ifaces/baseinterface.h"
 
 #include <QCoreApplication>
 #include <QElapsedTimer>
 
-BasePort::BasePort(const QString &logFilename, QObject *parent)
+BaseInterface::BaseInterface(const QString &logFilename, QObject *parent)
     : QObject(parent), m_state(Interface::State::Connect), m_reconnectLoopFlag(true)
 {
     m_log.init(logFilename + "." + ::logExt);
     m_log.writeRaw(::logStart);
 }
 
-void BasePort::setState(const Interface::State state) noexcept
+void BaseInterface::setState(const Interface::State state) noexcept
 {
     m_state.store(state);
     emit stateChanged(state);
 }
 
-Interface::State BasePort::getState() const noexcept
+Interface::State BaseInterface::getState() const noexcept
 {
     return m_state.load();
 }
 
-bool BasePort::getReconnectLoopFlag() const noexcept
+bool BaseInterface::getReconnectLoopFlag() const noexcept
 {
     return m_reconnectLoopFlag.load();
 }
 
-void BasePort::setReconnectLoopFlag(const bool flag) noexcept
+void BaseInterface::setReconnectLoopFlag(const bool flag) noexcept
 {
     m_reconnectLoopFlag.store(flag);
 }
 
-void BasePort::writeLog(const QByteArray &ba, Interface::Direction dir)
+void BaseInterface::writeLog(const QByteArray &ba, Interface::Direction dir)
 {
     QByteArray tmpba = QByteArray(metaObject()->className());
     switch (dir)
@@ -50,25 +50,25 @@ void BasePort::writeLog(const QByteArray &ba, Interface::Direction dir)
     m_log.writeRaw(tmpba);
 }
 
-void BasePort::writeLog(const Error::Msg msg, Interface::Direction dir)
+void BaseInterface::writeLog(const Error::Msg msg, Interface::Direction dir)
 {
     writeLog(QVariant::fromValue(msg).toByteArray(), dir);
 }
 
-bool BasePort::reconnectCycle()
-{
-    setState(Interface::State::Reconnect);
-    m_log.writeRaw("!!! Restart connection !!!\n");
-    disconnect();
-    QElapsedTimer timer;
-    timer.start();
-    while (timer.elapsed() < RECONNECTINTERVAL)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    emit clearQueries();
-    return connect();
-}
+// bool BaseInterface::reconnectCycle()
+//{
+//    setState(Interface::State::Reconnect);
+//    m_log.writeRaw("!!! Restart connection !!!\n");
+//    disconnect();
+//    QElapsedTimer timer;
+//    timer.start();
+//    while (timer.elapsed() < RECONNECTINTERVAL)
+//        QCoreApplication::processEvents(QEventLoop::AllEvents);
+//    emit clearQueries();
+//    return connect();
+//}
 
-void BasePort::poll()
+void BaseInterface::poll()
 {
     Interface::State state;
     do
@@ -100,7 +100,7 @@ void BasePort::poll()
     QCoreApplication::processEvents();
 }
 
-void BasePort::writeData(const QByteArray &ba)
+void BaseInterface::writeData(const QByteArray &ba)
 {
     auto status = Error::Msg::NoError;
     if (getState() == Interface::State::Run) // port is running
@@ -123,7 +123,7 @@ void BasePort::writeData(const QByteArray &ba)
     }
 }
 
-void BasePort::closeConnection()
+void BaseInterface::closeConnection()
 {
     if (getState() == Interface::State::Reconnect && getReconnectLoopFlag())
         setReconnectLoopFlag(false);
@@ -131,7 +131,7 @@ void BasePort::closeConnection()
     emit clearQueries();
 }
 
-void BasePort::finishReconnect()
+void BaseInterface::finishReconnect()
 {
     setReconnectLoopFlag(false);
 }

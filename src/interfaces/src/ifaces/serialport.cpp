@@ -1,4 +1,4 @@
-#include "interfaces/ports/serialport.h"
+#include "interfaces/ifaces/serialport.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -7,7 +7,7 @@
 
 #define TIMEOUT 3000
 
-SerialPort::SerialPort(QObject *parent) : BasePort("ModbusPort", parent)
+SerialPort::SerialPort(QObject *parent) : BaseInterface("ModbusPort", parent)
 {
 }
 
@@ -33,7 +33,7 @@ void SerialPort::init(SerialPortSettings settings)
     });
     QObject::connect(port.get(), &QIODevice::readyRead, timeoutTimer, &QTimer::stop);
     QObject::connect(timeoutTimer, &QTimer::timeout, this, [this] {
-        emit error(PortErrors::Timeout);
+        emit error(InterfaceError::Timeout);
         qWarning() << this->metaObject()->className() << Error::Timeout;
         writeLog(Error::Timeout);
         emit clearQueries();
@@ -103,7 +103,7 @@ bool SerialPort::write(const QByteArray &ba)
     if (bytes <= 0)
     {
         qCritical() << "Error with data writing";
-        emit error(PortErrors::WriteError);
+        emit error(InterfaceError::WriteError);
         return false;
     }
     return true;
@@ -117,7 +117,7 @@ void SerialPort::errorOccurred(const QSerialPort::SerialPortError err)
     else if (err == QSerialPort::NotOpenError || err == QSerialPort::ResourceError)
     {
         qWarning() << QVariant::fromValue(err).toString();
-        emit error(PortErrors::ReadError);
+        emit error(InterfaceError::ReadError);
     }
     else
         qDebug() << QVariant::fromValue(err).toString();

@@ -22,11 +22,15 @@
  * SOFTWARE.
  */
 
+// Updated by vladd12 in 2k23
+
 #ifndef QPROGRESSINDICATOR_H
 #define QPROGRESSINDICATOR_H
 
 #include <QColor>
 #include <QWidget>
+
+class QTimer;
 
 /*!
     \class QProgressIndicator
@@ -44,23 +48,20 @@ class QProgressIndicator : public QWidget
     Q_PROPERTY(bool displayedWhenStopped READ isDisplayedWhenStopped WRITE setDisplayedWhenStopped)
     Q_PROPERTY(QColor color READ color WRITE setColor)
 public:
-    QProgressIndicator(QWidget *parent = 0);
+    explicit QProgressIndicator(QWidget *parent = nullptr);
 
     /*! Returns the delay between animation steps.
         \return The number of milliseconds between animation steps. By default, the animation delay
        is set to 40 milliseconds.
         \sa setAnimationDelay
      */
-    int animationDelay() const
-    {
-        return m_delay;
-    }
+    int animationDelay() const noexcept;
 
     /*! Returns a Boolean value indicating whether the component is currently animated.
         \return Animation state.
         \sa startAnimation stopAnimation
      */
-    bool isAnimated() const;
+    bool isAnimated() const noexcept;
 
     /*! Returns a Boolean value indicating whether the receiver shows itself even when it is not
        animating.
@@ -68,18 +69,16 @@ public:
        default, it returns false.
         \sa setDisplayedWhenStopped
      */
-    bool isDisplayedWhenStopped() const;
+    bool isDisplayedWhenStopped() const noexcept;
 
     /*! Returns the color of the component.
         \sa setColor
       */
-    const QColor &color() const
-    {
-        return m_color;
-    }
+    const QColor &color() const noexcept;
 
-    virtual QSize sizeHint() const;
-    int heightForWidth(int w) const;
+    virtual QSize sizeHint() const noexcept;
+    int heightForWidth(int w) const noexcept;
+
 public slots:
     /*! Starts the spin animation.
         \sa stopAnimation isAnimated
@@ -97,30 +96,30 @@ public slots:
         \param delay The delay, in milliseconds.
         \sa animationDelay
      */
-    void setAnimationDelay(int delay);
+    void setAnimationDelay(int delay) noexcept;
 
     /*! Sets whether the component hides itself when it is not animating.
        \param state The animation state. Set false to hide the progress indicator when it is not
        animating; otherwise true.
        \sa isDisplayedWhenStopped
      */
-    void setDisplayedWhenStopped(bool state);
+    void setDisplayedWhenStopped(bool state) noexcept;
 
     /*! Sets the color of the components to the given color.
         \sa color
      */
-    void setColor(const QColor &color);
+    void setColor(const QColor &color) noexcept;
 
 protected:
-    virtual void timerEvent(QTimerEvent *event);
+    virtual void timerEvent();
     virtual void paintEvent(QPaintEvent *event);
 
 private:
     int m_angle;
-    int m_timerId;
     int m_delay;
     bool m_displayedWhenStopped;
     QColor m_color;
+    QTimer *m_timer;
 };
 
 #endif // QPROGRESSINDICATOR_H

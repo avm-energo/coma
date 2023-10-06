@@ -1,22 +1,22 @@
-#ifndef MODBUSTHREAD_H
-#define MODBUSTHREAD_H
+#ifndef MODBUSPARSER_H
+#define MODBUSPARSER_H
 
 #include <QTimer>
 #include <gen/datatypes.h>
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
-#include <interfaces/threads/baseconnectionthread.h>
+#include <interfaces/parsers/baseprotocolparser.h>
 #include <interfaces/types/modbus_types.h>
 
 namespace Interface
 {
 
-class ModbusThread : public BaseConnectionThread
+class ModbusParser : public BaseProtocolParser
 {
     Q_OBJECT
 public:
-    explicit ModbusThread(RequestQueue &queue, QObject *parent = nullptr);
-    ~ModbusThread();
+    explicit ModbusParser(RequestQueue &queue, QObject *parent = nullptr);
+    ~ModbusParser();
     void parseRequest(const CommandStruct &cmdStr) override;
     void parseResponse() override;
 
@@ -75,4 +75,4 @@ private:
 };
 
 }
-#endif // MODBUSTHREAD_H
+#endif // MODBUSPARSER_H

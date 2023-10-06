@@ -1,4 +1,4 @@
-#include "interfaces/threads/baseconnectionthread.h"
+#include "interfaces/parsers/baseprotocolparser.h"
 
 #include <QCoreApplication>
 #include <s2/s2util.h>
@@ -6,7 +6,7 @@
 
 using namespace Interface;
 
-const QMap<Interface::Commands, CommandRegisters> BaseConnectionThread::WSCommandMap {
+const QMap<Interface::Commands, CommandRegisters> BaseProtocolParser::WSCommandMap {
     { Commands::C_StartWorkingChannel, StartWorkingChannel },
     { Commands::C_SetStartupValues, SetStartupValues },
     { Commands::C_SetStartupPhaseA, SetStartupPhaseA },
@@ -19,45 +19,45 @@ const QMap<Interface::Commands, CommandRegisters> BaseConnectionThread::WSComman
     { Commands::C_ClearStartupError, ClearStartupSetError },
 };
 
-BaseConnectionThread::BaseConnectionThread(RequestQueue &queue, QObject *parent) : QObject(parent), m_queue(queue)
+BaseProtocolParser::BaseProtocolParser(RequestQueue &queue, QObject *parent) : QObject(parent), m_queue(queue)
 {
 }
 
-State BaseConnectionThread::getState() const
+State BaseProtocolParser::getState() const
 {
     return m_state.load();
 }
 
-void BaseConnectionThread::setState(const State state)
+void BaseProtocolParser::setState(const State state)
 {
     m_state.store(state);
 }
 
-void BaseConnectionThread::clear()
+void BaseProtocolParser::clear()
 {
     m_progress = 0;
     m_currentCommand = CommandStruct();
     finishCommand();
 }
 
-void BaseConnectionThread::finishCommand()
+void BaseProtocolParser::finishCommand()
 {
     m_isCommandRequested = false;
     m_readData.clear();
     wakeUp();
 }
 
-void BaseConnectionThread::wakeUp()
+void BaseProtocolParser::wakeUp()
 {
     m_waiter.wakeOne();
 }
 
-quint16 BaseConnectionThread::blockByReg(const quint32 regAddr)
+quint16 BaseProtocolParser::blockByReg(const quint32 regAddr)
 {
     return Connection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
 }
 
-void BaseConnectionThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataTypes::FileFormat format)
+void BaseProtocolParser::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataTypes::FileFormat format)
 {
     switch (format)
     {
@@ -122,7 +122,7 @@ void BaseConnectionThread::FilePostpone(QByteArray &ba, S2::FilesEnum addr, Data
     }
 }
 
-void BaseConnectionThread::checkQueue()
+void BaseProtocolParser::checkQueue()
 {
     auto opt = m_queue.deQueue();
     if (opt.has_value())
@@ -134,7 +134,7 @@ void BaseConnectionThread::checkQueue()
     }
 }
 
-void BaseConnectionThread::run()
+void BaseProtocolParser::run()
 {
     auto classname = QString(metaObject()->className()) + ".log";
     if (classname.contains("::"))
@@ -158,13 +158,13 @@ void BaseConnectionThread::run()
     emit finished();
 }
 
-void BaseConnectionThread::setProgressCount(const quint64 count)
+void BaseProtocolParser::setProgressCount(const quint64 count)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, count };
     emit responseSend(resp);
 }
 
-void BaseConnectionThread::setProgressRange(const quint64 count)
+void BaseProtocolParser::setProgressRange(const quint64 count)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, count };
     emit responseSend(resp);

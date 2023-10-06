@@ -19,7 +19,7 @@ enum INTERVAL
     WAIT = 15000
 };
 
-class BasePort;       // Forward declaration
+class BaseInterface;       // Forward declaration
 struct ConnectStruct; // Forward declaration
 
 namespace Interface

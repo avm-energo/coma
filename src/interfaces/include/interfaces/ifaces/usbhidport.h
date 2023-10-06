@@ -2,7 +2,7 @@
 
 #include <QWaitCondition>
 #include <gen/error.h>
-#include <interfaces/ports/baseport.h>
+#include <interfaces/ifaces/baseinterface.h>
 #include <interfaces/types/protocom_types.h>
 #include <interfaces/types/settingstypes.h>
 
@@ -16,7 +16,7 @@ constexpr unsigned MainLoopDelay = 20; // 20 ms main loop sleep
 constexpr char headerValidator[] = "[a-zA-Z]{3}(?=#)";
 } // namespace HID
 
-class UsbHidPort final : public BasePort
+class UsbHidPort final : public BaseInterface
 {
     Q_OBJECT
 public:

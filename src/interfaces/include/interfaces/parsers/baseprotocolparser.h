@@ -1,5 +1,5 @@
-#ifndef BASECONNECTIONTHREAD_H
-#define BASECONNECTIONTHREAD_H
+#ifndef BASEPROTOCOLPARSER_H
+#define BASEPROTOCOLPARSER_H
 
 #include <QObject>
 #include <QWaitCondition>
@@ -10,7 +10,7 @@
 namespace Interface
 {
 
-class BaseConnectionThread : public QObject
+class BaseProtocolParser : public QObject
 {
     Q_OBJECT
 protected:
@@ -30,7 +30,7 @@ protected:
 public:
     CommandStruct m_currentCommand;
 
-    explicit BaseConnectionThread(RequestQueue &queue, QObject *parent = nullptr);
+    explicit BaseProtocolParser(RequestQueue &queue, QObject *parent = nullptr);
 
     State getState() const;
     void setState(const State state);
@@ -59,4 +59,4 @@ public slots:
 
 }
 
-#endif // BASECONNECTIONTHREAD_H
+#endif // BASEPROTOCOLPARSER_H

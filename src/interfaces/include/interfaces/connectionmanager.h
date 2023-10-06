@@ -50,7 +50,7 @@ signals:
 
 private slots:
     /// \brief Хэндл для принятия ошибок от порта.
-    void handlePortError(const BasePort::PortErrors error);
+    void handlePortError(const InterfaceError error);
 
 public slots:
     /// \brief Слот для разрыва текущего соединения с устройством.

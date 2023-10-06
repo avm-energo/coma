@@ -2,14 +2,17 @@
 
 #include "../widgets/QProgressIndicator.h"
 #include "../widgets/epopup.h"
+#include "../widgets/wd_func.h"
 
 #include <QLabel>
 #include <QProgressBar>
 #include <QTimer>
 #include <QVBoxLayout>
 
-constexpr auto successMsg { "Переподключение прошло успешно!\n"
-                            "Данное окно автоматически закроется через %1 сек." };
+constexpr auto successMsg { //
+    "Переподключение прошло успешно!\n"
+    "Данное окно автоматически закроется через %1 сек."
+};
 
 ReconnectDialog::ReconnectDialog(QWidget *parent)
     : QDialog(parent), m_success(false), m_seconds(5), m_closeTimer(new QTimer(this))
@@ -53,6 +56,7 @@ void ReconnectDialog::setupUI()
     mainLayout->addWidget(m_progressBar, Qt::AlignCenter);
     setLayout(mainLayout);
     setMinimumSize(350, 200);
+    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void ReconnectDialog::open()
@@ -78,12 +82,14 @@ void ReconnectDialog::reject()
 void ReconnectDialog::reconnectSuccess()
 {
     m_success = true;
-    m_progressIndicator->stopAnimation();
     auto mainLayout = this->layout();
     mainLayout->removeWidget(m_progressIndicator);
     mainLayout->removeWidget(m_progressBar);
+    m_progressIndicator->stopAnimation();
     m_progressIndicator->deleteLater();
     m_progressBar->deleteLater();
     m_messageLabel->setText(QString(successMsg).arg(m_seconds));
+    mainLayout->addWidget(WDFunc::NewHexagonPB(
+        this, "", [this]() { this->reject(); }, ":/icons/tnyes.svg", "Закрыть"));
     m_closeTimer->start();
 }

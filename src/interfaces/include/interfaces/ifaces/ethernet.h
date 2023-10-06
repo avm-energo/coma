@@ -6,12 +6,12 @@
 #include <QTcpSocket>
 #include <QWaitCondition>
 #include <gen/logclass.h>
-#include <interfaces/ports/baseport.h>
+#include <interfaces/ifaces/baseinterface.h>
 #include <interfaces/types/settingstypes.h>
 
 #define PORT104 2404 // порт связи по протоколу МЭК 60870-5-104
 
-class Ethernet final : public BasePort
+class Ethernet final : public BaseInterface
 {
     Q_OBJECT
 

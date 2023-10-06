@@ -1,10 +1,10 @@
 #include "interfaces/connectionmanager.h"
 
 #include <gen/std_ext.h>
-#include <interfaces/ports/serialport.h>
-#include <interfaces/ports/usbhidport.h>
-#include <interfaces/threads/modbusthread.h>
-#include <interfaces/threads/protocomthread.h>
+#include <interfaces/ifaces/serialport.h>
+#include <interfaces/ifaces/usbhidport.h>
+#include <interfaces/parsers/modbusparser.h>
+#include <interfaces/parsers/protocomparser.h>
 
 namespace Interface
 {
@@ -31,13 +31,13 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
         overloaded {
             [this](const UsbHidSettings &settings) {
                 auto port = new UsbHidPort(settings);
-                auto parser = new ProtocomThread(m_currentConnection->m_queue);
+                auto parser = new ProtocomParser(m_currentConnection->m_queue);
                 m_context.init(port, parser, Strategy::Sync, Qt::DirectConnection);
             },
             [this](const SerialPortSettings &settings) {
                 auto port = new SerialPort();
                 port->init(settings);
-                auto parser = new ModbusThread(m_currentConnection->m_queue);
+                auto parser = new ModbusParser(m_currentConnection->m_queue);
                 parser->setDeviceAddress(settings.Address);
                 m_context.init(port, parser, Strategy::Sync, Qt::QueuedConnection);
             },
@@ -53,10 +53,11 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
             } //
         },
         connectionData.settings);
-    connect(m_context.m_port, &BasePort::error, this, &ConnectionManager::handlePortError, Qt::DirectConnection);
-    connect(this, &ConnectionManager::reconnectDevice, m_context.m_port, &BasePort::reconnect, Qt::QueuedConnection);
-    connect(this, &ConnectionManager::reconnectSuccess, m_context.m_port, //
-        &BasePort::finishReconnect, Qt::DirectConnection);
+    connect(m_context.m_iface, &BaseInterface::error, this, &ConnectionManager::handlePortError, Qt::DirectConnection);
+    connect(
+        this, &ConnectionManager::reconnectDevice, m_context.m_iface, &BaseInterface::reconnect, Qt::QueuedConnection);
+    connect(this, &ConnectionManager::reconnectSuccess, m_context.m_iface, //
+        &BaseInterface::finishReconnect, Qt::DirectConnection);
     if (m_context.run(m_currentConnection))
         emit connectSuccesfull();
     else
@@ -85,9 +86,9 @@ void ConnectionManager::breakConnection()
     Connection::s_connection.reset();
 }
 
-void ConnectionManager::handlePortError(const BasePort::PortErrors error)
+void ConnectionManager::handlePortError(const InterfaceError error)
 {
-    if (error == BasePort::PortErrors::Timeout
+    if (error == InterfaceError::Timeout
         && m_context.m_parser->m_currentCommand.command == Interface::Commands::C_ReqBSI)
     {
         qCritical() << "Превышено время ожидания блока BSI. Disconnect...";
@@ -99,7 +100,7 @@ bool ConnectionManager::isCurrentDevice(const QString &guid)
 {
     if (m_context.isValid())
     {
-        auto usbPort = dynamic_cast<UsbHidPort *>(m_context.m_port);
+        auto usbPort = dynamic_cast<UsbHidPort *>(m_context.m_iface);
         if (usbPort != nullptr)
         {
             const auto &devInfo = usbPort->deviceInfo();

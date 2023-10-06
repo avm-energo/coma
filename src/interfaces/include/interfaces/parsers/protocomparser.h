@@ -2,18 +2,18 @@
 
 #define PROTOCOM_DEBUG
 
-#include <interfaces/threads/baseconnectionthread.h>
+#include <interfaces/parsers/baseprotocolparser.h>
 #include <interfaces/types/protocom_types.h>
 
 namespace Interface
 {
 
-class ProtocomThread : public BaseConnectionThread
+class ProtocomParser : public BaseProtocolParser
 {
     Q_OBJECT
 public:
-    explicit ProtocomThread(RequestQueue &queue, QObject *parent = nullptr);
-    ~ProtocomThread();
+    explicit ProtocomParser(RequestQueue &queue, QObject *parent = nullptr);
+    ~ProtocomParser();
 
 public slots:
     void processReadBytes(QByteArray ba) override;

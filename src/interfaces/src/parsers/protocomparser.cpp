@@ -1,4 +1,4 @@
-#include "interfaces/threads/protocomthread.h"
+#include "interfaces/parsers/protocomparser.h"
 
 #include <QDebug>
 #include <QQueue>
@@ -16,17 +16,17 @@ using Proto::CommandStruct;
 using Proto::Starters;
 using namespace Interface;
 
-ProtocomThread::ProtocomThread(RequestQueue &queue, QObject *parent) : BaseConnectionThread(queue, parent)
+ProtocomParser::ProtocomParser(RequestQueue &queue, QObject *parent) : BaseProtocolParser(queue, parent)
 {
     isFirstBlock = true;
     m_longBlockChunks.clear();
 }
 
-ProtocomThread::~ProtocomThread()
+ProtocomParser::~ProtocomParser()
 {
 }
 
-void ProtocomThread::processReadBytes(QByteArray ba)
+void ProtocomParser::processReadBytes(QByteArray ba)
 {
     QMutexLocker locker(&m_mutex);
     if (!isValidIncomingData(ba))
@@ -61,7 +61,7 @@ void ProtocomThread::processReadBytes(QByteArray ba)
     }
 }
 
-void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
+void ProtocomParser::parseRequest(const CommandStruct &cmdStr)
 {
     QByteArray ba;
 #ifdef PROTOCOM_DEBUG
@@ -243,7 +243,7 @@ void ProtocomThread::parseRequest(const CommandStruct &cmdStr)
     }
 }
 
-void ProtocomThread::parseResponse()
+void ProtocomParser::parseResponse()
 {
     using namespace Proto;
     using namespace DataTypes;
@@ -345,7 +345,7 @@ void ProtocomThread::parseResponse()
     finishCommand();
 }
 
-void ProtocomThread::writeLog(const QByteArray &ba, Direction dir)
+void ProtocomParser::writeLog(const QByteArray &ba, Direction dir)
 {
 #ifdef PROTOCOM_DEBUG
     QString msg = metaObject()->className();
@@ -369,25 +369,25 @@ void ProtocomThread::writeLog(const QByteArray &ba, Direction dir)
 #endif
 }
 
-void ProtocomThread::appendInt16(QByteArray &ba, quint16 data)
+void ProtocomParser::appendInt16(QByteArray &ba, quint16 data)
 {
     ba.append(static_cast<char>(data % 0x100));
     ba.append(static_cast<char>(data / 0x100));
 }
 
-bool ProtocomThread::isOneSegment(quint16 length)
+bool ProtocomParser::isOneSegment(quint16 length)
 {
     // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
     Q_ASSERT(length <= Proto::MaxSegmenthLength);
     return (length != Proto::MaxSegmenthLength);
 }
 
-bool ProtocomThread::isSplitted(quint16 length)
+bool ProtocomParser::isSplitted(quint16 length)
 {
     return !(length < Proto::MaxSegmenthLength);
 }
 
-bool ProtocomThread::isValidIncomingData(const QByteArray &data)
+bool ProtocomParser::isValidIncomingData(const QByteArray &data)
 {
     // if there's no standard header
     if (data.size() >= 4)
@@ -413,7 +413,7 @@ bool ProtocomThread::isValidIncomingData(const QByteArray &data)
     return false;
 }
 
-void ProtocomThread::processFileFromDisk(S2::FilesEnum fileNum)
+void ProtocomParser::processFileFromDisk(S2::FilesEnum fileNum)
 {
     QString fileToFind;
     switch (fileNum)
@@ -481,7 +481,7 @@ void ProtocomThread::processFileFromDisk(S2::FilesEnum fileNum)
     }
 }
 
-void ProtocomThread::progressFile(const QByteArray &data)
+void ProtocomParser::progressFile(const QByteArray &data)
 {
     // Progress for big files
     if (m_currentCommand.command == Commands::C_ReqFile)
@@ -494,7 +494,7 @@ void ProtocomThread::progressFile(const QByteArray &data)
     }
 }
 
-QByteArray ProtocomThread::prepareOk(bool isStart, byte cmd)
+QByteArray ProtocomParser::prepareOk(bool isStart, byte cmd)
 {
     QByteArray tmpba;
     if (isStart)
@@ -508,7 +508,7 @@ QByteArray ProtocomThread::prepareOk(bool isStart, byte cmd)
     return tmpba;
 }
 
-QByteArray ProtocomThread::prepareError()
+QByteArray ProtocomParser::prepareError()
 {
     QByteArray tmpba;
     tmpba.append(Proto::Starters::Request);
@@ -519,7 +519,7 @@ QByteArray ProtocomThread::prepareError()
     return tmpba;
 }
 
-QByteArray ProtocomThread::prepareBlock(Proto::Commands cmd, const QByteArray &data, Proto::Starters startByte)
+QByteArray ProtocomParser::prepareBlock(Proto::Commands cmd, const QByteArray &data, Proto::Starters startByte)
 {
     QByteArray ba;
     ba.append(startByte);
@@ -531,7 +531,7 @@ QByteArray ProtocomThread::prepareBlock(Proto::Commands cmd, const QByteArray &d
     return ba;
 }
 
-void ProtocomThread::writeBlock(Proto::Commands cmd, const QByteArray &arg2)
+void ProtocomParser::writeBlock(Proto::Commands cmd, const QByteArray &arg2)
 {
     using Proto::MaxSegmenthLength;
     QByteArray ba = arg2;
@@ -582,7 +582,7 @@ void ProtocomThread::processUnixTime(const QByteArray &ba)
 }
 #endif
 
-void ProtocomThread::processU32(const QByteArray &ba, quint16 startAddr)
+void ProtocomParser::processU32(const QByteArray &ba, quint16 startAddr)
 {
     Q_ASSERT(ba.size() % sizeof(quint32) == 0);
     Q_ASSERT(ba.size() >= 4);
@@ -596,7 +596,7 @@ void ProtocomThread::processU32(const QByteArray &ba, quint16 startAddr)
     }
 }
 
-void ProtocomThread::processFloat(const QByteArray &ba, quint32 startAddr)
+void ProtocomParser::processFloat(const QByteArray &ba, quint32 startAddr)
 {
     // NOTE Проблема со стартовыми регистрами, получим на один регистр больше чем по другим протоколам
     Q_ASSERT(ba.size() >= sizeof(float));     // должен быть хотя бы один флоат
@@ -613,7 +613,7 @@ void ProtocomThread::processFloat(const QByteArray &ba, quint32 startAddr)
     }
 }
 
-void ProtocomThread::processSinglePoint(const QByteArray &ba, const quint16 startAddr)
+void ProtocomParser::processSinglePoint(const QByteArray &ba, const quint16 startAddr)
 {
     for (quint32 i = 0; i != quint32(ba.size()); ++i)
     {
@@ -623,19 +623,19 @@ void ProtocomThread::processSinglePoint(const QByteArray &ba, const quint16 star
     }
 }
 
-void ProtocomThread::processInt(const byte num)
+void ProtocomParser::processInt(const byte num)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, num };
     emit responseSend(resp);
 }
 
-void ProtocomThread::processOk()
+void ProtocomParser::processOk()
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, 0 };
     emit responseSend(resp);
 }
 
-void ProtocomThread::processError(int errorCode)
+void ProtocomParser::processError(int errorCode)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, static_cast<quint64>(errorCode) };
     emit responseSend(resp);
@@ -643,13 +643,13 @@ void ProtocomThread::processError(int errorCode)
     qCritical() << "Error code: " << QString::number(errorCode, 16);
 }
 
-void ProtocomThread::processBlock(const QByteArray &ba, quint32 blkNum)
+void ProtocomParser::processBlock(const QByteArray &ba, quint32 blkNum)
 {
     DataTypes::BlockStruct resp { blkNum, ba };
     emit responseSend(resp);
 }
 
-void ProtocomThread::processTechBlock(const QByteArray &ba, quint32 blkNum)
+void ProtocomParser::processTechBlock(const QByteArray &ba, quint32 blkNum)
 {
     switch (blkNum)
     {

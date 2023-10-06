@@ -1,13 +1,12 @@
-#ifndef SERIALPORT_H
-#define SERIALPORT_H
+#pragma once
 
 #include <QPointer>
 #include <QSerialPort>
 #include <QTimer>
-#include <interfaces/ports/baseport.h>
+#include <interfaces/ifaces/baseinterface.h>
 #include <interfaces/types/settingstypes.h>
 
-class SerialPort final : public BasePort
+class SerialPort final : public BaseInterface
 {
     Q_OBJECT
 public:
@@ -27,5 +26,3 @@ private:
 private slots:
     void errorOccurred(const QSerialPort::SerialPortError err);
 };
-
-#endif // SERIALPORT_H

@@ -25,27 +25,40 @@
 #include "QProgressIndicator.h"
 
 #include <QPainter>
+#include <QTimer>
 
 QProgressIndicator::QProgressIndicator(QWidget *parent)
-    : QWidget(parent), m_angle(0), m_timerId(-1), m_delay(40), m_displayedWhenStopped(false), m_color(Qt::black)
+    : QWidget(parent)
+    , m_angle(0)
+    , m_delay(40)
+    , m_displayedWhenStopped(false)
+    , m_color(Qt::black)
+    , m_timer(new QTimer(this))
 {
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setFocusPolicy(Qt::NoFocus);
+    m_timer->setSingleShot(false);
+    m_timer->setInterval(m_delay);
+    connect(m_timer, &QTimer::timeout, this, &QProgressIndicator::timerEvent);
 }
 
-bool QProgressIndicator::isAnimated() const
+int QProgressIndicator::animationDelay() const noexcept
 {
-    return (m_timerId != -1);
+    return m_delay;
 }
 
-void QProgressIndicator::setDisplayedWhenStopped(bool state)
+bool QProgressIndicator::isAnimated() const noexcept
+{
+    return m_timer->isActive();
+}
+
+void QProgressIndicator::setDisplayedWhenStopped(bool state) noexcept
 {
     m_displayedWhenStopped = state;
-
     update();
 }
 
-bool QProgressIndicator::isDisplayedWhenStopped() const
+bool QProgressIndicator::isDisplayedWhenStopped() const noexcept
 {
     return m_displayedWhenStopped;
 }
@@ -53,53 +66,47 @@ bool QProgressIndicator::isDisplayedWhenStopped() const
 void QProgressIndicator::startAnimation()
 {
     m_angle = 0;
-
-    if (m_timerId == -1)
-        m_timerId = startTimer(m_delay);
+    if (!isAnimated())
+        m_timer->start();
 }
 
 void QProgressIndicator::stopAnimation()
 {
-    if (m_timerId != -1)
-        killTimer(m_timerId);
-
-    m_timerId = -1;
-
+    if (isAnimated())
+        m_timer->stop();
     update();
 }
 
-void QProgressIndicator::setAnimationDelay(int delay)
+void QProgressIndicator::setAnimationDelay(int delay) noexcept
 {
-    if (m_timerId != -1)
-        killTimer(m_timerId);
-
     m_delay = delay;
-
-    if (m_timerId != -1)
-        m_timerId = startTimer(m_delay);
+    m_timer->setInterval(m_delay);
 }
 
-void QProgressIndicator::setColor(const QColor &color)
+const QColor &QProgressIndicator::color() const noexcept
+{
+    return m_color;
+}
+
+void QProgressIndicator::setColor(const QColor &color) noexcept
 {
     m_color = color;
-
     update();
 }
 
-QSize QProgressIndicator::sizeHint() const
+QSize QProgressIndicator::sizeHint() const noexcept
 {
     return QSize(20, 20);
 }
 
-int QProgressIndicator::heightForWidth(int w) const
+int QProgressIndicator::heightForWidth(int w) const noexcept
 {
     return w;
 }
 
-void QProgressIndicator::timerEvent(QTimerEvent * /*event*/)
+void QProgressIndicator::timerEvent()
 {
     m_angle = (m_angle + 30) % 360;
-
     update();
 }
 
@@ -108,14 +115,12 @@ void QProgressIndicator::paintEvent(QPaintEvent * /*event*/)
     if (!m_displayedWhenStopped && !isAnimated())
         return;
 
-    int width = qMin(this->width(), this->height());
-
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
 
+    int width = std::min(this->width(), this->height());
     int outerRadius = (width - 1) * 0.5;
     int innerRadius = (width - 1) * 0.5 * 0.38;
-
     int capsuleHeight = outerRadius - innerRadius;
     int capsuleWidth = (width > 32) ? capsuleHeight * .23 : capsuleHeight * .35;
     int capsuleRadius = capsuleWidth / 2;

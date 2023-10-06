@@ -3,8 +3,8 @@
 #include <QThread>
 #include <QThreadPool>
 #include <interfaces/connection.h>
-#include <interfaces/ports/baseport.h>
-#include <interfaces/threads/baseconnectionthread.h>
+#include <interfaces/ifaces/baseinterface.h>
+#include <interfaces/parsers/baseprotocolparser.h>
 
 namespace Interface
 {
@@ -21,8 +21,8 @@ class ConnectionContext
     friend class ConnectionManager;
 
 private:
-    BasePort *m_port;
-    BaseConnectionThread *m_parser;
+    BaseInterface *m_iface;
+    BaseProtocolParser *m_parser;
     Strategy m_strategy;
     std::pair<QThread *, QThread *> m_syncThreads;
     QThreadPool *m_threadPool;
@@ -36,7 +36,7 @@ public:
     /// \param connPolicy [in] - для взаимодействия порта и парсера используются
     /// по USB и последовательному порту используются разные типы коммуникации.
     /// Причина: использование QSerialPort, с которым нельзя работать из разных потоков.
-    void init(BasePort *port, BaseConnectionThread *parser, //
+    void init(BaseInterface *iface, BaseProtocolParser *parser, //
         const Strategy strategy, const Qt::ConnectionType connPolicy);
     /// \brief Запускает соединение для текущего инициализированного контекста.
     bool run(Connection *connection);

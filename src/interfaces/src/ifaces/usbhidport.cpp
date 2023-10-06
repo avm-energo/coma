@@ -1,4 +1,4 @@
-#include "interfaces/ports/usbhidport.h"
+#include "interfaces/ifaces/usbhidport.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -13,10 +13,10 @@ using Proto::Starters;
 using namespace Interface;
 
 UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent)
-    : BasePort("UsbHidPort", parent), m_deviceInfo(dev), m_hidDevice(nullptr), m_waitForReply(false)
+    : BaseInterface("UsbHidPort", parent), m_deviceInfo(dev), m_hidDevice(nullptr), m_waitForReply(false)
 {
     using namespace settings;
-    QObject::connect(this, &BasePort::clearQueries, this, &UsbHidPort::clear);
+    QObject::connect(this, &BaseInterface::clearQueries, this, &UsbHidPort::clear);
     QSettings sets;
     missingCounterMax = sets.value(regMap[hidTimeout].name, "50").toInt();
 }
@@ -89,7 +89,7 @@ QByteArray UsbHidPort::read(bool *status)
         Q_ASSERT(bytes == -1);
         writeLog(Error::Msg::ReadError);
         hidErrorHandle();
-        emit error(PortErrors::ReadError);
+        emit error(InterfaceError::ReadError);
         *status = false;
         data.clear();
         QCoreApplication::processEvents();
@@ -167,7 +167,7 @@ bool UsbHidPort::writeDataToPort(QByteArray &command)
     {
         writeLog(Error::Msg::WriteError);
         hidErrorHandle();
-        emit error(PortErrors::WriteError);
+        emit error(InterfaceError::WriteError);
         return false;
     }
     missingCounter = 0;

@@ -1,4 +1,4 @@
-#include "interfaces/ports/ethernet.h"
+#include "interfaces/ifaces/ethernet.h"
 
 #include <QCoreApplication>
 #include <QNetworkProxy>
@@ -9,7 +9,7 @@
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 
-Ethernet::Ethernet(QObject *parent) : BasePort("iec104port", parent)
+Ethernet::Ethernet(QObject *parent) : BaseInterface("iec104port", parent)
 {
     ClosePortAndFinishThread = false;
 }

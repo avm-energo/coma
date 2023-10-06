@@ -11,27 +11,28 @@
 #include <interfaces/types/common_types.h>
 
 /// TODO: Вынести в настройки
-constexpr qint64 RECONNECTINTERVAL = 10000;
+// constexpr qint64 RECONNECTINTERVAL = 10000;
 
-class BasePort : public QObject
+enum class InterfaceError : quint16
+{
+    ConnectError,
+    Timeout,
+    ReadError,
+    WriteError
+};
+
+class BaseInterface : public QObject
 {
     Q_OBJECT
 public:
-    enum class PortErrors : quint16
-    {
-        Timeout,
-        ReadError,
-        WriteError
-    };
-
-    explicit BasePort(const QString &logFilename, QObject *parent = nullptr);
-    bool reconnectCycle();
+    explicit BaseInterface(const QString &logFilename, QObject *parent = nullptr);
+    // bool reconnectCycle();
 
 signals:
     void dataReceived(QByteArray ba);
     void started();
     void finished();
-    void error(const BasePort::PortErrors error);
+    void error(const InterfaceError error);
     void stateChanged(Interface::State);
     void clearQueries();
 

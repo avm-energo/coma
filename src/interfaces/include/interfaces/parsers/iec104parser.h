@@ -1,5 +1,5 @@
-#ifndef IEC104THREAD_H
-#define IEC104THREAD_H
+#ifndef IEC104PARSER_H
+#define IEC104PARSER_H
 
 #include <QQueue>
 #include <QTimer>
@@ -7,13 +7,13 @@
 #include <gen/datatypes.h>
 #include <gen/error.h>
 #include <gen/logclass.h>
-#include <interfaces/threads/baseconnectionthread.h>
+#include <interfaces/parsers/baseprotocolparser.h>
 #include <s2/s2datatypes.h>
 
 namespace Interface
 {
 
-class IEC104Thread : public BaseConnectionThread
+class IEC104Parser : public BaseProtocolParser
 {
     Q_OBJECT
 public:
@@ -35,8 +35,8 @@ public:
             int SigNumber;
         } BS104Signals; */
 
-    IEC104Thread(RequestQueue &queue, QObject *parent = nullptr);
-    ~IEC104Thread();
+    IEC104Parser(RequestQueue &queue, QObject *parent = nullptr);
+    ~IEC104Parser();
 
     void SetBaseAdr(quint16 adr);
     // void clear() override {};
@@ -137,4 +137,4 @@ protected:
 };
 
 }
-#endif // IEC104THREAD_H
+#endif // IEC104PARSER_H

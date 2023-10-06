@@ -1,6 +1,6 @@
 #include "interfaces/utils/device_watcher.h"
 
-#include <interfaces/ports/usbhidport.h>
+#include <interfaces/ifaces/usbhidport.h>
 
 #ifdef Q_OS_WINDOWS
 // clang-format off

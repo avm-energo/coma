@@ -3,7 +3,7 @@
 #include <QCoreApplication>
 #include <QMutexLocker>
 #include <gen/std_ext.h>
-#include <interfaces/ports/baseport.h>
+#include <interfaces/ifaces/baseinterface.h>
 #include <s2/s2util.h>
 
 namespace Interface
