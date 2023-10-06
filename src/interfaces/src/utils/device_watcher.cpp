@@ -1,6 +1,7 @@
 #include "interfaces/utils/device_watcher.h"
 
-#include <interfaces/ifaces/usbhidport.h>
+#include <QDebug>
+#include <QRegularExpression>
 
 #ifdef Q_OS_WINDOWS
 // clang-format off
@@ -12,6 +13,8 @@
 
 namespace Interface
 {
+
+constexpr char headerValidator[] = "[a-zA-Z]{3}(?=#)";
 
 DeviceWatcher::DeviceWatcher(QWidget *parent) noexcept : QObject(parent)
 {
@@ -62,7 +65,7 @@ void DeviceWatcher::handleNativeEvent(const QByteArray &eventType, void *msg) no
     quint32 msgType = message->wParam;
     if (deviceType != DBT_DEVTYP_DEVICEINTERFACE)
         return;
-    QRegularExpression regex(HID::headerValidator);
+    QRegularExpression regex(headerValidator);
     QRegularExpressionMatch match = regex.match(guid);
     if (!match.hasMatch())
         return;

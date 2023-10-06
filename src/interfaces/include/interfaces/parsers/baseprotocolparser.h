@@ -33,7 +33,7 @@ public:
     explicit BaseProtocolParser(RequestQueue &queue, QObject *parent = nullptr);
 
     State getState() const;
-    void setState(const State state);
+    void setState(const State newState);
     void clear();
     void wakeUp();
 

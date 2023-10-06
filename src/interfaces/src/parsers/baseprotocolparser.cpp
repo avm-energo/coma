@@ -28,9 +28,13 @@ State BaseProtocolParser::getState() const
     return m_state.load();
 }
 
-void BaseProtocolParser::setState(const State state)
+void BaseProtocolParser::setState(const State newState)
 {
-    m_state.store(state);
+    if (newState == State::Reconnect)
+        m_queue.deactivate();
+    else
+        m_queue.activate();
+    m_state.store(newState);
 }
 
 void BaseProtocolParser::clear()
@@ -143,6 +147,12 @@ void BaseProtocolParser::run()
     m_log.info(logStart);
     while (getState() != State::Disconnect)
     {
+        // Если интерфейс находится в состоянии реконнекта, то ничего не отправляем
+        if (getState() == State::Reconnect)
+        {
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+            continue;
+        }
         QMutexLocker locker(&m_mutex);
         if (!m_isCommandRequested)
             checkQueue();

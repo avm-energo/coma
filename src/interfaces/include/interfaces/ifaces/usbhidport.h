@@ -9,13 +9,6 @@
 struct hid_device_;
 using hid_device = hid_device_; ///< opaque hidapi structure
 
-namespace HID
-{
-constexpr int MaxSegmenthLength = 64;  // максимальная длина одного сегмента (0x40)
-constexpr unsigned MainLoopDelay = 20; // 20 ms main loop sleep
-constexpr char headerValidator[] = "[a-zA-Z]{3}(?=#)";
-} // namespace HID
-
 class UsbHidPort final : public BaseInterface
 {
     Q_OBJECT

@@ -70,16 +70,16 @@ void FWUploadDialog::loadFirmware()
         return;
     }
 
-    auto fileType = std_ext::to_underlying(S2::FilesEnum::Firmware);
+    constexpr auto fileType = std_ext::to_underlying(S2::FilesEnum::Firmware);
     QByteArray firmware;
     S2Util::StoreDataMem(firmware, s2array, fileType);
     if (firmware.isEmpty())
     {
         qCritical() << Error::SizeError;
-        EMessageBox::error(this, "Получен некорректный размер файла.");
+        EMessageBox::error(this, "Получен файл с некорректным размером.");
         return;
     }
-    Connection::iface()->writeFile(fileType, firmware);
+    Connection::iface()->writeFirmware(firmware);
     uploadStatus = FirmwareUploadStatus::Written;
 }
 

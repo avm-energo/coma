@@ -6,6 +6,7 @@
 BaseInterface::BaseInterface(const QString &logFilename, QObject *parent)
     : QObject(parent), m_state(Interface::State::Connect), m_reconnectLoopFlag(true)
 {
+    qRegisterMetaType<InterfaceError>();
     m_log.init(logFilename + "." + ::logExt);
     m_log.writeRaw(::logStart);
 }
@@ -55,19 +56,6 @@ void BaseInterface::writeLog(const Error::Msg msg, Interface::Direction dir)
     writeLog(QVariant::fromValue(msg).toByteArray(), dir);
 }
 
-// bool BaseInterface::reconnectCycle()
-//{
-//    setState(Interface::State::Reconnect);
-//    m_log.writeRaw("!!! Restart connection !!!\n");
-//    disconnect();
-//    QElapsedTimer timer;
-//    timer.start();
-//    while (timer.elapsed() < RECONNECTINTERVAL)
-//        QCoreApplication::processEvents(QEventLoop::AllEvents);
-//    emit clearQueries();
-//    return connect();
-//}
-
 void BaseInterface::poll()
 {
     Interface::State state;
@@ -103,7 +91,7 @@ void BaseInterface::poll()
 void BaseInterface::writeData(const QByteArray &ba)
 {
     auto status = Error::Msg::NoError;
-    if (getState() == Interface::State::Run) // port is running
+    if (getState() == Interface::State::Run) // interface is running
     {
         if (!ba.isEmpty())
         {
@@ -125,9 +113,10 @@ void BaseInterface::writeData(const QByteArray &ba)
 
 void BaseInterface::closeConnection()
 {
-    if (getState() == Interface::State::Reconnect && getReconnectLoopFlag())
-        setReconnectLoopFlag(false);
+    bool isReconnect = (getState() == Interface::State::Reconnect);
     setState(Interface::State::Disconnect);
+    if (isReconnect && getReconnectLoopFlag())
+        setReconnectLoopFlag(false);
     emit clearQueries();
 }
 

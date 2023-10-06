@@ -83,13 +83,9 @@ QByteArray SerialPort::read(bool *status)
         }
         m_dataGuard.unlock(); // unlock port
     }
-    if (ba.isEmpty())
-    {
-        *status = false;
+    *status = !ba.isEmpty();
+    if (!(*status))
         QCoreApplication::processEvents();
-    }
-    else
-        *status = true;
     return ba;
 };
 

@@ -22,8 +22,6 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char name[] = "confHash";
 }
 
-constexpr auto confType = std_ext::to_underlying(S2::FilesEnum::Config);
-
 ConfigDialog::ConfigDialog(S2RequestService &s2service, //
     S2DataManager &s2manager, const S2BoardType boardType, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent)
@@ -33,7 +31,6 @@ ConfigDialog::ConfigDialog(S2RequestService &s2service, //
     , m_factory(m_boardConfig.m_workingConfig)
     , m_errConfState(new ErrConfState)
 {
-    // disableMessages();
     connect(&m_datamanager, &S2DataManager::parseStatus, this, &ConfigDialog::parseStatusHandle);
     connect(&m_datamanager, &S2DataManager::updateDataFromUI, this, &ConfigDialog::fillBack);
     connect(&m_requestService, &S2RequestService::noConfigurationError, this, &ConfigDialog::noConfigurationHandle);
@@ -52,9 +49,8 @@ void ConfigDialog::writeConfig()
     {
         if (prepareConfigToWrite())
         {
-            // auto s2file = m_boardConfig.m_workingConfig.toByteArray();
             auto s2file = m_datamanager.getBinaryConfiguration();
-            Connection::iface()->writeFile(confType, s2file);
+            Connection::iface()->writeConfiguration(s2file);
         }
         else
             qCritical("Ошибка чтения конфигурации");
@@ -77,51 +73,6 @@ bool ConfigDialog::isVisible(const quint16 id) const
     else
         return false;
 }
-
-/*
-// void ConfigDialog::configReceived(const QByteArray &rawData)
-//{
-//    using namespace S2;
-//    auto &workConfig = m_boardConfig.m_workingConfig;
-//    // if (workConfig.updateByRawData(rawData))
-//    if (true)
-//    {
-//        constexpr auto typeB_Id = "MTypeB_ID";
-//        constexpr auto typeE_Id = "MTypeE_ID";
-//        const DWORD typeB = Board::GetInstance().typeB();
-//        const DWORD typeM = Board::GetInstance().typeM();
-//        if (workConfig.contains(typeB_Id))
-//        {
-//            const auto s2typeB = workConfig[typeB_Id].value<DWORD>();
-//            if (s2typeB != typeB)
-//            {
-//                qCritical() << "Conflict typeB, module: " << QString::number(typeB, 16)
-//                            << " config: " << QString::number(s2typeB, 16);
-//                workConfig[typeB_Id].setData(typeB);
-//            }
-//        }
-//        else
-//            workConfig.setRecord(typeB_Id, typeB);
-//        if (workConfig.contains(typeE_Id))
-//        {
-//            const auto s2typeM = workConfig[typeE_Id].value<DWORD>();
-//            if (s2typeM != typeM)
-//            {
-//                qCritical() << "Conflict typeB, module: " << QString::number(typeM, 16)
-//                            << " config: " << QString::number(s2typeM, 16);
-//                workConfig[typeE_Id].setData(typeM);
-//            }
-//        }
-//        else
-//            workConfig.setRecord(typeE_Id, typeM);
-//        // checkForDiff();
-//        fill();
-//        EMessageBox::information(this, "Конфигурация прочитана успешно");
-//    }
-//    else
-//        EMessageBox::warning(this, "Ошибка чтения конфигурации, проверьте лог");
-//}
-*/
 
 void ConfigDialog::saveConfigToFile()
 {

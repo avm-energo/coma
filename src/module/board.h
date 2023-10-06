@@ -47,7 +47,7 @@ public:
     {
         Connected,
         Closed,
-        AboutToFinish
+        TryReconnect
     };
 
     Q_ENUM(DeviceType)

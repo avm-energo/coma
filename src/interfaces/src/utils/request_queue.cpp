@@ -7,8 +7,11 @@ RequestQueue::RequestQueue() noexcept = default;
 
 void RequestQueue::addToQueue(CommandStruct &&request)
 {
-    std::lock_guard<std::mutex> locker { m_queueAccess };
-    m_requests.push(std::move(request));
+    if (isActive())
+    {
+        std::lock_guard<std::mutex> locker { m_queueAccess };
+        m_requests.push(std::move(request));
+    }
 }
 
 std::optional<CommandStruct> RequestQueue::deQueue()
@@ -21,6 +24,21 @@ std::optional<CommandStruct> RequestQueue::deQueue()
         return retVal;
     }
     return std::nullopt;
+}
+
+void RequestQueue::activate() noexcept
+{
+    m_isActive.store(true);
+}
+
+void RequestQueue::deactivate() noexcept
+{
+    m_isActive.store(false);
+}
+
+bool RequestQueue::isActive() const noexcept
+{
+    return m_isActive.load();
 }
 
 } // namespace Interface

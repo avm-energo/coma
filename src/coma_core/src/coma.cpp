@@ -110,7 +110,7 @@ void convertPixmap(size_t size, QAction *jourAct)
     font.setPixelSize(14);
     painter.setFont(font);
     painter.setPen(Qt::white);
-    if (size > 10)
+    if (size > 99)
         painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, "...");
     else
         painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, QString::number(size));
@@ -141,6 +141,7 @@ QToolBar *Coma::createToolBar()
     connect(jourAct, &QAction::triggered, this, [this]() {
         ErrorDialog *dlg = new ErrorDialog(this);
         dlg->setMinimumWidth(this->width() / 2);
+        dlg->setMinimumHeight(this->height() / 2);
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
     });
@@ -350,7 +351,6 @@ void Coma::prepare()
     auto &board = Board::GetInstance();
     disconnect(&board, &Board::readyRead, this, &Coma::prepare);
     EMessageBox::information(this, "Установлена связь с " + board.moduleName());
-    Reconnect = true;
     prepareDialogs();
 
     // нет конфигурации
@@ -367,15 +367,6 @@ void Coma::prepare()
     msgModel->setText(board.moduleName());
 }
 
-// void Coma::nativeEvent(void *message)
-//{
-//    Q_UNUSED(message);
-//    if (BdaTimer->isActive())
-//        BdaTimer->stop();
-//    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-//        BdaTimer->start();
-//}
-
 void Coma::go()
 {
     // Load settings before anything
@@ -387,9 +378,6 @@ void Coma::go()
         dir.mkpath(".");
     StdFunc::Init();
     qInfo("=== Log started ===\n");
-
-    // connectionManager->registerDeviceNotifications(this);
-    Reconnect = false;
     newTimers();
     loadSettings();
     setStatusBar(WDFunc::NewSB(this));
@@ -530,7 +518,7 @@ void Coma::initInterfaceConnection()
             board.setConnectionState(Board::ConnectionState::Closed);
             break;
         case State::Reconnect:
-            board.setConnectionState(Board::ConnectionState::AboutToFinish);
+            board.setConnectionState(Board::ConnectionState::TryReconnect);
             break;
         default:
             break;
@@ -554,9 +542,7 @@ void Coma::disconnectAndClear()
         ConfigStorage::GetInstance().clearModuleSettings();
         s2dataManager->clear();
         Board::GetInstance().reset();
-        // Connection::iface()->close();
         connectionManager->breakConnection();
-        Reconnect = false;
     }
 }
 

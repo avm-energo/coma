@@ -53,9 +53,10 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
             } //
         },
         connectionData.settings);
-    connect(m_context.m_iface, &BaseInterface::error, this, &ConnectionManager::handlePortError, Qt::DirectConnection);
-    connect(
-        this, &ConnectionManager::reconnectDevice, m_context.m_iface, &BaseInterface::reconnect, Qt::QueuedConnection);
+    connect(m_context.m_iface, &BaseInterface::error, //
+        this, &ConnectionManager::handleInterfaceErrors, Qt::QueuedConnection);
+    connect(this, &ConnectionManager::reconnectDevice, //
+        m_context.m_iface, &BaseInterface::reconnect, Qt::QueuedConnection);
     connect(this, &ConnectionManager::reconnectSuccess, m_context.m_iface, //
         &BaseInterface::finishReconnect, Qt::DirectConnection);
     if (m_context.run(m_currentConnection))
@@ -86,7 +87,7 @@ void ConnectionManager::breakConnection()
     Connection::s_connection.reset();
 }
 
-void ConnectionManager::handlePortError(const InterfaceError error)
+void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
 {
     if (error == InterfaceError::Timeout
         && m_context.m_parser->m_currentCommand.command == Interface::Commands::C_ReqBSI)
@@ -116,18 +117,14 @@ void ConnectionManager::deviceConnected(const QString &guid)
     {
         if (m_reconnectMode == ReconnectMode::Silent)
             m_silentTimer->stop();
-        // Выводим порт из состояния реконнекта
-        emit reconnectSuccess();
+        emit reconnectSuccess(); // Выводим порт из состояния реконнекта
     }
 }
 
 void ConnectionManager::deviceDisconnected(const QString &guid)
 {
-    if (isCurrentDevice(guid))
-    {
-        // Загоняем порт в состояние реконнекта
-        reconnect();
-    }
+    if (isCurrentDevice(guid)) // Если отключено текущее устройство, то
+        reconnect();           // загоняем порт в состояние реконнекта
 }
 
 } // namespace Interface

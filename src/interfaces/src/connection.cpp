@@ -101,6 +101,18 @@ void Connection::writeFile(quint32 id, const QByteArray &ba)
     setToQueue(CommandStruct { Commands::C_WriteFile, id, ba });
 }
 
+void Connection::writeConfiguration(const QByteArray &ba)
+{
+    constexpr auto fileType = std_ext::to_underlying(S2::FilesEnum::Config);
+    writeFile(fileType, ba);
+}
+
+void Connection::writeFirmware(const QByteArray &ba)
+{
+    constexpr auto fileType = std_ext::to_underlying(S2::FilesEnum::Firmware);
+    writeFile(fileType, ba);
+}
+
 void Connection::reqTime()
 {
     setToQueue(CommandStruct { Commands::C_ReqTime, 0, 0 });

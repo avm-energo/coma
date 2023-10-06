@@ -10,23 +10,19 @@
 #include <gen/stdfunc.h>
 #include <interfaces/types/common_types.h>
 
-/// TODO: Вынести в настройки
-// constexpr qint64 RECONNECTINTERVAL = 10000;
-
 enum class InterfaceError : quint16
 {
-    ConnectError,
     Timeout,
     ReadError,
     WriteError
 };
+Q_DECLARE_METATYPE(InterfaceError);
 
 class BaseInterface : public QObject
 {
     Q_OBJECT
 public:
     explicit BaseInterface(const QString &logFilename, QObject *parent = nullptr);
-    // bool reconnectCycle();
 
 signals:
     void dataReceived(QByteArray ba);

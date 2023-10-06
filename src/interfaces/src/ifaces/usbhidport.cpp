@@ -12,6 +12,8 @@ using Proto::CommandStruct;
 using Proto::Starters;
 using namespace Interface;
 
+constexpr int MaxSegmenthLength = 64; // максимальная длина одного сегмента (0x40)
+
 UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent)
     : BaseInterface("UsbHidPort", parent), m_deviceInfo(dev), m_hidDevice(nullptr), m_waitForReply(false)
 {
@@ -23,10 +25,10 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &dev, QObject *parent)
 
 bool UsbHidPort::connect()
 {
+    setState(State::Connect);
     if ((m_deviceInfo.vendor_id == 0) || (m_deviceInfo.product_id == 0))
     {
         qCritical() << Error::Msg::NoDeviceError;
-        closeConnection();
         return false;
     }
     m_hidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, //
@@ -35,7 +37,6 @@ bool UsbHidPort::connect()
     {
         hidErrorHandle();
         qCritical() << Error::Msg::OpenError;
-        closeConnection();
         return false;
     }
     else
@@ -62,22 +63,30 @@ void UsbHidPort::disconnect()
 
 void UsbHidPort::reconnect()
 {
+    // Если устройство уже находится в состоянии переподключения
     if (getState() != State::Reconnect)
     {
         setState(State::Reconnect);
         while (getReconnectLoopFlag())
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
+            QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         setReconnectLoopFlag(true); // Восстанавливаем флаг цикла
-        disconnect();
-        StdFunc::Wait(1000); // Устройство не сразу появляется на связи
-        connect();
-        emit clearQueries();
+        // Если во время реконнекта отключаемся от устройства,
+        // то не предпринимаем попыток переподключиться.
+        if (getState() != State::Disconnect)
+        {
+            disconnect();            // Закрываем текущее соединение
+            StdFunc::Wait(1000);     // Устройство не сразу появляется на связи
+            if (connect())           // Если успешно переподключились,
+                emit clearQueries(); // то сбрасываем текущий запрос от парсера
+            else // Если произошёл разрыв с устройством во время переподключения к нему,
+                reconnect(); // то пытаемся переподключиться ещё раз
+        }
     }
 }
 
 QByteArray UsbHidPort::read(bool *status)
 {
-    constexpr auto maxLength = HID::MaxSegmenthLength + 1; // +1 to ID
+    constexpr auto maxLength = MaxSegmenthLength + 1; // +1 to ID
     QByteArray data(maxLength, 0);
     auto dataPtr = reinterpret_cast<unsigned char *>(data.data());
     m_dataGuard.lock();                                                  // lock port
@@ -92,7 +101,7 @@ QByteArray UsbHidPort::read(bool *status)
         emit error(InterfaceError::ReadError);
         *status = false;
         data.clear();
-        QCoreApplication::processEvents();
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     }
     // timeout from module (if avtuk accidentally couldnt response)
     if ((bytes == 0) && (m_waitForReply) && (missingCounter == missingCounterMax))
@@ -111,7 +120,7 @@ QByteArray UsbHidPort::read(bool *status)
     else
     {
         data.clear();
-        QCoreApplication::processEvents();
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     }
 
     return data;
@@ -150,19 +159,19 @@ void UsbHidPort::clear()
 
 bool UsbHidPort::writeDataToPort(QByteArray &command)
 {
-    if (command.size() > HID::MaxSegmenthLength)
+    if (command.size() > MaxSegmenthLength)
     {
         writeLog(Error::Msg::SizeError);
         qCritical() << Error::Msg::SizeError;
         return false;
     }
 
-    if (command.size() < HID::MaxSegmenthLength)
-        command.append(HID::MaxSegmenthLength - command.size(), static_cast<char>(0x00));
-    command.prepend(static_cast<char>(0x00)); // inserting ID field for HID protocol
+    if (command.size() < MaxSegmenthLength)
+        command.append(MaxSegmenthLength - command.size(), static_cast<char>(0x00));
+    command.prepend(static_cast<char>(0x00)); // Добавляем поле ID для HID protocol
 
     auto tmpt = static_cast<size_t>(command.size());
-    int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(command.data()), tmpt); // write
+    int errorCode = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(command.data()), tmpt);
     if (errorCode == -1)
     {
         writeLog(Error::Msg::WriteError);

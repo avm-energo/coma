@@ -24,7 +24,8 @@ void ConnectionContext::init(BaseInterface *iface, BaseProtocolParser *parser, /
         // Обмен данными
         QObject::connect(m_iface, &BaseInterface::dataReceived, //
             m_parser, &BaseProtocolParser::processReadBytes, connPolicy);
-        QObject::connect(m_parser, &BaseProtocolParser::sendDataToPort, m_iface, &BaseInterface::writeData, connPolicy);
+        QObject::connect(m_parser, &BaseProtocolParser::sendDataToPort, //
+            m_iface, &BaseInterface::writeData, connPolicy);
         QObject::connect(m_iface, &BaseInterface::stateChanged, //
             m_parser, &BaseProtocolParser::setState, Qt::DirectConnection);
         // Отмена команды

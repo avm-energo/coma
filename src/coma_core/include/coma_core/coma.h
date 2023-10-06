@@ -65,7 +65,6 @@ private:
     OscManager oscManager;
     XmlEditor *editor;
     File::Vector fileVector;
-    bool Reconnect;
     AppConfiguration mAppConfig;
     UniquePointer<DialogManager> mDlgManager;
 
@@ -97,7 +96,6 @@ private:
     }
 
 signals:
-    // void sendMessage(void *);
     void positionChanged(const QPoint &center);
 };
 

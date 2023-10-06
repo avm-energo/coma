@@ -4,7 +4,6 @@
 #include "../../module/modulesettings.h"
 
 #include <QTimer>
-#include <atomic>
 #include <gen/error.h>
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
@@ -19,7 +18,7 @@ enum INTERVAL
     WAIT = 15000
 };
 
-class BaseInterface;       // Forward declaration
+class BaseInterface;  // Forward declaration
 struct ConnectStruct; // Forward declaration
 
 namespace Interface
@@ -78,6 +77,8 @@ public:
     void reqBSIExt();
     void reqFile(quint32 id, FileFormat format = FileFormat::Binary, quint32 expectedSize = 0);
     void writeFile(quint32 id, const QByteArray &ba);
+    void writeConfiguration(const QByteArray &ba);
+    void writeFirmware(const QByteArray &ba);
     void reqTime();
     void writeTime(quint32 time);
 #ifdef Q_OS_LINUX
