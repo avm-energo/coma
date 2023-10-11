@@ -34,9 +34,7 @@ ConfigDialog::ConfigDialog(S2RequestService &s2service, //
     , m_factory(m_boardConfig.m_workingConfig)
     , m_errConfState(new ErrConfState)
 {
-    // disableMessages();
     connect(&m_datamanager, &S2DataManager::parseStatus, this, &ConfigDialog::parseStatusHandle);
-    connect(&m_datamanager, &S2DataManager::updateDataFromUI, this, &ConfigDialog::fillBack);
     connect(&m_requestService, &S2RequestService::noConfigurationError, this, &ConfigDialog::noConfigurationHandle);
 }
 
@@ -53,7 +51,7 @@ void ConfigDialog::writeConfig()
     {
         if (prepareConfigToWrite())
         {
-            // auto s2file = m_boardConfig.m_workingConfig.toByteArray();
+            fillBack();
             auto s2file = m_datamanager.getBinaryConfiguration();
             BaseInterface::iface()->writeFile(confType, s2file);
         }
@@ -135,6 +133,7 @@ void ConfigDialog::saveConfigToFile()
         qCritical("Ошибка чтения конфигурации");
         return;
     }
+    fillBack();
     QByteArray file = m_datamanager.getBinaryConfiguration();
     Q_ASSERT(file.size() > 8);
     quint32 length = *reinterpret_cast<quint32 *>(&file.data()[4]);
@@ -411,13 +410,13 @@ void ConfigDialog::parseStatusHandle(const Error::Msg status)
     }
     else
     {
-        EMessageBox::information(this, "Конфигурация прочитана успешно");
         fill();
+        EMessageBox::information(this, "Конфигурация прочитана успешно");
     }
 }
 
 void ConfigDialog::noConfigurationHandle()
 {
-    EMessageBox::warning(this, "Задана конфигурация по умолчанию");
     setDefaultConfig();
+    EMessageBox::warning(this, "Задана конфигурация по умолчанию");
 }

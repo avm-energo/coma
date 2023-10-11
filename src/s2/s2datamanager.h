@@ -84,7 +84,6 @@ public slots:
 
 signals:
     void parseStatus(const Error::Msg status);
-    void updateDataFromUI() const;
 };
 
 }

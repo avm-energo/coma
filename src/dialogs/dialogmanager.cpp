@@ -9,12 +9,12 @@ DialogManager::DialogManager(const ModuleSettings &settings, //
     , m_sidebar(new QListWidget(this))
 {
     // Init settings for sidebar and main workspace.
-    auto sizePolizy = m_workspace->sizePolicy();
-    sizePolizy.setRetainSizeWhenHidden(true);
-    m_workspace->setSizePolicy(sizePolizy);
-    sizePolizy = m_sidebar->sizePolicy();
-    sizePolizy.setRetainSizeWhenHidden(true);
-    m_sidebar->setSizePolicy(sizePolizy);
+    auto sizePoliсy = m_workspace->sizePolicy();
+    sizePoliсy.setRetainSizeWhenHidden(true);
+    m_workspace->setSizePolicy(sizePoliсy);
+    sizePoliсy = m_sidebar->sizePolicy();
+    sizePoliсy.setRetainSizeWhenHidden(true);
+    m_sidebar->setSizePolicy(sizePoliсy);
     connect(m_sidebar.get(), &QListWidget::currentRowChanged, m_workspace.get(), &QStackedWidget::setCurrentIndex);
     hideUI();
 }

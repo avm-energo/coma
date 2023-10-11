@@ -1,7 +1,6 @@
 #include "s2requestservice.h"
 
 #include "../interfaces/baseinterface.h"
-#include "../widgets/epopup.h"
 #include "board.h"
 
 S2RequestService::S2RequestService(QObject *parent)
