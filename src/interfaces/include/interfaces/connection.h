@@ -104,6 +104,7 @@ public:
 
 signals:
     void stateChanged(Interface::State m_state);
+    void silentReconnectMode();
     void wakeUpParser() const;
 
     // Response signals

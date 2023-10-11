@@ -105,6 +105,7 @@ void Connection::writeConfiguration(const QByteArray &ba)
 {
     constexpr auto fileType = std_ext::to_underlying(S2::FilesEnum::Config);
     writeFile(fileType, ba);
+    emit silentReconnectMode();
 }
 
 void Connection::writeFirmware(const QByteArray &ba)
@@ -133,6 +134,8 @@ void Connection::writeTime(const timespec &time)
 void Connection::writeCommand(Commands cmd, QVariant value)
 {
     setToQueue(CommandStruct { cmd, value, QVariant() });
+    if (cmd == Commands::C_StartFirmwareUpgrade)
+        emit silentReconnectMode();
 }
 
 void Interface::Connection::writeCommand(Commands cmd, const QVariantList &list)

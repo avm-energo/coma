@@ -86,8 +86,8 @@ void ReconnectDialog::reconnectSuccess()
     mainLayout->removeWidget(m_progressIndicator);
     mainLayout->removeWidget(m_progressBar);
     m_progressIndicator->stopAnimation();
-    m_progressIndicator->deleteLater();
-    m_progressBar->deleteLater();
+    // m_progressIndicator->deleteLater();
+    // m_progressBar->deleteLater();
     m_messageLabel->setText(QString(successMsg).arg(m_seconds));
     mainLayout->addWidget(WDFunc::NewHexagonPB(
         this, "", [this]() { this->reject(); }, ":/icons/tnyes.svg", "Закрыть"));

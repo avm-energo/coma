@@ -25,8 +25,10 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
 {
     if (m_currentConnection != nullptr)
         breakConnection();
-
     m_currentConnection = new Connection(this);
+    connect(m_currentConnection, &Connection::silentReconnectMode, this, //
+        [this] { setReconnectMode(ReconnectMode::Silent); });
+
     std::visit( // Инициализация контекста для обмена данными
         overloaded {
             [this](const UsbHidSettings &settings) {
@@ -53,12 +55,14 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
             } //
         },
         connectionData.settings);
+
     connect(m_context.m_iface, &BaseInterface::error, //
         this, &ConnectionManager::handleInterfaceErrors, Qt::QueuedConnection);
     connect(this, &ConnectionManager::reconnectDevice, //
         m_context.m_iface, &BaseInterface::reconnect, Qt::QueuedConnection);
     connect(this, &ConnectionManager::reconnectSuccess, m_context.m_iface, //
         &BaseInterface::finishReconnect, Qt::DirectConnection);
+
     if (m_context.run(m_currentConnection))
         emit connectSuccesfull();
     else
@@ -117,6 +121,7 @@ void ConnectionManager::deviceConnected(const QString &guid)
     {
         if (m_reconnectMode == ReconnectMode::Silent)
             m_silentTimer->stop();
+        setReconnectMode(ReconnectMode::Loud);
         emit reconnectSuccess(); // Выводим порт из состояния реконнекта
     }
 }

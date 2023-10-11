@@ -306,11 +306,6 @@ void ModbusParser::processReadBytes(QByteArray ba)
     }
 }
 
-// void ModbusThread::setDelay(quint8 newDelay)
-//{
-//    m_delay = newDelay;
-//}
-
 void ModbusParser::calcCRCAndSend(QByteArray &ba)
 {
     utils::CRC16 crc(ba);

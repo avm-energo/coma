@@ -568,7 +568,7 @@ void ProtocomParser::writeBlock(Proto::Commands cmd, const QByteArray &arg2)
 }
 
 #ifdef Q_OS_LINUX
-void ProtocomThread::processUnixTime(const QByteArray &ba)
+void ProtocomParser::processUnixTime(const QByteArray &ba)
 {
     Q_ASSERT(ba.size() == sizeof(quint64));
 
