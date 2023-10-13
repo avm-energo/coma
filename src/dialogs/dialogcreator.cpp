@@ -41,9 +41,12 @@ void DialogCreator::createDialogs(const AppConfiguration appCfg)
 
 void DialogCreator::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
 {
+    constexpr auto defCaption = "Мы забыли название :(";
     if (!name.isEmpty())
         dlg->setObjectName(name);
-    if (!caption.isEmpty())
+    if (caption.isEmpty())
+        dlg->setCaption(defCaption);
+    else
         dlg->setCaption(caption);
     m_dialogs.append(dlg);
 }

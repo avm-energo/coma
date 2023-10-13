@@ -88,8 +88,6 @@ void DataManager::parseS2File(const QByteArray &rawFile)
 
 QByteArray DataManager::getBinaryConfiguration() const
 {
-    // Обновляем данные из UI каждого конфигурационного диалога
-    emit updateDataFromUI();
     // В новую конфигурацию копируем данные из всех имеющихся
     S2Configuration all { m_storage };
     for (auto &[_, boardConfig] : m_data)
