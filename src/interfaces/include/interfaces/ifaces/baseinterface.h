@@ -1,5 +1,4 @@
-#ifndef BASEPORT_H
-#define BASEPORT_H
+#pragma once
 
 #include <QMutex>
 #include <QObject>
@@ -56,5 +55,3 @@ public slots:
     void close();
     void reconnect();
 };
-
-#endif // BASEPORT_H

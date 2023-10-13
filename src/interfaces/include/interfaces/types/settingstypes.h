@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QSerialPort>
 #include <interfaces/types/usbhidsettings.h>
 #include <variant>
 
@@ -21,15 +22,15 @@ struct IEC104Settings
 
 struct SerialPortSettings
 {
-    quint32 Baud;
-    QString Parity;
-    QString Stop;
-    quint8 Address;
-    QString Port;
+    QString name;
+    quint32 baud;
+    quint8 address;
+    QSerialPort::Parity parity;
+    QSerialPort::StopBits stop;
 
     bool isValid() const
     {
-        return !Port.isEmpty();
+        return !name.isEmpty();
     }
 };
 

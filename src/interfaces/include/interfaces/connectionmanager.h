@@ -25,8 +25,8 @@ private:
     ReconnectMode m_reconnectMode;
     quint16 m_timeoutCounter, m_timeoutMax;
     quint16 m_errorCounter, m_errorMax;
+    bool m_isReconnectEmitted;
 
-    // bool isCurrentDevice(const QString &guid);
     void reconnect();
 
 public:

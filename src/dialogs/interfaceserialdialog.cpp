@@ -69,11 +69,18 @@ void InterfaceSerialDialog::setInterface(QModelIndex index)
     int row = index.row();
     QString name = model->data(model->index(row, 0)).toString();
     SerialPortSettings portSettings;
-    portSettings.Port = model->data(model->index(row, 1)).toString();
-    portSettings.Baud = model->data(model->index(row, 2)).toUInt();
-    portSettings.Parity = model->data(model->index(row, 3)).toString();
-    portSettings.Stop = model->data(model->index(row, 4)).toString();
-    portSettings.Address = model->data(model->index(row, 5)).toUInt();
+    portSettings.name = model->data(model->index(row, 1)).toString();
+    portSettings.baud = model->data(model->index(row, 2)).toUInt();
+    auto parityStr = model->data(model->index(row, 3)).toString();
+    if (parityStr == "Нет")
+        portSettings.parity = QSerialPort::NoParity;
+    else if (parityStr == "Чет")
+        portSettings.parity = QSerialPort::EvenParity;
+    else
+        portSettings.parity = QSerialPort::OddParity;
+    auto stopStr = model->data(model->index(row, 4)).toString();
+    portSettings.stop = stopStr == "1" ? QSerialPort::OneStop : QSerialPort::TwoStop;
+    portSettings.address = model->data(model->index(row, 5)).toUInt();
     if (!portSettings.isValid())
         return;
     ConnectStruct st { name, portSettings };

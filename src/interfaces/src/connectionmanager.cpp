@@ -16,6 +16,7 @@ ConnectionManager::ConnectionManager(QWidget *parent)
     , m_reconnectMode(ReconnectMode::Loud)
     , m_timeoutCounter(0)
     , m_errorCounter(0)
+    , m_isReconnectEmitted(false)
 {
     // TODO: брать значение из настроек
     m_silentTimer->setInterval(10000);
@@ -42,10 +43,9 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
                 m_context.init(port, parser, Strategy::Sync, Qt::DirectConnection);
             },
             [this](const SerialPortSettings &settings) {
-                auto port = new SerialPort();
-                port->init(settings);
+                auto port = new SerialPort(settings);
                 auto parser = new ModbusParser(m_currentConnection->m_queue);
-                parser->setDeviceAddress(settings.Address);
+                parser->setDeviceAddress(settings.address);
                 m_context.init(port, parser, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const IEC104Settings &settings) {
@@ -82,11 +82,15 @@ void ConnectionManager::setReconnectMode(const ReconnectMode newMode) noexcept
 
 void ConnectionManager::reconnect()
 {
-    emit reconnectDevice();
-    if (m_reconnectMode == ReconnectMode::Loud)
-        emit reconnectUI();
-    else
-        m_silentTimer->start();
+    if (!m_isReconnectEmitted)
+    {
+        emit reconnectDevice();
+        if (m_reconnectMode == ReconnectMode::Loud)
+            emit reconnectUI();
+        else
+            m_silentTimer->start();
+        m_isReconnectEmitted = true;
+    }
 }
 
 void ConnectionManager::breakConnection()
@@ -103,7 +107,7 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
     case InterfaceError::ReadError:
     case InterfaceError::WriteError:
         ++m_errorCounter;
-        if (m_errorCounter == m_errorMax)
+        if (m_errorCounter > m_errorMax)
             reconnect();
         break;
     case InterfaceError::Timeout:
@@ -113,7 +117,7 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
             qCritical() << "Превышено время ожидания блока BSI. Disconnect...";
             breakConnection();
         }
-        if (m_timeoutCounter == m_timeoutMax)
+        if (m_timeoutCounter > m_timeoutMax)
             reconnect();
     }
 }
@@ -125,6 +129,7 @@ void ConnectionManager::deviceReconnected()
     setReconnectMode(ReconnectMode::Loud);
     m_errorCounter = 0;
     m_timeoutCounter = 0;
+    m_isReconnectEmitted = false;
     emit reconnectSuccess(); // Сообщаем, что переподключение прошло успешно
 }
 

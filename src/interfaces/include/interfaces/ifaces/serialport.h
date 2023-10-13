@@ -9,16 +9,16 @@
 class SerialPort final : public BaseInterface
 {
     Q_OBJECT
-public:
-    explicit SerialPort(QObject *parent = nullptr);
-    void init(SerialPortSettings settings);
-    bool connect() override;
-    void disconnect() override;
-
 private:
-    UniquePointer<QSerialPort> port;
+    QSerialPort *m_port;
     QTimer *timeoutTimer;
 
+public:
+    explicit SerialPort(const SerialPortSettings &settings, QObject *parent = nullptr);
+
+private:
+    bool connect() override;
+    void disconnect() override;
     QByteArray read(bool *status = nullptr) override;
     bool write(const QByteArray &ba) override;
     bool tryToReconnect() override;
