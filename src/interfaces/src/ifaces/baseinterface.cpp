@@ -4,7 +4,7 @@
 #include <QElapsedTimer>
 
 BaseInterface::BaseInterface(const QString &logFilename, QObject *parent)
-    : QObject(parent), m_state(Interface::State::Connect), m_reconnectLoopFlag(true)
+    : QObject(parent), m_state(Interface::State::Connect)
 {
     qRegisterMetaType<InterfaceError>();
     m_log.init(logFilename + "." + ::logExt);
@@ -20,16 +20,6 @@ void BaseInterface::setState(const Interface::State state) noexcept
 Interface::State BaseInterface::getState() const noexcept
 {
     return m_state.load();
-}
-
-bool BaseInterface::getReconnectLoopFlag() const noexcept
-{
-    return m_reconnectLoopFlag.load();
-}
-
-void BaseInterface::setReconnectLoopFlag(const bool flag) noexcept
-{
-    m_reconnectLoopFlag.store(flag);
 }
 
 void BaseInterface::writeLog(const QByteArray &ba, Interface::Direction dir)
@@ -111,16 +101,30 @@ void BaseInterface::writeData(const QByteArray &ba)
     }
 }
 
-void BaseInterface::closeConnection()
+void BaseInterface::close()
 {
-    bool isReconnect = (getState() == Interface::State::Reconnect);
     setState(Interface::State::Disconnect);
-    if (isReconnect && getReconnectLoopFlag())
-        setReconnectLoopFlag(false);
     emit clearQueries();
 }
 
-void BaseInterface::finishReconnect()
+void BaseInterface::reconnect()
 {
-    setReconnectLoopFlag(false);
+    // Если устройство уже находится в состоянии переподключения,
+    // то повторно заходить в цикл не следует.
+    if (getState() != Interface::State::Reconnect)
+    {
+        setState(Interface::State::Reconnect);
+        qCritical() << "Произошла ошибка соединения";
+        while (getState() == Interface::State::Reconnect)
+        {
+            if (tryToReconnect())
+                break;
+            QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        }
+        if (getState() == Interface::State::Run)
+        {
+            emit reconnected();
+            qCritical() << "Соединение восстановлено";
+        }
+    }
 }

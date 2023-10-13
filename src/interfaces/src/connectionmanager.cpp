@@ -14,9 +14,14 @@ ConnectionManager::ConnectionManager(QWidget *parent)
     , m_currentConnection(nullptr)
     , m_silentTimer(new QTimer(this))
     , m_reconnectMode(ReconnectMode::Loud)
+    , m_timeoutCounter(0)
+    , m_errorCounter(0)
 {
     // TODO: брать значение из настроек
     m_silentTimer->setInterval(10000);
+    m_errorMax = 5;
+    m_timeoutMax = 5;
+
     m_silentTimer->setSingleShot(true);
     connect(m_silentTimer, &QTimer::timeout, this, [this] { emit reconnectUI(); });
 }
@@ -60,8 +65,8 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
         this, &ConnectionManager::handleInterfaceErrors, Qt::QueuedConnection);
     connect(this, &ConnectionManager::reconnectDevice, //
         m_context.m_iface, &BaseInterface::reconnect, Qt::QueuedConnection);
-    connect(this, &ConnectionManager::reconnectSuccess, m_context.m_iface, //
-        &BaseInterface::finishReconnect, Qt::DirectConnection);
+    connect(m_context.m_iface, &BaseInterface::reconnected, //
+        this, &ConnectionManager::deviceReconnected, Qt::QueuedConnection);
 
     if (m_context.run(m_currentConnection))
         emit connectSuccesfull();
@@ -93,43 +98,34 @@ void ConnectionManager::breakConnection()
 
 void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
 {
-    if (error == InterfaceError::Timeout
-        && m_context.m_parser->m_currentCommand.command == Interface::Commands::C_ReqBSI)
+    switch (error)
     {
-        qCritical() << "Превышено время ожидания блока BSI. Disconnect...";
-        breakConnection();
-    }
-}
-
-bool ConnectionManager::isCurrentDevice(const QString &guid)
-{
-    if (m_context.isValid())
-    {
-        auto usbPort = dynamic_cast<UsbHidPort *>(m_context.m_iface);
-        if (usbPort != nullptr)
+    case InterfaceError::ReadError:
+    case InterfaceError::WriteError:
+        ++m_errorCounter;
+        if (m_errorCounter == m_errorMax)
+            reconnect();
+        break;
+    case InterfaceError::Timeout:
+        ++m_timeoutCounter;
+        if (m_context.m_parser->m_currentCommand.command == Commands::C_ReqBSI)
         {
-            const auto &devInfo = usbPort->deviceInfo();
-            return devInfo.hasMatch(guid);
+            qCritical() << "Превышено время ожидания блока BSI. Disconnect...";
+            breakConnection();
         }
-    }
-    return false;
-}
-
-void ConnectionManager::deviceConnected(const QString &guid)
-{
-    if (isCurrentDevice(guid))
-    {
-        if (m_reconnectMode == ReconnectMode::Silent)
-            m_silentTimer->stop();
-        setReconnectMode(ReconnectMode::Loud);
-        emit reconnectSuccess(); // Выводим порт из состояния реконнекта
+        if (m_timeoutCounter == m_timeoutMax)
+            reconnect();
     }
 }
 
-void ConnectionManager::deviceDisconnected(const QString &guid)
+void ConnectionManager::deviceReconnected()
 {
-    if (isCurrentDevice(guid)) // Если отключено текущее устройство, то
-        reconnect();           // загоняем порт в состояние реконнекта
+    if (m_reconnectMode == ReconnectMode::Silent)
+        m_silentTimer->stop();
+    setReconnectMode(ReconnectMode::Loud);
+    m_errorCounter = 0;
+    m_timeoutCounter = 0;
+    emit reconnectSuccess(); // Сообщаем, что переподключение прошло успешно
 }
 
 } // namespace Interface

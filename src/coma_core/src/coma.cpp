@@ -73,7 +73,7 @@ namespace Core
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
     , connectionManager(new ConnectionManager(this))
-    , deviceWatcher(new DeviceWatcher(this))
+    //, deviceWatcher(new DeviceWatcher(this))
     , s2dataManager(new S2DataManager(this))
     , s2requestService(new S2RequestService(this))
     , editor(nullptr)
@@ -84,10 +84,10 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     // connections
     connect(s2requestService.get(), &S2RequestService::response, //
         s2dataManager.get(), &S2DataManager::parseS2File);
-    connect(deviceWatcher.get(), &DeviceWatcher::deviceConnected, //
-        connectionManager.get(), &ConnectionManager::deviceConnected);
-    connect(deviceWatcher.get(), &DeviceWatcher::deviceDisconnected, //
-        connectionManager.get(), &ConnectionManager::deviceDisconnected);
+    //    connect(deviceWatcher.get(), &DeviceWatcher::deviceConnected, //
+    //        connectionManager.get(), &ConnectionManager::deviceConnected);
+    //    connect(deviceWatcher.get(), &DeviceWatcher::deviceDisconnected, //
+    //        connectionManager.get(), &ConnectionManager::deviceDisconnected);
     connect(connectionManager.get(), &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
 
     // registering center of coma main window for epopup message boxes

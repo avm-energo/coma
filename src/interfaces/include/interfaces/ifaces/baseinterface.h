@@ -27,6 +27,7 @@ public:
 signals:
     void dataReceived(QByteArray ba);
     void started();
+    void reconnected();
     void finished();
     void error(const InterfaceError error);
     void stateChanged(Interface::State);
@@ -34,30 +35,26 @@ signals:
 
 protected:
     std::atomic<Interface::State> m_state;
-    std::atomic<bool> m_reconnectLoopFlag;
     LogClass m_log;
     QMutex m_dataGuard;
 
     void setState(const Interface::State state) noexcept;
     Interface::State getState() const noexcept;
 
-    bool getReconnectLoopFlag() const noexcept;
-    void setReconnectLoopFlag(const bool flag) noexcept;
-
     void writeLog(const QByteArray &ba, Interface::Direction dir = Interface::NoDirection);
     void writeLog(const Error::Msg msg, Interface::Direction dir = Interface::NoDirection);
 
     virtual QByteArray read(bool *status = nullptr) = 0;
     virtual bool write(const QByteArray &ba) = 0;
+    virtual bool tryToReconnect() = 0;
 
 public slots:
     virtual bool connect() = 0;
     virtual void disconnect() = 0;
-    virtual void reconnect() = 0;
     void poll();
     void writeData(const QByteArray &ba);
-    void closeConnection();
-    void finishReconnect();
+    void close();
+    void reconnect();
 };
 
 #endif // BASEPORT_H

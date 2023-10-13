@@ -61,11 +61,6 @@ void SerialPort::disconnect()
         port->close();
 }
 
-void SerialPort::reconnect()
-{
-    ;
-}
-
 // blocking read from serial port with timeout implementation
 QByteArray SerialPort::read(bool *status)
 {
@@ -103,6 +98,11 @@ bool SerialPort::write(const QByteArray &ba)
         return false;
     }
     return true;
+}
+
+bool SerialPort::tryToReconnect()
+{
+    return false;
 }
 
 void SerialPort::errorOccurred(const QSerialPort::SerialPortError err)

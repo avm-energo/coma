@@ -20,19 +20,14 @@ public:
 public slots:
     bool connect() override;
     void disconnect() override;
-    void reconnect() override;
 
 private:
-    virtual QByteArray read(bool *status = nullptr) override;
-    virtual bool write(const QByteArray &ba) override;
-    void hidErrorHandle();
+    QByteArray read(bool *status = nullptr) override;
+    bool write(const QByteArray &ba) override;
     bool writeDataToPort(QByteArray &command);
-    void clear();
+    bool tryToReconnect() override;
+    void hidErrorHandle();
 
-    bool m_waitForReply;
     hid_device *m_hidDevice;
-    QByteArray m_currCommand;
     UsbHidSettings m_deviceInfo;
-    int missingCounter = 0;
-    int missingCounterMax;
 };

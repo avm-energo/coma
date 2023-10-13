@@ -104,6 +104,16 @@ bool Ethernet::write(const QByteArray &ba)
     return true;
 }
 
+bool Ethernet::tryToReconnect()
+{
+    return false;
+}
+
+bool Ethernet::connect()
+{
+    return false;
+}
+
 void Ethernet::disconnect()
 {
     if (sock->isOpen())
@@ -118,7 +128,7 @@ void Ethernet::disconnect()
     setState(Interface::State::Disconnect);
 }
 
-void Ethernet::reconnect()
+bool Ethernet::reconnect()
 {
     bool result = false;
     disconnect();
@@ -141,7 +151,7 @@ void Ethernet::reconnect()
     //        result = false;
     //    });
     loop.exec();
-    // return result;
+    return result;
 }
 
 void Ethernet::EthStateChanged(QAbstractSocket::SocketState state)

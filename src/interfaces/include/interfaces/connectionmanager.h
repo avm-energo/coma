@@ -23,8 +23,10 @@ private:
     Connection *m_currentConnection;
     QTimer *m_silentTimer;
     ReconnectMode m_reconnectMode;
+    quint16 m_timeoutCounter, m_timeoutMax;
+    quint16 m_errorCounter, m_errorMax;
 
-    bool isCurrentDevice(const QString &guid);
+    // bool isCurrentDevice(const QString &guid);
     void reconnect();
 
 public:
@@ -48,19 +50,16 @@ signals:
     void reconnectDevice();
     void reconnectSuccess();
 
-private slots:
-    /// \brief Хэндл для принятия ошибок от порта.
-    void handleInterfaceErrors(const InterfaceError error);
-
 public slots:
     /// \brief Слот для разрыва текущего соединения с устройством.
     void breakConnection();
+
+private slots:
+    /// \brief Хэндл для принятия ошибок от порта.
+    void handleInterfaceErrors(const InterfaceError error);
     /// \brief Слот для принятия уведомления о том, что
-    /// устройство с переданным GUID было подключено к компьютеру.
-    void deviceConnected(const QString &guid);
-    /// \brief Слот для принятия уведомления о том, что
-    /// устройство с переданным GUID было отключено от компьютера.
-    void deviceDisconnected(const QString &guid);
+    /// связь с устройством была успешно восстановлена.
+    void deviceReconnected();
 };
 
 } // namespace Interface

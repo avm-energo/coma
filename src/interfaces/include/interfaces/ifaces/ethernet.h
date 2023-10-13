@@ -30,12 +30,15 @@ signals:
     void Disconnected();
 
 public slots:
-    void reconnect() override;
+    bool reconnect();
+
+    bool connect() override;
     void disconnect() override;
     // bool writeData(const QByteArray &ba) override;
     // void poll();
     QByteArray read(bool *status = nullptr) override;
-    virtual bool write(const QByteArray &ba) override;
+    bool write(const QByteArray &ba) override;
+    bool tryToReconnect() override;
 
 private slots:
     void CheckForData();

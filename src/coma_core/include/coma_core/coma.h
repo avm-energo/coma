@@ -55,7 +55,7 @@ private slots:
 
 private:
     UniquePointer<Interface::ConnectionManager> connectionManager;
-    UniquePointer<Interface::DeviceWatcher> deviceWatcher;
+    // UniquePointer<Interface::DeviceWatcher> deviceWatcher;
     UniquePointer<Module> module;
     UniquePointer<S2DataManager> s2dataManager;
     UniquePointer<S2RequestService> s2requestService;
@@ -83,17 +83,17 @@ private:
     void showEvent(QShowEvent *event) override;
     void prepareDialogs();
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    virtual bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override
-#else
-    virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override
-#endif
-    {
-        Q_UNUSED(result);
-        if (deviceWatcher)
-            deviceWatcher->handleNativeEvent(eventType, message);
-        return false;
-    }
+    //#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    //    virtual bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override
+    //#else
+    //    virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override
+    //#endif
+    //    {
+    //        Q_UNUSED(result);
+    //        if (deviceWatcher)
+    //            deviceWatcher->handleNativeEvent(eventType, message);
+    //        return false;
+    //    }
 
 signals:
     void positionChanged(const QPoint &center);

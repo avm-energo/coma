@@ -13,15 +13,15 @@ public:
     explicit SerialPort(QObject *parent = nullptr);
     void init(SerialPortSettings settings);
     bool connect() override;
-    void reconnect() override;
+    void disconnect() override;
 
 private:
     UniquePointer<QSerialPort> port;
     QTimer *timeoutTimer;
 
-    void disconnect() override;
     QByteArray read(bool *status = nullptr) override;
-    virtual bool write(const QByteArray &ba) override;
+    bool write(const QByteArray &ba) override;
+    bool tryToReconnect() override;
 
 private slots:
     void errorOccurred(const QSerialPort::SerialPortError err);

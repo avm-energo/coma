@@ -87,7 +87,7 @@ bool ConnectionContext::run(Connection *connection)
     {
         if (!m_iface->connect())
         {
-            m_iface->closeConnection();
+            m_iface->close();
             m_iface->deleteLater();
             m_parser->deleteLater();
             m_syncThreads.first->deleteLater();
@@ -107,7 +107,7 @@ void ConnectionContext::reset()
 {
     if (isValid())
     {
-        m_iface->closeConnection();
+        m_iface->close();
         m_parser->wakeUp();
         if (m_strategy == Strategy::Sync)
             StdFunc::Wait(20);
