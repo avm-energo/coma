@@ -24,10 +24,10 @@ void ConnectionContext::init(BaseInterface *iface, BaseProtocolParser *parser, /
         // Обмен данными
         QObject::connect(m_iface, &BaseInterface::dataReceived, //
             m_parser, &BaseProtocolParser::processReadBytes, connPolicy);
-        QObject::connect(m_parser, &BaseProtocolParser::sendDataToPort, //
+        QObject::connect(m_parser, &BaseProtocolParser::sendDataToInterface, //
             m_iface, &BaseInterface::writeData, connPolicy);
-        QObject::connect(m_iface, &BaseInterface::stateChanged, //
-            m_parser, &BaseProtocolParser::setState, Qt::DirectConnection);
+        // QObject::connect(m_iface, &BaseInterface::stateChanged, //
+        //    m_parser, &BaseProtocolParser::setState, Qt::DirectConnection);
         // Отмена команды
         QObject::connect(m_iface, &BaseInterface::clearQueries, m_parser, &BaseProtocolParser::clear, connPolicy);
         // Конец работы
@@ -94,6 +94,7 @@ bool ConnectionContext::run(Connection *connection)
             m_syncThreads.second->deleteLater();
             return false;
         }
+        m_parser->activate();
         return true;
     }
     else

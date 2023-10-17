@@ -14,9 +14,9 @@ ConnectionManager::ConnectionManager(QWidget *parent)
     , m_currentConnection(nullptr)
     , m_silentTimer(new QTimer(this))
     , m_reconnectMode(ReconnectMode::Loud)
+    , m_isReconnectEmitted(false)
     , m_timeoutCounter(0)
     , m_errorCounter(0)
-    , m_isReconnectEmitted(false)
 {
     // TODO: брать значение из настроек
     m_silentTimer->setInterval(10000);

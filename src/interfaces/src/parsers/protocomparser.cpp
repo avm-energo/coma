@@ -22,10 +22,6 @@ ProtocomParser::ProtocomParser(RequestQueue &queue, QObject *parent) : BaseProto
     m_longBlockChunks.clear();
 }
 
-ProtocomParser::~ProtocomParser()
-{
-}
-
 void ProtocomParser::processReadBytes(QByteArray ba)
 {
     QMutexLocker locker(&m_mutex);
@@ -45,7 +41,8 @@ void ProtocomParser::processReadBytes(QByteArray ba)
     // Если ответе меньше 60 байт или пришёл BSI
     if (isOneSegment(size) || (m_responseReceived == Proto::ReadBlkStartInfo))
     {
-        m_parsingDataReady = true;
+        setState(ParserState::RequestParsing);
+        // m_parsingDataReady = true;
         progressFile(ba);    // Progress for big files
         isFirstBlock = true; // prepare bool for the next receive iteration
         wakeUp();
@@ -55,19 +52,15 @@ void ProtocomParser::processReadBytes(QByteArray ba)
     {
         auto tba = prepareOk(false, m_responseReceived); // prepare "Ok" answer to the device
         Q_ASSERT(tba.size() == 4);
-        progressFile(ba);         // Progress for big files
-        isFirstBlock = false;     // there'll be another segment
-        emit sendDataToPort(tba); // write "Ok" to the device
+        progressFile(ba);              // Progress for big files
+        isFirstBlock = false;          // there'll be another segment
+        emit sendDataToInterface(tba); // write "Ok" to the device
     }
 }
 
 void ProtocomParser::parseRequest(const CommandStruct &cmdStr)
 {
     QByteArray ba;
-#ifdef PROTOCOM_DEBUG
-    qDebug("Start parse request");
-#endif
-
     switch (cmdStr.command)
     {
     // commands requesting regs with addresses ("fake" read regs commands)
@@ -78,7 +71,7 @@ void ProtocomParser::parseRequest(const CommandStruct &cmdStr)
     {
         quint8 block = blockByReg(cmdStr.arg1.toUInt());
         ba = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::toByteArray(block));
-        emit sendDataToPort(ba);
+        emit sendDataToInterface(ba);
         break;
     }
     // commands without any arguments
@@ -92,7 +85,7 @@ void ProtocomParser::parseRequest(const CommandStruct &cmdStr)
         if (protoCommandMap.contains(cmdStr.command))
         {
             ba = prepareBlock(protoCommandMap.value(cmdStr.command));
-            emit sendDataToPort(ba);
+            emit sendDataToInterface(ba);
         }
         break;
     }
@@ -111,7 +104,7 @@ void ProtocomParser::parseRequest(const CommandStruct &cmdStr)
         if (protoCommandMap.contains(cmdStr.command))
         {
             ba = prepareBlock(protoCommandMap.value(cmdStr.command), StdFunc::toByteArray(cmdStr.arg1.value<quint8>()));
-            emit sendDataToPort(ba);
+            emit sendDataToInterface(ba);
         }
         break;
     }
@@ -131,7 +124,7 @@ void ProtocomParser::parseRequest(const CommandStruct &cmdStr)
             break;
         default:
             ba = prepareBlock(Proto::Commands::ReadFile, StdFunc::toByteArray(cmdStr.arg1.value<quint16>()));
-            emit sendDataToPort(ba);
+            emit sendDataToInterface(ba);
             break;
         }
         break;
@@ -165,7 +158,7 @@ void ProtocomParser::parseRequest(const CommandStruct &cmdStr)
             tba = StdFunc::toByteArray(cmdStr.arg1.value<quint32>());
         }
         ba = prepareBlock(Proto::Commands::WriteTime, tba);
-        emit sendDataToPort(ba);
+        emit sendDataToInterface(ba);
         break;
     }
 
@@ -210,9 +203,9 @@ void ProtocomParser::parseRequest(const CommandStruct &cmdStr)
         if (cmdStr.arg1.canConvert<DataTypes::SingleCommand>())
         {
             DataTypes::SingleCommand scmd = cmdStr.arg1.value<DataTypes::SingleCommand>();
-            ba = scmd.addr.toByteArray() + StdFunc::toByteArray(scmd.value);
+            ba = StdFunc::toByteArray(scmd.addr) + StdFunc::toByteArray(scmd.value);
             ba = prepareBlock(Proto::WriteSingleCommand, ba);
-            emit sendDataToPort(ba);
+            emit sendDataToInterface(ba);
         }
         break;
     }
@@ -230,11 +223,10 @@ void ProtocomParser::parseRequest(const CommandStruct &cmdStr)
     case Commands::C_SetTransOff:
     {
         uint24 converted(WSCommandMap[cmdStr.command]);
-        ba = converted.toByteArray();
-        // ba = StdFunc::toByteArray(static_cast<uint24>(WSCommandMap[cmdStr.command]));
+        ba = StdFunc::toByteArray(converted);
         ba.append(StdFunc::toByteArray(cmdStr.arg1.value<quint8>()));
         ba = prepareBlock(Proto::WriteSingleCommand, ba);
-        emit sendDataToPort(ba);
+        emit sendDataToInterface(ba);
         break;
     }
 
@@ -260,8 +252,8 @@ void ProtocomParser::parseResponse()
         {
             QByteArray ba = m_longBlockChunks.takeFirst();
             m_sentBytesCount += ba.size();
-            emit sendDataToPort(ba);
-            m_waiter.wakeOne();
+            emit sendDataToInterface(ba);
+            wakeUp();
             return;
         }
         processOk();
@@ -330,7 +322,7 @@ void ProtocomParser::parseResponse()
         break;
 
     case ReadFile:
-        FilePostpone(m_readData, FilesEnum(addr), FileFormat(count));
+        filePostpone(m_readData, FilesEnum(addr), FileFormat(count));
         break;
 
     case ReadMode:
@@ -343,6 +335,11 @@ void ProtocomParser::parseResponse()
         break;
     }
     finishCommand();
+}
+
+quint16 ProtocomParser::blockByReg(const quint32 regAddr)
+{
+    return Connection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
 }
 
 void ProtocomParser::writeLog(const QByteArray &ba, Direction dir)
@@ -379,12 +376,7 @@ bool ProtocomParser::isOneSegment(quint16 length)
 {
     // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
     Q_ASSERT(length <= Proto::MaxSegmenthLength);
-    return (length != Proto::MaxSegmenthLength);
-}
-
-bool ProtocomParser::isSplitted(quint16 length)
-{
-    return !(length < Proto::MaxSegmenthLength);
+    return (length < Proto::MaxSegmenthLength);
 }
 
 bool ProtocomParser::isValidIncomingData(const QByteArray &data)
@@ -419,26 +411,21 @@ void ProtocomParser::processFileFromDisk(S2::FilesEnum fileNum)
     switch (fileNum)
     {
     case S2::FilesEnum::JourSys:
-    {
         fileToFind = "system.dat";
         break;
-    }
     case S2::FilesEnum::JourMeas:
-    {
         fileToFind = "measj.dat";
         break;
-    }
     case S2::FilesEnum::JourWork:
-    {
         fileToFind = "workj.dat";
         break;
-    }
     default:
         qDebug() << "Wrong file type!"; // we should not be here
         return;
     }
 
-    m_isCommandRequested = false;
+    // m_isCommandRequested = false;
+    setState(ParserState::RequestParsing);
 
     QStringList drives = Files::Drives();
     if (drives.isEmpty())
@@ -469,13 +456,10 @@ void ProtocomParser::processFileFromDisk(S2::FilesEnum fileNum)
     {
         S2Util util;
         auto s2bFile = util.emulateS2B(ba, quint16(fileNum), boardType.mTypeB, boardType.mTypeM);
-        // auto &dataManager = DataManager::GetInstance();
         DataTypes::GeneralResponseStruct genResp {
             DataTypes::GeneralResponseTypes::Ok,      //
             static_cast<quint64>(s2bFile.header.size) //
         };
-        // dataManager.addSignalToOutList(genResp);
-        // dataManager.addSignalToOutList(s2bFile);
         emit responseSend(genResp);
         emit responseSend(s2bFile);
     }
@@ -536,7 +520,7 @@ void ProtocomParser::writeBlock(Proto::Commands cmd, const QByteArray &arg2)
     using Proto::MaxSegmenthLength;
     QByteArray ba = arg2;
 
-    if (isSplitted(ba.size()))
+    if (!isOneSegment(ba.size()))
     {
         // prepareLongBlk
         m_longBlockChunks.clear();
@@ -558,12 +542,12 @@ void ProtocomParser::writeBlock(Proto::Commands cmd, const QByteArray &arg2)
         }
         setProgressRange(ba.size() + segCount * 4);
         m_sentBytesCount = m_longBlockChunks.at(0).size();
-        emit sendDataToPort(m_longBlockChunks.takeFirst()); // send first chunk
+        emit sendDataToInterface(m_longBlockChunks.takeFirst()); // send first chunk
     }
     else
     {
         ba = prepareBlock(cmd, ba);
-        emit sendDataToPort(ba);
+        emit sendDataToInterface(ba);
     }
 }
 
@@ -627,20 +611,6 @@ void ProtocomParser::processInt(const byte num)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, num };
     emit responseSend(resp);
-}
-
-void ProtocomParser::processOk()
-{
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, 0 };
-    emit responseSend(resp);
-}
-
-void ProtocomParser::processError(int errorCode)
-{
-    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, static_cast<quint64>(errorCode) };
-    emit responseSend(resp);
-    // Module error code
-    qCritical() << "Error code: " << QString::number(errorCode, 16);
 }
 
 void ProtocomParser::processBlock(const QByteArray &ba, quint32 blkNum)

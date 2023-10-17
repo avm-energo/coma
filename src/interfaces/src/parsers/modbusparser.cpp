@@ -19,10 +19,6 @@ ModbusParser::ModbusParser(RequestQueue &queue, QObject *parent) : BaseProtocolP
 {
 }
 
-ModbusParser::~ModbusParser()
-{
-}
-
 void ModbusParser::parseRequest(const CommandStruct &cmdStr)
 {
     switch (cmdStr.command)
@@ -237,7 +233,7 @@ void ModbusParser::parseResponse()
         {
             quint32 addr = m_currentCommand.arg1.toUInt();
             quint32 count = m_currentCommand.arg2.toUInt();
-            FilePostpone(m_fileData, S2::FilesEnum(addr), FileFormat(count));
+            filePostpone(m_fileData, S2::FilesEnum(addr), FileFormat(count));
         }
         break;
     }
@@ -301,7 +297,7 @@ void ModbusParser::processReadBytes(QByteArray ba)
             qCritical() << Error::CrcError << metaObject()->className();
             m_readData.clear();
         }
-        m_parsingDataReady = true;
+        // m_parsingDataReady = true;
         wakeUp();
     }
 }
@@ -317,7 +313,7 @@ void ModbusParser::send(const QByteArray &ba)
 {
     m_readData.clear();
     m_log.info("-> " + ba.toHex());
-    emit sendDataToPort(ba);
+    emit sendDataToInterface(ba);
 }
 
 void ModbusParser::processFloatSignals()

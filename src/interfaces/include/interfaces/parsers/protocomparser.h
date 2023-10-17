@@ -13,7 +13,6 @@ class ProtocomParser : public BaseProtocolParser
     Q_OBJECT
 public:
     explicit ProtocomParser(RequestQueue &queue, QObject *parent = nullptr);
-    ~ProtocomParser();
 
 public slots:
     void processReadBytes(QByteArray ba) override;
@@ -39,10 +38,10 @@ private:
     void parseRequest(const CommandStruct &cmdStr) override;
     void parseResponse() override;
 
+    quint16 blockByReg(const quint32 regAddr);
     void writeLog(const QByteArray &ba, Interface::Direction dir = Interface::NoDirection);
     void appendInt16(QByteArray &ba, quint16 data);
     bool isOneSegment(quint16 length);
-    bool isSplitted(quint16 length);
     bool isValidIncomingData(const QByteArray &data);
     void processFileFromDisk(S2::FilesEnum fileNum);
     void progressFile(const QByteArray &data);
@@ -60,8 +59,6 @@ private:
     void processFloat(const QByteArray &ba, quint32 startAddr);
     void processInt(const byte num);
     void processSinglePoint(const QByteArray &ba, const quint16 startAddr);
-    void processOk();
-    void processError(int errorCode = 0);
     void processBlock(const QByteArray &ba, quint32 blkNum);
     void processTechBlock(const QByteArray &ba, quint32 blkNum);
 

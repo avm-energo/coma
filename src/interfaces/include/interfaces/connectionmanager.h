@@ -9,12 +9,20 @@
 namespace Interface
 {
 
+/// \brief Перечисление для описания режима переподключения к устройству
 enum class ReconnectMode : quint8
 {
+    /// Громкий режим: менеджер соединений сообщает UI сразу о том,
+    /// что устройство не выходит на связь.
     Loud,
+    /// Тихий режим: менеджер соединений в течение 10 секунд пытается
+    /// восстановить связь с устройством, и если оно не вышло на связь за этот промежуток времени,
+    /// то он сообщает UI о том, что устройство не выходит на связь. Может
+    /// использоваться для конфигурирования устройства и записи ВПО.
     Silent
 };
 
+/// \brief Класс, описывающий менеджер соединений.
 class ConnectionManager : public QObject
 {
     Q_OBJECT
@@ -23,9 +31,9 @@ private:
     Connection *m_currentConnection;
     QTimer *m_silentTimer;
     ReconnectMode m_reconnectMode;
+    bool m_isReconnectEmitted;
     quint16 m_timeoutCounter, m_timeoutMax;
     quint16 m_errorCounter, m_errorMax;
-    bool m_isReconnectEmitted;
 
     void reconnect();
 
@@ -44,8 +52,7 @@ signals:
     /// и информарования пользователя о проблемах связи с устройством.
     void reconnectUI();
     /// \brief Сигнал, который вызывается при переподключении к устройству.
-    /// \details Данный сигнал информирует порт о переходе в режим переподключения
-    /// к устройству. Зависит от конкректной реализации дочернего класса BasePort.
+    /// \details Данный сигнал информирует интерфейс о переходе в режим переподключения к устройству.
     /// \see BasePort.
     void reconnectDevice();
     void reconnectSuccess();
@@ -55,7 +62,7 @@ public slots:
     void breakConnection();
 
 private slots:
-    /// \brief Хэндл для принятия ошибок от порта.
+    /// \brief Хэндл для принятия ошибок от интерфейса.
     void handleInterfaceErrors(const InterfaceError error);
     /// \brief Слот для принятия уведомления о том, что
     /// связь с устройством была успешно восстановлена.

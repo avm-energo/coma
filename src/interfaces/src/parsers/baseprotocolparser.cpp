@@ -19,22 +19,23 @@ const QMap<Interface::Commands, CommandRegisters> BaseProtocolParser::WSCommandM
     { Commands::C_ClearStartupError, ClearStartupSetError },
 };
 
-BaseProtocolParser::BaseProtocolParser(RequestQueue &queue, QObject *parent) : QObject(parent), m_queue(queue)
+BaseProtocolParser::BaseProtocolParser(RequestQueue &queue, QObject *parent)
+    : QObject(parent), m_state(ParserState::Starting), m_queue(queue)
 {
 }
 
-State BaseProtocolParser::getState() const
+ParserState BaseProtocolParser::getState() const noexcept
 {
     return m_state.load();
 }
 
-void BaseProtocolParser::setState(const State newState)
+void BaseProtocolParser::setState(const ParserState newState) noexcept
 {
-    if (newState == State::Reconnect)
-        m_queue.deactivate();
-    else
-        m_queue.activate();
-    m_state.store(newState);
+    if (newState != getState())
+    {
+        m_state.store(newState);
+        emit stateChanged(newState);
+    }
 }
 
 void BaseProtocolParser::clear()
@@ -46,7 +47,7 @@ void BaseProtocolParser::clear()
 
 void BaseProtocolParser::finishCommand()
 {
-    m_isCommandRequested = false;
+    // m_isCommandRequested = false;
     m_readData.clear();
     wakeUp();
 }
@@ -56,12 +57,12 @@ void BaseProtocolParser::wakeUp()
     m_waiter.wakeOne();
 }
 
-quint16 BaseProtocolParser::blockByReg(const quint32 regAddr)
+void BaseProtocolParser::activate() noexcept
 {
-    return Connection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
+    setState(ParserState::RequestParsing);
 }
 
-void BaseProtocolParser::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataTypes::FileFormat format)
+void BaseProtocolParser::filePostpone(QByteArray &ba, S2::FilesEnum addr, DataTypes::FileFormat format)
 {
     switch (format)
     {
@@ -86,6 +87,8 @@ void BaseProtocolParser::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataTy
                 auto errCode = util.parseS2B(ba, s2bFile);
                 if (errCode == Error::Msg::NoError)
                     emit responseSend(s2bFile);
+                else
+                    qCritical() << QVariant::fromValue(errCode).toString();
             }
             break;
         }
@@ -126,15 +129,18 @@ void BaseProtocolParser::FilePostpone(QByteArray &ba, S2::FilesEnum addr, DataTy
     }
 }
 
-void BaseProtocolParser::checkQueue()
+void BaseProtocolParser::checkQueue() noexcept
 {
     auto opt = m_queue.deQueue();
     if (opt.has_value())
     {
-        m_isCommandRequested = true;
+        // m_isCommandRequested = true;
         m_progress = 0;
         m_currentCommand = opt.value();
+        setState(ParserState::CommandRequested);
+        // TODO: эта функция должна возвращать QByteArray, который мы отсюда отправляем интерфейсу
         parseRequest(m_currentCommand);
+        // TODO: тут эмитим сигнал sendDataToInterface
     }
 }
 
@@ -145,26 +151,54 @@ void BaseProtocolParser::run()
         classname = classname.split("::").last();
     m_log.init(classname);
     m_log.info(logStart);
-    while (getState() != State::Disconnect)
+
+    auto currentState = getState();
+    while (currentState != ParserState::Stopping)
     {
-        // Если интерфейс находится в состоянии реконнекта, то ничего не отправляем
-        if (getState() == State::Reconnect)
+        switch (currentState)
         {
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-            continue;
-        }
-        QMutexLocker locker(&m_mutex);
-        if (!m_isCommandRequested)
+        case ParserState::RequestParsing:
             checkQueue();
-        m_waiter.wait(&m_mutex, 100);
-        if (m_parsingDataReady)
-        {
-            parseResponse();
+            break;
+        case ParserState::ResponseParsing:
+            parseResponse(); // парсим ответ
             m_readData.clear();
-            m_parsingDataReady = false;
+            setState(ParserState::RequestParsing);
+            break;
+        case ParserState::CommandRequested:
+            // Ничего не делаем, ждём изменения состояния
+            break;
+        case ParserState::Pending:
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+            currentState = getState();
+            continue;
+        default:
+            break;
         }
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        currentState = getState();
     }
+
+    //    while (getState() != State::Disconnect)
+    //    {
+    //        // Если интерфейс находится в состоянии реконнекта, то ничего не отправляем
+    //        if (getState() == State::Reconnect)
+    //        {
+    //            QCoreApplication::processEvents(QEventLoop::AllEvents);
+    //            continue;
+    //        }
+    //        QMutexLocker locker(&m_mutex);
+    //        if (!m_isCommandRequested)
+    //            checkQueue();
+    //        m_waiter.wait(&m_mutex, 100);
+    //        if (m_parsingDataReady)
+    //        {
+    //            parseResponse();
+    //            m_readData.clear();
+    //            m_parsingDataReady = false;
+    //        }
+    //        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    //    }
     emit finished();
 }
 
@@ -178,4 +212,17 @@ void BaseProtocolParser::setProgressRange(const quint64 count)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, count };
     emit responseSend(resp);
+}
+
+void BaseProtocolParser::processOk()
+{
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, 0 };
+    emit responseSend(resp);
+}
+
+void BaseProtocolParser::processError(int errorCode)
+{
+    DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, static_cast<quint64>(errorCode) };
+    emit responseSend(resp);
+    qCritical() << "Device error code: " << QString::number(errorCode, 16);
 }

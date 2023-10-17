@@ -16,10 +16,9 @@ class ModbusParser : public BaseProtocolParser
     Q_OBJECT
 public:
     explicit ModbusParser(RequestQueue &queue, QObject *parent = nullptr);
-    ~ModbusParser();
+
     void parseRequest(const CommandStruct &cmdStr) override;
     void parseResponse() override;
-
     void setDeviceAddress(quint8 adr);
 
 public slots:
