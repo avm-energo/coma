@@ -107,9 +107,10 @@ QStringList TrendViewModel85::analogValues() const
 
 QStringList TrendViewModel85::digitalValues() const
 {
-    return { "OCNA", "OCNB", "OCNC", "OCFA", "OCFB", "OCFC", "BKCA", "BKCB", "BKCC", "BKOA", "BKOB", "BKOC", "CSC",
-        "CSO", "CNA", "CNB", "CNC", "CFA", "CFB", "CFC", "NNA", "NNB", "NNC", "NFA", "NFB", "NFC", "NCA", "NCB", "NCC",
-        "NOA", "NOB", "NOC" };
+    return digitalDescriptions();
+    //    { "OCNA", "OCNB", "OCNC", "OCFA", "OCFB", "OCFC", "BKCA", "BKCB", "BKCC", "BKOA", "BKOB", "BKOC", "CSC",
+    //        "CSO", "CNA", "CNB", "CNC", "CFA", "CFB", "CFC", "NNA", "NNB", "NNC", "NFA", "NFB", "NFC", "NCA", "NCB",
+    //        "NCC", "NOA", "NOB", "NOC" };
 }
 
 std::bitset<32> TrendViewModel85::digitalEnableFlags() const
