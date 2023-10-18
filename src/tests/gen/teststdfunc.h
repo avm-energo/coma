@@ -30,6 +30,7 @@ private slots:
     void VerToStr();
     void StrToVer();
     void EnumToStr();
+    void byteArrayTest();
 };
 
 #endif // TESTPROTOCOM_H

@@ -11,6 +11,7 @@ class BaseResponseParser : public QObject
 public:
     explicit BaseResponseParser(QObject *parent = nullptr);
 
+    virtual bool isValid(const QByteArray &response) = 0;
     virtual void parse(const QByteArray &response) = 0;
 };
 

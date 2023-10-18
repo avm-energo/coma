@@ -31,7 +31,7 @@ private:
 
 protected:
     using FileFormat = DataTypes::FileFormat;
-    static const QMap<Interface::Commands, CommandRegisters> WSCommandMap;
+    static const QMap<Commands, CommandRegisters> WSCommandMap;
 
     quint64 m_progress = 0;
     QMutex m_mutex;

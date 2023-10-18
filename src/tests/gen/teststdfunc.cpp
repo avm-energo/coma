@@ -32,4 +32,14 @@ void TestStdFunc::EnumToStr()
     QVERIFY(errStr == expected);
 }
 
+void TestStdFunc::byteArrayTest()
+{
+    quint16 data = 32125;
+    QByteArray first;
+    first.append(static_cast<char>(data % 0x100));
+    first.append(static_cast<char>(data / 0x100));
+    auto second = StdFunc::toByteArray(data);
+    QVERIFY(first == second);
+}
+
 QTEST_GUILESS_MAIN(TestStdFunc)

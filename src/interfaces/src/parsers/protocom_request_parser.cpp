@@ -1,5 +1,3 @@
-#pragma once
-
 #include "interfaces/parsers/protocom_request_parser.h"
 
 #include <interfaces/connection.h>
@@ -8,28 +6,28 @@ namespace Interface
 {
 
 const std::map<Interface::Commands, Proto::Commands> ProtocomRequestParser::s_protoCmdMap {
-    { Commands::C_ReqTime, Proto::ReadTime },                      // 12
-    { Commands::C_ReqBSI, Proto::ReadBlkStartInfo },               // 12
-    { Commands::C_ReqBSIExt, Proto::ReadBlkStartInfoExt },         // 12
-    { Commands::C_StartFirmwareUpgrade, Proto::WriteUpgrade },     // 12
-    { Commands::C_SetNewConfiguration, Proto::WriteBlkTech },      // 12
-    { Commands::C_WriteUserValues, Proto::WriteBlkData },          // 12
-    { Commands::C_EraseJournals, Proto::EraseTech },               // 12
-    { Commands::C_ReqProgress, Proto::ReadProgress },              // 12
-    { Commands::C_EraseTechBlock, Proto::EraseTech },              // 12
-    { Commands::C_Test, Proto::Test },                             // 12
-    { Commands::C_WriteSingleCommand, Proto::WriteSingleCommand }, // 12
-    { Commands::C_ReqTuningCoef, Proto::ReadBlkAC },               // 12
-    { Commands::C_WriteTuningCoef, Proto::WriteBlkAC },            // 12
-    { Commands::C_ReqBlkData, Proto::ReadBlkData },                // 12
-    { Commands::C_ReqBlkDataA, Proto::ReadBlkDataA },              // 12
-    { Commands::C_ReqBlkDataTech, Proto::ReadBlkTech },            // 12
-    { Commands::C_ReqOscInfo, Proto::ReadBlkTech },                // 12
-    { Commands::C_WriteBlkDataTech, Proto::WriteBlkTech },         // 12
-    { Commands::C_Reboot, Proto::WriteBlkCmd },                    // 12
-    { Commands::C_GetMode, Proto::ReadMode },                      // 12
-    { Commands::C_SetMode, Proto::WriteMode },                     // 12
-    { Commands::C_WriteHardware, Proto::WriteHardware }            // 12
+    { Commands::C_ReqTime, Proto::ReadTime },                      //
+    { Commands::C_ReqBSI, Proto::ReadBlkStartInfo },               //
+    { Commands::C_ReqBSIExt, Proto::ReadBlkStartInfoExt },         //
+    { Commands::C_StartFirmwareUpgrade, Proto::WriteUpgrade },     //
+    { Commands::C_SetNewConfiguration, Proto::WriteBlkTech },      //
+    { Commands::C_WriteUserValues, Proto::WriteBlkData },          //
+    { Commands::C_EraseJournals, Proto::EraseTech },               //
+    { Commands::C_ReqProgress, Proto::ReadProgress },              //
+    { Commands::C_EraseTechBlock, Proto::EraseTech },              //
+    { Commands::C_Test, Proto::Test },                             //
+    { Commands::C_WriteSingleCommand, Proto::WriteSingleCommand }, //
+    { Commands::C_ReqTuningCoef, Proto::ReadBlkAC },               //
+    { Commands::C_WriteTuningCoef, Proto::WriteBlkAC },            //
+    { Commands::C_ReqBlkData, Proto::ReadBlkData },                //
+    { Commands::C_ReqBlkDataA, Proto::ReadBlkDataA },              //
+    { Commands::C_ReqBlkDataTech, Proto::ReadBlkTech },            //
+    { Commands::C_ReqOscInfo, Proto::ReadBlkTech },                //
+    { Commands::C_WriteBlkDataTech, Proto::WriteBlkTech },         //
+    { Commands::C_Reboot, Proto::WriteBlkCmd },                    //
+    { Commands::C_GetMode, Proto::ReadMode },                      //
+    { Commands::C_SetMode, Proto::WriteMode },                     //
+    { Commands::C_WriteHardware, Proto::WriteHardware }            //
 };
 
 ProtocomRequestParser::ProtocomRequestParser(QObject *parent) : BaseRequestParser(parent)
@@ -39,7 +37,6 @@ ProtocomRequestParser::ProtocomRequestParser(QObject *parent) : BaseRequestParse
 QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
 {
     m_command.clear();
-
     switch (cmd.command)
     {
     // commands requesting regs with addresses ("fake" read regs commands)
@@ -48,7 +45,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_ReqFloats:
     case Commands::C_ReqBitStrings:
     {
-        quint8 block = blockByReg(cmd.arg1.toUInt());
+        quint8 block = getBlockByReg(cmd.arg1.toUInt());
         m_command = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::toByteArray(block));
         break;
     }
@@ -93,6 +90,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         case FilesEnum::JourMeas:
             /// TODO: Exceptional situation
             // processFileFromDisk(filetype);
+            setExceptionalSituationStatus(true);
             break;
         default:
             m_command = prepareBlock(Proto::Commands::ReadFile, StdFunc::toByteArray(cmd.arg1.value<quint16>()));
@@ -104,10 +102,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_WriteFile:
     {
         if (cmd.arg2.canConvert<QByteArray>())
-        {
-            /// TODO
-            // writeBlock(Proto::Commands::WriteFile, cmd.arg2.value<QByteArray>());
-        }
+            m_command = writeLongData(Proto::Commands::WriteFile, cmd.arg2.value<QByteArray>());
         break;
     }
     // write time command with different behaviour under different OS's
@@ -137,11 +132,10 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     {
         if (cmd.arg1.canConvert<DataTypes::BlockStruct>())
         {
-            DataTypes::BlockStruct bs = cmd.arg1.value<DataTypes::BlockStruct>();
-            m_command = StdFunc::toByteArray(static_cast<quint8>(bs.ID)); // сужающий каст
-            m_command.append(bs.data);
-            /// TODO
-            // writeBlock(protoCommandMap.value(cmdStr.command), ba);
+            auto bs = cmd.arg1.value<DataTypes::BlockStruct>();
+            QByteArray tmpba = StdFunc::toByteArray(static_cast<quint8>(bs.ID)); // сужающий каст
+            tmpba.append(bs.data);
+            m_command = writeLongData(s_protoCmdMap.at(cmd.command), tmpba);
         }
         break;
     }
@@ -150,17 +144,16 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     {
         if (cmd.arg1.canConvert<QVariantList>())
         {
-            QVariantList vl = cmd.arg1.value<QVariantList>();
-            const quint16 start_addr = vl.first().value<DataTypes::FloatStruct>().sigAdr;
-            const auto blockNum = static_cast<quint8>(blockByReg(start_addr)); // сужающий каст
-            m_command = StdFunc::toByteArray(blockNum);
-            for (const auto &i : vl)
+            auto vList = cmd.arg1.value<QVariantList>();
+            const quint16 start_addr = vList.first().value<DataTypes::FloatStruct>().sigAdr;
+            const auto blockNum = static_cast<quint8>(getBlockByReg(start_addr)); // сужающий каст
+            QByteArray tmpba = StdFunc::toByteArray(blockNum);
+            for (const auto &item : vList)
             {
-                const float value = i.value<DataTypes::FloatStruct>().sigVal;
-                m_command.append(StdFunc::toByteArray(value));
+                const float value = item.value<DataTypes::FloatStruct>().sigVal;
+                tmpba.append(StdFunc::toByteArray(value));
             }
-            /// TODO
-            // writeBlock(protoCommandMap.value(cmdStr.command), ba);
+            m_command = writeLongData(s_protoCmdMap.at(cmd.command), tmpba);
         }
         break;
     }
@@ -187,12 +180,9 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_StartWorkingChannel:
     case Commands::C_SetTransOff:
     {
-        /// TODO
-        //        uint24 converted(WSCommandMap[cmdStr.command]);
-        //        ba = StdFunc::toByteArray(converted);
-        //        ba.append(StdFunc::toByteArray(cmdStr.arg1.value<quint8>()));
-        //        ba = prepareBlock(Proto::WriteSingleCommand, ba);
-        //        emit sendDataToInterface(ba);
+        uint24 converted(s_wsCmdMap.at(cmd.command));
+        QByteArray tmpba = StdFunc::toByteArray(converted) + StdFunc::toByteArray(cmd.arg1.value<quint8>());
+        m_command = prepareBlock(Proto::WriteSingleCommand, tmpba);
         break;
     }
     default:
@@ -201,15 +191,9 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     return m_command;
 }
 
-quint16 ProtocomRequestParser::blockByReg(const quint32 regAddr)
+quint16 ProtocomRequestParser::getBlockByReg(const quint32 regAddr)
 {
     return Connection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
-}
-
-void ProtocomRequestParser::appendInt16(QByteArray &ba, quint16 data)
-{
-    ba.append(static_cast<char>(data % 0x100));
-    ba.append(static_cast<char>(data / 0x100));
 }
 
 QByteArray ProtocomRequestParser::prepareBlock(
@@ -218,17 +202,65 @@ QByteArray ProtocomRequestParser::prepareBlock(
     QByteArray ba;
     ba.append(startByte);
     ba.append(cmd);
-    appendInt16(ba, data.size());
-
+    auto length = static_cast<quint16>(data.size());
+    ba.append(StdFunc::toByteArray(length));
     if (!data.isEmpty())
         ba.append(data);
     return ba;
 }
 
-bool ProtocomRequestParser::isSupportedCommand(Commands command) noexcept
+bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noexcept
 {
     const auto search = s_protoCmdMap.find(command);
     return search != s_protoCmdMap.cend();
+}
+
+bool ProtocomRequestParser::isOneSegment(const quint64 length) const noexcept
+{
+    // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
+    Q_ASSERT(length <= Proto::MaxSegmenthLength);
+    return (length < Proto::MaxSegmenthLength);
+}
+
+void ProtocomRequestParser::prepareLongData(const Proto::Commands cmd, const QByteArray &data)
+{
+    using Proto::MaxSegmenthLength;
+    m_writeLongData.clear();
+    // Количество сегментов
+    quint64 segCount = (data.size() + 1) // +1 Т.к. некоторые команды имеют в значимой части один дополнительный байт
+            / MaxSegmenthLength          // Максимальная длинна сегмента
+        + 1; // Добавляем еще один сегмент, в него попадет последняя часть
+
+    QByteArray tba = data.left(MaxSegmenthLength);
+    m_writeLongData.push_back(prepareBlock(cmd, tba));
+    for (int pos = MaxSegmenthLength; pos < data.size(); pos += MaxSegmenthLength)
+    {
+        tba = data.mid(pos, MaxSegmenthLength);
+        m_writeLongData.push_back(prepareBlock(cmd, tba, Proto::Starters::Continue));
+    }
+    emit totalBytes(data.size() + segCount * 4);
+}
+
+QByteArray ProtocomRequestParser::writeLongData(const Proto::Commands cmd, const QByteArray &data)
+{
+    if (!isOneSegment(data.size()))
+    {
+        prepareLongData(cmd, data);
+        return getNextChunk(); // send first chunk
+    }
+    else
+        return prepareBlock(cmd, data);
+}
+
+QByteArray ProtocomRequestParser::getNextChunk()
+{
+    if (m_writeLongData.size() > 0)
+    {
+        QByteArray nextChunk { m_writeLongData.front() };
+        m_writeLongData.pop_front();
+        return nextChunk;
+    }
+    return QByteArray {};
 }
 
 } // namespace Interface

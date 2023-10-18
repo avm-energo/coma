@@ -12,7 +12,7 @@
 // typedef QQueue<QByteArray> ByteQueue;
 using DataTypes::FileFormat;
 using Interface::Direction;
-using Proto::CommandStruct;
+// using Proto::CommandStruct;
 using Proto::Starters;
 using namespace Interface;
 

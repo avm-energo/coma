@@ -34,73 +34,50 @@ enum Starters : byte
 
 enum Commands : byte
 {
-    // ответ "всё в порядке"
-    ResultOk = 0x11,
-    // запуск, остановка теста
-    Test = 0x49,
-    // ответ "ошибка"
-    ResultError = 0xf0,
-    // неизвестная команда
-    Unknown = 0xff,
+    ResultOk = 0x11,    ///< Ответ "всё в порядке"
+    Test = 0x49,        ///< Запуск, остановка теста
+    ResultError = 0xf0, ///< Ответ "ошибка"
+    Unknown = 0xff,     ///< Неизвестная команда
+
     ///
     /// namespace READ
     ///
-    ///
-    // чтение блока стартовой информации (дополнительного)
-    ReadBlkStartInfoExt = 0x20,
-    // чтение блока стартовой информации
-    ReadBlkStartInfo = 0x21,
-    // чтение настроечных коэффициентов
-    ReadBlkAC = 0x22,
-    // чтение текущих данных без настройки
-    ReadBlkDataA = 0x23,
-    // чтение блока текущих данных
-    ReadBlkData = 0x24,
-    // чтение технологического блока
-    ReadBlkTech = 0x26,
-    // чтение файла
-    ReadFile = 0x25,
-    // чтение номера варианта использования
-    ReadVariant = 0x27,
-    // чтение текущего режима работы
-    ReadMode = 0x28,
-    // чтение времени из МНК в формате UNIX
-    ReadTime = 0x29,
-    // запрос текущего прогресса
-    ReadProgress = 0x46,
+    ReadBlkStartInfoExt = 0x20, ///< Чтение дополнительного блока стартовой информации
+    ReadBlkStartInfo = 0x21, ///< Чтение блока стартовой информации
+    ReadBlkAC = 0x22,        ///< Чтение настроечных коэффициентов
+    ReadBlkDataA = 0x23,     ///< Чтение текущих данных без настройки
+    ReadBlkData = 0x24,      ///< Чтение блока текущих данных
+    ReadBlkTech = 0x26,      ///< Чтение технологического блока
+    ReadFile = 0x25,         ///< Чтение файла
+    ReadVariant = 0x27,      ///< Чтение номера варианта использования
+    ReadMode = 0x28,         ///< Чтение текущего режима работы
+    ReadTime = 0x29,         ///< Чтение времени из МНК в формате UNIX
+    ReadProgress = 0x46,     ///< Запрос текущего прогресса
+
     ///
     /// namespace WRITE
     ///
-    // запись настроечных коэффициентов
-    WriteBlkAC = 0x31,
-    // посылка блока данных
-    WriteBlkData = 0x34,
-    // посылка команды
-    WriteBlkCmd = 0x35,
-    // запись технологического блока
-    WriteBlkTech = 0x2B,
-    // отправка команды 104
-    WriteSingleCommand = 0x2D,
-    // запись файла
-    WriteFile = 0x32,
-    // задание варианта использования
-    //    WriteVariant = 0x44,
-    // задание текущего режима работы
-    WriteMode = 0x43,
-    // запись времени в МНК в формате UNIX
-    WriteTime = 0x2A,
-    // переход на новое ПО
-    WriteUpgrade = 0x40,
+    WriteBlkAC = 0x31,         ///< запись настроечных коэффициентов
+    WriteBlkData = 0x34,       ///< посылка блока данных
+    WriteBlkCmd = 0x35,        ///< посылка команды
+    WriteBlkTech = 0x2B,       ///< запись технологического блока
+    WriteSingleCommand = 0x2D, ///< отправка команды 104
+    WriteFile = 0x32,          ///< запись файла
+    WriteVariant = 0x44,       ///< задание варианта использования
+    WriteMode = 0x43,          ///< задание текущего режима работы
+    WriteTime = 0x2A,          ///< запись времени в МНК в формате UNIX
+    WriteUpgrade = 0x40,       ///< переход на новое ПО
+
     ///
     /// namespace ERASE
     ///
-    // стирание технологического блока
-    EraseTech = 0x45,
-    // стирание счётчиков дискретных состояний
-    EraseCnt = 0x47,
-    // запись версии аппаратуры модуля/серийного номера/типа платы
-    WriteHardware = 0x48,
+    EraseTech = 0x45, ///< стирание технологического блока
+    EraseCnt = 0x47,  ///< стирание счётчиков дискретных состояний
+    WriteHardware = 0x48, ///< запись версии аппаратуры модуля/серийного номера/типа платы
+
+    ///
     /// Fake commands
+    ///
     FakeReadRegData,
     FakeReadAlarms,
     FakeReadBitString
@@ -123,14 +100,6 @@ enum HiddenBlockModule : byte
     BaseMezzAdd = 0x07
 };
 
-struct CommandStruct
-{
-    Proto::Commands cmd;
-    QVariant arg1;
-    QVariant arg2;
-    QByteArray ba;
-};
-
 enum TypeId : int
 {
     Bool,
@@ -143,4 +112,3 @@ enum TypeId : int
 Q_ENUM_NS(TypeId)
 
 }
-Q_DECLARE_METATYPE(Proto::CommandStruct)
