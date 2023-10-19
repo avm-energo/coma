@@ -30,4 +30,21 @@ bool BaseRequestParser::isExceptionalSituation() const noexcept
     return m_isExceptionalSituation;
 }
 
+void BaseRequestParser::exceptionalAction(const CommandStruct &command) noexcept
+{
+    // Nothing to do here
+    Q_UNUSED(command);
+}
+
+QByteArray BaseRequestParser::getNextChunk()
+{
+    if (m_writeLongData.size() > 0)
+    {
+        QByteArray nextChunk { m_writeLongData.front() };
+        m_writeLongData.pop_front();
+        return nextChunk;
+    }
+    return QByteArray {};
+}
+
 } // namespace Interface

@@ -24,7 +24,6 @@ public:
     explicit ProtocomRequestParser(QObject *parent = nullptr);
 
     QByteArray parse(const CommandStruct &cmd) override;
-    QByteArray getNextChunk();
 };
 
 } // namespace Interface

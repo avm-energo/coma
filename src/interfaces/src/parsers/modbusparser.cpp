@@ -300,6 +300,8 @@ void ModbusParser::processReadBytes(QByteArray ba)
         // m_parsingDataReady = true;
         wakeUp();
     }
+    else
+        qCritical() << Error::SizeError;
 }
 
 void ModbusParser::calcCRCAndSend(QByteArray &ba)

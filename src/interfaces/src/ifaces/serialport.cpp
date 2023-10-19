@@ -79,6 +79,7 @@ bool SerialPort::write(const QByteArray &ba)
     if (!m_port->isOpen())
         return false;
     m_dataGuard.lock();                               // lock port
+    m_port->clear(QSerialPort::Direction::Input);     // flush input buffer
     auto bytes = m_port->write(ba.data(), ba.size()); // write data
     m_dataGuard.unlock();                             // unlock port
     if (bytes <= 0)

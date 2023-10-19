@@ -12,7 +12,7 @@ class BaseRequestParser : public QObject
 protected:
     static const std::map<Commands, CommandRegisters> s_wsCmdMap;
 
-    QByteArray m_command;
+    QByteArray m_request;
     std::deque<QByteArray> m_writeLongData;
     bool m_isExceptionalSituation;
 
@@ -22,9 +22,15 @@ public:
     explicit BaseRequestParser(QObject *parent = nullptr);
 
     virtual QByteArray parse(const CommandStruct &command) = 0;
+
     bool isExceptionalSituation() const noexcept;
+    virtual void exceptionalAction(const CommandStruct &command) noexcept;
+
+    QByteArray getNextChunk();
 
 signals:
+    void writingFile();
+    void readingFile();
     void totalBytes(const int total);
     void progressBytes(const int progress);
     void parsedCommand(const Interface::CommandStruct &command);

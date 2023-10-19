@@ -36,7 +36,7 @@ ProtocomRequestParser::ProtocomRequestParser(QObject *parent) : BaseRequestParse
 
 QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
 {
-    m_command.clear();
+    m_request.clear();
     switch (cmd.command)
     {
     // commands requesting regs with addresses ("fake" read regs commands)
@@ -46,7 +46,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_ReqBitStrings:
     {
         quint8 block = getBlockByReg(cmd.arg1.toUInt());
-        m_command = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::toByteArray(block));
+        m_request = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::toByteArray(block));
         break;
     }
     // commands without any arguments
@@ -58,7 +58,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_GetMode:
     {
         if (isSupportedCommand(cmd.command))
-            m_command = prepareBlock(s_protoCmdMap.at(cmd.command), QByteArray());
+            m_request = prepareBlock(s_protoCmdMap.at(cmd.command), QByteArray());
         break;
     }
     // commands with only one uint8 parameter (blocknum or smth similar)
@@ -74,7 +74,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_Test:
     {
         if (isSupportedCommand(cmd.command))
-            m_command = prepareBlock(s_protoCmdMap.at(cmd.command), StdFunc::toByteArray(cmd.arg1.value<quint8>()));
+            m_request = prepareBlock(s_protoCmdMap.at(cmd.command), StdFunc::toByteArray(cmd.arg1.value<quint8>()));
         break;
     }
     // file request: known file types should be download from disk and others must be taken from module by Protocom,
@@ -93,7 +93,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
             setExceptionalSituationStatus(true);
             break;
         default:
-            m_command = prepareBlock(Proto::Commands::ReadFile, StdFunc::toByteArray(cmd.arg1.value<quint16>()));
+            m_request = prepareBlock(Proto::Commands::ReadFile, StdFunc::toByteArray(cmd.arg1.value<quint16>()));
             break;
         }
         break;
@@ -102,7 +102,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_WriteFile:
     {
         if (cmd.arg2.canConvert<QByteArray>())
-            m_command = writeLongData(Proto::Commands::WriteFile, cmd.arg2.value<QByteArray>());
+            m_request = writeLongData(Proto::Commands::WriteFile, cmd.arg2.value<QByteArray>());
         break;
     }
     // write time command with different behaviour under different OS's
@@ -121,7 +121,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         {
             tmpba = StdFunc::toByteArray(cmd.arg1.value<quint32>());
         }
-        m_command = prepareBlock(Proto::Commands::WriteTime, tmpba);
+        m_request = prepareBlock(Proto::Commands::WriteTime, tmpba);
         break;
     }
     // block write, arg1 is BlockStruct of one quint32 (block ID) and one QByteArray (block contents)
@@ -135,7 +135,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
             auto bs = cmd.arg1.value<DataTypes::BlockStruct>();
             QByteArray tmpba = StdFunc::toByteArray(static_cast<quint8>(bs.ID)); // сужающий каст
             tmpba.append(bs.data);
-            m_command = writeLongData(s_protoCmdMap.at(cmd.command), tmpba);
+            m_request = writeLongData(s_protoCmdMap.at(cmd.command), tmpba);
         }
         break;
     }
@@ -153,7 +153,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
                 const float value = item.value<DataTypes::FloatStruct>().sigVal;
                 tmpba.append(StdFunc::toByteArray(value));
             }
-            m_command = writeLongData(s_protoCmdMap.at(cmd.command), tmpba);
+            m_request = writeLongData(s_protoCmdMap.at(cmd.command), tmpba);
         }
         break;
     }
@@ -164,7 +164,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         {
             DataTypes::SingleCommand scmd = cmd.arg1.value<DataTypes::SingleCommand>();
             auto tmpba = StdFunc::toByteArray(scmd.addr) + StdFunc::toByteArray(scmd.value);
-            m_command = prepareBlock(Proto::WriteSingleCommand, tmpba);
+            m_request = prepareBlock(Proto::WriteSingleCommand, tmpba);
         }
         break;
     }
@@ -182,13 +182,13 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     {
         uint24 converted(s_wsCmdMap.at(cmd.command));
         QByteArray tmpba = StdFunc::toByteArray(converted) + StdFunc::toByteArray(cmd.arg1.value<quint8>());
-        m_command = prepareBlock(Proto::WriteSingleCommand, tmpba);
+        m_request = prepareBlock(Proto::WriteSingleCommand, tmpba);
         break;
     }
     default:
-        qDebug() << "There's no such command";
+        qCritical() << "Undefined command: " << QVariant::fromValue(cmd.command).toString();
     }
-    return m_command;
+    return m_request;
 }
 
 quint16 ProtocomRequestParser::getBlockByReg(const quint32 regAddr)
@@ -245,22 +245,12 @@ QByteArray ProtocomRequestParser::writeLongData(const Proto::Commands cmd, const
 {
     if (!isOneSegment(data.size()))
     {
+        emit writingFile();
         prepareLongData(cmd, data);
         return getNextChunk(); // send first chunk
     }
     else
         return prepareBlock(cmd, data);
-}
-
-QByteArray ProtocomRequestParser::getNextChunk()
-{
-    if (m_writeLongData.size() > 0)
-    {
-        QByteArray nextChunk { m_writeLongData.front() };
-        m_writeLongData.pop_front();
-        return nextChunk;
-    }
-    return QByteArray {};
 }
 
 } // namespace Interface

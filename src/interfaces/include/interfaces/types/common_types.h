@@ -125,3 +125,5 @@ using DeviceResponse = std::variant<QByteArray, DataTypes::BitStringStruct,   //
     DataTypes::FloatWithTimeStruct>;
 
 } // namespace Interface
+
+Q_DECLARE_METATYPE(Interface::Commands);
