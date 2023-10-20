@@ -94,6 +94,8 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
             break;
         default:
             m_request = prepareBlock(Proto::Commands::ReadFile, StdFunc::toByteArray(cmd.arg1.value<quint16>()));
+            m_continueCommand = createContinueCommand(Proto::Commands::ReadFile);
+            emit readingFile();
             break;
         }
         break;
@@ -191,6 +193,24 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     return m_request;
 }
 
+QByteArray ProtocomRequestParser::getNextContinueCommand() noexcept
+{
+    return m_continueCommand;
+}
+
+bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noexcept
+{
+    const auto search = s_protoCmdMap.find(command);
+    return search != s_protoCmdMap.cend();
+}
+
+bool ProtocomRequestParser::isOneSegment(const quint64 length) const noexcept
+{
+    // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
+    Q_ASSERT(length <= Proto::MaxSegmenthLength);
+    return (length < Proto::MaxSegmenthLength);
+}
+
 quint16 ProtocomRequestParser::getBlockByReg(const quint32 regAddr)
 {
     return Connection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
@@ -207,19 +227,6 @@ QByteArray ProtocomRequestParser::prepareBlock(
     if (!data.isEmpty())
         ba.append(data);
     return ba;
-}
-
-bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noexcept
-{
-    const auto search = s_protoCmdMap.find(command);
-    return search != s_protoCmdMap.cend();
-}
-
-bool ProtocomRequestParser::isOneSegment(const quint64 length) const noexcept
-{
-    // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
-    Q_ASSERT(length <= Proto::MaxSegmenthLength);
-    return (length < Proto::MaxSegmenthLength);
 }
 
 void ProtocomRequestParser::prepareLongData(const Proto::Commands cmd, const QByteArray &data)
@@ -251,6 +258,17 @@ QByteArray ProtocomRequestParser::writeLongData(const Proto::Commands cmd, const
     }
     else
         return prepareBlock(cmd, data);
+}
+
+QByteArray ProtocomRequestParser::createContinueCommand(const Proto::Commands cmd) const noexcept
+{
+    QByteArray continueCmd;
+    continueCmd.append(Proto::Starters::Continue);
+    // NOTE Михалыч не следует документации поэтому пока так
+    // tmpba.append(Proto::Commands::ResultOk);
+    continueCmd.append(cmd);
+    continueCmd.append(StdFunc::toByteArray(quint16(0x0000)));
+    return continueCmd;
 }
 
 } // namespace Interface

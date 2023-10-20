@@ -5,7 +5,7 @@
 namespace Interface
 {
 
-ProtocomResponseParser::ProtocomResponseParser(QObject *parent) : BaseResponseParser(parent)
+ProtocomResponseParser::ProtocomResponseParser(QObject *parent) : BaseResponseParser(parent), m_isFirstSection(true)
 {
 }
 
@@ -34,93 +34,93 @@ bool ProtocomResponseParser::isValid(const QByteArray &response)
     return false;
 }
 
-void ProtocomResponseParser::parse(QByteArray &response)
+void ProtocomResponseParser::parse(const QByteArray &response)
 {
     // Убираем заголовок Protocom, подготовка
-    m_receivedCommand = Proto::Commands(response.at(1));
-    auto size = quint16(response.at(2));
-    response.remove(0, 4);
-    response.resize(size);
+    QByteArray tmpba = response;
+    m_receivedCommand = Proto::Commands(tmpba.at(1));
+    auto size = quint16(tmpba.at(2));
+    tmpba.remove(0, 4);
+    tmpba.resize(size);
+
+    if (m_request.command == Commands::C_ReqFile)
+    {
+        progressFile(tmpba);
+        // Если ещё не получили последнюю секцию, то выходим из функции
+        if (!m_isLastSectionReceived)
+            return;
+    }
+    else
+        m_response = tmpba;
 
     quint32 addr = m_request.arg1.toUInt();
     switch (m_receivedCommand)
     {
     case Proto::Commands::ResultOk:
     {
-        /// TODO
-        //        if (m_request.command == Commands::C_WriteFile)
-        //            setProgressCount(m_sentBytesCount);
-        //        if (!m_longBlockChunks.isEmpty())
-        //        {
-        //            QByteArray ba = m_longBlockChunks.takeFirst();
-        //            m_sentBytesCount += ba.size();
-        //            emit sendDataToInterface(ba);
-        //            return;
-        //        }
         processOk();
         break;
     }
     case Proto::Commands::ResultError:
     {
-        const quint8 errorCode = response.front();
+        const quint8 errorCode = m_response.front();
         processError(errorCode);
         break;
     }
     case Proto::Commands::ReadTime:
 #ifdef Q_OS_LINUX
-        if (response.size() == sizeof(quint64))
+        if (m_response.size() == sizeof(quint64))
             processUnixTime(m_readData);
         else
 #endif
-            processU32(response, addr);
+            processU32(m_response, addr);
         break;
     case Proto::Commands::ReadBlkStartInfo:
     case Proto::Commands::ReadBlkStartInfoExt:
         if (boardType.isEmpty())
         {
-            boardType.mTypeB = response[0];
-            boardType.mTypeM = response[4];
+            boardType.mTypeB = m_response[0];
+            boardType.mTypeM = m_response[4];
         }
-        processU32(response, addr);
+        processU32(m_response, addr);
         break;
     case Proto::Commands::ReadBlkAC:
     case Proto::Commands::ReadBlkDataA:
-        processBlock(response, addr); // Ожидается что в addr хранится номер блока
+        processBlock(m_response, addr); // Ожидается что в addr хранится номер блока
         break;
     case Proto::Commands::ReadBlkData:
         switch (m_request.command)
         {
         case Commands::C_ReqStartup:
         case Commands::C_ReqFloats:
-            processFloat(response, addr);
+            processFloat(m_response, addr);
             break;
         case Commands::C_ReqAlarms:
-            processSinglePoint(response, addr);
+            processSinglePoint(m_response, addr);
             break;
         case Commands::C_ReqBitStrings:
-            processU32(response, addr);
+            processU32(m_response, addr);
             break;
         default:
-            processBlock(response, addr);
+            processBlock(m_response, addr);
             break;
         }
         break;
     case Proto::Commands::ReadBlkTech:
-        processTechBlock(response, addr);
+        processTechBlock(m_response, addr);
         break;
     case Proto::Commands::ReadProgress:
-        processU32(response, addr);
+        processU32(m_response, addr);
         break;
     case Proto::Commands::ReadFile:
-        /// TODO
-        // filePostpone(response, S2::FilesEnum(addr), DataTypes::FileFormat(m_request.arg2.toUInt()));
+        fileReceived(m_response, S2::FilesEnum(addr), DataTypes::FileFormat(m_request.arg2.toUInt()));
         break;
     case Proto::Commands::ReadMode:
-        processInt(response.toInt());
+        processInt(m_response.toInt());
         break;
     default:
         qCritical("We shouldn't be here, something went wrong");
-        qDebug() << response.toHex();
+        qCritical() << m_response.toHex();
         break;
     }
 }
@@ -156,14 +156,15 @@ void ProtocomResponseParser::processFloat(const QByteArray &data, quint32 startA
     // NOTE Проблема со стартовыми регистрами, получим на один регистр больше чем по другим протоколам
     Q_ASSERT(data.size() >= sizeof(float));     // должен быть хотя бы один флоат
     Q_ASSERT(data.size() % sizeof(float) == 0); // размер кратен размеру флоат
+    int bapos = 0;
     const int baendpos = data.size();
-    constexpr auto step = sizeof(float);
-    for (int bapos = 0; bapos < baendpos; bapos += step)
+    while (bapos != baendpos)
     {
-        QByteArray tba = data.mid(bapos, step);
+        QByteArray tba = data.mid(bapos, sizeof(float));
         float blk = *reinterpret_cast<const float *>(tba.data());
         DataTypes::FloatStruct resp { startAddr++, blk, DataTypes::Quality::Good };
         emit responseParsed(resp);
+        bapos += sizeof(float);
     }
 }
 
@@ -240,6 +241,28 @@ void ProtocomResponseParser::processTechBlock(const QByteArray &data, quint32 bl
         qDebug() << data;
         break;
     }
+}
+
+void ProtocomResponseParser::progressFile(const QByteArray &filePart)
+{
+    // Проверяем, получили мы последнюю секцию, или нет
+    m_isLastSectionReceived = (filePart.size() < Proto::MaxSegmenthLength);
+    // Если получили первую секцию
+    if (m_isFirstSection)
+    {
+        m_response = filePart;
+        processProgressRange(m_util.getFileSize(m_response)); // set progressbar max size
+        m_isFirstSection = false;
+    }
+    // Если получили следующую секцию
+    else
+    {
+        // Добавляем полученные данные в буфер
+        m_response.append(filePart);
+    }
+    processProgressCount(m_response.size());
+    if (m_isLastSectionReceived)
+        m_isFirstSection = true;
 }
 
 } // namespace Interface

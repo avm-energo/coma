@@ -3,8 +3,7 @@
 #include <gen/std_ext.h>
 #include <interfaces/ifaces/serialport.h>
 #include <interfaces/ifaces/usbhidport.h>
-#include <interfaces/parsers/modbusparser.h>
-#include <interfaces/parsers/protocomparser.h>
+#include <interfaces/parsers/device_query_executor.h>
 
 namespace Interface
 {
@@ -18,7 +17,7 @@ ConnectionManager::ConnectionManager(QWidget *parent)
     , m_timeoutCounter(0)
     , m_errorCounter(0)
 {
-    // TODO: брать значение из настроек
+    /// TODO: брать значение из настроек
     m_silentTimer->setInterval(10000);
     m_errorMax = 5;
     m_timeoutMax = 5;
@@ -38,15 +37,15 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
     std::visit( // Инициализация контекста для обмена данными
         overloaded {
             [this](const UsbHidSettings &settings) {
-                auto port = new UsbHidPort(settings);
-                auto parser = new ProtocomParser(m_currentConnection->m_queue);
-                m_context.init(port, parser, Strategy::Sync, Qt::DirectConnection);
+                auto interface = new UsbHidPort(settings);
+                auto executor = DeviceQueryExecutor::makeProtocomExecutor(m_currentConnection->m_queue);
+                m_context.init(interface, executor, Strategy::Sync, Qt::DirectConnection);
             },
             [this](const SerialPortSettings &settings) {
-                auto port = new SerialPort(settings);
-                auto parser = new ModbusParser(m_currentConnection->m_queue);
-                parser->setDeviceAddress(settings.address);
-                m_context.init(port, parser, Strategy::Sync, Qt::QueuedConnection);
+                auto interface = new SerialPort(settings);
+                /// TODO: device address
+                auto executor = DeviceQueryExecutor::makeModbusExecutor(m_currentConnection->m_queue);
+                m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const IEC104Settings &settings) {
                 Q_UNUSED(settings);
@@ -112,7 +111,7 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
         break;
     case InterfaceError::Timeout:
         ++m_timeoutCounter;
-        if (m_context.m_parser->m_currentCommand.command == Commands::C_ReqBSI)
+        if (m_context.m_executor->getLastRequestedCommand() == Commands::C_ReqBSI)
         {
             qCritical() << "Превышено время ожидания блока BSI. Disconnect...";
             breakConnection();

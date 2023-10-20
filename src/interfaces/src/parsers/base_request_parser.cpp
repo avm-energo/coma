@@ -20,6 +20,17 @@ BaseRequestParser::BaseRequestParser(QObject *parent) : QObject(parent), m_isExc
 {
 }
 
+QByteArray BaseRequestParser::getNextChunk()
+{
+    if (m_writeLongData.size() > 0)
+    {
+        QByteArray nextChunk { m_writeLongData.front() };
+        m_writeLongData.pop_front();
+        return nextChunk;
+    }
+    return QByteArray {};
+}
+
 void BaseRequestParser::setExceptionalSituationStatus(bool status) noexcept
 {
     m_isExceptionalSituation = status;
@@ -34,17 +45,6 @@ void BaseRequestParser::exceptionalAction(const CommandStruct &command) noexcept
 {
     // Nothing to do here
     Q_UNUSED(command);
-}
-
-QByteArray BaseRequestParser::getNextChunk()
-{
-    if (m_writeLongData.size() > 0)
-    {
-        QByteArray nextChunk { m_writeLongData.front() };
-        m_writeLongData.pop_front();
-        return nextChunk;
-    }
-    return QByteArray {};
 }
 
 } // namespace Interface

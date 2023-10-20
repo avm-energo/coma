@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QTimer>
 #include <gen/logclass.h>
 #include <interfaces/types/common_types.h>
 #include <interfaces/utils/request_queue.h>
@@ -7,7 +8,6 @@
 namespace Interface
 {
 
-class QTimer;
 class BaseRequestParser;
 class BaseResponseParser;
 
@@ -28,6 +28,7 @@ class DeviceQueryExecutor : public QObject
     Q_OBJECT
 private:
     std::atomic<ExecutorState> m_state;
+    Commands m_lastRequestedCommand;
     RequestQueue &m_queue;
     LogClass m_log;
     QTimer *m_timeoutTimer;
@@ -38,7 +39,7 @@ private:
     /// \details Создание экземпляров класса доступно только через функции
     /// makeProtocomExecutor, makeModbusExecutor и makeIec104Executor.
     /// \see makeProtocomExecutor, makeModbusExecutor и makeIec104Executor.
-    explicit DeviceQueryExecutor(RequestQueue &queue, QObject *parent = nullptr);
+    explicit DeviceQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent = nullptr);
 
     /// \brief Инициализация логгера исполнителя запросов.
     /// \details Вызывается при создании исполнителя запросов.
@@ -54,24 +55,36 @@ private:
     /// \brief Изменяет текущее состояние исполнителя запросов указанным.
     void setState(const ExecutorState newState) noexcept;
 
-    void writeFromQueue() noexcept;
+    void parseFromQueue() noexcept;
+    void writeToInterface(const QByteArray &request) noexcept;
+
+    void writeToLog(const QByteArray &ba, const Direction dir = Direction::NoDirection) noexcept;
 
 public:
+    /// \brief Удалённый конструктор по умолчанию.
     DeviceQueryExecutor() = delete;
+    /// \brief Удалённый конструктор копирования.
     DeviceQueryExecutor(const DeviceQueryExecutor &rhs) = delete;
 
-    void run();
+    void exec();
+    void run() noexcept;
+    void pause() noexcept;
+    void stop() noexcept;
 
-    static DeviceQueryExecutor *makeProtocomExecutor(RequestQueue &queue);
-    static DeviceQueryExecutor *makeModbusExecutor(RequestQueue &queue);
-    static DeviceQueryExecutor *makeIec104Executor(RequestQueue &queue);
+    const Commands getLastRequestedCommand() const noexcept;
+
+    static DeviceQueryExecutor *makeProtocomExecutor(RequestQueue &queue, quint32 timeout = 1000);
+    static DeviceQueryExecutor *makeModbusExecutor(RequestQueue &queue, quint32 timeout = 3000);
+    static DeviceQueryExecutor *makeIec104Executor(RequestQueue &queue, quint32 timeout = 1000);
 
 public slots:
-    void receiveDataFromInterface(QByteArray data);
+    void receiveDataFromInterface(QByteArray response);
+    void cancelQuery();
 
 signals:
     void stateChanged(const Interface::ExecutorState state);
     void finished();
+    void timeout();
     void responseSend(const Interface::DeviceResponse &resp);
     void sendDataToInterface(const QByteArray &data);
 };

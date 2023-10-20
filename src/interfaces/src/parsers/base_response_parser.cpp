@@ -1,15 +1,22 @@
 #include "interfaces/parsers/base_response_parser.h"
 
+#include <s2/s2util.h>
+
 namespace Interface
 {
 
-BaseResponseParser::BaseResponseParser(QObject *parent) : QObject(parent)
+BaseResponseParser::BaseResponseParser(QObject *parent) : QObject(parent), m_isLastSectionReceived(false)
 {
 }
 
-void BaseResponseParser::setRequest(const CommandStruct &command) noexcept
+void BaseResponseParser::setRequest(const CommandStruct &request) noexcept
 {
-    m_request = command;
+    m_request = request;
+}
+
+bool BaseResponseParser::isLastSectionReceived() const noexcept
+{
+    return m_isLastSectionReceived;
 }
 
 void BaseResponseParser::totalBytes(const int total)
@@ -45,6 +52,78 @@ void BaseResponseParser::processError(int errorCode)
     qCritical() << "Device error code: " << QString::number(errorCode, 16);
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, static_cast<quint64>(errorCode) };
     emit responseParsed(resp);
+}
+
+void BaseResponseParser::fileReceived(const QByteArray &ba, //
+    const S2::FilesEnum addr, const DataTypes::FileFormat format)
+{
+    switch (format)
+    {
+    case DataTypes::FileFormat::Binary:
+    {
+        DataTypes::GeneralResponseStruct genResp {
+            DataTypes::GeneralResponseTypes::Ok, //
+            static_cast<quint64>(ba.size())      //
+        };
+        emit responseParsed(genResp);
+        switch (addr)
+        {
+        // По модбасу уже получили файл в формате S2B
+        case S2::FilesEnum::JourSys:
+        case S2::FilesEnum::JourWork:
+        case S2::FilesEnum::JourMeas:
+        {
+            if (!ba.isEmpty())
+            {
+                S2Util util;
+                S2::S2BFile s2bFile {};
+                auto errCode = util.parseS2B(ba, s2bFile);
+                if (errCode == Error::Msg::NoError)
+                    emit responseParsed(s2bFile);
+                else
+                    qCritical() << QVariant::fromValue(errCode).toString();
+            }
+            break;
+        }
+        default:
+        {
+            S2::FileStruct resp { addr, ba };
+            emit responseParsed(resp);
+            break;
+        }
+        }
+        break;
+    }
+    case DataTypes::FileFormat::DefaultS2:
+    {
+        emit responseParsed(ba);
+        break;
+    }
+    case DataTypes::FileFormat::CustomS2:
+    {
+        DataTypes::S2FilePack outlist;
+        if (!S2Util::RestoreData(ba, outlist))
+        {
+            DataTypes::GeneralResponseStruct resp {
+                DataTypes::GeneralResponseTypes::Error, //
+                static_cast<quint64>(ba.size())         //
+            };
+            emit responseParsed(resp);
+            return;
+        }
+        DataTypes::GeneralResponseStruct genResp {
+            DataTypes::GeneralResponseTypes::Ok, //
+            static_cast<quint64>(ba.size())      //
+        };
+        emit responseParsed(genResp);
+        for (auto &&file : outlist)
+        {
+            S2::FileStruct resp { S2::FilesEnum(file.ID), file.data };
+            emit responseParsed(resp);
+        }
+        break;
+    }
+    }
 }
 
 } // namespace Interface

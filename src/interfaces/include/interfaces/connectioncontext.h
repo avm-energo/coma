@@ -2,12 +2,13 @@
 
 #include <QThread>
 #include <QThreadPool>
-#include <interfaces/connection.h>
 #include <interfaces/ifaces/baseinterface.h>
-#include <interfaces/parsers/baseprotocolparser.h>
 
 namespace Interface
 {
+
+class Connection;
+class DeviceQueryExecutor;
 
 enum class Strategy : quint8
 {
@@ -22,7 +23,7 @@ class ConnectionContext
 
 private:
     BaseInterface *m_iface;
-    BaseProtocolParser *m_parser;
+    DeviceQueryExecutor *m_executor;
     Strategy m_strategy;
     std::pair<QThread *, QThread *> m_syncThreads;
     QThreadPool *m_threadPool;
@@ -36,7 +37,7 @@ public:
     /// \param connPolicy [in] - для взаимодействия порта и парсера используются
     /// по USB и последовательному порту используются разные типы коммуникации.
     /// Причина: использование QSerialPort, с которым нельзя работать из разных потоков.
-    void init(BaseInterface *iface, BaseProtocolParser *parser, //
+    void init(BaseInterface *iface, DeviceQueryExecutor *executor, //
         const Strategy strategy, const Qt::ConnectionType connPolicy);
     /// \brief Запускает соединение для текущего инициализированного контекста.
     bool run(Connection *connection);

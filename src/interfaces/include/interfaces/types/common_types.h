@@ -126,4 +126,5 @@ using DeviceResponse = std::variant<QByteArray, DataTypes::BitStringStruct,   //
 
 } // namespace Interface
 
+Q_DECLARE_METATYPE(Interface::DeviceResponse);
 Q_DECLARE_METATYPE(Interface::Commands);

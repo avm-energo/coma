@@ -1,38 +1,40 @@
 #include "interfaces/connectioncontext.h"
 
+#include <interfaces/connection.h>
+#include <interfaces/parsers/device_query_executor.h>
+
 namespace Interface
 {
 
-ConnectionContext::ConnectionContext() noexcept : m_iface(nullptr), m_parser(nullptr), m_strategy(Strategy::None)
+ConnectionContext::ConnectionContext() noexcept : m_iface(nullptr), m_executor(nullptr), m_strategy(Strategy::None)
 {
 }
 
 bool ConnectionContext::isValid() const noexcept
 {
-    return (m_iface != nullptr && m_parser != nullptr);
+    return (m_iface != nullptr && m_executor != nullptr);
 }
 
-void ConnectionContext::init(BaseInterface *iface, BaseProtocolParser *parser, //
+void ConnectionContext::init(BaseInterface *iface, DeviceQueryExecutor *executor, //
     const Strategy strategy, const Qt::ConnectionType connPolicy)
 {
     m_iface = iface;
-    m_parser = parser;
+    m_executor = executor;
     m_strategy = strategy;
 
     if (isValid() && m_strategy != Strategy::None)
     {
         // Обмен данными
         QObject::connect(m_iface, &BaseInterface::dataReceived, //
-            m_parser, &BaseProtocolParser::processReadBytes, connPolicy);
-        QObject::connect(m_parser, &BaseProtocolParser::sendDataToInterface, //
+            m_executor, &DeviceQueryExecutor::receiveDataFromInterface, Qt::QueuedConnection);
+        QObject::connect(m_executor, &DeviceQueryExecutor::sendDataToInterface, //
             m_iface, &BaseInterface::writeData, connPolicy);
-        // QObject::connect(m_iface, &BaseInterface::stateChanged, //
-        //    m_parser, &BaseProtocolParser::setState, Qt::DirectConnection);
         // Отмена команды
-        QObject::connect(m_iface, &BaseInterface::clearQueries, m_parser, &BaseProtocolParser::clear, connPolicy);
+        QObject::connect(m_iface, &BaseInterface::clearQueries, //
+            m_executor, &DeviceQueryExecutor::cancelQuery, connPolicy);
         // Конец работы
-        QObject::connect(m_iface, &BaseInterface::finished, m_parser, &BaseProtocolParser::wakeUp, connPolicy);
-        QObject::connect(m_iface, &BaseInterface::finished, m_parser, &BaseProtocolParser::finished, connPolicy);
+        // QObject::connect(m_iface, &BaseInterface::finished, m_executor, &DeviceQueryExecutor::wakeUp, connPolicy);
+        QObject::connect(m_iface, &BaseInterface::finished, m_executor, &DeviceQueryExecutor::finished, connPolicy);
 
         if (m_strategy == Strategy::Sync)
         {
@@ -40,19 +42,19 @@ void ConnectionContext::init(BaseInterface *iface, BaseProtocolParser *parser, /
             auto parserThread = new QThread;
             // Старт
             QObject::connect(ifaceThread, &QThread::started, m_iface, &BaseInterface::poll);
-            QObject::connect(parserThread, &QThread::started, m_parser, &BaseProtocolParser::run);
+            QObject::connect(parserThread, &QThread::started, m_executor, &DeviceQueryExecutor::exec);
             // Остановка
             QObject::connect(m_iface, &BaseInterface::finished, ifaceThread, &QThread::quit);
             QObject::connect(m_iface, &BaseInterface::finished, parserThread, &QThread::quit);
-            QObject::connect(m_parser, &BaseProtocolParser::finished, parserThread, &QThread::quit);
+            QObject::connect(m_executor, &DeviceQueryExecutor::finished, parserThread, &QThread::quit);
             QObject::connect(ifaceThread, &QThread::finished, m_iface, &QObject::deleteLater);
-            QObject::connect(parserThread, &QThread::finished, m_parser, &QObject::deleteLater);
+            QObject::connect(parserThread, &QThread::finished, m_executor, &QObject::deleteLater);
             QObject::connect(ifaceThread, &QThread::finished, &QObject::deleteLater);
             QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
             // Если интерфейс успешно запустился
             QObject::connect(iface, &BaseInterface::started, m_iface, [=] {
                 qInfo() << m_iface->metaObject()->className() << " connected";
-                parser->moveToThread(parserThread);
+                executor->moveToThread(parserThread);
                 iface->moveToThread(ifaceThread);
                 parserThread->start();
                 ifaceThread->start();
@@ -76,9 +78,9 @@ bool ConnectionContext::run(Connection *connection)
         return false;
 
     // Обмен данными для соединения
-    QObject::connect(connection, &Connection::wakeUpParser, //
-        m_parser, &BaseProtocolParser::wakeUp, Qt::DirectConnection);
-    QObject::connect(m_parser, &BaseProtocolParser::responseSend, //
+    // QObject::connect(connection, &Connection::wakeUpParser, //
+    //    m_parser, &BaseProtocolParser::wakeUp, Qt::DirectConnection);
+    QObject::connect(m_executor, &DeviceQueryExecutor::responseSend, //
         connection, &Connection::responseHandle, Qt::DirectConnection);
     QObject::connect(m_iface, &BaseInterface::stateChanged, connection, //
         &Connection::stateChanged, Qt::QueuedConnection);
@@ -89,12 +91,12 @@ bool ConnectionContext::run(Connection *connection)
         {
             m_iface->close();
             m_iface->deleteLater();
-            m_parser->deleteLater();
+            m_executor->deleteLater();
             m_syncThreads.first->deleteLater();
             m_syncThreads.second->deleteLater();
             return false;
         }
-        m_parser->activate();
+        m_executor->run();
         return true;
     }
     else
@@ -109,11 +111,11 @@ void ConnectionContext::reset()
     if (isValid())
     {
         m_iface->close();
-        m_parser->wakeUp();
+        m_executor->stop();
         if (m_strategy == Strategy::Sync)
             StdFunc::Wait(20);
         m_iface = nullptr;
-        m_parser = nullptr;
+        m_executor = nullptr;
     }
     m_strategy = Strategy::None;
 }

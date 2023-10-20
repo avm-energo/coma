@@ -15,6 +15,7 @@ Connection::InterfacePointer Connection::s_connection;
 Connection::Connection(QObject *parent) : QObject(parent), m_timeoutTimer(new QTimer(this))
 {
     qRegisterMetaType<State>();
+    qRegisterMetaType<DeviceResponse>();
     m_timeoutTimer->setInterval(MAINTIMEOUT);
     connect(m_timeoutTimer, &QTimer::timeout, this, &Connection::timeout);
     m_settings = std::unique_ptr<ProtocolDescription>(new ProtocolDescription());

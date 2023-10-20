@@ -1,15 +1,22 @@
 #include "interfaces/parsers/device_query_executor.h"
 
-#include <QTimer>
 #include <interfaces/parsers/protocom_request_parser.h>
 #include <interfaces/parsers/protocom_response_parser.h>
 
 namespace Interface
 {
 
-DeviceQueryExecutor::DeviceQueryExecutor(RequestQueue &queue, QObject *parent)
-    : QObject(parent), m_state(ExecutorState::Starting), m_queue(queue)
+DeviceQueryExecutor::DeviceQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent)
+    : QObject(parent), m_state(ExecutorState::Starting), m_queue(queue), m_timeoutTimer(new QTimer(this))
 {
+    m_timeoutTimer->setSingleShot(true);
+    m_timeoutTimer->setInterval(timeout);
+    connect(m_timeoutTimer, &QTimer::timeout, this, [this] {
+        qCritical() << "Timeout";
+        m_log.error("Timeout");
+        cancelQuery();
+        emit this->timeout();
+    });
 }
 
 void DeviceQueryExecutor::initLogger(const QString &protocolName) noexcept
@@ -51,25 +58,55 @@ void DeviceQueryExecutor::setState(const ExecutorState newState) noexcept
     }
 }
 
-void DeviceQueryExecutor::writeFromQueue() noexcept
+void DeviceQueryExecutor::parseFromQueue() noexcept
 {
     auto opt = m_queue.deQueue();
     if (opt.has_value())
     {
-        auto request = m_requestParser->parse(opt.value());
+        const auto command(opt.value());
+        auto request = m_requestParser->parse(command);
         if (request.isEmpty() || m_requestParser->isExceptionalSituation())
         {
             /// TODO: вызвать метод exceptionalAction
         }
         else
         {
-            setState(ExecutorState::Pending);
-            emit sendDataToInterface(request);
+            if (getState() == ExecutorState::RequestParsing)
+                setState(ExecutorState::Pending);
+            m_lastRequestedCommand = command.command;
+            m_responseParser->setRequest(command);
+            writeToInterface(request);
         }
     }
 }
 
-void DeviceQueryExecutor::run()
+void DeviceQueryExecutor::writeToInterface(const QByteArray &request) noexcept
+{
+    emit sendDataToInterface(request);
+    // m_timeoutTimer->start();
+    writeToLog(request, Direction::ToDevice);
+}
+
+void DeviceQueryExecutor::writeToLog(const QByteArray &ba, const Direction dir) noexcept
+{
+    QString msg = "DeviceQueryExecutor";
+    switch (dir)
+    {
+    case Interface::FromDevice:
+        msg += ": <- ";
+        break;
+    case Interface::ToDevice:
+        msg += ": -> ";
+        break;
+    default:
+        msg += ": ";
+        break;
+    }
+    msg += ba.toHex();
+    m_log.info(msg);
+}
+
+void DeviceQueryExecutor::exec()
 {
     auto currentState = getState();
     while (currentState != ExecutorState::Stopping)
@@ -77,7 +114,7 @@ void DeviceQueryExecutor::run()
         switch (currentState)
         {
         case ExecutorState::RequestParsing:
-            writeFromQueue();
+            parseFromQueue();
             break;
         case ExecutorState::Pending:
             // Ничего не делаем, ждём изменения состояния
@@ -90,9 +127,78 @@ void DeviceQueryExecutor::run()
     }
 }
 
-DeviceQueryExecutor *DeviceQueryExecutor::makeProtocomExecutor(RequestQueue &queue)
+void DeviceQueryExecutor::run() noexcept
 {
-    auto executor = new DeviceQueryExecutor(queue);
+    setState(ExecutorState::RequestParsing);
+    m_queue.activate();
+}
+
+void DeviceQueryExecutor::pause() noexcept
+{
+    setState(ExecutorState::Pending);
+    m_queue.deactivate();
+}
+
+void DeviceQueryExecutor::stop() noexcept
+{
+    setState(ExecutorState::Stopping);
+}
+
+const Commands DeviceQueryExecutor::getLastRequestedCommand() const noexcept
+{
+    return m_lastRequestedCommand;
+}
+
+void DeviceQueryExecutor::receiveDataFromInterface(QByteArray response)
+{
+    m_timeoutTimer->stop();
+    if (m_responseParser->isValid(response))
+    {
+        m_responseParser->parse(response);
+        writeToLog(response, Direction::FromDevice);
+
+        switch (getState())
+        {
+        case ExecutorState::FileReading:
+        {
+            if (!m_responseParser->isLastSectionReceived())
+            {
+                auto request = m_requestParser->getNextContinueCommand();
+                writeToInterface(request);
+            }
+            else
+                setState(ExecutorState::RequestParsing);
+            break;
+        }
+        case ExecutorState::FileWriting:
+        {
+            auto request = m_requestParser->getNextChunk();
+            // Если чанк не пустой, то ещё не отправили файл полностью
+            if (!request.isEmpty())
+                writeToInterface(request);
+            // Если чанк пустой, то отправили файл полностью
+            else
+                setState(ExecutorState::RequestParsing);
+            break;
+        }
+        case ExecutorState::Stopping:
+            // Просто выходим из слота, если исполнителя остановили
+            break;
+        default:
+            setState(ExecutorState::RequestParsing);
+            break;
+        }
+    }
+}
+
+void DeviceQueryExecutor::cancelQuery()
+{
+    setState(ExecutorState::RequestParsing);
+}
+
+DeviceQueryExecutor *DeviceQueryExecutor::makeProtocomExecutor(RequestQueue &queue, quint32 timeout)
+{
+    auto executor = new DeviceQueryExecutor(queue, timeout);
     executor->initLogger("Protocom");
     auto requestParser = new ProtocomRequestParser(executor);
     auto responseParser = new ProtocomResponseParser(executor);
@@ -100,26 +206,19 @@ DeviceQueryExecutor *DeviceQueryExecutor::makeProtocomExecutor(RequestQueue &que
     return executor;
 }
 
-void DeviceQueryExecutor::receiveDataFromInterface(QByteArray data)
-{
-    // setState(ExecutorState::ResponseParsing);
-    if (m_responseParser->isValid(data))
-    {
-        m_responseParser->parse(data);
-    }
-}
-
-DeviceQueryExecutor *DeviceQueryExecutor::makeModbusExecutor(RequestQueue &queue)
+DeviceQueryExecutor *DeviceQueryExecutor::makeModbusExecutor(RequestQueue &queue, quint32 timeout)
 {
     /// TODO
     Q_UNUSED(queue);
+    Q_UNUSED(timeout);
     return nullptr;
 }
 
-DeviceQueryExecutor *DeviceQueryExecutor::makeIec104Executor(RequestQueue &queue)
+DeviceQueryExecutor *DeviceQueryExecutor::makeIec104Executor(RequestQueue &queue, quint32 timeout)
 {
     /// TODO
     Q_UNUSED(queue);
+    Q_UNUSED(timeout);
     return nullptr;
 }
 

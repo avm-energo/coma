@@ -11,6 +11,7 @@ class ProtocomResponseParser final : public BaseResponseParser
     Q_OBJECT
 private:
     Proto::Commands m_receivedCommand;
+    bool m_isFirstSection;
 
     /// \brief Anonymous structure for representing type of the connected board.
     struct
@@ -34,11 +35,13 @@ private:
     void processBlock(const QByteArray &data, quint32 blockNum);
     void processTechBlock(const QByteArray &data, quint32 blockNum);
 
+    void progressFile(const QByteArray &filePart);
+
 public:
     explicit ProtocomResponseParser(QObject *parent = nullptr);
 
     bool isValid(const QByteArray &response) override;
-    virtual void parse(QByteArray &response) override;
+    virtual void parse(const QByteArray &response) override;
 };
 
 } // namespace Interface
