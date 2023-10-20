@@ -20,12 +20,12 @@ BaseRequestParser::BaseRequestParser(QObject *parent) : QObject(parent), m_isExc
 {
 }
 
-QByteArray BaseRequestParser::getNextChunk()
+QByteArray BaseRequestParser::getNextDataSection()
 {
-    if (m_writeLongData.size() > 0)
+    if (m_longDataSections.size() > 0)
     {
-        QByteArray nextChunk { m_writeLongData.front() };
-        m_writeLongData.pop_front();
+        QByteArray nextChunk { m_longDataSections.front() };
+        m_longDataSections.pop_front();
         return nextChunk;
     }
     return QByteArray {};

@@ -10,17 +10,14 @@ class BaseResponseParser : public QObject
 {
     Q_OBJECT
 protected:
-    QByteArray m_response;
+    QByteArray m_buffer;
     CommandStruct m_request;
     bool m_isLastSectionReceived;
     S2Util m_util;
 
-    void processProgressCount(const quint64 count);
-    void processProgressRange(const quint64 count);
     void processOk();
     void processError(int errorCode = 0);
-
-    void fileReceived(const QByteArray &ba, const S2::FilesEnum addr, const DataTypes::FileFormat format);
+    void fileReceived(const QByteArray &file, const S2::FilesEnum addr, const DataTypes::FileFormat format);
 
 public:
     explicit BaseResponseParser(QObject *parent = nullptr);
@@ -39,10 +36,11 @@ public:
     virtual void parse(const QByteArray &response) = 0;
 
 public slots:
-    void totalBytes(const int total);
-    void progressBytes(const int progress);
+    void processProgressCount(const quint64 count);
+    void processProgressRange(const quint64 count);
 
 signals:
+    void readingLongData();
     void responseParsed(const Interface::DeviceResponse &response);
 };
 

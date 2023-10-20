@@ -13,7 +13,7 @@ protected:
     static const std::map<Commands, CommandRegisters> s_wsCmdMap;
 
     QByteArray m_request;
-    std::deque<QByteArray> m_writeLongData;
+    std::deque<QByteArray> m_longDataSections;
     bool m_isExceptionalSituation;
 
     /// \brief Устанавливает флаг исключительной ситуации.
@@ -29,7 +29,7 @@ public:
     virtual QByteArray getNextContinueCommand() noexcept = 0;
     /// \brief Возвращает следующую команду из очереди для записи
     /// файла или большого массива данных в устройство.
-    QByteArray getNextChunk();
+    QByteArray getNextDataSection();
 
     /// \brief Возвращает флаг исключительной ситуации.
     /// \details Данный флаг устанавливается в true, если
@@ -39,13 +39,13 @@ public:
     /// \brief Выполнение действий, связанных с вызванной исключительной ситуацией.
     /// \details Должен переопредляться в классах-наследниках, если
     /// они могут требовать исключительных ситуаций.
+    /// \see isExceptionalSituation, setExceptionalSituationStatus.
     virtual void exceptionalAction(const CommandStruct &command) noexcept;
 
 signals:
-    void writingFile();
-    void readingFile();
-    void totalBytes(const int total);
-    void progressBytes(const int progress);
+    void writingLongData();
+    void totalBytes(const quint64 total);
+    void progressBytes(const quint64 progress);
     void parsedCommand(const Interface::CommandStruct &command);
 };
 

@@ -31,16 +31,20 @@ void DeviceQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseP
     {
         m_requestParser = reqParser;
         m_responseParser = respParser;
-        connect(m_responseParser, &BaseResponseParser::responseParsed, //
-            this, &DeviceQueryExecutor::responseSend);                 //
-        connect(m_requestParser, &BaseRequestParser::totalBytes,       //
-            m_responseParser, &BaseResponseParser::totalBytes);        //
-        connect(m_requestParser, &BaseRequestParser::progressBytes,    //
-            m_responseParser, &BaseResponseParser::progressBytes);     //
-        connect(m_requestParser, &BaseRequestParser::writingFile,      //
-            this, [this] { setState(ExecutorState::FileWriting); });   //
-        connect(m_requestParser, &BaseRequestParser::readingFile,      //
-            this, [this] { setState(ExecutorState::FileReading); });   //
+        connect(m_responseParser, &BaseResponseParser::responseParsed,    //
+            this, &DeviceQueryExecutor::responseSend);                    //
+        connect(m_requestParser, &BaseRequestParser::totalBytes,          //
+            m_responseParser, &BaseResponseParser::processProgressRange); //
+        connect(m_requestParser, &BaseRequestParser::progressBytes,       //
+            m_responseParser, &BaseResponseParser::processProgressCount); //
+        connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
+            setState(ExecutorState::WritingLongData);
+            m_queue.deactivate();
+        });
+        connect(m_responseParser, &BaseResponseParser::readingLongData, this, [this] {
+            setState(ExecutorState::ReadingLongData);
+            m_queue.deactivate();
+        });
     }
 }
 
@@ -51,11 +55,8 @@ ExecutorState DeviceQueryExecutor::getState() const noexcept
 
 void DeviceQueryExecutor::setState(const ExecutorState newState) noexcept
 {
-    if (newState != m_state.load())
-    {
-        m_state.store(newState);
-        emit stateChanged(newState);
-    }
+    m_state.store(newState);
+    emit stateChanged(newState);
 }
 
 void DeviceQueryExecutor::parseFromQueue() noexcept
@@ -66,9 +67,7 @@ void DeviceQueryExecutor::parseFromQueue() noexcept
         const auto command(opt.value());
         auto request = m_requestParser->parse(command);
         if (request.isEmpty() || m_requestParser->isExceptionalSituation())
-        {
-            /// TODO: вызвать метод exceptionalAction
-        }
+            m_requestParser->exceptionalAction(command);
         else
         {
             if (getState() == ExecutorState::RequestParsing)
@@ -83,7 +82,7 @@ void DeviceQueryExecutor::parseFromQueue() noexcept
 void DeviceQueryExecutor::writeToInterface(const QByteArray &request) noexcept
 {
     emit sendDataToInterface(request);
-    // m_timeoutTimer->start();
+    m_timeoutTimer->start();
     writeToLog(request, Direction::ToDevice);
 }
 
@@ -129,8 +128,11 @@ void DeviceQueryExecutor::exec()
 
 void DeviceQueryExecutor::run() noexcept
 {
-    setState(ExecutorState::RequestParsing);
-    m_queue.activate();
+    if (getState() != ExecutorState::Stopping)
+    {
+        setState(ExecutorState::RequestParsing);
+        m_queue.activate();
+    }
 }
 
 void DeviceQueryExecutor::pause() noexcept
@@ -159,7 +161,7 @@ void DeviceQueryExecutor::receiveDataFromInterface(QByteArray response)
 
         switch (getState())
         {
-        case ExecutorState::FileReading:
+        case ExecutorState::ReadingLongData:
         {
             if (!m_responseParser->isLastSectionReceived())
             {
@@ -167,25 +169,25 @@ void DeviceQueryExecutor::receiveDataFromInterface(QByteArray response)
                 writeToInterface(request);
             }
             else
-                setState(ExecutorState::RequestParsing);
+                run();
             break;
         }
-        case ExecutorState::FileWriting:
+        case ExecutorState::WritingLongData:
         {
-            auto request = m_requestParser->getNextChunk();
+            auto nextRequest = m_requestParser->getNextDataSection();
             // Если чанк не пустой, то ещё не отправили файл полностью
-            if (!request.isEmpty())
-                writeToInterface(request);
+            if (!nextRequest.isEmpty())
+                writeToInterface(nextRequest);
             // Если чанк пустой, то отправили файл полностью
             else
-                setState(ExecutorState::RequestParsing);
+                run();
             break;
         }
         case ExecutorState::Stopping:
             // Просто выходим из слота, если исполнителя остановили
             break;
         default:
-            setState(ExecutorState::RequestParsing);
+            run();
             break;
         }
     }
@@ -202,6 +204,8 @@ DeviceQueryExecutor *DeviceQueryExecutor::makeProtocomExecutor(RequestQueue &que
     executor->initLogger("Protocom");
     auto requestParser = new ProtocomRequestParser(executor);
     auto responseParser = new ProtocomResponseParser(executor);
+    connect(requestParser, &ProtocomRequestParser::sendJournalData, //
+        responseParser, &ProtocomResponseParser::receiveJournalData);
     executor->setParsers(requestParser, responseParser);
     return executor;
 }

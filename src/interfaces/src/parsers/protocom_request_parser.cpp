@@ -1,5 +1,6 @@
 #include "interfaces/parsers/protocom_request_parser.h"
 
+#include <gen/files.h>
 #include <interfaces/connection.h>
 
 namespace Interface
@@ -47,6 +48,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     {
         quint8 block = getBlockByReg(cmd.arg1.toUInt());
         m_request = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::toByteArray(block));
+        m_continueCommand = createContinueCommand(Proto::Commands::ReadBlkData);
         break;
     }
     // commands without any arguments
@@ -95,7 +97,6 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         default:
             m_request = prepareBlock(Proto::Commands::ReadFile, StdFunc::toByteArray(cmd.arg1.value<quint16>()));
             m_continueCommand = createContinueCommand(Proto::Commands::ReadFile);
-            emit readingFile();
             break;
         }
         break;
@@ -198,17 +199,16 @@ QByteArray ProtocomRequestParser::getNextContinueCommand() noexcept
     return m_continueCommand;
 }
 
+void ProtocomRequestParser::exceptionalAction(const CommandStruct &cmd) noexcept
+{
+    if (cmd.command == Commands::C_ReqFile)
+        processFileFromDisk(cmd.arg1.value<S2::FilesEnum>());
+}
+
 bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noexcept
 {
     const auto search = s_protoCmdMap.find(command);
     return search != s_protoCmdMap.cend();
-}
-
-bool ProtocomRequestParser::isOneSegment(const quint64 length) const noexcept
-{
-    // Если размер меньше MaxSegmenthLength то сегмент считается последним (единственным)
-    Q_ASSERT(length <= Proto::MaxSegmenthLength);
-    return (length < Proto::MaxSegmenthLength);
 }
 
 quint16 ProtocomRequestParser::getBlockByReg(const quint32 regAddr)
@@ -229,32 +229,79 @@ QByteArray ProtocomRequestParser::prepareBlock(
     return ba;
 }
 
+void ProtocomRequestParser::processFileFromDisk(const S2::FilesEnum fileNum)
+{
+    QString fileToFind;
+    switch (fileNum)
+    {
+    case S2::FilesEnum::JourSys:
+        fileToFind = "system.dat";
+        break;
+    case S2::FilesEnum::JourMeas:
+        fileToFind = "measj.dat";
+        break;
+    case S2::FilesEnum::JourWork:
+        fileToFind = "workj.dat";
+        break;
+    default:
+        qDebug() << "Wrong file type!"; // we should not be here
+        return;
+    }
+
+    QStringList drives = Files::Drives();
+    if (drives.isEmpty())
+    {
+        qCritical() << Error::NoDeviceError;
+        return;
+    }
+    QStringList files = Files::SearchForFile(drives, fileToFind);
+    if (files.isEmpty())
+    {
+        qCritical() << Error::FileNameError;
+        return;
+    }
+    QString JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
+    if (JourFile.isEmpty())
+    {
+        qCritical() << Error::FileNameError;
+        return;
+    }
+    QFile file(JourFile);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qCritical() << Error::FileOpenError;
+        return;
+    }
+    QByteArray ba = file.readAll();
+    emit sendJournalData(fileNum, ba);
+}
+
 void ProtocomRequestParser::prepareLongData(const Proto::Commands cmd, const QByteArray &data)
 {
     using Proto::MaxSegmenthLength;
-    m_writeLongData.clear();
+    m_longDataSections.clear();
     // Количество сегментов
     quint64 segCount = (data.size() + 1) // +1 Т.к. некоторые команды имеют в значимой части один дополнительный байт
             / MaxSegmenthLength          // Максимальная длинна сегмента
         + 1; // Добавляем еще один сегмент, в него попадет последняя часть
 
     QByteArray tba = data.left(MaxSegmenthLength);
-    m_writeLongData.push_back(prepareBlock(cmd, tba));
+    m_longDataSections.push_back(prepareBlock(cmd, tba));
     for (int pos = MaxSegmenthLength; pos < data.size(); pos += MaxSegmenthLength)
     {
         tba = data.mid(pos, MaxSegmenthLength);
-        m_writeLongData.push_back(prepareBlock(cmd, tba, Proto::Starters::Continue));
+        m_longDataSections.push_back(prepareBlock(cmd, tba, Proto::Starters::Continue));
     }
     emit totalBytes(data.size() + segCount * 4);
 }
 
 QByteArray ProtocomRequestParser::writeLongData(const Proto::Commands cmd, const QByteArray &data)
 {
-    if (!isOneSegment(data.size()))
+    if (data.size() > Proto::MaxSegmenthLength)
     {
-        emit writingFile();
+        emit writingLongData();
         prepareLongData(cmd, data);
-        return getNextChunk(); // send first chunk
+        return getNextDataSection(); // send first chunk
     }
     else
         return prepareBlock(cmd, data);

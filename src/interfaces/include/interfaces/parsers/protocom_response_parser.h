@@ -26,7 +26,7 @@ private:
     } boardType;
 
 #ifdef Q_OS_LINUX
-    void processUnixTime(const QByteArray &ba);
+    void processUnixTime(const QByteArray &data);
 #endif
     void processU32(const QByteArray &data, quint16 startAddr);
     void processFloat(const QByteArray &data, quint32 startAddr);
@@ -35,13 +35,17 @@ private:
     void processBlock(const QByteArray &data, quint32 blockNum);
     void processTechBlock(const QByteArray &data, quint32 blockNum);
 
-    void progressFile(const QByteArray &filePart);
+    void processDataBlock(const QByteArray &data, const quint16 addr);
+    void processDataSection(const QByteArray &fileSection);
 
 public:
     explicit ProtocomResponseParser(QObject *parent = nullptr);
 
     bool isValid(const QByteArray &response) override;
     virtual void parse(const QByteArray &response) override;
+
+public slots:
+    void receiveJournalData(const S2::FilesEnum fileNum, const QByteArray &file);
 };
 
 } // namespace Interface

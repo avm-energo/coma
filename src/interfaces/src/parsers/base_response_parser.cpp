@@ -19,16 +19,6 @@ bool BaseResponseParser::isLastSectionReceived() const noexcept
     return m_isLastSectionReceived;
 }
 
-void BaseResponseParser::totalBytes(const int total)
-{
-    processProgressRange(total);
-}
-
-void BaseResponseParser::progressBytes(const int progress)
-{
-    processProgressCount(progress);
-}
-
 void BaseResponseParser::processProgressCount(const quint64 count)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, count };
@@ -54,7 +44,7 @@ void BaseResponseParser::processError(int errorCode)
     emit responseParsed(resp);
 }
 
-void BaseResponseParser::fileReceived(const QByteArray &ba, //
+void BaseResponseParser::fileReceived(const QByteArray &file, //
     const S2::FilesEnum addr, const DataTypes::FileFormat format)
 {
     switch (format)
@@ -63,7 +53,7 @@ void BaseResponseParser::fileReceived(const QByteArray &ba, //
     {
         DataTypes::GeneralResponseStruct genResp {
             DataTypes::GeneralResponseTypes::Ok, //
-            static_cast<quint64>(ba.size())      //
+            static_cast<quint64>(file.size())    //
         };
         emit responseParsed(genResp);
         switch (addr)
@@ -73,11 +63,10 @@ void BaseResponseParser::fileReceived(const QByteArray &ba, //
         case S2::FilesEnum::JourWork:
         case S2::FilesEnum::JourMeas:
         {
-            if (!ba.isEmpty())
+            if (!file.isEmpty())
             {
-                S2Util util;
                 S2::S2BFile s2bFile {};
-                auto errCode = util.parseS2B(ba, s2bFile);
+                auto errCode = m_util.parseS2B(file, s2bFile);
                 if (errCode == Error::Msg::NoError)
                     emit responseParsed(s2bFile);
                 else
@@ -87,7 +76,7 @@ void BaseResponseParser::fileReceived(const QByteArray &ba, //
         }
         default:
         {
-            S2::FileStruct resp { addr, ba };
+            S2::FileStruct resp { addr, file };
             emit responseParsed(resp);
             break;
         }
@@ -96,24 +85,24 @@ void BaseResponseParser::fileReceived(const QByteArray &ba, //
     }
     case DataTypes::FileFormat::DefaultS2:
     {
-        emit responseParsed(ba);
+        emit responseParsed(file);
         break;
     }
     case DataTypes::FileFormat::CustomS2:
     {
         DataTypes::S2FilePack outlist;
-        if (!S2Util::RestoreData(ba, outlist))
+        if (!S2Util::RestoreData(file, outlist))
         {
             DataTypes::GeneralResponseStruct resp {
                 DataTypes::GeneralResponseTypes::Error, //
-                static_cast<quint64>(ba.size())         //
+                static_cast<quint64>(file.size())       //
             };
             emit responseParsed(resp);
             return;
         }
         DataTypes::GeneralResponseStruct genResp {
             DataTypes::GeneralResponseTypes::Ok, //
-            static_cast<quint64>(ba.size())      //
+            static_cast<quint64>(file.size())    //
         };
         emit responseParsed(genResp);
         for (auto &&file : outlist)

@@ -14,11 +14,11 @@ private:
     QByteArray m_continueCommand;
 
     bool isSupportedCommand(const Commands command) const noexcept;
-    bool isOneSegment(const quint64 length) const noexcept;
     quint16 getBlockByReg(const quint32 regAddr);
 
     QByteArray prepareBlock(const Proto::Commands cmd, const QByteArray &data, //
         Proto::Starters startByte = Proto::Starters::Request);
+    void processFileFromDisk(const S2::FilesEnum fileNum);
     void prepareLongData(const Proto::Commands cmd, const QByteArray &data);
     QByteArray writeLongData(const Proto::Commands cmd, const QByteArray &data);
     QByteArray createContinueCommand(const Proto::Commands cmd) const noexcept;
@@ -28,6 +28,10 @@ public:
 
     QByteArray parse(const CommandStruct &cmd) override;
     QByteArray getNextContinueCommand() noexcept override;
+    void exceptionalAction(const CommandStruct &cmd) noexcept override;
+
+signals:
+    void sendJournalData(const S2::FilesEnum fileNum, const QByteArray &file);
 };
 
 } // namespace Interface

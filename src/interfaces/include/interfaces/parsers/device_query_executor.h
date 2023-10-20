@@ -16,8 +16,8 @@ enum class ExecutorState : std::uint32_t
     Starting = 0,          ///< Стартовое состояние
     RequestParsing,        ///< Выполняется парсинг запроса
     Pending,               ///<
-    FileReading,           ///<
-    FileWriting,           ///<
+    ReadingLongData,       ///<
+    WritingLongData,       ///<
     Stopping,              ///<
     Undefined = UINT32_MAX ///< ABI compatibility
 };
