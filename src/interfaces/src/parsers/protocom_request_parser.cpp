@@ -279,6 +279,7 @@ void ProtocomRequestParser::processFileFromDisk(const S2::FilesEnum fileNum)
 void ProtocomRequestParser::prepareLongData(const Proto::Commands cmd, const QByteArray &data)
 {
     using Proto::MaxSegmenthLength;
+    m_progressCount = 0;
     m_longDataSections.clear();
     // Количество сегментов
     quint64 segCount = (data.size() + 1) // +1 Т.к. некоторые команды имеют в значимой части один дополнительный байт
@@ -292,7 +293,7 @@ void ProtocomRequestParser::prepareLongData(const Proto::Commands cmd, const QBy
         tba = data.mid(pos, MaxSegmenthLength);
         m_longDataSections.push_back(prepareBlock(cmd, tba, Proto::Starters::Continue));
     }
-    emit totalBytes(data.size() + segCount * 4);
+    emit totalWritingBytes(data.size() + segCount * 4);
 }
 
 QByteArray ProtocomRequestParser::writeLongData(const Proto::Commands cmd, const QByteArray &data)

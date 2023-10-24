@@ -46,7 +46,16 @@ void ProtocomResponseParser::parse(const QByteArray &response)
     switch (m_receivedCommand)
     {
     case Proto::Commands::ResultOk:
-        processOk();
+        if (m_request.command == Commands::C_WriteFile || m_request.command == Commands::C_WriteHardware)
+        {
+            if (m_isLastSectionSended)
+            {
+                processOk();
+                m_isLastSectionSended = false;
+            }
+        }
+        else
+            processOk();
         break;
     case Proto::Commands::ResultError:
         processError(quint8(tmpba.front()));

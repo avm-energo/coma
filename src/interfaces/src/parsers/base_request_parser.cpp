@@ -16,7 +16,8 @@ const std::map<Commands, CommandRegisters> BaseRequestParser::s_wsCmdMap {
     { Commands::C_ClearStartupError, ClearStartupSetError }       //
 };
 
-BaseRequestParser::BaseRequestParser(QObject *parent) : QObject(parent), m_isExceptionalSituation(false)
+BaseRequestParser::BaseRequestParser(QObject *parent)
+    : QObject(parent), m_isExceptionalSituation(false), m_progressCount(0)
 {
 }
 
@@ -26,6 +27,10 @@ QByteArray BaseRequestParser::getNextDataSection()
     {
         QByteArray nextChunk { m_longDataSections.front() };
         m_longDataSections.pop_front();
+        if (m_longDataSections.size() == 0)
+            emit writingLastSection();
+        m_progressCount += nextChunk.size();
+        emit progressBytes(m_progressCount);
         return nextChunk;
     }
     return QByteArray {};

@@ -5,7 +5,8 @@
 namespace Interface
 {
 
-BaseResponseParser::BaseResponseParser(QObject *parent) : QObject(parent), m_isLastSectionReceived(false)
+BaseResponseParser::BaseResponseParser(QObject *parent)
+    : QObject(parent), m_isLastSectionReceived(false), m_isLastSectionSended(false)
 {
 }
 
@@ -19,25 +20,30 @@ bool BaseResponseParser::isLastSectionReceived() const noexcept
     return m_isLastSectionReceived;
 }
 
-void BaseResponseParser::processProgressCount(const quint64 count)
+void BaseResponseParser::lastSectionSended() noexcept
+{
+    m_isLastSectionSended = true;
+}
+
+void BaseResponseParser::processProgressCount(const quint64 count) noexcept
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataCount, count };
     emit responseParsed(resp);
 }
 
-void BaseResponseParser::processProgressRange(const quint64 count)
+void BaseResponseParser::processProgressRange(const quint64 count) noexcept
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::DataSize, count };
     emit responseParsed(resp);
 }
 
-void BaseResponseParser::processOk()
+void BaseResponseParser::processOk() noexcept
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, 0 };
     emit responseParsed(resp);
 }
 
-void BaseResponseParser::processError(int errorCode)
+void BaseResponseParser::processError(int errorCode) noexcept
 {
     qCritical() << "Device error code: " << QString::number(errorCode, 16);
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, static_cast<quint64>(errorCode) };

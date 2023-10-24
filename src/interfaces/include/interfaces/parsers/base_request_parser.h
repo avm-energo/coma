@@ -6,6 +6,7 @@
 namespace Interface
 {
 
+/// \brief Базовый класс парсера запросов к устройству.
 class BaseRequestParser : public QObject
 {
     Q_OBJECT
@@ -15,6 +16,7 @@ protected:
     QByteArray m_request;
     std::deque<QByteArray> m_longDataSections;
     bool m_isExceptionalSituation;
+    std::uint32_t m_progressCount;
 
     /// \brief Устанавливает флаг исключительной ситуации.
     void setExceptionalSituationStatus(bool status) noexcept;
@@ -43,10 +45,19 @@ public:
     virtual void exceptionalAction(const CommandStruct &command) noexcept;
 
 signals:
+    /// \brief Сигнал, информирующий исполнителя на верхнем уровне
+    /// о записи файла или большого массива данных в устройство.
     void writingLongData();
-    void totalBytes(const quint64 total);
+    /// \brief Сигнал, информирующий парсер ответов от устройства о
+    /// том, что устройству была послана последняя секция данных.
+    void writingLastSection();
+
+    /// \brief Сигнал, который используется для передачи размера всего
+    /// отправляемого файла или большого массива данных (в байтах) в устройство.
+    void totalWritingBytes(const quint64 total);
+    /// \brief Сигнал, который используется для передачи прогресса
+    /// записи файла или большого массива данных (в байтах) в устройство.
     void progressBytes(const quint64 progress);
-    void parsedCommand(const Interface::CommandStruct &command);
 };
 
 } // namespace Interface

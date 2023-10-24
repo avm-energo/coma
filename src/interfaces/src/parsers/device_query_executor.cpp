@@ -33,10 +33,12 @@ void DeviceQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseP
         m_responseParser = respParser;
         connect(m_responseParser, &BaseResponseParser::responseParsed,    //
             this, &DeviceQueryExecutor::responseSend);                    //
-        connect(m_requestParser, &BaseRequestParser::totalBytes,          //
+        connect(m_requestParser, &BaseRequestParser::totalWritingBytes,   //
             m_responseParser, &BaseResponseParser::processProgressRange); //
         connect(m_requestParser, &BaseRequestParser::progressBytes,       //
             m_responseParser, &BaseResponseParser::processProgressCount); //
+        connect(m_requestParser, &BaseRequestParser::writingLastSection,  //
+            m_responseParser, &BaseResponseParser::lastSectionSended);    //
         connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
             setState(ExecutorState::WritingLongData);
             m_queue.deactivate();
