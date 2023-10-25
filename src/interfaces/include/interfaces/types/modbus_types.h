@@ -1,13 +1,14 @@
 #pragma once
 
 #include <QDebug>
-#include <QVariant>
+#include <QtEndian>
+#include <gen/stdfunc.h>
 
-namespace MBS
+namespace Modbus
 {
 Q_NAMESPACE
 
-enum Commands : quint8
+enum FunctionCode : quint8
 {
     ReadCoils = 0x01,
     ReadDiscreteInputs = 0x02,
@@ -17,26 +18,27 @@ enum Commands : quint8
     ReadFileSection = 0x41,
     WriteFileSection = 0x42
 };
-Q_ENUM_NS(Commands)
+Q_ENUM_NS(FunctionCode)
 
-struct CommandStruct
+struct Request
 {
-    Commands cmd;
-    quint16 adr;
-    quint16 quantity;
+    FunctionCode code;
+    std::uint16_t address;
+    std::uint16_t quantity;
     QByteArray data;
 };
 
-constexpr quint8 FileSectionLength = 0xF6;
+constexpr quint16 firmwareModbusAddr = 802;
+constexpr quint16 timeReg = 4600;
+constexpr quint8 fileSectionLength = 0xF6;
 
-inline QDebug operator<<(QDebug debug, const MBS::CommandStruct &cmd)
+inline QDebug operator<<(QDebug debug, const Modbus::Request &cmd)
 {
-    debug.nospace() << cmd.cmd << ":" << cmd.adr << ":" << cmd.quantity << ":";
+    debug.nospace() << cmd.code << ":" << cmd.address << ":" << cmd.quantity << ":";
     for (const quint8 byte : cmd.data)
         debug.nospace() << QString::number(byte, 16);
-
     return debug.maybeSpace();
 }
 
 }
-Q_DECLARE_METATYPE(MBS::CommandStruct)
+Q_DECLARE_METATYPE(Modbus::Request)

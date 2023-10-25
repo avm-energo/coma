@@ -41,11 +41,11 @@ void DeviceQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseP
             m_responseParser, &BaseResponseParser::lastSectionSended);    //
         connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
             setState(ExecutorState::WritingLongData);
-            m_queue.deactivate();
+            m_queue.get().deactivate();
         });
         connect(m_responseParser, &BaseResponseParser::readingLongData, this, [this] {
             setState(ExecutorState::ReadingLongData);
-            m_queue.deactivate();
+            m_queue.get().deactivate();
         });
     }
 }
@@ -63,12 +63,12 @@ void DeviceQueryExecutor::setState(const ExecutorState newState) noexcept
 
 void DeviceQueryExecutor::parseFromQueue() noexcept
 {
-    auto opt = m_queue.deQueue();
+    auto opt = m_queue.get().deQueue();
     if (opt.has_value())
     {
         const auto command(opt.value());
         auto request = m_requestParser->parse(command);
-        if (request.isEmpty() || m_requestParser->isExceptionalSituation())
+        if (request.isEmpty() && m_requestParser->isExceptionalSituation())
             m_requestParser->exceptionalAction(command);
         else
         {
@@ -133,14 +133,14 @@ void DeviceQueryExecutor::run() noexcept
     if (getState() != ExecutorState::Stopping)
     {
         setState(ExecutorState::RequestParsing);
-        m_queue.activate();
+        m_queue.get().activate();
     }
 }
 
 void DeviceQueryExecutor::pause() noexcept
 {
     setState(ExecutorState::Pending);
-    m_queue.deactivate();
+    m_queue.get().deactivate();
 }
 
 void DeviceQueryExecutor::stop() noexcept

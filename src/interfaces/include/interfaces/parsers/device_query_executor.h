@@ -29,7 +29,7 @@ class DeviceQueryExecutor : public QObject
 private:
     std::atomic<ExecutorState> m_state;
     Commands m_lastRequestedCommand;
-    RequestQueue &m_queue;
+    std::reference_wrapper<RequestQueue> m_queue;
     LogClass m_log;
     QTimer *m_timeoutTimer;
     BaseRequestParser *m_requestParser;

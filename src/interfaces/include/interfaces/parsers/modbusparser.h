@@ -27,21 +27,21 @@ public slots:
 private:
     quint8 m_deviceAddress;   ///< Deivce address
     quint16 m_fileSectionNum; // текущая считываемая / передаваемая секция файла
-    MBS::CommandStruct m_commandSent;
+    Modbus::Request m_commandSent;
     int m_bytesToReceive;
     QByteArray m_fileData;
     int m_sentBytesCount;
 
     // commands to send
-    void readRegisters(MBS::CommandStruct &cms);
-    void readCoils(MBS::CommandStruct &cms);
-    void writeMultipleRegisters(MBS::CommandStruct &cms);
+    void readRegisters(Modbus::Request &cms);
+    void readCoils(Modbus::Request &cms);
+    void writeMultipleRegisters(Modbus::Request &cms);
     bool writeFile(quint16 fileNum);
 
     // prepare start bytes for data to send
-    void setQueryStartBytes(MBS::CommandStruct &cms, QByteArray &ba);
+    void setQueryStartBytes(Modbus::Request &cms, QByteArray &ba);
 
-    QByteArray createReadPDU(const MBS::CommandStruct &cms) const;
+    QByteArray createReadPDU(const Modbus::Request &cms) const;
     QByteArray createADU(const QByteArray &pdu) const;
     void calcCRCAndSend(QByteArray &ba);
     void send(const QByteArray &ba);

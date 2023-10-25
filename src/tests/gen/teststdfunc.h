@@ -27,10 +27,12 @@ private slots:
     {
     }
 
-    void VerToStr();
-    void StrToVer();
-    void EnumToStr();
+    void verToStr();
+    void strToVer();
+    void enumToStr();
     void byteArrayTest();
+    void modbusRegistersTest01();
+    void modbusRegistersTest02();
 };
 
 #endif // TESTPROTOCOM_H

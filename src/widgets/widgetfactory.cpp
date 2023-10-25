@@ -463,7 +463,7 @@ bool WidgetFactory::fillBackModbus(
         }
         case config::Item::ModbusColumns::FuncCode:
         {
-            master.func = MBS::Commands(status ? data : 0);
+            master.func = Modbus::FunctionCode(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::DataType:

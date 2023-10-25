@@ -1,20 +1,50 @@
 #include "teststdfunc.h"
 
+#include <array>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+
+namespace detail
+{
+
+template <typename T> T unpackReg(QByteArray ba)
+{
+    assert(sizeof(T) == ba.size());
+    for (auto i = 0; i < ba.size(); i = i + 2)
+        std::swap(ba.data()[i], ba.data()[i + 1]);
+    return *reinterpret_cast<T *>(ba.data());
+}
+
+template <typename T> QByteArray packReg(T value)
+{
+    QByteArray ba;
+    std::array<std::uint8_t, sizeof(T)> valueBytes;
+    auto srcBegin = reinterpret_cast<std::uint8_t *>(&value);
+    auto srcEnd = srcBegin + sizeof(T);
+    auto dstBeign = valueBytes.begin();
+    std::copy(srcBegin, srcEnd, dstBeign);
+    for (auto it = valueBytes.begin(); it != valueBytes.end(); it = it + 2)
+    {
+        ba.push_back(*(it + 1));
+        ba.push_back(*it);
+    }
+    return ba;
+}
+
+} // namespace detail
 
 TestStdFunc::TestStdFunc(QObject *parent) : QObject(parent)
 {
 }
 
-void TestStdFunc::VerToStr()
+void TestStdFunc::verToStr()
 {
     QString expectedString("3.3-0001");
     auto realString = StdFunc::VerToStr(50528257);
     QVERIFY(expectedString == realString);
 }
 
-void TestStdFunc::StrToVer()
+void TestStdFunc::strToVer()
 {
     quint32 expectedValue = 50528257;
     auto realValue = StdFunc::StrToVer("3.3-0001");
@@ -23,7 +53,7 @@ void TestStdFunc::StrToVer()
     QVERIFY(StdFunc::StrToVer("4.3-0001") > StdFunc::StrToVer("3.3-0000"));
 }
 
-void TestStdFunc::EnumToStr()
+void TestStdFunc::enumToStr()
 {
     auto err = Error::Msg::CrcError;
     auto metaEnum = QMetaEnum::fromType<decltype(err)>();
@@ -40,6 +70,26 @@ void TestStdFunc::byteArrayTest()
     first.append(static_cast<char>(data / 0x100));
     auto second = StdFunc::toByteArray(data);
     QVERIFY(first == second);
+}
+
+void TestStdFunc::modbusRegistersTest01()
+{
+    std::uint16_t data = 0xaabb;
+    auto first = StdFunc::toByteArray(qToBigEndian(data));
+    auto second = detail::packReg(data);
+    qInfo() << "StdFunc::toByteArray result: " << first;
+    qInfo() << "     detail::packReg result: " << second;
+    QVERIFY(first == second);
+}
+
+void TestStdFunc::modbusRegistersTest02()
+{
+    std::uint32_t data = 0xaabbccdd;
+    auto first = StdFunc::toByteArray(qToBigEndian(data));
+    auto second = detail::packReg(data);
+    qInfo() << "StdFunc::toByteArray result: " << first;
+    qInfo() << "     detail::packReg result: " << second;
+    QVERIFY(first != second);
 }
 
 QTEST_GUILESS_MAIN(TestStdFunc)
