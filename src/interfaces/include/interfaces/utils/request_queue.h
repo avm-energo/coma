@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <condition_variable>
 #include <gen/error.h>
 #include <interfaces/types/common_types.h>
 #include <mutex>
@@ -16,6 +17,7 @@ class RequestQueue
 private:
     std::queue<CommandStruct> m_requests;
     std::mutex m_queueAccess;
+    std::condition_variable m_cvQueueEmpty;
     std::atomic_bool m_isActive = true;
 
 public:
@@ -25,7 +27,10 @@ public:
     /// \brief Функция для добавления команды в очередь запросов.
     void addToQueue(CommandStruct &&request);
     /// \brief Функция для взятия команды из очереди запросов.
-    std::optional<CommandStruct> deQueue();
+    std::optional<CommandStruct> getFromQueue();
+
+    /// \brief Функция для ожидания момента, когда в пустую очередь попадёт запрос.
+    void waitFillingQueue() noexcept;
 
     /// \brief Активирует очередь.
     /// \details В активном состоянии входящие запросы сохраняются в очереди.

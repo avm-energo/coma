@@ -131,7 +131,7 @@ void BaseProtocolParser::filePostpone(QByteArray &ba, S2::FilesEnum addr, DataTy
 
 void BaseProtocolParser::checkQueue() noexcept
 {
-    auto opt = m_queue.deQueue();
+    auto opt = m_queue.getFromQueue();
     if (opt.has_value())
     {
         // m_isCommandRequested = true;

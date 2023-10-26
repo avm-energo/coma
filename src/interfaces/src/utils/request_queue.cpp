@@ -1,3 +1,4 @@
+#include <chrono>
 #include <interfaces/utils/request_queue.h>
 
 namespace Interface
@@ -11,10 +12,11 @@ void RequestQueue::addToQueue(CommandStruct &&request)
     {
         std::lock_guard<std::mutex> locker { m_queueAccess };
         m_requests.push(std::move(request));
+        m_cvQueueEmpty.notify_all();
     }
 }
 
-std::optional<CommandStruct> RequestQueue::deQueue()
+std::optional<CommandStruct> RequestQueue::getFromQueue()
 {
     std::lock_guard<std::mutex> locker { m_queueAccess };
     if (!m_requests.empty())
@@ -24,6 +26,12 @@ std::optional<CommandStruct> RequestQueue::deQueue()
         return retVal;
     }
     return std::nullopt;
+}
+
+void RequestQueue::waitFillingQueue() noexcept
+{
+    std::unique_lock<std::mutex> locker { m_queueAccess };
+    m_cvQueueEmpty.wait(locker, [this] { return !m_requests.empty(); });
 }
 
 void RequestQueue::activate() noexcept

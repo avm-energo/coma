@@ -63,7 +63,7 @@ void DeviceQueryExecutor::setState(const ExecutorState newState) noexcept
 
 void DeviceQueryExecutor::parseFromQueue() noexcept
 {
-    auto opt = m_queue.get().deQueue();
+    auto opt = m_queue.get().getFromQueue();
     if (opt.has_value())
     {
         const auto command(opt.value());
@@ -78,6 +78,11 @@ void DeviceQueryExecutor::parseFromQueue() noexcept
             m_responseParser->setRequest(command);
             writeToInterface(request);
         }
+    }
+    else
+    {
+        // Если нет запросов в очереди, то ждём, пока они появятся
+        m_queue.get().waitFillingQueue();
     }
 }
 
