@@ -69,7 +69,7 @@ void ModbusParser::parseRequest(const CommandStruct &cmdStr)
         Modbus::Request inp {
             Modbus::FunctionCode::ReadFileSection, //
             cmdStr.arg1.value<quint16>(), // номер файла - нехорошо, т.к. кладём туда quint32
-            0,                            // номер секции
+            0, false,                     // номер секции
             StdFunc::toByteArray(Modbus::fileSectionLength) //
         };
         m_fileData.clear();
@@ -94,7 +94,7 @@ void ModbusParser::parseRequest(const CommandStruct &cmdStr)
         Modbus::Request command {
             Modbus::FunctionCode::WriteMultipleRegisters, //
             firmwareModbusAddr,                           //
-            1,                                            //
+            1, false,                                     //
             value                                         //
         };
         writeMultipleRegisters(command);
@@ -107,7 +107,7 @@ void ModbusParser::parseRequest(const CommandStruct &cmdStr)
         Modbus::Request inp {
             Modbus::FunctionCode::WriteMultipleRegisters, //
             Regs::timeReg,                                //
-            2,                                            //
+            2, false,                                     //
             timeArray                                     //
         };
         writeMultipleRegisters(inp);
@@ -137,7 +137,7 @@ void ModbusParser::parseRequest(const CommandStruct &cmdStr)
             Modbus::Request inp {
                 Modbus::FunctionCode::WriteMultipleRegisters, //
                 static_cast<quint16>(min_addr),               //
-                static_cast<quint16>(list.size() * 2),        // количество регистров типа int16
+                static_cast<quint16>(list.size() * 2), false, // количество регистров типа int16
                 sigArray                                      //
             };
             writeMultipleRegisters(inp);
@@ -153,7 +153,7 @@ void ModbusParser::parseRequest(const CommandStruct &cmdStr)
             Modbus::Request inp {
                 Modbus::FunctionCode::WriteMultipleRegisters, //
                 scmd.addr,                                    //
-                1,                                            // количество регистров типа int16
+                1, false,                                     // количество регистров типа int16
                 StdFunc::toByteArray(scmd.value)              //
             };
             writeMultipleRegisters(inp);
@@ -179,7 +179,7 @@ void ModbusParser::parseRequest(const CommandStruct &cmdStr)
             Modbus::Request inp {
                 Modbus::FunctionCode::WriteMultipleRegisters, //
                 static_cast<quint16>(cmdAddr),                //
-                1,                                            //
+                1, false,                                     //
                 packReg(value)                                //
             };
             writeMultipleRegisters(inp);
@@ -214,10 +214,12 @@ void ModbusParser::parseResponse()
     {
         if (processReadFile())
         {
-            Modbus::Request inp { Modbus::FunctionCode::ReadFileSection, //
+            Modbus::Request inp {
+                Modbus::FunctionCode::ReadFileSection, //
                 m_currentCommand.arg1.value<quint16>(), // номер файла - нехорошо, т.к. кладём туда quint32
-                ++m_fileSectionNum,                     // номер секции
-                StdFunc::toByteArray(Modbus::fileSectionLength) };
+                ++m_fileSectionNum, false,                      // номер секции
+                StdFunc::toByteArray(Modbus::fileSectionLength) //
+            };
             readRegisters(inp);
             return; // продолжаем, пока не получим весь файл
         }

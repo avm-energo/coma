@@ -1,20 +1,20 @@
 #include "interfaces/parsers/modbus_request_parser.h"
 
-#include <interfaces/connection.h>
+#include <gen/utils/crc16.h>
+#include <stdexcept>
 
 namespace helper
 {
 
-template <typename T> //
+template <typename T, std::size_t N = sizeof(T)> //
 QByteArray packRegister(T value)
 {
+    static_assert(N % 2 == 0, "The size of type T must be even");
+    static_assert(N >= 2, "The size of type T must be greater than or equal to 2");
     QByteArray ba;
-    std::array<std::uint8_t, sizeof(T)> valueBytes;
     auto srcBegin = reinterpret_cast<std::uint8_t *>(&value);
     auto srcEnd = srcBegin + sizeof(T);
-    auto dstBeign = valueBytes.begin();
-    std::copy(srcBegin, srcEnd, dstBeign);
-    for (auto it = valueBytes.begin(); it != valueBytes.end(); it = it + 2)
+    for (auto it = srcBegin; it != srcEnd; it = it + 2)
     {
         ba.push_back(*(it + 1));
         ba.push_back(*it);
@@ -41,10 +41,10 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_ReqAlarms:
     {
         request = Modbus::Request {
-            Modbus::FunctionCode::ReadCoils, //
-            cmd.arg1.value<quint16>(),       // нехорошо, т.к. кладём туда quint32
-            cmd.arg2.value<quint16>(),       //
-            {}                               //
+            Modbus::FunctionCode::ReadCoils,  //
+            cmd.arg1.value<quint16>(),        // нехорошо, т.к. кладём туда quint32
+            cmd.arg2.value<quint16>(), false, //
+            {}                                //
         };
         break;
     }
@@ -59,7 +59,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         request = Modbus::Request {
             Modbus::FunctionCode::ReadInputRegister, //
             cmd.arg1.value<quint16>(),               // нехорошо, т.к. кладём туда quint32
-            count,                                   //
+            count, false,                            //
             {}                                       //
         };
         break;
@@ -70,7 +70,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         request = Modbus::Request {
             Modbus::FunctionCode::ReadHoldingRegisters, //
             Modbus::timeReg,                            //
-            2,                                          //
+            2, false,                                   //
             {}                                          //
         };
         break;
@@ -78,15 +78,9 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     // request file
     case Commands::C_ReqFile:
     {
-        request = Modbus::Request {
-            Modbus::FunctionCode::ReadFileSection,          //
-            cmd.arg1.value<quint16>(),                      // номер файла
-            0,                                              // номер секции
-            StdFunc::toByteArray(Modbus::fileSectionLength) //
-        };
-        // m_fileData.clear();
-        // m_fileSectionNum = 0;
-        // readRegisters(inp);
+        m_fileNumber = cmd.arg1.value<quint16>();
+        m_fileSection = 0;
+        request = getNextFileSectionRequest();
         break;
     }
     // write file
@@ -94,10 +88,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     {
         auto fileNum = cmd.arg1.value<quint16>();
         auto fileData = cmd.arg2.value<QByteArray>();
-        // setProgressRange(m_fileData.size());
-        // m_sentBytesCount = 0;
-        // m_fileSectionNum = 0;
-        // writeFile();
+        prepareFileForWriting(fileNum, fileData);
         break;
     }
     // writing registers
@@ -106,8 +97,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         auto value = helper::packRegister(quint16(1));
         request = Modbus::Request {
             Modbus::FunctionCode::WriteMultipleRegisters, //
-            Modbus::firmwareModbusAddr,                   //
-            1,                                            //
+            Modbus::firmwareModbusAddr, 1, false,         //
             value                                         //
         };
         break;
@@ -118,8 +108,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         QByteArray timeArray = helper::packRegister(cmd.arg1.value<quint32>());
         request = Modbus::Request {
             Modbus::FunctionCode::WriteMultipleRegisters, //
-            Modbus::timeReg,                              //
-            2,                                            //
+            Modbus::timeReg, 2, false,                    //
             timeArray                                     //
         };
         break;
@@ -129,27 +118,8 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     {
         if (cmd.arg1.canConvert<QVariantList>())
         {
-            auto list = cmd.arg1.value<QVariantList>();
-            Q_ASSERT(list.first().canConvert<DataTypes::FloatStruct>());
-
-            // search for minimum sig addr
-            QByteArray sigArray;
-            quint16 min_addr = 0xffff;
-            for (auto &item : list)
-            {
-                auto floatData = item.value<DataTypes::FloatStruct>();
-                if (floatData.sigAdr < min_addr)
-                    min_addr = floatData.sigAdr;
-                // now write floats to the out sigArray
-                sigArray.push_back(helper::packRegister(floatData.sigVal));
-            }
-
-            request = Modbus::Request {
-                Modbus::FunctionCode::WriteMultipleRegisters, //
-                static_cast<quint16>(min_addr),               //
-                static_cast<quint16>(list.size() * 2),        // количество регистров типа int16
-                sigArray                                      //
-            };
+            auto valuesList = cmd.arg1.value<QVariantList>();
+            request = convertUserValuesToRequest(valuesList);
         }
         break;
     }
@@ -161,8 +131,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
             auto singleCmd = cmd.arg1.value<DataTypes::SingleCommand>();
             request = Modbus::Request {
                 Modbus::FunctionCode::WriteMultipleRegisters, //
-                singleCmd.addr,                               //
-                1,                                            // количество регистров типа int16
+                singleCmd.addr, 1, false,                     //
                 StdFunc::toByteArray(singleCmd.value)         //
             };
         }
@@ -187,7 +156,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
             request = Modbus::Request {
                 Modbus::FunctionCode::WriteMultipleRegisters,     //
                 static_cast<quint16>(s_wsCmdMap.at(cmd.command)), //
-                1,                                                //
+                1, false,                                         //
                 value                                             //
             };
         }
@@ -197,12 +166,13 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         qCritical() << "Undefined command: " << QVariant::fromValue(cmd.command).toString();
     }
 
+    m_request = createADU(request);
     return m_request;
 }
 
 QByteArray ModbusRequestParser::getNextContinueCommand() noexcept
 {
-    return {};
+    return createADU(getNextFileSectionRequest());
 };
 
 void ModbusRequestParser::setDeviceAddress(const quint8 deviceAddress) noexcept
@@ -210,7 +180,7 @@ void ModbusRequestParser::setDeviceAddress(const quint8 deviceAddress) noexcept
     m_deviceAddress = deviceAddress;
 }
 
-QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request)
+QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request) const
 {
     quint16 bytesToReceive = 0, temp = 0;
     QByteArray pdu;
@@ -223,6 +193,9 @@ QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request)
     case Modbus::FunctionCode::ReadCoils:
         temp = (request.quantity / 8) + ((request.quantity % 8) != 0);
         bytesToReceive = temp + 5; // address (1), function code (1), bytes count (1), crc (2)
+        break;
+    case Modbus::FunctionCode::ReadDiscreteInputs:
+        bytesToReceive = request.quantity + 5; // address (1), function code (1), bytes count (1), crc (2)
         break;
     case Modbus::FunctionCode::ReadHoldingRegisters:
     case Modbus::FunctionCode::ReadInputRegister:
@@ -237,12 +210,119 @@ QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request)
         pdu.append(StdFunc::toByteArray(qToBigEndian(request.quantity * 2)));
         pdu.append(request.data);
         break;
+    // Во время чтения файлов response parser сам определяет размер ответа
+    case Modbus::FunctionCode::ReadFileSection:
+        pdu.append(request.data);
+        break;
+    case Modbus::FunctionCode::WriteFileSection:
+        // Response size: address (1), function code (1), last section (1),
+        // numFile (2), numSection (2), secLength (1), crc (2)
+        bytesToReceive = 10;
+        pdu.insert(1, char(request.isLastSection));
+        pdu.append(quint8(request.data.size()));
+        pdu.append(request.data);
+        break;
     default:
         break;
     }
 
-    emit expectedResponseSize(bytesToReceive);
+    if (bytesToReceive > 0)
+        emit expectedResponseSize(bytesToReceive);
     return pdu;
+}
+
+QByteArray ModbusRequestParser::createADU(const Modbus::Request &request) const noexcept
+{
+    QByteArray adu;
+    // Пытаемся не выстрелить себе в ногу
+    /// TODO: Сделать без выстрелов в ногу
+    try
+    {
+        adu = createPDU(request);
+    } catch (const std::exception &e)
+    {
+        qCritical() << e.what();
+        adu.clear();
+    }
+    if (!adu.isEmpty())
+    {
+        adu.prepend(m_deviceAddress);
+        utils::CRC16 crc(adu);
+        adu.append(crc.toByteArray());
+    }
+    return adu;
+}
+
+Modbus::Request ModbusRequestParser::getNextFileSectionRequest() noexcept
+{
+    return Modbus::Request {
+        Modbus::FunctionCode::ReadFileSection,          //
+        m_fileNumber,                                   // номер файла
+        m_fileSection++, false,                         // номер секции
+        StdFunc::toByteArray(Modbus::fileSectionLength) //
+    };
+}
+
+Modbus::Request ModbusRequestParser::prepareFileForWriting(const quint16 fileNum, const QByteArray &data) noexcept
+{
+    std::deque<Modbus::Request> requestBuffer;
+    quint16 section = 0;
+    m_progressCount = 0;
+    m_longDataSections.clear();
+
+    // Разделяем файлы на секции и рпеобразовываем в формат запросов по протоколу Modbus
+    for (auto pos = 0; pos < data.size(); pos += Modbus::fileSectionLength)
+    {
+        QByteArray sectionData(data.mid(pos, Modbus::fileSectionLength));
+        if (!sectionData.isEmpty())
+        {
+            requestBuffer.push_back(Modbus::Request {
+                Modbus::FunctionCode::WriteFileSection,  //
+                fileNum,                                 // номер файла
+                section++, false,                        // номер секции
+                data.mid(pos, Modbus::fileSectionLength) //
+            });
+        }
+        else
+            break;
+    }
+    requestBuffer.back().isLastSection = true; // Помечаем последнюю секцию
+    emit totalWritingBytes(m_longDataSections.size() * 10 + data.size());
+
+    auto firstSection = requestBuffer.front(); // Первую секцию вытаскиваем из буфера
+    requestBuffer.pop_front();
+    if (!firstSection.isLastSection)
+        emit writingLongData();
+
+    // Преобразовываем оставшиеся в буфере элементы в готовые команды (формат QByteArray)
+    std::transform(requestBuffer.cbegin(), requestBuffer.cend(), m_longDataSections.begin(), //
+        [this](const Modbus::Request &request) -> QByteArray {
+            return createADU(request); //
+        });
+    return firstSection;
+}
+
+Modbus::Request ModbusRequestParser::convertUserValuesToRequest(const QVariantList &valuesList) const noexcept
+{
+    Q_ASSERT(valuesList.first().canConvert<DataTypes::FloatStruct>());
+    // search for minimum sig addr
+    QByteArray sigArray;
+    quint16 min_addr = 0xffff;
+    for (auto &item : valuesList)
+    {
+        auto floatData = item.value<DataTypes::FloatStruct>();
+        if (floatData.sigAdr < min_addr)
+            min_addr = floatData.sigAdr;
+        // now write floats to the out sigArray
+        sigArray.push_back(helper::packRegister(floatData.sigVal));
+    }
+
+    return Modbus::Request {
+        Modbus::FunctionCode::WriteMultipleRegisters, //
+        static_cast<quint16>(min_addr),               //
+        static_cast<quint16>(valuesList.size() * 2),  // количество регистров типа int16
+        false, sigArray                               //
+    };
 }
 
 } // namespace Interface

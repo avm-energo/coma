@@ -25,6 +25,7 @@ struct Request
     FunctionCode code;
     std::uint16_t address;
     std::uint16_t quantity;
+    bool isLastSection = false; // using only for writing files
     QByteArray data;
 };
 
