@@ -111,13 +111,17 @@ void BaseProtocolParser::filePostpone(QByteArray &ba, S2::FilesEnum addr, DataTy
         DataTypes::S2FilePack outlist;
         if (!S2Util::RestoreData(ba, outlist))
         {
-            DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error,
-                static_cast<quint64>(ba.size()) };
+            DataTypes::GeneralResponseStruct resp {
+                DataTypes::GeneralResponseTypes::Error, //
+                static_cast<quint64>(ba.size())         //
+            };
             emit responseSend(resp);
             return;
         }
-        DataTypes::GeneralResponseStruct genResp { DataTypes::GeneralResponseTypes::Ok,
-            static_cast<quint64>(ba.size()) };
+        DataTypes::GeneralResponseStruct genResp {
+            DataTypes::GeneralResponseTypes::Ok, //
+            static_cast<quint64>(ba.size())      //
+        };
         emit responseSend(genResp);
         for (auto &&file : outlist)
         {

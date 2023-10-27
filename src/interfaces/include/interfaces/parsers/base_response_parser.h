@@ -13,6 +13,7 @@ class BaseResponseParser : public QObject
 protected:
     QByteArray m_buffer;
     CommandStruct m_request;
+    bool m_isFirstSectionReceived;
     bool m_isLastSectionReceived;
     bool m_isLastSectionSended;
     S2Util m_util;

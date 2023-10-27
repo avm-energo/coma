@@ -5,7 +5,7 @@
 namespace Interface
 {
 
-ProtocomResponseParser::ProtocomResponseParser(QObject *parent) : BaseResponseParser(parent), m_isFirstSection(true)
+ProtocomResponseParser::ProtocomResponseParser(QObject *parent) : BaseResponseParser(parent)
 {
 }
 
@@ -274,7 +274,7 @@ void ProtocomResponseParser::processDataSection(const QByteArray &dataSection)
     // Добавляем полученные данные в буфер
     m_buffer.append(dataSection);
     // Если получили первую секцию
-    if (m_isFirstSection)
+    if (m_isFirstSectionReceived)
     {
         if (m_receivedCommand == Proto::Commands::ReadFile)
             processProgressRange(m_util.getFileSize(m_buffer)); // Отсылаем общую длину
@@ -283,7 +283,8 @@ void ProtocomResponseParser::processDataSection(const QByteArray &dataSection)
     }
     if (m_receivedCommand == Proto::Commands::ReadFile)
         processProgressCount(m_buffer.size()); // Отсылаем текущий прогресс
-    m_isFirstSection = m_isLastSectionReceived;
+    // Восстанавливаем флаг, когда получаем последнюю секцию
+    m_isFirstSectionReceived = m_isLastSectionReceived;
 }
 
 } // namespace Interface

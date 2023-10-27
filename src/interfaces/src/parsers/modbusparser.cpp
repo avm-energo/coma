@@ -327,6 +327,7 @@ void ModbusParser::processFloatSignals()
         qCritical() << Error::SizeError << metaObject()->className();
         return;
     }
+
     for (auto i = 0; i < ba.size(); i += sizeof(float))
     {
         DataTypes::FloatStruct signal;
@@ -352,6 +353,7 @@ void ModbusParser::processIntegerSignals()
         qCritical() << Error::SizeError << metaObject()->className();
         return;
     }
+
     for (auto i = 0; i < ba.size(); i += sizeof(quint32))
     {
         DataTypes::BitStringStruct signal;
@@ -379,6 +381,7 @@ void ModbusParser::processCommandResponse()
         m_log.error("Wrong byte size in response");
         return;
     }
+
     DataTypes::GeneralResponseStruct grs;
     grs.type = DataTypes::GeneralResponseTypes::Ok;
     emit responseSend(grs);
@@ -386,8 +389,6 @@ void ModbusParser::processCommandResponse()
 
 void ModbusParser::processSinglePointSignals()
 {
-    DataTypes::SinglePointWithTimeStruct signal;
-
     if (m_readData.size() < 3)
     {
         qCritical() << Error::SizeError << metaObject()->className();
@@ -398,8 +399,11 @@ void ModbusParser::processSinglePointSignals()
     if (byteSize > ba.size())
     {
         qCritical() << Error::SizeError << metaObject()->className();
+        m_log.error("Wrong byte size in response");
         return;
     }
+
+    DataTypes::SinglePointWithTimeStruct signal;
     for (int i = 0; i < byteSize; ++i)
     {
         quint8 ival = ba.at(i);

@@ -7,13 +7,13 @@ namespace helper
 {
 
 template <typename T, std::size_t N = sizeof(T)> //
-QByteArray packRegister(T value)
+inline QByteArray packRegister(T value)
 {
     static_assert(N % 2 == 0, "The size of type T must be even");
     static_assert(N >= 2, "The size of type T must be greater than or equal to 2");
     QByteArray ba;
     auto srcBegin = reinterpret_cast<std::uint8_t *>(&value);
-    auto srcEnd = srcBegin + sizeof(T);
+    auto srcEnd = srcBegin + N;
     for (auto it = srcBegin; it != srcEnd; it = it + 2)
     {
         ba.push_back(*(it + 1));
@@ -59,8 +59,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         request = Modbus::Request {
             Modbus::FunctionCode::ReadInputRegister, //
             cmd.arg1.value<quint16>(),               // нехорошо, т.к. кладём туда quint32
-            count, false,                            //
-            {}                                       //
+            count, false, {}                         //
         };
         break;
     }
@@ -69,9 +68,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     {
         request = Modbus::Request {
             Modbus::FunctionCode::ReadHoldingRegisters, //
-            Modbus::timeReg,                            //
-            2, false,                                   //
-            {}                                          //
+            Modbus::timeReg, 2, false, {}               //
         };
         break;
     }
@@ -97,8 +94,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         auto value = helper::packRegister(quint16(1));
         request = Modbus::Request {
             Modbus::FunctionCode::WriteMultipleRegisters, //
-            Modbus::firmwareModbusAddr, 1, false,         //
-            value                                         //
+            Modbus::firmwareModbusAddr, 1, false, value   //
         };
         break;
     }
@@ -108,8 +104,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         QByteArray timeArray = helper::packRegister(cmd.arg1.value<quint32>());
         request = Modbus::Request {
             Modbus::FunctionCode::WriteMultipleRegisters, //
-            Modbus::timeReg, 2, false,                    //
-            timeArray                                     //
+            Modbus::timeReg, 2, false, timeArray          //
         };
         break;
     }
@@ -156,8 +151,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
             request = Modbus::Request {
                 Modbus::FunctionCode::WriteMultipleRegisters,     //
                 static_cast<quint16>(s_wsCmdMap.at(cmd.command)), //
-                1, false,                                         //
-                value                                             //
+                1, false, value                                   //
             };
         }
         break;
@@ -165,7 +159,6 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     default:
         qCritical() << "Undefined command: " << QVariant::fromValue(cmd.command).toString();
     }
-
     m_request = createADU(request);
     return m_request;
 }

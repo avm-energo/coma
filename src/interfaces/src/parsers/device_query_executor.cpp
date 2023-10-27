@@ -74,7 +74,7 @@ void DeviceQueryExecutor::parseFromQueue() noexcept
         {
             if (getState() == ExecutorState::RequestParsing)
                 setState(ExecutorState::Pending);
-            m_lastRequestedCommand = command.command;
+            m_lastRequestedCommand.store(command.command);
             m_responseParser->setRequest(command);
             writeToInterface(request);
         }
@@ -155,7 +155,7 @@ void DeviceQueryExecutor::stop() noexcept
 
 const Commands DeviceQueryExecutor::getLastRequestedCommand() const noexcept
 {
-    return m_lastRequestedCommand;
+    return m_lastRequestedCommand.load();
 }
 
 void DeviceQueryExecutor::receiveDataFromInterface(QByteArray response)

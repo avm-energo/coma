@@ -11,15 +11,19 @@ namespace Interface
 class BaseRequestParser;
 class BaseResponseParser;
 
+/// \brief Перечисление для описания состояния исполнителя запросов к устройству.
 enum class ExecutorState : std::uint32_t
 {
-    Starting = 0,          ///< Стартовое состояние
-    RequestParsing,        ///< Выполняется парсинг запроса
-    Pending,               ///<
+    Starting = 0,          ///< Стартовое состояние.
+    RequestParsing,        ///< Выполняется парсинг запроса.
+    Pending,               ///< Состояние паузы, исполнитель "заморожен".
+    ExtendedReading,       ///< Режим работы, который активируется
+                           ///< когда от интерфейса пришло недостаточно данных
+                           ///< (используется для Modbus RTU).
     ReadingLongData,       ///<
     WritingLongData,       ///<
-    Stopping,              ///<
-    Undefined = UINT32_MAX ///< ABI compatibility
+    Stopping,              ///< Исполнитель заканчивает работу.
+    Undefined = UINT32_MAX ///< ABI compatibility.
 };
 
 /// \brief Класс исполнителя запросов к устройству.
@@ -27,8 +31,9 @@ class DeviceQueryExecutor : public QObject
 {
     Q_OBJECT
 private:
+    friend class QueryExecutorFabric;
     std::atomic<ExecutorState> m_state;
-    Commands m_lastRequestedCommand;
+    std::atomic<Commands> m_lastRequestedCommand;
     std::reference_wrapper<RequestQueue> m_queue;
     LogClass m_log;
     QTimer *m_timeoutTimer;

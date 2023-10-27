@@ -11,7 +11,6 @@ class ProtocomResponseParser final : public BaseResponseParser
     Q_OBJECT
 private:
     Proto::Commands m_receivedCommand;
-    bool m_isFirstSection;
 
     /// \brief Anonymous structure for representing type of the connected board.
     struct

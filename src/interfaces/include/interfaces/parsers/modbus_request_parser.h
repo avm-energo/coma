@@ -44,8 +44,7 @@ public:
     void setDeviceAddress(const quint8 deviceAddress) noexcept;
 
 signals:
-    // clazy:excludeall=const-signal-or-slot
-    void expectedResponseSize(const quint16 size) const;
+    void expectedResponseSize(const quint16 size) const; // clazy:exclude=const-signal-or-slot
 };
 
 } // namespace Interface

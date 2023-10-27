@@ -14,14 +14,17 @@ private slots:
     void initTestCase()
     {
     }
+
     // вызывается перед каждой тестовой функцией
     void init()
     {
     }
+
     // вызывается после каждой тестовой функции
     void cleanup()
     {
     }
+
     // вызывается после последней тестовой функции
     void cleanupTestCase()
     {
@@ -33,6 +36,10 @@ private slots:
     void byteArrayTest();
     void modbusRegistersTest01();
     void modbusRegistersTest02();
+    void modbusRegistersTest03();
+    void modbusRegistersTest04();
+    void modbusRegistersTest05();
+    void modbusSinglePoint();
 };
 
 #endif // TESTPROTOCOM_H

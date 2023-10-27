@@ -6,7 +6,7 @@ namespace Interface
 {
 
 BaseResponseParser::BaseResponseParser(QObject *parent)
-    : QObject(parent), m_isLastSectionReceived(false), m_isLastSectionSended(false)
+    : QObject(parent), m_isFirstSectionReceived(true), m_isLastSectionReceived(false), m_isLastSectionSended(false)
 {
 }
 
