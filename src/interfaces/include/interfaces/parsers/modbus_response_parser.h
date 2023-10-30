@@ -54,6 +54,7 @@ public slots:
 
 signals:
     void needMoredata();
+    void fullResponseReceived(const QByteArray &response);
 };
 
 } // namespace Interface

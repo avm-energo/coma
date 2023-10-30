@@ -1,7 +1,7 @@
-#include "interfaces/parsers/device_query_executor.h"
+#include "interfaces/device_query_executor.h"
 
-#include <interfaces/parsers/protocom_request_parser.h>
-#include <interfaces/parsers/protocom_response_parser.h>
+#include <interfaces/parsers/base_request_parser.h>
+#include <interfaces/parsers/base_response_parser.h>
 
 namespace Interface
 {
@@ -57,8 +57,11 @@ ExecutorState DeviceQueryExecutor::getState() const noexcept
 
 void DeviceQueryExecutor::setState(const ExecutorState newState) noexcept
 {
-    m_state.store(newState);
-    emit stateChanged(newState);
+    if (getState() != ExecutorState::Stopping)
+    {
+        m_state.store(newState);
+        emit stateChanged(newState);
+    }
 }
 
 void DeviceQueryExecutor::parseFromQueue() noexcept
@@ -135,11 +138,8 @@ void DeviceQueryExecutor::exec()
 
 void DeviceQueryExecutor::run() noexcept
 {
-    if (getState() != ExecutorState::Stopping)
-    {
-        setState(ExecutorState::RequestParsing);
-        m_queue.get().activate();
-    }
+    setState(ExecutorState::RequestParsing);
+    m_queue.get().activate();
 }
 
 void DeviceQueryExecutor::pause() noexcept
@@ -153,6 +153,17 @@ void DeviceQueryExecutor::stop() noexcept
     setState(ExecutorState::Stopping);
 }
 
+void DeviceQueryExecutor::startExtendedReading() noexcept
+{
+    m_prevState.store(getState());
+    setState(ExecutorState::ExtendedReading);
+}
+
+void DeviceQueryExecutor::stopExtendedReading() noexcept
+{
+    setState(m_prevState.load());
+}
+
 const Commands DeviceQueryExecutor::getLastRequestedCommand() const noexcept
 {
     return m_lastRequestedCommand.load();
@@ -161,10 +172,10 @@ const Commands DeviceQueryExecutor::getLastRequestedCommand() const noexcept
 void DeviceQueryExecutor::receiveDataFromInterface(QByteArray response)
 {
     m_timeoutTimer->stop();
+    writeToLog(response, Direction::FromDevice);
     if (m_responseParser->isValid(response))
     {
         m_responseParser->parse(response);
-        writeToLog(response, Direction::FromDevice);
 
         switch (getState())
         {
@@ -203,34 +214,6 @@ void DeviceQueryExecutor::receiveDataFromInterface(QByteArray response)
 void DeviceQueryExecutor::cancelQuery()
 {
     setState(ExecutorState::RequestParsing);
-}
-
-DeviceQueryExecutor *DeviceQueryExecutor::makeProtocomExecutor(RequestQueue &queue, quint32 timeout)
-{
-    auto executor = new DeviceQueryExecutor(queue, timeout);
-    executor->initLogger("Protocom");
-    auto requestParser = new ProtocomRequestParser(executor);
-    auto responseParser = new ProtocomResponseParser(executor);
-    connect(requestParser, &ProtocomRequestParser::sendJournalData, //
-        responseParser, &ProtocomResponseParser::receiveJournalData);
-    executor->setParsers(requestParser, responseParser);
-    return executor;
-}
-
-DeviceQueryExecutor *DeviceQueryExecutor::makeModbusExecutor(RequestQueue &queue, quint32 timeout)
-{
-    /// TODO
-    Q_UNUSED(queue);
-    Q_UNUSED(timeout);
-    return nullptr;
-}
-
-DeviceQueryExecutor *DeviceQueryExecutor::makeIec104Executor(RequestQueue &queue, quint32 timeout)
-{
-    /// TODO
-    Q_UNUSED(queue);
-    Q_UNUSED(timeout);
-    return nullptr;
 }
 
 } // namespace Interface

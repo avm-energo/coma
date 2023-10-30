@@ -32,7 +32,7 @@ class DeviceQueryExecutor : public QObject
     Q_OBJECT
 private:
     friend class QueryExecutorFabric;
-    std::atomic<ExecutorState> m_state;
+    std::atomic<ExecutorState> m_state, m_prevState;
     std::atomic<Commands> m_lastRequestedCommand;
     std::reference_wrapper<RequestQueue> m_queue;
     LogClass m_log;
@@ -60,9 +60,14 @@ private:
     /// \brief Изменяет текущее состояние исполнителя запросов указанным.
     void setState(const ExecutorState newState) noexcept;
 
+    /// \brief Функция, которая использует BaseRequestParser для парсинга
+    /// запроса из очереди запросов в бинарное представление конкретного протокола.
     void parseFromQueue() noexcept;
+
+    /// \brief Функция для отправки запроса активному интерфейсу.
     void writeToInterface(const QByteArray &request) noexcept;
 
+    /// \brief Функция для записи данных в лог протокола.
     void writeToLog(const QByteArray &ba, const Direction dir = Direction::NoDirection) noexcept;
 
 public:
@@ -71,16 +76,23 @@ public:
     /// \brief Удалённый конструктор копирования.
     DeviceQueryExecutor(const DeviceQueryExecutor &rhs) = delete;
 
+    /// \brief Функция, содержащая главный цикл исполнителя запросов.
     void exec();
+
+    /// \brief Функция для продолжения работы исполнителя запросов.
+    /// \details Переводит состояние исполнителя в ExecutorState::RequestParsing.
     void run() noexcept;
+    /// \brief Функция для приостановки работы исполнителя запросов.
+    /// \details Переводит состояние исполнителя в ExecutorState::Pending.
     void pause() noexcept;
+    /// \brief Функция для окончания работы исполнителя запросов.
+    /// \details Переводит состояние исполнителя в ExecutorState::Stopping.
     void stop() noexcept;
 
-    const Commands getLastRequestedCommand() const noexcept;
+    void startExtendedReading() noexcept;
+    void stopExtendedReading() noexcept;
 
-    static DeviceQueryExecutor *makeProtocomExecutor(RequestQueue &queue, quint32 timeout = 1000);
-    static DeviceQueryExecutor *makeModbusExecutor(RequestQueue &queue, quint32 timeout = 3000);
-    static DeviceQueryExecutor *makeIec104Executor(RequestQueue &queue, quint32 timeout = 1000);
+    const Commands getLastRequestedCommand() const noexcept;
 
 public slots:
     void receiveDataFromInterface(QByteArray response);

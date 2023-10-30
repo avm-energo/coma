@@ -44,7 +44,12 @@ bool ModbusResponseParser::checkResponseLength(const QByteArray &response) noexc
         else if (m_request.command == Commands::C_ReqFile)
         {
             if (response.size() >= 8)
-                m_expectedRespSize = response[reqFileSectionLengthPos] + 10; // дополнительные данные
+            {
+                // 10 байт - дополнительные данные команды Modbus
+                // см. Расширение Modbus. Пользовательские функции
+                quint8 sectionSize = response[reqFileSectionLengthPos];
+                m_expectedRespSize = sectionSize + 10;
+            }
             else
                 return false; // Не получили заголовок с длиной
         }
@@ -167,6 +172,7 @@ void ModbusResponseParser::parse(const QByteArray &response)
         {
             quint32 count = m_request.arg2.toUInt();
             fileReceived(m_buffer, S2::FilesEnum(requestAddress), DataTypes::FileFormat(count));
+            m_buffer.clear();
         }
         break;
     case Modbus::FunctionCode::WriteFileSection:
@@ -239,16 +245,40 @@ void ModbusResponseParser::processDataSection(const QByteArray &dataSection) noe
     // Проверяем, получили мы последнюю секцию, или нет
     m_isLastSectionReceived = dataSection[0];
     // Получаем размер секции
-    auto sectionSize = static_cast<quint8>(dataSection[5]);
+    constexpr auto sectionSizePos = 5;
+    auto sectionSize = static_cast<quint8>(dataSection[sectionSizePos]);
     // Добавляем полученные данные в буфер
-    m_buffer.append(dataSection.mid(5, sectionSize));
+    auto data = dataSection.mid(sectionSizePos + 1, sectionSize);
+    bool ok = true;
+    if ((data.size() != sectionSize) || data.size() < 16) // 16 - размер S2BHeader
+    {
+        qCritical() << "Получен некорректный размер при разборке секции файла";
+        ok = false; // Not ok
+    }
+    m_buffer.append(data);
     if (m_isFirstSectionReceived) // Если получили первую секцию
     {
         if (!m_isLastSectionReceived)
             emit readingLongData();
-        /// TODO: По первой части полученного файла определять размер
+        if (ok)
+        {
+            // Вытаскиваем размер из заголовка
+            auto sizeBytes = m_buffer.mid(4, sizeof(quint32));
+            auto size = *reinterpret_cast<quint32 *>(sizeBytes.data());
+            if (size > 0)
+                processProgressRange(size);
+        }
     }
-    processProgressCount(m_buffer.size()); // Отсылаем текущий прогресс
+
+    // Отсылаем текущий прогресс
+    auto format = DataTypes::FileFormat(m_request.arg2.toUInt());
+    auto difference = 0;
+    if (format == DataTypes::FileFormat::DefaultS2)
+        difference = sizeof(S2::S2FileHeader);
+    else if (format == DataTypes::FileFormat::Binary)
+        difference = sizeof(S2::S2BFileHeader) + sizeof(S2::S2BFileTail);
+    processProgressCount(m_buffer.size() - difference);
+
     // Восстанавливаем флаг, когда получаем последнюю секцию
     m_isFirstSectionReceived = m_isLastSectionReceived;
 }

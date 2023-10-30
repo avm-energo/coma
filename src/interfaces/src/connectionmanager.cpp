@@ -3,7 +3,7 @@
 #include <gen/std_ext.h>
 #include <interfaces/ifaces/serialport.h>
 #include <interfaces/ifaces/usbhidport.h>
-#include <interfaces/parsers/device_query_executor.h>
+#include <interfaces/query_executor_fabric.h>
 
 namespace Interface
 {
@@ -38,13 +38,12 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
         overloaded {
             [this](const UsbHidSettings &settings) {
                 auto interface = new UsbHidPort(settings);
-                auto executor = DeviceQueryExecutor::makeProtocomExecutor(m_currentConnection->m_queue);
+                auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->m_queue);
                 m_context.init(interface, executor, Strategy::Sync, Qt::DirectConnection);
             },
             [this](const SerialPortSettings &settings) {
                 auto interface = new SerialPort(settings);
-                /// TODO: device address
-                auto executor = DeviceQueryExecutor::makeModbusExecutor(m_currentConnection->m_queue);
+                auto executor = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->m_queue, settings.address);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const IEC104Settings &settings) {

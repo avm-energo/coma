@@ -1,7 +1,7 @@
 #include "interfaces/connectioncontext.h"
 
 #include <interfaces/connection.h>
-#include <interfaces/parsers/device_query_executor.h>
+#include <interfaces/device_query_executor.h>
 
 namespace Interface
 {
