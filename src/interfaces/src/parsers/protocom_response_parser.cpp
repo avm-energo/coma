@@ -1,7 +1,5 @@
 #include "interfaces/parsers/protocom_response_parser.h"
 
-#include <gen/error.h>
-
 namespace Interface
 {
 
@@ -9,40 +7,45 @@ ProtocomResponseParser::ProtocomResponseParser(QObject *parent) : BaseResponsePa
 {
 }
 
-bool ProtocomResponseParser::isValid(const QByteArray &response)
+bool ProtocomResponseParser::isCompleteResponse()
 {
-    // if there's no standard header
-    if (response.size() >= 4)
+    constexpr auto protocomMinResponseSize = 4;
+    if (m_responseBuffer.size() >= protocomMinResponseSize)
     {
-        // parsing protocom header
-        auto startByte = Proto::Starters(response.at(0)); // start byte
-        auto size = quint16(response.at(2));              // size of data
-        // only response should be received from device
-        if (startByte == Proto::Starters::Response)
-        {
-            // checking size limits
-            if (size <= Proto::MaxSegmenthLength)
-                return true;
-            else
-                qCritical() << Error::SizeError << size;
-        }
-        else
-            qCritical() << Error::WrongCommandError << startByte;
+        auto size = quint16(m_responseBuffer.at(2));
+        if (m_responseBuffer.size() >= (size + protocomMinResponseSize))
+            return true;
     }
-    else
-        qCritical() << Error::HeaderSizeError << response.toHex();
     return false;
 }
 
-void ProtocomResponseParser::parse(const QByteArray &response)
+Error::Msg ProtocomResponseParser::validate()
+{
+    // parsing protocom header
+    auto startByte = Proto::Starters(m_responseBuffer.at(0)); // start byte
+    auto size = quint16(m_responseBuffer.at(2));              // size of data
+    // only response should be received from device
+    if (startByte == Proto::Starters::Response)
+    {
+        // checking size limits
+        if (size <= Proto::MaxSegmenthLength)
+            return Error::NoError;
+        else
+            return Error::SizeError;
+    }
+    else
+        return Error::WrongCommandError;
+}
+
+void ProtocomResponseParser::parse()
 {
     // Убираем заголовок Protocom, подготовка
-    QByteArray tmpba = response;
-    m_receivedCommand = Proto::Commands(tmpba.at(1));
-    auto size = quint16(tmpba.at(2));
-    tmpba.remove(0, 4);
-    tmpba.resize(size);
+    m_receivedCommand = Proto::Commands(m_responseBuffer.at(1));
+    auto size = quint16(m_responseBuffer.at(2));
+    m_responseBuffer.remove(0, 4);
+    m_responseBuffer.resize(size);
     quint32 addr = m_request.arg1.toUInt();
+
     switch (m_receivedCommand)
     {
     case Proto::Commands::ResultOk:
@@ -58,7 +61,7 @@ void ProtocomResponseParser::parse(const QByteArray &response)
             processOk();
         break;
     case Proto::Commands::ResultError:
-        processError(quint8(tmpba.front()));
+        processError(quint8(m_responseBuffer.front()));
         break;
     case Proto::Commands::ReadTime:
 #ifdef Q_OS_LINUX
@@ -66,53 +69,54 @@ void ProtocomResponseParser::parse(const QByteArray &response)
             processUnixTime(tmpba);
         else
 #endif
-            processU32(tmpba, addr);
+            processU32(m_responseBuffer, addr);
         break;
     case Proto::Commands::ReadBlkStartInfo:
     case Proto::Commands::ReadBlkStartInfoExt:
         if (boardType.isEmpty())
         {
-            boardType.mTypeB = tmpba[0];
-            boardType.mTypeM = tmpba[4];
+            boardType.mTypeB = m_responseBuffer[0];
+            boardType.mTypeM = m_responseBuffer[4];
         }
-        processU32(tmpba, addr);
+        processU32(m_responseBuffer, addr);
         break;
     case Proto::Commands::ReadBlkAC:
     case Proto::Commands::ReadBlkDataA:
-        processBlock(tmpba, addr); // Ожидается что в addr хранится номер блока
+        processBlock(m_responseBuffer, addr); // Ожидается что в addr хранится номер блока
         break;
     // В протокоме данные могут не влезать в одну посылку
     case Proto::Commands::ReadBlkData:
-        processDataSection(tmpba);
+        processDataSection(m_responseBuffer);
         if (m_isLastSectionReceived)
         {
-            processDataBlock(m_buffer, addr);
-            m_buffer.clear();
+            processDataBlock(m_longDataBuffer, addr);
+            m_longDataBuffer.clear();
         }
         break;
     case Proto::Commands::ReadBlkTech:
-        processTechBlock(tmpba, addr);
+        processTechBlock(m_responseBuffer, addr);
         break;
     case Proto::Commands::ReadProgress:
-        processU32(tmpba, addr);
+        processU32(m_responseBuffer, addr);
         break;
     case Proto::Commands::ReadFile:
-        processDataSection(tmpba);
+        processDataSection(m_responseBuffer);
         // Если получили последнюю секцию, от отправляем файл наверх и очищаем буффер
         if (m_isLastSectionReceived)
         {
-            fileReceived(m_buffer, S2::FilesEnum(addr), DataTypes::FileFormat(m_request.arg2.toUInt()));
-            m_buffer.clear();
+            fileReceived(m_longDataBuffer, S2::FilesEnum(addr), DataTypes::FileFormat(m_request.arg2.toUInt()));
+            m_longDataBuffer.clear();
         }
         break;
     case Proto::Commands::ReadMode:
-        processInt(tmpba.toInt());
+        processInt(m_responseBuffer.toInt());
         break;
     default:
         qCritical("We shouldn't be here, something went wrong");
-        qCritical() << tmpba.toHex();
+        qCritical() << m_responseBuffer.toHex();
         break;
     }
+    clearResponseBuffer();
 }
 
 void ProtocomResponseParser::receiveJournalData(const S2::FilesEnum fileNum, const QByteArray &file)
@@ -272,17 +276,17 @@ void ProtocomResponseParser::processDataSection(const QByteArray &dataSection)
     // Проверяем, получили мы последнюю секцию, или нет
     m_isLastSectionReceived = (dataSection.size() < Proto::MaxSegmenthLength);
     // Добавляем полученные данные в буфер
-    m_buffer.append(dataSection);
+    m_longDataBuffer.append(dataSection);
     // Если получили первую секцию
     if (m_isFirstSectionReceived)
     {
         if (m_receivedCommand == Proto::Commands::ReadFile)
-            processProgressRange(m_util.getFileSize(m_buffer)); // Отсылаем общую длину
+            processProgressRange(m_util.getFileSize(m_longDataBuffer)); // Отсылаем общую длину
         if (!m_isLastSectionReceived)
             emit readingLongData();
     }
     if (m_receivedCommand == Proto::Commands::ReadFile)
-        processProgressCount(m_buffer.size()); // Отсылаем текущий прогресс
+        processProgressCount(m_longDataBuffer.size()); // Отсылаем текущий прогресс
     // Восстанавливаем флаг, когда получаем последнюю секцию
     m_isFirstSectionReceived = m_isLastSectionReceived;
 }

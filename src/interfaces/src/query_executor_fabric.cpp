@@ -26,6 +26,7 @@ DeviceQueryExecutor *QueryExecutorFabric::makeModbusExecutor(RequestQueue &queue
 {
     auto executor = new DeviceQueryExecutor(queue, timeout);
     executor->initLogger("Modbus");
+    // NOTE: query executor must be parent for all parsers
     auto requestParser = new ModbusRequestParser(executor);
     requestParser->setDeviceAddress(deviceAddress);
     auto responseParser = new ModbusResponseParser(executor);
@@ -33,10 +34,6 @@ DeviceQueryExecutor *QueryExecutorFabric::makeModbusExecutor(RequestQueue &queue
     // Передача ожидаемого размера ответа между парсерами
     QObject::connect(requestParser, &ModbusRequestParser::expectedResponseSize, //
         responseParser, &ModbusResponseParser::expectedResponseSize);
-    // Если response parser получил данных меньше ожидаемого,
-    // то он просит query executor ещё немного подождать
-    QObject::connect(responseParser, &ModbusResponseParser::needMoredata, executor, //
-        [executor] { executor->setState(ExecutorState::ExtendedReading); });
     executor->setParsers(requestParser, responseParser);
     return executor;
 }

@@ -40,8 +40,9 @@ private:
 public:
     explicit ProtocomResponseParser(QObject *parent = nullptr);
 
-    bool isValid(const QByteArray &response) override;
-    void parse(const QByteArray &response) override;
+    bool isCompleteResponse() override;
+    Error::Msg validate() override;
+    void parse() override;
 
 public slots:
     void receiveJournalData(const S2::FilesEnum fileNum, const QByteArray &file);

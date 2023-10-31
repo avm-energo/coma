@@ -10,14 +10,9 @@ class ModbusResponseParser final : public BaseResponseParser
 {
     Q_OBJECT
 private:
-    QByteArray m_response;
     quint8 m_deviceAddress;
     quint16 m_expectedRespSize;
 
-    /// \brief Функция для проверки размера полученного от устройства ответа.
-    /// \details Ожидается, что полученный ответ будет соответствовать ожидаемому.
-    /// \see expectedResponseSize.
-    bool checkResponseLength(const QByteArray &response) noexcept;
     /// \brief Функция для проверки контрольной суммы (CRC16)
     /// из конца полученного от устройства ответа.
     bool validateCRC(const QByteArray &response) const noexcept;
@@ -41,8 +36,12 @@ private:
 public:
     explicit ModbusResponseParser(QObject *parent = nullptr);
 
-    bool isValid(const QByteArray &response) override;
-    void parse(const QByteArray &response) override;
+    /// \brief Функция для проверки размера полученного от устройства ответа.
+    /// \details Ожидается, что полученный ответ будет соответствовать ожидаемому.
+    /// \see expectedResponseSize.
+    bool isCompleteResponse() override;
+    Error::Msg validate() override;
+    void parse() override;
 
     /// \brief Функция для задания адреса устройства,
     /// к которому будут формироваться запросы.
@@ -53,7 +52,6 @@ public slots:
     void expectedResponseSize(const quint16 size) noexcept;
 
 signals:
-    void needMoredata();
     void fullResponseReceived(const QByteArray &response);
 };
 

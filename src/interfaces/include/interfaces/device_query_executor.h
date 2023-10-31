@@ -17,8 +17,6 @@ enum class ExecutorState : std::uint32_t
     Starting = 0,          ///< Стартовое состояние.
     RequestParsing,        ///< Выполняется парсинг запроса.
     Pending,               ///< Состояние паузы, исполнитель "заморожен".
-    ExtendedReading,       ///< Режим работы, который активируется
-                           ///< когда от интерфейса пришло недостаточно данных
                            ///< (используется для Modbus RTU).
     ReadingLongData,       ///<
     WritingLongData,       ///<
@@ -32,7 +30,7 @@ class DeviceQueryExecutor : public QObject
     Q_OBJECT
 private:
     friend class QueryExecutorFabric;
-    std::atomic<ExecutorState> m_state, m_prevState;
+    std::atomic<ExecutorState> m_state;
     std::atomic<Commands> m_lastRequestedCommand;
     std::reference_wrapper<RequestQueue> m_queue;
     LogClass m_log;
@@ -88,9 +86,6 @@ public:
     /// \brief Функция для окончания работы исполнителя запросов.
     /// \details Переводит состояние исполнителя в ExecutorState::Stopping.
     void stop() noexcept;
-
-    void startExtendedReading() noexcept;
-    void stopExtendedReading() noexcept;
 
     const Commands getLastRequestedCommand() const noexcept;
 

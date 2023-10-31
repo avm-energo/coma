@@ -24,39 +24,11 @@ inline T unpackRegister(const QByteArray &ba)
 namespace Interface
 {
 
-constexpr auto responseCmdPos = 1;
-constexpr auto minResponseSize = 5;
-constexpr auto reqFileSectionLengthPos = 7;
 constexpr quint8 errorModbusConst = 0x80;
 
 ModbusResponseParser::ModbusResponseParser(QObject *parent)
     : BaseResponseParser(parent), m_deviceAddress(0), m_expectedRespSize(0)
 {
-}
-
-bool ModbusResponseParser::checkResponseLength(const QByteArray &response) noexcept
-{
-    if (response.size() >= minResponseSize)
-    {
-        quint8 receivedCommand = response[responseCmdPos];
-        if (receivedCommand & errorModbusConst)
-            return true;
-        else if (m_request.command == Commands::C_ReqFile)
-        {
-            if (response.size() >= 8)
-            {
-                // 10 байт - дополнительные данные команды Modbus
-                // см. Расширение Modbus. Пользовательские функции
-                quint8 sectionSize = response[reqFileSectionLengthPos];
-                m_expectedRespSize = sectionSize + 10;
-            }
-            else
-                return false; // Не получили заголовок с длиной
-        }
-        if (response.size() >= m_expectedRespSize)
-            return true;
-    }
-    return false; // Пришло слишком мало данных
 }
 
 bool ModbusResponseParser::validateCRC(const QByteArray &response) const noexcept
@@ -110,69 +82,95 @@ bool ModbusResponseParser::validateResponseSize(const quint8 functionCode, QByte
     return isValidSize;
 }
 
-bool ModbusResponseParser::isValid(const QByteArray &response)
+bool ModbusResponseParser::isCompleteResponse()
 {
-    m_response.append(response);
-    if (checkResponseLength(m_response))
+    constexpr auto responseCmdPos = 1;
+    constexpr auto minResponseSize = 5;
+    constexpr auto reqFileSectionLengthPos = 7;
+
+    if (m_responseBuffer.size() >= minResponseSize)
     {
-        if (validateCRC(m_response) && validateDeviceAddress(m_response))
+        quint8 receivedCommand = m_responseBuffer[responseCmdPos];
+        if (receivedCommand & errorModbusConst)
             return true;
+        else if (m_request.command == Commands::C_ReqFile)
+        {
+            if (m_responseBuffer.size() >= 8)
+            {
+                // 10 байт - дополнительные данные команды Modbus
+                // см. Расширение Modbus. Пользовательские функции
+                quint8 sectionSize = m_responseBuffer[reqFileSectionLengthPos];
+                m_expectedRespSize = sectionSize + 10;
+            }
+            else
+                return false; // Не получили заголовок с длиной
+        }
+        if (m_responseBuffer.size() >= m_expectedRespSize)
+            return true;
+    }
+    return false; // Пришло слишком мало данных
+}
+
+Error::Msg ModbusResponseParser::validate()
+{
+    if (validateCRC(m_responseBuffer))
+    {
+        if (validateDeviceAddress(m_responseBuffer))
+            return Error::NoError;
         else
-            m_response.clear();
+            return Error::WrongFormatError;
     }
     else
-        emit needMoredata(); // Парсеру надо больше данных от интерфейса
-    return false;
+        return Error::CrcError;
 }
 
 void ModbusResponseParser::removeModbusHeader() noexcept
 {
-    m_response.remove(0, 1); // Удаление адреса устройства
-    m_response.chop(2);      // Удаление CRC
+    m_responseBuffer.remove(0, 1); // Удаление адреса устройства
+    m_responseBuffer.chop(2);      // Удаление CRC
 }
 
-void ModbusResponseParser::parse(const QByteArray &response)
+void ModbusResponseParser::parse()
 {
-    Q_UNUSED(response);
     removeModbusHeader();
-    auto responseFunctionCode = static_cast<quint8>(m_response.at(0));
-    m_response.remove(0, 1); // удаление кода функции из ответа
+    auto responseFunctionCode = static_cast<quint8>(m_responseBuffer.at(0));
+    m_responseBuffer.remove(0, 1); // удаление кода функции из ответа
     if (responseFunctionCode & errorModbusConst)
     {
-        processError(responseFunctionCode, m_response);
-        m_response.clear();
+        processError(responseFunctionCode, m_responseBuffer);
+        clearResponseBuffer();
         return;
     }
     const auto requestAddress = m_request.arg1.value<quint16>();
-    if (!validateResponseSize(responseFunctionCode, m_response))
+    if (!validateResponseSize(responseFunctionCode, m_responseBuffer))
     {
-        m_response.clear();
+        clearResponseBuffer();
         return;
     }
 
     switch (responseFunctionCode)
     {
     case Modbus::FunctionCode::ReadCoils:
-        processSinglePointSignals(m_response, requestAddress);
+        processSinglePointSignals(m_responseBuffer, requestAddress);
         break;
     case Modbus::FunctionCode::ReadHoldingRegisters:
     case Modbus::FunctionCode::ReadInputRegister:
         if (m_request.command == Commands::C_ReqFloats || m_request.command == Commands::C_ReqStartup)
-            processFloatSignals(m_response, requestAddress);
+            processFloatSignals(m_responseBuffer, requestAddress);
         else
-            processIntegerSignals(m_response, requestAddress);
+            processIntegerSignals(m_responseBuffer, requestAddress);
         break;
     // В ответе нет полезных данных, если не пришла ошибка, то команда прошла успешно
     case Modbus::FunctionCode::WriteMultipleRegisters:
         processOk();
         break;
     case Modbus::FunctionCode::ReadFileSection:
-        processDataSection(m_response);
+        processDataSection(m_responseBuffer);
         if (m_isLastSectionReceived)
         {
             quint32 count = m_request.arg2.toUInt();
-            fileReceived(m_buffer, S2::FilesEnum(requestAddress), DataTypes::FileFormat(count));
-            m_buffer.clear();
+            fileReceived(m_longDataBuffer, S2::FilesEnum(requestAddress), DataTypes::FileFormat(count));
+            m_longDataBuffer.clear();
         }
         break;
     case Modbus::FunctionCode::WriteFileSection:
@@ -184,10 +182,10 @@ void ModbusResponseParser::parse(const QByteArray &response)
         break;
     default:
         qCritical("We shouldn't be here, something went wrong");
-        qCritical() << m_response.toHex();
+        qCritical() << m_responseBuffer.toHex();
         break;
     }
-    m_response.clear();
+    clearResponseBuffer();
 }
 
 void ModbusResponseParser::processError(const quint8 functionCode, const QByteArray &response) noexcept
@@ -255,7 +253,7 @@ void ModbusResponseParser::processDataSection(const QByteArray &dataSection) noe
         qCritical() << "Получен некорректный размер при разборке секции файла";
         ok = false; // Not ok
     }
-    m_buffer.append(data);
+    m_longDataBuffer.append(data);
     if (m_isFirstSectionReceived) // Если получили первую секцию
     {
         if (!m_isLastSectionReceived)
@@ -263,7 +261,7 @@ void ModbusResponseParser::processDataSection(const QByteArray &dataSection) noe
         if (ok)
         {
             // Вытаскиваем размер из заголовка
-            auto sizeBytes = m_buffer.mid(4, sizeof(quint32));
+            auto sizeBytes = m_longDataBuffer.mid(4, sizeof(quint32));
             auto size = *reinterpret_cast<quint32 *>(sizeBytes.data());
             if (size > 0)
                 processProgressRange(size);
@@ -271,14 +269,7 @@ void ModbusResponseParser::processDataSection(const QByteArray &dataSection) noe
     }
 
     // Отсылаем текущий прогресс
-    auto format = DataTypes::FileFormat(m_request.arg2.toUInt());
-    auto difference = 0;
-    if (format == DataTypes::FileFormat::DefaultS2)
-        difference = sizeof(S2::S2FileHeader);
-    else if (format == DataTypes::FileFormat::Binary)
-        difference = sizeof(S2::S2BFileHeader) + sizeof(S2::S2BFileTail);
-    processProgressCount(m_buffer.size() - difference);
-
+    processProgressCount(m_longDataBuffer.size() - sizeof(S2::S2FileHeader));
     // Восстанавливаем флаг, когда получаем последнюю секцию
     m_isFirstSectionReceived = m_isLastSectionReceived;
 }

@@ -12,7 +12,7 @@ DeviceQueryExecutor::DeviceQueryExecutor(RequestQueue &queue, quint32 timeout, Q
     m_timeoutTimer->setSingleShot(true);
     m_timeoutTimer->setInterval(timeout);
     connect(m_timeoutTimer, &QTimer::timeout, this, [this] {
-        qCritical() << "Timeout";
+        qCritical() << "Timeout, command: " << int(m_lastRequestedCommand.load());
         m_log.error("Timeout");
         cancelQuery();
         emit this->timeout();
@@ -153,17 +153,6 @@ void DeviceQueryExecutor::stop() noexcept
     setState(ExecutorState::Stopping);
 }
 
-void DeviceQueryExecutor::startExtendedReading() noexcept
-{
-    m_prevState.store(getState());
-    setState(ExecutorState::ExtendedReading);
-}
-
-void DeviceQueryExecutor::stopExtendedReading() noexcept
-{
-    setState(m_prevState.load());
-}
-
 const Commands DeviceQueryExecutor::getLastRequestedCommand() const noexcept
 {
     return m_lastRequestedCommand.load();
@@ -171,16 +160,26 @@ const Commands DeviceQueryExecutor::getLastRequestedCommand() const noexcept
 
 void DeviceQueryExecutor::receiveDataFromInterface(QByteArray response)
 {
-    m_timeoutTimer->stop();
-    writeToLog(response, Direction::FromDevice);
-    if (m_responseParser->isValid(response))
+    // Валидация при фрагментировании ответа от устройства
+    m_responseParser->accumulateToResponseBuffer(response);
+    if (m_responseParser->isCompleteResponse())
     {
-        m_responseParser->parse(response);
+        m_timeoutTimer->stop();
+        writeToLog(response, Direction::FromDevice);
+    }
+    else
+        return;
+
+    auto validationResult = m_responseParser->validate();
+    if (validationResult == Error::NoError)
+    {
+        m_responseParser->parse();
 
         switch (getState())
         {
         case ExecutorState::ReadingLongData:
         {
+            // Если не получили последнюю секцию, то посылаем команды на продолжение
             if (!m_responseParser->isLastSectionReceived())
             {
                 auto request = m_requestParser->getNextContinueCommand();
@@ -209,10 +208,21 @@ void DeviceQueryExecutor::receiveDataFromInterface(QByteArray response)
             break;
         }
     }
+    else
+    {
+        DataTypes::GeneralResponseStruct resp {
+            DataTypes::GeneralResponseTypes::Error, //
+            static_cast<quint64>(validationResult)  //
+        };
+        emit responseSend(resp);
+        cancelQuery();
+    }
 }
 
 void DeviceQueryExecutor::cancelQuery()
 {
+    m_responseParser->clearResponseBuffer();
+    m_queue.get().activate();
     setState(ExecutorState::RequestParsing);
 }
 

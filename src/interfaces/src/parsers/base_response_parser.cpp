@@ -20,6 +20,16 @@ bool BaseResponseParser::isLastSectionReceived() const noexcept
     return m_isLastSectionReceived;
 }
 
+void BaseResponseParser::accumulateToResponseBuffer(const QByteArray &responsePart) noexcept
+{
+    m_responseBuffer.append(responsePart);
+}
+
+void BaseResponseParser::clearResponseBuffer() noexcept
+{
+    m_responseBuffer.clear();
+}
+
 void BaseResponseParser::lastSectionSended() noexcept
 {
     m_isLastSectionSended = true;

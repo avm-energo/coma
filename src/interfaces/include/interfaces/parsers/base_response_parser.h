@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gen/error.h>
 #include <interfaces/types/common_types.h>
 #include <s2/s2util.h>
 
@@ -11,7 +12,8 @@ class BaseResponseParser : public QObject
 {
     Q_OBJECT
 protected:
-    QByteArray m_buffer;
+    QByteArray m_responseBuffer;
+    QByteArray m_longDataBuffer;
     CommandStruct m_request;
     bool m_isFirstSectionReceived;
     bool m_isLastSectionReceived;
@@ -36,10 +38,16 @@ public:
     /// секция данных при запросе на чтение файла.
     bool isLastSectionReceived() const noexcept;
 
+    void accumulateToResponseBuffer(const QByteArray &responsePart) noexcept;
+    void clearResponseBuffer() noexcept;
+
+    /// \brief Проверка размера ответа, полученного от устройства.
+    /// \returns true - если ответ получен полностью, false - получен фрагментированный ответ.
+    virtual bool isCompleteResponse() = 0;
     /// \brief Проверяет, является ли валидным ответ, полученный от устройства.
-    virtual bool isValid(const QByteArray &response) = 0;
+    virtual Error::Msg validate() = 0;
     /// \brief Функция парсинга полученного от устройства ответа на запрос.
-    virtual void parse(const QByteArray &response) = 0;
+    virtual void parse() = 0;
 
 public slots:
     /// \brief Слот, вызываемый при получении от парсера запросов к
