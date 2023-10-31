@@ -17,6 +17,8 @@ enum class Strategy : quint8
     None = 0xff
 };
 
+/// \brief Класс для представления контекста выполнения интерфейса
+/// устройства и исполнителя запросов к устройству в рамках текущего соединения.
 class ConnectionContext
 {
     friend class ConnectionManager;
@@ -31,6 +33,7 @@ private:
 public:
     explicit ConnectionContext() noexcept;
 
+    /// \brief Фунция для проверки, содержит ли контекст соединения валидные данные.
     bool isValid() const noexcept;
 
     /// \brief Инициализация контекста соединения с устройством.

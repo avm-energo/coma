@@ -27,6 +27,7 @@ private:
     /// в виде адреса устройства и CRC из полученного ответа.
     void removeModbusHeader() noexcept;
 
+    /// \brief Функция, разбирающая ошибки по протоколу Modbus, полученные от устройства.
     void processError(const quint8 functionCode, const QByteArray &response) noexcept;
     void processSinglePointSignals(const QByteArray &response, const quint16 address) noexcept;
     void processFloatSignals(const QByteArray &response, const quint16 address) noexcept;

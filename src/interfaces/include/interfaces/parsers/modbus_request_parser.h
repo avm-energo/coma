@@ -15,7 +15,7 @@ private:
     quint16 m_fileSection;
 
     /// \brief Функция для создания PDU (Protocol Data Unit) согласно спецификации Modbus.
-    /// \details Может бросать runtime_exception. Исполльзовать с особой осторожностью.
+    /// \details Может бросать runtime_exception. Использовать с особой осторожностью.
     QByteArray createPDU(const Modbus::Request &request) const;
     /// \brief Функция для создания ADU (Application Data Unit) согласно спецификации Modbus.
     /// \see createPDU.
@@ -31,12 +31,17 @@ private:
     /// \see getNextDataSection.
     Modbus::Request prepareFileForWriting(const quint16 fileNum, const QByteArray &data) noexcept;
 
+    /// \brief Функция для конвертации значений для записи
+    /// устройства в формат запроса протокола Modbus.
     Modbus::Request convertUserValuesToRequest(const QVariantList &valuesList) const noexcept;
 
 public:
     explicit ModbusRequestParser(QObject *parent = nullptr);
 
+    /// \brief Функция парсинга запроса в бинарное представление в рамках протокола Modbus.
     QByteArray parse(const CommandStruct &cmd) override;
+    /// \brief Функция для возврата следующей команды на
+    /// запись большого массива данных или файла.
     QByteArray getNextContinueCommand() noexcept override;
 
     /// \brief Функция для задания адреса устройства,
@@ -44,6 +49,8 @@ public:
     void setDeviceAddress(const quint8 deviceAddress) noexcept;
 
 signals:
+    /// \brief Сигнал, который отправляет парсеру
+    /// ответов ожидаемый размер ответа от устройства.
     void expectedResponseSize(const quint16 size) const; // clazy:exclude=const-signal-or-slot
 };
 

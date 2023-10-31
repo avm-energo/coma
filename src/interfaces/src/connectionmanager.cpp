@@ -47,13 +47,11 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const IEC104Settings &settings) {
-                Q_UNUSED(settings);
+                /// TODO
                 Q_UNUSED(settings);
             },
             [this](const EmulatorSettings &settings) {
-#ifdef ENABLE_EMULATOR
-                Q_UNUSED(settings);
-#endif
+                /// TODO
                 Q_UNUSED(settings);
             } //
         },

@@ -33,7 +33,6 @@ void ConnectionContext::init(BaseInterface *iface, DeviceQueryExecutor *executor
         QObject::connect(m_iface, &BaseInterface::clearQueries, //
             m_executor, &DeviceQueryExecutor::cancelQuery, connPolicy);
         // Конец работы
-        // QObject::connect(m_iface, &BaseInterface::finished, m_executor, &DeviceQueryExecutor::wakeUp, connPolicy);
         QObject::connect(m_iface, &BaseInterface::finished, m_executor, &DeviceQueryExecutor::finished, connPolicy);
 
         if (m_strategy == Strategy::Sync)
@@ -78,8 +77,6 @@ bool ConnectionContext::run(Connection *connection)
         return false;
 
     // Обмен данными для соединения
-    // QObject::connect(connection, &Connection::wakeUpParser, //
-    //    m_parser, &BaseProtocolParser::wakeUp, Qt::DirectConnection);
     QObject::connect(m_executor, &DeviceQueryExecutor::responseSend, //
         connection, &Connection::responseHandle, Qt::DirectConnection);
     QObject::connect(m_iface, &BaseInterface::stateChanged, connection, //

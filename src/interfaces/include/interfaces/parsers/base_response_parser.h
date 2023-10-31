@@ -38,7 +38,13 @@ public:
     /// секция данных при запросе на чтение файла.
     bool isLastSectionReceived() const noexcept;
 
+    /// \brief Функция для добавления принятых от устройства данных
+    /// в конец текущего буффера, содержащего ответ устройства.
+    /// \details Применятся для защиты данных от фрагментирования.
+    /// \see clearResponseBuffer.
     void accumulateToResponseBuffer(const QByteArray &responsePart) noexcept;
+    /// \brief Функция для очистки буффера, содержащего ответ устройства.
+    /// \see accumulateToResponseBuffer.
     void clearResponseBuffer() noexcept;
 
     /// \brief Проверка размера ответа, полученного от устройства.

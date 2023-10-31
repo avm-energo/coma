@@ -41,6 +41,7 @@ void DeviceQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseP
             m_responseParser, &BaseResponseParser::lastSectionSended);    //
         connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
             setState(ExecutorState::WritingLongData);
+            m_timeoutTimer->setInterval(m_timeoutTimer->interval() * 5);
             m_queue.get().deactivate();
         });
         connect(m_responseParser, &BaseResponseParser::readingLongData, this, [this] {
@@ -158,7 +159,7 @@ const Commands DeviceQueryExecutor::getLastRequestedCommand() const noexcept
     return m_lastRequestedCommand.load();
 }
 
-void DeviceQueryExecutor::receiveDataFromInterface(QByteArray response)
+void DeviceQueryExecutor::receiveDataFromInterface(const QByteArray &response)
 {
     // Валидация при фрагментировании ответа от устройства
     m_responseParser->accumulateToResponseBuffer(response);
@@ -197,7 +198,10 @@ void DeviceQueryExecutor::receiveDataFromInterface(QByteArray response)
                 writeToInterface(nextRequest);
             // Если чанк пустой, то отправили файл полностью
             else
+            {
+                m_timeoutTimer->setInterval(m_timeoutTimer->interval() / 5);
                 run();
+            }
             break;
         }
         case ExecutorState::Stopping:
@@ -223,6 +227,10 @@ void DeviceQueryExecutor::cancelQuery()
 {
     m_responseParser->clearResponseBuffer();
     m_queue.get().activate();
+    if (m_timeoutTimer->isActive())
+        m_timeoutTimer->stop();
+    if (getState() == ExecutorState::WritingLongData)
+        m_timeoutTimer->setInterval(m_timeoutTimer->interval() / 5);
     setState(ExecutorState::RequestParsing);
 }
 

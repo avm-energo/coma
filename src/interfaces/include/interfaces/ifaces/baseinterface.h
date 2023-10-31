@@ -24,7 +24,7 @@ public:
     explicit BaseInterface(const QString &logFilename, QObject *parent = nullptr);
 
 signals:
-    void dataReceived(QByteArray ba);
+    void dataReceived(const QByteArray &ba);
     void started();
     void reconnected();
     void finished();

@@ -65,8 +65,8 @@ void ProtocomResponseParser::parse()
         break;
     case Proto::Commands::ReadTime:
 #ifdef Q_OS_LINUX
-        if (tmpba.size() == sizeof(quint64))
-            processUnixTime(tmpba);
+        if (m_responseBuffer.size() == sizeof(quint64))
+            processUnixTime(m_responseBuffer);
         else
 #endif
             processU32(m_responseBuffer, addr);

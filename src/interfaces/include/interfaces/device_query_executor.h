@@ -17,9 +17,8 @@ enum class ExecutorState : std::uint32_t
     Starting = 0,          ///< Стартовое состояние.
     RequestParsing,        ///< Выполняется парсинг запроса.
     Pending,               ///< Состояние паузы, исполнитель "заморожен".
-                           ///< (используется для Modbus RTU).
-    ReadingLongData,       ///<
-    WritingLongData,       ///<
+    ReadingLongData,       ///< Чтение большого массива данных или файла.
+    WritingLongData,       ///< Запись большого массива данных или файла.
     Stopping,              ///< Исполнитель заканчивает работу.
     Undefined = UINT32_MAX ///< ABI compatibility.
 };
@@ -87,17 +86,28 @@ public:
     /// \details Переводит состояние исполнителя в ExecutorState::Stopping.
     void stop() noexcept;
 
+    /// \brief Функция, возвраващающая последнюю запрошенную команду.
     const Commands getLastRequestedCommand() const noexcept;
 
 public slots:
-    void receiveDataFromInterface(QByteArray response);
+    /// \brief Слот для принятия от устройства ответа на посланный ему ранее запрос.
+    void receiveDataFromInterface(const QByteArray &response);
+    /// \brief Слот для отмены текущего запроса.
     void cancelQuery();
 
 signals:
+    /// \brief Сигнал для уведомления об изменении состояния исполнителя запросов.
     void stateChanged(const Interface::ExecutorState state);
+    /// \brief Сигнал для уведомления об окончании работы исполнителя запросов.
     void finished();
+    /// \brief Сигнал для уведомления о таймауте устройства на посланный ему запрос.
+    /// \details Данный сигнал отправляется в том случае, если устройство не успело
+    /// ответить на отправленный ему запрос в течение заданного интервала времени.
     void timeout();
+
+    /// \brief Сигнал для отправки распарсенного ответа от устройства на высшестоящий урвоень.
     void responseSend(const Interface::DeviceResponse &resp);
+    /// \brief Сигнал для отправки запроса устройству в бинарном представлении.
     void sendDataToInterface(const QByteArray &data);
 };
 
