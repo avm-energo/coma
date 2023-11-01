@@ -4,7 +4,7 @@
 #include <QElapsedTimer>
 
 BaseInterface::BaseInterface(const QString &logFilename, QObject *parent)
-    : QObject(parent), m_state(Interface::State::Connect)
+    : QObject(parent), m_state(Interface::State::Connect), m_reconnectInterval(100)
 {
     qRegisterMetaType<InterfaceError>();
     m_log.init(logFilename + "." + ::logExt);
@@ -117,7 +117,10 @@ void BaseInterface::reconnect()
         qCritical() << "Произошла ошибка соединения";
         while (getState() == Interface::State::Reconnect)
         {
-            if (tryToReconnect())
+
+            disconnect();                       // Закрываем текущее соединение
+            StdFunc::Wait(m_reconnectInterval); // Интервал между закрытием подключения и попыткой переподключиться
+            if (connect()) // Пытаемся подключиться к интерфейсу заново
                 break;
             QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         }

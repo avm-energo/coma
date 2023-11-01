@@ -84,11 +84,8 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     // connections
     connect(s2requestService.get(), &S2RequestService::response, //
         s2dataManager.get(), &S2DataManager::parseS2File);
-    //    connect(deviceWatcher.get(), &DeviceWatcher::deviceConnected, //
-    //        connectionManager.get(), &ConnectionManager::deviceConnected);
-    //    connect(deviceWatcher.get(), &DeviceWatcher::deviceDisconnected, //
-    //        connectionManager.get(), &ConnectionManager::deviceDisconnected);
     connect(connectionManager.get(), &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
+    connect(connectionManager.get(), &ConnectionManager::connectSuccesfull, this, &Coma::prepare);
 
     // registering center of coma main window for epopup message boxes
     auto pointContainer = new PointContainer(this);
@@ -348,8 +345,9 @@ void Coma::newTimers()
 
 void Coma::prepare()
 {
+    StdFunc::Wait(20); // Подождём, пока BSI долетит до Board
     auto &board = Board::GetInstance();
-    disconnect(&board, &Board::readyRead, this, &Coma::prepare);
+    // disconnect(&board, &Board::readyRead, this, &Coma::prepare);
     EMessageBox::information(this, "Установлена связь с " + board.moduleName());
     prepareDialogs();
 
@@ -506,7 +504,7 @@ void Coma::initInterfaceConnection()
     auto conn = Connection::iface();
     conn->connection(&board, &Board::update);
     conn->connection(this, &Coma::update);
-    connect(&board, &Board::readyRead, this, &Coma::prepare);
+    // connect(&board, &Board::readyRead, this, &Coma::prepare);
     // TODO: Remove it?
     connect(conn, &Connection::stateChanged, &board, [&board](const State state) {
         switch (state)
@@ -518,7 +516,7 @@ void Coma::initInterfaceConnection()
             board.setConnectionState(Board::ConnectionState::Closed);
             break;
         case State::Reconnect:
-            board.setConnectionState(Board::ConnectionState::TryReconnect);
+            board.setConnectionState(Board::ConnectionState::TryToReconnect);
             break;
         default:
             break;

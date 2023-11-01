@@ -209,13 +209,13 @@ void Board::setBoardType(const Types &boardType)
     emit boardTypeChanged(boardType);
 }
 
-Board::DeviceType Board::deviceType() const
-{
-    return m_deviceType;
-}
+// Board::DeviceType Board::deviceType() const
+//{
+//    return m_deviceType;
+//}
 
-void Board::setDeviceType(const DeviceType &deviceType)
-{
-    m_deviceType = deviceType;
-    emit deviceTypeChanged(deviceType);
-}
+// void Board::setDeviceType(const DeviceType &deviceType)
+//{
+//    m_deviceType = deviceType;
+//    emit deviceTypeChanged(deviceType);
+//}

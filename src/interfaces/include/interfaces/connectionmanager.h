@@ -14,7 +14,7 @@ enum class ReconnectMode : quint8
 {
     /// Громкий режим: менеджер соединений сообщает UI сразу о том,
     /// что устройство не выходит на связь.
-    Loud,
+    Loud = 0,
     /// Тихий режим: менеджер соединений в течение 10 секунд пытается
     /// восстановить связь с устройством, и если оно не вышло на связь за этот промежуток времени,
     /// то он сообщает UI о том, что устройство не выходит на связь. Может
@@ -30,8 +30,9 @@ private:
     ConnectionContext m_context;
     Connection *m_currentConnection;
     QTimer *m_silentTimer;
+    QMetaObject::Connection m_connBSI;
     ReconnectMode m_reconnectMode;
-    bool m_isReconnectEmitted;
+    bool m_isReconnectOccurred, m_isInitialBSIRequest;
     quint16 m_timeoutCounter, m_timeoutMax;
     quint16 m_errorCounter, m_errorMax;
 
@@ -54,7 +55,7 @@ signals:
     /// \brief Сигнал, который вызывается при переподключении к устройству.
     /// \details Данный сигнал информирует интерфейс о переходе в режим переподключения к устройству.
     /// \see BasePort.
-    void reconnectDevice();
+    void reconnectInterface();
     void reconnectSuccess();
 
 public slots:
@@ -62,11 +63,15 @@ public slots:
     void breakConnection();
 
 private slots:
-    /// \brief Хэндл для принятия ошибок от интерфейса.
+    /// \brief Слот для принятия ошибок от интерфейса.
     void handleInterfaceErrors(const InterfaceError error);
+    /// \brief Слот для принятий уведомлений о таймаутах от исполнителя запросов.
+    void handleQueryExecutorTimeout();
+    void fastCheckBSI(const DataTypes::BitStringStruct &data);
+
     /// \brief Слот для принятия уведомления о том, что
     /// связь с устройством была успешно восстановлена.
-    void deviceReconnected();
+    void interfaceReconnected();
 };
 
 } // namespace Interface

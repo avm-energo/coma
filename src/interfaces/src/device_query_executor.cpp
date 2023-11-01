@@ -7,7 +7,7 @@ namespace Interface
 {
 
 DeviceQueryExecutor::DeviceQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent)
-    : QObject(parent), m_state(ExecutorState::Starting), m_queue(queue), m_timeoutTimer(new QTimer(this))
+    : QObject(parent), m_state(ExecutorState::Starting), m_queue(std::ref(queue)), m_timeoutTimer(new QTimer(this))
 {
     m_timeoutTimer->setSingleShot(true);
     m_timeoutTimer->setInterval(timeout);
@@ -166,7 +166,7 @@ void DeviceQueryExecutor::receiveDataFromInterface(const QByteArray &response)
     if (m_responseParser->isCompleteResponse())
     {
         m_timeoutTimer->stop();
-        writeToLog(response, Direction::FromDevice);
+        writeToLog(m_responseParser->getResponseBuffer(), Direction::FromDevice);
     }
     else
         return;
@@ -225,6 +225,7 @@ void DeviceQueryExecutor::receiveDataFromInterface(const QByteArray &response)
 
 void DeviceQueryExecutor::cancelQuery()
 {
+    m_log.warning("Command canceled");
     m_responseParser->clearResponseBuffer();
     m_queue.get().activate();
     if (m_timeoutTimer->isActive())
@@ -232,6 +233,14 @@ void DeviceQueryExecutor::cancelQuery()
     if (getState() == ExecutorState::WritingLongData)
         m_timeoutTimer->setInterval(m_timeoutTimer->interval() / 5);
     setState(ExecutorState::RequestParsing);
+}
+
+void DeviceQueryExecutor::reconnectEvent()
+{
+    m_log.warning("Reconnect");
+    cancelQuery();
+    pause();
+    m_queue.get().clear();
 }
 
 } // namespace Interface

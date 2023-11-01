@@ -8,7 +8,7 @@
 constexpr auto TIMEOUT = 3000;
 
 SerialPort::SerialPort(const SerialPortSettings &settings, QObject *parent)
-    : BaseInterface("ModbusPort", parent), m_port(new QSerialPort(settings.name, this)), timeoutTimer(new QTimer(this))
+    : BaseInterface("ModbusPort", parent), m_port(new QSerialPort(settings.name, this))
 {
     m_port->setBaudRate(settings.baud);
     m_port->setDataBits(QSerialPort::Data8);
@@ -16,33 +16,23 @@ SerialPort::SerialPort(const SerialPortSettings &settings, QObject *parent)
     m_port->setStopBits(settings.stop);
     m_port->setFlowControl(QSerialPort::NoFlowControl);
     m_port->setReadBufferSize(1024);
-
-    timeoutTimer->setInterval(TIMEOUT);
     QObject::connect(m_port, &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
-    QObject::connect(m_port, &QIODevice::bytesWritten, timeoutTimer, //
-        [timeoutTimer = timeoutTimer] { timeoutTimer->start(); });
-    QObject::connect(m_port, &QIODevice::readyRead, timeoutTimer, &QTimer::stop);
-    QObject::connect(timeoutTimer, &QTimer::timeout, this, [this] {
-        emit error(InterfaceError::Timeout);
-        qWarning() << this->metaObject()->className() << Error::Timeout;
-        writeLog(Error::Timeout);
-        emit clearQueries();
-    });
 }
 
 bool SerialPort::connect()
 {
-    if (!m_port->open(QIODevice::ReadWrite))
+    if (m_port->open(QIODevice::ReadWrite))
     {
-        qCritical() << m_port->metaObject()->className() << m_port->portName() << Error::OpenError;
-        return false;
+        if (getState() != Interface::State::Disconnect)
+        {
+            setState(Interface::State::Run);
+            emit started();
+            return true;
+        }
     }
     else
-    {
-        setState(Interface::State::Run);
-        emit started();
-        return true;
-    }
+        m_log.error("Can't open " + m_port->portName());
+    return false;
 }
 
 void SerialPort::disconnect()
@@ -91,18 +81,6 @@ bool SerialPort::write(const QByteArray &ba)
     return true;
 }
 
-bool SerialPort::tryToReconnect()
-{
-    disconnect();  // Закрываем порт
-    if (connect()) // Заново открываем порт
-    {
-        // Если порт открылся, то это не даёт гарантии, что устройство вышло на связь
-        ;
-    }
-
-    return false;
-}
-
 void SerialPort::errorOccurred(const QSerialPort::SerialPortError err)
 {
     switch (err)
@@ -124,6 +102,7 @@ void SerialPort::errorOccurred(const QSerialPort::SerialPortError err)
     case QSerialPort::SerialPortError::DeviceNotFoundError:
     case QSerialPort::SerialPortError::PermissionError:
     case QSerialPort::SerialPortError::OpenError:
+        emit error(InterfaceError::OpenError);
         break;
     // port unexpected removed
     case QSerialPort::SerialPortError::ResourceError:

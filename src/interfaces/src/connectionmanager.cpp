@@ -13,7 +13,8 @@ ConnectionManager::ConnectionManager(QWidget *parent)
     , m_currentConnection(nullptr)
     , m_silentTimer(new QTimer(this))
     , m_reconnectMode(ReconnectMode::Loud)
-    , m_isReconnectEmitted(false)
+    , m_isReconnectOccurred(false)
+    , m_isInitialBSIRequest(true)
     , m_timeoutCounter(0)
     , m_errorCounter(0)
 {
@@ -33,6 +34,7 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
     m_currentConnection = new Connection(this);
     connect(m_currentConnection, &Connection::silentReconnectMode, this, //
         [this] { setReconnectMode(ReconnectMode::Silent); });
+    m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
 
     std::visit( // Инициализация контекста для обмена данными
         overloaded {
@@ -59,13 +61,22 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
 
     connect(m_context.m_iface, &BaseInterface::error, //
         this, &ConnectionManager::handleInterfaceErrors, Qt::QueuedConnection);
-    connect(this, &ConnectionManager::reconnectDevice, //
+    connect(m_context.m_executor, &DeviceQueryExecutor::timeout, //
+        this, &ConnectionManager::handleQueryExecutorTimeout);
+    connect(this, &ConnectionManager::reconnectInterface, //
         m_context.m_iface, &BaseInterface::reconnect, Qt::QueuedConnection);
+    connect(this, &ConnectionManager::reconnectInterface, //
+        m_context.m_executor, &DeviceQueryExecutor::reconnectEvent, Qt::QueuedConnection);
     connect(m_context.m_iface, &BaseInterface::reconnected, //
-        this, &ConnectionManager::deviceReconnected, Qt::QueuedConnection);
+        this, &ConnectionManager::interfaceReconnected, Qt::QueuedConnection);
 
+    m_currentConnection->reqBSI();
     if (m_context.run(m_currentConnection))
-        emit connectSuccesfull();
+    {
+        // maybe validate BSI
+        // при реконнекте отключить устройство и подключить другое -> что будет?
+        // modbus same
+    }
     else
         emit connectFailed();
     Connection::setIface(Connection::InterfacePointer { m_currentConnection });
@@ -78,14 +89,14 @@ void ConnectionManager::setReconnectMode(const ReconnectMode newMode) noexcept
 
 void ConnectionManager::reconnect()
 {
-    if (!m_isReconnectEmitted)
+    if (!m_isReconnectOccurred)
     {
-        emit reconnectDevice();
+        emit reconnectInterface();
         if (m_reconnectMode == ReconnectMode::Loud)
             emit reconnectUI();
         else
             m_silentTimer->start();
-        m_isReconnectEmitted = true;
+        m_isReconnectOccurred = true;
     }
 }
 
@@ -103,30 +114,55 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
     case InterfaceError::ReadError:
     case InterfaceError::WriteError:
         ++m_errorCounter;
-        if (m_errorCounter > m_errorMax)
+        if (m_errorCounter > m_errorMax && !m_isReconnectOccurred)
             reconnect();
         break;
-    case InterfaceError::Timeout:
-        ++m_timeoutCounter;
-        if (m_context.m_executor->getLastRequestedCommand() == Commands::C_ReqBSI)
-        {
-            qCritical() << "Превышено время ожидания блока BSI. Disconnect...";
-            breakConnection();
-        }
-        if (m_timeoutCounter > m_timeoutMax)
-            reconnect();
+    default:
+        break;
     }
 }
 
-void ConnectionManager::deviceReconnected()
+void ConnectionManager::handleQueryExecutorTimeout()
+{
+    ++m_timeoutCounter;
+    if (m_context.m_executor->getLastRequestedCommand() == Commands::C_ReqBSI)
+    {
+        qCritical() << "Превышено время ожидания блока BSI. Disconnect...";
+        breakConnection();
+    }
+    if (m_timeoutCounter > m_timeoutMax && !m_isReconnectOccurred)
+        reconnect();
+}
+
+void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
+{
+    // fast checking
+    if (data.sigAdr == Regs::bsiStartReg)
+    {
+        if (m_isInitialBSIRequest)
+        {
+            m_isInitialBSIRequest = false;
+            emit connectSuccesfull();
+        }
+        else if (m_isReconnectOccurred)
+        {
+            m_isReconnectOccurred = false;
+            emit reconnectSuccess(); // Сообщаем, что переподключение прошло успешно
+        }
+        disconnect(m_connBSI);
+    }
+}
+
+void ConnectionManager::interfaceReconnected()
 {
     if (m_reconnectMode == ReconnectMode::Silent)
         m_silentTimer->stop();
     setReconnectMode(ReconnectMode::Loud);
     m_errorCounter = 0;
     m_timeoutCounter = 0;
-    m_isReconnectEmitted = false;
-    emit reconnectSuccess(); // Сообщаем, что переподключение прошло успешно
+    m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
+    m_context.m_executor->run();
+    m_currentConnection->reqBSI();
 }
 
 } // namespace Interface

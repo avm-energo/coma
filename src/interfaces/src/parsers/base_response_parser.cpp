@@ -25,6 +25,11 @@ void BaseResponseParser::accumulateToResponseBuffer(const QByteArray &responsePa
     m_responseBuffer.append(responsePart);
 }
 
+const QByteArray &BaseResponseParser::getResponseBuffer() const noexcept
+{
+    return m_responseBuffer;
+}
+
 void BaseResponseParser::clearResponseBuffer() noexcept
 {
     m_responseBuffer.clear();

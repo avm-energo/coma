@@ -94,6 +94,8 @@ public slots:
     void receiveDataFromInterface(const QByteArray &response);
     /// \brief Слот для отмены текущего запроса.
     void cancelQuery();
+    /// \brief Слот, вызываемый при переподключении текущего интерфейса.
+    void reconnectEvent();
 
 signals:
     /// \brief Сигнал для уведомления об изменении состояния исполнителя запросов.

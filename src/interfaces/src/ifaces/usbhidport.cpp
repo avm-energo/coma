@@ -22,6 +22,7 @@ bool UsbHidPort::connect()
         m_settings.serial.toStdWString().c_str());
     if (!m_hidDevice)
     {
+        emit error(InterfaceError::OpenError);
         // Выводим ошибки только при первом подключении,
         // при реконнекте не логгируем эти события
         if (getState() == Interface::State::Connect)
@@ -119,17 +120,9 @@ bool UsbHidPort::writeDataToPort(QByteArray &command)
     return true;
 }
 
-bool UsbHidPort::tryToReconnect()
-{
-    disconnect();       // Закрываем текущее соединение
-    StdFunc::Wait(100); // Интервал между закрытием подключения и попыткой переподключиться
-    return connect();   // Пытаемся подключиться к устройству заново
-}
-
 void UsbHidPort::hidErrorHandle()
 {
     auto errString = "HID API Error: " + QString::fromStdWString(hid_error(m_hidDevice));
-    // qCritical() << errString;
     writeLog(errString.toLocal8Bit());
 }
 

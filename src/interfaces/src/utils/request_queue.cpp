@@ -6,7 +6,13 @@ namespace Interface
 
 RequestQueue::RequestQueue() noexcept = default;
 
-void RequestQueue::addToQueue(CommandStruct &&request)
+RequestQueue::~RequestQueue() noexcept
+{
+    m_requests.push({});
+    m_cvQueueEmpty.notify_all();
+}
+
+void RequestQueue::addToQueue(CommandStruct &&request) noexcept
 {
     if (isActive())
     {
@@ -16,7 +22,7 @@ void RequestQueue::addToQueue(CommandStruct &&request)
     }
 }
 
-std::optional<CommandStruct> RequestQueue::getFromQueue()
+std::optional<CommandStruct> RequestQueue::getFromQueue() noexcept
 {
     std::lock_guard<std::mutex> locker { m_queueAccess };
     if (!m_requests.empty())
@@ -26,6 +32,13 @@ std::optional<CommandStruct> RequestQueue::getFromQueue()
         return retVal;
     }
     return std::nullopt;
+}
+
+void RequestQueue::clear() noexcept
+{
+    std::lock_guard<std::mutex> locker { m_queueAccess };
+    std::queue<CommandStruct> empty;
+    m_requests.swap(empty);
 }
 
 void RequestQueue::waitFillingQueue() noexcept

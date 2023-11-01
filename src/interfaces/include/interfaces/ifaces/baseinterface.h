@@ -11,7 +11,7 @@
 
 enum class InterfaceError : quint16
 {
-    Timeout,
+    OpenError,
     ReadError,
     WriteError
 };
@@ -34,6 +34,7 @@ signals:
 
 protected:
     std::atomic<Interface::State> m_state;
+    quint16 m_reconnectInterval;
     LogClass m_log;
     QMutex m_dataGuard;
 
@@ -45,7 +46,6 @@ protected:
 
     virtual QByteArray read(bool *status = nullptr) = 0;
     virtual bool write(const QByteArray &ba) = 0;
-    virtual bool tryToReconnect() = 0;
 
 public slots:
     virtual bool connect() = 0;

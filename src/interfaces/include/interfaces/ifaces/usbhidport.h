@@ -26,6 +26,5 @@ private:
     QByteArray read(bool *status = nullptr) override;
     bool write(const QByteArray &ba) override;
     bool writeDataToPort(QByteArray &command);
-    bool tryToReconnect() override;
     void hidErrorHandle();
 };

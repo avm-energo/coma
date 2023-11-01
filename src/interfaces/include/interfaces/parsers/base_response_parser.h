@@ -43,6 +43,8 @@ public:
     /// \details Применятся для защиты данных от фрагментирования.
     /// \see clearResponseBuffer.
     void accumulateToResponseBuffer(const QByteArray &responsePart) noexcept;
+    /// \brief Функция для возврата сохранённого буфера с ответом от устройства.
+    const QByteArray &getResponseBuffer() const noexcept;
     /// \brief Функция для очистки буффера, содержащего ответ устройства.
     /// \see accumulateToResponseBuffer.
     void clearResponseBuffer() noexcept;

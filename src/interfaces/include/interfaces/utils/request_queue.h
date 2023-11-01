@@ -23,11 +23,14 @@ private:
 public:
     /// \brief Конструктор по умолчанию.
     explicit RequestQueue() noexcept;
+    ~RequestQueue() noexcept;
 
     /// \brief Функция для добавления команды в очередь запросов.
-    void addToQueue(CommandStruct &&request);
+    void addToQueue(CommandStruct &&request) noexcept;
     /// \brief Функция для взятия команды из очереди запросов.
-    std::optional<CommandStruct> getFromQueue();
+    std::optional<CommandStruct> getFromQueue() noexcept;
+    /// \brief Функция для очистки очереди запросов.
+    void clear() noexcept;
 
     /// \brief Функция для ожидания момента, когда в пустую очередь попадёт запрос.
     void waitFillingQueue() noexcept;

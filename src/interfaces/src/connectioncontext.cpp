@@ -31,7 +31,7 @@ void ConnectionContext::init(BaseInterface *iface, DeviceQueryExecutor *executor
             m_iface, &BaseInterface::writeData, connPolicy);
         // Отмена команды
         QObject::connect(m_iface, &BaseInterface::clearQueries, //
-            m_executor, &DeviceQueryExecutor::cancelQuery, connPolicy);
+            m_executor, &DeviceQueryExecutor::cancelQuery, Qt::QueuedConnection);
         // Конец работы
         QObject::connect(m_iface, &BaseInterface::finished, m_executor, &DeviceQueryExecutor::finished, connPolicy);
 
