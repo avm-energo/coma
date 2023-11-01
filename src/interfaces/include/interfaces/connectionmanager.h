@@ -40,14 +40,14 @@ private:
 
 public:
     explicit ConnectionManager(QWidget *parent = nullptr);
-    void createConnection(const ConnectStruct &connectionData);
+    bool createConnection(const ConnectStruct &connectionData);
     void setReconnectMode(const ReconnectMode newMode) noexcept;
 
 signals:
     /// \brief Сигнал, который вызывается, если соединение к устройству произошло успешно.
     void connectSuccesfull();
     /// \brief Сигнал, который вызывается, если соединение к устройству провалилось.
-    void connectFailed();
+    void connectFailed(const QString &message);
     /// \brief Сигнал, который вызывается при переподключении к устройству.
     /// \details Данный сигнал передаётся родительскому окну для отрисовки виджета
     /// и информарования пользователя о проблемах связи с устройством.

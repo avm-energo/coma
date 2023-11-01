@@ -86,6 +86,8 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
         s2dataManager.get(), &S2DataManager::parseS2File);
     connect(connectionManager.get(), &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
     connect(connectionManager.get(), &ConnectionManager::connectSuccesfull, this, &Coma::prepare);
+    connect(connectionManager.get(), &ConnectionManager::connectFailed, this, //
+        [this](const QString &errMsg) { EMessageBox::error(this, errMsg); });
 
     // registering center of coma main window for epopup message boxes
     auto pointContainer = new PointContainer(this);
@@ -493,8 +495,8 @@ void Coma::initConnection(const ConnectStruct &st)
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     saveSettings();
-    connectionManager->createConnection(st);
-    initInterfaceConnection();
+    if (connectionManager->createConnection(st))
+        initInterfaceConnection();
     QApplication::restoreOverrideCursor();
 }
 

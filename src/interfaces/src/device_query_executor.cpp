@@ -135,6 +135,7 @@ void DeviceQueryExecutor::exec()
         QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         currentState = getState();
     }
+    emit finished();
 }
 
 void DeviceQueryExecutor::run() noexcept
@@ -152,6 +153,8 @@ void DeviceQueryExecutor::pause() noexcept
 void DeviceQueryExecutor::stop() noexcept
 {
     setState(ExecutorState::Stopping);
+    m_queue.get().activate();
+    m_queue.get().addToQueue({});
 }
 
 const Commands DeviceQueryExecutor::getLastRequestedCommand() const noexcept

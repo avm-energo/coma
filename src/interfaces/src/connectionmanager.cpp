@@ -27,7 +27,7 @@ ConnectionManager::ConnectionManager(QWidget *parent)
     connect(m_silentTimer, &QTimer::timeout, this, [this] { emit reconnectUI(); });
 }
 
-void ConnectionManager::createConnection(const ConnectStruct &connectionData)
+bool ConnectionManager::createConnection(const ConnectStruct &connectionData)
 {
     if (m_currentConnection != nullptr)
         breakConnection();
@@ -73,13 +73,15 @@ void ConnectionManager::createConnection(const ConnectStruct &connectionData)
     m_currentConnection->reqBSI();
     if (m_context.run(m_currentConnection))
     {
-        // maybe validate BSI
-        // при реконнекте отключить устройство и подключить другое -> что будет?
-        // modbus same
+        Connection::setIface(Connection::InterfacePointer { m_currentConnection });
+        return true;
     }
     else
-        emit connectFailed();
-    Connection::setIface(Connection::InterfacePointer { m_currentConnection });
+    {
+        m_currentConnection->deleteLater();
+        m_currentConnection = nullptr;
+        return false;
+    }
 }
 
 void ConnectionManager::setReconnectMode(const ReconnectMode newMode) noexcept
@@ -105,6 +107,7 @@ void ConnectionManager::breakConnection()
     m_context.reset();
     m_currentConnection = nullptr;
     Connection::s_connection.reset();
+    m_isInitialBSIRequest = true;
 }
 
 void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
@@ -117,7 +120,13 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
         if (m_errorCounter > m_errorMax && !m_isReconnectOccurred)
             reconnect();
         break;
-    default:
+    case InterfaceError::OpenError:
+        if (m_isInitialBSIRequest)
+        {
+            QString errMsg("Произошла ошибка открытия интерфейса. Disconnect...");
+            qCritical() << errMsg;
+            emit connectFailed(errMsg);
+        }
         break;
     }
 }
@@ -125,9 +134,11 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
 void ConnectionManager::handleQueryExecutorTimeout()
 {
     ++m_timeoutCounter;
-    if (m_context.m_executor->getLastRequestedCommand() == Commands::C_ReqBSI)
+    if (m_isInitialBSIRequest)
     {
-        qCritical() << "Превышено время ожидания блока BSI. Disconnect...";
+        QString errMsg("Превышено время ожидания блока BSI. Disconnect...");
+        qCritical() << errMsg;
+        emit connectFailed(errMsg);
         breakConnection();
     }
     if (m_timeoutCounter > m_timeoutMax && !m_isReconnectOccurred)
@@ -146,6 +157,8 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
         }
         else if (m_isReconnectOccurred)
         {
+            /// TODO: проверять BSI
+            // при реконнекте отключить устройство и подключить другое -> что будет? (modbus same)
             m_isReconnectOccurred = false;
             emit reconnectSuccess(); // Сообщаем, что переподключение прошло успешно
         }

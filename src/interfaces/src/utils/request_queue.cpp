@@ -6,12 +6,6 @@ namespace Interface
 
 RequestQueue::RequestQueue() noexcept = default;
 
-RequestQueue::~RequestQueue() noexcept
-{
-    m_requests.push({});
-    m_cvQueueEmpty.notify_all();
-}
-
 void RequestQueue::addToQueue(CommandStruct &&request) noexcept
 {
     if (isActive())

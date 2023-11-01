@@ -23,7 +23,6 @@ private:
 public:
     /// \brief Конструктор по умолчанию.
     explicit RequestQueue() noexcept;
-    ~RequestQueue() noexcept;
 
     /// \brief Функция для добавления команды в очередь запросов.
     void addToQueue(CommandStruct &&request) noexcept;
