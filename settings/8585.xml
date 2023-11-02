@@ -461,6 +461,18 @@
         </alarms>
         <config desc="Конфигурация">
             <record>
+                <id>1</id>
+                <defaultValue>85</defaultValue>
+                <count>0</count>
+                <visibility>false</visibility>
+            </record>
+            <record>
+                <id>2</id>
+                <defaultValue>85</defaultValue>
+                <count>0</count>
+                <visibility>false</visibility>
+            </record>
+            <record>
                 <id>3</id>
                 <defaultValue>1</defaultValue>
                 <visibility>true</visibility>
@@ -498,6 +510,11 @@
             <record>
                 <id>10</id>
                 <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>11</id>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -556,11 +573,6 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1165</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
                 <id>1114</id>
                 <defaultValue>2000</defaultValue>
                 <visibility>true</visibility>
@@ -606,16 +618,6 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1172</id>
-                <defaultValue>1.0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1173</id>
-                <defaultValue>1.0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
                 <id>1123</id>
                 <defaultValue>90,210,150</defaultValue>
                 <visibility>true</visibility>
@@ -623,36 +625,6 @@
             <record>
                 <id>1124</id>
                 <defaultValue>90,210,150</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1158</id>
-                <defaultValue>60</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1159</id>
-                <defaultValue>60</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1160</id>
-                <defaultValue>90</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1161</id>
-                <defaultValue>60</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1183</id>
-                <defaultValue>0,0,0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1184</id>
-                <defaultValue>0,0,0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -811,6 +783,36 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1156</id>
+                <defaultValue>32</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1157</id>
+                <defaultValue>20</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1158</id>
+                <defaultValue>60</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1159</id>
+                <defaultValue>60</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1160</id>
+                <defaultValue>90</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1161</id>
+                <defaultValue>60</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1162</id>
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
@@ -823,6 +825,11 @@
             <record>
                 <id>1164</id>
                 <defaultValue>300</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1165</id>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -848,6 +855,16 @@
             <record>
                 <id>1171</id>
                 <defaultValue>34</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1172</id>
+                <defaultValue>1.0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1173</id>
+                <defaultValue>1.0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -883,6 +900,16 @@
             <record>
                 <id>1182</id>
                 <defaultValue>20.0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1183</id>
+                <defaultValue>0,0,0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1184</id>
+                <defaultValue>0,0,0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -933,16 +960,6 @@
             <record>
                 <id>1199</id>
                 <defaultValue>0.4</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1156</id>
-                <defaultValue>32</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1157</id>
-                <defaultValue>20</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -1034,18 +1051,18 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные">
-                <sgroup tab="1" header="Основные">
-                    <mwidget desc="Температура микроконтроллера, °С" view="float">
+                <sgroup header="Основные" tab="1">
+                    <mwidget view="float" desc="Температура микроконтроллера, °С">
                         <start-addr>101</start-addr>
                         <toolTip>Температура микроконтроллера, °С</toolTip>
                     </mwidget>
-                    <mwidget desc="Напряжение батареи, В" view="float">
+                    <mwidget view="float" desc="Напряжение батареи, В">
                         <start-addr>102</start-addr>
                         <toolTip>Напряжение батареи, В</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Параметры вводов">
-                    <mwidget desc="U ф.%1" view="float">
+                <sgroup header="Параметры вводов" tab="1">
+                    <mwidget view="float" desc="U ф.%1">
                         <start-addr>1000</start-addr>
                         <count>3</count>
                         <toolTip>Фазное среднеквадратичное напряжение источника ф.%1</toolTip>
@@ -1055,11 +1072,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="U ср." view="float">
+                    <mwidget view="float" desc="U ср.">
                         <start-addr>1003</start-addr>
                         <toolTip>Среднее по фазам действующее напряжение источника</toolTip>
                     </mwidget>
-                    <mwidget desc="I ф.%1" view="float">
+                    <mwidget view="float" desc="I ф.%1">
                         <start-addr>1004</start-addr>
                         <count>3</count>
                         <toolTip>Фазный среднеквадратичный ток ф.%1</toolTip>
@@ -1069,11 +1086,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="I ср." view="float">
+                    <mwidget view="float" desc="I ср.">
                         <start-addr>1007</start-addr>
                         <toolTip>Средний по фазам действующий ток</toolTip>
                     </mwidget>
-                    <mwidget desc="Uи ф.%1" view="float">
+                    <mwidget view="float" desc="Uи ф.%1">
                         <start-addr>1008</start-addr>
                         <count>3</count>
                         <toolTip>Фазное среднеквадратичное напряжение нагрузки ф.%1</toolTip>
@@ -1083,11 +1100,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="Uи ср." view="float">
+                    <mwidget view="float" desc="Uи ср.">
                         <start-addr>1011</start-addr>
                         <toolTip>Среднее по фазам действующее напряжение нагрузки</toolTip>
                     </mwidget>
-                    <mwidget desc="P ф.%1" view="float">
+                    <mwidget view="float" desc="P ф.%1">
                         <start-addr>1012</start-addr>
                         <count>3</count>
                         <toolTip>Истинная активная мощность фазы %1</toolTip>
@@ -1097,11 +1114,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="P суммарная" view="float">
+                    <mwidget view="float" desc="P суммарная">
                         <start-addr>1015</start-addr>
                         <toolTip>Истинная активная мощность суммарная</toolTip>
                     </mwidget>
-                    <mwidget desc="Q ф.%1" view="float">
+                    <mwidget view="float" desc="Q ф.%1">
                         <start-addr>1016</start-addr>
                         <count>3</count>
                         <toolTip>Реактивная мощность фазы %1</toolTip>
@@ -1111,11 +1128,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="Q суммарная" view="float">
+                    <mwidget view="float" desc="Q суммарная">
                         <start-addr>1019</start-addr>
                         <toolTip>Реактивная мощность суммарная</toolTip>
                     </mwidget>
-                    <mwidget desc="S ф.%1" view="float">
+                    <mwidget view="float" desc="S ф.%1">
                         <start-addr>1020</start-addr>
                         <count>3</count>
                         <toolTip>Полная (кажущаяся) мощность фазы %1</toolTip>
@@ -1125,11 +1142,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="S суммарная" view="float">
+                    <mwidget view="float" desc="S суммарная">
                         <start-addr>1023</start-addr>
                         <toolTip>Полная мощность суммарная</toolTip>
                     </mwidget>
-                    <mwidget desc="cos ф.%1" view="float">
+                    <mwidget view="float" desc="cos ф.%1">
                         <start-addr>1024</start-addr>
                         <count>3</count>
                         <toolTip>Коэффициент мощности фазы %1 (по S и P)</toolTip>
@@ -1139,16 +1156,16 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="cos ср." view="float">
+                    <mwidget view="float" desc="cos ср.">
                         <start-addr>1027</start-addr>
                         <toolTip>Коэффициент мощности средний (по S и P)</toolTip>
                     </mwidget>
-                    <mwidget desc="Частота в сети, Гц" view="float">
+                    <mwidget view="float" desc="Частота в сети, Гц">
                         <start-addr>1028</start-addr>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="2" header="Параметры вводов">
-                    <mwidget desc="Tbo ф.%1" view="float">
+                <sgroup header="Параметры вводов" tab="2">
+                    <mwidget view="float" desc="Tbo ф.%1">
                         <start-addr>1040</start-addr>
                         <count>3</count>
                         <toolTip>Текущее время безоперационного простоя полюса ф.%1 выключателя</toolTip>
@@ -1158,7 +1175,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="Iznos ф.%1" view="float">
+                    <mwidget view="float" desc="Iznos ф.%1">
                         <start-addr>1043</start-addr>
                         <count>3</count>
                         <toolTip>Текущий электрический износ полюса ф.%1</toolTip>
@@ -1168,7 +1185,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="Resurs ф.%1" view="float">
+                    <mwidget view="float" desc="Resurs ф.%1">
                         <start-addr>1046</start-addr>
                         <count>3</count>
                         <toolTip>Остаточный коммутационный ресурс ф.%1</toolTip>
