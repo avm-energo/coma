@@ -6,6 +6,7 @@
 
 #include <QLabel>
 #include <QProgressBar>
+#include <QPushButton>
 #include <QTimer>
 #include <QVBoxLayout>
 
@@ -54,6 +55,11 @@ void ReconnectDialog::setupUI()
     m_progressBar->setMinimum(0);
     m_progressBar->setMaximum(0);
     mainLayout->addWidget(m_progressBar, Qt::AlignCenter);
+
+    m_cancelButton = new QPushButton("Прервать соединение", this);
+    QObject::connect(m_cancelButton, &QPushButton::clicked, this, &ReconnectDialog::reject);
+    mainLayout->addWidget(m_cancelButton, Qt::AlignCenter);
+
     setLayout(mainLayout);
     setMinimumSize(350, 200);
     setAttribute(Qt::WA_DeleteOnClose);
@@ -85,6 +91,7 @@ void ReconnectDialog::reconnectSuccess()
     auto mainLayout = this->layout();
     mainLayout->removeWidget(m_progressIndicator);
     mainLayout->removeWidget(m_progressBar);
+    mainLayout->removeWidget(m_cancelButton);
     m_progressIndicator->stopAnimation();
     m_messageLabel->setText(QString(successMsg).arg(m_seconds));
     mainLayout->addWidget(WDFunc::NewHexagonPB(

@@ -6,6 +6,7 @@ class QLabel;
 class QProgressBar;
 class QProgressIndicator;
 class QTimer;
+class QPushButton;
 
 class ReconnectDialog : public QDialog
 {
@@ -16,6 +17,7 @@ private:
     QLabel *m_messageLabel;
     QProgressBar *m_progressBar;
     QProgressIndicator *m_progressIndicator;
+    QPushButton *m_cancelButton;
     QTimer *m_closeTimer;
 
     void setupUI();

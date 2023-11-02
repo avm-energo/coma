@@ -1,5 +1,6 @@
 #include "widgetfactory.h"
 
+#include "../ctti/type_id.hpp"
 #include "../models/comboboxdelegate.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"

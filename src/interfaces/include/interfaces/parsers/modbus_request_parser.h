@@ -16,7 +16,7 @@ private:
 
     /// \brief Функция для создания PDU (Protocol Data Unit) согласно спецификации Modbus.
     /// \details Может бросать runtime_exception. Использовать с особой осторожностью.
-    QByteArray createPDU(const Modbus::Request &request) const;
+    QByteArray createPDU(const Modbus::Request &request) const noexcept;
     /// \brief Функция для создания ADU (Application Data Unit) согласно спецификации Modbus.
     /// \see createPDU.
     QByteArray createADU(const Modbus::Request &request) const noexcept;
@@ -29,7 +29,7 @@ private:
     /// команда на запись с первой секцией файла, остальные команды сразу преобразуются
     /// в очередь из объектов типа QByteArray для получения с помощью функции getNextDataSection.
     /// \see getNextDataSection.
-    Modbus::Request prepareFileForWriting(const quint16 fileNum, const QByteArray &data) noexcept;
+    QByteArray prepareFileForWriting(const quint16 fileNum, const QByteArray &data) noexcept;
 
     /// \brief Функция для конвертации значений для записи
     /// устройства в формат запроса протокола Modbus.

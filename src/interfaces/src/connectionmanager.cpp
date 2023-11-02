@@ -1,5 +1,6 @@
 #include "interfaces/connectionmanager.h"
 
+#include <QDebug>
 #include <gen/std_ext.h>
 #include <interfaces/ifaces/serialport.h>
 #include <interfaces/ifaces/usbhidport.h>
@@ -93,6 +94,7 @@ void ConnectionManager::reconnect()
 {
     if (!m_isReconnectOccurred)
     {
+        qCritical() << "Произошла ошибка соединения";
         emit reconnectInterface();
         if (m_reconnectMode == ReconnectMode::Loud)
             emit reconnectUI();
@@ -159,6 +161,12 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
         {
             /// TODO: проверять BSI
             // при реконнекте отключить устройство и подключить другое -> что будет? (modbus same)
+            if (m_reconnectMode == ReconnectMode::Silent)
+                m_silentTimer->stop();
+            setReconnectMode(ReconnectMode::Loud);
+            m_errorCounter = 0;
+            m_timeoutCounter = 0;
+            qCritical() << "Соединение восстановлено";
             m_isReconnectOccurred = false;
             emit reconnectSuccess(); // Сообщаем, что переподключение прошло успешно
         }
@@ -168,11 +176,6 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
 
 void ConnectionManager::interfaceReconnected()
 {
-    if (m_reconnectMode == ReconnectMode::Silent)
-        m_silentTimer->stop();
-    setReconnectMode(ReconnectMode::Loud);
-    m_errorCounter = 0;
-    m_timeoutCounter = 0;
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
     m_context.m_executor->run();
     m_currentConnection->reqBSI();
