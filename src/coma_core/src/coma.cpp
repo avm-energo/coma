@@ -234,7 +234,8 @@ void Coma::setupMenubar()
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Конвертация файлов переключений", this, &Coma::loadSwjPackConvertor);
-    menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
+    if (mAppConfig == AppConfiguration::Debug)
+        menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
     menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
     menubar->addMenu(menu);
     setMenuBar(menubar);
