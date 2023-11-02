@@ -114,7 +114,6 @@ void BaseInterface::reconnect()
     if (getState() != Interface::State::Reconnect)
     {
         setState(Interface::State::Reconnect);
-        qCritical() << "Произошла ошибка соединения";
         while (getState() == Interface::State::Reconnect)
         {
 
@@ -127,7 +126,6 @@ void BaseInterface::reconnect()
         if (getState() == Interface::State::Run)
         {
             emit reconnected();
-            qCritical() << "Соединение восстановлено";
         }
     }
 }

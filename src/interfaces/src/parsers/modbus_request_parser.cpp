@@ -85,8 +85,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     {
         auto fileNum = cmd.arg1.value<quint16>();
         auto fileData = cmd.arg2.value<QByteArray>();
-        prepareFileForWriting(fileNum, fileData);
-        break;
+        return prepareFileForWriting(fileNum, fileData);
     }
     // writing registers
     case Commands::C_StartFirmwareUpgrade:
@@ -173,7 +172,7 @@ void ModbusRequestParser::setDeviceAddress(const quint8 deviceAddress) noexcept
     m_deviceAddress = deviceAddress;
 }
 
-QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request) const
+QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request) const noexcept
 {
     quint16 bytesToReceive = 0, temp = 0;
     QByteArray pdu;
@@ -197,10 +196,16 @@ QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request) const
     case Modbus::FunctionCode::WriteMultipleRegisters:
         bytesToReceive = 8; // address (1), function code (1), address (2), quantity (2), crc (2)
         if (request.quantity * 2 != request.data.size())
-            throw std::runtime_error("Incorrect quantity"); // больно стреляем exception по ногам вызывающей стороны
+        {
+            qCritical() << "Incorrect quantity";
+            return QByteArray {};
+        }
         if (request.data.size() == 0)
-            throw std::runtime_error("Incorrect command data"); // ещё раз стреляем, ещё больнее
-        pdu.append(StdFunc::toByteArray(qToBigEndian(request.quantity * 2)));
+        {
+            qCritical() << "Incorrect command data";
+            return QByteArray {};
+        }
+        pdu.append(quint8(request.quantity * 2));
         pdu.append(request.data);
         break;
     // Во время чтения файлов response parser сам определяет размер ответа
@@ -226,17 +231,7 @@ QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request) const
 
 QByteArray ModbusRequestParser::createADU(const Modbus::Request &request) const noexcept
 {
-    QByteArray adu;
-    // Пытаемся не выстрелить себе в ногу
-    /// TODO: Сделать без выстрелов в ногу
-    try
-    {
-        adu = createPDU(request);
-    } catch (const std::exception &e)
-    {
-        qCritical() << e.what();
-        adu.clear();
-    }
+    QByteArray adu = createPDU(request);
     if (!adu.isEmpty())
     {
         adu.prepend(m_deviceAddress);
@@ -256,7 +251,7 @@ Modbus::Request ModbusRequestParser::getNextFileSectionRequest() noexcept
     };
 }
 
-Modbus::Request ModbusRequestParser::prepareFileForWriting(const quint16 fileNum, const QByteArray &data) noexcept
+QByteArray ModbusRequestParser::prepareFileForWriting(const quint16 fileNum, const QByteArray &data) noexcept
 {
     std::deque<Modbus::Request> requestBuffer;
     quint16 section = 0;
@@ -280,19 +275,18 @@ Modbus::Request ModbusRequestParser::prepareFileForWriting(const quint16 fileNum
             break;
     }
     requestBuffer.back().isLastSection = true; // Помечаем последнюю секцию
-    emit totalWritingBytes(m_longDataSections.size() * 10 + data.size());
+    emit totalWritingBytes(requestBuffer.size() * 10 + data.size());
 
-    auto firstSection = requestBuffer.front(); // Первую секцию вытаскиваем из буфера
-    requestBuffer.pop_front();
-    if (!firstSection.isLastSection)
+    // Проверяем первую секцию
+    if (!requestBuffer.front().isLastSection)
         emit writingLongData();
 
-    // Преобразовываем оставшиеся в буфере элементы в готовые команды (формат QByteArray)
-    std::transform(requestBuffer.cbegin(), requestBuffer.cend(), m_longDataSections.begin(), //
+    // Преобразовываем элементы из буфера в готовые команды (формат QByteArray)
+    std::transform(requestBuffer.cbegin(), requestBuffer.cend(), std::back_inserter(m_longDataSections), //
         [this](const Modbus::Request &request) -> QByteArray {
             return createADU(request); //
         });
-    return firstSection;
+    return getNextDataSection();
 }
 
 Modbus::Request ModbusRequestParser::convertUserValuesToRequest(const QVariantList &valuesList) const noexcept

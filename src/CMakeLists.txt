@@ -57,17 +57,6 @@ string(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
 # - https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Getting appdata directory path
-if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
-    # On windows
-    set(APPDATA_STR "$ENV{LOCALAPPDATA}/${PROJECT_NAME}")
-    string(REPLACE "\\" "/" APPDATA ${APPDATA_STR})
-else()
-    # On linux
-    set(APPDATA $ENV{HOME}/.local/share/${PROJECT_NAME})
-endif()
-message(STATUS "Local appdata path: ${APPDATA}")
-
 # Visual Studio compilation flags
 if(MSVC)
   add_compile_options(/permissive-)

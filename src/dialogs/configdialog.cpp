@@ -31,6 +31,8 @@ ConfigDialog::ConfigDialog(S2RequestService &s2service, //
     , m_factory(m_boardConfig.m_workingConfig)
     , m_errConfState(new ErrConfState)
 {
+    // Костыли, костыли never changes...
+    m_boardConfig.m_workingConfig = m_boardConfig.m_defaultConfig;
     connect(&m_datamanager, &S2DataManager::parseStatus, this, &ConfigDialog::parseStatusHandle);
     connect(&m_requestService, &S2RequestService::noConfigurationError, this, &ConfigDialog::noConfigurationHandle);
 }

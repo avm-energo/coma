@@ -30,6 +30,17 @@ if(ENABLE_EMULATOR)
   target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_EMULATOR)
 endif()
 
+# Getting appdata directory path
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+    # On windows
+    set(APPDATA_STR "$ENV{LOCALAPPDATA}/${PROJECT_NAME}")
+    string(REPLACE "\\" "/" APPDATA ${APPDATA_STR})
+else()
+    # On linux
+    set(APPDATA $ENV{HOME}/.local/share/${PROJECT_NAME})
+endif()
+message(STATUS "Local appdata path: ${APPDATA}")
+
 # Copy settings one time at first build
 set(DBG_CHECK_PATH "${CMAKE_CURRENT_BINARY_DIR}/check.txt")
 if(NOT EXISTS ${DBG_CHECK_PATH})
