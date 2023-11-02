@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="00" mtypeb="33">
+<module mtypeb="33" mtypem="00">
     <name>AVTUK-3300</name>
     <version>3.7-0000</version>
     <resources>
@@ -8,32 +8,7 @@
             <warning desc="Предупреждения"/>
             <info desc="Информационные"/>
         </alarms>
-        <config desc="Конфигурация">
-            <record>
-                <id>10</id>
-                <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>11</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>205</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>211</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>212</id>
-                <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-            </record>
+        <config desc="Конфигурация базовая">
             <record>
                 <id>3</id>
                 <defaultValue>4</defaultValue>
@@ -67,6 +42,31 @@
             <record>
                 <id>9</id>
                 <defaultValue>12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>10</id>
+                <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>11</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>205</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>211</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>212</id>
+                <defaultValue>2</defaultValue>
                 <visibility>true</visibility>
             </record>
         </config>
@@ -129,15 +129,15 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные базовая">
-                <sgroup tab="1" header="Общие">
-                    <mwidget view="float" desc="Температура микроконтроллера, °С">
+                <sgroup header="Общие" tab="1">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
                         <start-addr>101</start-addr>
                     </mwidget>
-                    <mwidget view="float" desc="Напряжение на батарейке, В">
+                    <mwidget desc="Напряжение на батарейке, В" view="float">
                         <start-addr>102</start-addr>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Текущее состояние входов">
+                <sgroup header="Текущее состояние входов" tab="1">
                     <mwidget desc="" view="bitset">
                         <start-addr>3001</start-addr>
                         <count>30</count>

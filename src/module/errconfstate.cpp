@@ -6,7 +6,7 @@
 #include <QLabel>
 #include <vector>
 
-ErrConfState::ErrConfState(QWidget *parent) : UWidget(parent), requestTimer(new QTimer(this))
+ErrConfState::ErrConfState(QWidget *parent) : UWidget(parent), m_requestTimer(new QTimer(this))
 {
     setupUI();
     configureRequest();
@@ -51,9 +51,9 @@ void ErrConfState::configureRequest()
     engine()->setUpdatesEnabled(false);
     // TODO: Get from signals (config data storage)...
     engine()->addBs({ errConfAddr, errConfSize });
-    requestTimer->setInterval(requestInterval);
-    connect(requestTimer.get(), &QTimer::timeout, this, &ErrConfState::reqUpdate);
-    requestTimer->start();
+    m_requestTimer->setInterval(requestInterval);
+    connect(m_requestTimer.get(), &QTimer::timeout, this, &ErrConfState::reqUpdate);
+    m_requestTimer->start();
 }
 
 void ErrConfState::updateBitStringData(const DataTypes::BitStringStruct &bs)

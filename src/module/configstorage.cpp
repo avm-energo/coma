@@ -3,23 +3,20 @@
 #include "../interfaces/baseinterface.h"
 #include "../interfaces/interfacesettings.h"
 
-ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent), mSettings(new ModuleSettings)
+ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent)
 {
 }
 
-/// \brief Constant getter for module settings.
 const ModuleSettings &ConfigStorage::getModuleSettings() const
 {
-    return *mSettings;
+    return m_settings;
 }
 
-/// \brief Cleaning module settings.
 void ConfigStorage::clearModuleSettings()
 {
-    mSettings->clear();
+    m_settings.clear();
 }
 
-/// \brief Slot for saving module's signal record.
 void ConfigStorage::signalDataReceive(const quint32 id, const quint32 addr, //
     const quint16 count, const ModuleTypes::SignalType sigType)
 {
@@ -30,10 +27,9 @@ void ConfigStorage::signalDataReceive(const quint32 id, const quint32 addr, //
     else if (count == 0)
         qWarning() << "Invalid signal count, signal id: " << id;
     else
-        mSettings->appendSignal(id, { addr, count, sigType });
+        m_settings.appendSignal(id, { addr, count, sigType });
 }
 
-/// \brief Slot for saving check's tab record.
 void ConfigStorage::tabDataReceive(const quint32 id, const QString &name)
 {
     if (id == 0)
@@ -41,40 +37,35 @@ void ConfigStorage::tabDataReceive(const quint32 id, const QString &name)
     else if (name == "")
         qWarning() << "Empty tab name, tab id: " << id;
     else
-        mSettings->appendTab(id, name);
+        m_settings.appendTab(id, name);
 }
 
-/// \brief Slot for saving check's section record.
 void ConfigStorage::sectionDataReceive(const ModuleTypes::SGMap &sgmap, const QString &secHead)
 {
-    mSettings->appendSection({ secHead, sgmap });
+    m_settings.appendSection({ secHead, sgmap });
 }
 
-/// \brief Slot for saving module's alarm record.
 void ConfigStorage::alarmDataReceive(const Modules::AlarmType aType, const quint32 addr, //
     const QString &desc, const QList<quint32> &highlights)
 {
-    mSettings->appendAlarm(aType, addr, desc);
-    mSettings->appendHighlight(aType, addr, highlights);
+    m_settings.appendAlarm(aType, addr, desc);
+    m_settings.appendHighlight(aType, addr, highlights);
 }
 
-/// \brief Slot for saving module a work journal's record.
 void ConfigStorage::workJourDataReceive(const quint32 id, const QString &desc)
 {
-    mSettings->appendWorkJournal(id, desc);
+    m_settings.appendWorkJournal(id, desc);
 }
 
-/// \brief Slot for saving module a measurement journal's record.
 void ConfigStorage::measJourDataReceive(const quint32 index, const QString &header, //
     const ModuleTypes::BinaryType type, bool visib)
 {
-    mSettings->appendMeasJournal(index, header, type, visib);
+    m_settings.appendMeasJournal(index, header, type, visib);
 }
 
-/// \brief Slot for saving module's protocol groups
 void ConfigStorage::protocolDescriptionReceived(const parseXChangeStruct &str)
 {
-    auto &sigMap = getModuleSettings().getSignals();
+    auto &sigMap = m_settings.getSignals();
     if (sigMap.contains(str.sigId))
     {
         auto signal = sigMap.value(str.sigId);

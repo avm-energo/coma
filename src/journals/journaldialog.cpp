@@ -34,7 +34,7 @@ void JournalDialog::createJournals(const ModuleSettings &settings)
         auto workJourTab = new JournalTabWidget(workJour, this);
         journals.insert({ workJour->getType(), workJourTab });
     }
-    if (!settings.getMeasJours().isEmpty())
+    if (!settings.getMeasJours().empty())
     {
         auto measJour = new MeasJournal(settings.getMeasJours(), this);
         auto measJourTab = new JournalTabWidget(measJour, this);

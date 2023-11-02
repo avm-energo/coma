@@ -145,31 +145,40 @@ QByteArray Configuration::toByteArray() const
     return m_util.convert(*this, std_ext::to_underlying(FilesEnum::Config));
 }
 
-bool Configuration::updateByRawData(const QByteArray &rawData)
+// bool Configuration::updateByRawData(const QByteArray &rawData)
+//{
+//    std::map<quint32, DataItem> dataFromFile;
+//    auto result = m_util.convert(rawData, m_factory, dataFromFile);
+//    switch (result)
+//    {
+//    case Error::Msg::NoError:
+//        m_data = dataFromFile;
+//        return true;
+//    case Error::Msg::HeaderSizeError:
+//        qWarning() << "Размер файла меньше установленного размера заголовка.";
+//        break;
+//    case Error::Msg::WrongFileError:
+//        qWarning() << "Передан файл, не являющийся конфигурацией.";
+//        break;
+//    case Error::Msg::SizeError:
+//        qWarning() << "Ошибка размера: выход за границу принятых байт.";
+//        break;
+//    case Error::Msg::CrcError:
+//        qWarning() << "Получена некорректная контрольная сумма.";
+//        break;
+//    default:
+//        break;
+//    }
+//    return false;
+//}
+
+void Configuration::merge(const Configuration &rhs)
 {
-    std::map<quint32, DataItem> dataFromFile;
-    auto result = m_util.convert(rawData, m_factory, dataFromFile);
-    switch (result)
-    {
-    case Error::Msg::NoError:
-        m_data = dataFromFile;
-        return true;
-    case Error::Msg::HeaderSizeError:
-        qWarning() << "Размер файла меньше установленного размера заголовка.";
-        break;
-    case Error::Msg::WrongFileError:
-        qWarning() << "Передан файл, не являющийся конфигурацией.";
-        break;
-    case Error::Msg::SizeError:
-        qWarning() << "Ошибка размера: выход за границу принятых байт.";
-        break;
-    case Error::Msg::CrcError:
-        qWarning() << "Получена некорректная контрольная сумма.";
-        break;
-    default:
-        break;
-    }
-    return false;
+    // Copying data from rhs container
+    auto rhs_data_copy { rhs.m_data };
+    // Extract nodes from rhs_data_copy
+    // and merge them to current container
+    m_data.merge(rhs_data_copy);
 }
 
 std::vector<quint32> Configuration::checkDiff(const Configuration &rhs) const

@@ -2,6 +2,7 @@
 
 #include "../module/errconfstate.h"
 #include "../module/modules.h"
+#include "../module/s2requestservice.h"
 #include "../s2/s2datamanager.h"
 #include "../widgets/udialog.h"
 #include "../widgets/widgetfactory.h"
@@ -14,20 +15,22 @@ class QTabWidget;
 class ConfigDialog : public UDialog
 {
 public:
-    explicit ConfigDialog(S2BoardConfig &boardConf, bool prereadConf = true, QWidget *parent = nullptr);
-    void prereadConfig();
+    explicit ConfigDialog(S2RequestService &s2service, S2DataManager &s2manager, //
+        const S2BoardType boardType, QWidget *parent = nullptr);
     void setDefaultConfig();
+
+private slots:
+    void parseStatusHandle(const Error::Msg status);
+    void noConfigurationHandle();
+    void fillBack();
 
 private:
     QWidget *ConfButtons();
-
     quint32 tabForId(quint16 id);
     void createTabs(QTabWidget *tabWidget);
     void setupUI();
 
     void fill();
-    void fillBack() const;
-
     bool prepareConfigToWrite();
     void uponInterfaceSetting() override;
     void checkConfig();
@@ -37,14 +40,12 @@ private:
     void writeConfig();
     void checkForDiff();
     bool isVisible(const quint16 id) const;
-    void configReceived(const QByteArray &rawData);
-
     void showConfigErrState();
 
-    S2BoardConfig &boardConfig;
-    bool m_prereadConf;
-    WidgetFactory factory;
-    UniquePointer<DataTypesProxy> proxyDRL;
-    ErrConfState *errConfState;
-    QStringList CheckConfErrors;
+    S2RequestService &m_requestService;
+    S2DataManager &m_datamanager;
+    S2BoardConfig &m_boardConfig;
+    WidgetFactory m_factory;
+    ErrConfState *m_errConfState;
+    QStringList m_confErrors;
 };

@@ -59,10 +59,15 @@ bool UsbHidPort::connect()
     }
     else
     {
-        hid_set_nonblocking(m_hidDevice, 1);
-        setState(State::Run);
-        qInfo("HID opened successfully");
-        return true;
+        if (getState() != Interface::State::Disconnect)
+        {
+            hid_set_nonblocking(m_hidDevice, 1);
+            setState(State::Run);
+            qInfo("HID opened successfully");
+            return true;
+        }
+        else
+            return false;
     }
 }
 

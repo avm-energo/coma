@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="34" mtypeb="00">
+<module mtypeb="00" mtypem="34">
     <name>AVTUK-0034</name>
     <resources>
         <alarms desc="Сигнализация">
@@ -7,7 +7,7 @@
             <warning desc="Предупреждения"/>
             <info desc="Информационные"/>
         </alarms>
-        <config desc="Конфигурация">
+        <config desc="Конфигурация мезонин">
             <record>
                 <id>421</id>
                 <defaultValue>0</defaultValue>

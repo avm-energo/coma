@@ -267,6 +267,11 @@ void BaseInterface::close()
     DataManager::GetInstance().clearQueue();
     if (ifacePort)
         ifacePort->closeConnection();
+    setState(State::Disconnect);
+    // TODO: dummy solution, maybe better to get signals from working threads
+    StdFunc::Wait(100);
+    disconnect();
+    m_iface.reset();
 }
 
 // ===============================================================================

@@ -4,6 +4,7 @@
 #include "../dialogs/dialogmanager.h"
 #include "../interfaces/settingstypes.h"
 #include "../module/module.h"
+#include "../module/s2requestservice.h"
 #include "../oscillograms/oscmanager.h"
 #include "../s2/s2datamanager.h"
 #include "../xml/xmleditor/xmleditor.h"
@@ -37,7 +38,6 @@ public:
     QWidget *least();
     void disconnect();
     void setupConnection();
-    //    static QPoint ComaPos();
     static QPoint ComaCenter();
 
 public slots:
@@ -63,6 +63,7 @@ private slots:
 private:
     UniquePointer<Module> module;
     UniquePointer<S2DataManager> s2dataManager;
+    UniquePointer<S2RequestService> s2requestService;
 
     QTimer *BdaTimer, *AlrmTimer;
     AlarmWidget *AlarmW;
@@ -83,7 +84,6 @@ private:
     void setProgressBarCount(int prbnum, int count);
     void newTimers();
     void setupUI();
-    void setupConnections();
     void prepare();
     QToolBar *createToolBar();
     void keyPressEvent(QKeyEvent *event) override;

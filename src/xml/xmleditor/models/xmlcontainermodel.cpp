@@ -10,14 +10,18 @@ XmlContainerModel::XmlContainerModel(int rows, int cols, ModelType type, QObject
 /// \brief Returns name of XML DOM node in dependency of model type.
 QString XmlContainerModel::getModelTagName() const
 {
-    static const QHash<ModelType, QString> tagByModelType = {
+    static const std::map<ModelType, QString> tagByModelType = {
         { ModelType::Resources, tags::res },     //
         { ModelType::Alarms, tags::alarms },     //
         { ModelType::Journals, tags::journals }, //
         { ModelType::Sections, tags::sections }, //
         { ModelType::Section, tags::section }    //
     };
-    return tagByModelType.value(mType, "undefined");
+    auto search = tagByModelType.find(mType);
+    if (search != tagByModelType.cend())
+        return search->second;
+    else
+        return "undefined";
 }
 
 /// \brief Parsing input XML nodes of file in model items.
@@ -102,11 +106,48 @@ QDomElement XmlContainerModel::toNode(QDomDocument &doc)
                 }
                 // Для узлов <resources>, <alarms> и <journals>
                 else
+                {
                     // Добавляем описание (атрибут desc)
                     setAttribute(doc, childNode, tags::desc, data(index(row, 1)));
+                }
                 node.appendChild(childNode);
             }
         }
     }
     return node;
+}
+
+/// \brief Slot for receiving a request from dialog and emits signal with response.
+/// \details Override needed for XmlResourceModel.
+void XmlContainerModel::getDialogRequest(const int row)
+{
+    if (row >= 0 && row < rowCount())
+    {
+        if (mType == ModelType::Resources)
+        {
+            QStringList response;
+            auto desc = data(index(row, 1));
+            if (desc.isValid() && desc.canConvert<QString>())
+                response.append(desc.value<QString>());
+            emit sendDialogResponse(response);
+        }
+        else
+            XmlModel::getDialogRequest(row);
+    }
+}
+
+/// \brief Slot for updating an item's data in the model.
+/// \details Override needed for XmlResourceModel.
+void XmlContainerModel::update(const QStringList &saved, const int row)
+{
+    if (row >= 0 && row < rowCount())
+    {
+        if (mType == ModelType::Resources)
+        {
+            setData(index(row, 1), saved[0]);
+            emit modelChanged();
+        }
+        else
+            XmlModel::update(saved, row);
+    }
 }

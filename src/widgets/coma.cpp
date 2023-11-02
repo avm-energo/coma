@@ -94,14 +94,22 @@ QPoint Coma::s_comaCenter = QPoint(0, 0);
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
     , s2dataManager(new S2DataManager(this))
-    , proxyBS(new DataTypesProxy)
-    , proxyGRS(new DataTypesProxy)
+    , s2requestService(new S2RequestService(this))
+    , proxyBS(new DataTypesProxy(this))
+    , proxyGRS(new DataTypesProxy(this))
     , editor(nullptr)
     , mAppConfig(appCfg)
-    , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), *s2dataManager, this))
+    , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), //
+          *s2dataManager, *s2requestService, this))
 {
     proxyBS->RegisterType<DataTypes::BitStringStruct>();
     proxyGRS->RegisterType<DataTypes::GeneralResponseStruct>();
+    connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &Coma::update);
+    // connections
+    QObject::connect(                                        //
+        s2requestService.get(), &S2RequestService::response, //
+        s2dataManager.get(), &S2DataManager::parseS2File     //
+    );
 }
 
 Coma::~Coma()
@@ -196,6 +204,8 @@ void Coma::prepareDialogs()
     }
     AlarmW->configure();
     mDlgManager->setupUI(mAppConfig, size());
+    // Запрашиваем s2 конфигурацию от модуля
+    s2requestService->request(S2::FilesEnum::Config, true);
     connect(BdaTimer, &QTimer::timeout, mDlgManager.get(), &DialogManager::reqUpdate);
 }
 
@@ -260,7 +270,7 @@ void Coma::prepareConnectDlg()
     }
     if (!Reconnect)
     {
-        QEventLoop loop;
+        // QEventLoop loop;
         auto dlg = new ConnectDialog(this);
         connect(dlg, &ConnectDialog::accepted, this, [=](const ConnectStruct st) {
             dlg->close();
@@ -298,13 +308,13 @@ void Coma::initInterfaceConnection()
         break;
 #endif
     case Board::InterfaceType::USB:
-        device.reset(new Protocom());
+        device.reset(new Protocom(this));
         break;
     case Board::InterfaceType::Ethernet:
-        device.reset(new IEC104());
+        device.reset(new IEC104(this));
         break;
     case Board::InterfaceType::RS485:
-        device.reset(new ModBus());
+        device.reset(new ModBus(this));
         break;
     default:
         qFatal("Connection type error");
@@ -425,18 +435,12 @@ void Coma::newTimers()
     AlrmTimer->start();
 }
 
-void Coma::setupConnections()
-{
-    connect(proxyGRS.get(), &DataTypesProxy::DataStorable, this, &Coma::update);
-}
-
 void Coma::prepare()
 {
     auto const &board = Board::GetInstance();
     EMessageBox::information(this, "Установлена связь с " + board.moduleName());
     Reconnect = true;
     prepareDialogs();
-    setupConnections();
 
     // нет конфигурации
     if (board.noConfig())
@@ -516,7 +520,7 @@ void Coma::go()
 
 void Coma::connectSB()
 {
-    const QMap<Board::InterfaceType, QString> images {
+    static const QMap<Board::InterfaceType, QString> images {
         { Board::InterfaceType::USB, ":/icons/usb.svg" },           //
         { Board::InterfaceType::RS485, ":/icons/rs485.svg" },       //
         { Board::InterfaceType::Ethernet, ":/icons/ethernet.svg" }, //
@@ -524,44 +528,34 @@ void Coma::connectSB()
     };
 
     auto msgModel = this->findChild<QLabel *>("Model");
-    if (msgModel != nullptr)
+    auto msgConnectionState = this->findChild<QLabel *>("ConnectionState");
+    auto msgConnectionType = this->findChild<QLabel *>("ConnectionType");
+    auto msgConnectionImage = this->findChild<QLabel *>("ConnectionImage");
+    if (msgModel && msgConnectionState && msgConnectionType && msgConnectionImage)
     {
-        auto msgConnectionState = this->findChild<QLabel *>("ConnectionState");
-        if (msgConnectionState != nullptr)
-        {
-            auto msgConnectionType = this->findChild<QLabel *>("ConnectionType");
-            if (msgConnectionType != nullptr)
-            {
-                auto msgConnectionImage = this->findChild<QLabel *>("ConnectionImage");
-                if (msgModel != nullptr)
-                {
-                    int height = this->statusBar()->height() - this->statusBar()->layout()->contentsMargins().bottom();
-                    auto board = &Board::GetInstance();
-                    QObject::connect(board, qOverload<>(&Board::typeChanged), msgModel,
-                        [=]() { msgModel->setText(board->moduleName()); });
-
-                    QObject::connect(
-                        board, &Board::connectionStateChanged, msgConnectionState,
-                        [=](Board::ConnectionState state) {
-                            QString connState = QVariant::fromValue(Board::ConnectionState(state)).toString();
-                            msgConnectionState->setText(connState);
-                            msgConnectionState->setForegroundRole(QPalette::Highlight);
-                            msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
-                        },
-                        Qt::QueuedConnection);
-                    QObject::connect(board, &Board::interfaceTypeChanged, msgConnectionType,
-                        [=](const Board::InterfaceType &interfaceType) {
-                            QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
-                            msgConnectionType->setText(connName);
-                        });
-                    QObject::connect(board, &Board::interfaceTypeChanged, msgConnectionImage,
-                        [=](const Board::InterfaceType &interfaceType) {
-                            QPixmap pixmap = QIcon(QString(images.value(interfaceType))).pixmap(QSize(height, height));
-                            msgConnectionImage->setPixmap(pixmap);
-                        });
-                }
-            }
-        }
+        int height = this->statusBar()->height() - this->statusBar()->layout()->contentsMargins().bottom();
+        auto board = &Board::GetInstance();
+        QObject::connect(board, qOverload<>(&Board::typeChanged), msgModel, //
+            [=]() { msgModel->setText(board->moduleName()); });
+        QObject::connect(
+            board, &Board::connectionStateChanged, msgConnectionState,
+            [=](Board::ConnectionState state) {
+                QString connState = QVariant::fromValue(Board::ConnectionState(state)).toString();
+                msgConnectionState->setText(connState);
+                msgConnectionState->setForegroundRole(QPalette::Highlight);
+                msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
+            },
+            Qt::QueuedConnection);
+        QObject::connect(board, &Board::interfaceTypeChanged, msgConnectionType, //
+            [=](const Board::InterfaceType &interfaceType) {
+                QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
+                msgConnectionType->setText(connName);
+            });
+        QObject::connect(
+            board, &Board::interfaceTypeChanged, msgConnectionImage, [=](const Board::InterfaceType &interfaceType) {
+                QPixmap pixmap = QIcon(QString(images.value(interfaceType))).pixmap(QSize(height, height));
+                msgConnectionImage->setPixmap(pixmap);
+            });
     }
 }
 
@@ -636,7 +630,6 @@ void Coma::disconnect()
     qInfo(__PRETTY_FUNCTION__);
     BdaTimer->stop();
     AlarmW->clear();
-    BaseInterface::iface()->disconnect();
 
     //     emit StopCommunications();
     // while (ActiveThreads) // wait for all threads to finish
@@ -709,7 +702,6 @@ void Coma::disconnectAndClear()
     {
         disconnect();
         mDlgManager->clearDialogs();
-
         ConfigStorage::GetInstance().clearModuleSettings();
         s2dataManager->clear();
         Board::GetInstance().reset();

@@ -18,13 +18,17 @@
 #include "switchjournaldialog.h"
 #include "timedialog.h"
 
-DialogCreator::DialogCreator(const ModuleSettings &settings, //
-    const Board &board, S2DataManager &s2DataManager, QWidget *parent)
-    : QObject(parent), settings(settings), board(board), s2manager(s2DataManager), mParent(parent)
+DialogCreator::DialogCreator(const ModuleSettings &settings, const Board &board, //
+    S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent)
+    : QObject(parent)
+    , m_settings(settings)
+    , m_board(board)
+    , m_s2manager(s2DataManager)
+    , m_s2service(s2ReqService)
+    , m_parent(parent)
 {
 }
 
-/// \brief Creating a list of dialogs based on module settings for a current connected module.
 void DialogCreator::createDialogs(const AppConfiguration appCfg)
 {
     deleteDialogs();
@@ -35,80 +39,71 @@ void DialogCreator::createDialogs(const AppConfiguration appCfg)
     createCommonDialogs(appCfg);
 }
 
-/// \brief Adding the created dialog to the list for saving.
 void DialogCreator::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
 {
-    dlg->setObjectName(name);
-    dlg->setCaption(caption);
-    mDialogs.append(dlg);
+    constexpr auto defCaption = "Мы забыли название :(";
+    if (!name.isEmpty())
+        dlg->setObjectName(name);
+    if (caption.isEmpty())
+        dlg->setCaption(defCaption);
+    else
+        dlg->setCaption(caption);
+    m_dialogs.append(dlg);
 }
 
-/// \brief Removing all dialogs in the dialog list.
 void DialogCreator::deleteDialogs()
 {
-    while (!mDialogs.isEmpty())
+    while (!m_dialogs.isEmpty())
     {
-        auto dialog = mDialogs.takeFirst();
+        auto dialog = m_dialogs.takeFirst();
         dialog->deleteLater();
     }
 }
 
-/// \brief Returns list with dialogs.
 QList<UDialog *> &DialogCreator::getDialogs()
 {
-    return mDialogs;
+    return m_dialogs;
 }
 
-/// \brief Returns true if module in box, otherwise false.
 bool DialogCreator::isBoxModule(const quint16 &type) const
 {
     return (type == Modules::Model::KDV || type == Modules::Model::KTF || type == Modules::Model::KIV);
 }
 
-/// \brief Creating config dialogs.
 void DialogCreator::createConfigDialogs()
 {
-    if (s2manager.isOneBoard())
+    for (const auto &[boardType, boardConf] : m_s2manager)
     {
-        auto confDialog = new ConfigDialog(s2manager.getCurrentConfiguration(), true, mParent);
-        addDialogToList(confDialog, "Конфигурация", "conf");
-    }
-    else
-    {
-        for (auto &iter : s2manager)
-        {
-            const auto key = iter.first;
-            QString indexStr = (iter.first == S2::BoardConfig::Base) ? "база" : "мезонин";
-            auto confDialog = new ConfigDialog(iter.second, true, mParent);
-            addDialogToList(confDialog, "Конфигурация " + indexStr, "conf" + QString::number(int(key)));
-        }
+        auto confDialog = new ConfigDialog(m_s2service, m_s2manager, boardType, m_parent);
+        const auto &confDialogCaption = boardConf.m_tabName;
+        const auto confDialogName = "conf" + QString::number(static_cast<int>(boardType));
+        addDialogToList(confDialog, confDialogCaption, confDialogName);
     }
 }
 
-/// \brief Creating check dialogs.
 void DialogCreator::createCheckDialogs()
 {
-    auto &sections = settings.getSections();
+    auto &sections = m_settings.getSections();
     auto index = 0;
     for (auto &section : sections)
     {
         auto indexStr = QString::number(index);
-        auto checkDialog = new CheckDialog(section, mParent);
-        checkDialog->setHighlights(Modules::AlarmType::Critical, settings.getHighlights(Modules::AlarmType::Critical));
-        checkDialog->setHighlights(Modules::AlarmType::Warning, settings.getHighlights(Modules::AlarmType::Warning));
+        auto checkDialog = new CheckDialog(section, m_parent);
+        checkDialog->setHighlights(
+            Modules::AlarmType::Critical, m_settings.getHighlights(Modules::AlarmType::Critical));
+        checkDialog->setHighlights(Modules::AlarmType::Warning, m_settings.getHighlights(Modules::AlarmType::Warning));
         addDialogToList(checkDialog, section.name, "check" + indexStr);
         index++;
     }
 }
 
-/// \brief Creating tune dialogs for KIV, KTF and KDV.
 void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
 {
-    auto &workConfig = s2manager.getCurrentConfiguration().m_workingConfig;
+    auto &workConfig = m_s2manager.getCurrentConfiguration().m_workingConfig;
     if (boxModel == Modules::Model::KIV)
     {
-        // TODO: Реанимировать регулировку для КИВ, временно не работает :(
-        addDialogToList(new TuneKIVDialog(workConfig, mParent), "Регулировка", "tune");
+        // AVM-KIV tune status: currently working
+        addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
     }
     else
     {
@@ -116,40 +111,37 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
     }
 }
 
-/// \brief Creating journal dialog.
 void DialogCreator::createJournalDialog()
 {
     using namespace journals;
     // TODO: Только для USB
     // Делаем проверку и создаём диалог для журналов
     // if (board.interfaceType() != Board::InterfaceType::RS485)
-    addDialogToList(new JournalDialog(settings, mParent), "Журналы", "jours");
+    addDialogToList(new JournalDialog(m_settings, m_parent), "Журналы", "jours");
 }
 
-/// \brief Creating startup dialog for KIV, KTF and KDV.
 void DialogCreator::createStartupDialog(const Modules::Model boxModel)
 {
     if (boxModel == Modules::Model::KIV)
-        addDialogToList(new StartupKIVDialog(mParent), "Начальные\nзначения", "startup");
+        addDialogToList(new StartupKIVDialog(m_parent), "Начальные\nзначения", "startup");
     else if (boxModel == Modules::Model::KTF)
-        addDialogToList(new StartupKTFDialog(mParent), "Начальные\nзначения", "startup");
+        addDialogToList(new StartupKTFDialog(m_parent), "Начальные\nзначения", "startup");
     else if (boxModel == Modules::Model::KDV)
-        addDialogToList(new StartupKDVDialog(mParent), "Начальные\nзначения", "startup");
+        addDialogToList(new StartupKDVDialog(m_parent), "Начальные\nзначения", "startup");
 }
 
-/// \brief Creating tune dialogs for two-part modules.
 void DialogCreator::createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem)
 {
     using namespace Modules;
-    auto &workConfig = s2manager.getCurrentConfiguration().m_workingConfig;
     if (typeb == BaseBoard::MTB_80)
     {
+        auto &workConfig = m_s2manager.getCurrentConfiguration().m_workingConfig;
         if ((typem == MezzanineBoard::MTM_81) || (typem == MezzanineBoard::MTM_82) || (typem == MezzanineBoard::MTM_83))
-            addDialogToList(new Tune82Dialog(workConfig, typem, mParent), "Регулировка", "tune");
+            addDialogToList(new Tune82Dialog(workConfig, typem, m_parent), "Регулировка", "tune");
         else if (typem == MezzanineBoard::MTM_84)
         {
-            addDialogToList(new TuneKIVDialog(workConfig, mParent), "Регулировка", "tune");
-            addDialogToList(new StartupKIVDialog(mParent), "Начальные\nзначения", "startup");
+            addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
+            addDialogToList(new StartupKIVDialog(m_parent), "Начальные\nзначения", "startup");
         }
     }
     else
@@ -158,7 +150,6 @@ void DialogCreator::createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, co
     }
 }
 
-/// \brief Creating oscillogram and switch journal dialogs.
 void DialogCreator::createOscAndSwJourDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem)
 {
     using namespace Modules;
@@ -166,30 +157,29 @@ void DialogCreator::createOscAndSwJourDialogs(const Modules::BaseBoard &typeb, c
     {
         if ((typem == MezzanineBoard::MTM_81) || (typem == MezzanineBoard::MTM_82) || (typem == MezzanineBoard::MTM_83))
         {
-            addDialogToList(new OscDialog(mParent), "Осциллограммы", "osc");
+            addDialogToList(new OscDialog(m_parent), "Осциллограммы", "osc");
         }
     }
     if ((typeb == BaseBoard::MTB_80 || typeb == BaseBoard::MTB_85) && typem == MezzanineBoard::MTM_85)
     {
-        addDialogToList(new SwitchJournalDialog(mParent), "Журнал переключений", "swjour");
-        addDialogToList(new OscDialog(mParent), "Осциллограммы", "osc");
+        addDialogToList(new SwitchJournalDialog(m_parent), "Журнал переключений", "swjour");
+        addDialogToList(new OscDialog(m_parent), "Осциллограммы", "osc");
     }
 }
 
-/// \brief Creating specific dialogs (tune, journal and startup).
 void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
 {
     using namespace Modules;
 
     // Коробочный модуль
-    if (isBoxModule(board.baseSerialInfo().type()))
+    if (isBoxModule(m_board.baseSerialInfo().type()))
     {
-        auto moduleModel = Model(board.type());
+        auto moduleModel = Model(m_board.type());
         // Добавляем регулировку, если АВМ Настройка
         if (appCfg == AppConfiguration::Debug)
             createBoxTuneDialogs(moduleModel);
         // TODO: Временно выключено для модбаса
-        if (board.interfaceType() == Board::InterfaceType::USB)
+        if (m_board.interfaceType() == Board::InterfaceType::USB)
             createStartupDialog(moduleModel); // Добавляем диалог начальных значений
 
         // TODO: Fix it
@@ -199,8 +189,8 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
     // Модуль состоит из двух плат
     else
     {
-        auto typeB = BaseBoard(board.typeB());
-        auto typeM = MezzanineBoard(board.typeM());
+        auto typeB = BaseBoard(m_board.typeB());
+        auto typeM = MezzanineBoard(m_board.typeM());
         // Добавляем регулировку, если АВМ Настройка
         if (appCfg == AppConfiguration::Debug)
             createTwoPartTuneDialogs(typeB, typeM);
@@ -208,21 +198,20 @@ void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
         createOscAndSwJourDialogs(typeB, typeM);
         // Добавляем диалог переключений
         if (typeB == BaseBoard::MTB_35)
-            addDialogToList(new RelayDialog(4, mParent), "Реле", "relay1");
+            addDialogToList(new RelayDialog(4, m_parent), "Реле", "relay1");
     }
 }
 
-/// \brief Creating common dialogs (all modules).
 void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
 {
-    if (board.interfaceType() != Board::InterfaceType::Ethernet)
-        addDialogToList(new FWUploadDialog(mParent), "Загрузка ВПО", "upload");
-    addDialogToList(new TimeDialog(mParent), "Время", "time");
-    addDialogToList(new InfoDialog(mParent), "О приборе", "info");
+    if (m_board.interfaceType() != Board::InterfaceType::Ethernet)
+        addDialogToList(new FWUploadDialog(m_parent), "Загрузка ВПО", "upload");
+    addDialogToList(new TimeDialog(m_parent), "Время", "time");
+    addDialogToList(new InfoDialog(m_parent), "О приборе", "info");
 
     if (appCfg == AppConfiguration::Debug)
     {
-        auto hiddenDialog = new HiddenDialog(mParent);
+        auto hiddenDialog = new HiddenDialog(m_parent);
         hiddenDialog->fill();
         addDialogToList(hiddenDialog, "Секретные операции", "hidden");
     }
