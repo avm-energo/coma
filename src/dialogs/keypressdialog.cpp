@@ -48,6 +48,7 @@ void KeyPressDialog::SetupUI()
         WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
     vlyout->addWidget(WDFunc::NewPswLE2(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
+    setMinimumSize(200, 120);
 }
 
 void KeyPressDialog::keyPressEvent(QKeyEvent *e)

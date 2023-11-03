@@ -377,7 +377,6 @@ void Coma::go()
     QDir dir(StdFunc::GetHomeDir());
     if (!dir.exists())
         dir.mkpath(".");
-    StdFunc::Init();
     qInfo("=== Log started ===\n");
     newTimers();
     loadSettings();
@@ -602,6 +601,7 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setOrganizationName(orgName);
     QCoreApplication::setApplicationVersion(version);
     initResources();
+    StdFunc::Init();
     Logger::writeStart(StdFunc::GetSystemHomeDir() + "coma.log");
     qInstallMessageHandler(Logger::messageHandler);
 }

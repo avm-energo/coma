@@ -1,10 +1,9 @@
 #ifndef HIDDENDIALOG_H
 #define HIDDENDIALOG_H
+
 #include "../widgets/udialog.h"
 
-#include <QDialog>
 #include <QPaintEvent>
-#include <QVBoxLayout>
 
 constexpr int RSTTIMEOUT = 5000; // таймаут на рестарт модуля после отправки ему блока Bhb
 
@@ -16,56 +15,41 @@ constexpr quint16 BYMY = 0x03;
 class HiddenDialog : public UDialog
 {
     Q_OBJECT
-    struct Bhb_Main
+private:
+    struct BoardHiddenBlock
     {
-        quint32 MType;        // тип платы
-        quint32 SerialNum;    // серийный номер платы
-        quint32 HWVer;        // версия аппаратного обеспечения модуля (платы)
+        quint32 boardType;    // тип платы
+        quint32 serialNum;    // серийный номер платы
+        quint32 hardwareVer;  // версия аппаратного обеспечения модуля (платы)
         quint32 ModSerialNum; // серийный номер модуля целиком
     };
-    struct Bhb_Overall
+
+    struct DeviceHiddenBlock
     {
-        Bhb_Main BoardBBhb;
-        Bhb_Main BoardMBhb;
+        BoardHiddenBlock baseBoardBlock;
+        BoardHiddenBlock mezzBoardBlock;
     };
-    Q_PROPERTY(bool status READ status WRITE setStatus NOTIFY statusChanged)
+
+    QString m_BGImage;
+    char m_type;
+    bool m_isMezzSelected;
+    bool m_isGodMode;
+    DeviceHiddenBlock m_deviceBlock;
+
 public:
     explicit HiddenDialog(QWidget *parent = nullptr);
     void fill();
-
-    bool status() const
-    {
-        return m_status;
-    }
-
-public slots:
-    void setStatus(bool status)
-    {
-        if (m_status == status)
-            return;
-
-        m_status = status;
-        emit statusChanged(m_status);
-    }
-
-signals:
-    void statusChanged(bool status);
 
 private:
     void setupUI();
     void setVersion(quint32 number, QString lename);
     quint32 getVersion(QString lename);
-    void sendBhb();
-    void updateMode(bool status);
+    void sendDeviceHiddenBlock();
+    void updateMode(bool enabled);
 
-    QString m_BGImage;
-    char m_type;
-    bool m_withMezzanine;
-    Bhb_Overall m_bhb;
-    bool m_status = false;
 private slots:
     void acceptChanges();
-    void setMezzanineEnabled(int Enabled);
+    void setMezzanineEnabled(int enabled);
 
 protected:
     void paintEvent(QPaintEvent *e);

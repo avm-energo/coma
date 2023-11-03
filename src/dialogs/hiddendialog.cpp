@@ -15,6 +15,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QPushButton>
+#include <QVBoxLayout>
 #include <QtSvg/QSvgRenderer>
 #include <gen/datatypes.h>
 #include <gen/error.h>
@@ -26,33 +27,35 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char hashLevel2[] = "fb001dfcffd1c899f3297871406242f097aecf1a5342ccf3ebcd116146188e4b";
 static constexpr char name[] = "hiddenHash";
 }
+
 HiddenDialog::HiddenDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
     setSuccessMsg("Записано успешно \nНеобходимо переподключиться");
     m_type = 0x00;
+    m_isMezzSelected = false;
+    m_isGodMode = false;
 
     const auto &board = Board::GetInstance();
     const auto bsi = board.baseSerialInfo();
     if (board.typeB() != Modules::BaseBoard::MTB_00)
     {
-
-        m_bhb.BoardBBhb.HWVer = bsi.HwverB;
-        m_bhb.BoardBBhb.SerialNum = bsi.SerialNumB;
-        m_bhb.BoardBBhb.MType = bsi.MTypeB;
+        m_deviceBlock.baseBoardBlock.hardwareVer = bsi.HwverB;
+        m_deviceBlock.baseBoardBlock.serialNum = bsi.SerialNumB;
+        m_deviceBlock.baseBoardBlock.boardType = bsi.MTypeB;
         m_type |= BYMN;
     }
     if (board.typeM() != Modules::MezzanineBoard::MTM_00)
     {
 
-        m_bhb.BoardMBhb.HWVer = bsi.HwverM;
-        m_bhb.BoardMBhb.SerialNum = bsi.SerialNumM;
-        m_bhb.BoardMBhb.MType = bsi.MTypeM;
+        m_deviceBlock.mezzBoardBlock.hardwareVer = bsi.HwverM;
+        m_deviceBlock.mezzBoardBlock.serialNum = bsi.SerialNumM;
+        m_deviceBlock.mezzBoardBlock.boardType = bsi.MTypeM;
         m_type |= BNMY;
     }
-    m_bhb.BoardBBhb.ModSerialNum = bsi.SerialNum;
+    m_deviceBlock.baseBoardBlock.ModSerialNum = bsi.SerialNum;
 
-    m_withMezzanine = false;
-    if (m_bhb.BoardBBhb.MType == 0xA1)
+    m_isMezzSelected = false;
+    if (m_deviceBlock.baseBoardBlock.boardType == 0xA1)
         m_BGImage = ":/images/pkdn.svg";
     else
     {
@@ -60,12 +63,12 @@ HiddenDialog::HiddenDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name
         {
         case BYMY:
             m_BGImage = ":/images/BM.svg";
-            m_withMezzanine = true;
+            m_isMezzSelected = true;
             break;
         case BNMY:
             m_BGImage = ":/images/BnM.svg";
             m_type = BYMY;
-            m_withMezzanine = true;
+            m_isMezzSelected = true;
             break;
         case BYMN:
             m_BGImage = ":/images/BMn.svg";
@@ -97,53 +100,43 @@ void HiddenDialog::setupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Тип " + tmps + " (hex):", "modtype"), 10);
+    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Тип модуля (hex):", "modtype"), 10);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Серийный номер " + tmps + ":", "modsn", true), 10);
+    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Серийный номер модуля:", "modsn", false), 10);
     vlyout->addLayout(hlyout);
-    /*    if (WithMezzanine) // ввод данных по мезонинной плате открывается только в случае её наличия
-        { */
     QGroupBox *gb = new QGroupBox("Мезонинная плата");
     QVBoxLayout *gblyout = new QVBoxLayout;
     gblyout->addWidget(WDFunc::NewChB2(this, "withmezzanine", "Установлена"));
     hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Тип платы (hex):", "meztp", true));
+    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Тип платы (hex):", "meztp", false));
     gblyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    WDFunc::AddLabelAndLineeditH(hlyout, "Версия платы:", "mezhwmv", true);
-    WDFunc::AddLabelAndLineeditH(hlyout, ".", "mezhwlv", true);
-    WDFunc::AddLabelAndLineeditH(hlyout, ".", "mezhwsv", true);
+    WDFunc::AddLabelAndLineeditH(hlyout, "Версия платы:", "mezhwmv", false);
+    WDFunc::AddLabelAndLineeditH(hlyout, ".", "mezhwlv", false);
+    WDFunc::AddLabelAndLineeditH(hlyout, ".", "mezhwsv", false);
     gblyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    if (m_status)
-        WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "mezsn", true);
-    else
-        WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "mezsn", false);
+    WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "mezsn", false);
     gblyout->addLayout(hlyout);
     gb->setLayout(gblyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(gb, 1);
     hlyout->addStretch(600);
     vlyout->addLayout(hlyout);
-    //    }
     vlyout->addStretch(800);
     gb = new QGroupBox("Базовая плата");
     gblyout = new QVBoxLayout;
     hlyout = new QHBoxLayout;
-    WDFunc::AddLabelAndLineeditH(hlyout, "Тип платы:", "bastp", true);
+    WDFunc::AddLabelAndLineeditH(hlyout, "Тип платы:", "bastp", false);
     gblyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    WDFunc::AddLabelAndLineeditH(hlyout, "Версия платы:", "bashwmv", true);
-    WDFunc::AddLabelAndLineeditH(hlyout, ".", "bashwlv", true);
-    WDFunc::AddLabelAndLineeditH(hlyout, ".", "bashwsv", true);
+    WDFunc::AddLabelAndLineeditH(hlyout, "Версия платы:", "bashwmv", false);
+    WDFunc::AddLabelAndLineeditH(hlyout, ".", "bashwlv", false);
+    WDFunc::AddLabelAndLineeditH(hlyout, ".", "bashwsv", false);
     gblyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    if (m_status)
-        WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "bassn", true);
-    else
-        WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "bassn", false);
+    WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "bassn", false);
     gblyout->addLayout(hlyout);
     gb->setLayout(gblyout);
     hlyout = new QHBoxLayout;
@@ -156,7 +149,11 @@ void HiddenDialog::setupUI()
     connect(pb, &QAbstractButton::clicked, this, [=] {
         KeyPressDialog *dlg = new KeyPressDialog(this);
         bool status = dlg->CheckPassword(crypto::hashLevel2);
-        updateMode(status);
+        if (!m_isGodMode)
+        {
+            m_isGodMode = status;
+            updateMode(m_isGodMode);
+        }
     });
     hlyout->addWidget(pb);
     pb = new QPushButton("Записать и закрыть");
@@ -170,8 +167,8 @@ void HiddenDialog::setupUI()
     if (m_type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
         WDFunc::SetLEData(this, "mezsn", "00000000", "^\\d{8}$");
     WDFunc::SetLEData(this, "bassn", "00000000", "^\\d{8}$");
-    WDFunc::SetChBData(this, "withmezzanine", m_withMezzanine);
-    setMezzanineEnabled(m_withMezzanine);
+    WDFunc::SetChBData(this, "withmezzanine", m_isMezzSelected);
+    setMezzanineEnabled(m_isMezzSelected);
     QCheckBox *cb = this->findChild<QCheckBox *>("withmezzanine");
     if (cb != nullptr)
         connect(cb, &QCheckBox::stateChanged, this, &HiddenDialog::setMezzanineEnabled);
@@ -179,20 +176,22 @@ void HiddenDialog::setupUI()
 
 void HiddenDialog::fill()
 {
-    setVersion(m_bhb.BoardBBhb.HWVer, "bashw");
-    QString tmps = QString::number(m_bhb.BoardBBhb.MType, 16);
+    setVersion(m_deviceBlock.baseBoardBlock.hardwareVer, "bashw");
+    QString tmps = QString::number(m_deviceBlock.baseBoardBlock.boardType, 16);
     tmps.truncate(8);
     WDFunc::SetLEData(this, "bastp", tmps);
-    WDFunc::SetLEData(this, "modsn", QString::number(m_bhb.BoardBBhb.ModSerialNum, 16), "^[a-fA-F0-9]{1,8}$");
-    WDFunc::SetLEData(this, "bassn", QString::number(m_bhb.BoardBBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
-    tmps = QString::number(m_bhb.BoardMBhb.MType, 16);
+    WDFunc::SetLEData(
+        this, "modsn", QString::number(m_deviceBlock.baseBoardBlock.ModSerialNum, 16), "^[a-fA-F0-9]{1,8}$");
+    WDFunc::SetLEData(this, "bassn", QString::number(m_deviceBlock.baseBoardBlock.serialNum, 16), "^[a-fA-F0-9]{1,8}$");
+    tmps = QString::number(m_deviceBlock.mezzBoardBlock.boardType, 16);
     tmps.truncate(8);
     WDFunc::SetLEData(this, "modtype", Board::GetInstance().moduleName());
-    m_bhb.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
+    m_deviceBlock.mezzBoardBlock.ModSerialNum = 0xFFFFFFFF;
     if (m_type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
     {
-        setVersion(m_bhb.BoardMBhb.HWVer, "mezhw");
-        WDFunc::SetLEData(this, "mezsn", QString::number(m_bhb.BoardMBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
+        setVersion(m_deviceBlock.mezzBoardBlock.hardwareVer, "mezhw");
+        WDFunc::SetLEData(
+            this, "mezsn", QString::number(m_deviceBlock.mezzBoardBlock.serialNum, 16), "^[a-fA-F0-9]{1,8}$");
         WDFunc::SetLEData(this, "meztp", tmps);
     }
 }
@@ -211,44 +210,43 @@ void HiddenDialog::acceptChanges()
 {
     if (!checkPassword())
         return;
-    // QPushButton *pb = qobject_cast<QPushButton *>(this->sender());
-    m_bhb.BoardBBhb.HWVer = getVersion("bashw");
+    m_deviceBlock.baseBoardBlock.hardwareVer = getVersion("bashw");
     QString tmps;
     WDFunc::LEData(this, "modsn", tmps);
-    m_bhb.BoardBBhb.ModSerialNum = tmps.toUInt(Q_NULLPTR, 16);
+    m_deviceBlock.baseBoardBlock.ModSerialNum = tmps.toUInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bassn", tmps);
-    m_bhb.BoardBBhb.SerialNum = tmps.toUInt(Q_NULLPTR, 16);
+    m_deviceBlock.baseBoardBlock.serialNum = tmps.toUInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bastp", tmps);
-    m_bhb.BoardBBhb.MType = tmps.toUInt(Q_NULLPTR, 16);
+    m_deviceBlock.baseBoardBlock.boardType = tmps.toUInt(Q_NULLPTR, 16);
     bool chbdata;
-    if (WDFunc::ChBData(
-            this, "withmezzanine", chbdata)) // ввод данных по мезонинной плате открывается только в случае её наличия
+    // ввод данных по мезонинной плате открывается только в случае её наличия
+    if (WDFunc::ChBData(this, "withmezzanine", chbdata))
     {
         if (chbdata)
         {
             m_type |= 0x02;
-            m_bhb.BoardMBhb.HWVer = getVersion("mezhw");
+            m_deviceBlock.mezzBoardBlock.hardwareVer = getVersion("mezhw");
             WDFunc::LEData(this, "meztp", tmps);
-            m_bhb.BoardMBhb.MType = tmps.toUInt(Q_NULLPTR, 16);
+            m_deviceBlock.mezzBoardBlock.boardType = tmps.toUInt(Q_NULLPTR, 16);
             WDFunc::LEData(this, "mezsn", tmps);
-            m_bhb.BoardMBhb.SerialNum = tmps.toUInt(Q_NULLPTR, 16);
-            m_bhb.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
+            m_deviceBlock.mezzBoardBlock.serialNum = tmps.toUInt(Q_NULLPTR, 16);
+            m_deviceBlock.mezzBoardBlock.ModSerialNum = 0xFFFFFFFF;
         }
     }
-
-    sendBhb();
+    sendDeviceHiddenBlock();
 }
 
-void HiddenDialog::setMezzanineEnabled(int Enabled)
+void HiddenDialog::setMezzanineEnabled(int enabled)
 {
-    WDFunc::SetEnabled(this, "meztp", Enabled);
-    WDFunc::SetEnabled(this, "mezhwmv", Enabled);
-    WDFunc::SetEnabled(this, "mezhwsv", Enabled);
-    WDFunc::SetEnabled(this, "mezhwlv", Enabled);
-    if (m_status)
-        WDFunc::SetEnabled(this, "mezsn", Enabled);
-    // else
-    // WDFunc::SetDisabled(this, "mezsn", Enabled);
+    m_isMezzSelected = enabled;
+    if ((m_isGodMode && m_isMezzSelected) || (!m_isMezzSelected))
+    {
+        WDFunc::SetEnabled(this, "meztp", enabled);
+        WDFunc::SetEnabled(this, "mezhwmv", enabled);
+        WDFunc::SetEnabled(this, "mezhwsv", enabled);
+        WDFunc::SetEnabled(this, "mezhwlv", enabled);
+        WDFunc::SetEnabled(this, "mezsn", enabled);
+    }
 }
 
 quint32 HiddenDialog::getVersion(QString lename)
@@ -263,7 +261,7 @@ quint32 HiddenDialog::getVersion(QString lename)
     return number;
 }
 
-void HiddenDialog::sendBhb()
+void HiddenDialog::sendDeviceHiddenBlock()
 {
     void *ptr;
     int size;
@@ -273,13 +271,13 @@ void HiddenDialog::sendBhb()
         return;
     if (chbdata)
     {
-        ptr = &m_bhb;
-        size = sizeof(m_bhb);
+        ptr = &m_deviceBlock;
+        size = sizeof(m_deviceBlock);
     }
     else
     {
-        ptr = &m_bhb.BoardBBhb;
-        size = sizeof(m_bhb.BoardBBhb);
+        ptr = &m_deviceBlock.baseBoardBlock;
+        size = sizeof(m_deviceBlock.baseBoardBlock);
     }
 
     auto buffer = QByteArray::fromRawData(static_cast<char *>(ptr), size);
@@ -287,9 +285,22 @@ void HiddenDialog::sendBhb()
     Connection::iface()->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(block));
 }
 
-void HiddenDialog::updateMode(bool status)
+void HiddenDialog::updateMode(bool enabled)
 {
-    WDFunc::SetEnabled(this, "mezsn", status);
-    WDFunc::SetEnabled(this, "bassn", status);
-    WDFunc::SetEnabled(this, "mezsn", status);
+    WDFunc::SetEnabled(this, "modsn", enabled);
+
+    WDFunc::SetEnabled(this, "bastp", enabled);
+    WDFunc::SetEnabled(this, "bashwmv", enabled);
+    WDFunc::SetEnabled(this, "bashwsv", enabled);
+    WDFunc::SetEnabled(this, "bashwlv", enabled);
+    WDFunc::SetEnabled(this, "bassn", enabled);
+
+    if (m_isMezzSelected)
+    {
+        WDFunc::SetEnabled(this, "meztp", enabled);
+        WDFunc::SetEnabled(this, "mezhwmv", enabled);
+        WDFunc::SetEnabled(this, "mezhwsv", enabled);
+        WDFunc::SetEnabled(this, "mezhwlv", enabled);
+        WDFunc::SetEnabled(this, "mezsn", enabled);
+    }
 }

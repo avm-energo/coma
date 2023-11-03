@@ -305,7 +305,10 @@ QByteArray ProtocomRequestParser::writeLongData(const Proto::Commands cmd, const
         return getNextDataSection(); // send first chunk
     }
     else
+    {
+        emit writingLastSection();
         return prepareBlock(cmd, data);
+    }
 }
 
 QByteArray ProtocomRequestParser::createContinueCommand(const Proto::Commands cmd) const noexcept
