@@ -46,41 +46,36 @@ HiddenDialog::HiddenDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name
     }
     if (board.typeM() != Modules::MezzanineBoard::MTM_00)
     {
-
         m_deviceBlock.mezzBoardBlock.hardwareVer = bsi.HwverM;
         m_deviceBlock.mezzBoardBlock.serialNum = bsi.SerialNumM;
         m_deviceBlock.mezzBoardBlock.boardType = bsi.MTypeM;
         m_type |= BNMY;
     }
-    m_deviceBlock.baseBoardBlock.ModSerialNum = bsi.SerialNum;
+    m_deviceBlock.baseBoardBlock.deviceSerialNum = bsi.SerialNum;
 
     m_isMezzSelected = false;
-    if (m_deviceBlock.baseBoardBlock.boardType == 0xA1)
-        m_BGImage = ":/images/pkdn.svg";
-    else
+
+    switch (m_type)
     {
-        switch (m_type)
-        {
-        case BYMY:
-            m_BGImage = ":/images/BM.svg";
-            m_isMezzSelected = true;
-            break;
-        case BNMY:
-            m_BGImage = ":/images/BnM.svg";
-            m_type = BYMY;
-            m_isMezzSelected = true;
-            break;
-        case BYMN:
-            m_BGImage = ":/images/BMn.svg";
-            break;
-        case BNMN:
-            m_BGImage = ":/images/BnMn.svg";
-            m_type = BYMN;
-            break;
-        default:
-            m_BGImage = "";
-            break;
-        }
+    case BYMY:
+        m_BGImage = ":/images/BM.svg";
+        m_isMezzSelected = true;
+        break;
+    case BNMY:
+        m_BGImage = ":/images/BnM.svg";
+        m_type = BYMY;
+        m_isMezzSelected = true;
+        break;
+    case BYMN:
+        m_BGImage = ":/images/BMn.svg";
+        break;
+    case BNMN:
+        m_BGImage = ":/images/BnMn.svg";
+        m_type = BYMN;
+        break;
+    default:
+        m_BGImage = "";
+        break;
     }
     setupUI();
 }
@@ -181,12 +176,12 @@ void HiddenDialog::fill()
     tmps.truncate(8);
     WDFunc::SetLEData(this, "bastp", tmps);
     WDFunc::SetLEData(
-        this, "modsn", QString::number(m_deviceBlock.baseBoardBlock.ModSerialNum, 16), "^[a-fA-F0-9]{1,8}$");
+        this, "modsn", QString::number(m_deviceBlock.baseBoardBlock.deviceSerialNum, 16), "^[a-fA-F0-9]{1,8}$");
     WDFunc::SetLEData(this, "bassn", QString::number(m_deviceBlock.baseBoardBlock.serialNum, 16), "^[a-fA-F0-9]{1,8}$");
     tmps = QString::number(m_deviceBlock.mezzBoardBlock.boardType, 16);
     tmps.truncate(8);
     WDFunc::SetLEData(this, "modtype", Board::GetInstance().moduleName());
-    m_deviceBlock.mezzBoardBlock.ModSerialNum = 0xFFFFFFFF;
+    m_deviceBlock.mezzBoardBlock.deviceSerialNum = 0xFFFFFFFF;
     if (m_type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
     {
         setVersion(m_deviceBlock.mezzBoardBlock.hardwareVer, "mezhw");
@@ -213,7 +208,7 @@ void HiddenDialog::acceptChanges()
     m_deviceBlock.baseBoardBlock.hardwareVer = getVersion("bashw");
     QString tmps;
     WDFunc::LEData(this, "modsn", tmps);
-    m_deviceBlock.baseBoardBlock.ModSerialNum = tmps.toUInt(Q_NULLPTR, 16);
+    m_deviceBlock.baseBoardBlock.deviceSerialNum = tmps.toUInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bassn", tmps);
     m_deviceBlock.baseBoardBlock.serialNum = tmps.toUInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bastp", tmps);
@@ -230,7 +225,7 @@ void HiddenDialog::acceptChanges()
             m_deviceBlock.mezzBoardBlock.boardType = tmps.toUInt(Q_NULLPTR, 16);
             WDFunc::LEData(this, "mezsn", tmps);
             m_deviceBlock.mezzBoardBlock.serialNum = tmps.toUInt(Q_NULLPTR, 16);
-            m_deviceBlock.mezzBoardBlock.ModSerialNum = 0xFFFFFFFF;
+            m_deviceBlock.mezzBoardBlock.deviceSerialNum = 0xFFFFFFFF;
         }
     }
     sendDeviceHiddenBlock();
@@ -280,9 +275,15 @@ void HiddenDialog::sendDeviceHiddenBlock()
         size = sizeof(m_deviceBlock.baseBoardBlock);
     }
 
+    if (Board::GetInstance().type() == Modules::Model::MPE)
+    {
+        m_conn->writeCommand(Commands::C_EnableWritingHardware, quint16(0x5c5c));
+        StdFunc::Wait(300);
+    }
+
     auto buffer = QByteArray::fromRawData(static_cast<char *>(ptr), size);
     DataTypes::HardwareStruct block { static_cast<quint32>(m_type), buffer };
-    Connection::iface()->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(block));
+    m_conn->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(block));
 }
 
 void HiddenDialog::updateMode(bool enabled)

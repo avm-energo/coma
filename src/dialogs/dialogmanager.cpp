@@ -90,6 +90,7 @@ void DialogManager::clearDialogs()
         m_workspace->removeWidget(widget);
         widget->deleteLater();
     }
+    m_currentDialogIndex = 0;
     m_sidebar->clear();
     m_dlgCreator->deleteDialogs();
 }

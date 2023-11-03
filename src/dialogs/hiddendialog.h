@@ -18,10 +18,10 @@ class HiddenDialog : public UDialog
 private:
     struct BoardHiddenBlock
     {
-        quint32 boardType;    // тип платы
-        quint32 serialNum;    // серийный номер платы
-        quint32 hardwareVer;  // версия аппаратного обеспечения модуля (платы)
-        quint32 ModSerialNum; // серийный номер модуля целиком
+        quint32 boardType;       // тип платы
+        quint32 serialNum;       // серийный номер платы
+        quint32 hardwareVer;     // версия аппаратного обеспечения модуля (платы)
+        quint32 deviceSerialNum; // серийный номер устройства целиком
     };
 
     struct DeviceHiddenBlock

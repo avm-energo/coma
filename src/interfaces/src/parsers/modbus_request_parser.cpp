@@ -93,7 +93,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         auto value = helper::packRegister(quint16(1));
         request = Modbus::Request {
             Modbus::FunctionCode::WriteMultipleRegisters, //
-            Modbus::firmwareModbusAddr, 1, false, value   //
+            Modbus::firmwareAddr, 1, false, value         //
         };
         break;
     }
@@ -131,6 +131,30 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         }
         break;
     }
+    // writing registers
+    case Commands::C_WriteHardware:
+    {
+        if (cmd.arg1.canConvert<DataTypes::BlockStruct>())
+        {
+            auto value = cmd.arg1.value<DataTypes::BlockStruct>().data;
+            const quint16 quantity = value.size() / 2;
+            request = Modbus::Request {
+                Modbus::FunctionCode::WriteMultipleRegisters,   //
+                Modbus::hardwareVerAddr, quantity, false, value //
+            };
+        }
+        break;
+    }
+    // writing registers
+    case Commands::C_EnableWritingHardware:
+    {
+        auto value = helper::packRegister(cmd.arg1.value<quint16>());
+        request = Modbus::Request {
+            Modbus::FunctionCode::WriteMultipleRegisters, //
+            Modbus::enableWriteHwAddr, 1, false, value    //
+        };
+        break;
+    }
     // "WS" commands
     case Commands::C_ClearStartupError:
     case Commands::C_ClearStartupUnbounced:
@@ -156,7 +180,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         break;
     }
     default:
-        qCritical() << "Undefined command: " << QVariant::fromValue(cmd.command).toString();
+        qCritical() << "Undefined command: " << cmd.command;
     }
     m_request = createADU(request);
     return m_request;

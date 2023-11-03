@@ -189,7 +189,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         break;
     }
     default:
-        qCritical() << "Undefined command: " << QVariant::fromValue(cmd.command).toString();
+        qCritical() << "Undefined command: " << cmd.command;
     }
     return m_request;
 }
