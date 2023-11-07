@@ -13,6 +13,7 @@
 #include "fwuploaddialog.h"
 #include "hiddendialog.h"
 #include "infodialog.h"
+#include "newhiddendialog.h"
 #include "plotdialog.h"
 #include "relaydialog.h"
 #include "switchjournaldialog.h"
@@ -214,5 +215,9 @@ void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
         auto hiddenDialog = new HiddenDialog(m_parent);
         hiddenDialog->fill();
         addDialogToList(hiddenDialog, "Секретные операции", "hidden");
+
+        // Debug purposes
+        auto anotherHiddenDialog = new NewHiddenDialog(m_settings.getHiddenSettings(), m_parent);
+        addDialogToList(anotherHiddenDialog, "Секретные операции 2", "hidden2");
     }
 }
