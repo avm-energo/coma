@@ -89,6 +89,8 @@ void Module::loadModuleSettings(ConfigStorage &mStorage, S2::DataManager &s2mana
         &mStorage, &ConfigStorage::measJourDataReceive);
     QObject::connect(moduleParser, &Xml::ModuleParser::protocolGroupSending, //
         &mStorage, &ConfigStorage::protocolDescriptionReceived);
+    QObject::connect(moduleParser, &Xml::ModuleParser::hiddenTabDataSending, //
+        &mStorage, &ConfigStorage::hiddenTabDataReceived);
     QObject::connect(moduleParser, &Xml::ModuleParser::parseError, this, &Module::parseErrorHandle);
     moduleParser->parse();
     moduleParser->deleteLater();

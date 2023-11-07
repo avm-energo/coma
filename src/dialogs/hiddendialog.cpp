@@ -1,24 +1,15 @@
 #include "hiddendialog.h"
 
 #include "../module/board.h"
-#include "../module/modules.h"
 #include "../widgets/wd_func.h"
 #include "keypressdialog.h"
 
-#include <QCoreApplication>
-#include <QElapsedTimer>
 #include <QGroupBox>
 #include <QHBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QMessageBox>
 #include <QPainter>
-#include <QPixmap>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QtSvg/QSvgRenderer>
-#include <gen/datatypes.h>
-#include <gen/error.h>
 #include <interfaces/connection.h>
 
 namespace crypto

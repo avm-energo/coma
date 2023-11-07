@@ -7,8 +7,6 @@
 #include <interfaces/types/interfacesettings.h>
 #include <s2/dataitem.h>
 
-constexpr auto baseConfigIndex = 0;
-
 namespace ModuleTypes
 {
 using SignalType = DataTypes::SignalTypes; ///< Перечисление для типа сигналов.
@@ -24,8 +22,10 @@ struct Signal
 /// \brief Перечисление для хранения типа отображения мультивиджета.
 enum class ViewType : quint8
 {
-    Float = 0,
-    Bitset
+    Float = 0, ///< отображение чисел с плавающей точкой
+    Bitset,    ///< отображение битового поля
+    LineEdit,  ///< ввод данных
+    Version    ///< ввод или отображение версии
 };
 
 /// \brief Структура для хранения информации узла <mwidget> из XML.
@@ -64,13 +64,32 @@ enum class BinaryType : quint8
     time64
 };
 
-/// \brief Структура для хранения информации узла <item> в <meas>.
+/// \brief Структура для хранения информации узла <item> из <journals/meas>.
 struct MeasJournal
 {
     quint32 index;   ///< атрибут "index"
-    QString header;  ///< атрибут "header"
     BinaryType type; ///< атрибут "type"
     bool visibility; ///< атрибут "visibility"
+    QString header;  ///< атрибут "header"
+};
+
+/// \brief Структура для хранения информации узла <mwidget> из <hidden/tab>.
+struct HiddenWidget
+{
+    QString name;    ///< узел <name>
+    QString title;   ///< атрибут "title"
+    quint32 addr;    ///< узел <addr>
+    BinaryType type; ///< узел <type>
+    ViewType view;   ///< атрибут "view"
+    bool visibility; ///< узел <visibility>
+};
+
+/// \brief Структура для хранения информации узла <tab> из <hidden>.
+struct HiddenTab
+{
+    QString title;                     ///< атрибут "desc"
+    QString background;                ///< атрибут "background"
+    std::vector<HiddenWidget> widgets; ///< узлы <mwdiget>
 };
 
 using SignalMap = QHash<quint32, Signal>;         ///< Хранит узлы <signal> секции <signals>.
@@ -78,10 +97,11 @@ using TabsMap = QHash<quint32, QString>;          ///< Хранит узлы <ta
 using HighlightMap = QMultiMap<quint32, quint32>; ///< Для подсветки элементов.
 using SectionList = std::vector<Section>;         ///< Хранит узлы <section> секции <sections>.
 using AlarmKey = Modules::AlarmType;              ///< Modules::AlarmType - тип сигнализации.
-using AlarmValue = QMap<quint32, QString>; ///< quint32 - адрес сигнализации, QString - нода <desc> (описание).
+using AlarmValue = QMap<quint32, QString>; ///< quint32 - адрес сигнализации, QString - узел <desc> (описание).
 using AlarmMap = QHash<AlarmKey, AlarmValue>;  ///< Хранит узлы <item> секции <alarms>.
 using WorkJourMap = QMap<quint32, QString>;    ///< Хранит узлы <item> секции <work> из <journals>.
 using MeasJourList = std::vector<MeasJournal>; ///< Хранит узлы <item> секции <meas> из <journals>.
+using HiddenSettings = std::vector<HiddenTab>; ///< Хранит узлы <tab> секции <hidden>.
 using DetailCountMap
     = QHash<quint16, quint16>; ///< Хранит количество элементов для конфигурационных параметров, имеющих одинаковые id.
 
@@ -93,7 +113,7 @@ class ModuleSettings
 public:
     ModuleSettings() = default;
     /// \brief Очистка настроек модуля.
-    void clear();
+    void clear() noexcept;
     /// \brief Добавление нового сигнала в список сигналов.
     void appendSignal(const quint32 id, const ModuleTypes::Signal sig);
     /// \brief Добавление новой вкладки в список вкладок.
@@ -101,14 +121,16 @@ public:
     /// \brief Добавление раздела в список разделов.
     void appendSection(const ModuleTypes::Section &section);
     /// \brief Добавление сигнализации в список сигнализаций по заданному типу сигнализации (key).
-    void appendAlarm(const ModuleTypes::AlarmKey &key, const quint32 &addr, const QString &desc);
+    void appendAlarm(const ModuleTypes::AlarmKey key, const quint32 addr, const QString &desc);
     /// \brief Добавление подсветки указанных полей для подсветки при появлении сигнализации.
-    void appendHighlight(const Modules::AlarmType &type, const quint32 &key, const QList<quint32> &values);
+    void appendHighlight(const Modules::AlarmType type, const quint32 key, const QList<quint32> &values);
     /// \brief Добавление записи в список описаний рабочего журналов.
     void appendWorkJournal(const quint32 id, const QString &desc);
     /// \brief Добавление записи в список о формате журнала измерений.
     void appendMeasJournal(const quint32 index, const QString &header, //
         const ModuleTypes::BinaryType type, bool visib);
+    /// \brief Добавление информации о вкладках HiddenDialog.
+    void appendHiddenTab(const ModuleTypes::HiddenTab &hiddenTab);
 
     /// \brief Constant getter for detailed count hashmap for current config list.
     const ModuleTypes::DetailCountMap &getDetailConfigCount() const;
@@ -126,6 +148,8 @@ public:
     const ModuleTypes::WorkJourMap &getWorkJours() const;
     /// \brief Constant getter for measurement journals.
     const ModuleTypes::MeasJourList &getMeasJours() const;
+    /// \brief Constant getter for hidden dialog settings.
+    const ModuleTypes::HiddenSettings &getHiddenSettings() const;
 
 private:
     ModuleTypes::DetailCountMap m_countMap;
@@ -136,4 +160,5 @@ private:
     ModuleTypes::HighlightMap m_critHighlight, m_warnHighlight;
     ModuleTypes::WorkJourMap m_workJournals;
     ModuleTypes::MeasJourList m_measJournals;
+    ModuleTypes::HiddenSettings m_hiddenSettings;
 };

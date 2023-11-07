@@ -99,14 +99,30 @@ ModuleTypes::SignalType Xml::ModuleParser::parseSigType(const QDomNode &sigNode)
     return ModuleTypes::SignalType::Float;
 }
 
-/// \brief Функция для определения типа типа отображения мультивиджета.
-ModuleTypes::ViewType Xml::ModuleParser::parseViewType(const QDomNode &mwidgetNode)
+/// \brief Функция для определения типа отображения мультивиджета.
+ModuleTypes::ViewType Xml::ModuleParser::parseViewType(const QString &viewString)
 {
-    auto viewString = mwidgetNode.toElement().attribute(tags::view, "float");
     if (viewString.contains("bitset", Qt::CaseInsensitive))
         return ModuleTypes::ViewType::Bitset;
+    else if (viewString.contains("LineEdit", Qt::CaseInsensitive))
+        return ModuleTypes::ViewType::LineEdit;
+    else if (viewString.contains("Version", Qt::CaseInsensitive))
+        return ModuleTypes::ViewType::Version;
     else
         return ModuleTypes::ViewType::Float;
+}
+
+/// \brief Функция для определения типа отображаемых/отправляемых данных.
+ModuleTypes::BinaryType Xml::ModuleParser::parseBinaryType(const QString &typeStr)
+{
+    if (typeStr == "uint32")
+        return ModuleTypes::BinaryType::uint32;
+    else if (typeStr == "time32")
+        return ModuleTypes::BinaryType::time32;
+    else if (typeStr == "time64")
+        return ModuleTypes::BinaryType::time64;
+    else
+        return ModuleTypes::BinaryType::float32;
 }
 
 /// \brief Функция для парсинга узла <signals>.
@@ -139,12 +155,14 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
         auto sgroupHeader = sgroupElem.attribute(tags::header, "");
         auto sgroupTab = sgroupElem.attribute(tags::tab, "").toUInt();
         callForEachChild(sgroupNode, [&](const QDomNode &mwidgetNode) {
-            auto mwidgetDesc = mwidgetNode.toElement().attribute(tags::desc, "");
+            auto mwidgetElem = mwidgetNode.toElement();
+            auto mwidgetDesc = mwidgetElem.attribute(tags::desc, "");
+            auto viewString = mwidgetElem.attribute(tags::view, "float");
             auto addr = parseNumFromNode<quint32>(mwidgetNode, tags::start_addr);
             auto count = parseNumFromNode<quint32>(mwidgetNode, tags::count);
             count = (count == 0) ? 1 : count;
             auto tooltip = parseString(mwidgetNode, tags::tooltip);
-            auto view = parseViewType(mwidgetNode);
+            auto view = parseViewType(viewString);
             auto itemList = parseStringArray(mwidgetNode);
             sgroup.name = sgroupHeader;
             sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, view, itemList });
@@ -197,18 +215,8 @@ void Xml::ModuleParser::parseMeasJournal(const QDomNode &jourNode)
 {
     auto index = parseNumFromNode<quint32>(jourNode, tags::index);
     auto header = parseString(jourNode, tags::header);
-
     auto strType = parseString(jourNode, tags::type);
-    ModuleTypes::BinaryType type;
-    if (strType == "uint32")
-        type = ModuleTypes::BinaryType::uint32;
-    else if (strType == "time32")
-        type = ModuleTypes::BinaryType::time32;
-    else if (strType == "time64")
-        type = ModuleTypes::BinaryType::time64;
-    else
-        type = ModuleTypes::BinaryType::float32;
-
+    ModuleTypes::BinaryType type = parseBinaryType(strType);
     auto visibility = true;
     if (parseString(jourNode, tags::visibility) == "false")
         visibility = false;
@@ -286,6 +294,30 @@ void Xml::ModuleParser::parseConfig(const QDomNode &configNode)
     emit configDataSending(id, defVal, visibility, count);
 }
 
+/// \brief Функция для парсинга узлов <tab> внутри <hidden>.
+void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
+{
+    auto hiddenTabElem = hiddenTabNode.toElement();
+    auto tabTitle = hiddenTabElem.attribute("desc");
+    auto tabBackground = hiddenTabElem.attribute("background");
+    std::vector<ModuleTypes::HiddenWidget> widgets;
+    callForEachChild(hiddenTabNode, [this, &widgets](const QDomNode &hiddenWidgetNode) {
+        auto hiddenWidgetElem = hiddenWidgetNode.toElement();
+        auto viewStr = hiddenWidgetElem.attribute("view", "LineEdit");
+        auto title = hiddenWidgetElem.attribute("title");
+        auto view = parseViewType(viewStr);
+        auto name = parseString(hiddenWidgetNode, tags::name);
+        auto typeStr = parseString(hiddenWidgetNode, tags::type);
+        auto type = parseBinaryType(typeStr);
+        auto addr = parseNumFromNode<quint32>(hiddenWidgetNode, tags::addr);
+        auto visibility = true;
+        if (parseString(hiddenWidgetNode, tags::visibility) == "false")
+            visibility = false;
+        widgets.push_back(ModuleTypes::HiddenWidget { name, title, addr, type, view, visibility });
+    });
+    emit hiddenTabDataSending(ModuleTypes::HiddenTab { tabTitle, tabBackground, widgets });
+}
+
 /// \brief Функция для парсинга узла <resources>.
 void Xml::ModuleParser::parseDetector(const QDomNode &node)
 {
@@ -296,6 +328,8 @@ void Xml::ModuleParser::parseDetector(const QDomNode &node)
         callForEachChild(node, [this](const QDomNode &sTabNode) { parseSTab(sTabNode); });
     else if (tag == tags::sections)
         callForEachChild(node, [this](const QDomNode &sectionNode) { parseSection(sectionNode); });
+    else if (tag == tags::hidden)
+        callForEachChild(node, [this](const QDomNode &hiddenTabNode) { parseHiddenTab(hiddenTabNode); });
     else if (tag == tags::alarms)
         parseAlarms(node);
     else if (tag == tags::journals)

@@ -1,5 +1,8 @@
 #include "interfaces/connection.h"
 
+/// TODO: этого инклуда здесь быть не должно...
+#include "../../module/modules.h"
+
 #include <QCoreApplication>
 #include <QMutexLocker>
 #include <gen/std_ext.h>

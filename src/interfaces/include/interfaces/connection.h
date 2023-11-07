@@ -1,8 +1,6 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include "../../module/modulesettings.h"
-
 #include <QTimer>
 #include <gen/error.h>
 #include <gen/logclass.h>

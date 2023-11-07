@@ -90,8 +90,6 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         case FilesEnum::JourSys:
         case FilesEnum::JourWork:
         case FilesEnum::JourMeas:
-            /// TODO: Exceptional situation
-            // processFileFromDisk(filetype);
             setExceptionalSituationStatus(true);
             break;
         default:

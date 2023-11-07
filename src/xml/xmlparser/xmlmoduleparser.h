@@ -33,6 +33,7 @@ signals:
     void protocolGroupSending(const AbstractGroup &str);
     void configDataSending(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
     void configNameSending(const QString &tabName);
+    void hiddenTabDataSending(const ModuleTypes::HiddenTab &hiddenTab);
 
 private:
     QString getFileName(const quint16 typeB, const quint16 typeM);
@@ -40,7 +41,8 @@ private:
     bool isCorrectModuleType(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM);
     bool isCorrectModuleVersion(const QDomElement &moduleNode);
     ModuleTypes::SignalType parseSigType(const QDomNode &sigNode);
-    ModuleTypes::ViewType parseViewType(const QDomNode &mwidgetNode);
+    ModuleTypes::ViewType parseViewType(const QString &viewString);
+    ModuleTypes::BinaryType parseBinaryType(const QString &typeStr);
 
     void parseDetector(const QDomNode &node);
     void parseSignal(const QDomNode &sigNode);
@@ -56,6 +58,7 @@ private:
     void parseProtocom(const QDomNode &protocomNode);
     void parseIec(const QDomNode &iecNode);
     void parseConfig(const QDomNode &configNode);
+    void parseHiddenTab(const QDomNode &hiddenTabNode);
 };
 
 }

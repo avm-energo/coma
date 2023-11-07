@@ -1242,5 +1242,59 @@
                 <type>BitString</type>
             </signal>
         </signals>
+        <hidden desc="Секретные операции">
+            <tab desc="Базовая плата" background=":/images/BMn.svg">
+                <mwidget view="LineEdit" title="Тип базовой платы">
+                    <name>basetype</name>
+                    <type>uint32</type>
+                    <addr>40010</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="LineEdit" title="Серийный номер платы">
+                    <name>baseserial</name>
+                    <type>uint32</type>
+                    <addr>40011</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="Version" title="Версия платы">
+                    <name>baseversion</name>
+                    <type>uint32</type>
+                    <addr>40012</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="LineEdit" title="Серийный номер модуля">
+                    <name>moduleserial</name>
+                    <type>uint32</type>
+                    <addr>40013</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+            </tab>
+            <tab desc="Мезонинная плата" background=":/images/BnM.svg">
+                <mwidget view="LineEdit" title="Тип мезонинной платы платы">
+                    <name>mezztype</name>
+                    <type>uint32</type>
+                    <addr>40014</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="LineEdit" title="Серийный номер платы">
+                    <name>mezzserial</name>
+                    <type>uint32</type>
+                    <addr>40015</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="Version" title="Версия платы">
+                    <name>mezzversion</name>
+                    <type>uint32</type>
+                    <addr>40016</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="LineEdit" title="Зарезервировано">
+                    <name>reserved</name>
+                    <type>uint32</type>
+                    <addr>40017</addr>
+                    <visibility>false</visibility>
+                </mwidget>
+            </tab>
+        </hidden>
     </resources>
 </module>

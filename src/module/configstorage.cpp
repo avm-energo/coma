@@ -63,6 +63,11 @@ void ConfigStorage::measJourDataReceive(const quint32 index, const QString &head
     m_settings.appendMeasJournal(index, header, type, visib);
 }
 
+void ConfigStorage::hiddenTabDataReceived(const ModuleTypes::HiddenTab &hiddenTab)
+{
+    m_settings.appendHiddenTab(hiddenTab);
+}
+
 void ConfigStorage::protocolDescriptionReceived(const AbstractGroup &str)
 {
     auto &sigMap = m_settings.getSignals();
