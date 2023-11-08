@@ -16,7 +16,7 @@ void ModuleSettings::clear() noexcept
 
 void ModuleSettings::appendSignal(const quint32 id, const ModuleTypes::Signal sig)
 {
-    m_signals.insert(id, sig);
+    m_signals.insert({ id, sig });
 }
 
 void ModuleSettings::appendTab(const quint32 id, const QString &tabName)

@@ -298,24 +298,26 @@ void Xml::ModuleParser::parseConfig(const QDomNode &configNode)
 void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
 {
     auto hiddenTabElem = hiddenTabNode.toElement();
-    auto tabTitle = hiddenTabElem.attribute("desc");
-    auto tabBackground = hiddenTabElem.attribute("background");
+    auto tabTitle = hiddenTabElem.attribute(tags::desc);
+    auto tabBackground = hiddenTabElem.attribute(tags::background);
+    auto tabPrefix = hiddenTabElem.attribute(tags::prefix);
     std::vector<ModuleTypes::HiddenWidget> widgets;
     callForEachChild(hiddenTabNode, [this, &widgets](const QDomNode &hiddenWidgetNode) {
         auto hiddenWidgetElem = hiddenWidgetNode.toElement();
-        auto viewStr = hiddenWidgetElem.attribute("view", "LineEdit");
-        auto title = hiddenWidgetElem.attribute("title");
+        auto viewStr = hiddenWidgetElem.attribute(tags::view, "LineEdit");
+        auto title = hiddenWidgetElem.attribute(tags::title);
         auto view = parseViewType(viewStr);
         auto name = parseString(hiddenWidgetNode, tags::name);
         auto typeStr = parseString(hiddenWidgetNode, tags::type);
         auto type = parseBinaryType(typeStr);
-        auto addr = parseNumFromNode<quint32>(hiddenWidgetNode, tags::addr);
+        auto src_addr = parseNumFromNode<quint32>(hiddenWidgetNode, tags::src_addr);
+        auto dst_addr = parseNumFromNode<quint32>(hiddenWidgetNode, tags::dst_addr);
         auto visibility = true;
         if (parseString(hiddenWidgetNode, tags::visibility) == "false")
             visibility = false;
-        widgets.push_back(ModuleTypes::HiddenWidget { name, title, addr, type, view, visibility });
+        widgets.push_back(ModuleTypes::HiddenWidget { name, title, src_addr, dst_addr, type, view, visibility });
     });
-    emit hiddenTabDataSending(ModuleTypes::HiddenTab { tabTitle, tabBackground, widgets });
+    emit hiddenTabDataSending(ModuleTypes::HiddenTab { tabTitle, tabBackground, tabPrefix, widgets });
 }
 
 /// \brief Функция для парсинга узла <resources>.

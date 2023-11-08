@@ -76,12 +76,13 @@ struct MeasJournal
 /// \brief Структура для хранения информации узла <mwidget> из <hidden/tab>.
 struct HiddenWidget
 {
-    QString name;    ///< узел <name>
-    QString title;   ///< атрибут "title"
-    quint32 addr;    ///< узел <addr>
-    BinaryType type; ///< узел <type>
-    ViewType view;   ///< атрибут "view"
-    bool visibility; ///< узел <visibility>
+    QString name;     ///< узел <name>
+    QString title;    ///< атрибут "title"
+    quint32 src_addr; ///< узел <src-addr>
+    quint32 dst_addr; ///< узел <dst-addr>
+    BinaryType type;  ///< узел <type>
+    ViewType view;    ///< атрибут "view"
+    bool visibility;  ///< узел <visibility>
 };
 
 /// \brief Структура для хранения информации узла <tab> из <hidden>.
@@ -89,10 +90,11 @@ struct HiddenTab
 {
     QString title;                     ///< атрибут "desc"
     QString background;                ///< атрибут "background"
+    QString prefix;                    ///< атрибут "prefix"
     std::vector<HiddenWidget> widgets; ///< узлы <mwdiget>
 };
 
-using SignalMap = QHash<quint32, Signal>;         ///< Хранит узлы <signal> секции <signals>.
+using SignalMap = std::map<quint32, Signal>;      ///< Хранит узлы <signal> секции <signals>.
 using TabsMap = QHash<quint32, QString>;          ///< Хранит узлы <tab> секции <section-tabs>.
 using HighlightMap = QMultiMap<quint32, quint32>; ///< Для подсветки элементов.
 using SectionList = std::vector<Section>;         ///< Хранит узлы <section> секции <sections>.
@@ -162,3 +164,5 @@ private:
     ModuleTypes::MeasJourList m_measJournals;
     ModuleTypes::HiddenSettings m_hiddenSettings;
 };
+
+typedef ModuleTypes::SignalMap::value_type SigMapValue;

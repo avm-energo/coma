@@ -115,9 +115,6 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
 void DialogCreator::createJournalDialog()
 {
     using namespace journals;
-    // TODO: Только для USB
-    // Делаем проверку и создаём диалог для журналов
-    // if (board.interfaceType() != Board::InterfaceType::RS485)
     addDialogToList(new JournalDialog(m_settings, m_parent), "Журналы", "jours");
 }
 
@@ -217,7 +214,7 @@ void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
         addDialogToList(hiddenDialog, "Секретные операции", "hidden");
 
         // Debug purposes
-        auto anotherHiddenDialog = new NewHiddenDialog(m_settings.getHiddenSettings(), m_parent);
+        auto anotherHiddenDialog = new NewHiddenDialog(m_settings, m_parent);
         addDialogToList(anotherHiddenDialog, "Секретные операции 2", "hidden2");
     }
 }

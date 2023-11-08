@@ -71,9 +71,9 @@ void ConfigStorage::hiddenTabDataReceived(const ModuleTypes::HiddenTab &hiddenTa
 void ConfigStorage::protocolDescriptionReceived(const AbstractGroup &str)
 {
     auto &sigMap = m_settings.getSignals();
-    if (sigMap.contains(str.sigId))
+    if (sigMap.find(str.sigId) != sigMap.cend())
     {
-        auto signal = sigMap.value(str.sigId);
+        auto signal = sigMap.at(str.sigId);
         ProtocolDescription *descr = Interface::Connection::iface()->settings();
         switch (str.ifaceType)
         {
