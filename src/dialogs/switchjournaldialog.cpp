@@ -23,8 +23,8 @@ static constexpr char name[] = "swjourHash";
 
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
-    m_conn->connection(this, &SwitchJournalDialog::fillSwJInfo);
-    m_conn->connection(this, &SwitchJournalDialog::fillJour);
+    m_dataUpdater->currentConnection()->connection(this, &SwitchJournalDialog::fillSwJInfo);
+    m_dataUpdater->currentConnection()->connection(this, &SwitchJournalDialog::fillJour);
     setupUI();
 }
 
@@ -163,8 +163,7 @@ void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
     quint32 size = swjMap.value(reqSwJNum).fileLength;
 
     if (!loadIfExist(size))
-        Connection::iface()->reqFile(
-            fileNum, DataTypes::FileFormat::CustomS2, size + 2 * sizeof(S2::DataRecHeader));
+        Connection::iface()->reqFile(fileNum, DataTypes::FileFormat::CustomS2, size + 2 * sizeof(S2::DataRecHeader));
 }
 
 void SwitchJournalDialog::exportSwJ(uint32_t swjNum)

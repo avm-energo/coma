@@ -268,13 +268,13 @@ void HiddenDialog::sendDeviceHiddenBlock()
 
     if (Board::GetInstance().type() == Modules::Model::MPE)
     {
-        m_conn->writeCommand(Commands::C_EnableWritingHardware, quint16(0x5c5c));
+        m_dataUpdater->currentConnection()->writeCommand(Commands::C_EnableWritingHardware, quint16(0x5c5c));
         StdFunc::Wait(300);
     }
 
     auto buffer = QByteArray::fromRawData(static_cast<char *>(ptr), size);
     DataTypes::HardwareStruct block { static_cast<quint32>(m_type), buffer };
-    m_conn->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(block));
+    m_dataUpdater->currentConnection()->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(block));
 }
 
 void HiddenDialog::updateMode(bool enabled)

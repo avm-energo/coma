@@ -16,9 +16,9 @@ class NewHiddenDialog final : public UDialog
     Q_OBJECT
 private:
     ModuleTypes::HiddenSettings m_settings;
-    std::vector<ModuleTypes::Signal> m_requestSignals;
     std::set<quint32> m_srcAddresses;
     QString m_currentBackground;
+    bool m_isGodMode;
 
     void generateDefaultSettings();
     void prepareInternalData(const ModuleTypes::SignalMap &sigMap);

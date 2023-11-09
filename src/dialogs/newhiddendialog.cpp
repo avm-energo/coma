@@ -16,9 +16,9 @@ static constexpr char name[] = "hiddenHash";
 }
 
 NewHiddenDialog::NewHiddenDialog(const ModuleSettings &settings, QWidget *parent)
-    : UDialog(crypto::hash, crypto::name, parent), m_settings(settings.getHiddenSettings())
+    : UDialog(crypto::hash, crypto::name, parent), m_settings(settings.getHiddenSettings()), m_isGodMode(false)
 {
-    m_dataUpdater->setUpdatesEnabled(false);
+    m_dataUpdater->disableUpdates();
     if (m_settings.empty())
         generateDefaultSettings();
     prepareInternalData(settings.getSignals());
@@ -56,7 +56,6 @@ void NewHiddenDialog::generateDefaultSettings()
 
 void NewHiddenDialog::prepareInternalData(const ModuleTypes::SignalMap &sigMap)
 {
-    m_requestSignals.reserve(4);
     std::set<quint32> uniqueSignalIds;
     for (auto &&tabSettings : m_settings)
     {
@@ -75,15 +74,18 @@ void NewHiddenDialog::prepareInternalData(const ModuleTypes::SignalMap &sigMap)
         }
     }
     for (auto unique_id : uniqueSignalIds)
-        m_requestSignals.push_back(sigMap.at(unique_id));
+    {
+        auto &signal = sigMap.at(unique_id);
+        m_dataUpdater->addBs({ signal.startAddr, signal.count });
+    }
 }
 
 void NewHiddenDialog::setupUI()
 {
-    auto layout = new QVBoxLayout;
+    auto mainLayout = new QVBoxLayout;
     auto tabWidget = new QTabWidget(this);
     tabWidget->setStyleSheet("background-color: transparent;"); // tabWidget прозрачный
-    layout->addWidget(WDFunc::NewLBLAndLE(this, "Тип модуля:", "moduletype"));
+    mainLayout->addWidget(WDFunc::NewLBLAndLE(this, "Тип модуля:", "moduletype"));
 
     for (auto &&tabSettings : m_settings)
     {
@@ -105,8 +107,23 @@ void NewHiddenDialog::setupUI()
                 m_currentBackground = m_settings[newIndex].background;
             update();
         });
-    layout->addWidget(tabWidget);
-    setLayout(layout);
+    mainLayout->addWidget(tabWidget);
+
+    auto btnLayout = new QHBoxLayout;
+    btnLayout->setAlignment(Qt::AlignRight);
+    auto modeChangeBtn = new QPushButton("Режим Д'Артяньян", this);
+    connect(modeChangeBtn, &QAbstractButton::clicked, this, [this] {
+        if (!checkPassword())
+            return;
+        m_isGodMode = true;
+        // updateUI();
+    });
+    btnLayout->addWidget(modeChangeBtn);
+    auto writeBtn = new QPushButton("Записать и закрыть", this);
+    connect(writeBtn, &QAbstractButton::clicked, this, [] { ; });
+    btnLayout->addWidget(writeBtn);
+    mainLayout->addLayout(btnLayout, 1);
+    setLayout(mainLayout);
 }
 
 QGroupBox *NewHiddenDialog::setupGroupBox(const ModuleTypes::HiddenTab &hiddenTab)
@@ -163,9 +180,6 @@ const ModuleTypes::HiddenWidget *NewHiddenDialog::findWidgetByAddress(const quin
 
 void NewHiddenDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
-    if (!updatesEnabled())
-        return;
-
     if (m_srcAddresses.find(bs.sigAdr) != m_srcAddresses.cend())
     {
         auto search = findWidgetByAddress(bs.sigAdr);
@@ -188,4 +202,20 @@ void NewHiddenDialog::fillWidget(const quint32 value, const ModuleTypes::HiddenW
     }
     else
         WDFunc::SetLEData(this, widget.name, QString::number(value, 16), "^[a-fA-F0-9]{1,8}$");
+}
+
+void NewHiddenDialog::fill()
+{
+    QTimer timer;
+    QEventLoop loop;
+    timer.setSingleShot(true);
+    timer.setInterval(1000);
+    connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
+    m_dataUpdater->enableBitStringDataUpdates();
+    m_dataUpdater->setUpdatesEnabled(true);
+    m_dataUpdater->requestUpdates();
+    timer.start();
+    loop.exec();
+    m_dataUpdater->setUpdatesEnabled(false);
+    m_dataUpdater->disableUpdates();
 }

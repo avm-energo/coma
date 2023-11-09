@@ -21,7 +21,6 @@ ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, const ModuleTypes::Alar
     else
         m_alarmColor = Qt::transparent;
     followToData();
-    m_conn->connection(this, &ModuleAlarm::update);
     setupUI(m_alarms.values());
 }
 
@@ -101,7 +100,7 @@ void ModuleAlarm::updatePixmap(const bool &isSet, const quint32 &position)
     }
 }
 
-void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
+void ModuleAlarm::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
     const quint8 sigval = sp.sigVal;
     if (!(sigval & 0x80))

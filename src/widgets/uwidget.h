@@ -28,11 +28,7 @@ public:
 protected:
     bool checkPassword();
     QString m_hash;
-    Connection *m_conn;
     ModuleDataUpdater *m_dataUpdater;
-
-private:
-    QMap<int, QList<HighlightWarnAlarmStruct>> m_highlightMap;
 };
 
 #endif // UWIDGET_H
