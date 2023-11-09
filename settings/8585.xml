@@ -1243,63 +1243,63 @@
             </signal>
         </signals>
         <hidden desc="Секретные операции">
-            <tab desc="Базовая плата" background=":/images/BMn.svg" prefix="base">
+            <tab desc="Базовая плата" background=":/images/BMn.svg" prefix="base" flag="1">
                 <mwidget view="LineEdit" title="Тип базовой платы">
                     <name>basetype</name>
                     <type>uint32</type>
-                    <src-addr>1</src-addr>
-                    <dst-addr>40010</dst-addr>
+                    <addr>1</addr>
+                    <index>1</index>
                     <visibility>true</visibility>
                 </mwidget>
                 <mwidget view="LineEdit" title="Серийный номер платы">
                     <name>baseserial</name>
                     <type>uint32</type>
-                    <src-addr>10</src-addr>
-                    <dst-addr>40011</dst-addr>
+                    <addr>10</addr>
+                    <index>2</index>
                     <visibility>true</visibility>
                 </mwidget>
                 <mwidget view="Version" title="Версия платы">
                     <name>baseversion</name>
                     <type>uint32</type>
-                    <src-addr>3</src-addr>
-                    <dst-addr>40012</dst-addr>
+                    <addr>3</addr>
+                    <index>3</index>
                     <visibility>true</visibility>
                 </mwidget>
                 <mwidget view="LineEdit" title="Серийный номер модуля">
                     <name>moduleserial</name>
                     <type>uint32</type>
-                    <src-addr>13</src-addr>
-                    <dst-addr>40013</dst-addr>
+                    <addr>13</addr>
+                    <index>4</index>
                     <visibility>true</visibility>
                 </mwidget>
             </tab>
-            <tab desc="Мезонинная плата" background=":/images/BnM.svg" prefix="mezz">
+            <tab desc="Мезонинная плата" background=":/images/BnM.svg" prefix="mezz" flag="2">
                 <mwidget view="LineEdit" title="Тип мезонинной платы платы">
                     <name>mezztype</name>
                     <type>uint32</type>
-                    <src-addr>2</src-addr>
-                    <dst-addr>40014</dst-addr>
+                    <addr>2</addr>
+                    <index>5</index>
                     <visibility>true</visibility>
                 </mwidget>
                 <mwidget view="LineEdit" title="Серийный номер платы">
                     <name>mezzserial</name>
                     <type>uint32</type>
-                    <src-addr>11</src-addr>
-                    <dst-addr>40015</dst-addr>
+                    <addr>11</addr>
+                    <index>6</index>
                     <visibility>true</visibility>
                 </mwidget>
                 <mwidget view="Version" title="Версия платы">
                     <name>mezzversion</name>
                     <type>uint32</type>
-                    <src-addr>12</src-addr>
-                    <dst-addr>40016</dst-addr>
+                    <addr>12</addr>
+                    <index>7</index>
                     <visibility>true</visibility>
                 </mwidget>
                 <mwidget view="LineEdit" title="Зарезервировано">
                     <name>reserved</name>
                     <type>uint32</type>
-                    <src-addr>1</src-addr>
-                    <dst-addr>40017</dst-addr>
+                    <addr>4</addr>
+                    <index>8</index>
                     <visibility>false</visibility>
                 </mwidget>
             </tab>

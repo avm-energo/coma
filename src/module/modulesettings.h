@@ -76,13 +76,13 @@ struct MeasJournal
 /// \brief Структура для хранения информации узла <mwidget> из <hidden/tab>.
 struct HiddenWidget
 {
-    QString name;     ///< узел <name>
-    QString title;    ///< атрибут "title"
-    quint32 src_addr; ///< узел <src-addr>
-    quint32 dst_addr; ///< узел <dst-addr>
-    BinaryType type;  ///< узел <type>
-    ViewType view;    ///< атрибут "view"
-    bool visibility;  ///< узел <visibility>
+    QString name;    ///< узел <name>
+    QString title;   ///< атрибут "title"
+    quint32 address; ///< узел <addr>
+    quint16 index;   ///< узел <index>
+    BinaryType type; ///< узел <type>
+    ViewType view;   ///< атрибут "view"
+    bool visibility; ///< узел <visibility>
 };
 
 /// \brief Структура для хранения информации узла <tab> из <hidden>.

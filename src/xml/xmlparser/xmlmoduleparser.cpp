@@ -310,12 +310,12 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
         auto name = parseString(hiddenWidgetNode, tags::name);
         auto typeStr = parseString(hiddenWidgetNode, tags::type);
         auto type = parseBinaryType(typeStr);
-        auto src_addr = parseNumFromNode<quint32>(hiddenWidgetNode, tags::src_addr);
-        auto dst_addr = parseNumFromNode<quint32>(hiddenWidgetNode, tags::dst_addr);
+        auto address = parseNumFromNode<quint32>(hiddenWidgetNode, tags::addr);
+        auto index = parseNumFromNode<quint16>(hiddenWidgetNode, tags::index);
         auto visibility = true;
         if (parseString(hiddenWidgetNode, tags::visibility) == "false")
             visibility = false;
-        widgets.push_back(ModuleTypes::HiddenWidget { name, title, src_addr, dst_addr, type, view, visibility });
+        widgets.push_back(ModuleTypes::HiddenWidget { name, title, address, index, type, view, visibility });
     });
     emit hiddenTabDataSending(ModuleTypes::HiddenTab { tabTitle, tabBackground, tabPrefix, widgets });
 }

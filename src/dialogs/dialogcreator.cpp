@@ -215,6 +215,7 @@ void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
 
         // Debug purposes
         auto anotherHiddenDialog = new NewHiddenDialog(m_settings, m_parent);
+        anotherHiddenDialog->setModuleName(m_board.moduleName());
         anotherHiddenDialog->fill();
         addDialogToList(anotherHiddenDialog, "Секретные операции 2", "hidden2");
     }
