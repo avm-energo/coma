@@ -131,7 +131,7 @@ void HiddenDialog::setupUI()
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->setAlignment(Qt::AlignRight);
-    QPushButton *pb = new QPushButton("Режим Д'Артяньян");
+    QPushButton *pb = new QPushButton("Режим Д'Артаньян");
     connect(pb, &QAbstractButton::clicked, this, [=] {
         KeyPressDialog *dlg = new KeyPressDialog(this);
         bool status = dlg->CheckPassword(crypto::hashLevel2);

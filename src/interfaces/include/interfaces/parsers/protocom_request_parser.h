@@ -32,6 +32,8 @@ public:
 
 signals:
     void sendJournalData(const S2::FilesEnum fileNum, const QByteArray &file);
+    /// \brief Сигнал для эмуляции ответов на команды, отсутствующие в Protocom.
+    void emulateOkAnswer();
 };
 
 } // namespace Interface

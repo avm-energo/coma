@@ -43,6 +43,7 @@ constexpr auto desc = "desc";
 constexpr auto prefix = "prefix";
 constexpr auto background = "background";
 constexpr auto title = "title";
+constexpr auto flag = "flag";
 constexpr auto id = "id";
 constexpr auto addr = "addr";
 constexpr auto start_addr = "start-addr";

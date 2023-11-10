@@ -18,6 +18,9 @@ DeviceQueryExecutor *QueryExecutorFabric::makeProtocomExecutor(RequestQueue &que
     // Чтение журналов через парсер запросов
     QObject::connect(requestParser, &ProtocomRequestParser::sendJournalData, //
         responseParser, &ProtocomResponseParser::receiveJournalData);
+    // Эмуляция ответа "Ок"
+    QObject::connect(requestParser, &ProtocomRequestParser::emulateOkAnswer, //
+        responseParser, &ProtocomResponseParser::processOk);
     executor->setParsers(requestParser, responseParser);
     return executor;
 }

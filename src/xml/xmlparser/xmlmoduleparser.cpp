@@ -301,6 +301,7 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
     auto tabTitle = hiddenTabElem.attribute(tags::desc);
     auto tabBackground = hiddenTabElem.attribute(tags::background);
     auto tabPrefix = hiddenTabElem.attribute(tags::prefix);
+    auto tabFlag = (hiddenTabElem.attribute(tags::flag)).toUShort();
     std::vector<ModuleTypes::HiddenWidget> widgets;
     callForEachChild(hiddenTabNode, [this, &widgets](const QDomNode &hiddenWidgetNode) {
         auto hiddenWidgetElem = hiddenWidgetNode.toElement();
@@ -317,7 +318,7 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
             visibility = false;
         widgets.push_back(ModuleTypes::HiddenWidget { name, title, address, index, type, view, visibility });
     });
-    emit hiddenTabDataSending(ModuleTypes::HiddenTab { tabTitle, tabBackground, tabPrefix, widgets });
+    emit hiddenTabDataSending(ModuleTypes::HiddenTab { tabTitle, tabBackground, tabPrefix, tabFlag, widgets });
 }
 
 /// \brief Функция для парсинга узла <resources>.

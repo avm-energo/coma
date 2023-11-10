@@ -17,7 +17,12 @@ static constexpr char name[] = "hiddenHash";
 }
 
 NewHiddenDialog::NewHiddenDialog(const ModuleSettings &settings, QWidget *parent)
-    : UDialog(crypto::hash, crypto::name, parent), m_settings(settings.getHiddenSettings()), m_isGodMode(false)
+    : UDialog(crypto::hash, crypto::name, parent)
+    , m_settings(settings.getHiddenSettings())
+    , m_isGodMode(false)
+    , m_isAlreadyFilled(false)
+    , m_isSendedEnableCmd(false)
+    , m_isSendedWritingCmd(false)
 {
     m_dataUpdater->disableUpdates();
     if (m_settings.empty())
@@ -30,7 +35,7 @@ void NewHiddenDialog::generateDefaultSettings()
 {
     using namespace ModuleTypes;
     m_settings = {
-        HiddenTab { "Базовая плата", ":/images/BMn.svg", "base", //
+        HiddenTab { "Базовая плата", ":/images/BMn.svg", "base", 1, //
             {
                 HiddenWidget { "basetype", "Тип платы", 1, 1, //
                     BinaryType::uint32, ViewType::LineEdit, true },
@@ -41,7 +46,7 @@ void NewHiddenDialog::generateDefaultSettings()
                 HiddenWidget { "moduleserial", "Серийный номер модуля", 13, 4, //
                     BinaryType::uint32, ViewType::LineEdit, true }             //
             } },                                                               //
-        HiddenTab { "Мезонинная плата", ":/images/BnM.svg", "mezz",            //
+        HiddenTab { "Мезонинная плата", ":/images/BnM.svg", "mezz", 2,         //
             {
                 HiddenWidget { "mezztype", "Тип платы", 2, 5, //
                     BinaryType::uint32, ViewType::LineEdit, true },
@@ -58,6 +63,7 @@ void NewHiddenDialog::generateDefaultSettings()
 void NewHiddenDialog::prepareInternalData(const ModuleTypes::SignalMap &sigMap)
 {
     std::set<quint32> uniqueSignalIds;
+    // Ищем сигналы, соотвествующие адресам, указанным в настройках
     for (auto &&tabSettings : m_settings)
     {
         for (auto &&widgetSettings : tabSettings.widgets)
@@ -74,6 +80,7 @@ void NewHiddenDialog::prepareInternalData(const ModuleTypes::SignalMap &sigMap)
             m_srcAddrStates.insert({ widgetSettings.address, false });
         }
     }
+    // Добавляем в список запрашиваемых сигналов
     for (auto unique_id : uniqueSignalIds)
     {
         auto &signal = sigMap.at(unique_id);
@@ -112,7 +119,7 @@ void NewHiddenDialog::setupUI()
     auto btnLayout = new QHBoxLayout;
     btnLayout->setAlignment(Qt::AlignRight);
 
-    auto modeChangeBtn = new QPushButton("Режим Д'Артяньян", this);
+    auto modeChangeBtn = new QPushButton("Режим Д'Артаньян", this);
     connect(modeChangeBtn, &QAbstractButton::clicked, this, [this] {
         if (!checkPassword())
             return;
@@ -122,14 +129,11 @@ void NewHiddenDialog::setupUI()
     btnLayout->addWidget(modeChangeBtn);
 
     auto updateBtn = new QPushButton("Обновить данные", this);
-    connect(updateBtn, &QAbstractButton::clicked, this, [this] {
-        fill();
-        EMessageBox::information(this, "Успешно обновлено!");
-    });
+    connect(updateBtn, &QAbstractButton::clicked, this, &NewHiddenDialog::fill);
     btnLayout->addWidget(updateBtn);
 
     auto writeBtn = new QPushButton("Записать", this);
-    connect(writeBtn, &QAbstractButton::clicked, this, [this] { fillBack(); });
+    connect(writeBtn, &QAbstractButton::clicked, this, &NewHiddenDialog::fillBack);
     btnLayout->addWidget(writeBtn);
     mainLayout->addLayout(btnLayout, 1);
     setLayout(mainLayout);
@@ -141,10 +145,13 @@ QGroupBox *NewHiddenDialog::setupGroupBox(const ModuleTypes::HiddenTab &hiddenTa
     tabGroupBox->setStyleSheet("background-color: white;"); // tabGroupBox непрозрачный
     tabGroupBox->setObjectName(hiddenTab.prefix + "tab");
     auto gbLayout = new QVBoxLayout;
-    auto enableCheckBox = WDFunc::NewChB2(this, hiddenTab.prefix + "enable", "Установлена");
-    enableCheckBox->setChecked(true);
-    connect(enableCheckBox, &QCheckBox::stateChanged, this, [this](int) { updateUI(); });
-    gbLayout->addWidget(enableCheckBox);
+    if (hiddenTab.flag != 1)
+    {
+        auto enableCheckBox = WDFunc::NewChB2(this, hiddenTab.prefix + "enable", "Установлена");
+        enableCheckBox->setChecked(true);
+        connect(enableCheckBox, &QCheckBox::stateChanged, this, [this](int) { updateUI(); });
+        gbLayout->addWidget(enableCheckBox);
+    }
     for (auto &&widget : hiddenTab.widgets)
     {
         if (widget.visibility)
@@ -175,13 +182,20 @@ void NewHiddenDialog::updateUI()
     // основе этой информации обновляем все её виджеты
     for (auto &&tabSettings : m_settings)
     {
-        bool enabled = false;
-        if (!WDFunc::ChBData(this, tabSettings.prefix + "enable", enabled))
-            continue;
-
+        bool isEnabled = isTabEnabled(tabSettings);
         for (auto &&widget : tabSettings.widgets)
-            updateWidget(enabled, widget);
+            updateWidget(isEnabled, widget);
     }
+}
+
+bool NewHiddenDialog::isTabEnabled(const ModuleTypes::HiddenTab &tabSettings) const noexcept
+{
+    bool enabled = false;
+    if (tabSettings.flag != 1)
+        WDFunc::ChBData(this, tabSettings.prefix + "enable", enabled);
+    else
+        enabled = true;
+    return enabled;
 }
 
 void NewHiddenDialog::updateWidget(const bool enabled, const ModuleTypes::HiddenWidget &widget)
@@ -230,8 +244,15 @@ void NewHiddenDialog::verifyFilling() noexcept
     }
 
     // Если пришли сюда, то все элементы m_srcAddrStates установлены в true
-    // Посылаем сигнал для выключения обновлений
-    emit fillingFinished();
+    // Выключаем обновление данных в диалоге
+    m_dataUpdater->setUpdatesEnabled(false);
+    m_dataUpdater->disableUpdates();
+
+    // Для повторного запроса
+    if (m_isAlreadyFilled)
+        EMessageBox::information(this, "Успешно обновлено!");
+    else
+        m_isAlreadyFilled = true;
 
     // Сбрасываем состояния m_srcAddrStates
     for (auto &iter : m_srcAddrStates)
@@ -256,7 +277,7 @@ void NewHiddenDialog::fillWidget(const quint32 value, const ModuleTypes::HiddenW
 {
     if (widgetData.view == ModuleTypes::ViewType::Version)
     {
-        QString tmps = QString::number(static_cast<quint8>(value >> 24), 16);
+        QString tmps = QString::number(static_cast<quint8>((value & 0xFF000000) >> 24), 16);
         WDFunc::SetLEData(this, widgetData.name + 'm', tmps, "^[a-fA-F0-9]$");
         tmps = QString::number(static_cast<quint8>((value & 0x00FF0000) >> 16), 16);
         WDFunc::SetLEData(this, widgetData.name + 'l', tmps, "^[a-fA-F0-9]$");
@@ -267,35 +288,110 @@ void NewHiddenDialog::fillWidget(const quint32 value, const ModuleTypes::HiddenW
         WDFunc::SetLEData(this, widgetData.name, QString::number(value, 16), "^[a-fA-F0-9]{1,8}$");
 }
 
-void NewHiddenDialog::fill()
+quint32 NewHiddenDialog::fillBackWidget(const ModuleTypes::HiddenWidget &widgetData)
 {
-    QEventLoop loop;
-    connect(this, &NewHiddenDialog::fillingFinished, &loop, &QEventLoop::quit);
-    m_dataUpdater->enableBitStringDataUpdates();
-    m_dataUpdater->setUpdatesEnabled(true);
-    m_dataUpdater->requestUpdates();
-    loop.exec();
-    m_dataUpdater->setUpdatesEnabled(false);
-    m_dataUpdater->disableUpdates();
+    /// TODO: Обрабатывать widgetData.type или убрать совсем
+    if (widgetData.visibility)
+    {
+        QString tmps;
+        // Version fill back
+        if (widgetData.view == ModuleTypes::ViewType::Version)
+        {
+            WDFunc::LEData(this, widgetData.name + 'm', tmps);
+            quint32 number = static_cast<quint32>(tmps.toInt()) << 24;
+            WDFunc::LEData(this, widgetData.name + 'l', tmps);
+            number |= static_cast<quint32>(tmps.toInt()) << 16;
+            WDFunc::LEData(this, widgetData.name + 's', tmps);
+            number |= static_cast<quint32>(tmps.toInt());
+            return number;
+        }
+        // Line edit fill back
+        else
+        {
+            WDFunc::LEData(this, widgetData.name, tmps);
+            quint32 number = static_cast<quint32>(tmps.toUInt(nullptr, 16));
+            return number;
+        }
+    }
+    else
+        return quint32(0xFFFFFFFF);
 }
 
-void NewHiddenDialog::fillBack()
+void NewHiddenDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
 {
-    using namespace ModuleTypes;
-    // Кладём описания всех виджетов в один временный вектор
-    std::vector<HiddenWidget> temp;
-    temp.reserve(16);
-    for (auto &&tabSettings : m_settings)
-        temp.insert(temp.end(), tabSettings.widgets.cbegin(), tabSettings.widgets.cend());
-    // Сортировка временного вектора
-    std::sort(temp.begin(), temp.end(), //
-        [](const HiddenWidget &lhs, const HiddenWidget &rhs) { return lhs.index < rhs.index; });
-
-    auto conn = m_dataUpdater->currentConnection();
-    /// TODO
+    if (m_isSendedEnableCmd)
+    {
+        m_isSendedEnableCmd = false;
+        if (response.type == DataTypes::Ok)
+        {
+            auto conn = m_dataUpdater->currentConnection();
+            conn->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(m_hardwareInfo));
+            m_isSendedWritingCmd = true;
+        }
+        else if (response.type == DataTypes::Error)
+            EMessageBox::error(this, "Устройство запрещает запись Hidden Block");
+    }
+    else if (m_isSendedWritingCmd)
+    {
+        m_isSendedWritingCmd = false;
+        m_dataUpdater->setUpdatesEnabled(false);
+        if (response.type == DataTypes::Ok)
+            EMessageBox::information(this, "Записано успешно\nНеобходимо переподключиться");
+        else if (response.type == DataTypes::Error)
+            EMessageBox::error(this, "Ошибка записи Hidden Block");
+    }
 }
 
 void NewHiddenDialog::setModuleName(const QString &moduleName)
 {
     WDFunc::SetLEData(this, "modulename", moduleName);
+}
+
+void NewHiddenDialog::fill()
+{
+    m_dataUpdater->enableBitStringDataUpdates();
+    m_dataUpdater->setUpdatesEnabled(true);
+    m_dataUpdater->requestUpdates();
+}
+
+void NewHiddenDialog::fillBack()
+{
+    using namespace ModuleTypes;
+    std::vector<HiddenWidget> temp;
+    temp.reserve(16);
+    quint32 id = 0;
+
+    // Кладём описания всех виджетов во временный вектор
+    for (auto &&tabSettings : m_settings)
+    {
+        // Только в том случае, если вкладка в состоянии 'enabled'
+        if (isTabEnabled(tabSettings))
+        {
+            temp.insert(temp.end(), tabSettings.widgets.cbegin(), tabSettings.widgets.cend());
+            id |= tabSettings.flag;
+        }
+    }
+    // Сортировка временного вектора
+    std::sort(temp.begin(), temp.end(), //
+        [](const HiddenWidget &lhs, const HiddenWidget &rhs) { return lhs.index < rhs.index; });
+
+    // Формируем вектор блока данных
+    std::vector<quint32> hiddenBlock;
+    hiddenBlock.reserve(temp.size());
+    for (auto &&widget : temp)
+        hiddenBlock.push_back(fillBackWidget(widget));
+    // Формируем блок на отправку в устройство
+    auto bufferSize = hiddenBlock.size() * sizeof(quint32);
+    QByteArray buffer(bufferSize, 0);
+    auto srcBegin = reinterpret_cast<char *>(hiddenBlock.data());
+    auto srcEnd = srcBegin + bufferSize;
+    std::copy(srcBegin, srcEnd, buffer.begin());
+    m_hardwareInfo = DataTypes::HardwareStruct { id, buffer };
+
+    // Посылаем команду на разрешение записи Hidden Block
+    auto conn = m_dataUpdater->currentConnection();
+    updateConnection(conn);
+    conn->writeCommand(Commands::C_EnableWritingHardware, quint16(0x5c5c));
+    m_isSendedEnableCmd = true;
+    m_dataUpdater->setUpdatesEnabled(true);
 }

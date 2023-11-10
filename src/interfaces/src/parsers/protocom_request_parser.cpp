@@ -186,6 +186,11 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         m_request = prepareBlock(Proto::WriteSingleCommand, tmpba);
         break;
     }
+    case Commands::C_EnableWritingHardware:
+    {
+        setExceptionalSituationStatus(true);
+        break;
+    }
     default:
         qCritical() << "Undefined command: " << cmd.command;
     }
@@ -201,6 +206,8 @@ void ProtocomRequestParser::exceptionalAction(const CommandStruct &cmd) noexcept
 {
     if (cmd.command == Commands::C_ReqFile)
         processFileFromDisk(cmd.arg1.value<S2::FilesEnum>());
+    else if (cmd.command == Commands::C_EnableWritingHardware)
+        emit emulateOkAnswer();
 }
 
 bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noexcept

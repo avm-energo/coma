@@ -91,7 +91,11 @@ struct HiddenTab
     QString title;                     ///< атрибут "desc"
     QString background;                ///< атрибут "background"
     QString prefix;                    ///< атрибут "prefix"
-    std::vector<HiddenWidget> widgets; ///< узлы <mwdiget>
+    quint16 flag;                      ///< атрибут "flag", возможные значения:
+                                       ///< 0x01 - базовая;
+                                       ///< 0x02 - мезонин;
+                                       ///< 0x04 - дополнительная.
+    std::vector<HiddenWidget> widgets; ///< узлы <mwdiget>.
 };
 
 using SignalMap = std::map<quint32, Signal>;      ///< Хранит узлы <signal> секции <signals>.
