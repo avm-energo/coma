@@ -212,12 +212,15 @@ void NewHiddenDialog::updateWidget(const bool enabled, const ModuleTypes::Hidden
 
 void NewHiddenDialog::paintEvent(QPaintEvent *e)
 {
-    QPainter painter;
-    painter.begin(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    QSvgRenderer svg(m_currentBackground);
-    svg.render(&painter);
-    painter.end();
+    if (!m_currentBackground.isEmpty())
+    {
+        QPainter painter;
+        painter.begin(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        QSvgRenderer svg(m_currentBackground);
+        svg.render(&painter);
+        painter.end();
+    }
     e->accept();
 }
 

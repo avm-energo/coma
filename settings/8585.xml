@@ -1274,7 +1274,7 @@
                 </mwidget>
             </tab>
             <tab desc="Мезонинная плата" background=":/images/BnM.svg" prefix="mezz" flag="2">
-                <mwidget view="LineEdit" title="Тип мезонинной платы платы">
+                <mwidget view="LineEdit" title="Тип мезонинной платы">
                     <name>mezztype</name>
                     <type>uint32</type>
                     <addr>2</addr>

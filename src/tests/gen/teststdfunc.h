@@ -39,6 +39,8 @@ private slots:
     void modbusRegistersTest03();
     void modbusRegistersTest04();
     void modbusRegistersTest05();
+    void modbusRegistersTest06();
+    void modbusRegistersTest07();
     void modbusSinglePoint();
 };
 

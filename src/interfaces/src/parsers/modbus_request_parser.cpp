@@ -12,9 +12,25 @@ inline QByteArray packRegister(T value)
     static_assert(N % 2 == 0, "The size of type T must be even");
     static_assert(N >= 2, "The size of type T must be greater than or equal to 2");
     QByteArray ba;
+    ba.reserve(N);
     auto srcBegin = reinterpret_cast<std::uint8_t *>(&value);
     auto srcEnd = srcBegin + N;
     for (auto it = srcBegin; it != srcEnd; it = it + 2)
+    {
+        ba.push_back(*(it + 1));
+        ba.push_back(*it);
+    }
+    return ba;
+}
+
+inline QByteArray packRegister(const QByteArray &value)
+{
+    const auto N = value.size();
+    Q_ASSERT(N % 2 == 0);
+    Q_ASSERT(N >= 2);
+    QByteArray ba;
+    ba.reserve(value.size());
+    for (auto it = value.cbegin(); it != value.cend(); it = it + 2)
     {
         ba.push_back(*(it + 1));
         ba.push_back(*it);
@@ -136,7 +152,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     {
         if (cmd.arg1.canConvert<DataTypes::BlockStruct>())
         {
-            auto value = cmd.arg1.value<DataTypes::BlockStruct>().data;
+            auto value = helper::packRegister(cmd.arg1.value<DataTypes::BlockStruct>().data);
             const quint16 quantity = value.size() / 2;
             request = Modbus::Request {
                 Modbus::FunctionCode::WriteMultipleRegisters,   //

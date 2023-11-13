@@ -9,7 +9,7 @@ namespace detail
 {
 
 template <typename T> //
-T unpackReg(QByteArray ba)
+inline T unpackReg(QByteArray ba)
 {
     assert(sizeof(T) == ba.size());
     for (auto i = 0; i < ba.size(); i = i + 2)
@@ -30,11 +30,12 @@ inline T unpackRegister(const QByteArray &ba)
 }
 
 template <typename T, std::size_t N = sizeof(T)> //
-QByteArray packRegister(T value)
+inline QByteArray packRegister(T value)
 {
     static_assert(N % 2 == 0, "The size of type T must be even");
     static_assert(N >= 2, "The size of type T must be greater than or equal to 2");
     QByteArray ba;
+    ba.reserve(N);
     auto srcBegin = reinterpret_cast<std::uint8_t *>(&value);
     auto srcEnd = srcBegin + sizeof(T);
     for (auto it = srcBegin; it != srcEnd; it = it + 2)
@@ -42,6 +43,33 @@ QByteArray packRegister(T value)
         ba.push_back(*(it + 1));
         ba.push_back(*it);
     }
+    return ba;
+}
+
+inline QByteArray packRegister(const QByteArray &value)
+{
+    const auto N = value.size();
+    Q_ASSERT(N % 2 == 0);
+    Q_ASSERT(N >= 2);
+    QByteArray ba;
+    ba.reserve(value.size());
+    for (auto it = value.cbegin(); it != value.cend(); it = it + 2)
+    {
+        ba.push_back(*(it + 1));
+        ba.push_back(*it);
+    }
+    return ba;
+}
+
+template <typename T, std::size_t N = sizeof(T)> //
+inline QByteArray packReg(T value)
+{
+    QByteArray ba;
+    ba.reserve(N);
+    auto srcBegin = reinterpret_cast<std::uint16_t *>(&value);
+    auto srcEnd = srcBegin + (N / sizeof(std::uint16_t));
+    for (auto iter = srcBegin; iter != srcEnd; ++iter)
+        ba.append(StdFunc::toByteArray(qToBigEndian(*iter)));
     return ba;
 }
 
@@ -160,10 +188,34 @@ void TestStdFunc::modbusRegistersTest02()
     std::uint32_t data = 0xaabbccdd;
     auto first = StdFunc::toByteArray(qToBigEndian(data));
     auto second = detail::packRegister(data);
+    auto third = detail::packReg(data);
+    qDebug() << first << second << third;
     QVERIFY(first != second);
+    QVERIFY(second == third);
 }
 
 void TestStdFunc::modbusRegistersTest03()
+{
+    std::uint64_t data = 0xaabbccddaabbccdd;
+    auto first = StdFunc::toByteArray(qToBigEndian(data));
+    auto second = detail::packRegister(data);
+    auto third = detail::packReg(data);
+    qDebug() << first << second << third;
+    QVERIFY(first != second);
+    QVERIFY(second == third);
+}
+
+void TestStdFunc::modbusRegistersTest04()
+{
+    std::uint32_t data = 0xaabbccdd;
+    auto first = StdFunc::toByteArray(data);
+    auto second = detail::packRegister(data);
+    auto third = detail::packRegister(first);
+    qDebug() << first << second << third;
+    QVERIFY(second == third);
+}
+
+void TestStdFunc::modbusRegistersTest05()
 {
     std::uint32_t data = 0xaabbccdd;
     auto packed = detail::packRegister(data);
@@ -171,7 +223,7 @@ void TestStdFunc::modbusRegistersTest03()
     QVERIFY(data == unpacked);
 }
 
-void TestStdFunc::modbusRegistersTest04()
+void TestStdFunc::modbusRegistersTest06()
 {
     std::uint32_t data = 0xaabbccdd;
     auto packed = detail::packRegister(data);
@@ -179,7 +231,7 @@ void TestStdFunc::modbusRegistersTest04()
     QVERIFY(data == unpacked);
 }
 
-void TestStdFunc::modbusRegistersTest05()
+void TestStdFunc::modbusRegistersTest07()
 {
     std::uint32_t data = 0xaabbccdd;
     auto packed = detail::packRegister(data);
