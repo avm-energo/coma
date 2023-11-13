@@ -67,6 +67,7 @@ void DialogManager::setupUI(const AppConfiguration appCfg, const QSize size)
     {
         dialog->engine()->setUpdatesEnabled(false);
         dialog->uponInterfaceSetting();
+        dialog->updateConnection(m_dataUpdater->currentConnection());
         auto item = new QListWidgetItem(dialog->getCaption(), m_sidebar.get());
         item->setSizeHint(QSize(0, size.height() / 20));
         item->setTextAlignment(Qt::AlignCenter);

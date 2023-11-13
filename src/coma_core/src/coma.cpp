@@ -506,8 +506,7 @@ void Coma::initInterfaceConnection()
     auto conn = Connection::iface();
     conn->connection(&board, &Board::update);
     conn->connection(this, &Coma::update);
-    // connect(&board, &Board::readyRead, this, &Coma::prepare);
-    // TODO: Remove it?
+    /// TODO: Remove it?
     connect(conn, &Connection::stateChanged, &board, [&board](const State state) {
         switch (state)
         {

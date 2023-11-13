@@ -34,6 +34,7 @@ private slots:
     void strToVer();
     void enumToStr();
     void byteArrayTest();
+
     void modbusRegistersTest01();
     void modbusRegistersTest02();
     void modbusRegistersTest03();
@@ -42,6 +43,8 @@ private slots:
     void modbusRegistersTest06();
     void modbusRegistersTest07();
     void modbusSinglePoint();
+
+    void cycleCheck(uint8_t value);
 };
 
 #endif // TESTPROTOCOM_H

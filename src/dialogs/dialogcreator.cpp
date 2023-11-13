@@ -11,7 +11,6 @@
 #include "checkdialog.h"
 #include "configdialog.h"
 #include "fwuploaddialog.h"
-#include "hiddendialog.h"
 #include "infodialog.h"
 #include "newhiddendialog.h"
 #include "plotdialog.h"
@@ -204,19 +203,13 @@ void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
 {
     if (m_board.interfaceType() != Interface::IfaceType::Ethernet)
         addDialogToList(new FWUploadDialog(m_parent), "Загрузка ВПО", "upload");
-    addDialogToList(new TimeDialog(m_parent), "Время", "time");
-    addDialogToList(new InfoDialog(m_parent), "О приборе", "info");
-
     if (appCfg == AppConfiguration::Debug)
     {
-        auto hiddenDialog = new HiddenDialog(m_parent);
-        hiddenDialog->fill();
-        addDialogToList(hiddenDialog, "Секретные операции", "hidden");
-
-        // Debug purposes
         auto anotherHiddenDialog = new NewHiddenDialog(m_settings, m_parent);
         anotherHiddenDialog->setModuleName(m_board.moduleName());
         anotherHiddenDialog->fill();
-        addDialogToList(anotherHiddenDialog, "Секретные операции 2", "hidden2");
+        addDialogToList(anotherHiddenDialog, "Секретные операции", "hidden");
     }
+    addDialogToList(new TimeDialog(m_parent), "Время", "time");
+    addDialogToList(new InfoDialog(m_parent), "О приборе", "info");
 }

@@ -81,7 +81,6 @@ void FWUploadDialog::loadFirmware()
     }
     auto conn = Connection::iface();
     conn->writeFirmware(firmware);
-    updateConnection(conn);
     uploadStatus = FirmwareUploadStatus::Written;
 }
 

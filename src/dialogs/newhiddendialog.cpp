@@ -121,10 +121,11 @@ void NewHiddenDialog::setupUI()
 
     auto modeChangeBtn = new QPushButton("Режим Д'Артаньян", this);
     connect(modeChangeBtn, &QAbstractButton::clicked, this, [this] {
-        if (!checkPassword())
-            return;
-        m_isGodMode = true;
-        updateUI();
+        if (checkPassword())
+        {
+            m_isGodMode = true;
+            updateUI();
+        }
     });
     btnLayout->addWidget(modeChangeBtn);
 
@@ -133,7 +134,10 @@ void NewHiddenDialog::setupUI()
     btnLayout->addWidget(updateBtn);
 
     auto writeBtn = new QPushButton("Записать", this);
-    connect(writeBtn, &QAbstractButton::clicked, this, &NewHiddenDialog::fillBack);
+    connect(writeBtn, &QAbstractButton::clicked, this, [this] {
+        if (checkPassword())
+            fillBack();
+    });
     btnLayout->addWidget(writeBtn);
     mainLayout->addLayout(btnLayout, 1);
     setLayout(mainLayout);
@@ -264,6 +268,8 @@ void NewHiddenDialog::verifyFilling() noexcept
 
 void NewHiddenDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
+    if (!updatesEnabled())
+        return;
     auto search = m_srcAddrStates.find(bs.sigAdr);
     if (search != m_srcAddrStates.cend())
     {
@@ -393,7 +399,6 @@ void NewHiddenDialog::fillBack()
 
     // Посылаем команду на разрешение записи Hidden Block
     auto conn = m_dataUpdater->currentConnection();
-    updateConnection(conn);
     conn->writeCommand(Commands::C_EnableWritingHardware, quint16(0x5c5c));
     m_isSendedEnableCmd = true;
     m_dataUpdater->setUpdatesEnabled(true);
