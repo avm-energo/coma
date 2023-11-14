@@ -136,7 +136,7 @@ void HiddenDialog::setupUI()
     auto writeBtn = new QPushButton("Записать", this);
     connect(writeBtn, &QAbstractButton::clicked, this, [this] {
         if (checkPassword())
-            fillBack();
+            write();
     });
     btnLayout->addWidget(writeBtn);
     mainLayout->addLayout(btnLayout, 1);
@@ -177,6 +177,20 @@ QGroupBox *HiddenDialog::setupGroupBox(const ModuleTypes::HiddenTab &hiddenTab)
     return tabGroupBox;
 }
 
+void HiddenDialog::paintEvent(QPaintEvent *e)
+{
+    if (!m_currentBackground.isEmpty())
+    {
+        QPainter painter;
+        painter.begin(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        QSvgRenderer svg(m_currentBackground);
+        svg.render(&painter);
+        painter.end();
+    }
+    e->accept();
+}
+
 void HiddenDialog::updateUI()
 {
     if (!m_isGodMode)
@@ -212,20 +226,6 @@ void HiddenDialog::updateWidget(const bool enabled, const ModuleTypes::HiddenWid
     }
     else
         WDFunc::SetEnabled(this, widget.name, enabled);
-}
-
-void HiddenDialog::paintEvent(QPaintEvent *e)
-{
-    if (!m_currentBackground.isEmpty())
-    {
-        QPainter painter;
-        painter.begin(this);
-        painter.setRenderHint(QPainter::Antialiasing);
-        QSvgRenderer svg(m_currentBackground);
-        svg.render(&painter);
-        painter.end();
-    }
-    e->accept();
 }
 
 const ModuleTypes::HiddenWidget *HiddenDialog::findWidgetByAddress(const quint32 addr) const noexcept
@@ -297,7 +297,7 @@ void HiddenDialog::fillWidget(const quint32 value, const ModuleTypes::HiddenWidg
         WDFunc::SetLEData(this, widgetData.name, QString::number(value, 16), "^[a-fA-F0-9]{1,8}$");
 }
 
-quint32 HiddenDialog::fillBackWidget(const ModuleTypes::HiddenWidget &widgetData)
+quint32 HiddenDialog::getDataFrom(const ModuleTypes::HiddenWidget &widgetData)
 {
     /// TODO: Обрабатывать widgetData.type или убрать совсем
     if (widgetData.visibility)
@@ -363,7 +363,7 @@ void HiddenDialog::fill()
     m_dataUpdater->requestUpdates();
 }
 
-void HiddenDialog::fillBack()
+void HiddenDialog::write()
 {
     using namespace ModuleTypes;
     std::vector<HiddenWidget> temp;
@@ -388,7 +388,7 @@ void HiddenDialog::fillBack()
     std::vector<quint32> hiddenBlock;
     hiddenBlock.reserve(temp.size());
     for (auto &&widget : temp)
-        hiddenBlock.push_back(fillBackWidget(widget));
+        hiddenBlock.push_back(getDataFrom(widget));
     // Формируем блок на отправку в устройство
     auto bufferSize = hiddenBlock.size() * sizeof(quint32);
     QByteArray buffer(bufferSize, 0);
