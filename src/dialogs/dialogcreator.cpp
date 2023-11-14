@@ -12,7 +12,7 @@
 #include "configdialog.h"
 #include "fwuploaddialog.h"
 #include "infodialog.h"
-#include "newhiddendialog.h"
+#include "hiddendialog.h"
 #include "plotdialog.h"
 #include "relaydialog.h"
 #include "switchjournaldialog.h"
@@ -205,10 +205,9 @@ void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
         addDialogToList(new FWUploadDialog(m_parent), "Загрузка ВПО", "upload");
     if (appCfg == AppConfiguration::Debug)
     {
-        auto anotherHiddenDialog = new NewHiddenDialog(m_settings, m_parent);
-        anotherHiddenDialog->setModuleName(m_board.moduleName());
-        anotherHiddenDialog->fill();
-        addDialogToList(anotherHiddenDialog, "Секретные операции", "hidden");
+        auto hiddenDialog = new HiddenDialog(m_settings, m_parent);
+        hiddenDialog->setModuleName(m_board.moduleName());
+        addDialogToList(hiddenDialog, "Секретные операции", "hidden");
     }
     addDialogToList(new TimeDialog(m_parent), "Время", "time");
     addDialogToList(new InfoDialog(m_parent), "О приборе", "info");

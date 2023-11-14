@@ -12,7 +12,7 @@ class QGroupBox;
 class QPaintEvent;
 class QTabWidget;
 
-class NewHiddenDialog final : public UDialog
+class HiddenDialog final : public UDialog
 {
     Q_OBJECT
 private:
@@ -42,7 +42,7 @@ private:
     void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response) override;
 
 public:
-    explicit NewHiddenDialog(const ModuleSettings &settings, QWidget *parent = nullptr);
+    explicit HiddenDialog(const ModuleSettings &settings, QWidget *parent = nullptr);
     void setModuleName(const QString &moduleName);
 
 public slots:

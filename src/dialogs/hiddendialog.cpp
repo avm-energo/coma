@@ -1,4 +1,4 @@
-#include "newhiddendialog.h"
+#include "hiddendialog.h"
 
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
@@ -16,7 +16,7 @@ static constexpr char hash[] = "fb001dfcffd1c899f3297871406242f097aecf1a5342ccf3
 static constexpr char name[] = "hiddenHash";
 }
 
-NewHiddenDialog::NewHiddenDialog(const ModuleSettings &settings, QWidget *parent)
+HiddenDialog::HiddenDialog(const ModuleSettings &settings, QWidget *parent)
     : UDialog(crypto::hash, crypto::name, parent)
     , m_settings(settings.getHiddenSettings())
     , m_isGodMode(false)
@@ -31,7 +31,7 @@ NewHiddenDialog::NewHiddenDialog(const ModuleSettings &settings, QWidget *parent
     setupUI();
 }
 
-void NewHiddenDialog::generateDefaultSettings()
+void HiddenDialog::generateDefaultSettings()
 {
     using namespace ModuleTypes;
     m_settings = {
@@ -60,7 +60,7 @@ void NewHiddenDialog::generateDefaultSettings()
     };
 }
 
-void NewHiddenDialog::prepareInternalData(const ModuleTypes::SignalMap &sigMap)
+void HiddenDialog::prepareInternalData(const ModuleTypes::SignalMap &sigMap)
 {
     std::set<quint32> uniqueSignalIds;
     // Ищем сигналы, соотвествующие адресам, указанным в настройках
@@ -88,7 +88,7 @@ void NewHiddenDialog::prepareInternalData(const ModuleTypes::SignalMap &sigMap)
     }
 }
 
-void NewHiddenDialog::setupUI()
+void HiddenDialog::setupUI()
 {
     auto mainLayout = new QVBoxLayout;
     auto tabWidget = new QTabWidget(this);
@@ -130,7 +130,7 @@ void NewHiddenDialog::setupUI()
     btnLayout->addWidget(modeChangeBtn);
 
     auto updateBtn = new QPushButton("Обновить данные", this);
-    connect(updateBtn, &QAbstractButton::clicked, this, &NewHiddenDialog::fill);
+    connect(updateBtn, &QAbstractButton::clicked, this, &HiddenDialog::fill);
     btnLayout->addWidget(updateBtn);
 
     auto writeBtn = new QPushButton("Записать", this);
@@ -143,7 +143,7 @@ void NewHiddenDialog::setupUI()
     setLayout(mainLayout);
 }
 
-QGroupBox *NewHiddenDialog::setupGroupBox(const ModuleTypes::HiddenTab &hiddenTab)
+QGroupBox *HiddenDialog::setupGroupBox(const ModuleTypes::HiddenTab &hiddenTab)
 {
     auto tabGroupBox = new QGroupBox(hiddenTab.title, this);
     tabGroupBox->setStyleSheet("background-color: white;"); // tabGroupBox непрозрачный
@@ -177,7 +177,7 @@ QGroupBox *NewHiddenDialog::setupGroupBox(const ModuleTypes::HiddenTab &hiddenTa
     return tabGroupBox;
 }
 
-void NewHiddenDialog::updateUI()
+void HiddenDialog::updateUI()
 {
     if (!m_isGodMode)
         return;
@@ -192,7 +192,7 @@ void NewHiddenDialog::updateUI()
     }
 }
 
-bool NewHiddenDialog::isTabEnabled(const ModuleTypes::HiddenTab &tabSettings) const noexcept
+bool HiddenDialog::isTabEnabled(const ModuleTypes::HiddenTab &tabSettings) const noexcept
 {
     bool enabled = false;
     if (tabSettings.flag != 1)
@@ -202,7 +202,7 @@ bool NewHiddenDialog::isTabEnabled(const ModuleTypes::HiddenTab &tabSettings) co
     return enabled;
 }
 
-void NewHiddenDialog::updateWidget(const bool enabled, const ModuleTypes::HiddenWidget &widget)
+void HiddenDialog::updateWidget(const bool enabled, const ModuleTypes::HiddenWidget &widget)
 {
     if (widget.view == ModuleTypes::ViewType::Version)
     {
@@ -214,7 +214,7 @@ void NewHiddenDialog::updateWidget(const bool enabled, const ModuleTypes::Hidden
         WDFunc::SetEnabled(this, widget.name, enabled);
 }
 
-void NewHiddenDialog::paintEvent(QPaintEvent *e)
+void HiddenDialog::paintEvent(QPaintEvent *e)
 {
     if (!m_currentBackground.isEmpty())
     {
@@ -228,7 +228,7 @@ void NewHiddenDialog::paintEvent(QPaintEvent *e)
     e->accept();
 }
 
-const ModuleTypes::HiddenWidget *NewHiddenDialog::findWidgetByAddress(const quint32 addr) const noexcept
+const ModuleTypes::HiddenWidget *HiddenDialog::findWidgetByAddress(const quint32 addr) const noexcept
 {
     for (auto &&tabSettings : m_settings)
     {
@@ -241,7 +241,7 @@ const ModuleTypes::HiddenWidget *NewHiddenDialog::findWidgetByAddress(const quin
     return nullptr;
 }
 
-void NewHiddenDialog::verifyFilling() noexcept
+void HiddenDialog::verifyFilling() noexcept
 {
     // Проверяем состояния m_srcAddrStates
     for (const auto [_, state] : m_srcAddrStates)
@@ -266,7 +266,7 @@ void NewHiddenDialog::verifyFilling() noexcept
         iter.second = false;
 }
 
-void NewHiddenDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
+void HiddenDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
     if (!updatesEnabled())
         return;
@@ -282,7 +282,7 @@ void NewHiddenDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
     }
 }
 
-void NewHiddenDialog::fillWidget(const quint32 value, const ModuleTypes::HiddenWidget &widgetData)
+void HiddenDialog::fillWidget(const quint32 value, const ModuleTypes::HiddenWidget &widgetData)
 {
     if (widgetData.view == ModuleTypes::ViewType::Version)
     {
@@ -297,7 +297,7 @@ void NewHiddenDialog::fillWidget(const quint32 value, const ModuleTypes::HiddenW
         WDFunc::SetLEData(this, widgetData.name, QString::number(value, 16), "^[a-fA-F0-9]{1,8}$");
 }
 
-quint32 NewHiddenDialog::fillBackWidget(const ModuleTypes::HiddenWidget &widgetData)
+quint32 HiddenDialog::fillBackWidget(const ModuleTypes::HiddenWidget &widgetData)
 {
     /// TODO: Обрабатывать widgetData.type или убрать совсем
     if (widgetData.visibility)
@@ -326,7 +326,7 @@ quint32 NewHiddenDialog::fillBackWidget(const ModuleTypes::HiddenWidget &widgetD
         return quint32(0xFFFFFFFF);
 }
 
-void NewHiddenDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
+void HiddenDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
 {
     if (m_isSendedEnableCmd)
     {
@@ -351,19 +351,19 @@ void NewHiddenDialog::updateGeneralResponse(const DataTypes::GeneralResponseStru
     }
 }
 
-void NewHiddenDialog::setModuleName(const QString &moduleName)
+void HiddenDialog::setModuleName(const QString &moduleName)
 {
     WDFunc::SetLEData(this, "modulename", moduleName);
 }
 
-void NewHiddenDialog::fill()
+void HiddenDialog::fill()
 {
     m_dataUpdater->enableBitStringDataUpdates();
     m_dataUpdater->setUpdatesEnabled(true);
     m_dataUpdater->requestUpdates();
 }
 
-void NewHiddenDialog::fillBack()
+void HiddenDialog::fillBack()
 {
     using namespace ModuleTypes;
     std::vector<HiddenWidget> temp;
