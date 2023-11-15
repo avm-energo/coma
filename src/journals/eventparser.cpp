@@ -11,7 +11,7 @@ EventParser::EventParser(QObject *parent) : QObject(parent)
 
 QString EventParser::eventTypeToString(const EventType type)
 {
-    auto eventTypeStr = QString("");
+    QString eventTypeStr;
     switch (type)
     {
     case EventType::Out:
@@ -23,38 +23,87 @@ QString EventParser::eventTypeToString(const EventType type)
     case EventType::ChangeState:
         eventTypeStr = "Изменение состояния";
         break;
+    default:
+        eventTypeStr = "Incorrect";
+        break;
     }
     return eventTypeStr;
 }
 
-void EventParser::update(const QByteArray &ba)
+EventRecord EventParser::getNextRecord()
 {
-    records.clear();
-    binaryFile = ba;
-    size = ba.size() / sizeof(EventRecord);
-    records.reserve(size);
-}
-
-EventRecord EventParser::getRecord()
-{
-    constexpr auto recordSize = sizeof(EventRecord);
-    EventRecord record;
-    auto recordByteArray = binaryFile.left(recordSize);
-    record = *reinterpret_cast<const EventRecord *>(recordByteArray.constData());
-    binaryFile.remove(0, recordSize);
+    auto record { m_eventFile.first() };
+    m_eventFile.remove(m_eventFile.begin(), m_eventFile.begin() + 1);
     return record;
 }
 
-const Data EventParser::parse(const Descriptions &desc, const QTimeZone timeZone)
+void EventParser::sortBinaryFile()
 {
-    Data retVal;
-    retVal.reserve(size);
+    auto unaryPredicate = [this](const auto &value) { return isBadRecord(value); };
+    auto &firstRecord = m_eventFile.first();
+    auto &lastRecord = m_eventFile.last();
+    auto isFirstBad = isBadRecord(firstRecord);
+    auto isLastBad = isBadRecord(lastRecord);
+
+    // Two segments at the start and the end of file
+    if (isFirstBad && isLastBad)
+    {
+        auto range { m_eventFile.findRange(unaryPredicate) };
+        if (range)
+            m_eventFile.remove(range);
+        range = m_eventFile.findRange(unaryPredicate);
+        if (range)
+            m_eventFile.remove(range);
+    }
+    // One segment at the start or the end of file
+    else if (isFirstBad || isLastBad)
+    {
+        auto range { m_eventFile.findRange(unaryPredicate) };
+        if (range)
+            m_eventFile.remove(range);
+    }
+    // One segment somewhere in the file
+    else
+    {
+        auto range { m_eventFile.findRange(unaryPredicate) };
+        if (range)
+        {
+            auto result = m_eventFile.move(range.end, m_eventFile.end(), m_eventFile.begin());
+            if (!result)
+                return;
+            range = m_eventFile.findRange(unaryPredicate);
+            if (range)
+                m_eventFile.remove(range);
+        }
+    }
+}
+
+bool EventParser::isBadRecord(const EventRecord &record)
+{
+    auto isBadTime = record.time == std::numeric_limits<quint64>::max();
+    auto isBadType = record.type == EventType::Incorrect;
+    auto isBadReserve = record.reserv == std::numeric_limits<quint32>::max();
+    return (isBadTime && isBadType && isBadReserve);
+}
+
+void EventParser::update(const QByteArray &ba)
+{
+    m_records.clear();
+    m_eventFile.update(ba);
+    sortBinaryFile();
+    m_records.reserve(m_eventFile.size());
+}
+
+JournalData EventParser::parse(const Descriptions &desc, const QTimeZone timeZone)
+{
+    JournalData retVal;
+    retVal.reserve(m_eventFile.size());
 
     int i, count;
-    for (i = 0, count = 0; i < size; i++)
+    for (i = 0, count = 0; i < m_eventFile.size(); i++)
     {
-        auto record = getRecord();
-        if (record.time == ULLONG_MAX)
+        auto record = getNextRecord();
+        if (isBadRecord(record))
             continue;
         count++;
 
@@ -62,14 +111,15 @@ const Data EventParser::parse(const Descriptions &desc, const QTimeZone timeZone
         index = (index & 0x00FFFFFF);
         auto eventDesc = desc.value(index, "Некорректный номер события: " + QString::number(index));
         auto eventType = eventTypeToString(record.type);
-        records.push_back(EventView { count, record.time, eventDesc, eventType, QString::number(record.reserv, 16) });
+        m_records.push_back(EventView { count, record.time, eventDesc, eventType, QString::number(record.reserv, 16) });
     }
-    std::sort(records.begin(), records.end(), //
+    std::sort(m_records.begin(), m_records.end(), //
         [](const EventView &lhs, const EventView &rhs) { return lhs.time > rhs.time; });
-    std::transform(records.cbegin(), records.cend(), std::back_inserter(retVal), [timeZone](const EventView &event) {
-        return QVector<QVariant> { event.counter, TimeFunc::UnixTime64ToInvStringFractional(event.time, timeZone),
-            event.desc, event.direction, event.hexField };
-    });
+    std::transform(
+        m_records.cbegin(), m_records.cend(), std::back_inserter(retVal), [timeZone](const EventView &event) {
+            return QVector<QVariant> { event.counter, TimeFunc::UnixTime64ToInvStringFractional(event.time, timeZone),
+                event.desc, event.direction, event.hexField };
+        });
     return retVal;
 }
 
