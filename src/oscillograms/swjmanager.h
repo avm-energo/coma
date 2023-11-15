@@ -89,5 +89,4 @@ private:
     const QString result(quint16 value) const;
     QString commutationPhases(quint8 value) const;
     QString floatToString(float value) const;
-    QString timeToDoubleString(std::uint16_t time) const;
 };

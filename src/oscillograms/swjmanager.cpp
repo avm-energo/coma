@@ -9,6 +9,20 @@
 #include <gen/error.h>
 #include <gen/files.h>
 
+namespace helper
+{
+
+template <typename T> //
+QString timeToDoubleString(T time)
+{
+    if (time == std::numeric_limits<T>::max())
+        return "-";
+    else
+        return QString::number(double(time) / 100, 'f', 2);
+}
+
+} // namespace helper
+
 File::Vector SwjManager::loadFromFile(const QString &filename) const
 {
     QByteArray buffer;
@@ -96,40 +110,40 @@ SwjModel SwjManager::load(const FileStruct &fs) const
         new QStandardItem(QString::number(record.voltage[2]))  //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(3)),                      //
-        new QStandardItem(timeToDoubleString(record.ownTime[0])), //
-        new QStandardItem(timeToDoubleString(record.ownTime[1])), //
-        new QStandardItem(timeToDoubleString(record.ownTime[2]))  //
+        new QStandardItem(detailDesc.at(3)),                              //
+        new QStandardItem(helper::timeToDoubleString(record.ownTime[0])), //
+        new QStandardItem(helper::timeToDoubleString(record.ownTime[1])), //
+        new QStandardItem(helper::timeToDoubleString(record.ownTime[2]))  //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(4)),                       //
-        new QStandardItem(timeToDoubleString(record.fullTime[0])), //
-        new QStandardItem(timeToDoubleString(record.fullTime[1])), //
-        new QStandardItem(timeToDoubleString(record.fullTime[2]))  //
+        new QStandardItem(detailDesc.at(4)),                               //
+        new QStandardItem(helper::timeToDoubleString(record.fullTime[0])), //
+        new QStandardItem(helper::timeToDoubleString(record.fullTime[1])), //
+        new QStandardItem(helper::timeToDoubleString(record.fullTime[2]))  //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(5)),                      //
-        new QStandardItem(timeToDoubleString(record.movTime[0])), //
-        new QStandardItem(timeToDoubleString(record.movTime[1])), //
-        new QStandardItem(timeToDoubleString(record.movTime[2]))  //
+        new QStandardItem(detailDesc.at(5)),                              //
+        new QStandardItem(helper::timeToDoubleString(record.movTime[0])), //
+        new QStandardItem(helper::timeToDoubleString(record.movTime[1])), //
+        new QStandardItem(helper::timeToDoubleString(record.movTime[2]))  //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(6)),                       //
-        new QStandardItem(timeToDoubleString(record.archTime[0])), //
-        new QStandardItem(timeToDoubleString(record.archTime[1])), //
-        new QStandardItem(timeToDoubleString(record.archTime[2]))  //
+        new QStandardItem(detailDesc.at(6)),                               //
+        new QStandardItem(helper::timeToDoubleString(record.archTime[0])), //
+        new QStandardItem(helper::timeToDoubleString(record.archTime[1])), //
+        new QStandardItem(helper::timeToDoubleString(record.archTime[2]))  //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(7)),                       //
-        new QStandardItem(timeToDoubleString(record.idleTime[0])), //
-        new QStandardItem(timeToDoubleString(record.idleTime[1])), //
-        new QStandardItem(timeToDoubleString(record.idleTime[2]))  //
+        new QStandardItem(detailDesc.at(7)),                  //
+        new QStandardItem(floatToString(record.idleTime[0])), //
+        new QStandardItem(floatToString(record.idleTime[1])), //
+        new QStandardItem(floatToString(record.idleTime[2]))  //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(8)),                         //
-        new QStandardItem(timeToDoubleString(record.inaccuracy[0])), //
-        new QStandardItem(timeToDoubleString(record.inaccuracy[1])), //
-        new QStandardItem(timeToDoubleString(record.inaccuracy[2]))  //
+        new QStandardItem(detailDesc.at(8)),                                 //
+        new QStandardItem(helper::timeToDoubleString(record.inaccuracy[0])), //
+        new QStandardItem(helper::timeToDoubleString(record.inaccuracy[1])), //
+        new QStandardItem(helper::timeToDoubleString(record.inaccuracy[2]))  //
     });
     detailModel->appendRow({
         new QStandardItem(detailDesc.at(9)),                 //
@@ -193,12 +207,4 @@ inline QString SwjManager::floatToString(float value) const
         return "-";
     else
         return QString::number(value, 'f', 2);
-}
-
-QString SwjManager::timeToDoubleString(std::uint16_t time) const
-{
-    if (time == std::numeric_limits<std::uint16_t>::max())
-        return "-";
-    else
-        return QString::number(double(time) / 100, 'f', 2);
 }
