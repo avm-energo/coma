@@ -1,4 +1,4 @@
-project(AVM-Debug VERSION 2.5.1)
+project(AVM-Debug VERSION 2.5.2)
 
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Widgets REQUIRED)
