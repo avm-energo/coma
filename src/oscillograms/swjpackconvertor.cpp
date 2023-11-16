@@ -98,6 +98,7 @@ void SwjPackConvertor::writeData(QXlsx::Worksheet *sheet)
     int row = 2;
     for (auto &item : m_data)
     {
+        bool ok = false;
         int column = 1;
         auto common = item.commonModel.get();
         auto detail = item.detailModel.get();
@@ -110,22 +111,31 @@ void SwjPackConvertor::writeData(QXlsx::Worksheet *sheet)
         auto commutationType = common->data(common->index(4, 1)).toString();
         auto switchResult = common->data(common->index(5, 1)).toString();
         auto commutationPhases = common->data(common->index(6, 1)).toString();
-        auto solenoidVoltage = common->data(common->index(7, 1)).toDouble();
-        auto ambientTemperature = common->data(common->index(8, 1)).toString();
+        auto solenoidVoltageStr = common->data(common->index(7, 1)).toString();
+        auto ambientTemperatureStr = common->data(common->index(8, 1)).toString();
 
         sheet->writeString(QXlsx::CellReference { row, column++ }, dateStr);
         sheet->writeString(QXlsx::CellReference { row, column++ }, switchType);
         sheet->writeString(QXlsx::CellReference { row, column++ }, commutationType);
         sheet->writeString(QXlsx::CellReference { row, column++ }, switchResult);
         sheet->writeString(QXlsx::CellReference { row, column++ }, commutationPhases);
-        sheet->writeNumeric(QXlsx::CellReference { row, column++ }, solenoidVoltage);
-        sheet->writeString(QXlsx::CellReference { row, column++ }, ambientTemperature);
+
+        auto solenoidVoltage = solenoidVoltageStr.toDouble(&ok);
+        if (ok)
+            sheet->writeNumeric(QXlsx::CellReference { row, column++ }, solenoidVoltage);
+        else
+            sheet->writeString(QXlsx::CellReference { row, column++ }, solenoidVoltageStr);
+
+        auto ambientTemperature = ambientTemperatureStr.toDouble(&ok);
+        if (ok)
+            sheet->writeNumeric(QXlsx::CellReference { row, column++ }, ambientTemperature);
+        else
+            sheet->writeString(QXlsx::CellReference { row, column++ }, ambientTemperatureStr);
 
         for (int indexRow = 1; indexRow < 11; indexRow++)
         {
             for (int indexCol = 1; indexCol < 4; indexCol++)
             {
-                bool ok = false;
                 auto detailDataStr = detail->data(detail->index(indexRow, indexCol)).toString();
                 auto detailData = detailDataStr.toDouble(&ok);
                 if (ok)
