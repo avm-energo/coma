@@ -76,7 +76,11 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_Test:
     {
         if (isSupportedCommand(cmd.command))
-            m_request = prepareBlock(s_protoCmdMap.at(cmd.command), StdFunc::toByteArray(cmd.arg1.value<quint8>()));
+        {
+            const auto protoCommand = s_protoCmdMap.at(cmd.command);
+            m_request = prepareBlock(protoCommand, StdFunc::toByteArray(cmd.arg1.value<quint8>()));
+            m_continueCommand = createContinueCommand(protoCommand);
+        }
         break;
     }
     // file request: known file types should be download from disk and others must be taken from module by Protocom,
