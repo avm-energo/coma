@@ -69,24 +69,24 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
     return widget;
 }
 
-// template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] quint16 key)
-//{
-//    QWidget *widget = nullptr;
-//    switch (arg.itemType)
-//    {
-//    case delegate::ItemType::ModbusItem:
-//    {
-//        widget = parent->findChild<QTableView *>(WidgetFactory::hashedName(arg.type, arg.parent));
-//        if (!widget)
-//        {
-//            widget = createModbusView(parent);
-//            widget->setObjectName(WidgetFactory::hashedName(arg.type, arg.parent));
-//        }
-//        return widget;
-//    }
-//    }
-//    return nullptr;
-//}
+template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] quint16 key)
+{
+    QWidget *widget = nullptr;
+    switch (arg.itemType)
+    {
+    case delegate::ItemType::ModbusItem:
+    {
+        widget = parent->findChild<QTableView *>(WidgetFactory::hashedName(arg.type, arg.parent));
+        if (!widget)
+        {
+            widget = createModbusView(parent);
+            widget->setObjectName(WidgetFactory::hashedName(arg.type, arg.parent));
+        }
+        return widget;
+    }
+    }
+    return nullptr;
+}
 
 template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey) const
 {

@@ -66,14 +66,48 @@ void EventParser::sortBinaryFile()
     else
     {
         auto range { m_eventFile.findRange(unaryPredicate) };
+
+#ifdef DEBUG_JOURNALS
+        std::ptrdiff_t indexStart = range.begin - m_eventFile.begin(), //
+            indexEnd = range.end - m_eventFile.begin(),                //
+            rangeSize = indexEnd - indexStart,                         //
+            fileSize = m_eventFile.end() - m_eventFile.begin();        //
+        qDebug() << "indexStart, indexEnd, rangeSize, fileSize: "      //
+                 << indexStart << ' ' << indexEnd << ' ' << rangeSize  //
+                 << ' ' << fileSize;                                   //
+#endif
+
         if (range)
         {
             auto result = m_eventFile.move(range.end, m_eventFile.end(), m_eventFile.begin());
             if (!result)
                 return;
             range = m_eventFile.findRange(unaryPredicate);
+
+#ifdef DEBUG_JOURNALS
+            indexStart = range.begin - m_eventFile.begin(); //
+            indexEnd = range.end - m_eventFile.begin();     //
+            rangeSize = indexEnd - indexStart;
+            fileSize = m_eventFile.end() - m_eventFile.begin();           //
+            qDebug() << "indexStart, indexEnd, rangeSize, fileSize: "     //
+                     << indexStart << ' ' << indexEnd << ' ' << rangeSize //
+                     << ' ' << fileSize;                                  //
+#endif
+
             if (range)
                 m_eventFile.remove(range);
+
+#ifdef DEBUG_JOURNALS
+            lastRecord = m_eventFile.last();
+            range = m_eventFile.findRange(unaryPredicate);
+            indexStart = range.begin - m_eventFile.begin(); //
+            indexEnd = range.end - m_eventFile.begin();     //
+            rangeSize = indexEnd - indexStart;
+            fileSize = m_eventFile.end() - m_eventFile.begin();           //
+            qDebug() << "indexStart, indexEnd, rangeSize, fileSize: "     //
+                     << indexStart << ' ' << indexEnd << ' ' << rangeSize //
+                     << ' ' << fileSize;                                  //
+#endif
         }
     }
 }
@@ -98,23 +132,20 @@ JournalData EventParser::parse(const Descriptions &desc, const QTimeZone timeZon
 {
     JournalData retVal;
     retVal.reserve(m_eventFile.size());
-
-    int i, count;
-    for (i = 0, count = 0; i < m_eventFile.size(); i++)
+    int count = 0;
+    for (auto iter = m_eventFile.begin(); iter != m_eventFile.end(); ++iter)
     {
-        auto record = getNextRecord();
+        const auto &record { *iter };
         if (isBadRecord(record))
             continue;
-        count++;
+        ++count;
 
-        int index = (((record.num[2] << 8) + record.num[1]) << 8) + record.num[0];
+        quint32 index = (((record.num[2] << 8) + record.num[1]) << 8) + record.num[0];
         index = (index & 0x00FFFFFF);
         auto eventDesc = desc.value(index, "Некорректный номер события: " + QString::number(index));
         auto eventType = eventTypeToString(record.type);
         m_records.push_back(EventView { count, record.time, eventDesc, eventType, QString::number(record.reserv, 16) });
     }
-    std::sort(m_records.begin(), m_records.end(), //
-        [](const EventView &lhs, const EventView &rhs) { return lhs.time > rhs.time; });
     std::transform(
         m_records.cbegin(), m_records.cend(), std::back_inserter(retVal), [timeZone](const EventView &event) {
             return QVector<QVariant> { event.counter, TimeFunc::UnixTime64ToInvStringFractional(event.time, timeZone),

@@ -129,7 +129,7 @@ void SwitchJournalDialog::fillSwJInfo(const S2::SwitchJourInfo &swjInfo)
     QVector<QVariant> lsl {
         QVariant(swjInfo.fileNum),                                            //
         swjInfo.num,                                                          //
-        TimeFunc::UnixTime64ToString(swjInfo.time),                           //
+        TimeFunc::UnixTime64ToInvStringFractional(swjInfo.time),              //
         SwjManager::craftType(swjInfo.typeA) + QString::number(swjInfo.numA), //
         SwjManager::switchType(swjInfo.options),                              //
         tr("Скачать"),                                                        //
@@ -163,8 +163,7 @@ void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
     quint32 size = swjMap.value(reqSwJNum).fileLength;
 
     if (!loadIfExist(size))
-        Connection::iface()->reqFile(
-            fileNum, DataTypes::FileFormat::CustomS2, size + 2 * sizeof(S2::DataRecHeader));
+        Connection::iface()->reqFile(fileNum, DataTypes::FileFormat::CustomS2, size + 2 * sizeof(S2::DataRecHeader));
 }
 
 void SwitchJournalDialog::exportSwJ(uint32_t swjNum)
