@@ -140,10 +140,10 @@ void OscDialog::fillOscInfo(const S2::OscInfo &info)
 {
     oscMap.insert(info.typeHeader.id, info);
     QVector<QVariant> lsl {
-        QString::number(info.typeHeader.id),         //
-        TimeFunc::UnixTime64ToString(info.unixtime), //
-        info.idOsc0,                                 //
-        info.typeHeader.numByte,                     //
+        QString::number(info.typeHeader.id),                      //
+        TimeFunc::UnixTime64ToInvStringFractional(info.unixtime), //
+        info.idOsc0,                                              //
+        info.typeHeader.numByte,                                  //
         "Скачать",
     };
     tableModel->addRowWithData(lsl);

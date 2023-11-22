@@ -129,7 +129,7 @@ void SwitchJournalDialog::fillSwJInfo(const S2::SwitchJourInfo &swjInfo)
     QVector<QVariant> lsl {
         QVariant(swjInfo.fileNum),                                            //
         swjInfo.num,                                                          //
-        TimeFunc::UnixTime64ToString(swjInfo.time),                           //
+        TimeFunc::UnixTime64ToInvStringFractional(swjInfo.time),              //
         SwjManager::craftType(swjInfo.typeA) + QString::number(swjInfo.numA), //
         SwjManager::switchType(swjInfo.options),                              //
         tr("Скачать"),                                                        //

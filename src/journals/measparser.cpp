@@ -98,9 +98,9 @@ bool MeasParser::sortByTime(const QVector<QVariant> &lhs, const QVector<QVariant
     return lStrTime > rStrTime;
 }
 
-const Data MeasParser::parse(const MeasSettings &settings)
+const JournalData MeasParser::parse(const MeasSettings &settings)
 {
-    Data retVal;
+    JournalData retVal;
     retVal.reserve(size);
 
     for (auto i = 0; i < size; i++)

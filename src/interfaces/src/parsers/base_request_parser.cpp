@@ -5,6 +5,7 @@ namespace Interface
 
 const std::map<Commands, CommandRegisters> BaseRequestParser::s_wsCmdMap {
     { Commands::C_StartWorkingChannel, StartWorkingChannel },     //
+    { Commands::C_EraseJournals, EraseSystemJournal },            //
     { Commands::C_SetStartupValues, SetStartupValues },           //
     { Commands::C_SetStartupPhaseA, SetStartupPhaseA },           //
     { Commands::C_SetStartupPhaseB, SetStartupPhaseB },           //
