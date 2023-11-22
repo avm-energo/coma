@@ -1,4 +1,4 @@
-#include "interfaces/ifaces/ethernet.h"
+#include "ethernet.h"
 
 #include <QCoreApplication>
 #include <QNetworkProxy>
@@ -102,11 +102,6 @@ bool Ethernet::write(const QByteArray &ba)
 {
     Q_UNUSED(ba);
     return true;
-}
-
-bool Ethernet::tryToReconnect()
-{
-    return false;
 }
 
 bool Ethernet::connect()

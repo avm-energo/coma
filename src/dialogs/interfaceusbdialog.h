@@ -1,7 +1,8 @@
 #pragma once
+
 #include "abstractinterfacedialog.h"
 
-class InterfaceUSBDialog : public AbstractInterfaceDialog
+class InterfaceUSBDialog final : public AbstractInterfaceDialog
 {
     Q_OBJECT
 public:
