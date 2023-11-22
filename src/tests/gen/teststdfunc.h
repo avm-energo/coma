@@ -43,8 +43,6 @@ private slots:
     void modbusRegistersTest06();
     void modbusRegistersTest07();
     void modbusSinglePoint();
-
-    void cycleCheck(uint8_t value);
 };
 
 #endif // TESTPROTOCOM_H

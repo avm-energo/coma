@@ -249,36 +249,4 @@ void TestStdFunc::modbusSinglePoint()
     QVERIFY(detail::compare(first, second));
 }
 
-enum BoadType
-{
-    None = 0,
-    Base = 1,
-    Mezz = Base << 1,
-    Addition = Mezz << 1
-};
-
-void TestStdFunc::cycleCheck(uint8_t value)
-{
-    uint8_t highBit = BoadType::Addition << 1;
-    uint8_t flag;
-    for (flag = 1; flag != highBit; flag = flag << 1)
-    {
-        switch (value & flag)
-        {
-        case Base:
-            // do for base board
-            break;
-        case Mezz:
-            // do for mezz board
-            break;
-        case Addition:
-            // do for addition board
-            break;
-        default:
-            // do nothing or send error
-            break;
-        }
-    }
-}
-
 QTEST_GUILESS_MAIN(TestStdFunc)
