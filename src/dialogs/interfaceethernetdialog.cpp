@@ -51,7 +51,8 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
     QString name = mdl->data(mdl->index(row, 0)).toString();
     IEC104Settings settings;
     settings.ip = mdl->data(mdl->index(row, 1)).toString();
-    settings.baseadr = mdl->data(mdl->index(row, 2)).toUInt();
+    settings.port = mdl->data(mdl->index(row, 2)).toUInt();
+    settings.baseadr = mdl->data(mdl->index(row, 3)).toUInt();
     if (!settings.isValid())
         return;
     ConnectStruct st { name, settings };
@@ -82,7 +83,7 @@ void InterfaceEthernetDialog::addInterface()
     hlayout->addWidget(lbl);
     for (int i = 0; i < 4; ++i)
     {
-        auto ipCell = WDFunc::NewSPB2(dialog, "iple." + QString::number(i), 0, 255, 0);
+        auto ipCell = WDFunc::NewSPB2(dialog, QString("iple_%1").arg(i), 0, 255, 0);
         hlayout->addWidget(ipCell);
         if (i != 3)
         {
@@ -91,14 +92,27 @@ void InterfaceEthernetDialog::addInterface()
         }
     }
     mainLayout->addLayout(hlayout);
+    constexpr auto u16min = std::numeric_limits<quint16>::min();
+    constexpr auto u16max = std::numeric_limits<quint16>::max();
+
+    hlayout = new QHBoxLayout;
+    lbl = new QLabel(tr("Порт:"), dialog);
+    hlayout->addWidget(lbl);
+    auto portspb = WDFunc::NewSPB2(dialog, "portspb", u16min, u16max, 0);
+    /// TODO: Значение 2404 должно быть настраиваемым значением
+    portspb->setValue(2404);
+    hlayout->addWidget(portspb);
+    mainLayout->addLayout(hlayout);
+
     hlayout = new QHBoxLayout;
     lbl = new QLabel(tr("Адрес БС:"), dialog);
     hlayout->addWidget(lbl);
-    /// TODO: 205 должно быть настраиваемым значением
-    le = new QLineEdit("205", dialog);
-    le->setObjectName("bsadrspb");
-    hlayout->addWidget(le);
+    auto bsaddrspb = WDFunc::NewSPB2(dialog, "bsaddrspb", u16min, u16max, 0);
+    /// TODO: Значение 205 должно быть настраиваемым значением
+    bsaddrspb->setValue(205);
+    hlayout->addWidget(bsaddrspb);
     mainLayout->addLayout(hlayout);
+
     hlayout = new QHBoxLayout;
     hlayout->addWidget(WDFunc::NewPB(dialog, "", tr("Сохранить"), this, &InterfaceEthernetDialog::acceptedInterface));
     hlayout->addWidget(WDFunc::NewPB(dialog, "", tr("Отмена"), dialog, [dialog] { dialog->close(); }));
@@ -151,20 +165,22 @@ void InterfaceEthernetDialog::acceptedInterface()
     }
 
     QString ipstr =                                                     //
-        QString::number(WDFunc::SPBData<int>(dialog, "iple.0")) + "." + //
-        QString::number(WDFunc::SPBData<int>(dialog, "iple.1")) + "." + //
-        QString::number(WDFunc::SPBData<int>(dialog, "iple.2")) + "." + //
-        QString::number(WDFunc::SPBData<int>(dialog, "iple.3"));        //
-    int spbdata;
-    WDFunc::LEData(dialog, "bsadrspb", spbdata);
-    if (spbdata == 0)
+        QString::number(WDFunc::SPBData<int>(dialog, "iple_0")) + "." + //
+        QString::number(WDFunc::SPBData<int>(dialog, "iple_1")) + "." + //
+        QString::number(WDFunc::SPBData<int>(dialog, "iple_2")) + "." + //
+        QString::number(WDFunc::SPBData<int>(dialog, "iple_3"));        //
+    auto port = WDFunc::SPBData<quint16>(dialog, "portspb");
+    auto bsAddress = WDFunc::SPBData<quint16>(dialog, "bsaddrspb");
+    if (bsAddress == 0)
     {
         EMessageBox::error(this, "Адрес базовой станции не может быть равен нулю");
         return;
     }
+
     m_settings.beginGroup(name);
     m_settings.setValue("ipAddress", ipstr);
-    m_settings.setValue("bsAddress", QString::number(spbdata));
+    m_settings.setValue("port", QString::number(port));
+    m_settings.setValue("bsAddress", QString::number(bsAddress));
     m_settings.endGroup();
 
     if (!updateModel())
@@ -244,7 +260,7 @@ void InterfaceEthernetDialog::createPortTask()
 
 bool InterfaceEthernetDialog::updateModel()
 {
-    QStringList headers { "Имя", "IP", "Адрес БС" };
+    QStringList headers { "Имя", "IP", "Порт", "Адрес БС" };
     auto model = static_cast<QStandardItemModel *>(m_tableView->model());
     if (model == nullptr)
         model = new QStandardItemModel(this);
@@ -259,6 +275,7 @@ bool InterfaceEthernetDialog::updateModel()
         QList<QStandardItem *> items {
             new QStandardItem(item),                                                  //
             new QStandardItem(m_settings.value("ipAddress", "127.0.0.1").toString()), //
+            new QStandardItem(m_settings.value("port", "2404").toString()),           //
             new QStandardItem(m_settings.value("bsAddress", "205").toString())        //
         };
         model->appendRow(items);

@@ -136,7 +136,7 @@ public:
         auto spb = parent->findChild<QDoubleSpinBox *>(spbname);
         if (spb == nullptr)
         {
-            qDebug() << "No spinbox " << spbname;
+            qWarning() << "No spinbox " << spbname;
             return 0;
         }
         return T(spb->value());
@@ -223,7 +223,8 @@ public:
     static std::array<quint8, 4> IPCtrlData(const QObject *parent, const QString &name);
 
     //    static void AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled = false);
-    static void AddLabelAndLineeditH(QWidget *parent, QHBoxLayout *hlyout, QString caption, QString lename, bool enabled = false);
+    static void AddLabelAndLineeditH(
+        QWidget *parent, QHBoxLayout *hlyout, QString caption, QString lename, bool enabled = false);
     static QWidget *NewLBLAndLBL(QWidget *parent, QString lblname, QString caption, bool enabled = false);
     static QWidget *NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled = false);
     static void SetEnabled(QWidget *w, const QString &wname, bool enabled);
