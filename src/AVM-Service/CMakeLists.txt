@@ -1,4 +1,4 @@
-project(AVM-Service VERSION 2.7.0)
+project(AVM-Service VERSION 2.8.0)
 
 configure_file(
   ${CMAKE_SOURCE_DIR}/cconfig.h.in
