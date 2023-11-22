@@ -176,5 +176,67 @@
                 <type>BitString</type>
             </signal>
         </signals>
+        <hidden desc="Секретные операции">
+            <tab desc="Базовая плата" background="" prefix="base" flag="1">
+                <mwidget view="LineEdit" title="Тип базовой платы">
+                    <name>basetype</name>
+                    <type>uint32</type>
+                    <addr>1</addr>
+                    <index>1</index>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="LineEdit" title="Серийный номер платы">
+                    <name>baseserial</name>
+                    <type>uint32</type>
+                    <addr>10</addr>
+                    <index>2</index>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="Version" title="Версия платы">
+                    <name>baseversion</name>
+                    <type>uint32</type>
+                    <addr>3</addr>
+                    <index>3</index>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="LineEdit" title="Серийный номер модуля">
+                    <name>moduleserial</name>
+                    <type>uint32</type>
+                    <addr>13</addr>
+                    <index>4</index>
+                    <visibility>true</visibility>
+                </mwidget>
+            </tab>
+            <tab desc="Плата датчиков" background="" prefix="mezz" flag="2">
+                <mwidget view="LineEdit" title="Тип платы датчиков">
+                    <name>mezztype</name>
+                    <type>uint32</type>
+                    <addr>2</addr>
+                    <index>5</index>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="LineEdit" title="Серийный номер платы">
+                    <name>mezzserial</name>
+                    <type>uint32</type>
+                    <addr>11</addr>
+                    <index>6</index>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="Version" title="Версия платы">
+                    <name>mezzversion</name>
+                    <type>uint32</type>
+                    <addr>12</addr>
+                    <index>7</index>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget view="LineEdit" title="Зарезервировано">
+                    <name>reserved</name>
+                    <type>uint32</type>
+                    <addr>4</addr>
+                    <index>8</index>
+                    <visibility>false</visibility>
+                </mwidget>
+            </tab>
+        </hidden>
     </resources>
 </module>

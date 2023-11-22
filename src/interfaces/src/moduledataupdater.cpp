@@ -5,15 +5,20 @@ ModuleDataUpdater::ModuleDataUpdater(Connection *connection, QObject *parent) : 
     updateConnection(connection);
 }
 
-void ModuleDataUpdater::updateConnection(Connection *connection)
+void ModuleDataUpdater::updateConnection(Connection *connection) noexcept
 {
     m_conn = connection;
     if (m_conn != nullptr)
     {
-        m_conn->connection(this, &ModuleDataUpdater::updateFloatData);
-        m_conn->connection(this, &ModuleDataUpdater::updateSinglePointData);
-        m_conn->connection(this, &ModuleDataUpdater::updateBitStringData);
+        enableFloatDataUpdates();
+        enableSinglePointDataUpdates();
+        enableBitStringDataUpdates();
     }
+}
+
+Connection *ModuleDataUpdater::currentConnection() noexcept
+{
+    return m_conn;
 }
 
 void ModuleDataUpdater::requestUpdates()
@@ -39,19 +44,35 @@ void ModuleDataUpdater::setUpdatesEnabled(bool enabled)
     m_updatesEnabled = enabled;
 }
 
-void ModuleDataUpdater::setFloatQuery(const QList<BdQuery> &list)
+void ModuleDataUpdater::enableFloatDataUpdates() noexcept
 {
-    m_floatQueryList = list;
+    if (m_floatDataConn)
+        disconnect(m_floatDataConn);
+    m_floatDataConn = m_conn->connection(this, &ModuleDataUpdater::updateFloatData);
 }
 
-void ModuleDataUpdater::setSpQuery(const QList<BdQuery> &list)
+void ModuleDataUpdater::enableSinglePointDataUpdates() noexcept
 {
-    m_spQueryList = list;
+    if (m_singlePointDataConn)
+        disconnect(m_singlePointDataConn);
+    m_singlePointDataConn = m_conn->connection(this, &ModuleDataUpdater::updateSinglePointData);
 }
 
-void ModuleDataUpdater::setBsQuery(const QList<BdQuery> &list)
+void ModuleDataUpdater::enableBitStringDataUpdates() noexcept
 {
-    m_bsQueryList = list;
+    if (m_bitStringDataConn)
+        disconnect(m_bitStringDataConn);
+    m_bitStringDataConn = m_conn->connection(this, &ModuleDataUpdater::updateBitStringData);
+}
+
+void ModuleDataUpdater::disableUpdates() noexcept
+{
+    if (m_floatDataConn)
+        disconnect(m_floatDataConn);
+    if (m_singlePointDataConn)
+        disconnect(m_singlePointDataConn);
+    if (m_bitStringDataConn)
+        disconnect(m_bitStringDataConn);
 }
 
 void ModuleDataUpdater::addFloat(const BdQuery &query)

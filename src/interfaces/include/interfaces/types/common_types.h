@@ -82,8 +82,10 @@ enum class Commands
     C_ReqOscInfo,
     C_SetMode,
     C_GetMode,
-    C_WriteHardware
+    C_WriteHardware,
+    C_EnableWritingHardware
 };
+Q_ENUM_NS(Commands)
 
 enum CommandRegisters
 {

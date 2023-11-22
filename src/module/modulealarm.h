@@ -10,7 +10,7 @@
 
 /// \brief The class for alarm dialog, that displaying critical,
 /// warning and info alarms from XML configuration files.
-class ModuleAlarm : public BaseAlarm
+class ModuleAlarm final : public BaseAlarm
 {
     Q_OBJECT
 private:
@@ -34,5 +34,5 @@ public:
 
 public slots:
     /// \brief This slot called when a SinglePoint data is received from the device.
-    void update(const DataTypes::SinglePointWithTimeStruct &sp);
+    void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
 };

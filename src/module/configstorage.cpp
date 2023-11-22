@@ -63,12 +63,17 @@ void ConfigStorage::measJourDataReceive(const quint32 index, const QString &head
     m_settings.appendMeasJournal(index, header, type, visib);
 }
 
+void ConfigStorage::hiddenTabDataReceived(const ModuleTypes::HiddenTab &hiddenTab)
+{
+    m_settings.appendHiddenTab(hiddenTab);
+}
+
 void ConfigStorage::protocolDescriptionReceived(const AbstractGroup &str)
 {
     auto &sigMap = m_settings.getSignals();
-    if (sigMap.contains(str.sigId))
+    if (sigMap.find(str.sigId) != sigMap.cend())
     {
-        auto signal = sigMap.value(str.sigId);
+        auto signal = sigMap.at(str.sigId);
         ProtocolDescription *descr = Interface::Connection::iface()->settings();
         switch (str.ifaceType)
         {

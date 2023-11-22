@@ -20,10 +20,6 @@ protected:
     bool m_isLastSectionSended;
     S2Util m_util;
 
-    /// \brief Функция, отправляющая наверх статус "OK", полученный от устройства.
-    void processOk() noexcept;
-    /// \brief Функция, отправляющая наверх код ошибки, полученный от устройства.
-    void processError(int errorCode = 0) noexcept;
     /// \brief Базовая функция для отправки наверх прочитанных из устройства файлов.
     void fileReceived(const QByteArray &file, const S2::FilesEnum addr, const DataTypes::FileFormat format);
 
@@ -68,6 +64,11 @@ public slots:
     /// \brief Слот, отправляющий наверх прогресс чтения/записи
     /// файла или большого массива байт.
     void processProgressCount(const quint64 count) noexcept;
+
+    /// \brief Слот, отправляющий наверх статус "OK", полученный от устройства.
+    void processOk() noexcept;
+    /// \brief Слот, отправляющий наверх код ошибки, полученный от устройства.
+    void processError(int errorCode = 0) noexcept;
 
 signals:
     /// \brief Сигнал, информирующий исполнителя на верхнем уровне

@@ -377,7 +377,6 @@ void Coma::go()
     QDir dir(StdFunc::GetHomeDir());
     if (!dir.exists())
         dir.mkpath(".");
-    StdFunc::Init();
     qInfo("=== Log started ===\n");
     newTimers();
     loadSettings();
@@ -507,8 +506,7 @@ void Coma::initInterfaceConnection()
     auto conn = Connection::iface();
     conn->connection(&board, &Board::update);
     conn->connection(this, &Coma::update);
-    // connect(&board, &Board::readyRead, this, &Coma::prepare);
-    // TODO: Remove it?
+    /// TODO: Remove it?
     connect(conn, &Connection::stateChanged, &board, [&board](const State state) {
         switch (state)
         {
@@ -602,6 +600,7 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setOrganizationName(orgName);
     QCoreApplication::setApplicationVersion(version);
     initResources();
+    StdFunc::Init();
     Logger::writeStart(StdFunc::GetSystemHomeDir() + "coma.log");
     qInstallMessageHandler(Logger::messageHandler);
 }

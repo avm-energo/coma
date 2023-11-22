@@ -9,8 +9,7 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 
-UWidget::UWidget(QWidget *parent)
-    : QWidget(parent), m_conn(Connection::iface()), m_dataUpdater(new ModuleDataUpdater(m_conn))
+UWidget::UWidget(QWidget *parent) : QWidget(parent), m_dataUpdater(new ModuleDataUpdater(Connection::iface()))
 {
     // Отключим обновление виджета по умолчанию
     m_dataUpdater->setUpdatesEnabled(false);
@@ -46,9 +45,7 @@ void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 
 void UWidget::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
-    auto hstlist = m_highlightMap.value(sp.sigAdr);
-    for (const auto &hst : hstlist)
-        WDFunc::SetLBLTColor(this, QString::number(hst.fieldnum), (sp.sigVal == 1) ? Colors::TABCOLORA1 : hst.color);
+    Q_UNUSED(sp);
 }
 
 void UWidget::updateBitStringData(const DataTypes::BitStringStruct &bs)
@@ -78,6 +75,6 @@ void UWidget::uponInterfaceSetting()
 bool UWidget::checkPassword()
 {
     Q_ASSERT(!m_hash.isEmpty());
-    KeyPressDialog *dlg = new KeyPressDialog;
-    return dlg->CheckPassword(m_hash);
+    auto dialog = new KeyPressDialog(this);
+    return dialog->CheckPassword(m_hash);
 }

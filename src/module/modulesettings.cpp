@@ -1,6 +1,6 @@
 #include "modulesettings.h"
 
-void ModuleSettings::clear()
+void ModuleSettings::clear() noexcept
 {
     m_countMap.clear();
     m_signals.clear();
@@ -11,11 +11,12 @@ void ModuleSettings::clear()
     m_measJournals.clear();
     m_critHighlight.clear();
     m_warnHighlight.clear();
+    m_hiddenSettings.clear();
 }
 
 void ModuleSettings::appendSignal(const quint32 id, const ModuleTypes::Signal sig)
 {
-    m_signals.insert(id, sig);
+    m_signals.insert({ id, sig });
 }
 
 void ModuleSettings::appendTab(const quint32 id, const QString &tabName)
@@ -28,12 +29,12 @@ void ModuleSettings::appendSection(const ModuleTypes::Section &section)
     m_sections.push_back(section);
 }
 
-void ModuleSettings::appendAlarm(const ModuleTypes::AlarmKey &key, const quint32 &addr, const QString &desc)
+void ModuleSettings::appendAlarm(const ModuleTypes::AlarmKey key, const quint32 addr, const QString &desc)
 {
     m_alarms[key].insert(addr, desc);
 }
 
-void ModuleSettings::appendHighlight(const Modules::AlarmType &type, const quint32 &key, const QList<quint32> &values)
+void ModuleSettings::appendHighlight(const Modules::AlarmType type, const quint32 key, const QList<quint32> &values)
 {
     if (type == Modules::AlarmType::Critical)
     {
@@ -55,7 +56,12 @@ void ModuleSettings::appendWorkJournal(const quint32 id, const QString &desc)
 void ModuleSettings::appendMeasJournal(const quint32 index, const QString &header, //
     const ModuleTypes::BinaryType type, bool visib)
 {
-    m_measJournals.push_back({ index, header, type, visib });
+    m_measJournals.push_back(ModuleTypes::MeasJournal { index, type, visib, header });
+}
+
+void ModuleSettings::appendHiddenTab(const ModuleTypes::HiddenTab &hiddenTab)
+{
+    m_hiddenSettings.push_back(hiddenTab);
 }
 
 const ModuleTypes::DetailCountMap &ModuleSettings::getDetailConfigCount() const
@@ -99,4 +105,9 @@ const ModuleTypes::WorkJourMap &ModuleSettings::getWorkJours() const
 const ModuleTypes::MeasJourList &ModuleSettings::getMeasJours() const
 {
     return m_measJournals;
+}
+
+const ModuleTypes::HiddenSettings &ModuleSettings::getHiddenSettings() const
+{
+    return m_hiddenSettings;
 }

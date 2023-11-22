@@ -39,6 +39,8 @@ public slots:
     /// \brief Slot for saving module a measurement journal's record.
     void measJourDataReceive(const quint32 index, const QString &header, //
         const ModuleTypes::BinaryType type, bool visib);
+    /// \brief Slot for saving hidden dialog's tab settings.
+    void hiddenTabDataReceived(const ModuleTypes::HiddenTab &hiddenTab);
     /// \brief Slot for saving module's protocol groups
     void protocolDescriptionReceived(const AbstractGroup &str);
 };
