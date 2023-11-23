@@ -196,7 +196,7 @@ void TestStdFunc::modbusRegistersTest02()
 
 void TestStdFunc::modbusRegistersTest03()
 {
-    std::uint64_t data = 0xaabbccddaabbccdd;
+    quint64 data = 0xaabbccddaabbccdd;
     auto first = StdFunc::toByteArray(qToBigEndian(data));
     auto second = detail::packRegister(data);
     auto third = detail::packReg(data);

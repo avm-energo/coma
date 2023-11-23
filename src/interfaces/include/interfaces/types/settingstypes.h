@@ -8,7 +8,7 @@ struct IEC104Settings
 {
     QString ip;
     quint16 port;
-    quint16 baseadr;
+    quint16 bsAddress;
 
     bool isValid() const
     {

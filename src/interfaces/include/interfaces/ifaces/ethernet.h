@@ -22,4 +22,5 @@ private:
 
 private slots:
     void handleSocketState(const QAbstractSocket::SocketState state);
+    void handleSocketError(const QAbstractSocket::SocketError err);
 };

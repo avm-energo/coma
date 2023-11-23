@@ -84,7 +84,7 @@ bool Mip::start()
     // m_device = new IEC104;
     IEC104Settings settings;
     settings.ip = sets->value(regMap[MIPIP].name, regMap[MIPIP].defValue).toString();
-    settings.baseadr = sets->value(regMap[MIPAddress].name, regMap[MIPAddress].defValue).toUInt();
+    settings.bsAddress = sets->value(regMap[MIPAddress].name, regMap[MIPAddress].defValue).toUInt();
     ConnectStruct st { "mip", settings };
     // if (!m_device->start(st))
     //    return false;

@@ -52,7 +52,7 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
     IEC104Settings settings;
     settings.ip = mdl->data(mdl->index(row, 1)).toString();
     settings.port = mdl->data(mdl->index(row, 2)).toUInt();
-    settings.baseadr = mdl->data(mdl->index(row, 3)).toUInt();
+    settings.bsAddress = mdl->data(mdl->index(row, 3)).toUInt();
     if (!settings.isValid())
         return;
     ConnectStruct st { name, settings };

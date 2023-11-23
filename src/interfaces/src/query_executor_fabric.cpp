@@ -1,5 +1,7 @@
 #include "interfaces/query_executor_fabric.h"
 
+#include <interfaces/parsers/iec104_request_parser.h>
+#include <interfaces/parsers/iec104_response_parser.h>
 #include <interfaces/parsers/modbus_request_parser.h>
 #include <interfaces/parsers/modbus_response_parser.h>
 #include <interfaces/parsers/protocom_request_parser.h>
@@ -41,12 +43,16 @@ DeviceQueryExecutor *QueryExecutorFabric::makeModbusExecutor(RequestQueue &queue
     return executor;
 }
 
-DeviceQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queue, quint32 timeout)
+DeviceQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queue, quint16 bsAddress, quint32 timeout)
 {
-    /// TODO
-    Q_UNUSED(queue);
-    Q_UNUSED(timeout);
-    return nullptr;
+    Q_UNUSED(bsAddress);
+    auto executor = new DeviceQueryExecutor(queue, timeout);
+    executor->initLogger("IEC104");
+    // NOTE: query executor must be parent for all parsers
+    auto requestParser = new Iec104RequestParser(executor);
+    auto responseParser = new Iec104ResponseParser(executor);
+    executor->setParsers(requestParser, responseParser);
+    return executor;
 }
 
 } // namespace Interface
