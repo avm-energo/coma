@@ -1,13 +1,14 @@
 #ifndef IEC104PARSER_H
 #define IEC104PARSER_H
 
+#include "baseprotocolparser.h"
+
 #include <QQueue>
 #include <QTimer>
 #include <QVariant>
 #include <gen/datatypes.h>
 #include <gen/error.h>
 #include <gen/logclass.h>
-#include <interfaces/parsers/baseprotocolparser.h>
 #include <s2/s2datatypes.h>
 
 namespace Interface
@@ -106,8 +107,8 @@ private:
     void ParseIFormat(QByteArray &ba);
     Error::Msg isIncomeDataValid(QByteArray);
     QByteArray CreateGI(unsigned char apdulength);
-    QByteArray ASDUFilePrefix(unsigned char Command, unsigned char filenum, unsigned char secnum);
-    QByteArray ASDU6Prefix(unsigned char Command, quint32 adr);
+    QByteArray ASDUFilePrefix(Iec104::MessageDataType Command, unsigned char filenum, unsigned char secnum);
+    QByteArray ASDU6Prefix(Iec104::MessageDataType Command, quint32 adr);
     template <typename T> QByteArray ToByteArray(T var);
     void Send(int inc, APCI, ASDU = QByteArray());
     void SendGI();

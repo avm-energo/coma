@@ -1,4 +1,4 @@
-#include "interfaces/conn/iec104.h"
+#include "iec104.h"
 
 #include <QCoreApplication>
 #include <QDateTime>
@@ -14,7 +14,7 @@ namespace Interface
 {
 
 IEC104::IEC104(QObject *parent)
-    : BaseConnection(parent), EthThreadWorking(false), ParseThreadWorking(false), sock(new QTcpSocket(this))
+    : QObject(parent), EthThreadWorking(false), ParseThreadWorking(false), sock(new QTcpSocket(this))
 {
     m_log.init("ethernet.log");
 }
@@ -124,7 +124,7 @@ void IEC104::reqBSI()
 
 void IEC104::reqBSIExt()
 {
-    // No request, bsiExt is in the same group with bsi, so request bsi also requests bsi ext
+  // No request, bsiExt is in the same group with bsi, so request bsi also requests bsi ext
 }
 
 void IEC104::reqFile(quint32 filenum, Datatypes::FileFormat format)

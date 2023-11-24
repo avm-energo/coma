@@ -165,7 +165,7 @@ void TestStdFunc::enumToStr()
     QVERIFY(errStr == expected);
 }
 
-void TestStdFunc::byteArrayTest()
+void TestStdFunc::byteArrayTest01()
 {
     quint16 data = 32125;
     QByteArray first;
@@ -173,6 +173,11 @@ void TestStdFunc::byteArrayTest()
     first.append(static_cast<char>(data / 0x100));
     auto second = StdFunc::toByteArray(data);
     QVERIFY(first == second);
+}
+
+void TestStdFunc::byteArrayTest02()
+{
+    quint16 data = 205;
 }
 
 void TestStdFunc::modbusRegistersTest01()
