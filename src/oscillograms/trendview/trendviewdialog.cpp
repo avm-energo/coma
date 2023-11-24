@@ -292,12 +292,61 @@ ptrdiff_t TrendViewDialog::visibleSignalOscDescriptionSize(TrendViewDialog::Sign
 
 void TrendViewDialog::graphClicked(QCPAbstractPlottable *plot, int dataIndex)
 {
-    auto dataValue = plot->interface1D()->dataMainValue(dataIndex);
-    auto message = QString("Clicked on graph '%1' at data point #%2 with value %3.")
-                       .arg(plot->name())
+    auto x = plot->interface1D()->dataMainValue(dataIndex);
+    auto y = plot->interface1D()->dataMainKey(dataIndex);
+    auto name = plot->name();
+    auto message = QString("Clicked on graph '%1' at data point #%2 with poisition X:%3, Y:%4.")
+                       .arg(name)
                        .arg(dataIndex)
-                       .arg(dataValue);
-    qDebug() << message;
+                       .arg(x)
+                       .arg(y);
+    qWarning() << message;
+
+    QVector<double> yValues { y, y };
+    if (!digital.noSignals())
+    {
+        QVector<double> xValues { sizeX.min, sizeX.max };
+        if (digital.selection)
+        {
+            mainPlot->removeGraph(digital.selection);
+            digital.selection = nullptr;
+        }
+
+        auto axisRect = mainPlot->axisRect(0);
+        auto leftAxis = axisRect->axis(QCPAxis::atLeft, 0);
+        auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
+        digital.selection = mainPlot->addGraph(bottomAxis, leftAxis);
+        digital.selection->setLineStyle(QCPGraph::lsStepLeft);
+        digital.selection->setPen(QPen(Qt::black));
+        digital.selection->setAntialiased(true);
+        digital.selection->setData(yValues, xValues);
+        mainPlot->replot();
+    }
+
+    if (!analog.noSignals())
+    {
+        QVector<double> xValues { -2000, 2000 };
+        if (analog.selection)
+        {
+            mainPlot->removeGraph(analog.selection);
+            analog.selection = nullptr;
+        }
+
+        QCPAxisRect *axisRect = nullptr;
+        if (m_trendModel->idOsc() != AVTUK_85::OSC_ID)
+            axisRect = mainPlot->axisRect(0);
+        else
+            axisRect = mainPlot->axisRect(1);
+        auto axisIndex = CURRENT_AXIS_INDEX;
+        auto leftAxis = axisRect->axis(QCPAxis::atLeft, axisIndex);
+        auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
+        analog.selection = mainPlot->addGraph(bottomAxis, leftAxis);
+        analog.selection->setLineStyle(QCPGraph::lsLine);
+        analog.selection->setPen(QPen(Qt::black));
+        analog.selection->setAntialiased(true);
+        analog.selection->setData(yValues, xValues);
+        mainPlot->replot();
+    }
 }
 
 void TrendViewDialog::signalChoosed(QString signame) const
@@ -681,6 +730,7 @@ void TrendViewDialog::digitalAxis(int &MainPlotLayoutRow)
 void TrendViewDialog::setupPlots()
 {
     mainPlot = std::unique_ptr<QCustomPlot>(new QCustomPlot);
+    mainPlot->setMouseTracking(true);
     mainPlot->plotLayout()->clear();
     mainPlot->setInteractions(QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectAxes);
     mainPlot->setAutoAddPlottableToLegend(false);

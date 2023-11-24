@@ -58,6 +58,7 @@ private:
     struct Signals
     {
         DescriptionStruct description;
+        QCPGraph *selection = nullptr;
         QCPLegend *legend;
         // should we rescale upper and lower ranges automatically to let the zero not moving
         bool rescaleActivated;
@@ -97,6 +98,7 @@ private:
     void addSig(QString signame);
 
     Q_ENUM(SignalTypes)
+
 private slots:
     void graphClicked(QCPAbstractPlottable *plot, int dataIndex);
     void signalChoosed(QString signame) const;
