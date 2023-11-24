@@ -79,6 +79,7 @@ private:
     bool rangeChangeInProgress, starting;
     bool rangeAxisInProgress, startingAx;
 
+    QLineEdit *nameOutput, *valueOutput, *timeOutput;
     QToolBar *createToolBar(SignalTypes type);
     void changeRange(const QCPRange &range);
     QCPLegend *createLegend(int rectindex);
