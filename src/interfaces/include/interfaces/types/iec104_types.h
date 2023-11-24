@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <interfaces/types/common_types.h>
 
 constexpr quint32 BSIGROUP = 1;
 constexpr quint32 STARTUPGROUP = 2;
@@ -9,7 +10,6 @@ constexpr quint32 MAINFLOATGROUP = 4;
 constexpr quint32 MAINBITSTRINGGROUP = 4;
 constexpr quint32 TIMEGROUP = 15;
 
-#define BASEADR104 205
 #define I104_START 0x68
 
 #define I104_I 0x00
@@ -37,13 +37,13 @@ constexpr quint32 TIMEGROUP = 15;
 #define FHSIZE 16
 #define SYSTEM_JOUR_SIZE 65568
 
-namespace Commands104
+namespace Iec104
 {
 Q_NAMESPACE
 
 /// \brief Data type in message, type identification
 /// \see https://infosys.beckhoff.com/english.php?content=../content/1033/tf6500_tc3_iec60870_5_10x/984447883.html
-enum TypeId : char
+enum class MessageDataType : std::uint8_t
 {
     M_SP_NA_1 = 1,  ///< Single-point information
     M_SP_TA_1 = 2,  ///< Single-point information with time tag
@@ -127,7 +127,7 @@ enum TypeId : char
     F_DR_TA_1 = 126, ///< Directory
     F_SC_NB_1 = 127  ///< 127..255 - Reserved (user area)
 };
-Q_ENUM_NS(Commands104::TypeId)
+Q_ENUM_NS(Iec104::MessageDataType)
 
 // CAUSE OF TRANSMISSION: define causes
 //#define COT_PERIODIC 1
@@ -145,25 +145,17 @@ Q_ENUM_NS(Commands104::TypeId)
 //#define COT_FILETRANSFER 13
 //#define COT_INTERROGATION 20
 
-enum CommandRegisters : quint32
-{
-    SetNewConfigurationReg = 801,
-    StartFirmwareUpgradeReg = 802,
-    StartWorkingChannelReg = 803,
-    // Моветон EraseJournalsReg = 806,
-    SetStartupValuesReg = 900,   ///< Задать начальные значения по всем фазам
-    SetStartupPhaseA = 901,      ///< Задать начальные значения по фазе A
-    SetStartupPhaseB = 902,      ///< Задать начальные значения по фазе B
-    SetStartupPhaseC = 903,      ///< Задать начальные значения по фазе C
-    SetStartupUnbounced = 904,   ///< Задать начальные значения по току небаланса
-    ClearStartupValuesReg = 905, ///< Сбросить начальные значения по всем фазам
-    ClearStartupSetError = 906,  ///< Сбросить ошибку задания начальных значений
-    SetTransOff = 907,           ///< Послать команду "Трансфоратор отключён"
-    ClearStartupUnbounced = 908  ///< Сбросить начальное значение тока небаланса
-};
-
 enum Commands
 {
+    // New
+    RequestGroup,
+    RequestFile,
+    RequestConfigFile,
+    WriteFile,
+    COM45,
+    COM50,
+    COM51,
+    // Old
     CM104_REQGROUP,
     CM104_COM51,
     CM104_COM45,
@@ -184,25 +176,25 @@ struct CommandStruct
 
 struct QualifierVariableStructute
 {
-    unsigned char Number; // number of Informational Objects
-    unsigned char SQ;     // Single <0> or Series <1> of Objects
+    quint8 Number; // number of Informational Objects
+    quint8 SQ;     // Single <0> or Series <1> of Objects
 };
 
 struct CauseOfTransmission
 {
-    unsigned char cause;     // <0..63> cause number
-    unsigned char confirm;   // <0> - positive , <1> - negative
-    unsigned char test;      // <0> - not a test, <1> - test
-    unsigned char initiator; // number of initiating address
+    quint8 cause;     // <0..63> cause number
+    quint8 confirm;   // <0> - positive , <1> - negative
+    quint8 test;      // <0> - not a test, <1> - test
+    quint8 initiator; // number of initiating address
 };
 
 struct DataUnitIdentifier
 {
-    TypeId typeIdent;
+    MessageDataType typeIdent;
     QualifierVariableStructute qualifier;
     CauseOfTransmission cause;
     quint8 commonAdrASDU;
 };
 
 }
-Q_DECLARE_METATYPE(Commands104::CommandStruct)
+Q_DECLARE_METATYPE(Iec104::CommandStruct)

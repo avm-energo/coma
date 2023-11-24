@@ -1,4 +1,4 @@
-#include "interfaces/parsers/iec104parser.h"
+#include "iec104parser.h"
 
 #include <QCoreApplication>
 #include <QDateTime>
@@ -13,7 +13,7 @@ using namespace Interface;
 QMutex IEC104Parser::s_ParseReadMutex;
 QMutex IEC104Parser::s_ParseWriteMutex;
 
-using namespace Commands104;
+using namespace Iec104;
 
 IEC104Parser::IEC104Parser(RequestQueue &queue, QObject *parent) : BaseProtocolParser(queue, parent)
 {
@@ -75,36 +75,36 @@ void IEC104Parser::Run()
         }
         if (!m_isFileSending && !m_writingToPortBlocked)
         {
-            Commands104::CommandStruct inp;
+            Iec104::CommandStruct inp;
             if (true)
             {
                 switch (inp.cmd)
                 {
-                case Commands104::CM104_COM45:
+                case Iec104::CM104_COM45:
                     Com45(inp.address, inp.blarg);
                     break;
-                case Commands104::CM104_COM50:
+                case Iec104::CM104_COM50:
                     Com50(inp.address, inp.flarg);
                     break;
-                case Commands104::CM104_WRITEFILE:
+                case Iec104::CM104_WRITEFILE:
                 {
                     m_fileIsConfigFile = DataTypes::FileFormat::Binary;
                     m_file = inp.ba;
                     FileReady(inp.address);
                     break;
                 }
-                case Commands104::CM104_REQCONFIGFILE:
+                case Iec104::CM104_REQCONFIGFILE:
                     m_fileIsConfigFile = DataTypes::FileFormat::DefaultS2;
                     SelectFile(inp.address);
                     break;
-                case Commands104::CM104_REQFILE:
+                case Iec104::CM104_REQFILE:
                     m_fileIsConfigFile = DataTypes::FileFormat::Binary;
                     SelectFile(inp.address);
                     break;
-                case Commands104::CM104_COM51:
+                case Iec104::CM104_COM51:
                     Com51WriteTime(inp.address);
                     break;
-                case Commands104::CM104_REQGROUP:
+                case Iec104::CM104_REQGROUP:
                     reqGroup(inp.address);
                     break;
                 default:
@@ -276,7 +276,6 @@ bool IEC104Parser::handleFile(QByteArray &ba, S2::FilesEnum addr, DataTypes::Fil
 
 void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разборщик
 {
-    using namespace Commands104;
     quint32 basize = ba.size();
     DataUnitIdentifier DUI;
     try
@@ -286,7 +285,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
             qDebug() << Error::SizeError;
             return;
         }
-        DUI.typeIdent = static_cast<TypeId>(ba.at(0));
+        DUI.typeIdent = static_cast<MessageDataType>(ba.at(0));
         DUI.qualifier.Number = ba.at(1) & 0x7f;
         DUI.qualifier.SQ = ba.at(1) >> 7;
         DUI.cause.cause = ba.at(2) & 0x3F;
@@ -317,11 +316,11 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
             switch (DUI.typeIdent)
             {
 
-            case TypeId::M_EI_NA_1:
+            case MessageDataType::M_EI_NA_1:
             {
                 break;
             }
-            case TypeId::M_ME_TF_1:
+            case MessageDataType::M_ME_TF_1:
             {
                 Q_ASSERT(basize >= (index + 12));
                 DataTypes::FloatWithTimeStruct signal;
@@ -339,10 +338,10 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::C_IC_NA_1:
+            case MessageDataType::C_IC_NA_1:
                 break;
 
-            case TypeId::M_ME_NC_1:
+            case MessageDataType::M_ME_NC_1:
             {
                 Q_ASSERT(basize >= (index + 5));
                 DataTypes::FloatWithTimeStruct signal;
@@ -354,7 +353,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::M_SP_NA_1:
+            case MessageDataType::M_SP_NA_1:
             {
                 Q_ASSERT(basize >= index);
                 DataTypes::SinglePointWithTimeStruct signal;
@@ -364,7 +363,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::M_SP_TB_1:
+            case MessageDataType::M_SP_TB_1:
             {
                 Q_ASSERT(basize >= (index + 8));
                 DataTypes::SinglePointWithTimeStruct signal;
@@ -376,7 +375,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::M_BO_NA_1:
+            case MessageDataType::M_BO_NA_1:
             {
                 Q_ASSERT(basize >= (index + 5));
                 DataTypes::BitStringStruct signal;
@@ -388,7 +387,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::F_SR_NA_1:
+            case MessageDataType::F_SR_NA_1:
             {
                 Q_ASSERT(basize >= 11);
                 m_log.info("Section ready");
@@ -397,7 +396,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::F_FR_NA_1:
+            case MessageDataType::F_FR_NA_1:
             {
                 Q_ASSERT(basize >= 14);
                 m_log.info("File ready");
@@ -412,7 +411,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::F_SG_NA_1:
+            case MessageDataType::F_SG_NA_1:
             {
                 Q_ASSERT(basize >= (m_readSize + 14));
                 m_log.info(
@@ -428,7 +427,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::F_LS_NA_1:
+            case MessageDataType::F_LS_NA_1:
             {
                 Q_ASSERT(basize >= 13);
                 m_log.info("Last section, ba[12] = " + QString::number(ba.at(12)));
@@ -459,7 +458,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::F_SC_NA_1:
+            case MessageDataType::F_SC_NA_1:
             {
                 Q_ASSERT(basize >= 13);
                 if (ba.at(12) == 0x02) //запрос файла
@@ -475,7 +474,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::F_AF_NA_1:
+            case MessageDataType::F_AF_NA_1:
             {
                 Q_ASSERT(basize >= 13);
                 m_log.info("Last section of file " + QString::number(ba[12]) + " confirm");
@@ -490,7 +489,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::C_SC_NA_1:
+            case MessageDataType::C_SC_NA_1:
             {
                 if (DUI.cause.cause == 10)
                 {
@@ -501,7 +500,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 break;
             }
 
-            case TypeId::C_SE_NC_1:
+            case MessageDataType::C_SE_NC_1:
             {
                 Q_ASSERT(basize >= 14);
                 if (DUI.cause.cause == 10)
@@ -592,10 +591,10 @@ QByteArray IEC104Parser::CreateGI(unsigned char apdulength)
     return GI;
 }
 
-QByteArray IEC104Parser::ASDUFilePrefix(unsigned char cmd, unsigned char filenum, unsigned char secnum)
+QByteArray IEC104Parser::ASDUFilePrefix(MessageDataType cmd, unsigned char filenum, unsigned char secnum)
 {
     QByteArray ba;
-    ba.append(cmd);
+    ba.append(std_ext::to_underlying(cmd));
     ba.append(QByteArrayLiteral("\x01\x0d\x00"));
     ba.append(m_baseAdrLow);
     ba.append(m_baseAdrHigh);
@@ -606,10 +605,10 @@ QByteArray IEC104Parser::ASDUFilePrefix(unsigned char cmd, unsigned char filenum
     return ba;
 }
 
-QByteArray IEC104Parser::ASDU6Prefix(unsigned char cmd, quint32 adr)
+QByteArray IEC104Parser::ASDU6Prefix(MessageDataType cmd, quint32 adr)
 {
     ASDU ba;
-    ba.append(cmd);
+    ba.append(std_ext::to_underlying(cmd));
     ba.append(QByteArrayLiteral("\x01\x06\x00"));
     ba.append(m_baseAdrLow);
     ba.append(m_baseAdrHigh);
@@ -621,7 +620,7 @@ QByteArray IEC104Parser::ASDU6Prefix(unsigned char cmd, quint32 adr)
 
 void IEC104Parser::SendGI()
 {
-    ASDU GInter = ASDU6Prefix(C_IC_NA_1, 0x00);
+    ASDU GInter = ASDU6Prefix(MessageDataType::C_IC_NA_1, 0x00);
     GInter.append(0x14);
     APCI GI = CreateGI(0x0e);
     Send(1, GI, GInter); // ASDU = QByteArray()
@@ -694,7 +693,7 @@ void IEC104Parser::SelectFile(char numfile)
     m_log.info("FileSending set");
     m_sendTestTimer->stop();
     m_log.info("SelectFile(" + QString::number(numfile) + ")");
-    ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numfile, 0x00);
+    ASDU cmd = ASDUFilePrefix(MessageDataType::F_SC_NA_1, numfile, 0x00);
     cmd.append('\x01');
     APCI GI = CreateGI(0x11);
     Send(1, GI, cmd); // ASDU = QByteArray()
@@ -702,7 +701,7 @@ void IEC104Parser::SelectFile(char numfile)
 
 void IEC104Parser::CallFile(unsigned char numFile)
 {
-    ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numFile, 0x00);
+    ASDU cmd = ASDUFilePrefix(MessageDataType::F_SC_NA_1, numFile, 0x00);
     cmd.append('\x02');
     APCI GI = CreateGI(0x11);
     Send(1, GI, cmd); // ASDU = QByteArray()
@@ -710,7 +709,7 @@ void IEC104Parser::CallFile(unsigned char numFile)
 
 void IEC104Parser::GetSection(unsigned char numFile)
 {
-    ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numFile, m_sectionNum);
+    ASDU cmd = ASDUFilePrefix(MessageDataType::F_SC_NA_1, numFile, m_sectionNum);
     cmd.append('\x06');
     APCI GI = CreateGI(0x11);
     Send(1, GI, cmd); // ASDU = QByteArray()
@@ -718,7 +717,7 @@ void IEC104Parser::GetSection(unsigned char numFile)
 
 void IEC104Parser::ConfirmSection(unsigned char numFile)
 {
-    ASDU cmd = ASDUFilePrefix(F_AF_NA_1, numFile, m_sectionNum);
+    ASDU cmd = ASDUFilePrefix(MessageDataType::F_AF_NA_1, numFile, m_sectionNum);
     cmd.append('\x03');
     APCI GI = CreateGI(0x11);
     Send(1, GI, cmd); // ASDU = QByteArray()
@@ -727,7 +726,7 @@ void IEC104Parser::ConfirmSection(unsigned char numFile)
 
 void IEC104Parser::ConfirmFile(unsigned char numFile)
 {
-    ASDU cmd = ASDUFilePrefix(F_AF_NA_1, numFile, m_sectionNum);
+    ASDU cmd = ASDUFilePrefix(MessageDataType::F_AF_NA_1, numFile, m_sectionNum);
     cmd.append('\x01');
     APCI GI = CreateGI(0x11);
     Send(1, GI, cmd); // ASDU = QByteArray()
@@ -740,7 +739,7 @@ void IEC104Parser::FileReady(quint16 numfile)
     m_log.info("FileSending set");
     //    DR = file;
     m_sectionNum = 1;
-    ASDU cmd = ASDUFilePrefix(F_FR_NA_1, numfile, 0x00);
+    ASDU cmd = ASDUFilePrefix(MessageDataType::F_FR_NA_1, numfile, 0x00);
     cmd.chop(1);
     m_fileLen = m_file.size();
     cmd.append(m_fileLen & 0xFF);
@@ -752,7 +751,7 @@ void IEC104Parser::FileReady(quint16 numfile)
 
 void IEC104Parser::SectionReady()
 {
-    ASDU cmd = ASDUFilePrefix(F_SR_NA_1, 0x01, m_sectionNum);
+    ASDU cmd = ASDUFilePrefix(MessageDataType::F_SR_NA_1, 0x01, m_sectionNum);
     cmd.append(m_fileLen & 0xFF);
     cmd.append((m_fileLen & 0xFF00) >> 8);
     cmd.append((m_fileLen & 0xFF0000) >> 16);
@@ -768,7 +767,7 @@ void IEC104Parser::SendSegments()
 
     unsigned int pos = 0;
     setGeneralResponse(DataTypes::GeneralResponseTypes::DataSize, m_fileLen);
-    ASDU cmd = ASDUFilePrefix(F_SG_NA_1, 0x01, m_sectionNum);
+    ASDU cmd = ASDUFilePrefix(MessageDataType::F_SG_NA_1, 0x01, m_sectionNum);
     cmd.append('\x0');
     unsigned char diff;
 
@@ -798,7 +797,7 @@ void IEC104Parser::SendSegments()
         QThread::msleep(100);
     } while (!m_file.isEmpty());
 
-    cmd = ASDUFilePrefix(F_LS_NA_1, 1, m_sectionNum);
+    cmd = ASDUFilePrefix(MessageDataType::F_LS_NA_1, 1, m_sectionNum);
     cmd.append('\x03');
     cmd.append(m_KSS);
     m_KSS = 0;
@@ -809,7 +808,7 @@ void IEC104Parser::SendSegments()
 
 void IEC104Parser::LastSection()
 {
-    ASDU cmd = ASDUFilePrefix(F_LS_NA_1, 1, m_sectionNum);
+    ASDU cmd = ASDUFilePrefix(MessageDataType::F_LS_NA_1, 1, m_sectionNum);
     cmd.append('\x01');
     cmd.append(m_KSF);
     m_KSF = 0;
@@ -820,7 +819,7 @@ void IEC104Parser::LastSection()
 void IEC104Parser::Com45(quint32 com, bool value)
 {
     quint8 data = value ? '\x01' : '\x00';
-    ASDU cmd = ASDU6Prefix(C_SC_NA_1, com);
+    ASDU cmd = ASDU6Prefix(MessageDataType::C_SC_NA_1, com);
     cmd.append(data);
     APCI GI = CreateGI(0x0e);
     Send(1, GI, cmd);
@@ -831,7 +830,7 @@ void IEC104Parser::Com50(quint32 adr, float param)
     if (adr == 910)
         setGeneralResponse(DataTypes::GeneralResponseTypes::DataSize, 11);
 
-    ASDU cmd = ASDU6Prefix(C_SE_NC_1, adr);
+    ASDU cmd = ASDU6Prefix(MessageDataType::C_SE_NC_1, adr);
     cmd.append(ToByteArray(param));
     cmd.append('\x00');
     APCI GI = CreateGI(0x12);
@@ -841,7 +840,7 @@ void IEC104Parser::Com50(quint32 adr, float param)
 void IEC104Parser::reqGroup(int groupNum)
 {
     // qDebug(__PRETTY_FUNCTION__);
-    ASDU req = ASDU6Prefix(C_IC_NA_1, 0);
+    ASDU req = ASDU6Prefix(MessageDataType::C_IC_NA_1, 0);
     req.append(groupNum + 20); // group 0 (GI) -> 20, group 1 -> 21 etc
     APCI GI = CreateGI(0x0e);
     Send(1, GI, req); // ASDU = QByteArray()
@@ -850,7 +849,7 @@ void IEC104Parser::reqGroup(int groupNum)
 
 void IEC104Parser::Com51WriteTime(quint32 time)
 {
-    ASDU cmd = ASDU6Prefix(C_BO_NA_1, 4601);
+    ASDU cmd = ASDU6Prefix(MessageDataType::C_BO_NA_1, 4601);
     cmd.append(ToByteArray(time));
     APCI GI = CreateGI(0x11);
     Send(1, GI, cmd); // ASDU = QByteArray()

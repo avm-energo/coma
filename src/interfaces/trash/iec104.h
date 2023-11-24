@@ -6,8 +6,8 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include <gen/logclass.h>
-#include <interfaces/conn/baseconnection.h>
 #include <interfaces/types/iec104_types.h>
+#include <interfaces/types/settingstypes.h>
 
 // namespace Commands104
 //{
@@ -28,7 +28,7 @@
 namespace Interface
 {
 
-class IEC104 final : public BaseConnection
+class IEC104 final : public QObject
 {
     Q_OBJECT
 
@@ -37,12 +37,12 @@ private:
     QTcpSocket *sock;
     LogClass m_log;
 
-    Commands104::CommandRegisters get104Command(Commands cmd);
+    Iec104::CommandRegisters get104Command(Commands cmd);
 
 public:
     IEC104(QObject *parent = nullptr);
     ~IEC104();
-    bool start(const ConnectStruct &st) override;
+    bool start(const ConnectStruct &st);
 
     void disconnect();
 public slots:
@@ -67,11 +67,6 @@ public slots:
     //    static void FileReady(S2ConfigType *s2config);
     //    static void getTime();
     //    static void com51WriteTime(uint time);
-    bool supportBSIExt() override
-    {
-        // no way to check
-        return true;
-    }
 
 signals:
     void StopAll();
