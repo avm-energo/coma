@@ -9,6 +9,7 @@ class TestStdFunc : public QObject
     Q_OBJECT
 public:
     explicit TestStdFunc(QObject *parent = nullptr);
+
 private slots:
     // вызывается перед первой тестовой функцией
     void initTestCase()

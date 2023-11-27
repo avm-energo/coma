@@ -1,6 +1,7 @@
 #include "interfaces/parsers/iec104_request_parser.h"
 
 #include <gen/datatypes.h>
+#include <gen/stdfunc.h>
 #include <s2/filestruct.h>
 
 namespace Interface
@@ -115,13 +116,12 @@ QByteArray Iec104RequestParser::createGroupRequest([[maybe_unused]] const quint3
     return QByteArray {};
 }
 
-QByteArray createASDUPrefix(const MessageDataType type, const quint32 address)
+QByteArray Iec104RequestParser::createASDUPrefix(const Iec104::MessageDataType type, const quint32 address)
 {
     QByteArray asdu;
     asdu.append(std_ext::to_underlying(type));
     asdu.append(QByteArrayLiteral("\x01\x06\x00"));
-    // asdu.append(m_baseAdrLow);
-    // asdu.append(m_baseAdrHigh);
+    asdu.append(StdFunc::toByteArray(m_baseStationAddress));
     asdu.append(address);
     asdu.append(address >> 8);
     asdu.append(address >> 16);
