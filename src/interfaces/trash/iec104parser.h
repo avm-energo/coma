@@ -69,7 +69,6 @@ signals:
     void SendMessagefromParse();
 
 private:
-    typedef QByteArray APCI, ASDU;
 
     static QMutex s_ParseReadMutex;
     static QMutex s_ParseWriteMutex;
@@ -110,7 +109,7 @@ private:
     QByteArray ASDUFilePrefix(Iec104::MessageDataType Command, unsigned char filenum, unsigned char secnum);
     QByteArray ASDU6Prefix(Iec104::MessageDataType Command, quint32 adr);
     template <typename T> QByteArray ToByteArray(T var);
-    void Send(int inc, APCI, ASDU = QByteArray());
+    void Send(int inc, QByteArray apci, QByteArray asdu = QByteArray());
     void SendGI();
     void SendS();
     void SendTestCon();

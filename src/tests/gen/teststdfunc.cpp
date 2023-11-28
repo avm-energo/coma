@@ -4,7 +4,7 @@
 #include <gen/datatypes.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <interfaces/types/iec104_control_block.h>
+#include <interfaces/types/iec104/control_block.h>
 
 namespace detail
 {
