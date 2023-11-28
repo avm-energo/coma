@@ -5,8 +5,12 @@
 
 #include <QEventLoop>
 #include <QSettings>
+#include <QThread>
 #include <gen/settings.h>
 #include <gen/stdfunc.h>
+#include <interfaces/connection.h>
+#include <interfaces/ifaces/ethernet.h>
+#include <interfaces/parsers/iec104parser.h>
 #include <interfaces/types/settingstypes.h>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent) : QObject()
@@ -81,13 +85,11 @@ bool Mip::start()
 {
     using namespace settings;
     auto sets = std::make_unique<QSettings>();
-    // m_device = new IEC104;
     IEC104Settings settings;
     settings.ip = sets->value(regMap[MIPIP].name, regMap[MIPIP].defValue).toString();
     settings.bsAddress = sets->value(regMap[MIPAddress].name, regMap[MIPAddress].defValue).toUInt();
-    ConnectStruct st { "mip", settings };
-    // if (!m_device->start(st))
-    //    return false;
+    if (!initConnection(settings))
+        return false;
     if (m_withGUI)
     {
         setupWidget();
@@ -117,8 +119,54 @@ void Mip::stop()
     m_updateTimer->stop();
     m_updateTimer->deleteLater();
     m_updater->setUpdatesEnabled(false);
-    // m_device->disconnect();
+    m_iface->close();
     emit finished();
+}
+
+bool Mip::initConnection(const IEC104Settings &settings)
+{
+    auto ifaceThread = new QThread;
+    auto parserThread = new QThread;
+    auto conn = new Connection(this);
+    m_iface = new Ethernet(settings);
+    auto parser = new IEC104Parser(conn->getQueue());
+    // Обмен данными
+    QObject::connect(m_iface, &BaseInterface::dataReceived, //
+        parser, &IEC104Parser::processReadBytes, Qt::QueuedConnection);
+    QObject::connect(parser, &IEC104Parser::writeData, //
+        m_iface, &BaseInterface::writeData, Qt::DirectConnection);
+    QObject::connect(m_iface, &BaseInterface::finished, //
+        parser, &IEC104Parser::stop, Qt::DirectConnection);
+    QObject::connect(parser, &IEC104Parser::responseSend, //
+        conn, &Connection::responseHandle, Qt::DirectConnection);
+    // Потоки
+    QObject::connect(ifaceThread, &QThread::started, m_iface, &BaseInterface::poll);
+    QObject::connect(parserThread, &QThread::started, parser, &IEC104Parser::run);
+    QObject::connect(m_iface, &BaseInterface::finished, ifaceThread, &QThread::quit);
+    QObject::connect(m_iface, &BaseInterface::finished, parserThread, &QThread::quit);
+    QObject::connect(ifaceThread, &QThread::finished, m_iface, &QObject::deleteLater);
+    QObject::connect(parserThread, &QThread::finished, parser, &QObject::deleteLater);
+    QObject::connect(ifaceThread, &QThread::finished, &QObject::deleteLater);
+    QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
+    QObject::connect(m_iface, &BaseInterface::started, m_iface, [=] {
+        qInfo() << m_iface->metaObject()->className() << " connected";
+        parser->moveToThread(parserThread);
+        m_iface->moveToThread(ifaceThread);
+        parserThread->start();
+        ifaceThread->start();
+    });
+
+    if (!m_iface->connect())
+    {
+        m_iface->close();
+        m_iface->deleteLater();
+        parser->deleteLater();
+        ifaceThread->deleteLater();
+        parserThread->deleteLater();
+        return false;
+    }
+    parser->run();
+    return true;
 }
 
 Error::Msg Mip::check()

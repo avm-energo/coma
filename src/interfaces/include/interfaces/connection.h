@@ -63,6 +63,11 @@ public:
         s_connection = std::move(iface);
     }
 
+    RequestQueue &getQueue() noexcept
+    {
+        return m_queue;
+    }
+
     bool supportBSIExt();
 
     // helper methods
