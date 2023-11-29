@@ -73,7 +73,7 @@ private:
     LogClass m_log;
 
     void parseIFormat(QByteArray &ba);
-    Error::Msg isIncomeDataValid(QByteArray);
+    Error::Msg isIncomeDataValid(QByteArray &);
     QByteArray createGI(unsigned char apdulength);
     QByteArray ASDUFilePrefix(Iec104::MessageDataType Command, unsigned char filenum, unsigned char secnum);
     QByteArray ASDU6Prefix(Iec104::MessageDataType Command, quint32 adr);

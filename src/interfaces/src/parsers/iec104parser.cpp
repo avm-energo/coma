@@ -42,11 +42,14 @@ void IEC104Parser::run()
     m_timer104->setInterval(15000);
     m_sendTestTimer = new QTimer(this);
     m_sendTestTimer->setInterval(5000);
+
 #ifndef DEBUG
     connect(m_timer104, &QTimer::timeout, this, &IEC104Parser::stop);
     connect(m_sendTestTimer, &QTimer::timeout, this, &IEC104Parser::SendTestAct);
     m_sendTestTimer->start();
 #endif
+
+    startDT();
     while (!m_threadMustBeFinished)
     {
         if (!m_parseData.isEmpty())
@@ -57,8 +60,8 @@ void IEC104Parser::run()
             if (!tmpba.isEmpty())
             {
                 Error::Msg tmpi = isIncomeDataValid(tmpba);
-                if (tmpi == Error::Msg::NoError) // если поймали правильное начало данных,
-                                                 // переходим к их обработке
+                // если поймали правильное начало данных, то переходим к их обработке
+                if (tmpi == Error::Msg::NoError)
                 {
                     if (m_APDUFormat == I104_I)
                     {
@@ -71,47 +74,66 @@ void IEC104Parser::run()
         }
         if (!m_isFileSending && !m_writingToPortBlocked)
         {
-            Iec104::CommandStruct inp;
-            if (true)
+            auto opt = m_queue.get().getFromQueue();
+            if (!opt.has_value())
             {
-                switch (inp.cmd)
-                {
-                case Iec104::CM104_COM45:
-                    com45(inp.address, inp.blarg);
-                    break;
-                case Iec104::CM104_COM50:
-                    com50(inp.address, inp.flarg);
-                    break;
-                case Iec104::CM104_WRITEFILE:
-                {
-                    m_fileIsConfigFile = DataTypes::FileFormat::Binary;
-                    m_file = inp.ba;
-                    fileReady(inp.address);
-                    break;
-                }
-                case Iec104::CM104_REQCONFIGFILE:
-                    m_fileIsConfigFile = DataTypes::FileFormat::DefaultS2;
-                    selectFile(inp.address);
-                    break;
-                case Iec104::CM104_REQFILE:
-                    m_fileIsConfigFile = DataTypes::FileFormat::Binary;
-                    selectFile(inp.address);
-                    break;
-                case Iec104::CM104_COM51:
-                    com51WriteTime(inp.address);
-                    break;
-                case Iec104::CM104_REQGROUP:
-                    reqGroup(inp.address);
-                    break;
-                default:
-                    break;
-                }
+                QCoreApplication::processEvents();
+                continue;
             }
+
+            const auto command(opt.value());
+            switch (command.command)
+            {
+            case Commands::C_ReqFloats:
+            {
+                auto group = command.arg1.value<quint32>();
+                reqGroup(group);
+                break;
+            }
+            default:
+                qCritical() << "Undefined command: " << command.command;
+                break;
+            }
+
+            //            Iec104::CommandStruct inp;
+            //            switch (inp.cmd)
+            //            {
+            //            case Iec104::CM104_COM45:
+            //                com45(inp.address, inp.blarg);
+            //                break;
+            //            case Iec104::CM104_COM50:
+            //                com50(inp.address, inp.flarg);
+            //                break;
+            //            case Iec104::CM104_WRITEFILE:
+            //            {
+            //                m_fileIsConfigFile = DataTypes::FileFormat::Binary;
+            //                m_file = inp.ba;
+            //                fileReady(inp.address);
+            //                break;
+            //            }
+            //            case Iec104::CM104_REQCONFIGFILE:
+            //                m_fileIsConfigFile = DataTypes::FileFormat::DefaultS2;
+            //                selectFile(inp.address);
+            //                break;
+            //            case Iec104::CM104_REQFILE:
+            //                m_fileIsConfigFile = DataTypes::FileFormat::Binary;
+            //                selectFile(inp.address);
+            //                break;
+            //            case Iec104::CM104_COM51:
+            //                com51WriteTime(inp.address);
+            //                break;
+            //            case Iec104::CM104_REQGROUP:
+            //                reqGroup(inp.address);
+            //                break;
+            //            default:
+            //                break;
+            //            }
             if (m_V_R > (m_ackVR + I104_W))
                 sendS();
         }
         QCoreApplication::processEvents();
     }
+    m_log.info("Finish thread");
     emit finished();
 }
 
@@ -154,7 +176,7 @@ void IEC104Parser::processReadBytes(QByteArray ba)
     m_isFirstParse = true;
 }
 
-Error::Msg IEC104Parser::isIncomeDataValid(QByteArray ba)
+Error::Msg IEC104Parser::isIncomeDataValid(QByteArray &ba)
 {
     if (ba.size() < 3)
         return Error::SizeError;
@@ -289,6 +311,7 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
         DUI.cause.test = ba.at(2) >> 7;
         DUI.cause.initiator = ba.at(3);
         DUI.commonAdrASDU = ba.at(4) + ba.at(5) * 256;
+        qDebug() << "Address ASDU: " << DUI.commonAdrASDU;
         if (DUI.commonAdrASDU != m_baseAdr) // not our station
             return;
         quint32 objectAdr = 0;
