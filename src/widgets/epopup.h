@@ -14,10 +14,10 @@ class PointContainer : public QObject
     Q_OBJECT
 private:
     static QPoint s_point;
-    friend class EPopup;
 
 public:
     explicit PointContainer(QObject *parent = nullptr);
+    static QPoint getPoint() noexcept;
 
 public slots:
     void receivePoint(const QPoint &point);

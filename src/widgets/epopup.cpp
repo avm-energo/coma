@@ -18,6 +18,11 @@ PointContainer::PointContainer(QObject *parent) : QObject(parent)
 {
 }
 
+QPoint PointContainer::getPoint() noexcept
+{
+    return s_point;
+}
+
 void PointContainer::receivePoint(const QPoint &point)
 {
     s_point = point;
@@ -185,22 +190,26 @@ void EPopup::aboutToClose()
 
 void EPopup::adjustPosition()
 {
-    QRect globalGeometry = QGuiApplication::primaryScreen()->geometry();
-    int globalWidth = globalGeometry.width();
-    int globalHeight = globalGeometry.height();
-    int width2 = width() * 0.5;
-    int height2 = height() * 0.5;
-    QPoint centerPoint = PointContainer::s_point;
-    // centerPoint = Coma::ComaCenter();
-    int right = centerPoint.x() + width2;
-    int down = centerPoint.y() + height2;
-    if ((right > globalWidth) || (down > globalHeight))
+    QPoint appCenterPoint = PointContainer::getPoint();
+    auto currentScreen = QGuiApplication::screenAt(appCenterPoint);
+    if (!currentScreen)
+        currentScreen = QGuiApplication::primaryScreen();
+
+    QRect currentGeometry = currentScreen->geometry();
+    int screenWidth = currentGeometry.width();
+    int screenHeight = currentGeometry.height();
+    int halfWidth = width() * 0.5;
+    int halfHeight = height() * 0.5;
+    int right = appCenterPoint.x() + halfWidth;
+    int down = appCenterPoint.y() + halfHeight;
+
+    if ((right > screenWidth) || (down > screenHeight))
         move(0, 0);
     // Если главное окно отсутствует или прекратило своё существование
-    else if ((centerPoint.x() == 0) || (centerPoint.y() == 0))
-        move(globalGeometry.center() - QPoint { width2, height2 });
+    else if ((appCenterPoint.x() == 0) || (appCenterPoint.y() == 0))
+        move(currentGeometry.center() - QPoint { halfWidth, halfHeight });
     else
-        move(centerPoint.x() - width2, centerPoint.y() - height2);
+        move(appCenterPoint.x() - halfWidth, appCenterPoint.y() - halfHeight);
 }
 
 void EPopup::showEvent(QShowEvent *e)

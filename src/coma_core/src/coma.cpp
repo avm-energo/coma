@@ -73,7 +73,6 @@ namespace Core
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
     , connectionManager(new ConnectionManager(this))
-    //, deviceWatcher(new DeviceWatcher(this))
     , s2dataManager(new S2DataManager(this))
     , s2requestService(new S2RequestService(this))
     , editor(nullptr)
