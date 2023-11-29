@@ -1,5 +1,6 @@
-#include "interfaces/query_executor_fabric.h"
+#include "interfaces/exec/query_executor_fabric.h"
 
+#include <interfaces/exec/iec104_query_executor.h>
 #include <interfaces/parsers/iec104_request_parser.h>
 #include <interfaces/parsers/iec104_response_parser.h>
 #include <interfaces/parsers/modbus_request_parser.h>
@@ -10,9 +11,9 @@
 namespace Interface
 {
 
-DeviceQueryExecutor *QueryExecutorFabric::makeProtocomExecutor(RequestQueue &queue, quint32 timeout)
+DefaultQueryExecutor *QueryExecutorFabric::makeProtocomExecutor(RequestQueue &queue, quint32 timeout)
 {
-    auto executor = new DeviceQueryExecutor(queue, timeout);
+    auto executor = new DefaultQueryExecutor(queue, timeout);
     executor->initLogger("Protocom");
     // NOTE: query executor must be parent for all parsers
     auto requestParser = new ProtocomRequestParser(executor);
@@ -27,9 +28,10 @@ DeviceQueryExecutor *QueryExecutorFabric::makeProtocomExecutor(RequestQueue &que
     return executor;
 }
 
-DeviceQueryExecutor *QueryExecutorFabric::makeModbusExecutor(RequestQueue &queue, quint8 deviceAddress, quint32 timeout)
+DefaultQueryExecutor *QueryExecutorFabric::makeModbusExecutor(
+    RequestQueue &queue, quint8 deviceAddress, quint32 timeout)
 {
-    auto executor = new DeviceQueryExecutor(queue, timeout);
+    auto executor = new DefaultQueryExecutor(queue, timeout);
     executor->initLogger("Modbus");
     // NOTE: query executor must be parent for all parsers
     auto requestParser = new ModbusRequestParser(executor);
@@ -43,10 +45,10 @@ DeviceQueryExecutor *QueryExecutorFabric::makeModbusExecutor(RequestQueue &queue
     return executor;
 }
 
-DeviceQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queue, quint16 bsAddress, quint32 timeout)
+DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queue, quint16 bsAddress, quint32 timeout)
 {
     Q_UNUSED(bsAddress);
-    auto executor = new DeviceQueryExecutor(queue, timeout);
+    auto executor = new Iec104QueryExecutor(queue, timeout);
     executor->initLogger("IEC104");
     // NOTE: query executor must be parent for all parsers
     auto requestParser = new Iec104RequestParser(executor);

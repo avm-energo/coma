@@ -16,8 +16,10 @@ private:
     ControlBlock m_ctrlBlock;
     std::uint8_t m_asduSize;
 
+    QByteArray createHeader();
+
 public:
-    explicit APCI(const ControlBlock controlBlock, const std::uint8_t asduSize = 4) noexcept;
+    explicit APCI(const ControlBlock &controlBlock, const std::uint8_t asduSize = 0) noexcept;
 
     QByteArray toIFormatByteArray() const noexcept;
     QByteArray toSFormatByteArray() const noexcept;

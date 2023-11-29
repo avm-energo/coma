@@ -133,4 +133,14 @@ QByteArray Iec104RequestParser::getNextContinueCommand() noexcept
     return QByteArray {};
 };
 
+QByteArray Iec104RequestParser::createStartMessage() noexcept
+{
+    return QByteArray {};
+}
+
+QByteArray Iec104RequestParser::createStopMessage() noexcept
+{
+    return QByteArray {};
+}
+
 } // namespace Interface

@@ -2,10 +2,10 @@
 
 #include <QDebug>
 #include <gen/std_ext.h>
+#include <interfaces/exec/query_executor_fabric.h>
 #include <interfaces/ifaces/ethernet.h>
 #include <interfaces/ifaces/serialport.h>
 #include <interfaces/ifaces/usbhidport.h>
-#include <interfaces/query_executor_fabric.h>
 
 namespace Interface
 {
@@ -65,12 +65,12 @@ bool ConnectionManager::createConnection(const ConnectStruct &connectionData)
 
     connect(m_context.m_iface, &BaseInterface::error, //
         this, &ConnectionManager::handleInterfaceErrors, Qt::QueuedConnection);
-    connect(m_context.m_executor, &DeviceQueryExecutor::timeout, //
+    connect(m_context.m_executor, &DefaultQueryExecutor::timeout, //
         this, &ConnectionManager::handleQueryExecutorTimeout);
     connect(this, &ConnectionManager::reconnectInterface, //
         m_context.m_iface, &BaseInterface::reconnect, Qt::QueuedConnection);
     connect(this, &ConnectionManager::reconnectInterface, //
-        m_context.m_executor, &DeviceQueryExecutor::reconnectEvent, Qt::QueuedConnection);
+        m_context.m_executor, &DefaultQueryExecutor::reconnectEvent, Qt::QueuedConnection);
     connect(m_context.m_iface, &BaseInterface::reconnected, //
         this, &ConnectionManager::interfaceReconnected, Qt::QueuedConnection);
 

@@ -1,4 +1,4 @@
-#include "interfaces/device_query_executor.h"
+#include "interfaces/exec/default_query_executor.h"
 
 #include <interfaces/parsers/base_request_parser.h>
 #include <interfaces/parsers/base_response_parser.h>
@@ -6,7 +6,7 @@
 namespace Interface
 {
 
-DeviceQueryExecutor::DeviceQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent)
+DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent)
     : QObject(parent), m_state(ExecutorState::Starting), m_queue(std::ref(queue)), m_timeoutTimer(new QTimer(this))
 {
     m_timeoutTimer->setSingleShot(true);
@@ -19,20 +19,20 @@ DeviceQueryExecutor::DeviceQueryExecutor(RequestQueue &queue, quint32 timeout, Q
     });
 }
 
-void DeviceQueryExecutor::initLogger(const QString &protocolName) noexcept
+void DefaultQueryExecutor::initLogger(const QString &protocolName) noexcept
 {
     m_log.init(protocolName + "Executor." + logExt);
     m_log.info(logStart);
 }
 
-void DeviceQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept
+void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept
 {
     if (reqParser != nullptr && respParser != nullptr)
     {
         m_requestParser = reqParser;
         m_responseParser = respParser;
         connect(m_responseParser, &BaseResponseParser::responseParsed,    //
-            this, &DeviceQueryExecutor::responseSend);                    //
+            this, &DefaultQueryExecutor::responseSend);                      //
         connect(m_requestParser, &BaseRequestParser::totalWritingBytes,   //
             m_responseParser, &BaseResponseParser::processProgressRange); //
         connect(m_requestParser, &BaseRequestParser::progressBytes,       //
@@ -51,12 +51,12 @@ void DeviceQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseP
     }
 }
 
-ExecutorState DeviceQueryExecutor::getState() const noexcept
+ExecutorState DefaultQueryExecutor::getState() const noexcept
 {
     return m_state.load();
 }
 
-void DeviceQueryExecutor::setState(const ExecutorState newState) noexcept
+void DefaultQueryExecutor::setState(const ExecutorState newState) noexcept
 {
     if (getState() != ExecutorState::Stopping)
     {
@@ -65,7 +65,7 @@ void DeviceQueryExecutor::setState(const ExecutorState newState) noexcept
     }
 }
 
-void DeviceQueryExecutor::parseFromQueue() noexcept
+void DefaultQueryExecutor::parseFromQueue() noexcept
 {
     auto opt = m_queue.get().getFromQueue();
     if (opt.has_value())
@@ -90,14 +90,14 @@ void DeviceQueryExecutor::parseFromQueue() noexcept
     }
 }
 
-void DeviceQueryExecutor::writeToInterface(const QByteArray &request) noexcept
+void DefaultQueryExecutor::writeToInterface(const QByteArray &request) noexcept
 {
     emit sendDataToInterface(request);
     m_timeoutTimer->start();
     writeToLog(request, Direction::ToDevice);
 }
 
-void DeviceQueryExecutor::writeToLog(const QByteArray &ba, const Direction dir) noexcept
+void DefaultQueryExecutor::writeToLog(const QByteArray &ba, const Direction dir) noexcept
 {
     QString msg = "DeviceQueryExecutor";
     switch (dir)
@@ -116,7 +116,7 @@ void DeviceQueryExecutor::writeToLog(const QByteArray &ba, const Direction dir) 
     m_log.info(msg);
 }
 
-void DeviceQueryExecutor::exec()
+void DefaultQueryExecutor::exec()
 {
     auto currentState = getState();
     while (currentState != ExecutorState::Stopping)
@@ -138,31 +138,31 @@ void DeviceQueryExecutor::exec()
     emit finished();
 }
 
-void DeviceQueryExecutor::run() noexcept
+void DefaultQueryExecutor::run() noexcept
 {
     setState(ExecutorState::RequestParsing);
     m_queue.get().activate();
 }
 
-void DeviceQueryExecutor::pause() noexcept
+void DefaultQueryExecutor::pause() noexcept
 {
     setState(ExecutorState::Pending);
     m_queue.get().deactivate();
 }
 
-void DeviceQueryExecutor::stop() noexcept
+void DefaultQueryExecutor::stop() noexcept
 {
     setState(ExecutorState::Stopping);
     m_queue.get().activate();
     m_queue.get().addToQueue({});
 }
 
-const Commands DeviceQueryExecutor::getLastRequestedCommand() const noexcept
+const Commands DefaultQueryExecutor::getLastRequestedCommand() const noexcept
 {
     return m_lastRequestedCommand.load();
 }
 
-void DeviceQueryExecutor::receiveDataFromInterface(const QByteArray &response)
+void DefaultQueryExecutor::receiveDataFromInterface(const QByteArray &response)
 {
     // Валидация при фрагментировании ответа от устройства
     m_responseParser->accumulateToResponseBuffer(response);
@@ -226,7 +226,7 @@ void DeviceQueryExecutor::receiveDataFromInterface(const QByteArray &response)
     }
 }
 
-void DeviceQueryExecutor::cancelQuery()
+void DefaultQueryExecutor::cancelQuery()
 {
     m_log.warning("Command canceled");
     m_responseParser->clearResponseBuffer();
@@ -238,7 +238,7 @@ void DeviceQueryExecutor::cancelQuery()
     setState(ExecutorState::RequestParsing);
 }
 
-void DeviceQueryExecutor::reconnectEvent()
+void DefaultQueryExecutor::reconnectEvent()
 {
     m_log.warning("Reconnect");
     cancelQuery();

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QObject>
 #include <interfaces/types/common_types.h>
+#include <interfaces/types/iec104/apci.h>
 #include <interfaces/types/iec104/asdu.h>
 
 constexpr quint32 BSIGROUP = 1;

@@ -24,10 +24,10 @@ enum class ExecutorState : std::uint32_t
 };
 
 /// \brief Класс исполнителя запросов к устройству.
-class DeviceQueryExecutor : public QObject
+class DefaultQueryExecutor : public QObject
 {
     Q_OBJECT
-private:
+protected:
     friend class QueryExecutorFabric;
     std::atomic<ExecutorState> m_state;
     std::atomic<Commands> m_lastRequestedCommand;
@@ -38,10 +38,9 @@ private:
     BaseResponseParser *m_responseParser;
 
     /// \brief Приватный конструктор.
-    /// \details Создание экземпляров класса доступно только через функции
-    /// makeProtocomExecutor, makeModbusExecutor и makeIec104Executor.
-    /// \see makeProtocomExecutor, makeModbusExecutor и makeIec104Executor.
-    explicit DeviceQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent = nullptr);
+    /// \details Создание экземпляров класса доступно только через QueryExecutorFabric.
+    /// \see QueryExecutorFabric.
+    explicit DefaultQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent = nullptr);
 
     /// \brief Инициализация логгера исполнителя запросов.
     /// \details Вызывается при создании исполнителя запросов.
@@ -50,7 +49,7 @@ private:
     void initLogger(const QString &protocolName) noexcept;
     /// \brief Устанавливает переданные парсеры для работы исполнителя запросов.
     /// \details Вызывается при создании исполнителя запросов.
-    void setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept;
+    virtual void setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept;
 
     /// \brief Возвращает текущее состояние исполнителя запросов.
     ExecutorState getState() const noexcept;
@@ -69,12 +68,12 @@ private:
 
 public:
     /// \brief Удалённый конструктор по умолчанию.
-    DeviceQueryExecutor() = delete;
+    DefaultQueryExecutor() = delete;
     /// \brief Удалённый конструктор копирования.
-    DeviceQueryExecutor(const DeviceQueryExecutor &rhs) = delete;
+    DefaultQueryExecutor(const DefaultQueryExecutor &rhs) = delete;
 
     /// \brief Функция, содержащая главный цикл исполнителя запросов.
-    void exec();
+    virtual void exec();
 
     /// \brief Функция для продолжения работы исполнителя запросов.
     /// \details Переводит состояние исполнителя в ExecutorState::RequestParsing.
