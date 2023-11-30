@@ -17,7 +17,16 @@ bool Ethernet::connect()
 {
     m_socket->connectToHost(m_settings.ip, m_settings.port, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     /// TODO: сделать настраиваемым значение 5 секунд на подключение
-    return m_socket->waitForConnected(5000);
+    if (m_socket->waitForConnected(5000))
+    {
+        if (getState() != Interface::State::Disconnect)
+        {
+            setState(Interface::State::Run);
+            emit started();
+            return true;
+        }
+    }
+    return false;
 }
 
 void Ethernet::disconnect()
@@ -43,13 +52,15 @@ QByteArray Ethernet::read(bool *status)
         m_log.error("Ethernet reading data from the closed socket");
         return data;
     }
-    if (m_socket->waitForReadyRead(-1))
+    if (m_socket->bytesAvailable())
     {
         m_dataGuard.lock();         // lock port
         data = m_socket->readAll(); // read data
         m_dataGuard.unlock();       // unlock port
         *status = true;
     }
+    else
+        QCoreApplication::processEvents();
     return data;
 };
 
@@ -107,6 +118,9 @@ void Ethernet::handleSocketError(const QAbstractSocket::SocketError err)
 {
     switch (err)
     {
+    case QAbstractSocket::SocketError::SocketTimeoutError:
+        // ignore
+        break;
     default:
         m_log.error(m_socket->errorString());
         emit error(InterfaceError::OpenError);

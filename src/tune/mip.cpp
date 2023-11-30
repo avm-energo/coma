@@ -5,15 +5,17 @@
 
 #include <QEventLoop>
 #include <QSettings>
+#include <QThread>
 #include <gen/settings.h>
 #include <gen/stdfunc.h>
+#include <interfaces/connection.h>
+#include <interfaces/ifaces/ethernet.h>
+#include <interfaces/parsers/iec104parser.h>
 #include <interfaces/types/settingstypes.h>
 
-Mip::Mip(bool withGUI, MType moduleType, QWidget *parent) : QObject()
+Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
+    : QObject(parent), m_parent(parent), m_withGUI(withGUI), m_moduleType(moduleType)
 {
-    m_withGUI = withGUI;
-    m_parent = parent;
-    m_moduleType = moduleType;
 }
 
 void Mip::updateData(const DataTypes::FloatStruct &fl)
@@ -69,7 +71,7 @@ void Mip::setupWidget()
     }
     lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "17", "Температура", true), 9, 0);
     lyout->addWidget(WDFunc::NewPB(m_widget, "", "Далее",
-                         [&] {
+                         [=] {
                              stop();
                              m_widget->close();
                          }),
@@ -80,30 +82,28 @@ void Mip::setupWidget()
 bool Mip::start()
 {
     using namespace settings;
-    auto sets = std::make_unique<QSettings>();
-    // m_device = new IEC104;
+    QSettings sets;
     IEC104Settings settings;
-    settings.ip = sets->value(regMap[MIPIP].name, regMap[MIPIP].defValue).toString();
-    settings.bsAddress = sets->value(regMap[MIPAddress].name, regMap[MIPAddress].defValue).toUInt();
-    ConnectStruct st { "mip", settings };
-    // if (!m_device->start(st))
-    //    return false;
+    settings.ip = sets.value(regMap[MIPIP].name, regMap[MIPIP].defValue).toString();
+    settings.port = 2404; // TODO: в настройки...
+    settings.bsAddress = sets.value(regMap[MIPAddress].name, regMap[MIPAddress].defValue).toUInt();
+    if (!initConnection(settings))
+        return false;
     if (m_withGUI)
     {
         setupWidget();
         m_widget->engine()->addFloat({ 0, 46 });
         connect(m_widget->engine(), &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
-        m_widget->engine()->setUpdatesEnabled();
+        m_widget->engine()->setUpdatesEnabled(true);
         m_widget->show();
     }
     else
     {
-        //    m_updater = new ModuleDataUpdater(m_device);
         // Отключим обновление виджета по умолчанию
         m_updater->setUpdatesEnabled(false);
         m_updater->addFloat({ 0, 46 });
         connect(m_updater, &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
-        m_updater->setUpdatesEnabled();
+        m_updater->setUpdatesEnabled(true);
         m_updateTimer = new QTimer;
         m_updateTimer->setInterval(1000);
         connect(m_updateTimer, &QTimer::timeout, m_updater, &ModuleDataUpdater::requestUpdates);
@@ -114,11 +114,69 @@ bool Mip::start()
 
 void Mip::stop()
 {
-    m_updateTimer->stop();
-    m_updateTimer->deleteLater();
-    m_updater->setUpdatesEnabled(false);
-    // m_device->disconnect();
+    if (m_withGUI)
+        m_widget->engine()->setUpdatesEnabled(false);
+    else
+    {
+        m_updateTimer->stop();
+        m_updateTimer->deleteLater();
+        m_updater->setUpdatesEnabled(false);
+    }
+    m_iface->close();
     emit finished();
+}
+
+bool Mip::initConnection(const IEC104Settings &settings)
+{
+    using namespace DataTypes;
+    auto conn = new Connection(this);
+    conn->settings()->addGroup(Iec104Group { 0, 46, 0, 0 });
+    conn->connection(this, //
+        [this](const FloatWithTimeStruct &fs) {
+            updateData(FloatStruct { fs.sigAdr, fs.sigVal, fs.sigQuality });
+        });
+    m_iface = new Ethernet(settings);
+    m_updater = new ModuleDataUpdater(conn, this);
+    auto ifaceThread = new QThread;
+    auto parserThread = new QThread;
+    auto parser = new IEC104Parser(conn->getQueue());
+    parser->setBaseAdr(settings.bsAddress);
+    // Обмен данными
+    QObject::connect(m_iface, &BaseInterface::dataReceived, //
+        parser, &IEC104Parser::processReadBytes, Qt::QueuedConnection);
+    QObject::connect(parser, &IEC104Parser::writeData, //
+        m_iface, &BaseInterface::writeData, Qt::QueuedConnection);
+    QObject::connect(m_iface, &BaseInterface::finished, //
+        parser, &IEC104Parser::stop, Qt::DirectConnection);
+    QObject::connect(parser, &IEC104Parser::responseSend, //
+        conn, &Connection::responseHandle, Qt::DirectConnection);
+    // Потоки
+    QObject::connect(ifaceThread, &QThread::started, m_iface, &BaseInterface::poll);
+    QObject::connect(parserThread, &QThread::started, parser, &IEC104Parser::run);
+    QObject::connect(m_iface, &BaseInterface::finished, ifaceThread, &QThread::quit);
+    QObject::connect(m_iface, &BaseInterface::finished, parserThread, &QThread::quit);
+    QObject::connect(ifaceThread, &QThread::finished, m_iface, &QObject::deleteLater);
+    QObject::connect(parserThread, &QThread::finished, parser, &QObject::deleteLater);
+    QObject::connect(ifaceThread, &QThread::finished, &QObject::deleteLater);
+    QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
+    QObject::connect(m_iface, &BaseInterface::started, m_iface, [=] {
+        qInfo() << m_iface->metaObject()->className() << " connected";
+        m_iface->moveToThread(ifaceThread);
+        parser->moveToThread(parserThread);
+        ifaceThread->start();
+        parserThread->start();
+    });
+
+    if (!m_iface->connect())
+    {
+        m_iface->close();
+        m_iface->deleteLater();
+        parser->deleteLater();
+        ifaceThread->deleteLater();
+        parserThread->deleteLater();
+        return false;
+    }
+    return true;
 }
 
 Error::Msg Mip::check()

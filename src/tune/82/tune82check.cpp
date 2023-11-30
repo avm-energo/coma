@@ -89,7 +89,7 @@ Error::Msg Tune82Check::check()
 
 Error::Msg Tune82Check::checkMip()
 {
-    Mip *mip = new Mip(false);
+    Mip *mip = new Mip(true, Modules::MezzanineBoard::MTM_82, this);
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
     static_assert(inom.size() > 3);
     mip->setNominalCurrent(inom.at(3)); // 2nd currents, phase A
