@@ -7,7 +7,12 @@ namespace Interface
 {
 
 DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent)
-    : QObject(parent), m_state(ExecutorState::Starting), m_queue(std::ref(queue)), m_timeoutTimer(new QTimer(this))
+    : QObject(parent)
+    , m_state(ExecutorState::Starting)
+    , m_queue(std::ref(queue))
+    , m_timeoutTimer(new QTimer(this))
+    , m_requestParser(nullptr)
+    , m_responseParser(nullptr)
 {
     m_timeoutTimer->setSingleShot(true);
     m_timeoutTimer->setInterval(timeout);
@@ -32,7 +37,7 @@ void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponse
         m_requestParser = reqParser;
         m_responseParser = respParser;
         connect(m_responseParser, &BaseResponseParser::responseParsed,    //
-            this, &DefaultQueryExecutor::responseSend);                      //
+            this, &DefaultQueryExecutor::responseSend);                   //
         connect(m_requestParser, &BaseRequestParser::totalWritingBytes,   //
             m_responseParser, &BaseResponseParser::processProgressRange); //
         connect(m_requestParser, &BaseRequestParser::progressBytes,       //
