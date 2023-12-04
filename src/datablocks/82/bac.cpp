@@ -16,10 +16,10 @@ Bac82::Bac82(QObject *parent) : DataBlock(parent), m_blockData(std::make_unique<
 
 void Bac82::setupValuesDesc()
 {
-    addNewGroup("Коэффициенты по напряжению", "KmU", 6, 0, &m_blockData->KmU[0], 5);
+    addNewGroup("Коэффициенты по напряжению", "KmU", 0, 6, &m_blockData->KmU[0], 5);
     addNewGroup("Коэффициенты по току для Inom=5A", "KmI_5", 6, 6, &m_blockData->KmI_5[0], 5);
-    addNewGroup("Коэффициенты по току для Inom=1A", "KmI_1", 6, 12, &m_blockData->KmI_1[0], 5);
-    addNewGroup("Коррекция фазы", "DPsi", 6, 18, &m_blockData->DPsi[0], 5);
+    addNewGroup("Коэффициенты по току для Inom=1A", "KmI_1", 12, 6, &m_blockData->KmI_1[0], 5);
+    addNewGroup("Коррекция фазы", "DPsi", 18, 6, &m_blockData->DPsi[0], 5);
     addNewValue("K_Freq", "Коррекция частоты", &m_blockData->K_freq, 5);
     addNewValue("Kinter", "Коррекция взаимного влияния каналов", &m_blockData->Kinter, 5);
 }

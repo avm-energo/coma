@@ -64,6 +64,7 @@ private:
 
 signals:
     void finished();
+    void oneMeasurementReceived();
 
 public slots:
     void stop();

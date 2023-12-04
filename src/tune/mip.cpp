@@ -25,6 +25,8 @@ void Mip::updateData(const DataTypes::FloatStruct &fl)
     {
         float *mipdata = reinterpret_cast<float *>(&m_mipData);
         *(mipdata + fl.sigAdr) = fl.sigVal;
+        if (fl.sigAdr == 41)
+            emit oneMeasurementReceived();
     }
     if (m_withGUI)
         m_widget->updateFloatData(fl);
@@ -270,7 +272,7 @@ Mip::MipDataStruct Mip::takeOneMeasurement(float i2nom)
     setNominalCurrent(i2nom);
     start();
     QEventLoop el;
-    connect(this, &Mip::finished, &el, &QEventLoop::quit);
+    connect(this, &Mip::oneMeasurementReceived, &el, &QEventLoop::quit);
     el.exec();
     stop();
     return m_mipData;

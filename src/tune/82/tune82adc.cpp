@@ -53,9 +53,10 @@ Error::Msg Tune82ADC::setDefBac()
 Error::Msg Tune82ADC::getAnalogData()
 {
     waitNSeconds(1);
-    m_bd1->readBlockFromModule();
+    m_bda->readAndUpdate();
     waitNSeconds(1);
-    return m_bda->checkValues(m_typeM, { 1, 1, 1, 1, 1, 1 });
+    const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
+    return m_bda->checkValues(m_typeM, inom);
 }
 
 Error::Msg Tune82ADC::saveUeff()
