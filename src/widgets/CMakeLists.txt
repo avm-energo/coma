@@ -25,7 +25,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Xml
   Boost::headers
-  QXlsx
   s2
   interfaces
   dialogs

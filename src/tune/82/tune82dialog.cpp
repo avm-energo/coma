@@ -18,8 +18,9 @@ Tune82Dialog::Tune82Dialog(S2::Configuration &config, Modules::MezzanineBoard ty
     QStringList sl;
     QString str;
     sl = str.split(',');
-    m_dialogList = { { "Проверка правильности измерения входных сигналов",
-        new Tune82Check(config, TS82_CHECKING, typeM, this) } };
+    m_dialogList = {
+        { "Проверка правильности измерения входных сигналов", new Tune82Check(config, TS82_CHECKING, typeM, this) } //
+    };
     if (typeM != Modules::MezzanineBoard::MTM_81)
     {
         m_dialogList.append({ "Регулировка каналов напряжения", new Tune82ADC(config, typeM, TS82_ADCU, this) });

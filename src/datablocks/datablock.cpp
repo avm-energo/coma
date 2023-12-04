@@ -176,15 +176,17 @@ void DataBlock::updateWidget()
     {
         for (auto &valueDesc : group.values)
         {
-            std::visit(overloaded { [&](float *arg)                                                       //
-                           {                                                                              //
-                               WDFunc::SetLEData(                                                         //
-                                   m_widget, valueDesc.valueId, WDFunc::StringFloatValueWithCheck(*arg)); //
-                           },                                                                             //
-                           [&](quint32 *arg)                                                              //
-                           {                                                                              //
-                               WDFunc::SetLEData(m_widget, valueDesc.valueId, QString::number(*arg));     //
-                           } },                                                                           //
+            std::visit(                                                                            //
+                overloaded {                                                                       //
+                    [&](float *arg)                                                                //
+                    {                                                                              //
+                        WDFunc::SetLEData(                                                         //
+                            m_widget, valueDesc.valueId, WDFunc::StringFloatValueWithCheck(*arg)); //
+                    },                                                                             //
+                    [&](quint32 *arg)                                                              //
+                    {                                                                              //
+                        WDFunc::SetLEData(m_widget, valueDesc.valueId, QString::number(*arg));     //
+                    } },                                                                           //
                 valueDesc.value);
         }
     }
