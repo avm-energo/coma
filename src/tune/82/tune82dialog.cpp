@@ -15,20 +15,26 @@ Tune82Dialog::Tune82Dialog(S2::Configuration &config, Modules::MezzanineBoard ty
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    QStringList sl;
-    QString str;
-    sl = str.split(',');
+    QString step2Caption = "Регулировка каналов %1";
+    switch (typeM)
+    {
+    case Modules::MezzanineBoard::MTM_81:
+        step2Caption = step2Caption.arg("тока");
+        break;
+    case Modules::MezzanineBoard::MTM_82:
+        step2Caption = step2Caption.arg("тока и напряжения");
+        break;
+    case Modules::MezzanineBoard::MTM_83:
+        step2Caption = step2Caption.arg("напряжения");
+        break;
+    default:
+        assert(false && "Undefined mezzanine board");
+        break;
+    }
     m_dialogList = {
-        { "Проверка правильности измерения входных сигналов", new Tune82Check(config, TS82_CHECKING, typeM, this) } //
+        { "Проверка правильности измерения входных сигналов", new Tune82Check(config, TS82_CHECKING, typeM, this) }, //
+        { step2Caption, new Tune82ADC(config, typeM, TS82_ADC, this) }                                               //
     };
-    if (typeM != Modules::MezzanineBoard::MTM_81)
-    {
-        m_dialogList.append({ "Регулировка каналов напряжения", new Tune82ADC(config, typeM, TS82_ADCU, this) });
-    }
-    if (typeM != Modules::MezzanineBoard::MTM_83)
-    {
-        m_dialogList.append({ "Регулировка каналов тока", new Tune82ADC(config, typeM, TS82_ADCI, this) });
-    }
 
     m_calibrSteps = m_dialogList.size() + 1;
     Bac82 *bac = new Bac82;
