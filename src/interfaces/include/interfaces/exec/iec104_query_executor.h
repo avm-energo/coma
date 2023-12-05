@@ -1,6 +1,7 @@
 #pragma once
 
 #include <interfaces/exec/default_query_executor.h>
+#include <interfaces/types/iec104_types.h>
 
 namespace Interface
 {
@@ -13,6 +14,8 @@ class Iec104QueryExecutor final : public DefaultQueryExecutor
     Q_OBJECT
 private:
     friend class QueryExecutorFabric;
+
+    SharedControlBlock m_ctrlBlock;
 
     /// \brief Приватный конструктор.
     /// \details Создание экземпляров класса доступно только через QueryExecutorFabric.

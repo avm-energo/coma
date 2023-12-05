@@ -9,13 +9,18 @@ namespace Interface
 
 using namespace Iec104;
 
-Iec104RequestParser::Iec104RequestParser(QObject *parent) : BaseRequestParser(parent)
+Iec104RequestParser::Iec104RequestParser(QObject *parent) : BaseRequestParser(parent), m_baseStationAddress(0)
 {
 }
 
 void Iec104RequestParser::setBaseStationAddress(const quint16 bsAddress) noexcept
 {
     m_baseStationAddress = bsAddress;
+}
+
+void Iec104RequestParser::updateControlBlock(const SharedControlBlock &newControlBlock) noexcept
+{
+    m_ctrlBlock = newControlBlock;
 }
 
 QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)

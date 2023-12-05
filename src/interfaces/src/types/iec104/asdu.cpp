@@ -1,6 +1,7 @@
+#include "interfaces/types/iec104/asdu.h"
+
 #include <gen/std_ext.h>
 #include <gen/stdfunc.h>
-#include <interfaces/types/iec104/asdu.h>
 
 namespace Iec104
 {

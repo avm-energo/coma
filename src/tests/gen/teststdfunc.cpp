@@ -263,7 +263,7 @@ void TestStdFunc::modbusSinglePoint()
 void TestStdFunc::iec104ControlBlockTest01()
 {
     using namespace Iec104;
-    ControlBlock block {};
+    UnnumberedControl block {};
     QCOMPARE(block.startDataTransferActivate(), 0x07);
     QCOMPARE(block.startDataTransferActivate(), 0b00000111);
     QCOMPARE(block.startDataTransferConfirm(), 0x0B);
@@ -283,8 +283,8 @@ void TestStdFunc::iec104ControlBlockTest02()
     using namespace Iec104;
     ControlBlock block { 1, 1 };
     QCOMPARE(block.toInfoTransferFormat(), 0x00020002);
-    block.received = 3;
-    block.sent = 2;
+    block.setReveived(3);
+    block.setSent(2);
     QCOMPARE(block.toInfoTransferFormat(), 0x00060004);
 }
 
@@ -293,9 +293,9 @@ void TestStdFunc::iec104ControlBlockTest03()
     using namespace Iec104;
     ControlBlock block { 3, 3 };
     QCOMPARE(block.toNumberedSupervisoryFunction(), 0x00060001);
-    block.received = 2;
+    block.setReveived(2);
     QCOMPARE(block.toNumberedSupervisoryFunction(), 0x00040001);
-    block.received = 1;
+    block.setReveived(1);
     QCOMPARE(block.toNumberedSupervisoryFunction(), 0x00020001);
 }
 
@@ -307,8 +307,8 @@ void TestStdFunc::iec104ControlBlockTest04()
     QByteArray first;
     first.append(static_cast<char>(0x01));
     first.append(static_cast<char>(0x00));
-    first.append((block.received & 0x007F) << 1);
-    first.append((block.received & 0x7F80) >> 7);
+    first.append((block.getReceived() & 0x007F) << 1);
+    first.append((block.getReceived() & 0x7F80) >> 7);
 
     auto data = block.toNumberedSupervisoryFunction();
     QCOMPARE(data, 0x8F220001);
@@ -319,24 +319,24 @@ void TestStdFunc::iec104ControlBlockTest04()
 void TestStdFunc::iec104ControlBlockTest05()
 {
     using namespace Iec104;
-    ControlBlock block {};
-    auto actual = block.toUnnumberedControlFunction<ControlFunc::StartDataTransfer, ControlArg::Activate>();
-    auto expected = block.startDataTransferActivate();
+    UnnumberedControl block {};
+    auto actual = block.startDataTransferActivate();
+    auto expected = (1 << 2) | 3;
     QCOMPARE(actual, expected);
-    actual = block.toUnnumberedControlFunction<ControlFunc::StartDataTransfer, ControlArg::Confirm>();
-    expected = block.startDataTransferConfirm();
+    actual = block.startDataTransferConfirm();
+    expected = (1 << 3) | 3;
     QCOMPARE(actual, expected);
-    actual = block.toUnnumberedControlFunction<ControlFunc::StopDataTransfer, ControlArg::Activate>();
-    expected = block.stopDataTransferActivate();
+    actual = block.stopDataTransferActivate();
+    expected = (1 << 4) | 3;
     QCOMPARE(actual, expected);
-    actual = block.toUnnumberedControlFunction<ControlFunc::StopDataTransfer, ControlArg::Confirm>();
-    expected = block.stopDataTransferConfirm();
+    actual = block.stopDataTransferConfirm();
+    expected = (1 << 5) | 3;
     QCOMPARE(actual, expected);
-    actual = block.toUnnumberedControlFunction<ControlFunc::TestFrame, ControlArg::Activate>();
-    expected = block.testFrameActivate();
+    actual = block.testFrameActivate();
+    expected = (1 << 6) | 3;
     QCOMPARE(actual, expected);
-    actual = block.toUnnumberedControlFunction<ControlFunc::TestFrame, ControlArg::Confirm>();
-    expected = block.testFrameConfirm();
+    actual = block.testFrameConfirm();
+    expected = (1 << 7) | 3;
     QCOMPARE(actual, expected);
 }
 

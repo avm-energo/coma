@@ -7,6 +7,11 @@ Iec104ResponseParser::Iec104ResponseParser(QObject *parent) : BaseResponseParser
 {
 }
 
+void Iec104ResponseParser::updateControlBlock(const SharedControlBlock &newControlBlock) noexcept
+{
+    m_ctrlBlock = newControlBlock;
+}
+
 bool Iec104ResponseParser::isCompleteResponse()
 {
     return true;

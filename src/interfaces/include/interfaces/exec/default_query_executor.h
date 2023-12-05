@@ -29,6 +29,7 @@ class DefaultQueryExecutor : public QObject
     Q_OBJECT
 protected:
     friend class QueryExecutorFabric;
+
     std::atomic<ExecutorState> m_state;
     std::atomic<Commands> m_lastRequestedCommand;
     std::reference_wrapper<RequestQueue> m_queue;
