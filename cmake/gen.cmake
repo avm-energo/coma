@@ -3,10 +3,11 @@ include(FetchContent)
 FetchContent_Declare(
   gen
   GIT_REPOSITORY https://github.com/avm-energo/gen.git
-  GIT_TAG        origin/data-refactoring
+  GIT_TAG        origin/new-journal-sort
 )
 # Building gen as dynamic library
 set(GEN_STATIC OFF)
+set(GEN_BUILD_TESTS OFF)
 FetchContent_MakeAvailable(gen)
 
 # Create install component for deb packages

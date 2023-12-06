@@ -88,6 +88,7 @@ enum class Commands
 enum CommandRegisters
 {
     StartWorkingChannel = 803,  ///< Старт рабочего канала
+    EraseSystemJournal = 807,   ///< Стереть системный журнал
     SetStartupValues = 900,     ///< Задать начальные значения по всем фазам
     SetStartupPhaseA = 901,     ///< Задать начальные значения по фазе A
     SetStartupPhaseB = 902,     ///< Задать начальные значения по фазе B

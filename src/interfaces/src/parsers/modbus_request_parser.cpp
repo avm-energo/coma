@@ -133,6 +133,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     }
     // "WS" commands
     case Commands::C_ClearStartupError:
+    case Commands::C_EraseJournals:
     case Commands::C_ClearStartupUnbounced:
     case Commands::C_ClearStartupValues:
     case Commands::C_SetStartupValues:
