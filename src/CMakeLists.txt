@@ -127,6 +127,7 @@ message(STATUS "Packaging install prefix: ${CPACK_PACKAGING_INSTALL_PREFIX}")
 # Building libraries and targets
 # Step 1: Build dependencies
 include(gen)
+include(expected)
 include(qcustomplot)
 include(limereport)
 include(qxlsx)

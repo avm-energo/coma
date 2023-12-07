@@ -2,11 +2,21 @@
 
 #include <cstdint>
 #include <gen/std_ext.h>
+#include <tl/expected.hpp>
 
 namespace Iec104
 {
 
-/// \brief Control function type.
+/// \brief The control parse error type.
+enum class ControlBlockError : std::uint8_t
+{
+    UndefinedControlFunc = 0,
+    UndefinedControlArg,
+    UndefinedControlValue,
+    UndefinedFrameFormat
+};
+
+/// \brief The control function type.
 enum class ControlFunc : std::uint8_t
 {
     StartDataTransfer = 2, ///< STARTDT
@@ -14,7 +24,7 @@ enum class ControlFunc : std::uint8_t
     TestFrame = 6          ///< TESTFR
 };
 
-/// \brief Control function argument type.
+/// \brief The control function argument type.
 enum class ControlArg : std::uint8_t
 {
     Activate = 0, ///< ACT
@@ -87,33 +97,12 @@ struct UnnumberedControl
         return UnnumberedControlValue<ControlFunc::TestFrame, ControlArg::Confirm>::value; // 0x83
     }
 
-    static inline std::uint32_t getValue(const ControlFunc func, const ControlArg arg) noexcept
-    {
-        if (arg == ControlArg::Activate)
-        {
-            switch (func)
-            {
-            case ControlFunc::StartDataTransfer:
-                return startDataTransferActivate();
-            case ControlFunc::StopDataTransfer:
-                return stopDataTransferActivate();
-            case ControlFunc::TestFrame:
-                return testFrameActivate();
-            }
-        }
-        else
-        {
-            switch (func)
-            {
-            case ControlFunc::StartDataTransfer:
-                return startDataTransferConfirm();
-            case ControlFunc::StopDataTransfer:
-                return stopDataTransferConfirm();
-            case ControlFunc::TestFrame:
-                return testFrameConfirm();
-            }
-        }
-    }
+    /// \brief Run-time calculation the value of unnumbered control function.
+    static tl::expected<std::uint32_t, ControlBlockError> //
+    getValue(const ControlFunc func, const ControlArg arg) noexcept;
+
+    static tl::expected<std::pair<ControlFunc, ControlArg>, ControlBlockError> //
+    fromValue(const std::uint32_t value) noexcept;
 };
 
 } // namespace Iec104

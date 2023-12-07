@@ -3,42 +3,43 @@
 namespace Iec104
 {
 
-APCI::APCI(const ControlBlock &controlBlock, const std::uint8_t asduSize) noexcept
-    : m_asduSize(asduSize), m_ctrlBlock(controlBlock)
+APCI::APCI(const FrameFormat format, const std::uint8_t asduSize) noexcept : m_ctrlBlock(format), m_asduSize(asduSize)
 {
 }
 
-QByteArray APCI::createHeader() const noexcept
+APCI::APCI(const ControlBlock controlBlock, const std::uint8_t asduSize) noexcept
+    : m_ctrlBlock(controlBlock), m_asduSize(asduSize)
 {
-    QByteArray header;
-    header.append(headerTag);
-    header.append(m_asduSize + sizeof(ControlBlock));
-    return header;
 }
 
-QByteArray APCI::toIFormatByteArray() const noexcept
+void APCI::updateControlBlock(const FrameFormat fmt, const ControlFunc func, const ControlArg arg) noexcept
 {
-    QByteArray apci { createHeader() };
-    auto ctrlData { m_ctrlBlock.toInfoTransferFormat() };
-    apci.append(StdFunc::toByteArray(ctrlData));
-    return apci;
+    m_ctrlBlock.format = fmt;
+    m_ctrlBlock.func = func;
+    m_ctrlBlock.arg = arg;
 }
 
-QByteArray APCI::toSFormatByteArray() const noexcept
+void APCI::updateControlBlock(const ControlBlock controlBlock) noexcept
 {
-    QByteArray apci { createHeader() };
-    auto ctrlData { m_ctrlBlock.toNumberedSupervisoryFunction() };
-    apci.append(StdFunc::toByteArray(ctrlData));
-    return apci;
+    m_ctrlBlock = controlBlock;
 }
 
-template <ControlFunc func, ControlArg arg> //
-QByteArray APCI::toUFormatByteArray() const noexcept
+QByteArray APCI::toByteArray() const noexcept
 {
-    QByteArray apci { createHeader() };
-    // std::uint32_t ctrlData { m_ctrlBlock.toUnnumberedControlFunction<func, arg>() };
-    // apci.append(StdFunc::toByteArray(ctrlData));
-    return apci;
+    auto ctrlData = m_ctrlBlock.data();
+    if (ctrlData.has_value())
+    {
+        QByteArray apci;
+        apci.append(headerTag);
+        apci.append(m_asduSize + sizeof(std::uint32_t));
+        apci.append(StdFunc::toByteArray(*ctrlData));
+        return apci;
+    }
+    else
+    {
+        // TODO: error dispatching
+        return QByteArray {};
+    }
 }
 
 } // namespace Iec104

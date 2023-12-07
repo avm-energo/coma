@@ -281,38 +281,49 @@ void TestStdFunc::iec104ControlBlockTest01()
 void TestStdFunc::iec104ControlBlockTest02()
 {
     using namespace Iec104;
-    ControlBlock block { 1, 1 };
-    QCOMPARE(block.toInfoTransferFormat(), 0x00020002);
-    block.setReveived(3);
-    block.setSent(2);
-    QCOMPARE(block.toInfoTransferFormat(), 0x00060004);
+    ControlBlock block { FrameFormat::Information, 1, 1 };
+    auto data = block.data();
+    QVERIFY(data.has_value());
+    QCOMPARE(*data, 0x00020002);
+    block.received = 3;
+    block.sent = 2;
+    data = block.data();
+    QVERIFY(data.has_value());
+    QCOMPARE(*data, 0x00060004);
 }
 
 void TestStdFunc::iec104ControlBlockTest03()
 {
     using namespace Iec104;
-    ControlBlock block { 3, 3 };
-    QCOMPARE(block.toNumberedSupervisoryFunction(), 0x00060001);
-    block.setReveived(2);
-    QCOMPARE(block.toNumberedSupervisoryFunction(), 0x00040001);
-    block.setReveived(1);
-    QCOMPARE(block.toNumberedSupervisoryFunction(), 0x00020001);
+    ControlBlock block { FrameFormat::Supervisory, 3, 3 };
+    auto data = block.data();
+    QVERIFY(data.has_value());
+    QCOMPARE(*data, 0x00060001);
+    block.received = 2;
+    data = block.data();
+    QVERIFY(data.has_value());
+    QCOMPARE(*data, 0x00040001);
+    block.received = 1;
+    data = block.data();
+    QVERIFY(data.has_value());
+    QCOMPARE(*data, 0x00020001);
 }
 
 // Similar results as in IEC104Parser::SendS function
 void TestStdFunc::iec104ControlBlockTest04()
 {
     using namespace Iec104;
-    ControlBlock block { 0, 18321 };
+    ControlBlock block { FrameFormat::Supervisory, 0, 18321 };
     QByteArray first;
     first.append(static_cast<char>(0x01));
     first.append(static_cast<char>(0x00));
-    first.append((block.getReceived() & 0x007F) << 1);
-    first.append((block.getReceived() & 0x7F80) >> 7);
+    first.append((block.received & 0x007F) << 1);
+    first.append((block.received & 0x7F80) >> 7);
 
-    auto data = block.toNumberedSupervisoryFunction();
-    QCOMPARE(data, 0x8F220001);
-    auto second = StdFunc::toByteArray(data);
+    auto data = block.data();
+    QVERIFY(data.has_value());
+    QCOMPARE(*data, 0x8F220001);
+    auto second = StdFunc::toByteArray(*data);
     QCOMPARE(first, second);
 }
 
@@ -338,6 +349,21 @@ void TestStdFunc::iec104ControlBlockTest05()
     actual = block.testFrameConfirm();
     expected = (1 << 7) | 3;
     QCOMPARE(actual, expected);
+}
+
+void TestStdFunc::iec104ControlBlockTest06()
+{
+    using namespace Iec104;
+    UnnumberedControl block {};
+    auto value = block.getValue(static_cast<ControlFunc>(5), static_cast<ControlArg>(10));
+    QVERIFY(!value.has_value());
+    QCOMPARE(value.error(), ControlBlockError::UndefinedControlArg);
+    value = block.getValue(static_cast<ControlFunc>(5), ControlArg::Confirm);
+    QVERIFY(!value.has_value());
+    QCOMPARE(value.error(), ControlBlockError::UndefinedControlFunc);
+    value = block.getValue(ControlFunc::StartDataTransfer, ControlArg::Activate);
+    QVERIFY(value.has_value());
+    QCOMPARE(*value, block.startDataTransferActivate());
 }
 
 QTEST_GUILESS_MAIN(TestStdFunc)

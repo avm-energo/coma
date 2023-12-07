@@ -51,6 +51,7 @@ private slots:
     void iec104ControlBlockTest03();
     void iec104ControlBlockTest04();
     void iec104ControlBlockTest05();
+    void iec104ControlBlockTest06();
 };
 
 #endif // TESTPROTOCOM_H

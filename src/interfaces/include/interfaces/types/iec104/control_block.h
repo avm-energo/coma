@@ -1,13 +1,14 @@
 #pragma once
 
 #include <QByteArray>
-#include <atomic>
+#include <gen/error.h>
 #include <interfaces/types/iec104/unnumbered_control.h>
 #include <memory>
 
 namespace Iec104
 {
 
+/// \brief The frame format type.
 enum class FrameFormat : std::uint16_t
 {
     Information = 0,
@@ -19,24 +20,29 @@ enum class FrameFormat : std::uint16_t
 class ControlBlock
 {
 private:
-    std::atomic_uint16_t m_sent, m_received;
+    /// \brief Converting saved data to I-format (information transfer format).
+    std::uint32_t toInfoTransferFormat() const noexcept;
+    /// \brief Converting saved data to S-format (supervisory control format).
+    std::uint32_t toNumberedSupervisoryFunction() const noexcept;
+    /// \brief Converting saved data to U-format (unnumbered control format).
+    tl::expected<std::uint32_t, ControlBlockError> toUnnumberedControlFunction() const noexcept;
 
 public:
-    explicit ControlBlock(std::uint16_t sent = 0, std::uint16_t received = 0) noexcept;
-    explicit ControlBlock(const ControlBlock &lhs) noexcept;
+    std::uint16_t sent, received;
+    FrameFormat format;
+    ControlFunc func;
+    ControlArg arg;
 
-    std::uint16_t getSent() const noexcept;
-    std::uint16_t getReceived() const noexcept;
-    void setSent(const std::uint16_t sent) noexcept;
-    void setReveived(const std::uint16_t received) noexcept;
+    /// \brief Default c-tor.
+    explicit ControlBlock(const FrameFormat fmt = FrameFormat::Information, //
+        const std::uint16_t sent = 0, const std::uint16_t received = 0) noexcept;
+    /// \brief Copy c-tor.
+    explicit ControlBlock(const ControlBlock &rhs) noexcept;
+    /// \brief Assignment operator.
+    const ControlBlock &operator=(const ControlBlock &rhs) noexcept;
 
-    /// \brief I-format
-    std::uint32_t toInfoTransferFormat() const noexcept;
-
-    /// \brief S-format
-    std::uint32_t toNumberedSupervisoryFunction() const noexcept;
-
-    /// \brief U-format
+    /// \brief Converting the stored control block data to a protocol representation.
+    tl::expected<std::uint32_t, ControlBlockError> data() const noexcept;
 };
 
 } // namespace Iec104

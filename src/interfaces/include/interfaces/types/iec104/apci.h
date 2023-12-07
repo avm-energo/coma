@@ -16,16 +16,14 @@ private:
     ControlBlock m_ctrlBlock;
     std::uint8_t m_asduSize;
 
-    QByteArray createHeader() const noexcept;
-
 public:
-    explicit APCI(const ControlBlock &controlBlock, const std::uint8_t asduSize = 0) noexcept;
+    explicit APCI(const FrameFormat format, const std::uint8_t asduSize = 0) noexcept;
+    explicit APCI(const ControlBlock controlBlock, const std::uint8_t asduSize = 0) noexcept;
 
-    QByteArray toIFormatByteArray() const noexcept;
-    QByteArray toSFormatByteArray() const noexcept;
+    void updateControlBlock(const FrameFormat fmt, const ControlFunc func, const ControlArg arg) noexcept;
+    void updateControlBlock(const ControlBlock controlBlock) noexcept;
 
-    template <ControlFunc func, ControlArg arg> //
-    QByteArray toUFormatByteArray() const noexcept;
+    QByteArray toByteArray() const noexcept;
 };
 
 } // namespace Iec104

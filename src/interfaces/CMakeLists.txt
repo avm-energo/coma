@@ -71,6 +71,7 @@ set(files_cpp
     "${SRC_PATH}/types/iec104/apci.cpp"
     "${SRC_PATH}/types/iec104/asdu.cpp"
     "${SRC_PATH}/types/iec104/control_block.cpp"
+    "${SRC_PATH}/types/iec104/unnumbered_control.cpp"
     "${SRC_PATH}/types/usbhidportinfo.cpp"
     "${SRC_PATH}/types/usbhidsettings.cpp"
     "${SRC_PATH}/utils/device_watcher.cpp"
@@ -91,6 +92,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Widgets
   s2
 )
+
+target_link_libraries(${PROJECT_NAME} PUBLIC tl::expected)
 
 if(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
