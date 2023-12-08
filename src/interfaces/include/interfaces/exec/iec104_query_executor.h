@@ -27,6 +27,10 @@ private:
 
     void setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept override;
 
+    void initConnection() noexcept;
+    void closeConnection() noexcept;
+    void writeToInterface(const QByteArray &message, bool isCounted = true) noexcept;
+
 public:
     /// \brief Удалённый конструктор по умолчанию.
     Iec104QueryExecutor() = delete;

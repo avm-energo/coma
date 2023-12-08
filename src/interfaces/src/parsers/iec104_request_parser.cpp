@@ -138,14 +138,30 @@ QByteArray Iec104RequestParser::getNextContinueCommand() noexcept
     return QByteArray {};
 };
 
-QByteArray Iec104RequestParser::createStartMessage() noexcept
+QByteArray Iec104RequestParser::createStartMessage() const noexcept
 {
-    return QByteArray {};
+    APCI apci;
+    apci.updateControlBlock(FrameFormat::Unnumbered, ControlFunc::StartDataTransfer, ControlArg::Activate);
+    if (auto bytes = apci.toByteArray(); bytes.has_value())
+        return bytes.value();
+    else
+    {
+        /// TODO: error dispatch
+        return QByteArray {};
+    }
 }
 
-QByteArray Iec104RequestParser::createStopMessage() noexcept
+QByteArray Iec104RequestParser::createStopMessage() const noexcept
 {
-    return QByteArray {};
+    APCI apci;
+    apci.updateControlBlock(FrameFormat::Unnumbered, ControlFunc::StopDataTransfer, ControlArg::Activate);
+    if (auto bytes = apci.toByteArray(); bytes.has_value())
+        return bytes.value();
+    else
+    {
+        /// TODO: error dispatch
+        return QByteArray {};
+    }
 }
 
 } // namespace Interface

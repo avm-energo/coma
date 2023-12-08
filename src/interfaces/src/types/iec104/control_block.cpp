@@ -35,12 +35,12 @@ std::uint32_t ControlBlock::toNumberedSupervisoryFunction() const noexcept
     return (std::uint32_t(received << 1) << 16) | std::uint16_t(0x0001);
 }
 
-tl::expected<std::uint32_t, ControlBlockError> ControlBlock::toUnnumberedControlFunction() const noexcept
+tl::expected<std::uint32_t, ApciError> ControlBlock::toUnnumberedControlFunction() const noexcept
 {
     return UnnumberedControl::getValue(func, arg);
 }
 
-tl::expected<std::uint32_t, ControlBlockError> ControlBlock::data() const noexcept
+tl::expected<std::uint32_t, ApciError> ControlBlock::data() const noexcept
 {
     switch (format)
     {
@@ -51,8 +51,48 @@ tl::expected<std::uint32_t, ControlBlockError> ControlBlock::data() const noexce
     case FrameFormat::Unnumbered:
         return toUnnumberedControlFunction();
     default:
-        return tl::unexpected(ControlBlockError::UndefinedFrameFormat);
+        return tl::unexpected(ApciError::InvalidFrameFormat);
     }
+}
+
+tl::expected<ControlBlock, ApciError> ControlBlock::fromData(const std::uint32_t data) noexcept
+{
+    ControlBlock retVal;
+    auto fmt = static_cast<FrameFormat>(data & std_ext::to_underlying(FrameFormat::Unnumbered));
+    std::uint16_t lopart = data & std::numeric_limits<std::uint16_t>::max(), hipart = data >> 16;
+    switch (fmt)
+    {
+    case FrameFormat::Unnumbered:
+        retVal.format = fmt;
+        if (auto value = UnnumberedControl::fromValue(data); value.has_value())
+        {
+            retVal.func = value->first;
+            retVal.arg = value->second;
+            break;
+        }
+        else
+            return tl::unexpected(value.error());
+    case FrameFormat::Supervisory:
+        if ((hipart & 1) == 0 && lopart == 1)
+        {
+            retVal.format = fmt;
+            retVal.received = hipart >> 1;
+            break;
+        }
+        else
+            return tl::unexpected(ApciError::InvalidFrameFormat);
+    default:
+        if (((hipart & 1) == 0) && ((lopart & 1) == 0))
+        {
+            retVal.format = FrameFormat::Information;
+            retVal.sent = lopart >> 1;
+            retVal.received = hipart >> 1;
+            break;
+        }
+        else
+            return tl::unexpected(ApciError::InvalidFrameFormat);
+    }
+    return tl::expected<ControlBlock, ApciError>(retVal);
 }
 
 } // namespace Iec104

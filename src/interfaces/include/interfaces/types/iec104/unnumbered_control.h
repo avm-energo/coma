@@ -7,13 +7,16 @@
 namespace Iec104
 {
 
-/// \brief The control parse error type.
-enum class ControlBlockError : std::uint8_t
+/// \brief The APCI block error type.
+enum class ApciError : std::uint8_t
 {
-    UndefinedControlFunc = 0,
-    UndefinedControlArg,
-    UndefinedControlValue,
-    UndefinedFrameFormat
+    InvalidControlFunc = 0,
+    InvalidControlArg,
+    InvalidControlValue,
+    InvalidFrameFormat,
+    InvalidDataLength,
+    InvalidAsduSize,
+    InvalidStartByte
 };
 
 /// \brief The control function type.
@@ -98,10 +101,10 @@ struct UnnumberedControl
     }
 
     /// \brief Run-time calculation the value of unnumbered control function.
-    static tl::expected<std::uint32_t, ControlBlockError> //
+    static tl::expected<std::uint32_t, ApciError> //
     getValue(const ControlFunc func, const ControlArg arg) noexcept;
 
-    static tl::expected<std::pair<ControlFunc, ControlArg>, ControlBlockError> //
+    static tl::expected<std::pair<ControlFunc, ControlArg>, ApciError> //
     fromValue(const std::uint32_t value) noexcept;
 };
 

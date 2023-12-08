@@ -25,8 +25,8 @@ public:
     QByteArray parse(const CommandStruct &cmd) override;
     QByteArray getNextContinueCommand() noexcept override;
 
-    QByteArray createStartMessage() noexcept;
-    QByteArray createStopMessage() noexcept;
+    QByteArray createStartMessage() const noexcept;
+    QByteArray createStopMessage() const noexcept;
 };
 
 } // namespace Interface

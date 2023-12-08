@@ -4,6 +4,7 @@
 #include <gen/datatypes.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <interfaces/types/iec104/apci.h>
 #include <interfaces/types/iec104/control_block.h>
 
 namespace detail
@@ -327,7 +328,7 @@ void TestStdFunc::iec104ControlBlockTest04()
     QCOMPARE(first, second);
 }
 
-void TestStdFunc::iec104ControlBlockTest05()
+void TestStdFunc::iec104UnnumberedControlTest01()
 {
     using namespace Iec104;
     UnnumberedControl block {};
@@ -351,19 +352,46 @@ void TestStdFunc::iec104ControlBlockTest05()
     QCOMPARE(actual, expected);
 }
 
-void TestStdFunc::iec104ControlBlockTest06()
+void TestStdFunc::iec104UnnumberedControlTest02()
 {
     using namespace Iec104;
     UnnumberedControl block {};
     auto value = block.getValue(static_cast<ControlFunc>(5), static_cast<ControlArg>(10));
     QVERIFY(!value.has_value());
-    QCOMPARE(value.error(), ControlBlockError::UndefinedControlArg);
+    QCOMPARE(value.error(), ApciError::InvalidControlArg);
     value = block.getValue(static_cast<ControlFunc>(5), ControlArg::Confirm);
     QVERIFY(!value.has_value());
-    QCOMPARE(value.error(), ControlBlockError::UndefinedControlFunc);
+    QCOMPARE(value.error(), ApciError::InvalidControlFunc);
     value = block.getValue(ControlFunc::StartDataTransfer, ControlArg::Activate);
     QVERIFY(value.has_value());
     QCOMPARE(*value, block.startDataTransferActivate());
+}
+
+void TestStdFunc::iec104ApciTest01()
+{
+    using namespace Iec104;
+    ControlBlock ctrl { FrameFormat::Information, 1, 2 };
+    APCI apci { ctrl, 4 };
+    auto actual = apci.toByteArray();
+    auto expected = QByteArrayLiteral("\x68\x08\x02\x00\x04\x00");
+    QVERIFY(actual.has_value());
+    QCOMPARE(actual.value(), expected);
+    ctrl.format = FrameFormat::Supervisory;
+    ctrl.received = 3;
+    apci.updateControlBlock(ctrl);
+    actual = apci.toByteArray();
+    expected = QByteArrayLiteral("\x68\x08\x01\x00\x06\x00");
+    QVERIFY(actual.has_value());
+    QCOMPARE(actual.value(), expected);
+    ctrl.format = FrameFormat::Unnumbered;
+    ctrl.func = ControlFunc::StopDataTransfer;
+    ctrl.arg = ControlArg::Confirm;
+    apci.updateControlBlock(ctrl);
+    apci.updateASDUSize(249);
+    actual = apci.toByteArray();
+    expected = QByteArrayLiteral("\x68\xfd\x23\x00\x00\x00");
+    QVERIFY(actual.has_value());
+    QCOMPARE(actual.value(), expected);
 }
 
 QTEST_GUILESS_MAIN(TestStdFunc)

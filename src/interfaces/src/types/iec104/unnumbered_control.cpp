@@ -7,7 +7,7 @@
 namespace Iec104
 {
 
-tl::expected<std::uint32_t, ControlBlockError> //
+tl::expected<std::uint32_t, ApciError> //
 UnnumberedControl::getValue(const ControlFunc func, const ControlArg arg) noexcept
 {
     if (arg == ControlArg::Activate)
@@ -21,7 +21,7 @@ UnnumberedControl::getValue(const ControlFunc func, const ControlArg arg) noexce
         case ControlFunc::TestFrame:
             return testFrameActivate();
         default:
-            return tl::unexpected(ControlBlockError::UndefinedControlFunc);
+            return tl::unexpected(ApciError::InvalidControlFunc);
         }
     }
     else if (arg == ControlArg::Confirm)
@@ -35,15 +35,15 @@ UnnumberedControl::getValue(const ControlFunc func, const ControlArg arg) noexce
         case ControlFunc::TestFrame:
             return testFrameConfirm();
         default:
-            return tl::unexpected(ControlBlockError::UndefinedControlFunc);
+            return tl::unexpected(ApciError::InvalidControlFunc);
         }
     }
     else
-        return tl::unexpected(ControlBlockError::UndefinedControlArg);
+        return tl::unexpected(ApciError::InvalidControlArg);
 }
 
-tl::expected<std::pair<ControlFunc, ControlArg>, ControlBlockError> //
-UnnumberedControl::fromValue(const std::uint32_t value) noexcept
+tl::expected<std::pair<ControlFunc, ControlArg>, ApciError> UnnumberedControl::fromValue(
+    const std::uint32_t value) noexcept
 {
     switch (value)
     {
@@ -61,7 +61,7 @@ UnnumberedControl::fromValue(const std::uint32_t value) noexcept
         return std::pair { ControlFunc::TestFrame, ControlArg::Confirm };
     default:
         qWarning() << "Undefined value, not U-format frame received";
-        return tl::unexpected(ControlBlockError::UndefinedControlValue);
+        return tl::unexpected(ApciError::InvalidControlValue);
     }
 }
 
