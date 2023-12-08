@@ -11,6 +11,10 @@ class Iec104ResponseParser final : public BaseResponseParser
     Q_OBJECT
 private:
     SharedControlBlock m_ctrlBlock;
+    Iec104::APCI m_currentAPCI;
+    Iec104::ASDU m_currentASDU;
+
+    void apciErrorHandle(const Iec104::ApciError err) const noexcept;
 
 public:
     explicit Iec104ResponseParser(QObject *parent = nullptr);

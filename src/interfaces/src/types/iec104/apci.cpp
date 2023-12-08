@@ -3,8 +3,9 @@
 namespace Iec104
 {
 
-constexpr inline std::uint8_t headerTag = 0x68;  ///< Header start for protocol.
-constexpr inline std::uint8_t maxAsduSize = 249; ///< Max ASDU size for protocol.
+constexpr inline std::uint8_t headerTag = 0x68; ///< Header start for protocol.
+constexpr inline std::uint8_t maxAsduSize
+    = std::numeric_limits<std::uint8_t>::max() - apciSize; ///< Max ASDU size for protocol.
 
 APCI::APCI(const std::uint8_t asduSize) noexcept : m_asduSize(asduSize)
 {
@@ -15,21 +16,16 @@ APCI::APCI(const ControlBlock controlBlock, const std::uint8_t asduSize) noexcep
 {
 }
 
-void APCI::updateControlBlock(const FrameFormat fmt, const ControlFunc func, const ControlArg arg) noexcept
+const APCI &APCI::operator=(const APCI &rhs) noexcept
 {
-    m_ctrlBlock.format = fmt;
-    m_ctrlBlock.func = func;
-    m_ctrlBlock.arg = arg;
+    m_ctrlBlock = rhs.m_ctrlBlock;
+    m_asduSize = rhs.m_asduSize;
+    return *this;
 }
 
 void APCI::updateControlBlock(const ControlBlock controlBlock) noexcept
 {
     m_ctrlBlock = controlBlock;
-}
-
-void APCI::updateASDUSize(const std::uint8_t newSize) noexcept
-{
-    m_asduSize = newSize;
 }
 
 tl::expected<QByteArray, ApciError> APCI::toByteArray() const noexcept

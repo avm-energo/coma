@@ -141,7 +141,9 @@ QByteArray Iec104RequestParser::getNextContinueCommand() noexcept
 QByteArray Iec104RequestParser::createStartMessage() const noexcept
 {
     APCI apci;
-    apci.updateControlBlock(FrameFormat::Unnumbered, ControlFunc::StartDataTransfer, ControlArg::Activate);
+    apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
+    apci.m_ctrlBlock.m_func = ControlFunc::StartDataTransfer;
+    apci.m_ctrlBlock.m_arg = ControlArg::Activate;
     if (auto bytes = apci.toByteArray(); bytes.has_value())
         return bytes.value();
     else
@@ -154,7 +156,9 @@ QByteArray Iec104RequestParser::createStartMessage() const noexcept
 QByteArray Iec104RequestParser::createStopMessage() const noexcept
 {
     APCI apci;
-    apci.updateControlBlock(FrameFormat::Unnumbered, ControlFunc::StopDataTransfer, ControlArg::Activate);
+    apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
+    apci.m_ctrlBlock.m_func = ControlFunc::StopDataTransfer;
+    apci.m_ctrlBlock.m_arg = ControlArg::Activate;
     if (auto bytes = apci.toByteArray(); bytes.has_value())
         return bytes.value();
     else

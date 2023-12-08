@@ -42,8 +42,8 @@ UnnumberedControl::getValue(const ControlFunc func, const ControlArg arg) noexce
         return tl::unexpected(ApciError::InvalidControlArg);
 }
 
-tl::expected<std::pair<ControlFunc, ControlArg>, ApciError> UnnumberedControl::fromValue(
-    const std::uint32_t value) noexcept
+tl::expected<std::pair<ControlFunc, ControlArg>, ApciError> //
+UnnumberedControl::fromValue(const std::uint32_t value) noexcept
 {
     switch (value)
     {

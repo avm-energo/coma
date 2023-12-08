@@ -12,17 +12,18 @@ constexpr inline std::size_t apciSize = controlBlockSize + 2; ///< APCI size.
 /// \brief Application Protocol Control Information (APCI) class.
 class APCI
 {
-private:
+public:
     ControlBlock m_ctrlBlock;
     std::uint8_t m_asduSize;
 
-public:
+    /// \brief Default c-tor.
     explicit APCI(const std::uint8_t asduSize = 0) noexcept;
+    /// \brief Param c-tor.
     explicit APCI(const ControlBlock controlBlock, const std::uint8_t asduSize = 0) noexcept;
+    /// \brief Assignment operator.
+    const APCI &operator=(const APCI &rhs) noexcept;
 
-    void updateControlBlock(const FrameFormat fmt, const ControlFunc func, const ControlArg arg) noexcept;
     void updateControlBlock(const ControlBlock controlBlock) noexcept;
-    void updateASDUSize(const std::uint8_t newSize) noexcept;
 
     tl::expected<QByteArray, ApciError> toByteArray() const noexcept;
     static tl::expected<APCI, ApciError> fromByteArray(const QByteArray &data) noexcept;

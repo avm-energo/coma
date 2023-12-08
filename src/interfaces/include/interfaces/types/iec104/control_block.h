@@ -30,10 +30,10 @@ private:
     tl::expected<std::uint32_t, ApciError> toUnnumberedControlFunction() const noexcept;
 
 public:
-    std::uint16_t sent, received;
-    FrameFormat format;
-    ControlFunc func;
-    ControlArg arg;
+    std::uint16_t m_sent, m_received;
+    FrameFormat m_format;
+    ControlFunc m_func;
+    ControlArg m_arg;
 
     /// \brief Default c-tor.
     explicit ControlBlock(const FrameFormat fmt = FrameFormat::Information, //

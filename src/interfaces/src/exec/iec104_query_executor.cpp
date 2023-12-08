@@ -47,7 +47,7 @@ void Iec104QueryExecutor::writeToInterface(const QByteArray &message, bool isCou
 {
     DefaultQueryExecutor::writeToInterface(message);
     if (isCounted)
-        ++(m_ctrlBlock->sent);
+        ++(m_ctrlBlock->m_sent);
 }
 
 void Iec104QueryExecutor::exec()
