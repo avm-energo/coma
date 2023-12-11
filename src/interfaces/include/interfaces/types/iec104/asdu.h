@@ -122,6 +122,7 @@ enum class CauseOfTransmission : std::uint8_t
 };
 
 inline constexpr auto maxElements = std::numeric_limits<std::uint8_t>::max() >> 1;
+inline constexpr auto asduHeaderSize = 6;
 
 /// \brief
 class ASDU
@@ -138,9 +139,11 @@ private:
     QByteArray m_data;
 
 public:
-    explicit ASDU() noexcept = default;
+    explicit ASDU() noexcept;
 
     QByteArray toByteArray() const noexcept;
+
+    static ASDU fromByteArray(const QByteArray &data) noexcept;
 };
 
 } // namespace Iec104

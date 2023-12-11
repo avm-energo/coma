@@ -104,6 +104,7 @@ struct UnnumberedControl
     static tl::expected<std::uint32_t, ApciError> //
     getValue(const ControlFunc func, const ControlArg arg) noexcept;
 
+    /// \brief Converting the passed value to a pair of control function and argument.
     static tl::expected<std::pair<ControlFunc, ControlArg>, ApciError> //
     fromValue(const std::uint32_t value) noexcept;
 };

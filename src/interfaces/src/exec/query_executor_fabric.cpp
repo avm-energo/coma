@@ -53,6 +53,8 @@ DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queu
     // NOTE: query executor must be parent for all parsers
     auto requestParser = new Iec104RequestParser(executor);
     auto responseParser = new Iec104ResponseParser(executor);
+    requestParser->updateControlBlock(executor->m_ctrlBlock);
+    responseParser->updateControlBlock(executor->m_ctrlBlock);
     executor->setParsers(requestParser, responseParser);
     return executor;
 }

@@ -50,7 +50,7 @@ protected:
     void initLogger(const QString &protocolName) noexcept;
     /// \brief Устанавливает переданные парсеры для работы исполнителя запросов.
     /// \details Вызывается при создании исполнителя запросов.
-    virtual void setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept;
+    void setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept;
 
     /// \brief Возвращает текущее состояние исполнителя запросов.
     ExecutorState getState() const noexcept;

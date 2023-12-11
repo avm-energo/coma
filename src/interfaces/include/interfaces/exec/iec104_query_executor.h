@@ -25,8 +25,6 @@ private:
     inline Iec104ResponseParser *getResponseParser() noexcept;
     inline Iec104RequestParser *getRequestParser() noexcept;
 
-    void setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept override;
-
     void initConnection() noexcept;
     void closeConnection() noexcept;
     void writeToInterface(const QByteArray &message, bool isCounted = true) noexcept;

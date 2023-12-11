@@ -23,13 +23,6 @@ Iec104RequestParser *Iec104QueryExecutor::getRequestParser() noexcept
     return reinterpret_cast<Iec104RequestParser *>(m_requestParser);
 }
 
-void Iec104QueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept
-{
-    DefaultQueryExecutor::setParsers(reqParser, respParser);
-    getRequestParser()->updateControlBlock(m_ctrlBlock);
-    getResponseParser()->updateControlBlock(m_ctrlBlock);
-}
-
 void Iec104QueryExecutor::initConnection() noexcept
 {
     auto startMsg { getRequestParser()->createStartMessage() };

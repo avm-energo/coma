@@ -23,9 +23,12 @@ public:
     /// \brief Assignment operator.
     const APCI &operator=(const APCI &rhs) noexcept;
 
+    /// \brief Updating the control block inside the APCI unit.
     void updateControlBlock(const ControlBlock controlBlock) noexcept;
 
+    /// \brief Converting the APCI object to a byte array.
     tl::expected<QByteArray, ApciError> toByteArray() const noexcept;
+    /// \brief Converting the received byte array to a APCI object.
     static tl::expected<APCI, ApciError> fromByteArray(const QByteArray &data) noexcept;
 };
 

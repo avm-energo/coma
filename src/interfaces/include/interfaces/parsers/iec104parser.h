@@ -8,7 +8,8 @@
 #include <gen/datatypes.h>
 #include <gen/error.h>
 #include <gen/logclass.h>
-#include <interfaces/connection.h>
+#include <interfaces/types/iec104/asdu.h>
+#include <interfaces/utils/request_queue.h>
 #include <s2/filestruct.h>
 #include <s2/s2datatypes.h>
 

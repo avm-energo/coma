@@ -392,4 +392,33 @@ void TestStdFunc::iec104ApciTest01()
     QCOMPARE(actual.value(), expected);
 }
 
+void TestStdFunc::iec104ApciTest02()
+{
+    using namespace Iec104;
+    auto actual = APCI::fromByteArray(QByteArrayLiteral("\x68\x08\x02\x00\x04\x00"));
+    QVERIFY(actual.has_value());
+    QCOMPARE(actual->m_asduSize, 4);
+    QCOMPARE(actual->m_ctrlBlock.m_format, FrameFormat::Information);
+    QCOMPARE(actual->m_ctrlBlock.m_received, 2);
+    QCOMPARE(actual->m_ctrlBlock.m_sent, 1);
+    actual = APCI::fromByteArray(QByteArrayLiteral("\x68\x04\x0b\x00\x00\x00"));
+    QVERIFY(actual.has_value());
+    QCOMPARE(actual->m_asduSize, 0);
+    QCOMPARE(actual->m_ctrlBlock.m_format, FrameFormat::Unnumbered);
+    QCOMPARE(actual->m_ctrlBlock.m_func, ControlFunc::StartDataTransfer);
+    QCOMPARE(actual->m_ctrlBlock.m_arg, ControlArg::Confirm);
+    actual = APCI::fromByteArray(QByteArrayLiteral("\x67\x04\x0b\x00\x00\x00"));
+    QVERIFY(!actual.has_value());
+    QCOMPARE(actual.error(), ApciError::InvalidStartByte);
+    actual = APCI::fromByteArray(QByteArrayLiteral("\x68\x02\x0b\x00"));
+    QVERIFY(!actual.has_value());
+    QCOMPARE(actual.error(), ApciError::InvalidDataLength);
+    actual = APCI::fromByteArray(QByteArrayLiteral("\x68\x04\xff\xff\xff\xff"));
+    QVERIFY(!actual.has_value());
+    QCOMPARE(actual.error(), ApciError::InvalidControlValue);
+    actual = APCI::fromByteArray(QByteArrayLiteral("\x68\x04\x01\x01\x06\x00"));
+    QVERIFY(!actual.has_value());
+    QCOMPARE(actual.error(), ApciError::InvalidFrameFormat);
+}
+
 QTEST_GUILESS_MAIN(TestStdFunc)
