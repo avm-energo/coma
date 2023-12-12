@@ -5,6 +5,7 @@
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/iec104/apci.h>
+#include <interfaces/types/iec104/asdu.h>
 #include <interfaces/types/iec104/control_block.h>
 
 namespace detail
@@ -419,6 +420,37 @@ void TestStdFunc::iec104ApciTest02()
     actual = APCI::fromByteArray(QByteArrayLiteral("\x68\x04\x01\x01\x06\x00"));
     QVERIFY(!actual.has_value());
     QCOMPARE(actual.error(), ApciError::InvalidFrameFormat);
+}
+
+void TestStdFunc::iec104AsduTest01()
+{
+    using namespace Iec104;
+    auto actual = ASDU::fromByteArray(QByteArrayLiteral("\x64\x01\x06\x00\xCD\x00\x00\x00\x00\x14"));
+    QCOMPARE(actual.m_msgType, MessageDataType::C_IC_NA_1);
+    QCOMPARE(actual.m_qualifier, StructureQualifier::Sequence);
+    QCOMPARE(actual.m_elements, 1);
+    QCOMPARE(actual.m_confirmation, Confirmation::Positive);
+    QCOMPARE(actual.m_isTest, false);
+    QCOMPARE(actual.m_cause, CauseOfTransmission::Activation);
+    QCOMPARE(actual.m_originatorAddr, 0);
+    QCOMPARE(actual.m_bsAddress, 205);
+    QCOMPARE(actual.m_data, QByteArrayLiteral("\x00\x00\x00\x14"));
+    actual = ASDU::fromByteArray(QByteArrayLiteral("\x65\x01\x0A\x00\x0C\x00\x00\x00\x00\x05"));
+    QCOMPARE(actual.m_msgType, MessageDataType::C_CI_NA_1);
+    QCOMPARE(actual.m_qualifier, StructureQualifier::Sequence);
+    QCOMPARE(actual.m_elements, 1);
+    QCOMPARE(actual.m_cause, CauseOfTransmission::ActivationTermination);
+    QCOMPARE(actual.m_originatorAddr, 0);
+    QCOMPARE(actual.m_bsAddress, 12);
+    QCOMPARE(actual.m_data, QByteArrayLiteral("\x00\x00\x00\x05"));
+    actual = ASDU::fromByteArray(QByteArrayLiteral("\x0B\x07\x03\x00\x0C\x00\x10\x30\x00\xBE\x09\x00"));
+    QCOMPARE(actual.m_msgType, MessageDataType::M_ME_NB_1);
+    QCOMPARE(actual.m_qualifier, StructureQualifier::Sequence);
+    QCOMPARE(actual.m_elements, 7);
+    QCOMPARE(actual.m_cause, CauseOfTransmission::Spontaneous);
+    QCOMPARE(actual.m_originatorAddr, 0);
+    QCOMPARE(actual.m_bsAddress, 12);
+    QCOMPARE(actual.m_data, QByteArrayLiteral("\x10\x30\x00\xBE\x09\x00"));
 }
 
 QTEST_GUILESS_MAIN(TestStdFunc)

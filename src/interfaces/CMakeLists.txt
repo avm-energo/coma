@@ -35,6 +35,7 @@ set(files_h
     "${INCLUDE_PATH}/types/iec104/asdu.h"
     "${INCLUDE_PATH}/types/iec104/control_block.h"
     "${INCLUDE_PATH}/types/iec104/unnumbered_control.h"
+    "${INCLUDE_PATH}/types/iec104_settings.h"
     "${INCLUDE_PATH}/types/iec104_types.h"
     "${INCLUDE_PATH}/types/interfacesettings.h"
     "${INCLUDE_PATH}/types/modbus_types.h"

@@ -2,7 +2,7 @@
 
 #include <QByteArray>
 #include <QObject>
-#include <cstdint>
+#include <gen/uint24.h>
 #include <limits>
 
 namespace Iec104
@@ -124,10 +124,10 @@ enum class CauseOfTransmission : std::uint8_t
 inline constexpr auto maxElements = std::numeric_limits<std::uint8_t>::max() >> 1;
 inline constexpr auto asduHeaderSize = 6;
 
-/// \brief
+/// \brief ASDU representation of the IEC-60870-5-104 protocol.
 class ASDU
 {
-private:
+public:
     MessageDataType m_msgType;
     StructureQualifier m_qualifier;
     std::uint8_t m_elements;
@@ -135,14 +135,22 @@ private:
     Confirmation m_confirmation;
     CauseOfTransmission m_cause;
     std::uint8_t m_originatorAddr;
-    std::uint16_t m_address;
+    std::uint16_t m_bsAddress;
     QByteArray m_data;
 
-public:
     explicit ASDU() noexcept;
+    explicit ASDU(const std::uint16_t bsAddress) noexcept;
+
+    /// \brief Bitstring.
+    void setData(const uint24 address, const std::uint32_t data) noexcept;
+    /// \brief Float.
+    void setData(const uint24 address, const float data) noexcept;
+    /// \brief Single command.
+    void setData(const uint24 address, const bool data) noexcept;
+    /// \brief Interrogate group.
+    void setData(const std::uint8_t group) noexcept;
 
     QByteArray toByteArray() const noexcept;
-
     static ASDU fromByteArray(const QByteArray &data) noexcept;
 };
 

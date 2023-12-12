@@ -183,7 +183,6 @@ void DefaultQueryExecutor::receiveDataFromInterface(const QByteArray &response)
     if (validationResult == Error::NoError)
     {
         m_responseParser->parse();
-
         switch (getState())
         {
         case ExecutorState::ReadingLongData:

@@ -62,10 +62,11 @@ Error::Msg Iec104ResponseParser::validate()
 
 void Iec104ResponseParser::parse()
 {
-    ++m_ctrlBlock->m_received;
     switch (m_currentAPCI.m_ctrlBlock.m_format)
     {
     case FrameFormat::Information:
+        ++m_ctrlBlock->m_received;
+        emit needToCheckControlBlock();
         parseInfoFormat();
         break;
     case FrameFormat::Supervisory:
@@ -80,13 +81,19 @@ void Iec104ResponseParser::parse()
 
 void Iec104ResponseParser::parseInfoFormat() noexcept
 {
-    ;
+    auto asdu = ASDU::fromByteArray(m_responseBuffer.mid(apciSize, m_currentAPCI.m_asduSize));
+    switch (asdu.m_msgType)
+    {
+    /// TODO: Handle all message data types
+    default:
+        qDebug() << asdu.m_data;
+        break;
+    }
 }
 
 void Iec104ResponseParser::parseSupervisoryFormat() noexcept
 {
     /// Need action?
-    ;
 }
 
 void Iec104ResponseParser::parseUnnumberedFormat() noexcept

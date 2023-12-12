@@ -45,16 +45,18 @@ DefaultQueryExecutor *QueryExecutorFabric::makeModbusExecutor(
     return executor;
 }
 
-DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queue, quint16 bsAddress, quint32 timeout)
+DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queue, const IEC104Settings &settings)
 {
-    Q_UNUSED(bsAddress);
-    auto executor = new Iec104QueryExecutor(queue, timeout);
+    auto executor = new Iec104QueryExecutor(queue, settings.params);
     executor->initLogger("IEC104");
     // NOTE: query executor must be parent for all parsers
     auto requestParser = new Iec104RequestParser(executor);
     auto responseParser = new Iec104ResponseParser(executor);
     requestParser->updateControlBlock(executor->m_ctrlBlock);
     responseParser->updateControlBlock(executor->m_ctrlBlock);
+    requestParser->setBaseStationAddress(settings.bsAddress);
+    QObject::connect(responseParser, &Iec104ResponseParser::needToCheckControlBlock, //
+        executor, &Iec104QueryExecutor::checkControlBlock);
     executor->setParsers(requestParser, responseParser);
     return executor;
 }

@@ -31,6 +31,7 @@ public:
 
 signals:
     void unnumberedFormatReceived(const Iec104::ControlFunc func, const Iec104::ControlArg arg);
+    void needToCheckControlBlock();
 };
 
 } // namespace Interface

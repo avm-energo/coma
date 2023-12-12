@@ -116,9 +116,15 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
     return m_request;
 }
 
-QByteArray Iec104RequestParser::createGroupRequest([[maybe_unused]] const quint32 groupNum)
+QByteArray Iec104RequestParser::createGroupRequest(const quint32 groupNum)
 {
-    return QByteArray {};
+    ASDU asdu(m_baseStationAddress);
+    asdu.setData(groupNum);
+    auto request = asdu.toByteArray();
+    APCI apci(*m_ctrlBlock, request.size());
+    apci.m_ctrlBlock.m_format = FrameFormat::Information;
+    request.prepend(apci.toByteArray().value_or(QByteArray {}));
+    return request;
 }
 
 QByteArray Iec104RequestParser::createASDUPrefix(const Iec104::MessageDataType type, const quint32 address)
@@ -144,13 +150,8 @@ QByteArray Iec104RequestParser::createStartMessage() const noexcept
     apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
     apci.m_ctrlBlock.m_func = ControlFunc::StartDataTransfer;
     apci.m_ctrlBlock.m_arg = ControlArg::Activate;
-    if (auto bytes = apci.toByteArray(); bytes.has_value())
-        return bytes.value();
-    else
-    {
-        /// TODO: error dispatch
-        return QByteArray {};
-    }
+    auto bytes = apci.toByteArray();
+    return bytes.value_or(QByteArray {});
 }
 
 QByteArray Iec104RequestParser::createStopMessage() const noexcept
@@ -159,13 +160,8 @@ QByteArray Iec104RequestParser::createStopMessage() const noexcept
     apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
     apci.m_ctrlBlock.m_func = ControlFunc::StopDataTransfer;
     apci.m_ctrlBlock.m_arg = ControlArg::Activate;
-    if (auto bytes = apci.toByteArray(); bytes.has_value())
-        return bytes.value();
-    else
-    {
-        /// TODO: error dispatch
-        return QByteArray {};
-    }
+    auto bytes = apci.toByteArray();
+    return bytes.value_or(QByteArray {});
 }
 
 } // namespace Interface

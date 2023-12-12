@@ -2,6 +2,8 @@
 
 #include <interfaces/exec/default_query_executor.h>
 
+struct IEC104Settings;
+
 namespace Interface
 {
 
@@ -21,7 +23,7 @@ public:
     /// \brief Создание исполнителя запросов к устройству по протоколу Modbus.
     static DefaultQueryExecutor *makeModbusExecutor(RequestQueue &queue, quint8 deviceAddress, quint32 timeout = 3000);
     /// \brief Создание исполнителя запросов к устройству по протоколу МЭК 60870-5-104.
-    static DefaultQueryExecutor *makeIec104Executor(RequestQueue &queue, quint16 bsAddress, quint32 timeout = 1000);
+    static DefaultQueryExecutor *makeIec104Executor(RequestQueue &queue, const IEC104Settings &settings);
 };
 
 } // namespace Interface

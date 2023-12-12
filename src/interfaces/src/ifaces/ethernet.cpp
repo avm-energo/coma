@@ -16,8 +16,7 @@ Ethernet::Ethernet(const IEC104Settings &settings, QObject *parent)
 bool Ethernet::connect()
 {
     m_socket->connectToHost(m_settings.ip, m_settings.port, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
-    /// TODO: сделать настраиваемым значение 5 секунд на подключение
-    if (m_socket->waitForConnected(5000))
+    if (m_socket->waitForConnected(m_settings.params.t0 * 1000))
     {
         if (getState() != Interface::State::Disconnect)
         {

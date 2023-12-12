@@ -52,8 +52,7 @@ bool ConnectionManager::createConnection(const ConnectStruct &connectionData)
             },
             [this](const IEC104Settings &settings) {
                 auto interface = new Ethernet(settings);
-                auto executor
-                    = QueryExecutorFabric::makeIec104Executor(m_currentConnection->m_queue, settings.bsAddress);
+                auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->m_queue, settings);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const EmulatorSettings &settings) {
