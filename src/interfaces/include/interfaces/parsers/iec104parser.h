@@ -40,11 +40,7 @@ signals:
     void responseSend(const Interface::DeviceResponse &resp);
 
 private:
-    static QMutex s_ParseReadMutex;
-    static QMutex s_ParseWriteMutex;
-
     std::reference_wrapper<RequestQueue> m_queue;
-
     int m_signalCounter, m_noAnswer;
     bool m_isFileSending;
     // flag indicates how file should be restored
@@ -67,7 +63,7 @@ private:
     QTimer *m_sendTestTimer;
     quint8 m_KSS;
     quint8 m_KSF;
-    QByteArray m_cutPckt;
+    QByteArray m_tempBuffer;
     bool m_isFirstParse;
     bool m_writingToPortBlocked;
     LogClass m_log;
