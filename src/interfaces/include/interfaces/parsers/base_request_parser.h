@@ -1,6 +1,7 @@
 #pragma once
 
 #include <deque>
+#include <gen/logclass.h>
 #include <interfaces/types/common_types.h>
 
 namespace Interface
@@ -58,6 +59,9 @@ signals:
     /// \brief Сигнал, который используется для передачи прогресса
     /// записи файла или большого массива данных (в байтах) в устройство.
     void progressBytes(const quint64 progress);
+
+    /// \brief Сигнал, который используется для отправки сообщения в лог исполнителя запросов.
+    void needToLog(const QString &message, const LogLevel level);
 };
 
 } // namespace Interface

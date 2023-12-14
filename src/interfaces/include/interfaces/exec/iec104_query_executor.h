@@ -49,6 +49,8 @@ public:
     void exec() override;
 
 public slots:
+    /// \brief Слот для принятия от устройства данных асинхронно.
+    void receiveDataFromInterface(const QByteArray &response) override;
     /// \brief Слот для проверки контрольного блока.
     void checkControlBlock() noexcept;
 };

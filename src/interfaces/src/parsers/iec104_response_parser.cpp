@@ -7,8 +7,9 @@ namespace Interface
 
 using namespace Iec104;
 
-Iec104ResponseParser::Iec104ResponseParser(QObject *parent) : BaseResponseParser(parent), m_isAPCIParseError(false)
+Iec104ResponseParser::Iec104ResponseParser(QObject *parent) : BaseResponseParser(parent)
 {
+    m_responses.reserve(1024);
 }
 
 void Iec104ResponseParser::updateControlBlock(const SharedControlBlock &newControlBlock) noexcept
@@ -18,65 +19,86 @@ void Iec104ResponseParser::updateControlBlock(const SharedControlBlock &newContr
 
 void Iec104ResponseParser::apciParseErrorHandle(const Iec104::ApciError err) noexcept
 {
-    m_isAPCIParseError = true;
+    /// TODO: So naive realization
     qWarning() << "Parsing APCI error: " << std_ext::to_underlying(err);
 }
 
 bool Iec104ResponseParser::isCompleteResponse()
 {
-    if (m_responseBuffer.size() < apciSize)
-        return false;
-
-    auto parseProduct = APCI::fromByteArray(m_responseBuffer.left(apciSize));
-    if (parseProduct.has_value())
-    {
-        m_currentAPCI = *parseProduct;
-        if (m_responseBuffer.size() == m_currentAPCI.m_asduSize + apciSize)
+    if (m_responseBuffer.size() >= apciSize)
+        if (m_responseBuffer.size() >= std::uint8_t(m_responseBuffer[2]))
             return true;
-        else
-            return false;
-    }
-    else
-    {
-        apciParseErrorHandle(parseProduct.error());
-        return true; // Because we don't want to wait an another data
-    }
+    return false;
 }
 
 Error::Msg Iec104ResponseParser::validate()
 {
+    return Error::NoError;
+}
+
+Error::Msg Iec104ResponseParser::validate(const QByteArray &response) noexcept
+{
+    auto parseProduct = APCI::fromByteArray(response.left(apciSize));
     // Parse APCI check
-    if (m_isAPCIParseError)
+    if (parseProduct.has_value())
     {
-        m_isAPCIParseError = false;
+        m_currentAPCI = *parseProduct;
+        // Size check
+        if (m_currentAPCI.m_ctrlBlock.m_format == FrameFormat::Information)
+        {
+            if (response.size() != m_currentAPCI.m_asduSize + apciSize)
+                return Error::SizeError;
+        }
+        return validate(); // returns no error
+    }
+    else
+    {
+        apciParseErrorHandle(parseProduct.error());
         return Error::WrongFormatError;
     }
-    // Size check
-    if (m_currentAPCI.m_ctrlBlock.m_format == FrameFormat::Information)
+}
+
+void Iec104ResponseParser::splitBuffer() noexcept
+{
+    while (isCompleteResponse())
     {
-        if (m_responseBuffer.size() != m_currentAPCI.m_asduSize + apciSize)
-            return Error::SizeError;
+        auto responseSize = std::uint8_t(m_responseBuffer[2]);
+        m_responses.emplace_back(m_responseBuffer.left(responseSize));
+        m_responseBuffer.remove(0, responseSize);
     }
-    return Error::NoError;
 }
 
 void Iec104ResponseParser::parse()
 {
-    switch (m_currentAPCI.m_ctrlBlock.m_format)
+    splitBuffer();
+    for (const auto &response : m_responses)
     {
-    case FrameFormat::Information:
-        ++m_ctrlBlock->m_received;
-        emit needToCheckControlBlock();
-        parseInfoFormat();
-        break;
-    case FrameFormat::Supervisory:
-        parseSupervisoryFormat();
-        break;
-    case FrameFormat::Unnumbered:
-        parseUnnumberedFormat();
-        break;
+        emit needToLog(QString("-> %1").arg(QString(response.toHex())), LogLevel::Info);
+        auto validationResult = validate(response);
+        if (validationResult == Error::Msg::NoError)
+        {
+            switch (m_currentAPCI.m_ctrlBlock.m_format)
+            {
+            case FrameFormat::Information:
+                ++m_ctrlBlock->m_received;
+                emit needToCheckControlBlock();
+                parseInfoFormat();
+                break;
+            case FrameFormat::Supervisory:
+                parseSupervisoryFormat();
+                break;
+            case FrameFormat::Unnumbered:
+                parseUnnumberedFormat();
+                break;
+            }
+        }
+        else
+        {
+            auto errStr = "Message validation fault, reason: " + QVariant::fromValue(validationResult).toString();
+            emit needToLog(errStr, LogLevel::Error);
+        }
     }
-    clearResponseBuffer();
+    m_responses.clear();
 }
 
 void Iec104ResponseParser::parseInfoFormat() noexcept

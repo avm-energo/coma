@@ -3,7 +3,7 @@ include(FetchContent)
 FetchContent_Declare(
   gen
   GIT_REPOSITORY https://github.com/avm-energo/gen.git
-  GIT_TAG        origin/tune82
+  GIT_TAG        origin/feature/log-level
 )
 # Building gen as dynamic library
 set(GEN_STATIC OFF)

@@ -67,6 +67,10 @@ protected:
     /// \brief Функция для записи данных в лог протокола.
     void writeToLog(const QByteArray &ba, const Direction dir = Direction::NoDirection) noexcept;
 
+private slots:
+    /// \brief Приватный слот для записи информации в лог от парсера запросов и ответов.
+    void logFromParser(const QString &message, const LogLevel level);
+
 public:
     /// \brief Удалённый конструктор по умолчанию.
     DefaultQueryExecutor() = delete;
@@ -91,7 +95,7 @@ public:
 
 public slots:
     /// \brief Слот для принятия от устройства ответа на посланный ему ранее запрос.
-    void receiveDataFromInterface(const QByteArray &response);
+    virtual void receiveDataFromInterface(const QByteArray &response);
     /// \brief Слот для отмены текущего запроса.
     void cancelQuery();
     /// \brief Слот, вызываемый при переподключении текущего интерфейса.

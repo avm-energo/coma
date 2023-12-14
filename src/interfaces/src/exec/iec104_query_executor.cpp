@@ -62,6 +62,23 @@ void Iec104QueryExecutor::exec()
     closeConnection();
 }
 
+void Iec104QueryExecutor::receiveDataFromInterface(const QByteArray &response)
+{
+    m_responseParser->accumulateToResponseBuffer(response);
+    m_responseParser->parse();
+    switch (getState())
+    {
+    case ExecutorState::Stopping:
+    case ExecutorState::Pending:
+        // Просто выходим из слота, если исполнителя
+        // остановили, или запрошенные данные ещё не пришли
+        break;
+    default:
+        run();
+        break;
+    }
+}
+
 void Iec104QueryExecutor::checkControlBlock() noexcept
 {
     if (m_ctrlBlock->m_received >= m_params.w)

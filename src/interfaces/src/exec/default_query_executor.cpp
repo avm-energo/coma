@@ -44,6 +44,11 @@ void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponse
             m_responseParser, &BaseResponseParser::processProgressCount); //
         connect(m_requestParser, &BaseRequestParser::writingLastSection,  //
             m_responseParser, &BaseResponseParser::lastSectionSended);    //
+        connect(m_requestParser, &BaseRequestParser::needToLog,           //
+            this, &DefaultQueryExecutor::logFromParser);                  //
+        connect(m_responseParser, &BaseResponseParser::needToLog,         //
+            this, &DefaultQueryExecutor::logFromParser);                  //
+
         connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
             setState(ExecutorState::WritingLongData);
             m_timeoutTimer->setInterval(m_timeoutTimer->interval() * 5);
@@ -119,6 +124,11 @@ void DefaultQueryExecutor::writeToLog(const QByteArray &ba, const Direction dir)
     }
     msg += ba.toHex();
     m_log.info(msg);
+}
+
+void DefaultQueryExecutor::logFromParser(const QString &message, const LogLevel level)
+{
+    m_log.logging(message, level);
 }
 
 void DefaultQueryExecutor::exec()

@@ -11,10 +11,13 @@ class Iec104ResponseParser final : public BaseResponseParser
     Q_OBJECT
 private:
     SharedControlBlock m_ctrlBlock;
+    std::vector<QByteArray> m_responses;
     Iec104::APCI m_currentAPCI;
-    bool m_isAPCIParseError;
     Iec104::ASDU m_currentASDU;
 
+    /// \brief Используется для разбивания буффера на
+    /// массив байт каждого ответа от устройства.
+    void splitBuffer() noexcept;
     void apciParseErrorHandle(const Iec104::ApciError err) noexcept;
     void parseInfoFormat() noexcept;
     void parseSupervisoryFormat() noexcept;
@@ -27,6 +30,7 @@ public:
 
     bool isCompleteResponse() override;
     Error::Msg validate() override;
+    Error::Msg validate(const QByteArray &response) noexcept;
     void parse() override;
 
 signals:
