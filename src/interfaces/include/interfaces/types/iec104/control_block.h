@@ -17,6 +17,7 @@ enum class FrameFormat : std::uint16_t
 };
 
 constexpr inline std::size_t controlBlockSize = sizeof(std::uint32_t);
+constexpr inline auto controlMax = std::numeric_limits<std::uint16_t>::max() >> 1;
 
 /// \brief The data format control block structure.
 class ControlBlock

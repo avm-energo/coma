@@ -30,10 +30,8 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
     {
     case Commands::C_ReqBSI:
     case Commands::C_ReqBSIExt:
-    {
-        // Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, BSIGROUP, 0, {} };
+        m_request = createGroupRequest(BSIGROUP);
         break;
-    }
     case Commands::C_ReqStartup:
     {
         // Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, STARTUPGROUP, 0, {} };
@@ -116,6 +114,11 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
     return m_request;
 }
 
+QByteArray Iec104RequestParser::getNextContinueCommand() noexcept
+{
+    return QByteArray {};
+};
+
 QByteArray Iec104RequestParser::createGroupRequest(const quint32 groupNum)
 {
     ASDU asdu(m_baseStationAddress);
@@ -126,23 +129,6 @@ QByteArray Iec104RequestParser::createGroupRequest(const quint32 groupNum)
     request.prepend(apci.toByteArray().value_or(QByteArray {}));
     return request;
 }
-
-QByteArray Iec104RequestParser::createASDUPrefix(const Iec104::MessageDataType type, const quint32 address)
-{
-    QByteArray asdu;
-    asdu.append(std_ext::to_underlying(type));
-    asdu.append(QByteArrayLiteral("\x01\x06\x00"));
-    asdu.append(StdFunc::toByteArray(m_baseStationAddress));
-    asdu.append(address);
-    asdu.append(address >> 8);
-    asdu.append(address >> 16);
-    return asdu;
-}
-
-QByteArray Iec104RequestParser::getNextContinueCommand() noexcept
-{
-    return QByteArray {};
-};
 
 QByteArray Iec104RequestParser::createStartMessage() const noexcept
 {
@@ -160,6 +146,14 @@ QByteArray Iec104RequestParser::createStopMessage() const noexcept
     apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
     apci.m_ctrlBlock.m_func = ControlFunc::StopDataTransfer;
     apci.m_ctrlBlock.m_arg = ControlArg::Activate;
+    auto bytes = apci.toByteArray();
+    return bytes.value_or(QByteArray {});
+}
+
+QByteArray Iec104RequestParser::createSupervisoryMessage() const noexcept
+{
+    APCI apci(*m_ctrlBlock);
+    apci.m_ctrlBlock.m_format = FrameFormat::Supervisory;
     auto bytes = apci.toByteArray();
     return bytes.value_or(QByteArray {});
 }

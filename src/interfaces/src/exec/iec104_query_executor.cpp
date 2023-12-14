@@ -15,6 +15,7 @@ Iec104QueryExecutor::Iec104QueryExecutor(RequestQueue &queue, const IEC104Connec
     , m_params(params)
     , m_t2Timer(new QTimer(this))
     , m_t3Timer(new QTimer(this))
+    , m_acknowledgeReceived(0)
 {
     m_t2Timer->setSingleShot(true);
     m_t2Timer->setInterval(m_params.t2);
@@ -47,11 +48,14 @@ void Iec104QueryExecutor::closeConnection() noexcept
 
 void Iec104QueryExecutor::writeToInterface(const QByteArray &request, bool isCounted) noexcept
 {
-    DefaultQueryExecutor::writeToInterface(request);
-    if (isCounted)
+    if (!request.isEmpty())
     {
-        ++(m_ctrlBlock->m_sent);
-        checkControlBlock();
+        DefaultQueryExecutor::writeToInterface(request);
+        if (isCounted)
+        {
+            ++(m_ctrlBlock->m_sent);
+            checkControlBlock();
+        }
     }
 }
 
@@ -81,10 +85,17 @@ void Iec104QueryExecutor::receiveDataFromInterface(const QByteArray &response)
 
 void Iec104QueryExecutor::checkControlBlock() noexcept
 {
-    if (m_ctrlBlock->m_received >= m_params.w)
+    auto triggerThresholdValue = m_acknowledgeReceived + m_params.w;
+    if (m_ctrlBlock->m_received >= triggerThresholdValue || m_ctrlBlock->m_received == controlMax)
     {
-        /// TODO: подумать о логике работы
+        auto supervisoryMessage { getRequestParser()->createSupervisoryMessage() };
+        m_acknowledgeReceived = m_ctrlBlock->m_received;
+        writeToInterface(supervisoryMessage, false);
     }
+    if (m_ctrlBlock->m_received == controlMax)
+        m_ctrlBlock->m_received = 0;
+    if (m_ctrlBlock->m_sent == controlMax)
+        m_ctrlBlock->m_sent = 0;
 }
 
 } // namespace Interface

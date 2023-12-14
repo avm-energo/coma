@@ -1,5 +1,6 @@
 #include "interfaces/types/iec104/asdu.h"
 
+#include <gen/datatypes.h>
 #include <gen/std_ext.h>
 #include <gen/stdfunc.h>
 
@@ -97,6 +98,65 @@ ASDU ASDU::fromByteArray(const QByteArray &data) noexcept
     retVal.m_bsAddress = ((std::uint8_t(data[5]) << 8) | std::uint8_t(data[4]));
     retVal.m_data = data.mid(asduHeaderSize);
     return retVal;
+}
+
+///!------------------------------------------!///
+
+ASDUUnpacker::ASDUUnpacker(const ASDU &asdu) noexcept : m_asdu(asdu)
+{
+}
+
+void ASDUUnpacker::update(const ASDU &newASDU) noexcept
+{
+    m_asdu = newASDU;
+}
+
+void ASDUUnpacker::unpack() const noexcept
+{
+    std::uint32_t objectAdr = 0, index = 0, dataSize = m_asdu.get().m_data.size();
+    const auto &dataRef = m_asdu.get().m_data;
+    bool runningFlag = true;
+    for (auto i = 0; (i < m_asdu.get().m_elements) && runningFlag; ++i)
+    {
+        if ((i == 0) || (m_asdu.get().m_qualifier == StructureQualifier::Sequence))
+        {
+            Q_ASSERT(dataSize >= (index + 3));
+            objectAdr = std::uint8_t(dataRef[index++]);
+            objectAdr |= std::uint8_t(dataRef[index++]) << 8;
+            objectAdr |= std::uint8_t(dataRef[index++]) << 16;
+        }
+        else
+            objectAdr++;
+        switch (m_asdu.get().m_msgType)
+        {
+        case MessageDataType::M_ME_NC_1:
+        {
+            Q_ASSERT(dataSize >= (index + 5));
+            DataTypes::FloatWithTimeStruct signal;
+            signal.sigAdr = objectAdr;
+            signal.sigVal = *reinterpret_cast<const float *>(&dataRef.data()[index]);
+            index += sizeof(float);
+            signal.sigQuality = std::uint8_t(dataRef[index++]);
+            // emit responseSend(signal);
+            break;
+        }
+        case MessageDataType::M_BO_NA_1:
+        {
+            Q_ASSERT(dataSize >= (index + 5));
+            DataTypes::BitStringStruct signal;
+            signal.sigAdr = objectAdr;
+            signal.sigVal = *reinterpret_cast<const std::uint32_t *>(&dataRef.data()[index]);
+            index += sizeof(std::uint32_t);
+            signal.sigQuality = std::uint8_t(dataRef[index++]);
+            // emit responseSend(signal);
+            break;
+        }
+        default:
+            /// TODO: Realise all?
+            runningFlag = false;
+            break;
+        }
+    }
 }
 
 } // namespace Iec104

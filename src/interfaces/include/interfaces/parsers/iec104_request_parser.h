@@ -14,7 +14,6 @@ private:
     quint16 m_baseStationAddress;
 
     QByteArray createGroupRequest(const quint32 groupNum);
-    QByteArray createASDUPrefix(const Iec104::MessageDataType type, const quint32 address);
 
 public:
     explicit Iec104RequestParser(QObject *parent = nullptr);
@@ -27,6 +26,7 @@ public:
 
     QByteArray createStartMessage() const noexcept;
     QByteArray createStopMessage() const noexcept;
+    QByteArray createSupervisoryMessage() const noexcept;
 };
 
 } // namespace Interface

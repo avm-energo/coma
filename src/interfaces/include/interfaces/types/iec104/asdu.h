@@ -154,4 +154,19 @@ public:
     static ASDU fromByteArray(const QByteArray &data) noexcept;
 };
 
+///!------------------------------------------!///
+
+class ASDUUnpacker
+{
+private:
+    std::reference_wrapper<const ASDU> m_asdu;
+
+public:
+    explicit ASDUUnpacker(const ASDU &asdu) noexcept;
+
+    void update(const ASDU &newASDU) noexcept;
+
+    void unpack() const noexcept;
+};
+
 } // namespace Iec104

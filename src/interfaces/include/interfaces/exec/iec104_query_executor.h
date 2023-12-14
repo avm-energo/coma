@@ -20,6 +20,7 @@ private:
     IEC104ConnectionParams m_params;
     QTimer *m_t2Timer;
     QTimer *m_t3Timer;
+    std::uint16_t m_acknowledgeReceived;
 
     /// \brief Приватный конструктор.
     /// \details Создание экземпляров класса доступно только через QueryExecutorFabric.
