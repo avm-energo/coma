@@ -55,8 +55,12 @@ DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queu
     requestParser->updateControlBlock(executor->m_ctrlBlock);
     responseParser->updateControlBlock(executor->m_ctrlBlock);
     requestParser->setBaseStationAddress(settings.bsAddress);
+    // Проверка контрольного блока исполнителем запросов
     QObject::connect(responseParser, &Iec104ResponseParser::needToCheckControlBlock, //
-        executor, &Iec104QueryExecutor::checkControlBlock);
+        executor, &Iec104QueryExecutor::checkControlBlock);                          //
+    // Проверка посылки U-формата исполнителем запросов
+    QObject::connect(responseParser, &Iec104ResponseParser::unnumberedFormatReceived, //
+        executor, &Iec104QueryExecutor::checkUnnumberedFormat);                       //
     executor->setParsers(requestParser, responseParser);
     return executor;
 }

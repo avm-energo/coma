@@ -2,7 +2,7 @@
 
 #include <interfaces/types/common_types.h>
 #include <interfaces/types/iec104/apci.h>
-#include <interfaces/types/iec104/asdu.h>
+#include <interfaces/types/iec104/asdu_unpacker.h>
 
 constexpr quint32 BSIGROUP = 1;
 constexpr quint32 STARTUPGROUP = 2;

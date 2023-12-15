@@ -52,8 +52,12 @@ public:
 public slots:
     /// \brief Слот для принятия от устройства данных асинхронно.
     void receiveDataFromInterface(const QByteArray &response) override;
+
+private slots:
     /// \brief Слот для проверки контрольного блока.
     void checkControlBlock() noexcept;
+    /// \brief Слот для обработки полученного фрейма U-формата.
+    void checkUnnumberedFormat(const Iec104::ControlFunc func, const Iec104::ControlArg arg) noexcept;
 };
 
 } // namespace Interface

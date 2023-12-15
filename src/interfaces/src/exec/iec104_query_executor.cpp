@@ -10,7 +10,7 @@ namespace Interface
 using namespace Iec104;
 
 Iec104QueryExecutor::Iec104QueryExecutor(RequestQueue &queue, const IEC104ConnectionParams params, QObject *parent)
-    : DefaultQueryExecutor(queue, params.t1, parent)
+    : DefaultQueryExecutor(queue, params.t1 * 1000, parent)
     , m_ctrlBlock(std::make_shared<ControlBlock>())
     , m_params(params)
     , m_t2Timer(new QTimer(this))
@@ -18,9 +18,9 @@ Iec104QueryExecutor::Iec104QueryExecutor(RequestQueue &queue, const IEC104Connec
     , m_acknowledgeReceived(0)
 {
     m_t2Timer->setSingleShot(true);
-    m_t2Timer->setInterval(m_params.t2);
+    m_t2Timer->setInterval(m_params.t2 * 1000);
     m_t3Timer->setSingleShot(true);
-    m_t3Timer->setInterval(m_params.t3);
+    m_t3Timer->setInterval(m_params.t3 * 1000);
 }
 
 Iec104ResponseParser *Iec104QueryExecutor::getResponseParser() noexcept
@@ -96,6 +96,27 @@ void Iec104QueryExecutor::checkControlBlock() noexcept
         m_ctrlBlock->m_received = 0;
     if (m_ctrlBlock->m_sent == controlMax)
         m_ctrlBlock->m_sent = 0;
+}
+
+void Iec104QueryExecutor::checkUnnumberedFormat(const ControlFunc func, const ControlArg arg) noexcept
+{
+    switch (func)
+    {
+    case ControlFunc::StartDataTransfer:
+        if (arg == ControlArg::Confirm)
+            run();
+        else
+        {
+            /// TODO: What about this?
+        }
+        break;
+    case ControlFunc::StopDataTransfer:
+        /// TODO
+        break;
+    case ControlFunc::TestFrame:
+        /// TODO
+        break;
+    }
 }
 
 } // namespace Interface

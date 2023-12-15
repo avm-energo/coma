@@ -122,7 +122,7 @@ QByteArray Iec104RequestParser::getNextContinueCommand() noexcept
 QByteArray Iec104RequestParser::createGroupRequest(const quint32 groupNum)
 {
     ASDU asdu(m_baseStationAddress);
-    asdu.setData(groupNum);
+    asdu.setRequestData(groupNum);
     auto request = asdu.toByteArray();
     APCI apci(*m_ctrlBlock, request.size());
     apci.m_ctrlBlock.m_format = FrameFormat::Information;

@@ -142,31 +142,16 @@ public:
     explicit ASDU(const std::uint16_t bsAddress) noexcept;
 
     /// \brief Bitstring.
-    void setData(const uint24 address, const std::uint32_t data) noexcept;
+    void setRequestData(const uint24 address, const std::uint32_t data) noexcept;
     /// \brief Float.
-    void setData(const uint24 address, const float data) noexcept;
+    void setRequestData(const uint24 address, const float data) noexcept;
     /// \brief Single command.
-    void setData(const uint24 address, const bool data) noexcept;
+    void setRequestData(const uint24 address, const bool data) noexcept;
     /// \brief Interrogate group.
-    void setData(const std::uint8_t group) noexcept;
+    void setRequestData(const std::uint8_t group) noexcept;
 
     QByteArray toByteArray() const noexcept;
     static ASDU fromByteArray(const QByteArray &data) noexcept;
-};
-
-///!------------------------------------------!///
-
-class ASDUUnpacker
-{
-private:
-    std::reference_wrapper<const ASDU> m_asdu;
-
-public:
-    explicit ASDUUnpacker(const ASDU &asdu) noexcept;
-
-    void update(const ASDU &newASDU) noexcept;
-
-    void unpack() const noexcept;
 };
 
 } // namespace Iec104

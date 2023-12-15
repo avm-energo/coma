@@ -128,7 +128,7 @@ void DefaultQueryExecutor::writeToLog(const QByteArray &ba, const Direction dir)
 
 void DefaultQueryExecutor::logFromParser(const QString &message, const LogLevel level)
 {
-    m_log.logging(message, level);
+    m_log.logging("DeviceQueryExecutor: " + message, level);
 }
 
 void DefaultQueryExecutor::exec()

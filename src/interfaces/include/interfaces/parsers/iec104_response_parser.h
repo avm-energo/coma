@@ -13,13 +13,13 @@ private:
     SharedControlBlock m_ctrlBlock;
     std::vector<QByteArray> m_responses;
     Iec104::APCI m_currentAPCI;
-    Iec104::ASDU m_currentASDU;
+    Iec104::ASDUUnpacker m_unpacker;
 
     /// \brief Используется для разбивания буффера на
     /// массив байт каждого ответа от устройства.
     void splitBuffer() noexcept;
     void apciParseErrorHandle(const Iec104::ApciError err) noexcept;
-    void parseInfoFormat() noexcept;
+    void parseInfoFormat(const QByteArray &response) noexcept;
     void parseSupervisoryFormat() noexcept;
     void parseUnnumberedFormat() noexcept;
 

@@ -7,8 +7,10 @@ namespace Interface
 
 using namespace Iec104;
 
-Iec104ResponseParser::Iec104ResponseParser(QObject *parent) : BaseResponseParser(parent)
+Iec104ResponseParser::Iec104ResponseParser(QObject *parent) : BaseResponseParser(parent), m_unpacker(this)
 {
+    connect(&m_unpacker, &ASDUUnpacker::unpacked,   //
+        this, &BaseResponseParser::responseParsed); //
     m_responses.reserve(1024);
 }
 
@@ -26,7 +28,7 @@ void Iec104ResponseParser::apciParseErrorHandle(const Iec104::ApciError err) noe
 bool Iec104ResponseParser::isCompleteResponse()
 {
     if (m_responseBuffer.size() >= apciSize)
-        if (m_responseBuffer.size() >= std::uint8_t(m_responseBuffer[2]))
+        if (m_responseBuffer.size() >= (std::uint8_t(m_responseBuffer[1]) + 2))
             return true;
     return false;
 }
@@ -62,7 +64,7 @@ void Iec104ResponseParser::splitBuffer() noexcept
 {
     while (isCompleteResponse())
     {
-        auto responseSize = std::uint8_t(m_responseBuffer[2]);
+        auto responseSize = std::uint8_t(m_responseBuffer[1]) + 2;
         m_responses.emplace_back(m_responseBuffer.left(responseSize));
         m_responseBuffer.remove(0, responseSize);
     }
@@ -73,16 +75,14 @@ void Iec104ResponseParser::parse()
     splitBuffer();
     for (const auto &response : m_responses)
     {
-        emit needToLog(QString("-> %1").arg(QString(response.toHex())), LogLevel::Info);
+        emit needToLog(QString("<- %1").arg(QString(response.toHex())), LogLevel::Info);
         auto validationResult = validate(response);
         if (validationResult == Error::Msg::NoError)
         {
             switch (m_currentAPCI.m_ctrlBlock.m_format)
             {
             case FrameFormat::Information:
-                ++m_ctrlBlock->m_received;
-                emit needToCheckControlBlock();
-                parseInfoFormat();
+                parseInfoFormat(response);
                 break;
             case FrameFormat::Supervisory:
                 parseSupervisoryFormat();
@@ -101,16 +101,12 @@ void Iec104ResponseParser::parse()
     m_responses.clear();
 }
 
-void Iec104ResponseParser::parseInfoFormat() noexcept
+void Iec104ResponseParser::parseInfoFormat(const QByteArray &response) noexcept
 {
-    auto asdu = ASDU::fromByteArray(m_responseBuffer.mid(apciSize, m_currentAPCI.m_asduSize));
-    switch (asdu.m_msgType)
-    {
-    /// TODO: Handle all message data types
-    default:
-        qDebug() << asdu.m_data;
-        break;
-    }
+    ++m_ctrlBlock->m_received;
+    emit needToCheckControlBlock();
+    auto asdu = ASDU::fromByteArray(response.mid(apciSize, m_currentAPCI.m_asduSize));
+    m_unpacker.unpack(asdu);
 }
 
 void Iec104ResponseParser::parseSupervisoryFormat() noexcept
