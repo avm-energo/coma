@@ -119,4 +119,10 @@ void Iec104QueryExecutor::checkUnnumberedFormat(const ControlFunc func, const Co
     }
 }
 
+void Iec104QueryExecutor::requestedDataReceived() noexcept
+{
+    m_timeoutTimer->stop();
+    run(); // execute next query from queue
+}
+
 } // namespace Interface

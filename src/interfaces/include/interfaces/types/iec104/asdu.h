@@ -138,19 +138,23 @@ public:
     std::uint16_t m_bsAddress;
     QByteArray m_data;
 
+    /// \brief Default c-tor.
     explicit ASDU() noexcept;
+    /// \brief C-tor with params.
     explicit ASDU(const std::uint16_t bsAddress) noexcept;
 
-    /// \brief Bitstring.
+    /// \brief Writing a bitstring data.
     void setRequestData(const uint24 address, const std::uint32_t data) noexcept;
-    /// \brief Float.
+    /// \brief Writing a float data.
     void setRequestData(const uint24 address, const float data) noexcept;
-    /// \brief Single command.
+    /// \brief Writing a single command data.
     void setRequestData(const uint24 address, const bool data) noexcept;
-    /// \brief Interrogate group.
+    /// \brief Requesting an interrogate group.
     void setRequestData(const std::uint8_t group) noexcept;
 
+    /// \brief Converting the ASDU object to a byte array.
     QByteArray toByteArray() const noexcept;
+    /// \brief Converting the received byte array to an ASDU object.
     static ASDU fromByteArray(const QByteArray &data) noexcept;
 };
 

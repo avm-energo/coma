@@ -111,13 +111,27 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
     default:
         qCritical() << "Undefined command: " << cmd.command;
     }
+
+    // debug purposes
+    if (m_request.isEmpty())
+    {
+        // qWarning() << Error::Msg::NullDataError;
+        m_isExceptionalSituation = true;
+    }
+
     return m_request;
 }
 
 QByteArray Iec104RequestParser::getNextContinueCommand() noexcept
 {
     return QByteArray {};
-};
+}
+
+void Iec104RequestParser::exceptionalAction(const CommandStruct &command) noexcept
+{
+    Q_UNUSED(command);
+    m_isExceptionalSituation = false;
+}
 
 QByteArray Iec104RequestParser::createGroupRequest(const quint32 groupNum)
 {

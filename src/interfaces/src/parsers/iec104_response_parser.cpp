@@ -9,8 +9,10 @@ using namespace Iec104;
 
 Iec104ResponseParser::Iec104ResponseParser(QObject *parent) : BaseResponseParser(parent), m_unpacker(this)
 {
-    connect(&m_unpacker, &ASDUUnpacker::unpacked,   //
-        this, &BaseResponseParser::responseParsed); //
+    connect(&m_unpacker, &ASDUUnpacker::unpacked,              //
+        this, &BaseResponseParser::responseParsed);            //
+    connect(&m_unpacker, &ASDUUnpacker::unpackedObjectAddress, //
+        this, &Iec104ResponseParser::responseAddressReceived); //
     m_responses.reserve(1024);
 }
 
@@ -118,6 +120,18 @@ void Iec104ResponseParser::parseUnnumberedFormat() noexcept
 {
     /// TODO: Send data to request parser?
     emit unnumberedFormatReceived(m_currentAPCI.m_ctrlBlock.m_func, m_currentAPCI.m_ctrlBlock.m_arg);
+}
+
+void Iec104ResponseParser::responseAddressReceived(const std::uint32_t addr) noexcept
+{
+    if (m_request.arg1.canConvert<std::uint32_t>())
+    {
+        auto requestedAddr = m_request.arg1.value<std::uint32_t>();
+        if (requestedAddr == addr)
+            emit requestedDataReceived();
+    }
+    else
+        emit requestedDataReceived();
 }
 
 } // namespace Interface

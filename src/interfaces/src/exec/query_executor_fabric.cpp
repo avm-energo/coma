@@ -61,6 +61,9 @@ DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queu
     // Проверка посылки U-формата исполнителем запросов
     QObject::connect(responseParser, &Iec104ResponseParser::unnumberedFormatReceived, //
         executor, &Iec104QueryExecutor::checkUnnumberedFormat);                       //
+    // Обработка состояния, когда запрошенные данные получены
+    QObject::connect(responseParser, &Iec104ResponseParser::requestedDataReceived, //
+        executor, &Iec104QueryExecutor::requestedDataReceived);                    //
     executor->setParsers(requestParser, responseParser);
     return executor;
 }

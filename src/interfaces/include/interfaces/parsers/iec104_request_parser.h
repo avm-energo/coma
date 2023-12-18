@@ -23,6 +23,7 @@ public:
 
     QByteArray parse(const CommandStruct &cmd) override;
     QByteArray getNextContinueCommand() noexcept override;
+    void exceptionalAction(const CommandStruct &command) noexcept override;
 
     QByteArray createStartMessage() const noexcept;
     QByteArray createStopMessage() const noexcept;

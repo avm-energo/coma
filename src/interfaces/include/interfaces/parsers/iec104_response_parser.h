@@ -6,6 +6,7 @@
 namespace Interface
 {
 
+/// \brief Класс парсера ответов от устройства по протоколу IEC-60870-5-104.
 class Iec104ResponseParser final : public BaseResponseParser
 {
     Q_OBJECT
@@ -15,27 +16,50 @@ private:
     Iec104::APCI m_currentAPCI;
     Iec104::ASDUUnpacker m_unpacker;
 
-    /// \brief Используется для разбивания буффера на
+    /// \brief Используется для разбиения буффера входных данных на
     /// массив байт каждого ответа от устройства.
     void splitBuffer() noexcept;
+    /// \brief Функция для обработки ошибок парсинга APCI входящих ответов.
     void apciParseErrorHandle(const Iec104::ApciError err) noexcept;
+
+    /// \brief Парсинг данных в I-формате.
     void parseInfoFormat(const QByteArray &response) noexcept;
+    /// \brief Парсинг данных в S-формате.
     void parseSupervisoryFormat() noexcept;
+    /// \brief Парсинг данных в U-формате.
     void parseUnnumberedFormat() noexcept;
 
-public:
-    explicit Iec104ResponseParser(QObject *parent = nullptr);
-
-    void updateControlBlock(const SharedControlBlock &newControlBlock) noexcept;
-
-    bool isCompleteResponse() override;
     Error::Msg validate() override;
     Error::Msg validate(const QByteArray &response) noexcept;
+
+public:
+    /// \brief Конструктор по-умолчанию.
+    explicit Iec104ResponseParser(QObject *parent = nullptr);
+    /// \brief Сеттер для контрольного блока.
+    void updateControlBlock(const SharedControlBlock &newControlBlock) noexcept;
+
+    /// \brief Проверка размера ответа, полученного от устройства.
+    bool isCompleteResponse() override;
+    /// \brief Функция парсинга полученного от устройства ответа на запрос.
     void parse() override;
 
+private slots:
+    /// \brief Слот для проверки адреса полученного объекта.
+    /// \details Если адрес полученного объекта совпадает с адресом
+    /// запрашиваемого объекта, то вызывается сигнал requestedDataReceived.
+    /// \see requestedDataReceived.
+    void responseAddressReceived(const std::uint32_t addr) noexcept;
+
 signals:
+    /// \brief Сигнал для информамирования исполнителя
+    /// запросов о пришедешей информации в U-формате.
     void unnumberedFormatReceived(const Iec104::ControlFunc func, const Iec104::ControlArg arg);
+    /// \brief Сигнал для информирования исполнителя запросов
+    /// о необходимости проверки контрольного блока APCI.
     void needToCheckControlBlock();
+    /// \brief Сигнал для информирования исполнителя запросов
+    /// о том, что запрошенные данные получены.
+    void requestedDataReceived();
 };
 
 } // namespace Interface

@@ -58,6 +58,8 @@ private slots:
     void checkControlBlock() noexcept;
     /// \brief Слот для обработки полученного фрейма U-формата.
     void checkUnnumberedFormat(const Iec104::ControlFunc func, const Iec104::ControlArg arg) noexcept;
+    /// \brief Слот для обработки сигнала от парсера ответов, когда запрошенные данные получены.
+    void requestedDataReceived() noexcept;
 };
 
 } // namespace Interface

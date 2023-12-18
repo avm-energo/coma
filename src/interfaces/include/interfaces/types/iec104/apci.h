@@ -28,7 +28,7 @@ public:
 
     /// \brief Converting the APCI object to a byte array.
     tl::expected<QByteArray, ApciError> toByteArray() const noexcept;
-    /// \brief Converting the received byte array to a APCI object.
+    /// \brief Converting the received byte array to an APCI object.
     static tl::expected<APCI, ApciError> fromByteArray(const QByteArray &data) noexcept;
 };
 
