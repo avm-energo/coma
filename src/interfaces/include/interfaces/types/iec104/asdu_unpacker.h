@@ -6,6 +6,12 @@
 namespace Iec104
 {
 
+struct Interrogate
+{
+    std::uint32_t addr;
+    std::uint8_t group;
+};
+
 /// \brief The unpacker adapter class for ASDU objects.
 class ASDUUnpacker : public QObject
 {
@@ -18,6 +24,7 @@ private:
     void parseFloat(const QByteArray &data) noexcept;
     /// \brief Parsing a bitstring data from the received ASDU object.
     void parseBitString(const QByteArray &data) noexcept;
+    void parseInterrogate(const QByteArray &data) noexcept;
 
 public:
     /// \brief Default c-tor.
@@ -31,8 +38,6 @@ public:
 signals:
     /// \brief Signal for sending an unpacked data from the received ASDU object.
     void unpacked(const Interface::DeviceResponse &data);
-    /// \brief Signal for sending the unpacked object address.
-    void unpackedObjectAddress(const std::uint32_t address);
 };
 
 } // namespace Iec104

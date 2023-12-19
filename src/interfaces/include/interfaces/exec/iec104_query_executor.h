@@ -35,7 +35,7 @@ private:
     /// \brief Отправка команды Stop data transfer activation.
     void closeConnection() noexcept;
     /// \brief Функция для отправки запроса устройству с подсчётом отправляемых сообщений.
-    void writeToInterface(const QByteArray &request, bool isCounted = true) noexcept;
+    void writeToInterface(const QByteArray &request, bool isCounted = true) noexcept override;
 
 public:
     /// \brief Удалённый конструктор по умолчанию.

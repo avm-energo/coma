@@ -28,6 +28,9 @@ public:
     QByteArray createStartMessage() const noexcept;
     QByteArray createStopMessage() const noexcept;
     QByteArray createSupervisoryMessage() const noexcept;
+
+signals:
+    void currentCommand(const Iec104::Command cmd);
 };
 
 } // namespace Interface

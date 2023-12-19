@@ -14,24 +14,16 @@ constexpr quint32 TIMEGROUP = 15;
 namespace Iec104
 {
 
-enum Commands
+enum class Command : std::uint8_t
 {
-    // New
-    RequestGroup,
+    RequestGroup = 0,
     RequestFile,
-    RequestConfigFile,
+    RequestConfig,
     WriteFile,
-    COM45,
-    COM50,
-    COM51,
-    // Old
-    CM104_REQGROUP,
-    CM104_COM51,
-    CM104_COM45,
-    CM104_COM50,
-    CM104_REQFILE,
-    CM104_REQCONFIGFILE,
-    CM104_WRITEFILE
+    Command45,
+    Command50,
+    Command51,
+    None = std::numeric_limits<std::uint8_t>::max()
 };
 
 }

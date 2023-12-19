@@ -30,11 +30,14 @@ void ASDUUnpacker::unpack(const ASDU &asdu) noexcept
             m_objAddress++;
         switch (asdu.m_msgType)
         {
+        case MessageDataType::M_BO_NA_1:
+            parseBitString(dataRef);
+            break;
         case MessageDataType::M_ME_NC_1:
             parseFloat(dataRef);
             break;
-        case MessageDataType::M_BO_NA_1:
-            parseBitString(dataRef);
+        case MessageDataType::C_IC_NA_1:
+            parseInterrogate(dataRef);
             break;
         default:
             /// TODO: Realise all?
@@ -49,23 +52,6 @@ void ASDUUnpacker::stopUnpacking() noexcept
     m_isRunning = false;
 }
 
-void ASDUUnpacker::parseFloat(const QByteArray &data) noexcept
-{
-    constexpr auto parsedDataSize = sizeof(float) + sizeof(std::uint8_t);
-    if (m_dataSize >= (m_index + parsedDataSize))
-    {
-        DataTypes::FloatStruct signal;
-        signal.sigAdr = m_objAddress;
-        signal.sigVal = *reinterpret_cast<const float *>(&data.data()[m_index]);
-        m_index += sizeof(float);
-        signal.sigQuality = std::uint8_t(data[m_index++]);
-        emit unpackedObjectAddress(m_objAddress);
-        emit unpacked(signal);
-    }
-    else
-        stopUnpacking();
-}
-
 void ASDUUnpacker::parseBitString(const QByteArray &data) noexcept
 {
     constexpr auto parsedDataSize = sizeof(std::uint32_t) + sizeof(std::uint8_t);
@@ -76,8 +62,37 @@ void ASDUUnpacker::parseBitString(const QByteArray &data) noexcept
         signal.sigVal = *reinterpret_cast<const std::uint32_t *>(&data.data()[m_index]);
         m_index += sizeof(std::uint32_t);
         signal.sigQuality = std::uint8_t(data[m_index++]);
-        emit unpackedObjectAddress(m_objAddress);
         emit unpacked(signal);
+    }
+    else
+        stopUnpacking();
+}
+
+void ASDUUnpacker::parseFloat(const QByteArray &data) noexcept
+{
+    constexpr auto parsedDataSize = sizeof(float) + sizeof(std::uint8_t);
+    if (m_dataSize >= (m_index + parsedDataSize))
+    {
+        DataTypes::FloatStruct signal;
+        signal.sigAdr = m_objAddress;
+        signal.sigVal = *reinterpret_cast<const float *>(&data.data()[m_index]);
+        m_index += sizeof(float);
+        signal.sigQuality = std::uint8_t(data[m_index++]);
+        emit unpacked(signal);
+    }
+    else
+        stopUnpacking();
+}
+
+void ASDUUnpacker::parseInterrogate(const QByteArray &data) noexcept
+{
+    constexpr auto parsedDataSize = sizeof(std::uint8_t);
+    if (m_dataSize >= (m_index + parsedDataSize))
+    {
+        Interrogate signal;
+        signal.addr = m_objAddress;
+        signal.group = std::uint8_t(data[m_index++]);
+        Q_UNUSED(signal);
     }
     else
         stopUnpacking();

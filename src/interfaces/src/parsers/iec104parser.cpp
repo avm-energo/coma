@@ -37,9 +37,22 @@
 
 namespace old
 {
+
+// Old
+enum Commands
+{
+    CM104_REQGROUP,
+    CM104_COM51,
+    CM104_COM45,
+    CM104_COM50,
+    CM104_REQFILE,
+    CM104_REQCONFIGFILE,
+    CM104_WRITEFILE
+};
+
 struct CommandStruct
 {
-    Iec104::Commands cmd;
+    Commands cmd;
     quint32 address;
     float flarg;
     bool blarg;

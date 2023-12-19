@@ -7,12 +7,11 @@ namespace Interface
 
 using namespace Iec104;
 
-Iec104ResponseParser::Iec104ResponseParser(QObject *parent) : BaseResponseParser(parent), m_unpacker(this)
+Iec104ResponseParser::Iec104ResponseParser(QObject *parent)
+    : BaseResponseParser(parent), m_currentCommand(Command::None), m_unpacker(this)
 {
-    connect(&m_unpacker, &ASDUUnpacker::unpacked,              //
-        this, &BaseResponseParser::responseParsed);            //
-    connect(&m_unpacker, &ASDUUnpacker::unpackedObjectAddress, //
-        this, &Iec104ResponseParser::responseAddressReceived); //
+    connect(&m_unpacker, &ASDUUnpacker::unpacked,   //
+        this, &BaseResponseParser::responseParsed); //
     m_responses.reserve(1024);
 }
 
@@ -59,6 +58,31 @@ Error::Msg Iec104ResponseParser::validate(const QByteArray &response) noexcept
     {
         apciParseErrorHandle(parseProduct.error());
         return Error::WrongFormatError;
+    }
+}
+
+void Iec104ResponseParser::verify(const Iec104::ASDU &asdu) noexcept
+{
+    /// TODO: shitty code
+    static bool confirm = false, terminate = false;
+    switch (m_currentCommand)
+    {
+    case Command::RequestGroup:
+        if (asdu.m_cause == CauseOfTransmission::ActivationConfirm)
+            confirm = true;
+        else if (asdu.m_cause == CauseOfTransmission::ActivationTermination)
+            terminate = true;
+        if (confirm && terminate)
+        {
+            confirm = false;
+            terminate = false;
+            m_currentCommand = Command::None;
+            emit requestedDataReceived();
+        }
+        break;
+    default:
+        /// TODO: don't ignore other commands
+        break;
     }
 }
 
@@ -109,6 +133,7 @@ void Iec104ResponseParser::parseInfoFormat(const QByteArray &response) noexcept
     emit needToCheckControlBlock();
     auto asdu = ASDU::fromByteArray(response.mid(apciSize, m_currentAPCI.m_asduSize));
     m_unpacker.unpack(asdu);
+    verify(asdu);
 }
 
 void Iec104ResponseParser::parseSupervisoryFormat() noexcept
@@ -122,16 +147,9 @@ void Iec104ResponseParser::parseUnnumberedFormat() noexcept
     emit unnumberedFormatReceived(m_currentAPCI.m_ctrlBlock.m_func, m_currentAPCI.m_ctrlBlock.m_arg);
 }
 
-void Iec104ResponseParser::responseAddressReceived(const std::uint32_t addr) noexcept
+void Iec104ResponseParser::receiveCurrentCommand(const Iec104::Command currCommand) noexcept
 {
-    if (m_request.arg1.canConvert<std::uint32_t>())
-    {
-        auto requestedAddr = m_request.arg1.value<std::uint32_t>();
-        if (requestedAddr == addr)
-            emit requestedDataReceived();
-    }
-    else
-        emit requestedDataReceived();
+    m_currentCommand = currCommand;
 }
 
 } // namespace Interface

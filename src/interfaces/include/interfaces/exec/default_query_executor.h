@@ -62,7 +62,7 @@ protected:
     void parseFromQueue() noexcept;
 
     /// \brief Функция для отправки запроса активному интерфейсу.
-    void writeToInterface(const QByteArray &request) noexcept;
+    virtual void writeToInterface(const QByteArray &request, bool isCounted = true) noexcept;
 
     /// \brief Функция для записи данных в лог протокола.
     void writeToLog(const QByteArray &ba, const Direction dir = Direction::NoDirection) noexcept;

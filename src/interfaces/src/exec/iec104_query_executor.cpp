@@ -50,7 +50,7 @@ void Iec104QueryExecutor::writeToInterface(const QByteArray &request, bool isCou
 {
     if (!request.isEmpty())
     {
-        DefaultQueryExecutor::writeToInterface(request);
+        DefaultQueryExecutor::writeToInterface(request, isCounted);
         if (isCounted)
         {
             ++(m_ctrlBlock->m_sent);

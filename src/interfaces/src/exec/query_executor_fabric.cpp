@@ -55,6 +55,9 @@ DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queu
     requestParser->updateControlBlock(executor->m_ctrlBlock);
     responseParser->updateControlBlock(executor->m_ctrlBlock);
     requestParser->setBaseStationAddress(settings.bsAddress);
+    // Парсер запросов отправляет данные в парсер ответов для подтверждения получения
+    QObject::connect(requestParser, &Iec104RequestParser::currentCommand, //
+        responseParser, &Iec104ResponseParser::receiveCurrentCommand);    //
     // Проверка контрольного блока исполнителем запросов
     QObject::connect(responseParser, &Iec104ResponseParser::needToCheckControlBlock, //
         executor, &Iec104QueryExecutor::checkControlBlock);                          //

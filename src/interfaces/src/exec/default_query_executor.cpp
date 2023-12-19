@@ -100,8 +100,9 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
     }
 }
 
-void DefaultQueryExecutor::writeToInterface(const QByteArray &request) noexcept
+void DefaultQueryExecutor::writeToInterface(const QByteArray &request, bool isCounted) noexcept
 {
+    Q_UNUSED(isCounted);
     emit sendDataToInterface(request);
     m_timeoutTimer->start();
     writeToLog(request, Direction::ToDevice);

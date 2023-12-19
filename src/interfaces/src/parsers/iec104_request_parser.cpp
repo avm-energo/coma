@@ -141,6 +141,7 @@ QByteArray Iec104RequestParser::createGroupRequest(const quint32 groupNum)
     APCI apci(*m_ctrlBlock, request.size());
     apci.m_ctrlBlock.m_format = FrameFormat::Information;
     request.prepend(apci.toByteArray().value_or(QByteArray {}));
+    emit currentCommand(Iec104::Command::RequestGroup);
     return request;
 }
 

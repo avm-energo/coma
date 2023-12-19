@@ -14,6 +14,7 @@ private:
     SharedControlBlock m_ctrlBlock;
     std::vector<QByteArray> m_responses;
     Iec104::APCI m_currentAPCI;
+    Iec104::Command m_currentCommand;
     Iec104::ASDUUnpacker m_unpacker;
 
     /// \brief Используется для разбиения буффера входных данных на
@@ -31,6 +32,7 @@ private:
 
     Error::Msg validate() override;
     Error::Msg validate(const QByteArray &response) noexcept;
+    void verify(const Iec104::ASDU &asdu) noexcept;
 
 public:
     /// \brief Конструктор по-умолчанию.
@@ -43,12 +45,8 @@ public:
     /// \brief Функция парсинга полученного от устройства ответа на запрос.
     void parse() override;
 
-private slots:
-    /// \brief Слот для проверки адреса полученного объекта.
-    /// \details Если адрес полученного объекта совпадает с адресом
-    /// запрашиваемого объекта, то вызывается сигнал requestedDataReceived.
-    /// \see requestedDataReceived.
-    void responseAddressReceived(const std::uint32_t addr) noexcept;
+public slots:
+    void receiveCurrentCommand(const Iec104::Command currCommand) noexcept;
 
 signals:
     /// \brief Сигнал для информамирования исполнителя
