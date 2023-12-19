@@ -6,6 +6,7 @@
 #include <gen/stdfunc.h>
 #include <interfaces/types/iec104/apci.h>
 #include <interfaces/types/iec104/asdu.h>
+#include <interfaces/types/iec104/asdu_unpacker.h>
 #include <interfaces/types/iec104/control_block.h>
 
 namespace detail
@@ -451,6 +452,39 @@ void TestStdFunc::iec104AsduTest01()
     QCOMPARE(actual.m_originatorAddr, 0);
     QCOMPARE(actual.m_bsAddress, 12);
     QCOMPARE(actual.m_data, QByteArrayLiteral("\x10\x30\x00\xBE\x09\x00"));
+}
+
+void TestStdFunc::iec104AsduUnpackerTest01()
+{
+    using namespace Iec104;
+    // Emulate BSI response from KIV
+    auto response = QByteArrayLiteral(                                                                         //
+        "\x68\x82\x02\x00\x02\x00\x07\x0f\x15\x00\xcd\x00\x01\x00\x00\xa2\x00\x00\x00\x00\x02\x00\x00\x84\x00" //
+        "\x00\x00\x00\x03\x00\x00\x00\x00\x01\x02\x00\x04\x00\x00\x00\x00\x03\x03\x00\x05\x00\x00\x00\x00\x00" //
+        "\x00\x00\x06\x00\x00\x8f\x03\x00\x00\x00\x07\x00\x00\x40\x00\x33\x00\x00\x08\x00\x00\x11\x47\x39\x33" //
+        "\x00\x09\x00\x00\x38\x35\x32\x34\x00\x0a\x00\x00\x30\x60\x53\x21\x00\x0b\x00\x00\x24\x90\x51\x22\x00" //
+        "\x0c\x00\x00\x00\x00\x01\x04\x00\x0d\x00\x00\x28\x30\x22\x22\x00\x0e\x00\x00\xc2\x61\x15\x6d\x00\x0f" //
+        "\x00\x00\x40\x00\x00\x00\x00"                                                                         //
+    );                                                                                                         //
+    auto apciProduct = APCI::fromByteArray(response.left(apciSize));
+    QVERIFY(apciProduct.has_value());
+    auto apci = apciProduct.value();
+    auto asdu = ASDU::fromByteArray(response.mid(apciSize, apci.m_asduSize));
+    QVERIFY(!asdu.m_data.isEmpty());
+    ASDUUnpacker unpacker;
+    QSignalSpy spy(&unpacker, &ASDUUnpacker::unpacked);
+    unpacker.unpack(asdu);
+    std::uint32_t expectedAddress = 1;
+    for (const auto &item : qAsConst(spy))
+    {
+        QVERIFY(item.at(0).canConvert<Interface::DeviceResponse>());
+        auto value { item.at(0).value<Interface::DeviceResponse>() };
+        QVERIFY(std::holds_alternative<DataTypes::BitStringStruct>(value));
+        auto bitstring { std::get<DataTypes::BitStringStruct>(value) };
+        auto actualAddress = bitstring.sigAdr;
+        QCOMPARE(actualAddress, expectedAddress);
+        ++expectedAddress;
+    }
 }
 
 QTEST_GUILESS_MAIN(TestStdFunc)

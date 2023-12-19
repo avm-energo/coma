@@ -58,6 +58,8 @@ private slots:
     void iec104ApciTest02();
 
     void iec104AsduTest01();
+
+    void iec104AsduUnpackerTest01();
 };
 
 #endif // TESTPROTOCOM_H
