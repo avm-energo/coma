@@ -42,17 +42,18 @@ bool ConnectionManager::createConnection(const ConnectStruct &connectionData)
         overloaded {
             [this](const UsbHidSettings &settings) {
                 auto interface = new UsbHidPort(settings);
-                auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->m_queue);
+                auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->getQueue());
                 m_context.init(interface, executor, Strategy::Sync, Qt::DirectConnection);
             },
             [this](const SerialPortSettings &settings) {
                 auto interface = new SerialPort(settings);
-                auto executor = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->m_queue, settings.address);
+                auto executor
+                    = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->getQueue(), settings.address);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const IEC104Settings &settings) {
                 auto interface = new Ethernet(settings);
-                auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->m_queue, settings);
+                auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->getQueue(), settings);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const EmulatorSettings &settings) {
@@ -76,7 +77,7 @@ bool ConnectionManager::createConnection(const ConnectStruct &connectionData)
     m_currentConnection->reqBSI();
     if (m_context.run(m_currentConnection))
     {
-        Connection::setIface(Connection::InterfacePointer { m_currentConnection });
+        Connection::update(Connection::InterfacePointer { m_currentConnection });
         return true;
     }
     else
@@ -110,7 +111,7 @@ void ConnectionManager::breakConnection()
 {
     m_context.reset();
     m_currentConnection = nullptr;
-    Connection::s_connection.reset();
+    Connection::update(nullptr);
     m_isInitialBSIRequest = true;
 }
 

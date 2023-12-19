@@ -222,7 +222,8 @@ bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noe
 
 quint16 ProtocomRequestParser::getBlockByReg(const quint32 regAddr)
 {
-    return Connection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
+    return 0;
+    // return Connection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
 }
 
 QByteArray ProtocomRequestParser::prepareBlock(

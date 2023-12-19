@@ -10,15 +10,6 @@
 #include <interfaces/utils/request_queue.h>
 #include <interfaces/utils/slot_trait.h>
 
-enum INTERVAL
-{
-    RECONNECT = 3000,
-    WAIT = 15000
-};
-
-class BaseInterface;  // Forward declaration
-struct ConnectStruct; // Forward declaration
-
 namespace Interface
 {
 
@@ -35,7 +26,6 @@ class Connection : public QObject
     Q_OBJECT
 
 protected:
-    friend class ConnectionManager;
     using FileFormat = DataTypes::FileFormat;
     RequestQueue m_queue;
 
@@ -46,33 +36,21 @@ public:
     using InterfacePointer = UniquePointer<Connection>;
 
     // protocol settings
-    std::unique_ptr<ProtocolDescription> m_settings;
+    // std::unique_ptr<ProtocolDescription> m_settings;
 
     explicit Connection(QObject *parent = nullptr);
-    ~Connection() {};
 
-    /// Pointer to current interface
-    static Connection *iface()
-    {
-        return s_connection.get();
-    }
+    /// \brief Getter for the current connection.
+    static Connection *iface() noexcept;
+    /// \brief Updating the current connection.
+    static void update(InterfacePointer iface) noexcept;
 
-    /// Creator for interface
-    static void setIface(InterfacePointer iface)
-    {
-        s_connection = std::move(iface);
-    }
-
-    RequestQueue &getQueue() noexcept
-    {
-        return m_queue;
-    }
-
+    RequestQueue &getQueue() noexcept;
     bool supportBSIExt();
 
     // helper methods
-    bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0);
-    ProtocolDescription *settings();
+    // bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0);
+    // ProtocolDescription *settings();
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
@@ -108,7 +86,6 @@ public:
 signals:
     void stateChanged(Interface::State m_state);
     void silentReconnectMode();
-    void wakeUpParser() const;
 
     // Response signals
     // clazy:excludeall=overloaded-signal

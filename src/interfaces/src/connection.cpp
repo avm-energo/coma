@@ -21,30 +21,41 @@ Connection::Connection(QObject *parent) : QObject(parent), m_timeoutTimer(new QT
     qRegisterMetaType<DeviceResponse>();
     m_timeoutTimer->setInterval(MAINTIMEOUT);
     connect(m_timeoutTimer, &QTimer::timeout, this, &Connection::timeout);
-    m_settings = std::unique_ptr<ProtocolDescription>(new ProtocolDescription());
+}
+
+Connection *Connection::iface() noexcept
+{
+    return s_connection.get();
+}
+
+void Connection::update(InterfacePointer iface) noexcept
+{
+    s_connection = std::move(iface);
+}
+
+RequestQueue &Connection::getQueue() noexcept
+{
+    return m_queue;
 }
 
 void Connection::reqAlarms(quint32 sigAdr, quint32 sigCount)
 {
-    if (isValidRegs(sigAdr, sigCount))
-        setToQueue(CommandStruct { Commands::C_ReqAlarms, sigAdr, sigCount });
+    setToQueue(CommandStruct { Commands::C_ReqAlarms, sigAdr, sigCount });
 }
 
 void Connection::reqFloats(quint32 sigAdr, quint32 sigCount)
 {
-    if (isValidRegs(sigAdr, sigCount))
-        setToQueue(CommandStruct { Commands::C_ReqFloats, sigAdr, sigCount });
+    setToQueue(CommandStruct { Commands::C_ReqFloats, sigAdr, sigCount });
 }
 
 void Connection::reqBitStrings(quint32 sigAdr, quint32 sigCount)
 {
-    if (isValidRegs(sigAdr, sigCount))
-        setToQueue(CommandStruct { Commands::C_ReqBitStrings, sigAdr, sigCount });
-    /// TODO: Костыли для протокома, убрать...
-    else if (sigAdr == Regs::bsiStartReg)
+    if (sigAdr == Regs::bsiStartReg)
         reqBSI();
     else if (sigAdr == Regs::bsiExtStartReg)
         reqBSIExt();
+    else
+        setToQueue(CommandStruct { Commands::C_ReqBitStrings, sigAdr, sigCount });
 }
 
 bool Connection::supportBSIExt()
@@ -149,9 +160,9 @@ void Connection::writeCommand(Commands cmd, QVariant value)
 
 void Interface::Connection::writeCommand(Commands cmd, const QVariantList &list)
 {
-    const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
-    if (isValidRegs(start_addr, list.size()))
-        setToQueue(CommandStruct { cmd, list, QVariant() });
+    // const quint16 start_addr = list.first().value<DataTypes::FloatStruct>().sigAdr;
+    // if (isValidRegs(start_addr, list.size()))
+    setToQueue(CommandStruct { cmd, list, QVariant() });
 }
 
 void Interface::Connection::responseHandle(const Interface::DeviceResponse &resp)
@@ -189,29 +200,28 @@ void Connection::timeout()
 void Connection::setToQueue(CommandStruct &&cmd)
 {
     m_queue.addToQueue(std::move(cmd));
-    emit wakeUpParser();
 }
 
 // helper methods
 
-bool Connection::isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command)
-{
-    const auto &st = settings();
-    if (!st->dictionary().contains(sigAdr))
-        return false;
-    const auto val = st->dictionary().value(sigAdr);
-    if (command != 0)
-    {
-        if (command != val.function)
-            return false;
-    }
-    return val.count == sigCount;
-}
+// bool Connection::isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command)
+//{
+//    const auto &st = settings();
+//    if (!st->dictionary().contains(sigAdr))
+//        return false;
+//    const auto val = st->dictionary().value(sigAdr);
+//    if (command != 0)
+//    {
+//        if (command != val.function)
+//            return false;
+//    }
+//    return val.count == sigCount;
+//}
 
-ProtocolDescription *Connection::settings()
-{
-    return m_settings.get();
-}
+// ProtocolDescription *Connection::settings()
+//{
+//    return m_settings.get();
+//}
 
 // ===============================================================================
 // =============================== SYNC METHODS ==================================

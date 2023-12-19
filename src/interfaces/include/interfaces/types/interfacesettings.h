@@ -1,9 +1,9 @@
 #pragma once
 
 #include <interfaces/types/common_types.h>
-#include <interfaces/types/iec104_types.h>
-#include <interfaces/types/modbus_types.h>
-#include <interfaces/types/protocom_types.h>
+//#include <interfaces/types/iec104_types.h>
+//#include <interfaces/types/modbus_types.h>
+//#include <interfaces/types/protocom_types.h>
 
 ///< /brief Базовая группа сигналов для абстрактного протокола: код функции, тип данных, начальный адрес сигнала и
 ///< количество сигналов
@@ -24,7 +24,7 @@ struct BaseGroup
     quint32 count;
 
     BaseGroup() = default;
-    BaseGroup(const quint32 sigAddr, const quint32 sigCount = 0) : startAddr(sigAddr), count(sigCount)
+    BaseGroup(const quint32 sigAddr, const quint32 sigCount) : startAddr(sigAddr), count(sigCount)
     {
     }
 };

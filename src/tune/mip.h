@@ -7,6 +7,8 @@
 #include <gen/stdfunc.h>
 #include <interfaces/types/settingstypes.h>
 
+class BaseInterface;
+
 class Mip : public QObject
 {
     Q_OBJECT

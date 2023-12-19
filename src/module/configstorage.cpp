@@ -70,21 +70,23 @@ void ConfigStorage::hiddenTabDataReceived(const ModuleTypes::HiddenTab &hiddenTa
 
 void ConfigStorage::protocolDescriptionReceived(const AbstractGroup &str)
 {
+    using namespace Interface;
     auto &sigMap = m_settings.getSignals();
     if (sigMap.find(str.sigId) != sigMap.cend())
     {
         auto signal = sigMap.at(str.sigId);
-        ProtocolDescription *descr = Interface::Connection::iface()->settings();
+        // ProtocolDescription *descr = Connection::iface()->settings();
+        ProtocolDescription description;
         switch (str.ifaceType)
         {
         case Interface::IfaceType::USB:
-            descr->addGroup(ProtocomGroup { signal.startAddr, signal.count, str.arg1 });
+            description.addGroup(ProtocomGroup { signal.startAddr, signal.count, str.arg1 });
             break;
         case Interface::IfaceType::RS485:
-            descr->addGroup(ModbusGroup { signal.startAddr, signal.count, str.arg1 });
+            description.addGroup(ModbusGroup { signal.startAddr, signal.count, str.arg1 });
             break;
         case Interface::IfaceType::Ethernet:
-            descr->addGroup(Iec104Group { signal.startAddr, signal.count, str.arg1, str.arg2 });
+            description.addGroup(Iec104Group { signal.startAddr, signal.count, str.arg1, str.arg2 });
             break;
         default:
             break;
