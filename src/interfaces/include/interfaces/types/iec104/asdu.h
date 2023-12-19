@@ -88,28 +88,29 @@ Q_ENUM_NS(Iec104::MessageDataType)
 /// information objects or elements are addressed.
 enum class StructureQualifier : std::uint8_t
 {
-    Sequence = 0, ///< sequence of information objects.
-    Single = 1    ///< single information object.
+    Sequence = 0, ///< Sequence of information objects.
+    Single = 1    ///< Single information object.
 };
 
 /// \brief The confirmation of an activation
 /// requested by a primary application function.
 enum class Confirmation : std::uint8_t
 {
-    Positive = 0, ///< positive confirmation.
-    Negative = 1  ///< negative confirmation.
+    Positive = 0, ///< Positive confirmation.
+    Negative = 1  ///< Negative confirmation.
 };
 
 /// \brief Cause of transmission (COT) is used to control
 /// the routing of messages both on the communication network.
 enum class CauseOfTransmission : std::uint8_t
 {
+    GroupRequest = 0,       ///< Group request.
     Periodic = 1,           ///< Cyclic data.
     Background,             ///< Background scan.
-    Spontaneous,            ///< Spontaneous data (спорадика).
+    Spontaneous = 3,        ///< Spontaneous data (спорадика).
     Initialized,            ///< End of initialization.
     Request,                ///< Read request.
-    Activation,             ///< Command activation.
+    Activation = 6,         ///< Command activation.
     ActivationConfirm,      ///< Confirmation of command activation.
     Deactivation,           ///< Command abortion.
     DeactivationConfirm,    ///< Confirmation of command abortion.

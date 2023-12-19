@@ -68,10 +68,18 @@ void Iec104ResponseParser::verify(const Iec104::ASDU &asdu) noexcept
     switch (m_currentCommand)
     {
     case Command::RequestGroup:
-        if (asdu.m_cause == CauseOfTransmission::ActivationConfirm)
+    {
+        switch (asdu.m_cause)
+        {
+        case CauseOfTransmission::ActivationConfirm:
             confirm = true;
-        else if (asdu.m_cause == CauseOfTransmission::ActivationTermination)
+            break;
+        case CauseOfTransmission::ActivationTermination:
             terminate = true;
+            break;
+        default:
+            break;
+        }
         if (confirm && terminate)
         {
             confirm = false;
@@ -80,6 +88,7 @@ void Iec104ResponseParser::verify(const Iec104::ASDU &asdu) noexcept
             emit requestedDataReceived();
         }
         break;
+    }
     default:
         /// TODO: don't ignore other commands
         break;
