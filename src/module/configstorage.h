@@ -15,13 +15,14 @@ class ConfigStorage : public QObject, public Singleton<ConfigStorage>
     Q_OBJECT
 private:
     ModuleSettings m_settings;
+    ProtocolDescription m_protocol;
 
 public:
     explicit ConfigStorage(token, QObject *parent = nullptr);
     /// \brief Constant getter for module settings.
     const ModuleSettings &getModuleSettings() const;
-    /// \brief Cleaning module settings.
-    void clearModuleSettings();
+    /// \brief Cleaning connected device's settings.
+    void clear();
 
 public slots:
     /// \brief Slot for saving device's signal records.
@@ -42,7 +43,7 @@ public slots:
     /// \brief Slot for saving hidden dialog's tab settings.
     void hiddenTabDataReceived(const ModuleTypes::HiddenTab &hiddenTab);
     /// \brief Slot for saving module's protocol groups
-    void protocolDescriptionReceived(const AbstractGroup &str);
+    void protocolGroupReceived(const Protocol::AbstractGroup &group);
 };
 
 #endif // CONFIGSTORAGE_H

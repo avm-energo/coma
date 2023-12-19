@@ -202,27 +202,6 @@ void Connection::setToQueue(CommandStruct &&cmd)
     m_queue.addToQueue(std::move(cmd));
 }
 
-// helper methods
-
-// bool Connection::isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command)
-//{
-//    const auto &st = settings();
-//    if (!st->dictionary().contains(sigAdr))
-//        return false;
-//    const auto val = st->dictionary().value(sigAdr);
-//    if (command != 0)
-//    {
-//        if (command != val.function)
-//            return false;
-//    }
-//    return val.count == sigCount;
-//}
-
-// ProtocolDescription *Connection::settings()
-//{
-//    return m_settings.get();
-//}
-
 // ===============================================================================
 // =============================== SYNC METHODS ==================================
 // ===============================================================================

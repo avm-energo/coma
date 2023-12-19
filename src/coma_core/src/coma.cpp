@@ -184,6 +184,7 @@ void Coma::prepareDialogs()
                 "Проверьте журнал сообщений.\n"
                 "Доступны минимальные функции.");
         }
+        /// TODO: Update connection protocol settings
     }
     AlarmW->configure();
     mDlgManager->setupUI(mAppConfig, size());
@@ -538,7 +539,7 @@ void Coma::disconnectAndClear()
         BdaTimer->stop();
         AlarmW->clear();
         mDlgManager->clearDialogs();
-        ConfigStorage::GetInstance().clearModuleSettings();
+        ConfigStorage::GetInstance().clear();
         s2dataManager->clear();
         Board::GetInstance().reset();
         connectionManager->breakConnection();

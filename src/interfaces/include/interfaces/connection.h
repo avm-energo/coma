@@ -6,7 +6,6 @@
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/common_types.h>
-#include <interfaces/types/interfacesettings.h>
 #include <interfaces/utils/request_queue.h>
 #include <interfaces/utils/slot_trait.h>
 
@@ -35,9 +34,6 @@ public:
     /// multiple times in runtime
     using InterfacePointer = UniquePointer<Connection>;
 
-    // protocol settings
-    // std::unique_ptr<ProtocolDescription> m_settings;
-
     explicit Connection(QObject *parent = nullptr);
 
     /// \brief Getter for the current connection.
@@ -47,10 +43,6 @@ public:
 
     RequestQueue &getQueue() noexcept;
     bool supportBSIExt();
-
-    // helper methods
-    // bool isValidRegs(const quint32 sigAdr, const quint32 sigCount, const quint32 command = 0);
-    // ProtocolDescription *settings();
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
