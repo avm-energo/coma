@@ -107,12 +107,12 @@ void TrendViewDialog::addSig(QString signame)
 
     if (signalOscPropertiesMap.value(signame).type == ST_DIGITAL)
     {
-        auto digitalcount = visibleSignalOscDescriptionSize(ST_DIGITAL);
-        if (digitalcount >= MAXGRAPHSPERPLOT)
-        {
-            PlotOverloadMessage(scw, signame);
-            return;
-        }
+        // auto digitalcount = visibleSignalOscDescriptionSize(ST_DIGITAL);
+        // if (digitalcount >= MAXGRAPHSPERPLOT)
+        //{
+        //    PlotOverloadMessage(scw, signame);
+        //    return;
+        //}
 
         scw->setChecked(signame, true);
         auto graph = signalOscPropertiesMap.value(signame).graph;
@@ -146,11 +146,11 @@ void TrendViewDialog::addSig(QString signame)
     else if (signalOscPropertiesMap.value(signame).type == ST_ANALOG)
     {
         auto analogcount = visibleSignalOscDescriptionSize(ST_ANALOG);
-        if (analogcount >= MAXGRAPHSPERPLOT)
-        {
-            PlotOverloadMessage(scw, signame);
-            return;
-        }
+        // if (analogcount >= MAXGRAPHSPERPLOT)
+        //{
+        //    PlotOverloadMessage(scw, signame);
+        //    return;
+        //}
 
         scw->setChecked(signame, true);
         auto graph = signalOscPropertiesMap.value(signame).graph;
