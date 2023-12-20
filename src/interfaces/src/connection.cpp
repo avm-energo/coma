@@ -17,9 +17,9 @@ Connection::ConnectionPointer Connection::s_connection;
 
 Connection::Connection(QObject *parent) : QObject(parent), m_timeoutTimer(new QTimer(this))
 {
-    qRegisterMetaType<State>();
-    qRegisterMetaType<DeviceResponse>();
-    qRegisterMetaType<ProtocolDescription>();
+    // qRegisterMetaType<State>();
+    // qRegisterMetaType<DeviceResponse>();
+    // qRegisterMetaType<ProtocolDescription>();
     m_timeoutTimer->setInterval(MAINTIMEOUT);
     connect(m_timeoutTimer, &QTimer::timeout, this, &Connection::timeout);
 }

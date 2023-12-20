@@ -1,10 +1,5 @@
-#ifndef CONNECTION_H
-#define CONNECTION_H
+#pragma once
 
-#include <QTimer>
-#include <gen/error.h>
-#include <gen/stdfunc.h>
-#include <interfaces/types/common_types.h>
 #include <interfaces/types/protocol_settings.h>
 #include <interfaces/utils/request_queue.h>
 #include <interfaces/utils/slot_trait.h>
@@ -12,7 +7,7 @@
 namespace Interface
 {
 
-namespace Regs
+namespace addr
 {
     constexpr quint16 bsiStartReg = 1;
     constexpr quint16 bsiCountRegs = 15;
@@ -20,30 +15,17 @@ namespace Regs
     constexpr quint16 timeReg = 4600;
 }
 
-class Connection : public QObject
+class AsyncConnection final : public QObject
 {
     Q_OBJECT
-protected:
+private:
     using FileFormat = DataTypes::FileFormat;
     RequestQueue m_queue;
 
 public:
-    /// BaseInterface has its own memory manager
-    /// because it can be created and deleted
-    /// multiple times in runtime
-    using ConnectionPointer = UniquePointer<Connection>;
-
-    explicit Connection(QObject *parent = nullptr);
-
-    /// \brief Getter for the current connection.
-    static Connection *iface() noexcept;
-    /// \brief Updating the current connection.
-    static void update(ConnectionPointer conn) noexcept;
-
+    explicit AsyncConnection(QObject *parent = nullptr);
     RequestQueue &getQueue() noexcept;
     void updateProtocol(const ProtocolDescription &desc) noexcept;
-
-    bool supportBSIExt();
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
@@ -65,16 +47,8 @@ public:
     void reqBitStrings(quint32 addr, quint32 count = 0);
     void setToQueue(CommandStruct &&cmd);
 
-    // ===============================================================================
-    // =============================== SYNC METHODS ==================================
-    // ===============================================================================
-
-    Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
-    Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
-    Error::Msg writeFileSync(S2::FilesEnum filenum, const QByteArray &ba);
-    Error::Msg readS2FileSync(S2::FilesEnum filenum);
-    Error::Msg readFileSync(S2::FilesEnum filenum, QByteArray &ba);
-    Error::Msg reqTimeSync(void *block, quint32 blocksize);
+public slots:
+    void responseHandle(const Interface::DeviceResponse &response);
 
 signals:
     void stateChanged(Interface::State m_state);
@@ -99,22 +73,6 @@ signals:
     void response(const S2::OscInfo &resp);
     void response(const S2::SwitchJourInfo &resp);
 
-private:
-    static ConnectionPointer s_connection;
-    bool m_busy, m_timeout;
-    QByteArray m_byteArrayResult;
-    bool m_responseResult;
-    QTimer *m_timeoutTimer;
-
-public slots:
-    void responseHandle(const Interface::DeviceResponse &response);
-
-private slots:
-    void resultReady(const DataTypes::BlockStruct &result);
-    void responseReceived(const DataTypes::GeneralResponseStruct &response);
-    void fileReceived(const S2::FileStruct &file);
-    void timeout();
-
 public:
     /// \brief Функция для присоединения receiver и его слота к текущему соединению для получения данных.
     /// \details Qt::QueuedConnection используется по умолчанию, чтобы
@@ -126,7 +84,7 @@ public:
         if constexpr (slot_checks<Class, Slot, DeviceResponse>)
         {
             using slot_type = typename slot_trait<Slot>::arg_type;
-            return QObject::connect(this, qOverload<const slot_type &>(&Connection::response), //
+            return QObject::connect(this, qOverload<const slot_type &>(&AsyncConnection::response), //
                 receiver, slot, type);
         }
         else
@@ -148,12 +106,11 @@ public:
     inline MetaConnection connection(Class *receiver, L lambda, Qt::ConnectionType type = Qt::QueuedConnection)
     {
         using l_type = typename lambda_trait<L, DeviceResponse>::arg_type;
-        return QObject::connect(this, qOverload<const l_type &>(&Connection::response), receiver, lambda, type);
+        return QObject::connect(this, qOverload<const l_type &>(&AsyncConnection::response), receiver, lambda, type);
     }
 };
-}
 
-// Q_DECLARE_METATYPE(Interface::State)
-// Q_DECLARE_METATYPE(Interface::CommandStruct)
+} // namespace Interface
 
-#endif // CONNECTION_H
+Q_DECLARE_METATYPE(Interface::State)
+Q_DECLARE_METATYPE(Interface::CommandStruct)
