@@ -13,10 +13,12 @@ private:
     SharedControlBlock m_ctrlBlock;
     quint16 m_baseStationAddress;
 
+    Protocol::Iec104Group getGroupByAddress(const quint32 addr) const noexcept;
     QByteArray createGroupRequest(const quint32 groupNum);
 
 public:
     explicit Iec104RequestParser(QObject *parent = nullptr);
+    void basicProtocolSetup() noexcept override;
 
     void setBaseStationAddress(const quint16 bsAddress) noexcept;
     void updateControlBlock(const SharedControlBlock &newControlBlock) noexcept;

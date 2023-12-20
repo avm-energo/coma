@@ -43,4 +43,18 @@ void ProtocolDescription::clear() noexcept
     m_groups.clear();
 }
 
+void ProtocolDescription::merge(const ProtocolDescription &rhs) noexcept
+{
+    for (auto &node : rhs.m_groups)
+    {
+        auto [_, status] = m_groups.insert(node);
+        if (!status)
+        {
+            auto search = m_groups.find(node.first);
+            if (search != m_groups.end())
+                search->second = node.second;
+        }
+    }
+}
+
 } // namespace Protocol

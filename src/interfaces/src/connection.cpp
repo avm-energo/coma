@@ -13,12 +13,13 @@ namespace Interface
 {
 
 // Static members
-Connection::InterfacePointer Connection::s_connection;
+Connection::ConnectionPointer Connection::s_connection;
 
 Connection::Connection(QObject *parent) : QObject(parent), m_timeoutTimer(new QTimer(this))
 {
     qRegisterMetaType<State>();
     qRegisterMetaType<DeviceResponse>();
+    qRegisterMetaType<ProtocolDescription>();
     m_timeoutTimer->setInterval(MAINTIMEOUT);
     connect(m_timeoutTimer, &QTimer::timeout, this, &Connection::timeout);
 }
@@ -28,9 +29,9 @@ Connection *Connection::iface() noexcept
     return s_connection.get();
 }
 
-void Connection::update(InterfacePointer iface) noexcept
+void Connection::update(ConnectionPointer conn) noexcept
 {
-    s_connection = std::move(iface);
+    s_connection = std::move(conn);
 }
 
 RequestQueue &Connection::getQueue() noexcept
@@ -38,24 +39,29 @@ RequestQueue &Connection::getQueue() noexcept
     return m_queue;
 }
 
-void Connection::reqAlarms(quint32 sigAdr, quint32 sigCount)
+void Connection::updateProtocol(const ProtocolDescription &desc) noexcept
 {
-    setToQueue(CommandStruct { Commands::C_ReqAlarms, sigAdr, sigCount });
+    emit protocolSettingsUpdated(desc);
 }
 
-void Connection::reqFloats(quint32 sigAdr, quint32 sigCount)
+void Connection::reqAlarms(quint32 addr, quint32 count)
 {
-    setToQueue(CommandStruct { Commands::C_ReqFloats, sigAdr, sigCount });
+    setToQueue(CommandStruct { Commands::C_ReqAlarms, addr, count });
 }
 
-void Connection::reqBitStrings(quint32 sigAdr, quint32 sigCount)
+void Connection::reqFloats(quint32 addr, quint32 count)
 {
-    if (sigAdr == Regs::bsiStartReg)
+    setToQueue(CommandStruct { Commands::C_ReqFloats, addr, count });
+}
+
+void Connection::reqBitStrings(quint32 addr, quint32 count)
+{
+    if (addr == Regs::bsiStartReg)
         reqBSI();
-    else if (sigAdr == Regs::bsiExtStartReg)
+    else if (addr == Regs::bsiExtStartReg)
         reqBSIExt();
     else
-        setToQueue(CommandStruct { Commands::C_ReqBitStrings, sigAdr, sigCount });
+        setToQueue(CommandStruct { Commands::C_ReqBitStrings, addr, count });
 }
 
 bool Connection::supportBSIExt()

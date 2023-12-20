@@ -130,7 +130,6 @@ bool Mip::initConnection(const IEC104Settings &settings)
 {
     using namespace DataTypes;
     auto conn = new Connection(this);
-    // conn->settings()->addGroup(Iec104Group { 0, 46, 0, 0 });
     conn->connection(this, //
         [this](const FloatWithTimeStruct &fs) {
             updateData(FloatStruct { fs.sigAdr, fs.sigVal, fs.sigQuality });

@@ -184,7 +184,9 @@ void Coma::prepareDialogs()
                 "Проверьте журнал сообщений.\n"
                 "Доступны минимальные функции.");
         }
-        /// TODO: Update connection protocol settings
+        // Обновляем описание протокола
+        else
+            Connection::iface()->updateProtocol(storage.getProtocolDescription());
     }
     AlarmW->configure();
     mDlgManager->setupUI(mAppConfig, size());

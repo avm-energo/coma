@@ -35,6 +35,12 @@ ProtocomRequestParser::ProtocomRequestParser(QObject *parent) : BaseRequestParse
 {
 }
 
+void ProtocomRequestParser::basicProtocolSetup() noexcept
+{
+    using namespace Protocol;
+    m_protocol.addGroup(ProtocomGroup { 1, 15, 0 }); // BSI request
+}
+
 QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
 {
     m_request.clear();
@@ -47,8 +53,11 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_ReqBitStrings:
     {
         quint8 block = getBlockByReg(cmd.arg1.toUInt());
-        m_request = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::toByteArray(block));
-        m_continueCommand = createContinueCommand(Proto::Commands::ReadBlkData);
+        if (block)
+        {
+            m_request = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::toByteArray(block));
+            m_continueCommand = createContinueCommand(Proto::Commands::ReadBlkData);
+        }
         break;
     }
     // commands without any arguments
@@ -152,13 +161,16 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
             auto vList = cmd.arg1.value<QVariantList>();
             const quint16 start_addr = vList.first().value<DataTypes::FloatStruct>().sigAdr;
             const auto blockNum = static_cast<quint8>(getBlockByReg(start_addr)); // сужающий каст
-            QByteArray tmpba = StdFunc::toByteArray(blockNum);
-            for (const auto &item : vList)
+            if (blockNum)
             {
-                const float value = item.value<DataTypes::FloatStruct>().sigVal;
-                tmpba.append(StdFunc::toByteArray(value));
+                QByteArray tmpba = StdFunc::toByteArray(blockNum);
+                for (const auto &item : vList)
+                {
+                    const float value = item.value<DataTypes::FloatStruct>().sigVal;
+                    tmpba.append(StdFunc::toByteArray(value));
+                }
+                m_request = writeLongData(s_protoCmdMap.at(cmd.command), tmpba);
             }
-            m_request = writeLongData(s_protoCmdMap.at(cmd.command), tmpba);
         }
         break;
     }
@@ -220,10 +232,14 @@ bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noe
     return search != s_protoCmdMap.cend();
 }
 
+Protocol::ProtocomGroup ProtocomRequestParser::getGroupByAddress(const quint32 addr) const noexcept
+{
+    return getGroupsByAddress<Protocol::ProtocomGroup>(addr);
+}
+
 quint16 ProtocomRequestParser::getBlockByReg(const quint32 regAddr)
 {
-    return 0;
-    // return Connection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
+    return getGroupByAddress(regAddr).m_block;
 }
 
 QByteArray ProtocomRequestParser::prepareBlock(

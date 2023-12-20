@@ -13,6 +13,16 @@ Iec104RequestParser::Iec104RequestParser(QObject *parent) : BaseRequestParser(pa
 {
 }
 
+void Iec104RequestParser::basicProtocolSetup() noexcept
+{
+    /// TODO
+}
+
+Protocol::Iec104Group Iec104RequestParser::getGroupByAddress(const quint32 addr) const noexcept
+{
+    return getGroupsByAddress<Protocol::Iec104Group>(addr);
+}
+
 void Iec104RequestParser::setBaseStationAddress(const quint16 bsAddress) noexcept
 {
     m_baseStationAddress = bsAddress;

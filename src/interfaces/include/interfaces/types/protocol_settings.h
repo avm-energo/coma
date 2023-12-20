@@ -64,10 +64,13 @@ public:
     void addGroup(const ProtocolGroup &group) noexcept;
     /// \brief Доступ к внутреннему контейнеру данных.
     const std::map<ui32, ProtocolGroup> &groups() const noexcept;
-    /// \brief Функция для очистки описания протокола связи.
+    /// \brief Очистка описания протокола связи.
     void clear() noexcept;
+    /// \brief Слияние двух объектов описания протокола связи.
+    void merge(const ProtocolDescription &rhs) noexcept;
 };
 
 } // namespace Protocol
 
 using ProtocolDescription = Protocol::ProtocolDescription;
+Q_DECLARE_METATYPE(ProtocolDescription);

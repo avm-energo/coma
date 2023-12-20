@@ -47,6 +47,16 @@ ModbusRequestParser::ModbusRequestParser(QObject *parent) : BaseRequestParser(pa
 {
 }
 
+void ModbusRequestParser::basicProtocolSetup() noexcept
+{
+    /// TODO
+}
+
+Protocol::ModbusGroup ModbusRequestParser::getGroupByAddress(const quint32 addr) const noexcept
+{
+    return getGroupsByAddress<Protocol::ModbusGroup>(addr);
+}
+
 QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
 {
     m_request.clear();

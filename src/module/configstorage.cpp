@@ -4,12 +4,17 @@ ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent)
 {
 }
 
-const ModuleSettings &ConfigStorage::getModuleSettings() const
+const ModuleSettings &ConfigStorage::getModuleSettings() const noexcept
 {
     return m_settings;
 }
 
-void ConfigStorage::clear()
+const ProtocolDescription &ConfigStorage::getProtocolDescription() const noexcept
+{
+    return m_protocol;
+}
+
+void ConfigStorage::clear() noexcept
 {
     m_settings.clear();
     m_protocol.clear();

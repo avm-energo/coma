@@ -82,6 +82,9 @@ bool ConnectionContext::run(Connection *connection)
         connection, &Connection::responseHandle, Qt::DirectConnection);
     QObject::connect(m_iface, &BaseInterface::stateChanged, connection, //
         &Connection::stateChanged, Qt::QueuedConnection);
+    // Обновление описания протокола
+    QObject::connect(connection, &Connection::protocolSettingsUpdated, //
+        m_executor, &DefaultQueryExecutor::receiveProtocolDescription, Qt::QueuedConnection);
 
     if (m_strategy == Strategy::Sync)
     {

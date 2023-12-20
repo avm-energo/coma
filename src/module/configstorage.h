@@ -18,11 +18,15 @@ private:
     ProtocolDescription m_protocol;
 
 public:
+    /// \brief C-tor.
     explicit ConfigStorage(token, QObject *parent = nullptr);
+
     /// \brief Constant getter for module settings.
-    const ModuleSettings &getModuleSettings() const;
+    const ModuleSettings &getModuleSettings() const noexcept;
+    /// \brief Constant getter for protocol description.
+    const ProtocolDescription &getProtocolDescription() const noexcept;
     /// \brief Cleaning connected device's settings.
-    void clear();
+    void clear() noexcept;
 
 public slots:
     /// \brief Slot for saving device's signal records.

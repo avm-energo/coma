@@ -49,6 +49,8 @@ void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponse
         connect(m_responseParser, &BaseResponseParser::needToLog,         //
             this, &DefaultQueryExecutor::logFromParser);                  //
 
+        m_requestParser->basicProtocolSetup(); // basic protocol setup
+
         connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
             setState(ExecutorState::WritingLongData);
             m_timeoutTimer->setInterval(m_timeoutTimer->interval() * 5);
@@ -82,7 +84,7 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
     {
         const auto command(opt.value());
         auto request = m_requestParser->parse(command);
-        if (request.isEmpty() && m_requestParser->isExceptionalSituation())
+        if (request.isEmpty() || m_requestParser->isExceptionalSituation())
             m_requestParser->exceptionalAction(command);
         else
         {
@@ -239,6 +241,11 @@ void DefaultQueryExecutor::receiveDataFromInterface(const QByteArray &response)
         emit responseSend(resp);
         cancelQuery();
     }
+}
+
+void DefaultQueryExecutor::receiveProtocolDescription(const ProtocolDescription &desc) noexcept
+{
+    m_requestParser->updateProtocolSettings(desc);
 }
 
 void DefaultQueryExecutor::cancelQuery()

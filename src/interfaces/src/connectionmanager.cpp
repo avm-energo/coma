@@ -77,7 +77,7 @@ bool ConnectionManager::createConnection(const ConnectStruct &connectionData)
     m_currentConnection->reqBSI();
     if (m_context.run(m_currentConnection))
     {
-        Connection::update(Connection::InterfacePointer { m_currentConnection });
+        Connection::update(Connection::ConnectionPointer { m_currentConnection });
         return true;
     }
     else

@@ -22,6 +22,11 @@ BaseRequestParser::BaseRequestParser(QObject *parent)
 {
 }
 
+void BaseRequestParser::updateProtocolSettings(const ProtocolDescription &desc) noexcept
+{
+    m_protocol.merge(desc);
+}
+
 QByteArray BaseRequestParser::getNextDataSection()
 {
     if (m_longDataSections.size() > 0)

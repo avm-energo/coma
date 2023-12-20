@@ -3,9 +3,9 @@
 
 #include <QTimer>
 #include <gen/error.h>
-#include <gen/logclass.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/common_types.h>
+#include <interfaces/types/protocol_settings.h>
 #include <interfaces/utils/request_queue.h>
 #include <interfaces/utils/slot_trait.h>
 
@@ -23,7 +23,6 @@ namespace Regs
 class Connection : public QObject
 {
     Q_OBJECT
-
 protected:
     using FileFormat = DataTypes::FileFormat;
     RequestQueue m_queue;
@@ -32,16 +31,18 @@ public:
     /// BaseInterface has its own memory manager
     /// because it can be created and deleted
     /// multiple times in runtime
-    using InterfacePointer = UniquePointer<Connection>;
+    using ConnectionPointer = UniquePointer<Connection>;
 
     explicit Connection(QObject *parent = nullptr);
 
     /// \brief Getter for the current connection.
     static Connection *iface() noexcept;
     /// \brief Updating the current connection.
-    static void update(InterfacePointer iface) noexcept;
+    static void update(ConnectionPointer conn) noexcept;
 
     RequestQueue &getQueue() noexcept;
+    void updateProtocol(const ProtocolDescription &desc) noexcept;
+
     bool supportBSIExt();
 
     // commands to send
@@ -59,9 +60,9 @@ public:
 #endif
     void writeCommand(Commands cmd, QVariant value = 0);
     void writeCommand(Commands cmd, const QVariantList &list);
-    void reqAlarms(quint32 sigAdr = 0, quint32 sigCount = 0);
-    void reqFloats(quint32 sigAdr = 0, quint32 sigCount = 0);
-    void reqBitStrings(quint32 sigAdr = 0, quint32 sigCount = 0);
+    void reqAlarms(quint32 addr, quint32 count = 0);
+    void reqFloats(quint32 addr, quint32 count = 0);
+    void reqBitStrings(quint32 addr, quint32 count = 0);
     void setToQueue(CommandStruct &&cmd);
 
     // ===============================================================================
@@ -78,6 +79,7 @@ public:
 signals:
     void stateChanged(Interface::State m_state);
     void silentReconnectMode();
+    void protocolSettingsUpdated(const ProtocolDescription &desc);
 
     // Response signals
     // clazy:excludeall=overloaded-signal
@@ -98,7 +100,7 @@ signals:
     void response(const S2::SwitchJourInfo &resp);
 
 private:
-    static InterfacePointer s_connection;
+    static ConnectionPointer s_connection;
     bool m_busy, m_timeout;
     QByteArray m_byteArrayResult;
     bool m_responseResult;
