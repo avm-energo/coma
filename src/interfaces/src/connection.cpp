@@ -142,7 +142,7 @@ void Connection::writeFirmware(const QByteArray &ba)
 
 void Connection::reqTime()
 {
-    setToQueue(CommandStruct { Commands::C_ReqTime, 0, 0 });
+    setToQueue(CommandStruct { Commands::C_ReqTime, 4600, 1 });
 }
 
 void Connection::writeTime(quint32 time)

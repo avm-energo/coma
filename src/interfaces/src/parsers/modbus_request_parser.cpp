@@ -49,7 +49,9 @@ ModbusRequestParser::ModbusRequestParser(QObject *parent) : BaseRequestParser(pa
 
 void ModbusRequestParser::basicProtocolSetup() noexcept
 {
-    /// TODO
+    using namespace Protocol;
+    m_protocol.addGroup(ModbusGroup { 1, 15, 4 }); // BSI request
+    /// TODO: добавить загрузку ВПО, секретные операции
 }
 
 Protocol::ModbusGroup ModbusRequestParser::getGroupByAddress(const quint32 addr) const noexcept
@@ -66,12 +68,16 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     // Reading coils
     case Commands::C_ReqAlarms:
     {
-        request = Modbus::Request {
-            Modbus::FunctionCode::ReadCoils,  //
-            cmd.arg1.value<quint16>(),        // нехорошо, т.к. кладём туда quint32
-            cmd.arg2.value<quint16>(), false, //
-            {}                                //
-        };
+        const auto addr = cmd.arg1.value<quint16>();
+        const auto func = getGroupByAddress(addr).m_function;
+        if (func)
+        {
+            request = Modbus::Request {
+                Modbus::FunctionCode::ReadCoils, //
+                addr, cmd.arg2.value<quint16>(), //
+                false, {}                        // нехорошо, т.к. кладём туда quint32
+            };
+        }
         break;
     }
     // Reading registers
@@ -81,12 +87,16 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_ReqBSI:
     case Commands::C_ReqBSIExt:
     {
+        const auto addr = cmd.arg1.value<quint16>();
         const quint8 count = (cmd.arg2.value<quint16>() * 2); // startup registers are float (2 ints long)
-        request = Modbus::Request {
-            Modbus::FunctionCode::ReadInputRegister, //
-            cmd.arg1.value<quint16>(),               // нехорошо, т.к. кладём туда quint32
-            count, false, {}                         //
-        };
+        const auto func = getGroupByAddress(addr).m_function;
+        if (func)
+        {
+            request = Modbus::Request {
+                Modbus::FunctionCode::ReadInputRegister, //
+                addr, count, false, {}                   // нехорошо, т.к. кладём туда quint32
+            };
+        }
         break;
     }
     // writing registers

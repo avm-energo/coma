@@ -39,6 +39,7 @@ void ProtocomRequestParser::basicProtocolSetup() noexcept
 {
     using namespace Protocol;
     m_protocol.addGroup(ProtocomGroup { 1, 15, 0 }); // BSI request
+    /// TODO: добавить загрузку ВПО, секретные операции
 }
 
 QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
