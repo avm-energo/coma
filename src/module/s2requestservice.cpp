@@ -6,7 +6,7 @@ S2RequestService::S2RequestService(QObject *parent) : QObject(parent), m_conn(nu
 {
 }
 
-void S2RequestService::updateConnection(Interface::Connection *connection)
+void S2RequestService::updateConnection(Interface::AsyncConnection *connection)
 {
     m_conn = connection;
     if (m_conn != nullptr)

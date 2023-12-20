@@ -1,6 +1,6 @@
 #include "interfaces/connectioncontext.h"
 
-#include <interfaces/connection.h>
+#include <interfaces/conn/async_connection.h>
 #include <interfaces/exec/default_query_executor.h>
 
 namespace Interface
@@ -70,7 +70,7 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
     }
 }
 
-bool ConnectionContext::run(Connection *connection)
+bool ConnectionContext::run(AsyncConnection *connection)
 {
     // Если нет интерфейсы, парсера или в качестве соединения передан
     // nullptr, то прерываем запуск контекста.
@@ -79,11 +79,11 @@ bool ConnectionContext::run(Connection *connection)
 
     // Обмен данными для соединения
     QObject::connect(m_executor, &DefaultQueryExecutor::responseSend, //
-        connection, &Connection::responseHandle, Qt::DirectConnection);
+        connection, &AsyncConnection::responseHandle, Qt::DirectConnection);
     QObject::connect(m_iface, &BaseInterface::stateChanged, connection, //
-        &Connection::stateChanged, Qt::QueuedConnection);
+        &AsyncConnection::stateChanged, Qt::QueuedConnection);
     // Обновление описания протокола
-    QObject::connect(connection, &Connection::protocolSettingsUpdated, //
+    QObject::connect(connection, &AsyncConnection::protocolSettingsUpdated, //
         m_executor, &DefaultQueryExecutor::receiveProtocolDescription, Qt::QueuedConnection);
 
     if (m_strategy == Strategy::Sync)

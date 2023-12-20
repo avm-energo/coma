@@ -10,7 +10,6 @@ set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/interfaces")
 set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 set(files_h
-    "${INCLUDE_PATH}/connection.h"
     "${INCLUDE_PATH}/connectioncontext.h"
     "${INCLUDE_PATH}/connectionmanager.h"
     "${INCLUDE_PATH}/moduledataupdater.h"
@@ -53,7 +52,6 @@ set(files_h
 )
 
 set(files_cpp
-    "${SRC_PATH}/connection.cpp"
     "${SRC_PATH}/connectioncontext.cpp"
     "${SRC_PATH}/connectionmanager.cpp"
     "${SRC_PATH}/moduledataupdater.cpp"

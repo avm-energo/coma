@@ -9,9 +9,11 @@ namespace Interface
 
 class ActiveConnection final : public Singleton<ActiveConnection>
 {
-private:
+public:
     using AsyncConnectionPtr = UniquePointer<AsyncConnection>;
     using SyncConneectionPtr = UniquePointer<SyncConnection>;
+
+private:
     AsyncConnectionPtr m_asyncConnection;
     SyncConneectionPtr m_syncConnection;
 
@@ -30,3 +32,5 @@ public:
 };
 
 } // namespace Interface
+
+using ActiveConnection = Interface::ActiveConnection;

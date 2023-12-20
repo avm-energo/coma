@@ -26,6 +26,12 @@
 // disable all limits checks
 // #define NO_LIMITS
 
+namespace Interface
+{
+class AsyncConnection;
+class SyncConnection;
+}
+
 class AbstractTuneDialog : public QDialog
 {
     Q_OBJECT
@@ -88,6 +94,10 @@ public:
     Error::Msg writeTuneCoefs(bool isUserChoosingRequired);
     Error::Msg readTuneCoefs();
     Error::Msg sendChangedConfig(const std::vector<std::pair<QString, S2::valueType>> &changes) const;
+
+protected:
+    Interface::AsyncConnection *m_async;
+    Interface::SyncConnection *m_sync;
 
 private:
     QMap<int, DataBlock *> AbsBac;

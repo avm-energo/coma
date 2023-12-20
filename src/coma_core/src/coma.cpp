@@ -60,6 +60,7 @@
 #include <gen/logger.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
+#include <interfaces/conn/active_connection.h>
 #include <interfaces/types/settingstypes.h>
 #include <iostream>
 #include <memory>
@@ -186,7 +187,7 @@ void Coma::prepareDialogs()
         }
         // Обновляем описание протокола
         else
-            Connection::iface()->updateProtocol(storage.getProtocolDescription());
+            ActiveConnection::async()->updateProtocol(storage.getProtocolDescription());
     }
     AlarmW->configure();
     mDlgManager->setupUI(mAppConfig, size());
@@ -498,19 +499,21 @@ void Coma::initConnection(const ConnectStruct &st)
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     saveSettings();
-    if (connectionManager->createConnection(st))
-        initInterfaceConnection();
+    auto currentConnection = connectionManager->createConnection(st);
+    if (currentConnection)
+        initInterfaceConnection(currentConnection);
     QApplication::restoreOverrideCursor();
 }
 
-void Coma::initInterfaceConnection()
+void Coma::initInterfaceConnection(AsyncConnection *conn)
 {
+    // Update global storage for current connection
+    ActiveConnection::update(ActiveConnection::AsyncConnectionPtr { conn });
     auto &board = Board::GetInstance();
-    auto conn = Connection::iface();
     conn->connection(&board, &Board::update);
     conn->connection(this, &Coma::update);
     /// TODO: Remove it?
-    connect(conn, &Connection::stateChanged, &board, [&board](const State state) {
+    connect(conn, &AsyncConnection::stateChanged, &board, [&board](const State state) {
         switch (state)
         {
         case State::Run:
@@ -544,6 +547,7 @@ void Coma::disconnectAndClear()
         ConfigStorage::GetInstance().clear();
         s2dataManager->clear();
         Board::GetInstance().reset();
+        ActiveConnection::reset();
         connectionManager->breakConnection();
     }
 }

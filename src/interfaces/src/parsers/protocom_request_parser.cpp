@@ -1,7 +1,7 @@
 #include "interfaces/parsers/protocom_request_parser.h"
 
 #include <gen/files.h>
-#include <interfaces/connection.h>
+#include <gen/stdfunc.h>
 
 namespace Interface
 {
