@@ -33,6 +33,14 @@
 #include <cfloat>
 #endif
 
+// clang-format off
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QRegExpValidator>
+#else
+#include <QRegularExpressionValidator>
+#endif
+// clang-format on
+
 QLineEdit *WDFunc::NewLE2(QWidget *parent, const QString &lename, const QString &letext, const QString &tooltip)
 {
     auto le = new QLineEdit(parent);
@@ -65,7 +73,7 @@ bool WDFunc::SetLEData(QObject *parent, const QString &lename, const QString &le
     le->setText(levalue);
     if (!restring.isEmpty())
     {
-        auto validator = StdFunc::getRegExpValidator(restring, parent);
+        auto validator = getRegExpValidator(restring, parent);
         le->setValidator(validator);
     }
     return true;
@@ -967,6 +975,18 @@ void WDFunc::SortTV(QWidget *parent, const QString &tvname, int column, Qt::Sort
     }
     if (column >= 0)
         tv->sortByColumn(column, sortorder);
+}
+
+QValidator *WDFunc::getRegExpValidator(const QString &pattern, QObject *parent)
+{
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // Qt5 code
+    auto validator = new QRegExpValidator(QRegExp(pattern), parent);
+#else
+    // Qt6 code
+    auto validator = new QRegularExpressionValidator(QRegularExpression(pattern), parent);
+#endif
+    return validator;
 }
 
 QAbstractItemModel *WDFunc::TVModel(QWidget *parent, const QString &tvname)
