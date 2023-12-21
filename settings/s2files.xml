@@ -251,9 +251,17 @@
 		<description>Порты протоколов</description>
 		<type>WORD[4]</type>
 		<widget>
-			<type>QLineEdit</type>
+			<type>DoubleSpinBoxGroup</type>
 			<group>220</group>
-			<string>Порт протокола 104</string>
+			<string>Порты протоколов</string>
+			<string-array>
+				<item>IEC-61850-5-104</item>
+				<item>Modbus TCP</item>
+			</string-array>
+			<count>2</count>
+			<min>1</min>
+			<max>65554</max>
+			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
@@ -2386,6 +2394,18 @@
 			<min>0</min>
 			<max>10000</max>
 			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1045</id>
+		<name>RejDelta</name>
+		<description>Разрешение функции дельта режима</description>
+		<type>BYTE</type>
+		<widget>
+			<type>QCheckBox</type>
+			<group>51</group>
+			<string>Разрешение функции дельта режима</string>
+			<toolTip>Разрешение функции дельта режима</toolTip>
 		</widget>
 	</record>
 	<record>

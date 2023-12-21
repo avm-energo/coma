@@ -448,6 +448,11 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1045</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1050</id>
                 <defaultValue>100.0</defaultValue>
                 <visibility>true</visibility>
