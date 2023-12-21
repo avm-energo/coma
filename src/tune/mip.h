@@ -15,23 +15,26 @@ class Mip : public QObject
 public:
     struct MipDataStruct
     {
-        float reserved;
-        float f[3];          // 1-3
-        float uPh[3];        // 4-6
-        float iPh[3];        // 7-9
-        float iN;            // 10
-        float phyPh[3];      // 11-13
-        float reserved2[3];  // 14-16
-        float temp;          // 17
-        float reserved3;     // 18
-        float uLin[3];       // 19-21
-        float pPh[3];        // 22-24
-        float p;             // 25
-        float qPh[3];        // 26-28
-        float q;             // 29
-        float sPh[3];        // 30-32
-        float s;             // 33
-        float reserved4[13]; // 34-46
+        float reserved1;
+        float freq[3];           // 1-3
+        float uPhase[3];         // 4-6
+        float iPhase[3];         // 7-9
+        float iZero;             // 10
+        float loadAnglePhase[3]; // 11-13
+        float uAnglePhase[3];    // 14-16
+        float temp;              // 17
+        float reserved2;         // 18
+        float uLinearPhase[3];   // 19-21
+        float pPhase[3];         // 22-24
+        float p;                 // 25
+        float qPhase[3];         // 26-28
+        float q;                 // 29
+        float sPhhase[3];        // 30-32
+        float s;                 // 33
+        float phase3LoadAngle;   // 34
+        float reserved3;         // 35
+        float uSequence[3];      // 36-38
+        float iSequence[3];      // 39-41
     };
 
     using MType = Modules::MezzanineBoard;
@@ -63,6 +66,7 @@ private:
 
 signals:
     void finished();
+    void oneMeasurementReceived();
 
 public slots:
     void stop();

@@ -28,6 +28,7 @@ namespace crypto
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
 static constexpr char name[] = "tuneHash";
 }
+
 AbstractTuneDialog::AbstractTuneDialog(S2::Configuration &workConfig, int tuneStep, QWidget *parent)
     : QDialog(parent), config(workConfig), m_async(ActiveConnection::async()), m_sync(ActiveConnection::sync())
 {
@@ -209,7 +210,7 @@ int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
     //    return widgetindex;
 }
 
-void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int msg, bool Visible)
+void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int msg, bool visible)
 {
     QPixmap *pm;
     switch (type)
@@ -224,10 +225,10 @@ void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int ms
         pm = new QPixmap(":/tunes/hr.png");
         break;
     case NoMsg:
-        WDFunc::SetVisible(this, "tunemsg" + QString::number(msg), Visible);
+        WDFunc::SetVisible(this, "tunemsg" + QString::number(msg), visible);
         return;
     }
-    WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), Visible);
+    WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), visible);
     WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
 }
 

@@ -82,7 +82,12 @@ void ProtocomResponseParser::parse()
         break;
     case Proto::Commands::ReadBlkAC:
     case Proto::Commands::ReadBlkDataA:
-        processBlock(m_responseBuffer, addr); // Ожидается что в addr хранится номер блока
+        processDataSection(m_responseBuffer);
+        if (m_isLastSectionReceived)
+        {
+            processBlock(m_longDataBuffer, addr); // Ожидается что в addr хранится номер блока
+            m_longDataBuffer.clear();
+        }
         break;
     // В протокоме данные могут не влезать в одну посылку
     case Proto::Commands::ReadBlkData:

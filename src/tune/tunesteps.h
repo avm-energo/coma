@@ -24,10 +24,11 @@ enum TuneSteps82
 {
     TS82_CHECKMIP = 0,
     TS82_CHECKING = 1,
-    TS82_ADCU = 2,
-    TS82_ADCI = 3,
-    TS82_60TUNING = 4,
-    TS82_20TUNING = 5
+    TS82_ADC = 2,
+    //    TS82_ADCU = 2,
+    //    TS82_ADCI = 3,
+    //    TS82_60TUNING = 4,
+    //    TS82_20TUNING = 5
 };
 
 #endif // TUNESTEPS_H

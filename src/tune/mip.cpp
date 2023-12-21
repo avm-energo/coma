@@ -4,6 +4,7 @@
 #include "../widgets/wd_func.h"
 
 #include <QEventLoop>
+#include <QGroupBox>
 #include <QSettings>
 #include <QThread>
 #include <gen/settings.h>
@@ -20,10 +21,12 @@ Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
 
 void Mip::updateData(const DataTypes::FloatStruct &fl)
 {
-    if (fl.sigAdr < 46)
+    if (fl.sigAdr < 42)
     {
         float *mipdata = reinterpret_cast<float *>(&m_mipData);
         *(mipdata + fl.sigAdr) = fl.sigVal;
+        if (fl.sigAdr == 41)
+            emit oneMeasurementReceived();
     }
     if (m_withGUI)
         m_widget->updateFloatData(fl);
@@ -37,46 +40,64 @@ Mip::MipDataStruct Mip::getData()
 void Mip::setupWidget()
 {
     m_widget = new UWidget;
-    QGridLayout *lyout = new QGridLayout;
+    auto mipWidgetLayout = new QVBoxLayout;
+
+    auto measGroup = new QGroupBox("Измеряемые параметры", m_widget);
+    auto measLayout = new QGridLayout;
     for (int i = 0; i < 3; ++i)
     {
-        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 1),
-                             "Частота ф. " + QString::number(i + 10, 36).toUpper(), true),
-            0, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 4),
-                             "Фазное напряжение ф. " + QString::number(i + 10, 36).toUpper(), true),
-            1, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 19),
-                             "Фазное напряжение ф. " + QString::number(i + 10, 36).toUpper(), true),
-            2, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 7),
-                             "Фазный ток ф. " + QString::number(i + 10, 36).toUpper(), true),
-            3, i);
+        auto phase = QString::number(i + 10, 16).toUpper();
+        measLayout->addWidget(
+            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 1), "Частота ф. " + phase, true), 0, i);
+        measLayout->addWidget(
+            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 4), "Фазное напряжение ф. " + phase, true), 1, i);
+        measLayout->addWidget(
+            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 7), "Фазный ток ф. " + phase, true), 3, i);
+        measLayout->addWidget(
+            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 11), "Угол нагрузки ф. " + phase, true), 4, i);
+        measLayout->addWidget(
+            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 14), "Фазовый угол напряжения ф. " + phase, true), 5, i);
     }
-    lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "10", "Ток N", true), 4, 0);
+    measLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "10", "Ток нулевого провода", true), 6, 0);
+    measLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "17", "Температура МИП", true), 6, 1);
+    measGroup->setLayout(measLayout);
+    mipWidgetLayout->addWidget(measGroup);
+
+    auto computedGroup = new QGroupBox("Вычисляемые параметры", m_widget);
+    auto computedLayout = new QGridLayout;
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "19", "Линейное напряжение AB", true), 0, 0);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "20", "Линейное напряжение BC", true), 0, 1);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "21", "Линейное напряжение CA", true), 0, 2);
     for (int i = 0; i < 3; ++i)
     {
-        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 11),
-                             "Угол ф. " + QString::number(i + 10, 36).toUpper(), true),
-            5, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 22),
-                             "Активная мощность ф. " + QString::number(i + 10, 36).toUpper(), true),
-            6, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 26),
-                             "Реактивная мощность ф. " + QString::number(i + 10, 36).toUpper(), true),
-            7, i);
-        lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 30),
-                             "Полная мощность ф. " + QString::number(i + 10, 36).toUpper(), true),
-            8, i);
+        auto phase = QString::number(i + 10, 16).toUpper();
+        computedLayout->addWidget(
+            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 22), "Активная мощность ф. " + phase, true), 1, i);
+        computedLayout->addWidget(
+            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 26), "Реактивная мощность ф. " + phase, true), 2, i);
+        computedLayout->addWidget(
+            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 30), "Полная мощность ф. " + phase, true), 3, i);
     }
-    lyout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "17", "Температура", true), 9, 0);
-    lyout->addWidget(WDFunc::NewPB(m_widget, "", "Далее",
-                         [=] {
-                             stop();
-                             m_widget->close();
-                         }),
-        10, 0);
-    m_widget->setLayout(lyout);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "25", "Активная общая мощность", true), 4, 0);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "29", "Реактивная общая мощность", true), 4, 1);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "33", "Полная общая мощность", true), 4, 2);
+    computedLayout->addWidget(
+        WDFunc::NewLBLAndLBL(m_widget, "36", "Напряжение нулевой последовательности", true), 5, 0);
+    computedLayout->addWidget( //
+        WDFunc::NewLBLAndLBL(m_widget, "37", "Напряжение прямой последовательности", true), 5, 1);
+    computedLayout->addWidget(
+        WDFunc::NewLBLAndLBL(m_widget, "38", "Напряжение обратной последовательности", true), 5, 2);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "39", "Ток нулевой последовательности", true), 6, 0);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "40", "Ток прямой последовательности", true), 6, 1);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "41", "Ток обратной последовательности", true), 6, 2);
+    computedGroup->setLayout(computedLayout);
+    mipWidgetLayout->addWidget(computedGroup);
+
+    mipWidgetLayout->addWidget(WDFunc::NewPB(m_widget, "", "Далее", [=] {
+        stop();
+        m_widget->close();
+    }));
+    m_widget->setLayout(mipWidgetLayout);
 }
 
 bool Mip::start()
@@ -92,7 +113,7 @@ bool Mip::start()
     if (m_withGUI)
     {
         setupWidget();
-        m_widget->engine()->addFloat({ 0, 46 });
+        m_widget->engine()->addFloat({ 0, 42 });
         connect(m_widget->engine(), &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
         m_widget->engine()->setUpdatesEnabled(true);
         m_widget->show();
@@ -101,7 +122,7 @@ bool Mip::start()
     {
         // Отключим обновление виджета по умолчанию
         m_updater->setUpdatesEnabled(false);
-        m_updater->addFloat({ 0, 46 });
+        m_updater->addFloat({ 0, 42 });
         connect(m_updater, &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
         m_updater->setUpdatesEnabled(true);
         m_updateTimer = new QTimer;
@@ -193,8 +214,9 @@ Error::Msg Mip::check()
         break;
     case MType::MTM_82:
         u = 60.0;
-        uthr = 0.05;
-        ithr = 0.05;
+        uthr = u * 0.005;
+        iNom = 1;
+        ithr = iNom * 0.005;
         break;
     case MType::MTM_83:
         u = 0;
@@ -205,30 +227,26 @@ Error::Msg Mip::check()
         return Error::GeneralError;
     }
 
-    double ValuesToCheck[10] = { 0.0, 50.0, 50.0, 50.0, u, u, u, iNom, iNom, iNom };
-    double ThresholdsToCheck[10] = { 0.0, 0.05, 0.05, 0.05, uthr, uthr, uthr, ithr, ithr, ithr };
-    double *VTC, *TTC;
-    VTC = ValuesToCheck;
-    TTC = ThresholdsToCheck;
-    for (int i = 0; i < 10; i++)
+    constexpr auto arraySize = 9;
+    double valuesToCheck[arraySize] = { 50.0, 50.0, 50.0, u, u, u, iNom, iNom, iNom };
+    double thresholds[arraySize] = { 0.05, 0.05, 0.05, uthr, uthr, uthr, ithr, ithr, ithr };
+    auto mipDataPtr = reinterpret_cast<float *>(&m_mipData);
+    for (int i = 0; i < arraySize; i++)
     {
-        float *mipdata = reinterpret_cast<float *>(&m_mipData);
-        if (!StdFunc::FloatIsWithinLimits(*(mipdata + i), *VTC, *TTC))
+        auto mipData = *(mipDataPtr + i + 1);
+        if (!StdFunc::FloatIsWithinLimits(mipData, valuesToCheck[i], thresholds[i]))
         {
+            auto errStr =                                                       //
+                "Несовпадение МИП по параметру " + QString::number(i) +         //
+                ". Измерено: " + QString::number(mipData, 'f', 4) +             //
+                ", должно быть: " + QString::number(valuesToCheck[i], 'f', 4) + //
+                " ± " + QString::number(thresholds[i], 'f', 4);                 //
             if (m_withGUI)
-                EMessageBox::warning(m_parent,
-                    "Несовпадение МИП по параметру " + QString::number(i)
-                        + ". Измерено: " + QString::number(*mipdata, 'f', 4)
-                        + ", должно быть: " + QString::number(*VTC, 'f', 4) + " +/- " + QString::number(*TTC, 'f', 4));
+                EMessageBox::warning(m_parent, errStr);
             else
-                qDebug() << "Несовпадение МИП по параметру " + QString::number(i)
-                         << ". Измерено: " + QString::number(*mipdata, 'f', 4)
-                         << ", должно быть: " + QString::number(*VTC, 'f', 4) << " +/- "
-                         << QString::number(*TTC, 'f', 4);
+                qDebug() << errStr;
             return Error::Msg::GeneralError;
         }
-        ++VTC;
-        ++TTC;
     }
     return Error::Msg::NoError;
 }
@@ -253,7 +271,7 @@ Mip::MipDataStruct Mip::takeOneMeasurement(float i2nom)
     setNominalCurrent(i2nom);
     start();
     QEventLoop el;
-    connect(this, &Mip::finished, &el, &QEventLoop::quit);
+    connect(this, &Mip::oneMeasurementReceived, &el, &QEventLoop::quit);
     el.exec();
     stop();
     return m_mipData;

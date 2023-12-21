@@ -2,6 +2,7 @@
 #define TUNESEQUENCEFILE_H
 
 #define TS_FILENAME "calibr.ini"
+
 #include <QSettings>
 #include <QString>
 #include <memory>

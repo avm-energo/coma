@@ -34,11 +34,12 @@ public:
         QString mask;
     };
 
-    QMap<DataTypes::DataBlockTypes, FilePropertiesStruct> ExtMap
-        = { { DataTypes::DataBlockTypes::BacBlock, { ".tn", "Tune files (*.tn?)" } },
-              { DataTypes::DataBlockTypes::BciBlock, { ".cf", "Configuration files (*.cf?)" } },
-              { DataTypes::DataBlockTypes::BdBlock, { ".bd", "Data files (*.bd?)" } },
-              { DataTypes::DataBlockTypes::BdaBlock, { ".bda", "Simple data files (*.bda)" } } };
+    QMap<DataTypes::DataBlockTypes, FilePropertiesStruct> ExtMap = {
+        { DataTypes::DataBlockTypes::BacBlock, { ".tn", "Tune files (*.tn?)" } },          //
+        { DataTypes::DataBlockTypes::BciBlock, { ".cf", "Configuration files (*.cf?)" } }, //
+        { DataTypes::DataBlockTypes::BdBlock, { ".bd", "Data files (*.bd?)" } },           //
+        { DataTypes::DataBlockTypes::BdaBlock, { ".bda", "Simple data files (*.bda)" } }   //
+    };
 
     using ValueType = std::variant<float *, quint32 *>;
 
