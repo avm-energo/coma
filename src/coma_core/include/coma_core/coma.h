@@ -9,7 +9,6 @@
 #include <QStackedWidget>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/types/settingstypes.h>
-#include <interfaces/utils/device_watcher.h>
 #include <s2/s2datamanager.h>
 
 class AlarmWidget;
