@@ -17,7 +17,6 @@ private:
 
     /// \brief Возврат группы протокола по запрошенному адресу.
     Protocol::ProtocomGroup getGroupByAddress(const quint32 addr) const noexcept;
-    quint16 getBlockByReg(const quint32 regAddr);
 
     QByteArray prepareBlock(const Proto::Commands cmd, const QByteArray &data, //
         Proto::Starters startByte = Proto::Starters::Request);

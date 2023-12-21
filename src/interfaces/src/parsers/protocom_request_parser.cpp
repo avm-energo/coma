@@ -53,9 +53,11 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_ReqFloats:
     case Commands::C_ReqBitStrings:
     {
-        quint8 block = getBlockByReg(cmd.arg1.toUInt());
-        if (block)
+        const auto addr = cmd.arg1.toUInt();
+        const auto group = getGroupByAddress(addr);
+        if (group.m_startAddr == addr)
         {
+            const auto block = static_cast<quint8>(group.m_block); // сужающий каст
             m_request = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::toByteArray(block));
             m_continueCommand = createContinueCommand(Proto::Commands::ReadBlkData);
         }
@@ -161,10 +163,11 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         {
             auto vList = cmd.arg1.value<QVariantList>();
             const quint16 start_addr = vList.first().value<DataTypes::FloatStruct>().sigAdr;
-            const auto blockNum = static_cast<quint8>(getBlockByReg(start_addr)); // сужающий каст
-            if (blockNum)
+            const auto group = getGroupByAddress(start_addr);
+            if (group.m_startAddr == start_addr)
             {
-                QByteArray tmpba = StdFunc::toByteArray(blockNum);
+                const auto block = static_cast<quint8>(group.m_block); // сужающий каст
+                QByteArray tmpba = StdFunc::toByteArray(block);
                 for (const auto &item : vList)
                 {
                     const float value = item.value<DataTypes::FloatStruct>().sigVal;
@@ -225,6 +228,7 @@ void ProtocomRequestParser::exceptionalAction(const CommandStruct &cmd) noexcept
         processFileFromDisk(cmd.arg1.value<S2::FilesEnum>());
     else if (cmd.command == Commands::C_EnableWritingHardware)
         emit emulateOkAnswer();
+    setExceptionalSituationStatus(false);
 }
 
 bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noexcept
@@ -236,11 +240,6 @@ bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noe
 Protocol::ProtocomGroup ProtocomRequestParser::getGroupByAddress(const quint32 addr) const noexcept
 {
     return getGroupsByAddress<Protocol::ProtocomGroup>(addr);
-}
-
-quint16 ProtocomRequestParser::getBlockByReg(const quint32 regAddr)
-{
-    return getGroupByAddress(regAddr).m_block;
 }
 
 QByteArray ProtocomRequestParser::prepareBlock(

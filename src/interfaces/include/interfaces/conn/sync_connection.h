@@ -2,7 +2,6 @@
 
 #include <QTimer>
 #include <gen/error.h>
-#include <gen/stdfunc.h>
 #include <interfaces/types/common_types.h>
 
 namespace Interface

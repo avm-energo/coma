@@ -56,6 +56,7 @@ void BaseRequestParser::exceptionalAction(const CommandStruct &command) noexcept
 {
     // Nothing to do here
     Q_UNUSED(command);
+    setExceptionalSituationStatus(false);
 }
 
 } // namespace Interface

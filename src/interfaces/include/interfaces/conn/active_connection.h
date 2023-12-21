@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gen/singleton.h>
+#include <gen/stdfunc.h>
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/conn/sync_connection.h>
 

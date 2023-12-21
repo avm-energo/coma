@@ -2,6 +2,7 @@
 
 #include <QCoreApplication>
 #include <gen/std_ext.h>
+#include <gen/stdfunc.h>
 #include <interfaces/conn/async_connection.h>
 
 namespace Interface

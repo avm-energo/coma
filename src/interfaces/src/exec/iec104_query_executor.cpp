@@ -105,10 +105,6 @@ void Iec104QueryExecutor::checkUnnumberedFormat(const ControlFunc func, const Co
     case ControlFunc::StartDataTransfer:
         if (arg == ControlArg::Confirm)
             run();
-        else
-        {
-            /// TODO: What about this?
-        }
         break;
     case ControlFunc::StopDataTransfer:
         /// TODO

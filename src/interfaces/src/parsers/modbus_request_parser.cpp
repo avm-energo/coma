@@ -69,8 +69,8 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_ReqAlarms:
     {
         const auto addr = cmd.arg1.value<quint16>();
-        const auto func = getGroupByAddress(addr).m_function;
-        if (func)
+        const auto group = getGroupByAddress(addr);
+        if (group.m_startAddr == addr)
         {
             request = Modbus::Request {
                 Modbus::FunctionCode::ReadCoils, //
@@ -89,8 +89,8 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     {
         const auto addr = cmd.arg1.value<quint16>();
         const quint8 count = (cmd.arg2.value<quint16>() * 2); // startup registers are float (2 ints long)
-        const auto func = getGroupByAddress(addr).m_function;
-        if (func)
+        const auto group = getGroupByAddress(addr);
+        if (group.m_startAddr == addr)
         {
             request = Modbus::Request {
                 Modbus::FunctionCode::ReadInputRegister, //
