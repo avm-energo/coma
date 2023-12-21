@@ -9,9 +9,9 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent, Qt::Window | Qt::Dia
 
 void AboutDialog::setupUI()
 {
+    setWindowTitle("О программе");
     auto hlyout = new QHBoxLayout;
     auto lyout = new QVBoxLayout;
-
     hlyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":icons/avm-energo.svg")), 0);
     for (const auto &str : qAsConst(m_lines))
     {

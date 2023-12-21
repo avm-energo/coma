@@ -41,7 +41,7 @@ void SplashScreen::drawContents(QPainter *painter)
     painter->drawText(rect, Qt::AlignLeft, Prog::modules);
 
     rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
-    painter->drawText(rect, Qt::AlignLeft, Prog::zlib);
+    painter->drawText(rect, Qt::AlignLeft, Prog::liblzma);
 
     rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
     painter->drawText(rect, Qt::AlignLeft, Prog::hidapi);
