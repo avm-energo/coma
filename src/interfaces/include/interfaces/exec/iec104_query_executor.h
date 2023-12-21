@@ -54,6 +54,10 @@ public slots:
     void receiveDataFromInterface(const QByteArray &response) override;
 
 private slots:
+    /// \brief Слот для активации или подтверждения U-посылки для тестирования данных.
+    void testConnection(Iec104::ControlArg arg) noexcept;
+    /// \brief Слот для отправки S-посылки.
+    void sendSupervisoryMessage() noexcept;
     /// \brief Слот для проверки контрольного блока.
     void checkControlBlock() noexcept;
     /// \brief Слот для обработки полученного фрейма U-формата.

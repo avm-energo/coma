@@ -84,8 +84,10 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
     {
         const auto command(opt.value());
         auto request = m_requestParser->parse(command);
-        if (request.isEmpty() || m_requestParser->isExceptionalSituation())
+        if (m_requestParser->isExceptionalSituation())
             m_requestParser->exceptionalAction(command);
+        else if (request.isEmpty())
+            return;
         else
         {
             if (getState() == ExecutorState::RequestParsing)
@@ -153,6 +155,7 @@ void DefaultQueryExecutor::exec()
         QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         currentState = getState();
     }
+    m_log.info("DeviceQueryExecutor finished");
     emit finished();
 }
 

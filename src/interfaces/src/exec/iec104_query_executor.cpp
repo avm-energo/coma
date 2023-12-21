@@ -10,7 +10,7 @@ namespace Interface
 using namespace Iec104;
 
 Iec104QueryExecutor::Iec104QueryExecutor(RequestQueue &queue, const IEC104ConnectionParams params, QObject *parent)
-    : DefaultQueryExecutor(queue, params.t1 * 1000, parent)
+    : DefaultQueryExecutor(queue, 1000, parent)
     , m_ctrlBlock(std::make_shared<ControlBlock>())
     , m_params(params)
     , m_t2Timer(new QTimer(this))
@@ -48,15 +48,14 @@ void Iec104QueryExecutor::closeConnection() noexcept
 
 void Iec104QueryExecutor::writeToInterface(const QByteArray &request, bool isCounted) noexcept
 {
-    if (!request.isEmpty())
+    emit sendDataToInterface(request);
+    if (isCounted)
     {
-        DefaultQueryExecutor::writeToInterface(request, isCounted);
-        if (isCounted)
-        {
-            ++(m_ctrlBlock->m_sent);
-            checkControlBlock();
-        }
+        m_timeoutTimer->start();
+        ++(m_ctrlBlock->m_sent);
+        checkControlBlock();
     }
+    writeToLog(request, Direction::ToDevice);
 }
 
 void Iec104QueryExecutor::exec()
@@ -83,15 +82,23 @@ void Iec104QueryExecutor::receiveDataFromInterface(const QByteArray &response)
     }
 }
 
+void Iec104QueryExecutor::testConnection(ControlArg arg) noexcept
+{
+    ;
+}
+
+void Iec104QueryExecutor::sendSupervisoryMessage() noexcept
+{
+    auto supervisoryMessage { getRequestParser()->createSupervisoryMessage() };
+    m_acknowledgeReceived = m_ctrlBlock->m_received;
+    writeToInterface(supervisoryMessage, false);
+}
+
 void Iec104QueryExecutor::checkControlBlock() noexcept
 {
     auto triggerThresholdValue = m_acknowledgeReceived + m_params.w;
     if (m_ctrlBlock->m_received >= triggerThresholdValue || m_ctrlBlock->m_received == controlMax)
-    {
-        auto supervisoryMessage { getRequestParser()->createSupervisoryMessage() };
-        m_acknowledgeReceived = m_ctrlBlock->m_received;
-        writeToInterface(supervisoryMessage, false);
-    }
+        sendSupervisoryMessage();
     if (m_ctrlBlock->m_received == controlMax)
         m_ctrlBlock->m_received = 0;
     if (m_ctrlBlock->m_sent == controlMax)
@@ -107,7 +114,8 @@ void Iec104QueryExecutor::checkUnnumberedFormat(const ControlFunc func, const Co
             run();
         break;
     case ControlFunc::StopDataTransfer:
-        /// TODO
+        if (arg == ControlArg::Confirm)
+            stop();
         break;
     case ControlFunc::TestFrame:
         /// TODO
