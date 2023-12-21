@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QValidator>
 #include <gen/pch.h>
 #include <gen/std_ext.h>
 
@@ -332,6 +333,8 @@ public:
     static QString ChooseFileForSave(
         QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr = "");
     static QString ChooseDirectoryForOpen(QWidget *parent);
+
+    static QValidator *getRegExpValidator(const QString &pattern, QObject *parent = nullptr);
 
 private:
     static QPushButton *NewPBCommon(QWidget *parent, const QString &pbname, const QString &text,

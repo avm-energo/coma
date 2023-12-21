@@ -1,12 +1,13 @@
 #include "ipctrl.h"
 
+#include "wd_func.h"
+
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QIntValidator>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLineEdit>
-#include <gen/stdfunc.h>
 
 IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
 {
@@ -54,7 +55,7 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
         pEdit->setMaximumWidth(pixelsWide * 2);
         pEdit->installEventFilter(this);
 
-        auto validator = StdFunc::getRegExpValidator("^(0|[1-9]|[1-9][0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$", pEdit);
+        auto validator = WDFunc::getRegExpValidator("^(0|[1-9]|[1-9][0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$", pEdit);
         pEdit->setValidator(validator);
     }
     // setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
