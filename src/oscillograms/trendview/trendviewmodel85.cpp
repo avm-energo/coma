@@ -115,5 +115,5 @@ QStringList TrendViewModel85::digitalValues() const
 
 std::bitset<32> TrendViewModel85::digitalEnableFlags() const
 {
-    return { 0b11111111111100111000000000000000 };
+    return { 0b11111111111100111111000000000000 };
 }

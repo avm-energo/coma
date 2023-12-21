@@ -107,12 +107,12 @@ void TrendViewDialog::addSig(QString signame)
 
     if (signalOscPropertiesMap.value(signame).type == ST_DIGITAL)
     {
-        auto digitalcount = visibleSignalOscDescriptionSize(ST_DIGITAL);
-        if (digitalcount >= MAXGRAPHSPERPLOT)
-        {
-            PlotOverloadMessage(scw, signame);
-            return;
-        }
+        // auto digitalcount = visibleSignalOscDescriptionSize(ST_DIGITAL);
+        // if (digitalcount >= MAXGRAPHSPERPLOT)
+        //{
+        //    PlotOverloadMessage(scw, signame);
+        //    return;
+        //}
 
         scw->setChecked(signame, true);
         auto graph = signalOscPropertiesMap.value(signame).graph;
@@ -146,11 +146,11 @@ void TrendViewDialog::addSig(QString signame)
     else if (signalOscPropertiesMap.value(signame).type == ST_ANALOG)
     {
         auto analogcount = visibleSignalOscDescriptionSize(ST_ANALOG);
-        if (analogcount >= MAXGRAPHSPERPLOT)
-        {
-            PlotOverloadMessage(scw, signame);
-            return;
-        }
+        // if (analogcount >= MAXGRAPHSPERPLOT)
+        //{
+        //    PlotOverloadMessage(scw, signame);
+        //    return;
+        //}
 
         scw->setChecked(signame, true);
         auto graph = signalOscPropertiesMap.value(signame).graph;
@@ -207,6 +207,31 @@ void TrendViewDialog::setupUI()
         vlyout->addWidget(createToolBar(ST_ANALOG));
         vlyout->addWidget(setupHelper(analog));
     }
+
+    auto h1Layout = new QHBoxLayout;
+    auto nameLabel = new QLabel("Selected plot: ", this);
+    nameOutput = new QLineEdit(this);
+    nameOutput->setReadOnly(true);
+    h1Layout->addWidget(nameLabel);
+    h1Layout->addWidget(nameOutput);
+    vlyout->addLayout(h1Layout);
+
+    auto h2Layout = new QHBoxLayout;
+    auto valueLabel = new QLabel("Value: ", this);
+    valueOutput = new QLineEdit(this);
+    valueOutput->setReadOnly(true);
+    h2Layout->addWidget(valueLabel);
+    h2Layout->addWidget(valueOutput);
+    vlyout->addLayout(h2Layout);
+
+    auto h3Layout = new QHBoxLayout;
+    auto timeLabel = new QLabel("Time: ", this);
+    timeOutput = new QLineEdit(this);
+    timeOutput->setReadOnly(true);
+    h3Layout->addWidget(timeLabel);
+    h3Layout->addWidget(timeOutput);
+    vlyout->addLayout(h3Layout);
+
     auto sidebarWidget = new QWidget(this);
     sidebarWidget->setMinimumWidth(350);
     sidebarWidget->setLayout(vlyout);
@@ -292,12 +317,70 @@ ptrdiff_t TrendViewDialog::visibleSignalOscDescriptionSize(TrendViewDialog::Sign
 
 void TrendViewDialog::graphClicked(QCPAbstractPlottable *plot, int dataIndex)
 {
-    auto dataValue = plot->interface1D()->dataMainValue(dataIndex);
-    auto message = QString("Clicked on graph '%1' at data point #%2 with value %3.")
-                       .arg(plot->name())
+    auto x = plot->interface1D()->dataMainKey(dataIndex);
+    auto y = plot->interface1D()->dataMainValue(dataIndex);
+    auto name = plot->name();
+    auto message = QString("Clicked on graph '%1' at data point #%2 with poisition X:%3, Y:%4.")
+                       .arg(name)
                        .arg(dataIndex)
-                       .arg(dataValue);
-    qDebug() << message;
+                       .arg(x)
+                       .arg(y);
+    qWarning() << message;
+
+    if (name == "digitalSelector" || name == "analogSelector")
+        return;
+
+    nameOutput->setText(name);
+    valueOutput->setText(QString::number(y));
+    timeOutput->setText(QString::number(x));
+
+    QVector<double> xValues { x, x };
+    if (!digital.noSignals())
+    {
+        QVector<double> yValues { sizeX.min, sizeX.max };
+        if (digital.selection)
+        {
+            mainPlot->removeGraph(digital.selection);
+            digital.selection = nullptr;
+        }
+
+        auto axisRect = mainPlot->axisRect(0);
+        auto leftAxis = axisRect->axis(QCPAxis::atLeft, 0);
+        auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
+        digital.selection = mainPlot->addGraph(bottomAxis, leftAxis);
+        digital.selection->setLineStyle(QCPGraph::lsStepLeft);
+        digital.selection->setName("digitalSelector");
+        digital.selection->setPen(QPen(Qt::black));
+        digital.selection->setAntialiased(true);
+        digital.selection->setData(xValues, yValues);
+        mainPlot->replot();
+    }
+
+    if (!analog.noSignals())
+    {
+        QVector<double> yValues { -2000, 2000 };
+        if (analog.selection)
+        {
+            mainPlot->removeGraph(analog.selection);
+            analog.selection = nullptr;
+        }
+
+        QCPAxisRect *axisRect = nullptr;
+        if (m_trendModel->idOsc() != AVTUK_85::OSC_ID)
+            axisRect = mainPlot->axisRect(0);
+        else
+            axisRect = mainPlot->axisRect(1);
+        auto axisIndex = CURRENT_AXIS_INDEX;
+        auto leftAxis = axisRect->axis(QCPAxis::atLeft, axisIndex);
+        auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
+        analog.selection = mainPlot->addGraph(bottomAxis, leftAxis);
+        analog.selection->setLineStyle(QCPGraph::lsLine);
+        analog.selection->setName("analogSelector");
+        analog.selection->setPen(QPen(Qt::black));
+        analog.selection->setAntialiased(true);
+        analog.selection->setData(xValues, yValues);
+        mainPlot->replot();
+    }
 }
 
 void TrendViewDialog::signalChoosed(QString signame) const
@@ -681,6 +764,7 @@ void TrendViewDialog::digitalAxis(int &MainPlotLayoutRow)
 void TrendViewDialog::setupPlots()
 {
     mainPlot = std::unique_ptr<QCustomPlot>(new QCustomPlot);
+    mainPlot->setMouseTracking(true);
     mainPlot->plotLayout()->clear();
     mainPlot->setInteractions(QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectAxes);
     mainPlot->setAutoAddPlottableToLegend(false);
