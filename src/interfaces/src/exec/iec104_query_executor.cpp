@@ -21,6 +21,8 @@ Iec104QueryExecutor::Iec104QueryExecutor(RequestQueue &queue, const IEC104Connec
     m_t2Timer->setInterval(m_params.t2 * 1000);
     m_t3Timer->setSingleShot(true);
     m_t3Timer->setInterval(m_params.t3 * 1000);
+    connect(m_t2Timer, &QTimer::timeout, this, &Iec104QueryExecutor::sendSupervisoryMessage);
+    connect(m_t3Timer, &QTimer::timeout, this, [this]() { testConnection(ControlArg::Activate); });
 }
 
 Iec104ResponseParser *Iec104QueryExecutor::getResponseParser() noexcept
@@ -62,7 +64,7 @@ void Iec104QueryExecutor::exec()
 {
     initConnection();
     DefaultQueryExecutor::exec();
-    closeConnection();
+    // closeConnection();
 }
 
 void Iec104QueryExecutor::receiveDataFromInterface(const QByteArray &response)
@@ -84,7 +86,8 @@ void Iec104QueryExecutor::receiveDataFromInterface(const QByteArray &response)
 
 void Iec104QueryExecutor::testConnection(ControlArg arg) noexcept
 {
-    ;
+    auto testMessage { getRequestParser()->createTestMessage(arg) };
+    writeToInterface(testMessage, false);
 }
 
 void Iec104QueryExecutor::sendSupervisoryMessage() noexcept
@@ -115,10 +118,11 @@ void Iec104QueryExecutor::checkUnnumberedFormat(const ControlFunc func, const Co
         break;
     case ControlFunc::StopDataTransfer:
         if (arg == ControlArg::Confirm)
-            stop();
+            emit finished();
         break;
     case ControlFunc::TestFrame:
-        /// TODO
+        if (arg == ControlArg::Activate)
+            testConnection(ControlArg::Confirm);
         break;
     }
 }

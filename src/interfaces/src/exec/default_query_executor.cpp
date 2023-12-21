@@ -27,7 +27,6 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, quint32 timeout,
 void DefaultQueryExecutor::initLogger(const QString &protocolName) noexcept
 {
     m_log.init(protocolName + "Executor." + logExt);
-    m_log.info(logStart);
 }
 
 void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept
@@ -155,7 +154,7 @@ void DefaultQueryExecutor::exec()
         QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         currentState = getState();
     }
-    m_log.info("DeviceQueryExecutor finished");
+    m_log.info("DeviceQueryExecutor is finished\n");
     emit finished();
 }
 

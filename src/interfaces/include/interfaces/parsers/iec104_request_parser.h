@@ -29,6 +29,7 @@ public:
 
     QByteArray createStartMessage() const noexcept;
     QByteArray createStopMessage() const noexcept;
+    QByteArray createTestMessage(Iec104::ControlArg arg) const noexcept;
     QByteArray createSupervisoryMessage() const noexcept;
 
 signals:

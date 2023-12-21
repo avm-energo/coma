@@ -8,7 +8,6 @@ BaseInterface::BaseInterface(const QString &logFilename, QObject *parent)
 {
     qRegisterMetaType<InterfaceError>();
     m_log.init(logFilename + "." + ::logExt);
-    m_log.writeRaw(::logStart);
 }
 
 void BaseInterface::setState(const Interface::State state) noexcept

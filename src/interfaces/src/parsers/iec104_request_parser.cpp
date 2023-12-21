@@ -170,6 +170,16 @@ QByteArray Iec104RequestParser::createStopMessage() const noexcept
     return bytes.value_or(QByteArray {});
 }
 
+QByteArray Iec104RequestParser::createTestMessage(Iec104::ControlArg arg) const noexcept
+{
+    APCI apci;
+    apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
+    apci.m_ctrlBlock.m_func = ControlFunc::TestFrame;
+    apci.m_ctrlBlock.m_arg = arg;
+    auto bytes = apci.toByteArray();
+    return bytes.value_or(QByteArray {});
+}
+
 QByteArray Iec104RequestParser::createSupervisoryMessage() const noexcept
 {
     APCI apci(*m_ctrlBlock);

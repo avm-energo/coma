@@ -27,7 +27,9 @@ private:
     /// \see QueryExecutorFabric.
     explicit Iec104QueryExecutor(RequestQueue &queue, const IEC104ConnectionParams params, QObject *parent = nullptr);
 
+    /// \brief Преобразование хранимого парсера запросов к primary типу.
     inline Iec104ResponseParser *getResponseParser() noexcept;
+    /// \brief Преобразование хранимого парсера ответов к primary типу.
     inline Iec104RequestParser *getRequestParser() noexcept;
 
     /// \brief Отправка команды Start data transfer activation.
