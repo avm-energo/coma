@@ -46,7 +46,6 @@ set(files_h
     "${INCLUDE_PATH}/types/settingstypes.h"
     "${INCLUDE_PATH}/types/usbhidportinfo.h"
     "${INCLUDE_PATH}/types/usbhidsettings.h"
-    "${INCLUDE_PATH}/utils/device_watcher.h"
     "${INCLUDE_PATH}/utils/request_queue.h"
     "${INCLUDE_PATH}/utils/slot_trait.h"
 )
@@ -82,7 +81,6 @@ set(files_cpp
     "${SRC_PATH}/types/protocol_settings.cpp"
     "${SRC_PATH}/types/usbhidportinfo.cpp"
     "${SRC_PATH}/types/usbhidsettings.cpp"
-    "${SRC_PATH}/utils/device_watcher.cpp"
     "${SRC_PATH}/utils/request_queue.cpp"
 )
 
