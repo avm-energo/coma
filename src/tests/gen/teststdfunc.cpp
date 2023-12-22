@@ -192,7 +192,8 @@ void TestStdFunc::byteArrayTest02()
 void TestStdFunc::modbusRegistersTest01()
 {
     std::uint16_t data = 0xaabb;
-    auto first = StdFunc::toByteArray(qToBigEndian(data));
+    auto reversed = qToBigEndian(data);
+    auto first = StdFunc::toByteArray(reversed);
     auto second = detail::packRegister(data);
     QCOMPARE(first, second);
 }

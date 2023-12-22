@@ -16,6 +16,14 @@ APCI::APCI(const ControlBlock controlBlock, const std::uint8_t asduSize) noexcep
 {
 }
 
+APCI::APCI(const APCI &rhs) noexcept : m_ctrlBlock(rhs.m_ctrlBlock), m_asduSize(rhs.m_asduSize)
+{
+}
+
+APCI::APCI(APCI &&rhs) noexcept : m_ctrlBlock(std::move(rhs.m_ctrlBlock)), m_asduSize(std::move(rhs.m_asduSize))
+{
+}
+
 const APCI &APCI::operator=(const APCI &rhs) noexcept
 {
     m_ctrlBlock = rhs.m_ctrlBlock;

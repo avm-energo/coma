@@ -20,6 +20,8 @@ public:
     explicit APCI(const std::uint8_t asduSize = 0) noexcept;
     /// \brief Param c-tor.
     explicit APCI(const ControlBlock controlBlock, const std::uint8_t asduSize = 0) noexcept;
+    APCI(const APCI &rhs) noexcept;
+    APCI(APCI &&rhs) noexcept;
     /// \brief Assignment operator.
     const APCI &operator=(const APCI &rhs) noexcept;
 

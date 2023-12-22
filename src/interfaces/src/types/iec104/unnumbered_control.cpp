@@ -1,5 +1,3 @@
-#pragma once
-
 #include "interfaces/types/iec104/unnumbered_control.h"
 
 #include <QDebug>

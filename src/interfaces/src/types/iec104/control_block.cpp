@@ -1,5 +1,3 @@
-#pragma once
-
 #include "interfaces/types/iec104/control_block.h"
 
 namespace Iec104
