@@ -177,7 +177,7 @@ void DefaultQueryExecutor::stop() noexcept
     m_queue.get().addToQueue({});
 }
 
-const Commands DefaultQueryExecutor::getLastRequestedCommand() const noexcept
+Commands DefaultQueryExecutor::getLastRequestedCommand() const noexcept
 {
     return m_lastRequestedCommand.load();
 }

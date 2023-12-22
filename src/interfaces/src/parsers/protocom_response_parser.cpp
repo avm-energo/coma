@@ -160,7 +160,7 @@ void ProtocomResponseParser::processU32(const QByteArray &data, quint16 startAdd
 {
     Q_ASSERT(data.size() % sizeof(quint32) == 0);
     Q_ASSERT(data.size() >= 4);
-    for (int i = 0; i != (data.size() / sizeof(quint32)); i++)
+    for (std::size_t i = 0; i != (data.size() / sizeof(quint32)); i++)
     {
         QByteArray tba = data.mid(sizeof(qint32) * i, sizeof(qint32));
         quint32 value = *reinterpret_cast<const quint32 *>(tba.data());

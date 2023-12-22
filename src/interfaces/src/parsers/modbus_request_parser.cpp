@@ -226,7 +226,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
 QByteArray ModbusRequestParser::getNextContinueCommand() noexcept
 {
     return createADU(getNextFileSectionRequest());
-};
+}
 
 void ModbusRequestParser::setDeviceAddress(const quint8 deviceAddress) noexcept
 {

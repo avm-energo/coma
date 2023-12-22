@@ -15,7 +15,7 @@ enum class InterfaceError : quint16
     ReadError,
     WriteError
 };
-Q_DECLARE_METATYPE(InterfaceError);
+Q_DECLARE_METATYPE(InterfaceError)
 
 class BaseInterface : public QObject
 {

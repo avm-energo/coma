@@ -58,7 +58,7 @@ QByteArray SerialPort::read(bool *status)
     if (data.isEmpty())
         QCoreApplication::processEvents();
     return data;
-};
+}
 
 bool SerialPort::write(const QByteArray &ba)
 {

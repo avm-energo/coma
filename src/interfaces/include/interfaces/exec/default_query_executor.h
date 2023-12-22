@@ -91,7 +91,7 @@ public:
     void stop() noexcept;
 
     /// \brief Функция, возвраващающая последнюю запрошенную команду.
-    const Commands getLastRequestedCommand() const noexcept;
+    Commands getLastRequestedCommand() const noexcept;
 
 public slots:
     /// \brief Слот для принятия от устройства ответа на посланный ему ранее запрос.

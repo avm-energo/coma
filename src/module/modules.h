@@ -18,7 +18,7 @@ enum Model
     KDV = 0xA387,
     MPE = 0xC001
 };
-Q_ENUM_NS(Model);
+Q_ENUM_NS(Model)
 
 enum BaseBoard : quint16
 {

@@ -324,7 +324,7 @@ void ProtocomRequestParser::prepareLongData(const Proto::Commands cmd, const QBy
 
 QByteArray ProtocomRequestParser::writeLongData(const Proto::Commands cmd, const QByteArray &data)
 {
-    if (data.size() > Proto::MaxSegmenthLength)
+    if (std::size_t(data.size()) > Proto::MaxSegmenthLength)
     {
         emit writingLongData();
         prepareLongData(cmd, data);

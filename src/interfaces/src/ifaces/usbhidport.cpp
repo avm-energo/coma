@@ -7,7 +7,7 @@ constexpr int MaxSegmenthLength = 64; ///< Максимальная длина �
 constexpr int hidApiErrorCode = -1;   ///< Код ошибки от HID API
 
 UsbHidPort::UsbHidPort(const UsbHidSettings &settings, QObject *parent)
-    : BaseInterface("UsbHidPort", parent), m_settings(settings), m_hidDevice(nullptr)
+    : BaseInterface("UsbHidPort", parent), m_hidDevice(nullptr), m_settings(settings)
 {
 }
 

@@ -73,4 +73,4 @@ public:
 } // namespace Protocol
 
 using ProtocolDescription = Protocol::ProtocolDescription;
-Q_DECLARE_METATYPE(ProtocolDescription);
+Q_DECLARE_METATYPE(ProtocolDescription)

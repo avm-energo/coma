@@ -61,7 +61,7 @@ QByteArray Ethernet::read(bool *status)
     else
         QCoreApplication::processEvents();
     return data;
-};
+}
 
 bool Ethernet::write(const QByteArray &data)
 {
