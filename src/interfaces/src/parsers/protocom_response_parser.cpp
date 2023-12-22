@@ -172,8 +172,8 @@ void ProtocomResponseParser::processU32(const QByteArray &data, quint16 startAdd
 void ProtocomResponseParser::processFloat(const QByteArray &data, quint32 startAddr)
 {
     // NOTE Проблема со стартовыми регистрами, получим на один регистр больше чем по другим протоколам
-    Q_ASSERT(data.size() >= sizeof(float));     // должен быть хотя бы один флоат
-    Q_ASSERT(data.size() % sizeof(float) == 0); // размер кратен размеру флоат
+    Q_ASSERT(std::size_t(data.size()) >= sizeof(float));     // должен быть хотя бы один флоат
+    Q_ASSERT(std::size_t(data.size()) % sizeof(float) == 0); // размер кратен размеру флоат
     int bapos = 0;
     const int baendpos = data.size();
     while (bapos != baendpos)
@@ -197,8 +197,8 @@ void ProtocomResponseParser::processSinglePoint(const QByteArray &data, const qu
     for (quint32 i = 0; i != quint32(data.size()); ++i)
     {
         quint8 value = data.at(i);
-        DataTypes::SinglePointWithTimeStruct data { (startAddr + i), value, 0, DataTypes::Quality::Good };
-        emit responseParsed(data);
+        DataTypes::SinglePointWithTimeStruct response { (startAddr + i), value, 0, DataTypes::Quality::Good };
+        emit responseParsed(response);
     }
 }
 
@@ -284,7 +284,7 @@ void ProtocomResponseParser::processDataBlock(const QByteArray &data, const quin
 void ProtocomResponseParser::processDataSection(const QByteArray &dataSection)
 {
     // Проверяем, получили мы последнюю секцию, или нет
-    m_isLastSectionReceived = (dataSection.size() < Proto::MaxSegmenthLength);
+    m_isLastSectionReceived = (std::size_t(dataSection.size()) < Proto::MaxSegmenthLength);
     // Добавляем полученные данные в буфер
     m_longDataBuffer.append(dataSection);
     // Если получили первую секцию

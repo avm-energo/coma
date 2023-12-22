@@ -91,6 +91,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
+if (MSVC)
+  target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+else()
+  target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
