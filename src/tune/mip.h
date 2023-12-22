@@ -38,6 +38,7 @@ public:
     using MType = Modules::MezzanineBoard;
 
     Mip(bool withGUI = true, MType ModuleType = MType::MTM_82, QWidget *parent = nullptr);
+    ~Mip() noexcept;
 
     void updateData(const DataTypes::FloatStruct &fl);
     MipDataStruct getData();

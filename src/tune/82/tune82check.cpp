@@ -102,10 +102,7 @@ Error::Msg Tune82Check::checkMip()
     connect(this, &AbstractTuneDialog::cancelled, mip, &Mip::stop);
     connect(mip, &Mip::finished, &el, &QEventLoop::quit);
     el.exec();
-    mip->stop();
-    waitNSeconds(5);
     return mip->check();
-    return Error::Msg::NoError;
 }
 
 void Tune82Check::showEvent(QShowEvent *e)

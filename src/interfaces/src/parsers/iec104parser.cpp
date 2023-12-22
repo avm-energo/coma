@@ -611,6 +611,7 @@ void IEC104Parser::stop()
     stopDT();
     m_threadMustBeFinished = true;
     m_timer104->stop();
+    m_queue.get().addToQueue({});
 }
 
 QByteArray IEC104Parser::createGI(unsigned char apdulength)
