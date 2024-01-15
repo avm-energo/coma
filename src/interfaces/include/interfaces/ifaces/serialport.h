@@ -16,7 +16,7 @@ public:
 private:
     bool connect() override;
     void disconnect() override;
-    QByteArray read(bool *status = nullptr) override;
+    QByteArray read(bool &status) override;
     bool write(const QByteArray &ba) override;
 
 private slots:

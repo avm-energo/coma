@@ -14,7 +14,7 @@ inline T unpackRegister(const QByteArray &ba)
     T value;
     auto dstBegin = reinterpret_cast<std::uint8_t *>(&value);
     std::copy(ba.cbegin(), ba.cend(), dstBegin);
-    for (auto i = 0; i < N; i += 2)
+    for (std::size_t i = 0; i < N; i += 2)
         std::swap(dstBegin[i], dstBegin[i + 1]);
     return value;
 }
@@ -174,15 +174,14 @@ void ModbusResponseParser::parse()
         }
         break;
     case Modbus::FunctionCode::WriteFileSection:
-        if (m_isLastSectionSended)
+        if (m_isLastSectionSent)
         {
             processOk();
-            m_isLastSectionSended = false;
+            m_isLastSectionSent = false;
         }
         break;
     default:
-        qCritical("We shouldn't be here, something went wrong");
-        qCritical() << m_responseBuffer.toHex();
+        qCritical() << "Parse: wrong function code, hex: " << m_responseBuffer.toHex();
         break;
     }
     clearResponseBuffer();
@@ -215,11 +214,11 @@ void ModbusResponseParser::processSinglePointSignals(const QByteArray &response,
 void ModbusResponseParser::processFloatSignals(const QByteArray &response, const quint16 address) noexcept
 {
     constexpr auto step = sizeof(float);
-    for (auto i = 0; i < response.size(); i += step)
+    for (int pos = 0, i = 0; pos < response.size(); pos += step, ++i)
     {
         DataTypes::FloatStruct signal;
-        signal.sigAdr = address + (i / step);
-        signal.sigVal = helper::unpackRegister<float>(response.mid(i, step));
+        signal.sigAdr = address + i;
+        signal.sigVal = helper::unpackRegister<float>(response.mid(pos, step));
         signal.sigQuality = DataTypes::Quality::Good;
         emit responseParsed(signal);
     }
@@ -228,11 +227,11 @@ void ModbusResponseParser::processFloatSignals(const QByteArray &response, const
 void ModbusResponseParser::processIntegerSignals(const QByteArray &response, const quint16 address) noexcept
 {
     constexpr auto step = sizeof(quint32);
-    for (auto i = 0; i < response.size(); i += step)
+    for (int pos = 0, i = 0; pos < response.size(); pos += step, ++i)
     {
         DataTypes::BitStringStruct signal;
-        signal.sigVal = helper::unpackRegister<quint32>(response.mid(i, step));
-        signal.sigAdr = address + i / step;
+        signal.sigVal = helper::unpackRegister<quint32>(response.mid(pos, step));
+        signal.sigAdr = address + i;
         signal.sigQuality = DataTypes::Quality::Good;
         emit responseParsed(signal);
     }

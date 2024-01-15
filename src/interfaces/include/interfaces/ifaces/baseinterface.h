@@ -44,7 +44,7 @@ protected:
     void writeLog(const QByteArray &ba, Interface::Direction dir = Interface::NoDirection);
     void writeLog(const Error::Msg msg, Interface::Direction dir = Interface::NoDirection);
 
-    virtual QByteArray read(bool *status = nullptr) = 0;
+    virtual QByteArray read(bool &status) = 0;
     virtual bool write(const QByteArray &ba) = 0;
 
 public slots:

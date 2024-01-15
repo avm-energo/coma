@@ -51,10 +51,10 @@ void ProtocomResponseParser::parse()
     case Proto::Commands::ResultOk:
         if (m_request.command == Commands::C_WriteFile || m_request.command == Commands::C_WriteHardware)
         {
-            if (m_isLastSectionSended)
+            if (m_isLastSectionSent)
             {
                 processOk();
-                m_isLastSectionSended = false;
+                m_isLastSectionSent = false;
             }
         }
         else

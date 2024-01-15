@@ -17,7 +17,7 @@ protected:
     CommandStruct m_request;
     bool m_isFirstSectionReceived;
     bool m_isLastSectionReceived;
-    bool m_isLastSectionSended;
+    bool m_isLastSectionSent;
     S2Util m_util;
 
     /// \brief Функция, отправляющая наверх статус "OK", полученный от устройства.

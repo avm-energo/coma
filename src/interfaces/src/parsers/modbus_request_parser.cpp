@@ -221,6 +221,7 @@ QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request) const 
         pdu.append(request.data);
         break;
     default:
+        qCritical() << "Parse: wrong request function code";
         break;
     }
 
@@ -258,7 +259,7 @@ QByteArray ModbusRequestParser::prepareFileForWriting(const quint16 fileNum, con
     m_progressCount = 0;
     m_longDataSections.clear();
 
-    // Разделяем файлы на секции и рпеобразовываем в формат запросов по протоколу Modbus
+    // Разделяем файлы на секции и преобразовываем в формат запросов по протоколу Modbus
     for (auto pos = 0; pos < data.size(); pos += Modbus::fileSectionLength)
     {
         QByteArray sectionData(data.mid(pos, Modbus::fileSectionLength));
