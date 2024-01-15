@@ -124,7 +124,7 @@ Error::Msg ModbusResponseParser::validate()
         return Error::CrcError;
 }
 
-void ModbusResponseParser::removeModbusHeader() noexcept
+void ModbusResponseParser::extractModbusData() noexcept
 {
     m_responseBuffer.remove(0, 1); // Удаление адреса устройства
     m_responseBuffer.chop(2);      // Удаление CRC
@@ -132,7 +132,7 @@ void ModbusResponseParser::removeModbusHeader() noexcept
 
 void ModbusResponseParser::parse()
 {
-    removeModbusHeader();
+    extractModbusData();
     auto responseFunctionCode = static_cast<quint8>(m_responseBuffer.at(0));
     m_responseBuffer.remove(0, 1); // удаление кода функции из ответа
     if (responseFunctionCode & errorModbusConst)

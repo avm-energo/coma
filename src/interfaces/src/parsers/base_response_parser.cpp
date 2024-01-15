@@ -35,7 +35,7 @@ void BaseResponseParser::clearResponseBuffer() noexcept
     m_responseBuffer.clear();
 }
 
-void BaseResponseParser::lastSectionSended() noexcept
+void BaseResponseParser::lastSectionSent() noexcept
 {
     m_isLastSectionSent = true;
 }

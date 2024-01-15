@@ -24,8 +24,7 @@
 
 // Updated by vladd12 in 2k23
 
-#ifndef QPROGRESSINDICATOR_H
-#define QPROGRESSINDICATOR_H
+#pragma once
 
 #include <QColor>
 #include <QWidget>
@@ -33,22 +32,22 @@
 class QTimer;
 
 /*!
-    \class QProgressIndicator
-    \brief The QProgressIndicator class lets an application display a progress indicator to show
+    \class EProgressIndicator
+    \brief The EProgressIndicator class lets an application display a progress indicator to show
    that a lengthy task is under way.
 
     Progress indicators are indeterminate and do nothing more than spin to show that the application
    is busy.
     \sa QProgressBar
 */
-class QProgressIndicator : public QWidget
+class EProgressIndicator : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(int delay READ animationDelay WRITE setAnimationDelay)
     Q_PROPERTY(bool displayedWhenStopped READ isDisplayedWhenStopped WRITE setDisplayedWhenStopped)
     Q_PROPERTY(QColor color READ color WRITE setColor)
 public:
-    explicit QProgressIndicator(QWidget *parent = nullptr);
+    explicit EProgressIndicator(QWidget *parent = nullptr);
 
     /*! Returns the delay between animation steps.
         \return The number of milliseconds between animation steps. By default, the animation delay
@@ -121,5 +120,3 @@ private:
     QColor m_color;
     QTimer *m_timer;
 };
-
-#endif // QPROGRESSINDICATOR_H

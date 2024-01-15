@@ -25,7 +25,7 @@ private:
 
     /// \brief Для Modbus RTU удаляет протокольное обрамление
     /// в виде адреса устройства и CRC из полученного ответа.
-    void removeModbusHeader() noexcept;
+    void extractModbusData() noexcept;
 
     /// \brief Функция, разбирающая ошибки по протоколу Modbus, полученные от устройства.
     void processError(const quint8 functionCode, const QByteArray &response) noexcept;

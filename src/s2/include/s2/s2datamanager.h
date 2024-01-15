@@ -19,6 +19,11 @@ struct BoardConfiguration
     QString m_tabName;
     S2Configuration m_defaultConfig; ///< Конфигурация по умолчанию (из XML файла).
     S2Configuration m_workingConfig; ///< Рабочая конфигурация платы.
+
+    void setDefaultConfig() noexcept
+    {
+        m_workingConfig = m_defaultConfig;
+    }
 };
 
 /// \brief Класс, который используется в качестве контейнера
