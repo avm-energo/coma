@@ -186,7 +186,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         m_request = prepareBlock(Proto::WriteSingleCommand, tmpba);
         break;
     }
-    case Commands::C_EnableWritingHardware:
+    case Commands::C_EnableHardwareWriting:
     {
         setExceptionalSituationStatus(true);
         break;
@@ -206,7 +206,7 @@ void ProtocomRequestParser::exceptionalAction(const CommandStruct &cmd) noexcept
 {
     if (cmd.command == Commands::C_ReqFile)
         processFileFromDisk(cmd.arg1.value<S2::FilesEnum>());
-    else if (cmd.command == Commands::C_EnableWritingHardware)
+    else if (cmd.command == Commands::C_EnableHardwareWriting)
         emit emulateOkAnswer();
 }
 

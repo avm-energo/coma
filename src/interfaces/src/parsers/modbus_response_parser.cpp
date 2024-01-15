@@ -1,25 +1,8 @@
 #include "interfaces/parsers/modbus_response_parser.h"
 
 #include <QDebug>
-#include <execution>
 #include <gen/utils/crc16.h>
-
-namespace helper
-{
-
-template <typename T, std::size_t N = sizeof(T)> //
-inline T unpackRegister(const QByteArray &ba)
-{
-    assert(N == ba.size());
-    T value;
-    auto dstBegin = reinterpret_cast<std::uint8_t *>(&value);
-    std::copy(ba.cbegin(), ba.cend(), dstBegin);
-    for (auto i = 0; i < N; i += 2)
-        std::swap(dstBegin[i], dstBegin[i + 1]);
-    return value;
-}
-
-} // namespace helper
+#include <interfaces/utils/modbus_convertations.h>
 
 namespace Interface
 {
@@ -219,7 +202,7 @@ void ModbusResponseParser::processFloatSignals(const QByteArray &response, const
     {
         DataTypes::FloatStruct signal;
         signal.sigAdr = address + (i / step);
-        signal.sigVal = helper::unpackRegister<float>(response.mid(i, step));
+        signal.sigVal = Modbus::unpackRegister<float>(response.mid(i, step));
         signal.sigQuality = DataTypes::Quality::Good;
         emit responseParsed(signal);
     }
@@ -231,7 +214,7 @@ void ModbusResponseParser::processIntegerSignals(const QByteArray &response, con
     for (auto i = 0; i < response.size(); i += step)
     {
         DataTypes::BitStringStruct signal;
-        signal.sigVal = helper::unpackRegister<quint32>(response.mid(i, step));
+        signal.sigVal = Modbus::unpackRegister<quint32>(response.mid(i, step));
         signal.sigAdr = address + i / step;
         signal.sigQuality = DataTypes::Quality::Good;
         emit responseParsed(signal);

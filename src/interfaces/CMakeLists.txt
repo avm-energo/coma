@@ -34,6 +34,7 @@ set(files_h
     "${INCLUDE_PATH}/types/usbhidportinfo.h"
     "${INCLUDE_PATH}/types/usbhidsettings.h"
     "${INCLUDE_PATH}/utils/device_watcher.h"
+    "${INCLUDE_PATH}/utils/modbus_convertations.h"
     "${INCLUDE_PATH}/utils/request_queue.h"
     "${INCLUDE_PATH}/utils/slot_trait.h"
 )

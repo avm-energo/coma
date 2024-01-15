@@ -366,8 +366,9 @@ void HiddenDialog::fill()
 void HiddenDialog::write()
 {
     using namespace ModuleTypes;
+    constexpr std::size_t maxWidgetsCount = 16;
     std::vector<HiddenWidget> temp;
-    temp.reserve(16);
+    temp.reserve(maxWidgetsCount);
     quint32 id = 0;
 
     // Кладём описания всех виджетов во временный вектор
@@ -399,7 +400,7 @@ void HiddenDialog::write()
 
     // Посылаем команду на разрешение записи Hidden Block
     auto conn = m_dataUpdater->currentConnection();
-    conn->writeCommand(Commands::C_EnableWritingHardware, quint16(0x5c5c));
+    conn->writeCommand(Commands::C_EnableHardwareWriting, quint16(0x5c5c));
     m_isSendedEnableCmd = true;
     m_dataUpdater->setUpdatesEnabled(true);
 }
