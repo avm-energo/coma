@@ -260,7 +260,7 @@
 			</string-array>
 			<count>2</count>
 			<min>1</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1084,7 +1084,7 @@
 			<string>Время фильтрации (шаг 250мкс)</string>
 			<count>30</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1268,7 +1268,7 @@
 			<string>Время фильтрации (шаг 250мкс)</string>
 			<count>30</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1283,7 +1283,7 @@
 			<string>Температурный коэффициент</string>
 			<count>8</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>3</decimals>
 		</widget>
 	</record>
@@ -1297,8 +1297,8 @@
 			<group>100</group>
 			<string>Мин. значение сигнала в градусах</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1312,8 +1312,8 @@
 			<group>100</group>
 			<string>Макс. значение сигнала в градусах</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1327,8 +1327,8 @@
 			<group>202</group>
 			<string>Значение уставки по мин. значению</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1342,8 +1342,8 @@
 			<group>201</group>
 			<string>Значение уставки по мин. значению</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1357,8 +1357,8 @@
 			<group>201</group>
 			<string>Значение уставки по макс. значению</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1372,8 +1372,8 @@
 			<group>202</group>
 			<string>Значение уставки по макс. значению</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1447,7 +1447,7 @@
 			<string>Температурный коэффициент</string>
 			<count>8</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>3</decimals>
 		</widget>
 	</record>
@@ -1461,8 +1461,8 @@
 			<group>100</group>
 			<string>Мин. значение сигнала в градусах</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1476,8 +1476,8 @@
 			<group>100</group>
 			<string>Макс. значение сигнала в градусах</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1491,8 +1491,8 @@
 			<group>202</group>
 			<string>Значение уставки по мин. значению</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1506,8 +1506,8 @@
 			<group>201</group>
 			<string>Значение уставки по мин. значению</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1521,8 +1521,8 @@
 			<group>201</group>
 			<string>Значение уставки по макс. значению</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -1536,8 +1536,8 @@
 			<group>202</group>
 			<string>Значение уставки по макс. значению</string>
 			<count>8</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -3043,7 +3043,7 @@
 			</string-array>
 			<count>3</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>1</decimals>
 		</widget>
 	</record>
@@ -3063,7 +3063,7 @@
 			</string-array>
 			<count>3</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>1</decimals>
 		</widget>
 	</record>
@@ -3084,7 +3084,7 @@
 			</string-array>
 			<count>3</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -3105,7 +3105,7 @@
 			</string-array>
 			<count>3</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -3125,8 +3125,8 @@
 				<item>C</item>
 			</string-array>
 			<count>3</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -3146,8 +3146,8 @@
 				<item>C</item>
 			</string-array>
 			<count>3</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -3433,7 +3433,7 @@
 			</string-array>
 			<count>2</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -3453,7 +3453,7 @@
 			</string-array>
 			<count>2</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>0</decimals>
 		</widget>
 	</record>
@@ -3589,7 +3589,7 @@
 			</string-array>
 			<count>3</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -3610,7 +3610,7 @@
 			</string-array>
 			<count>3</count>
 			<min>0</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -3977,8 +3977,8 @@
 				<item>C</item>
 			</string-array>
 			<count>3</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -3997,8 +3997,8 @@
 				<item>C</item>
 			</string-array>
 			<count>3</count>
-			<min>-65554</min>
-			<max>65554</max>
+			<min>-65534</min>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -4019,7 +4019,7 @@
 			</string-array>
 			<count>4</count>
 			<min>-1000</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -4040,7 +4040,7 @@
 			</string-array>
 			<count>4</count>
 			<min>-1000</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -4061,7 +4061,7 @@
 			</string-array>
 			<count>4</count>
 			<min>-1000</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -4082,7 +4082,7 @@
 			</string-array>
 			<count>4</count>
 			<min>-1000</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -4103,7 +4103,7 @@
 			</string-array>
 			<count>4</count>
 			<min>-1000</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -4124,7 +4124,7 @@
 			</string-array>
 			<count>4</count>
 			<min>-1000</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -4145,7 +4145,7 @@
 			</string-array>
 			<count>4</count>
 			<min>-1000</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
@@ -4166,7 +4166,7 @@
 			</string-array>
 			<count>4</count>
 			<min>-1000</min>
-			<max>65554</max>
+			<max>65534</max>
 			<decimals>2</decimals>
 		</widget>
 	</record>
