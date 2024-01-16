@@ -57,7 +57,8 @@ Error::Msg Tune82Check::showScheme()
     }
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(pmpfile)));
+    auto label = WDFunc::NewLBL2(this, "", "", new QPixmap(pmpfile));
+    lyout->addWidget(label);
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Отключите выходы РЕТОМ;"));
     lyout->addWidget(WDFunc::NewLBL2(w, "2. Соберите схему подключения по вышеприведённой картинке;"));
     lyout->addWidget(WDFunc::NewLBL2(w,
@@ -68,7 +69,6 @@ Error::Msg Tune82Check::showScheme()
         lyout->addWidget(WDFunc::NewLBL2(w, "    значения токов по фазам 1 А;"));
     lyout->addWidget(WDFunc::NewLBL2(w, "    частоту 50 Гц."));
     lyout->addWidget(WDFunc::NewLBL2(w, "5. Включите выходы РЕТОМ"));
-
     w->setLayout(lyout);
     if (!EMessageBox::next(this, w))
         CancelTune();
@@ -89,7 +89,7 @@ Error::Msg Tune82Check::check()
 
 Error::Msg Tune82Check::checkMip()
 {
-    Mip *mip = new Mip(false);
+    Mip *mip = new Mip(true, Modules::MezzanineBoard::MTM_82, this);
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
     static_assert(inom.size() > 3);
     mip->setNominalCurrent(inom.at(3)); // 2nd currents, phase A

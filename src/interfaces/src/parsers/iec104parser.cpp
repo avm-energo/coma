@@ -1,4 +1,4 @@
-#include "iec104parser.h"
+#include "interfaces/parsers/iec104parser.h"
 
 #include <QCoreApplication>
 #include <QDateTime>
@@ -15,7 +15,7 @@ QMutex IEC104Parser::s_ParseWriteMutex;
 
 using namespace Iec104;
 
-IEC104Parser::IEC104Parser(RequestQueue &queue, QObject *parent) : BaseProtocolParser(queue, parent)
+IEC104Parser::IEC104Parser(RequestQueue &queue, QObject *parent) : QObject(parent), m_queue(queue)
 {
     m_writingToPortBlocked = true;
     m_isFirstParse = true;
@@ -29,28 +29,27 @@ IEC104Parser::IEC104Parser(RequestQueue &queue, QObject *parent) : BaseProtocolP
     m_log.init("ethernetThread.log");
 }
 
-IEC104Parser::~IEC104Parser()
-{
-}
-
-void IEC104Parser::SetBaseAdr(quint16 adr)
+void IEC104Parser::setBaseAdr(quint16 adr)
 {
     m_baseAdr = adr;
     m_baseAdrHigh = adr >> 8;
     m_baseAdrLow = adr;
 }
 
-void IEC104Parser::Run()
+void IEC104Parser::run()
 {
     m_timer104 = new QTimer(this);
     m_timer104->setInterval(15000);
     m_sendTestTimer = new QTimer(this);
     m_sendTestTimer->setInterval(5000);
+
 #ifndef DEBUG
-    connect(m_timer104, &QTimer::timeout, this, &IEC104Parser::Stop);
+    connect(m_timer104, &QTimer::timeout, this, &IEC104Parser::stop);
     connect(m_sendTestTimer, &QTimer::timeout, this, &IEC104Parser::SendTestAct);
     m_sendTestTimer->start();
 #endif
+
+    startDT();
     while (!m_threadMustBeFinished)
     {
         if (!m_parseData.isEmpty())
@@ -61,61 +60,80 @@ void IEC104Parser::Run()
             if (!tmpba.isEmpty())
             {
                 Error::Msg tmpi = isIncomeDataValid(tmpba);
-                if (tmpi == Error::Msg::NoError) // если поймали правильное начало данных,
-                                                 // переходим к их обработке
+                // если поймали правильное начало данных, то переходим к их обработке
+                if (tmpi == Error::Msg::NoError)
                 {
                     if (m_APDUFormat == I104_I)
                     {
                         Q_ASSERT(tmpba.size() > 6);
                         tmpba = tmpba.mid(6);
-                        ParseIFormat(tmpba); // без APCI
+                        parseIFormat(tmpba); // без APCI
                     }
                 }
             }
         }
         if (!m_isFileSending && !m_writingToPortBlocked)
         {
-            Iec104::CommandStruct inp;
-            if (true)
+            auto opt = m_queue.get().getFromQueue();
+            if (!opt.has_value())
             {
-                switch (inp.cmd)
-                {
-                case Iec104::CM104_COM45:
-                    Com45(inp.address, inp.blarg);
-                    break;
-                case Iec104::CM104_COM50:
-                    Com50(inp.address, inp.flarg);
-                    break;
-                case Iec104::CM104_WRITEFILE:
-                {
-                    m_fileIsConfigFile = DataTypes::FileFormat::Binary;
-                    m_file = inp.ba;
-                    FileReady(inp.address);
-                    break;
-                }
-                case Iec104::CM104_REQCONFIGFILE:
-                    m_fileIsConfigFile = DataTypes::FileFormat::DefaultS2;
-                    SelectFile(inp.address);
-                    break;
-                case Iec104::CM104_REQFILE:
-                    m_fileIsConfigFile = DataTypes::FileFormat::Binary;
-                    SelectFile(inp.address);
-                    break;
-                case Iec104::CM104_COM51:
-                    Com51WriteTime(inp.address);
-                    break;
-                case Iec104::CM104_REQGROUP:
-                    reqGroup(inp.address);
-                    break;
-                default:
-                    break;
-                }
+                QCoreApplication::processEvents();
+                continue;
             }
+
+            const auto command(opt.value());
+            switch (command.command)
+            {
+            case Commands::C_ReqFloats:
+            {
+                auto group = command.arg1.value<quint32>();
+                reqGroup(group);
+                break;
+            }
+            default:
+                qCritical() << "Undefined command: " << command.command;
+                break;
+            }
+
+            //            Iec104::CommandStruct inp;
+            //            switch (inp.cmd)
+            //            {
+            //            case Iec104::CM104_COM45:
+            //                com45(inp.address, inp.blarg);
+            //                break;
+            //            case Iec104::CM104_COM50:
+            //                com50(inp.address, inp.flarg);
+            //                break;
+            //            case Iec104::CM104_WRITEFILE:
+            //            {
+            //                m_fileIsConfigFile = DataTypes::FileFormat::Binary;
+            //                m_file = inp.ba;
+            //                fileReady(inp.address);
+            //                break;
+            //            }
+            //            case Iec104::CM104_REQCONFIGFILE:
+            //                m_fileIsConfigFile = DataTypes::FileFormat::DefaultS2;
+            //                selectFile(inp.address);
+            //                break;
+            //            case Iec104::CM104_REQFILE:
+            //                m_fileIsConfigFile = DataTypes::FileFormat::Binary;
+            //                selectFile(inp.address);
+            //                break;
+            //            case Iec104::CM104_COM51:
+            //                com51WriteTime(inp.address);
+            //                break;
+            //            case Iec104::CM104_REQGROUP:
+            //                reqGroup(inp.address);
+            //                break;
+            //            default:
+            //                break;
+            //            }
             if (m_V_R > (m_ackVR + I104_W))
-                SendS();
+                sendS();
         }
         QCoreApplication::processEvents();
     }
+    m_log.info("Finish thread");
     emit finished();
 }
 
@@ -158,7 +176,7 @@ void IEC104Parser::processReadBytes(QByteArray ba)
     m_isFirstParse = true;
 }
 
-Error::Msg IEC104Parser::isIncomeDataValid(QByteArray ba)
+Error::Msg IEC104Parser::isIncomeDataValid(QByteArray &ba)
 {
     if (ba.size() < 3)
         return Error::SizeError;
@@ -219,7 +237,7 @@ Error::Msg IEC104Parser::isIncomeDataValid(QByteArray ba)
             {
                 m_timer104->stop();
                 m_command = I104_STARTDT_CON;
-                SendGI();
+                sendGI();
                 m_writingToPortBlocked = false;
             }
             if ((baat2 == I104_STOPDT_CON)
@@ -229,7 +247,7 @@ Error::Msg IEC104Parser::isIncomeDataValid(QByteArray ba)
                 && (m_command == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
                 m_command = I104_TESTFR_CON;
             if (baat2 == I104_TESTFR_ACT)
-                SendTestCon();
+                sendTestCon();
 
             m_noAnswer = 0;
 
@@ -274,7 +292,7 @@ bool IEC104Parser::handleFile(QByteArray &ba, S2::FilesEnum addr, DataTypes::Fil
     return true;
 }
 
-void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разборщик
+void IEC104Parser::parseIFormat(QByteArray &ba) // основной разборщик
 {
     quint32 basize = ba.size();
     DataUnitIdentifier DUI;
@@ -293,6 +311,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
         DUI.cause.test = ba.at(2) >> 7;
         DUI.cause.initiator = ba.at(3);
         DUI.commonAdrASDU = ba.at(4) + ba.at(5) * 256;
+        qDebug() << "Address ASDU: " << DUI.commonAdrASDU;
         if (DUI.commonAdrASDU != m_baseAdr) // not our station
             return;
         quint32 objectAdr = 0;
@@ -392,7 +411,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 Q_ASSERT(basize >= 11);
                 m_log.info("Section ready");
                 unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
-                GetSection(filenum);
+                getSection(filenum);
                 break;
             }
 
@@ -407,7 +426,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 fileSize = (static_cast<quint8>(ba.at(13)) << 16) | (static_cast<quint8>(ba.at(12)) << 8)
                     | (static_cast<quint8>(ba.at(11)));
                 setGeneralResponse(DataTypes::GeneralResponseTypes::DataSize, fileSize);
-                CallFile(filenum);
+                callFile(filenum);
                 break;
             }
 
@@ -436,7 +455,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 case 1:
                 {
                     unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
-                    ConfirmFile(filenum);
+                    confirmFile(filenum);
                     m_sendTestTimer->start();
                     m_isFileSending = false;
                     m_log.info("FileSending clear");
@@ -451,7 +470,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 case 3:
                 {
                     unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
-                    ConfirmSection(filenum);
+                    confirmSection(filenum);
                     break;
                 }
                 }
@@ -464,12 +483,12 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 if (ba.at(12) == 0x02) //запрос файла
                 {
                     m_log.info("File query");
-                    SectionReady();
+                    sectionReady();
                 }
                 if (ba.at(12) == 0x06)
                 {
                     m_log.info("Segment query");
-                    SendSegments();
+                    sendSegments();
                 }
                 break;
             }
@@ -479,12 +498,12 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
                 Q_ASSERT(basize >= 13);
                 m_log.info("Last section of file " + QString::number(ba[12]) + " confirm");
                 if (ba.at(12) == 0x03) // подтверждение секции
-                    LastSection();
+                    lastSection();
                 if (ba.at(12) == 0x01) // подтверждение файла
                 {
                     m_log.info("FileSending clear");
                     m_isFileSending = false;
-                    emit SendMessagefromParse();
+                    emit sendMessagefromParse();
                 }
                 break;
             }
@@ -532,7 +551,7 @@ void IEC104Parser::ParseIFormat(QByteArray &ba) // основной разбор
     }
 }
 
-void IEC104Parser::StartDT()
+void IEC104Parser::startDT()
 {
     // qDebug() << QDateTime::currentMSecsSinceEpoch() << __PRETTY_FUNCTION__;
     m_log.info("Start()");
@@ -542,11 +561,11 @@ void IEC104Parser::StartDT()
     StartDT.append(I104_STARTDT_ACT);
     StartDT.append(QByteArrayLiteral("\x00\x00\x00"));
     m_command = I104_STARTDT_ACT;
-    Send(0, StartDT);
+    send(0, StartDT);
     m_timer104->start();
 }
 
-void IEC104Parser::StopDT()
+void IEC104Parser::stopDT()
 {
     m_log.info("Stop()");
     QByteArray StopDT;
@@ -555,30 +574,30 @@ void IEC104Parser::StopDT()
     StopDT.append(I104_STOPDT_ACT);
     StopDT.append(QByteArrayLiteral("\x00\x00\x00"));
     m_command = I104_STOPDT_ACT;
-    Send(0, StopDT); // ASDU = QByteArray()
+    send(0, StopDT); // ASDU = QByteArray()
     m_sendTestTimer->stop();
 }
 
-void IEC104Parser::Send(int inc, QByteArray apci, QByteArray asdu)
+void IEC104Parser::send(int inc, QByteArray apci, QByteArray asdu)
 {
     QByteArray ba = apci;
     ba.append(asdu);
     m_log.info("--> " + ba.toHex());
-    emit WriteData(ba);
+    emit writeData(ba);
 
     if (inc)
         m_V_S++;
 }
 
-void IEC104Parser::Stop()
+void IEC104Parser::stop()
 {
     m_writingToPortBlocked = true;
-    StopDT();
+    stopDT();
     m_threadMustBeFinished = true;
     m_timer104->stop();
 }
 
-QByteArray IEC104Parser::CreateGI(unsigned char apdulength)
+QByteArray IEC104Parser::createGI(unsigned char apdulength)
 {
     QByteArray GI;
     GI.append(I104_START);
@@ -618,12 +637,12 @@ QByteArray IEC104Parser::ASDU6Prefix(MessageDataType cmd, quint32 adr)
     return ba;
 }
 
-void IEC104Parser::SendGI()
+void IEC104Parser::sendGI()
 {
     QByteArray GInter = ASDU6Prefix(MessageDataType::C_IC_NA_1, 0x00);
     GInter.append(0x14);
-    QByteArray GI = CreateGI(0x0e);
-    Send(1, GI, GInter); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x0e);
+    send(1, GI, GInter); // ASDU = QByteArray()
     m_ackVR = m_V_R;
 }
 
@@ -640,10 +659,9 @@ template <typename T> QByteArray IEC104Parser::ToByteArray(T var)
     return ba;
 }
 
-void IEC104Parser::SendS()
+void IEC104Parser::sendS()
 {
     QByteArray Confirm;
-
     Confirm.append(I104_START);
     Confirm.append(0x04);
     Confirm.append(I104_S);
@@ -651,11 +669,11 @@ void IEC104Parser::SendS()
     Confirm.append((m_V_R & 0x007F) << 1);
     Confirm.append((m_V_R & 0x7F80) >> 7);
     m_command = I104_S;
-    Send(0, Confirm); // ASDU = QByteArray()
+    send(0, Confirm); // ASDU = QByteArray()
     m_ackVR = m_V_R;
 }
 
-void IEC104Parser::SendTestCon()
+void IEC104Parser::sendTestCon()
 {
     QByteArray GI;
     GI.append(I104_START);
@@ -663,14 +681,14 @@ void IEC104Parser::SendTestCon()
     GI.append(I104_TESTFR_CON);
     GI.append(QByteArrayLiteral("\x00\x00\x00"));
     m_command = I104_TESTFR_CON;
-    Send(0, GI); // ASDU = QByteArray()
+    send(0, GI); // ASDU = QByteArray()
 }
 
 void IEC104Parser::SendTestAct()
 {
     if (m_noAnswer)
     {
-        emit ReconnectSignal();
+        emit reconnectSignal();
         qCritical("No answer");
         return;
     }
@@ -683,10 +701,10 @@ void IEC104Parser::SendTestAct()
     GI.append(I104_TESTFR_ACT);
     GI.append(QByteArrayLiteral("\x00\x00\x00"));
     m_command = I104_TESTFR_ACT;
-    Send(0, GI); // ASDU = QByteArray()
+    send(0, GI); // ASDU = QByteArray()
 }
 
-void IEC104Parser::SelectFile(char numfile)
+void IEC104Parser::selectFile(char numfile)
 {
     m_sectionNum = 1;
     m_isFileSending = true;
@@ -695,49 +713,47 @@ void IEC104Parser::SelectFile(char numfile)
     m_log.info("SelectFile(" + QString::number(numfile) + ")");
     QByteArray cmd = ASDUFilePrefix(MessageDataType::F_SC_NA_1, numfile, 0x00);
     cmd.append('\x01');
-    QByteArray GI = CreateGI(0x11);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x11);
+    send(1, GI, cmd); // ASDU = QByteArray()
 }
 
-void IEC104Parser::CallFile(unsigned char numFile)
+void IEC104Parser::callFile(unsigned char numFile)
 {
     QByteArray cmd = ASDUFilePrefix(MessageDataType::F_SC_NA_1, numFile, 0x00);
     cmd.append('\x02');
-    QByteArray GI = CreateGI(0x11);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x11);
+    send(1, GI, cmd); // ASDU = QByteArray()
 }
 
-void IEC104Parser::GetSection(unsigned char numFile)
+void IEC104Parser::getSection(unsigned char numFile)
 {
     QByteArray cmd = ASDUFilePrefix(MessageDataType::F_SC_NA_1, numFile, m_sectionNum);
     cmd.append('\x06');
-    QByteArray GI = CreateGI(0x11);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x11);
+    send(1, GI, cmd); // ASDU = QByteArray()
 }
 
-void IEC104Parser::ConfirmSection(unsigned char numFile)
+void IEC104Parser::confirmSection(unsigned char numFile)
 {
     QByteArray cmd = ASDUFilePrefix(MessageDataType::F_AF_NA_1, numFile, m_sectionNum);
     cmd.append('\x03');
-    QByteArray GI = CreateGI(0x11);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x11);
+    send(1, GI, cmd); // ASDU = QByteArray()
     m_sectionNum++;
 }
 
-void IEC104Parser::ConfirmFile(unsigned char numFile)
+void IEC104Parser::confirmFile(unsigned char numFile)
 {
     QByteArray cmd = ASDUFilePrefix(MessageDataType::F_AF_NA_1, numFile, m_sectionNum);
     cmd.append('\x01');
-    QByteArray GI = CreateGI(0x11);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x11);
+    send(1, GI, cmd); // ASDU = QByteArray()
 }
 
-// void IEC104Thread::FileReady(S2ConfigType *file)
-void IEC104Parser::FileReady(quint16 numfile)
+void IEC104Parser::fileReady(quint16 numfile)
 {
     m_isFileSending = true;
     m_log.info("FileSending set");
-    //    DR = file;
     m_sectionNum = 1;
     QByteArray cmd = ASDUFilePrefix(MessageDataType::F_FR_NA_1, numfile, 0x00);
     cmd.chop(1);
@@ -745,21 +761,21 @@ void IEC104Parser::FileReady(quint16 numfile)
     cmd.append(m_fileLen & 0xFF);
     cmd.append((m_fileLen & 0xFF00) >> 8);
     cmd.append((m_fileLen & 0xFF0000) >> 16);
-    QByteArray GI = CreateGI(0x12);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x12);
+    send(1, GI, cmd); // ASDU = QByteArray()
 }
 
-void IEC104Parser::SectionReady()
+void IEC104Parser::sectionReady()
 {
     QByteArray cmd = ASDUFilePrefix(MessageDataType::F_SR_NA_1, 0x01, m_sectionNum);
     cmd.append(m_fileLen & 0xFF);
     cmd.append((m_fileLen & 0xFF00) >> 8);
     cmd.append((m_fileLen & 0xFF0000) >> 16);
-    QByteArray GI = CreateGI(0x13);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x13);
+    send(1, GI, cmd); // ASDU = QByteArray()
 }
 
-void IEC104Parser::SendSegments()
+void IEC104Parser::sendSegments()
 {
     QByteArray GI;
     m_KSS = 0;
@@ -791,8 +807,8 @@ void IEC104Parser::SendSegments()
         setGeneralResponse(DataTypes::GeneralResponseTypes::DataCount, pos);
         //        emit SetDataCount(pos);
         cmd[12] = static_cast<unsigned char>(diff);
-        GI = CreateGI(diff + 17);
-        Send(1, GI, cmd); // ASDU = QByteArray()
+        GI = createGI(diff + 17);
+        send(1, GI, cmd); // ASDU = QByteArray()
         cmd = cmd.left(13);
         QThread::msleep(100);
     } while (!m_file.isEmpty());
@@ -801,31 +817,31 @@ void IEC104Parser::SendSegments()
     cmd.append('\x03');
     cmd.append(m_KSS);
     m_KSS = 0;
-    GI = CreateGI(0x12);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    GI = createGI(0x12);
+    send(1, GI, cmd); // ASDU = QByteArray()
     emit responseSend(resp);
 }
 
-void IEC104Parser::LastSection()
+void IEC104Parser::lastSection()
 {
     QByteArray cmd = ASDUFilePrefix(MessageDataType::F_LS_NA_1, 1, m_sectionNum);
     cmd.append('\x01');
     cmd.append(m_KSF);
     m_KSF = 0;
-    QByteArray GI = CreateGI(0x12);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x12);
+    send(1, GI, cmd); // ASDU = QByteArray()
 }
 
-void IEC104Parser::Com45(quint32 com, bool value)
+void IEC104Parser::com45(quint32 com, bool value)
 {
     quint8 data = value ? '\x01' : '\x00';
     QByteArray cmd = ASDU6Prefix(MessageDataType::C_SC_NA_1, com);
     cmd.append(data);
-    QByteArray GI = CreateGI(0x0e);
-    Send(1, GI, cmd);
+    QByteArray GI = createGI(0x0e);
+    send(1, GI, cmd);
 }
 
-void IEC104Parser::Com50(quint32 adr, float param)
+void IEC104Parser::com50(quint32 adr, float param)
 {
     if (adr == 910)
         setGeneralResponse(DataTypes::GeneralResponseTypes::DataSize, 11);
@@ -833,26 +849,25 @@ void IEC104Parser::Com50(quint32 adr, float param)
     QByteArray cmd = ASDU6Prefix(MessageDataType::C_SE_NC_1, adr);
     cmd.append(ToByteArray(param));
     cmd.append('\x00');
-    QByteArray GI = CreateGI(0x12);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x12);
+    send(1, GI, cmd); // ASDU = QByteArray()
 }
 
 void IEC104Parser::reqGroup(int groupNum)
 {
-    // qDebug(__PRETTY_FUNCTION__);
     QByteArray req = ASDU6Prefix(MessageDataType::C_IC_NA_1, 0);
     req.append(groupNum + 20); // group 0 (GI) -> 20, group 1 -> 21 etc
-    QByteArray GI = CreateGI(0x0e);
-    Send(1, GI, req); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x0e);
+    send(1, GI, req); // ASDU = QByteArray()
     m_ackVR = m_V_R;
 }
 
-void IEC104Parser::Com51WriteTime(quint32 time)
+void IEC104Parser::com51WriteTime(quint32 time)
 {
     QByteArray cmd = ASDU6Prefix(MessageDataType::C_BO_NA_1, 4601);
     cmd.append(ToByteArray(time));
-    QByteArray GI = CreateGI(0x11);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    QByteArray GI = createGI(0x11);
+    send(1, GI, cmd); // ASDU = QByteArray()
 }
 
 void IEC104Parser::setGeneralResponse(DataTypes::GeneralResponseTypes type, quint64 data)

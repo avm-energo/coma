@@ -16,21 +16,21 @@ InterfaceEmuDialog::InterfaceEmuDialog(QWidget *parent) : AbstractInterfaceDialo
 void InterfaceEmuDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    tableView = WDFunc::NewQTV(this, "", nullptr);
-    lyout->addWidget(tableView);
-    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_tableView = WDFunc::NewQTV(this, "", nullptr);
+    lyout->addWidget(m_tableView);
+    m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addStretch(10);
     hlyout->addWidget(WDFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceEmuDialog::addInterface));
     hlyout->addWidget(WDFunc::NewPB(this, "", tr("Удалить"), this, [this] {
-        auto name = tableView->currentIndex().siblingAtColumn(0).data().toString();
-        removeDevice(name);
+        auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
+        removeConnection(name);
         updateModel();
     }));
     hlyout->addStretch(10);
     lyout->addLayout(hlyout);
     setLayout(lyout);
-    connect(tableView, &QTableView::doubleClicked, this, &InterfaceEmuDialog::setInterface);
+    connect(m_tableView, &QTableView::doubleClicked, this, &InterfaceEmuDialog::setInterface);
     AbstractInterfaceDialog::setupUI();
 }
 
@@ -44,7 +44,7 @@ bool InterfaceEmuDialog::updateModel()
         rslist << sets->value(rsname, "").toString();
     }
     QStringList sl { "Имя", "typeB", "typeM" };
-    QStandardItemModel *mdl = static_cast<QStandardItemModel *>(tableView->model());
+    QStandardItemModel *mdl = static_cast<QStandardItemModel *>(m_tableView->model());
     if (mdl == nullptr)
         mdl = new QStandardItemModel(this);
     else
@@ -62,8 +62,8 @@ bool InterfaceEmuDialog::updateModel()
         };
         mdl->appendRow(items);
     }
-    tableView->setModel(mdl);
-    tableView->resizeColumnsToContents();
+    m_tableView->setModel(mdl);
+    m_tableView->resizeColumnsToContents();
     return true;
 }
 
@@ -119,12 +119,12 @@ void InterfaceEmuDialog::acceptedInterface()
         return;
     QString name = WDFunc::LEData(dlg, "namele");
     // check if there's such name in registry
-    if (isKeyExist("EMU-", name))
+    if (isConnectionExist(name))
     {
         QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
         return;
     }
-    rotateSettings("EMU-", name);
+    // rotateSettings("EMU-", name);
     QString key = QCoreApplication::applicationName();
     key += "\\" + name;
     UniquePointer<QSettings> settings(new QSettings(QCoreApplication::organizationName(), key));

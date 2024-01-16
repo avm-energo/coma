@@ -4,6 +4,7 @@
 #include <gen/datatypes.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <interfaces/types/iec104/control_block.h>
 
 namespace detail
 {
@@ -144,14 +145,14 @@ void TestStdFunc::verToStr()
 {
     QString expectedString("3.3-0001");
     auto realString = StdFunc::VerToStr(50528257);
-    QVERIFY(expectedString == realString);
+    QCOMPARE(expectedString, realString);
 }
 
 void TestStdFunc::strToVer()
 {
     quint32 expectedValue = 50528257;
     auto realValue = StdFunc::StrToVer("3.3-0001");
-    QVERIFY(expectedValue == realValue);
+    QCOMPARE(expectedValue, realValue);
     QVERIFY(StdFunc::StrToVer("3.3-0001") > StdFunc::StrToVer("3.3-0000"));
     QVERIFY(StdFunc::StrToVer("4.3-0001") > StdFunc::StrToVer("3.3-0000"));
 }
@@ -162,17 +163,27 @@ void TestStdFunc::enumToStr()
     auto metaEnum = QMetaEnum::fromType<decltype(err)>();
     QString errStr(metaEnum.valueToKey(err));
     QString expected = "CrcError";
-    QVERIFY(errStr == expected);
+    QCOMPARE(errStr, expected);
 }
 
-void TestStdFunc::byteArrayTest()
+void TestStdFunc::byteArrayTest01()
 {
     quint16 data = 32125;
     QByteArray first;
     first.append(static_cast<char>(data % 0x100));
     first.append(static_cast<char>(data / 0x100));
     auto second = StdFunc::toByteArray(data);
-    QVERIFY(first == second);
+    QCOMPARE(first, second);
+}
+
+void TestStdFunc::byteArrayTest02()
+{
+    quint16 data = 12205;
+    QByteArray first;
+    first.append(static_cast<char>(data & 0xFF)); // low
+    first.append(static_cast<char>(data >> 8));   // high
+    auto second = StdFunc::toByteArray(data);
+    QCOMPARE(first, second);
 }
 
 void TestStdFunc::modbusRegistersTest01()
@@ -180,7 +191,7 @@ void TestStdFunc::modbusRegistersTest01()
     std::uint16_t data = 0xaabb;
     auto first = StdFunc::toByteArray(qToBigEndian(data));
     auto second = detail::packRegister(data);
-    QVERIFY(first == second);
+    QCOMPARE(first, second);
 }
 
 void TestStdFunc::modbusRegistersTest02()
@@ -191,18 +202,18 @@ void TestStdFunc::modbusRegistersTest02()
     auto third = detail::packReg(data);
     qDebug() << first << second << third;
     QVERIFY(first != second);
-    QVERIFY(second == third);
+    QCOMPARE(second, third);
 }
 
 void TestStdFunc::modbusRegistersTest03()
 {
-    std::uint64_t data = 0xaabbccddaabbccdd;
+    quint64 data = 0xaabbccddaabbccdd;
     auto first = StdFunc::toByteArray(qToBigEndian(data));
     auto second = detail::packRegister(data);
     auto third = detail::packReg(data);
     qDebug() << first << second << third;
     QVERIFY(first != second);
-    QVERIFY(second == third);
+    QCOMPARE(second, third);
 }
 
 void TestStdFunc::modbusRegistersTest04()
@@ -212,7 +223,7 @@ void TestStdFunc::modbusRegistersTest04()
     auto second = detail::packRegister(data);
     auto third = detail::packRegister(first);
     qDebug() << first << second << third;
-    QVERIFY(second == third);
+    QCOMPARE(second, third);
 }
 
 void TestStdFunc::modbusRegistersTest05()
@@ -220,7 +231,7 @@ void TestStdFunc::modbusRegistersTest05()
     std::uint32_t data = 0xaabbccdd;
     auto packed = detail::packRegister(data);
     auto unpacked = detail::unpackReg<std::uint32_t>(packed);
-    QVERIFY(data == unpacked);
+    QCOMPARE(data, unpacked);
 }
 
 void TestStdFunc::modbusRegistersTest06()
@@ -228,7 +239,7 @@ void TestStdFunc::modbusRegistersTest06()
     std::uint32_t data = 0xaabbccdd;
     auto packed = detail::packRegister(data);
     auto unpacked = detail::unpackRegister<std::uint32_t>(packed);
-    QVERIFY(data == unpacked);
+    QCOMPARE(data, unpacked);
 }
 
 void TestStdFunc::modbusRegistersTest07()
@@ -237,7 +248,7 @@ void TestStdFunc::modbusRegistersTest07()
     auto packed = detail::packRegister(data);
     auto first = detail::unpackReg<std::uint32_t>(packed);
     auto second = detail::unpackRegister<std::uint32_t>(packed);
-    QVERIFY(first == second);
+    QCOMPARE(first, second);
 }
 
 void TestStdFunc::modbusSinglePoint()
@@ -247,6 +258,86 @@ void TestStdFunc::modbusSinglePoint()
     const auto first = detail::processSinglePointSignals01(data, 1);
     const auto second = detail::processSinglePointSignals02(data, 1);
     QVERIFY(detail::compare(first, second));
+}
+
+void TestStdFunc::iec104ControlBlockTest01()
+{
+    using namespace Iec104;
+    ControlBlock block {};
+    QCOMPARE(block.startDataTransferActivate(), 0x07);
+    QCOMPARE(block.startDataTransferActivate(), 0b00000111);
+    QCOMPARE(block.startDataTransferConfirm(), 0x0B);
+    QCOMPARE(block.startDataTransferConfirm(), 0b00001011);
+    QCOMPARE(block.stopDataTransferActivate(), 0x13);
+    QCOMPARE(block.stopDataTransferActivate(), 0b00010011);
+    QCOMPARE(block.stopDataTransferConfirm(), 0x23);
+    QCOMPARE(block.stopDataTransferConfirm(), 0b00100011);
+    QCOMPARE(block.testFrameActivate(), 0x43);
+    QCOMPARE(block.testFrameActivate(), 0b01000011);
+    QCOMPARE(block.testFrameConfirm(), 0x83);
+    QCOMPARE(block.testFrameConfirm(), 0b10000011);
+}
+
+void TestStdFunc::iec104ControlBlockTest02()
+{
+    using namespace Iec104;
+    ControlBlock block { 1, 1 };
+    QCOMPARE(block.toInfoTransferFormat(), 0x00020002);
+    block.received = 3;
+    block.sent = 2;
+    QCOMPARE(block.toInfoTransferFormat(), 0x00060004);
+}
+
+void TestStdFunc::iec104ControlBlockTest03()
+{
+    using namespace Iec104;
+    ControlBlock block { 3, 3 };
+    QCOMPARE(block.toNumberedSupervisoryFunction(), 0x00060001);
+    block.received = 2;
+    QCOMPARE(block.toNumberedSupervisoryFunction(), 0x00040001);
+    block.received = 1;
+    QCOMPARE(block.toNumberedSupervisoryFunction(), 0x00020001);
+}
+
+// Similar results as in IEC104Parser::SendS function
+void TestStdFunc::iec104ControlBlockTest04()
+{
+    using namespace Iec104;
+    ControlBlock block { 0, 18321 };
+    QByteArray first;
+    first.append(static_cast<char>(0x01));
+    first.append(static_cast<char>(0x00));
+    first.append((block.received & 0x007F) << 1);
+    first.append((block.received & 0x7F80) >> 7);
+
+    auto data = block.toNumberedSupervisoryFunction();
+    QCOMPARE(data, 0x8F220001);
+    auto second = StdFunc::toByteArray(data);
+    QCOMPARE(first, second);
+}
+
+void TestStdFunc::iec104ControlBlockTest05()
+{
+    using namespace Iec104;
+    ControlBlock block {};
+    auto actual = block.toUnnumberedControlFunction<ControlFunc::StartDataTransfer, ControlArg::Activate>();
+    auto expected = block.startDataTransferActivate();
+    QCOMPARE(actual, expected);
+    actual = block.toUnnumberedControlFunction<ControlFunc::StartDataTransfer, ControlArg::Confirm>();
+    expected = block.startDataTransferConfirm();
+    QCOMPARE(actual, expected);
+    actual = block.toUnnumberedControlFunction<ControlFunc::StopDataTransfer, ControlArg::Activate>();
+    expected = block.stopDataTransferActivate();
+    QCOMPARE(actual, expected);
+    actual = block.toUnnumberedControlFunction<ControlFunc::StopDataTransfer, ControlArg::Confirm>();
+    expected = block.stopDataTransferConfirm();
+    QCOMPARE(actual, expected);
+    actual = block.toUnnumberedControlFunction<ControlFunc::TestFrame, ControlArg::Activate>();
+    expected = block.testFrameActivate();
+    QCOMPARE(actual, expected);
+    actual = block.toUnnumberedControlFunction<ControlFunc::TestFrame, ControlArg::Confirm>();
+    expected = block.testFrameConfirm();
+    QCOMPARE(actual, expected);
 }
 
 QTEST_GUILESS_MAIN(TestStdFunc)

@@ -1,11 +1,7 @@
 #include "interfaces/ifaces/serialport.h"
 
-#include <QCoreApplication>
 #include <QDebug>
 #include <QThread>
-#include <QTimer>
-
-constexpr auto TIMEOUT = 3000;
 
 SerialPort::SerialPort(const SerialPortSettings &settings, QObject *parent)
     : BaseInterface("ModbusPort", parent), m_port(new QSerialPort(settings.name, this))

@@ -11,15 +11,16 @@
 
 InterfaceUSBDialog::InterfaceUSBDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
+    setWindowTitle("USB соединения");
 }
 
 void InterfaceUSBDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    tableView = WDFunc::NewQTV(this, "usbtv", nullptr);
-    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers); // no editable view
-    lyout->addWidget(tableView);
-    connect(tableView, &QTableView::doubleClicked, this, &InterfaceUSBDialog::setInterface);
+    m_tableView = WDFunc::NewQTV(this, "usbtv", nullptr);
+    m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers); // no editable view
+    lyout->addWidget(m_tableView);
+    connect(m_tableView, &QTableView::doubleClicked, this, &InterfaceUSBDialog::setInterface);
     setLayout(lyout);
     AbstractInterfaceDialog::setupUI();
 }
@@ -71,7 +72,7 @@ bool InterfaceUSBDialog::updateModel()
         };
         mdl->appendRow(device);
     }
-    tableView->setModel(mdl);
-    tableView->resizeColumnsToContents();
+    m_tableView->setModel(mdl);
+    m_tableView->resizeColumnsToContents();
     return true;
 }

@@ -56,8 +56,6 @@ public:
 
     bool IsNeededDefConf;
     int m_blockCount;
-    //    QStringList m_messages;
-    //    QList<Error::Msg (AbstractTuneDialog::*)()> m_tuneFunctions;
     QList<TuneFuncStruct> m_tuneFunctions;
     quint8 bStep;
     int TuneVariant; // вариант регулировочных параметров
@@ -75,7 +73,7 @@ public:
     Error::Msg CheckPassword();
     virtual void setTuneFunctions() = 0; // заполнить список функций настройки
     int addWidgetToTabWidget(QWidget *w, const QString &caption);
-    void MsgSetVisible(MsgTypes type, int msg, bool Visible = true);
+    void MsgSetVisible(MsgTypes type, int msg, bool visible = true);
     void MsgClear();
     void setBac(DataBlock *block);
     Error::Msg checkCalibrStep();

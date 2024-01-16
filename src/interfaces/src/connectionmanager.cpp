@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <gen/std_ext.h>
+#include <interfaces/ifaces/ethernet.h>
 #include <interfaces/ifaces/serialport.h>
 #include <interfaces/ifaces/usbhidport.h>
 #include <interfaces/query_executor_fabric.h>
@@ -50,8 +51,10 @@ bool ConnectionManager::createConnection(const ConnectStruct &connectionData)
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const IEC104Settings &settings) {
-                /// TODO
-                Q_UNUSED(settings);
+                auto interface = new Ethernet(settings);
+                auto executor
+                    = QueryExecutorFabric::makeIec104Executor(m_currentConnection->m_queue, settings.bsAddress);
+                m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const EmulatorSettings &settings) {
                 /// TODO
