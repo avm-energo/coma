@@ -43,11 +43,12 @@ void Ethernet::disconnect()
 }
 
 // Blocking data reading from the socket
-QByteArray Ethernet::read(bool *status)
+QByteArray Ethernet::read(bool &status)
 {
     QByteArray data;
     if (!m_socket->isOpen() || !m_socket->isReadable())
     {
+        status = false;
         m_log.error("Ethernet reading data from the closed socket");
         return data;
     }
@@ -56,7 +57,7 @@ QByteArray Ethernet::read(bool *status)
         m_dataGuard.lock();         // lock port
         data = m_socket->readAll(); // read data
         m_dataGuard.unlock();       // unlock port
-        *status = true;
+        status = true;
     }
     else
         QCoreApplication::processEvents();

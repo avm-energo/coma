@@ -42,14 +42,13 @@ void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponse
         connect(m_requestParser, &BaseRequestParser::progressBytes,       //
             m_responseParser, &BaseResponseParser::processProgressCount); //
         connect(m_requestParser, &BaseRequestParser::writingLastSection,  //
-            m_responseParser, &BaseResponseParser::lastSectionSended);    //
+            m_responseParser, &BaseResponseParser::lastSectionSent);      //
         connect(m_requestParser, &BaseRequestParser::needToLog,           //
             this, &DefaultQueryExecutor::logFromParser);                  //
         connect(m_responseParser, &BaseResponseParser::needToLog,         //
             this, &DefaultQueryExecutor::logFromParser);                  //
 
         m_requestParser->basicProtocolSetup(); // basic protocol setup
-
         connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
             setState(ExecutorState::WritingLongData);
             m_timeoutTimer->setInterval(m_timeoutTimer->interval() * 5);

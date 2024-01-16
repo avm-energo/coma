@@ -18,7 +18,7 @@ protected:
     CommandStruct m_request;
     bool m_isFirstSectionReceived;
     bool m_isLastSectionReceived;
-    bool m_isLastSectionSended;
+    bool m_isLastSectionSent;
     S2Util m_util;
 
     /// \brief Базовая функция для отправки наверх прочитанных из устройства файлов.
@@ -57,7 +57,7 @@ public:
 public slots:
     /// \brief Слот, вызываемый при получении от парсера запросов к
     /// устройству сигнала о том, что была отправлена последняя секция на запись.
-    void lastSectionSended() noexcept;
+    void lastSectionSent() noexcept;
 
     /// \brief Слот, отправляющий наверх размер читаемого/записываемого
     /// файла или большого массива байт.

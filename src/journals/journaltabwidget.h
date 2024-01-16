@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../widgets/QProgressIndicator.h"
+#include "../widgets/eprogressindicator.h"
 #include "basejournal.h"
 
 #include <QDialog>
@@ -18,8 +18,8 @@ class JournalTabWidget : public QWidget
 private:
     BaseJournal *journal;
     ETableView *modelView;
-    QDialog *getProgressDialog;
-    QProgressIndicator *getProgressIndicator;
+    QDialog *progressDialog;
+    EProgressIndicator *progressIndicator;
     QProgressDialog *saveProgressDialog;
     S2::S2BFile journalFile;
 

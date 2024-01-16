@@ -55,9 +55,9 @@ void UsbHidPort::disconnect()
     emit clearQueries();
 }
 
-QByteArray UsbHidPort::read(bool *status)
+QByteArray UsbHidPort::read(bool &status)
 {
-    constexpr auto maxLength = MaxSegmenthLength + 1; // +1 to ID
+    constexpr auto maxLength = MaxSegmenthLength + 1; // +1 for ID
     QByteArray data(maxLength, 0);
     auto dataPtr = reinterpret_cast<unsigned char *>(data.data());
     m_dataGuard.lock();                                                      // lock iface
@@ -69,17 +69,19 @@ QByteArray UsbHidPort::read(bool *status)
         writeLog(Error::Msg::ReadError);
         hidErrorHandle();
         emit error(InterfaceError::ReadError);
-        *status = false;
         data.clear();
+        status = false;
         QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     }
     else if (readBytes > 0)
     {
         data.resize(readBytes);
+        status = true;
     }
     else
     {
         data.clear();
+        status = false;
         QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     }
 

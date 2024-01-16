@@ -23,7 +23,7 @@ public slots:
     void disconnect() override;
 
 private:
-    QByteArray read(bool *status = nullptr) override;
+    QByteArray read(bool &status) override;
     bool write(const QByteArray &ba) override;
     bool writeDataToPort(QByteArray &command);
     void hidErrorHandle();

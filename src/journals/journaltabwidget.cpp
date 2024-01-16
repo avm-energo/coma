@@ -18,8 +18,8 @@ JournalTabWidget::JournalTabWidget(BaseJournal *jour, QWidget *parent)
     : QWidget(parent)
     , journal(jour)
     , modelView(journal->createModelView(this))
-    , getProgressIndicator(nullptr)
-    , getProgressDialog(nullptr)
+    , progressIndicator(nullptr)
+    , progressDialog(nullptr)
     , saveProgressDialog(new QProgressDialog(this))
 {
     setupProgressDialogs();
@@ -32,11 +32,11 @@ void JournalTabWidget::setupProgressDialogs()
 {
     constexpr auto progressDlgParams = //
         Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint;
-    getProgressDialog = new QDialog(this, progressDlgParams);
+    progressDialog = new QDialog(this, progressDlgParams);
     auto progressLayout = new QHBoxLayout;
-    getProgressIndicator = new QProgressIndicator(this);
-    progressLayout->addWidget(getProgressIndicator);
-    getProgressDialog->setLayout(progressLayout);
+    progressIndicator = new EProgressIndicator(this);
+    progressLayout->addWidget(progressIndicator);
+    progressDialog->setLayout(progressLayout);
     saveProgressDialog->setCancelButton(nullptr);
     saveProgressDialog->cancel();
     connect(journal, &BaseJournal::resendMaxResult, saveProgressDialog, &QProgressDialog::setMaximum);
@@ -69,7 +69,7 @@ void JournalTabWidget::setupUI()
     hLayout2->addWidget(saveBinaryButton);
 
     connect(journal, &BaseJournal::done, this, [this, saveExcelButton, saveBinaryButton] {
-        getProgressDialog->close();
+        progressDialog->close();
         modelView->setUpdatesEnabled(true);
         saveExcelButton->setEnabled(true);
         saveBinaryButton->setEnabled(true);
@@ -104,8 +104,8 @@ QString JournalTabWidget::getSuggestedFilename()
 
 void JournalTabWidget::gettingJournal()
 {
-    getProgressDialog->show();
-    getProgressIndicator->startAnimation();
+    progressDialog->show();
+    progressIndicator->startAnimation();
     ActiveConnection::async()->reqFile(quint32(journal->getType()));
     modelView->setUpdatesEnabled(false);
 }
