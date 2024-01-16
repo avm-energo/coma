@@ -109,9 +109,13 @@ void SwjPackConvertor::writeData(QXlsx::Worksheet *sheet)
         {
             for (int indexCol = 1; indexCol < 4; indexCol++)
             {
-                auto detailData = detail->data(detail->index(indexRow, indexCol)).toString();
-                detailData.replace(".", ",");
-                sheet->writeString(QXlsx::CellReference { row, column++ }, detailData);
+                auto index = detail->index(indexRow, indexCol);
+                if (index.isValid())
+                {
+                    auto detailData = detail->data(index).toString();
+                    detailData.replace(".", ",");
+                    sheet->writeString(QXlsx::CellReference { row, column++ }, detailData);
+                }
             }
         }
 
