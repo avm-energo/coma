@@ -145,7 +145,7 @@ void TrendViewDialog::addSig(QString signame)
     }
     else if (signalOscPropertiesMap.value(signame).type == ST_ANALOG)
     {
-        auto analogcount = visibleSignalOscDescriptionSize(ST_ANALOG);
+        // auto analogcount = visibleSignalOscDescriptionSize(ST_ANALOG);
         // if (analogcount >= MAXGRAPHSPERPLOT)
         //{
         //    PlotOverloadMessage(scw, signame);

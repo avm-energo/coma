@@ -126,9 +126,9 @@ void BaseResponseParser::fileReceived(const QByteArray &file, //
             static_cast<quint64>(file.size())    //
         };
         emit responseParsed(genResp);
-        for (auto &&file : outlist)
+        for (auto &&record : outlist)
         {
-            S2::FileStruct resp { S2::FilesEnum(file.ID), file.data };
+            S2::FileStruct resp { S2::FilesEnum(record.ID), record.data };
             emit responseParsed(resp);
         }
         break;
