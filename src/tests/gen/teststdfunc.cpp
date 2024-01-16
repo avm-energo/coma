@@ -8,6 +8,7 @@
 #include <interfaces/types/iec104/asdu.h>
 #include <interfaces/types/iec104/asdu_unpacker.h>
 #include <interfaces/types/iec104/control_block.h>
+#include <interfaces/utils/modbus_convertations.h>
 
 namespace detail
 {
@@ -19,50 +20,6 @@ inline T unpackReg(QByteArray ba)
     for (auto i = 0; i < ba.size(); i = i + 2)
         std::swap(ba.data()[i], ba.data()[i + 1]);
     return *reinterpret_cast<T *>(ba.data());
-}
-
-template <typename T, std::size_t N = sizeof(T)> //
-inline T unpackRegister(const QByteArray &ba)
-{
-    assert(N == ba.size());
-    T value;
-    auto dstBegin = reinterpret_cast<std::uint8_t *>(&value);
-    std::copy(ba.cbegin(), ba.cend(), dstBegin);
-    for (auto i = 0; i < N; i += 2)
-        std::swap(dstBegin[i], dstBegin[i + 1]);
-    return value;
-}
-
-template <typename T, std::size_t N = sizeof(T)> //
-inline QByteArray packRegister(T value)
-{
-    static_assert(N % 2 == 0, "The size of type T must be even");
-    static_assert(N >= 2, "The size of type T must be greater than or equal to 2");
-    QByteArray ba;
-    ba.reserve(N);
-    auto srcBegin = reinterpret_cast<std::uint8_t *>(&value);
-    auto srcEnd = srcBegin + sizeof(T);
-    for (auto it = srcBegin; it != srcEnd; it = it + 2)
-    {
-        ba.push_back(*(it + 1));
-        ba.push_back(*it);
-    }
-    return ba;
-}
-
-inline QByteArray packRegister(const QByteArray &value)
-{
-    const auto N = value.size();
-    Q_ASSERT(N % 2 == 0);
-    Q_ASSERT(N >= 2);
-    QByteArray ba;
-    ba.reserve(value.size());
-    for (auto it = value.cbegin(); it != value.cend(); it = it + 2)
-    {
-        ba.push_back(*(it + 1));
-        ba.push_back(*it);
-    }
-    return ba;
 }
 
 template <typename T, std::size_t N = sizeof(T)> //
@@ -194,7 +151,7 @@ void TestStdFunc::modbusRegistersTest01()
     std::uint16_t data = 0xaabb;
     auto reversed = qToBigEndian(data);
     auto first = StdFunc::toByteArray(reversed);
-    auto second = detail::packRegister(data);
+    auto second = Modbus::packRegister(data);
     QCOMPARE(first, second);
 }
 
@@ -202,7 +159,7 @@ void TestStdFunc::modbusRegistersTest02()
 {
     std::uint32_t data = 0xaabbccdd;
     auto first = StdFunc::toByteArray(qToBigEndian(data));
-    auto second = detail::packRegister(data);
+    auto second = Modbus::packRegister(data);
     auto third = detail::packReg(data);
     qDebug() << first << second << third;
     QVERIFY(first != second);
@@ -213,7 +170,7 @@ void TestStdFunc::modbusRegistersTest03()
 {
     quint64 data = 0xaabbccddaabbccdd;
     auto first = StdFunc::toByteArray(qToBigEndian(data));
-    auto second = detail::packRegister(data);
+    auto second = Modbus::packRegister(data);
     auto third = detail::packReg(data);
     qDebug() << first << second << third;
     QVERIFY(first != second);
@@ -224,8 +181,8 @@ void TestStdFunc::modbusRegistersTest04()
 {
     std::uint32_t data = 0xaabbccdd;
     auto first = StdFunc::toByteArray(data);
-    auto second = detail::packRegister(data);
-    auto third = detail::packRegister(first);
+    auto second = Modbus::packRegister(data);
+    auto third = Modbus::packRegister(first);
     qDebug() << first << second << third;
     QCOMPARE(second, third);
 }
@@ -233,7 +190,7 @@ void TestStdFunc::modbusRegistersTest04()
 void TestStdFunc::modbusRegistersTest05()
 {
     std::uint32_t data = 0xaabbccdd;
-    auto packed = detail::packRegister(data);
+    auto packed = Modbus::packRegister(data);
     auto unpacked = detail::unpackReg<std::uint32_t>(packed);
     QCOMPARE(data, unpacked);
 }
@@ -241,17 +198,17 @@ void TestStdFunc::modbusRegistersTest05()
 void TestStdFunc::modbusRegistersTest06()
 {
     std::uint32_t data = 0xaabbccdd;
-    auto packed = detail::packRegister(data);
-    auto unpacked = detail::unpackRegister<std::uint32_t>(packed);
+    auto packed = Modbus::packRegister(data);
+    auto unpacked = Modbus::unpackRegister<std::uint32_t>(packed);
     QCOMPARE(data, unpacked);
 }
 
 void TestStdFunc::modbusRegistersTest07()
 {
     std::uint32_t data = 0xaabbccdd;
-    auto packed = detail::packRegister(data);
+    auto packed = Modbus::packRegister(data);
     auto first = detail::unpackReg<std::uint32_t>(packed);
-    auto second = detail::unpackRegister<std::uint32_t>(packed);
+    auto second = Modbus::unpackRegister<std::uint32_t>(packed);
     QCOMPARE(first, second);
 }
 
