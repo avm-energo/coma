@@ -160,7 +160,8 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
             // ... среди сигналов ищем такой, чтобы...
             auto search = std::find_if(sigMap.cbegin(), sigMap.cend(),
                 // ... виджет попадал в допустимый диапазон сигнала...
-                [&](const ModuleTypes::Signal &signal) -> bool {
+                [&](const SigMapValue &element) -> bool {
+                    auto &signal = element.second;
                     auto start = widget.startAddr;
                     auto end = (widget.view == ModuleTypes::ViewType::Bitset) ? (start + 1) : (start + widget.count);
                     auto acceptStart = signal.startAddr;
@@ -170,7 +171,7 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
             // ... и когда находим...
             if (search != sigMap.cend())
                 // ... то добавляем в множество неповторяющихся ключей.
-                sigIds.insert(search.key());
+                sigIds.insert(search->first);
         }
     }
 
@@ -178,7 +179,7 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
     for (auto it = sigIds.cbegin(); it != sigIds.cend(); it++)
     {
         auto &id = *it;
-        auto signal = sigMap.value(id);
+        auto signal = sigMap.at(id);
         switch (signal.sigType)
         {
         case ModuleTypes::SignalType::Float:

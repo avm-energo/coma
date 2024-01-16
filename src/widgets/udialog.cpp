@@ -11,7 +11,6 @@ UDialog::UDialog(QWidget *parent) : UWidget(parent)
     showSuccessMessageFlag = true;
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
-    updateConnection(m_conn);
 }
 
 UDialog::UDialog(const QString &hash, const QString &key, QWidget *parent) : UDialog(parent)
@@ -23,15 +22,14 @@ UDialog::UDialog(const QString &hash, const QString &key, QWidget *parent) : UDi
     m_hash = settings.value(key, "").toString();
 }
 
-void UDialog::updateConnection(Connection *connection)
+void UDialog::updateConnection(Connection *conn)
 {
-    m_conn = connection;
-    m_dataUpdater->updateConnection(m_conn);
-    if (m_conn != nullptr)
+    m_dataUpdater->updateConnection(conn);
+    if (conn != nullptr)
     {
         if (m_genRespConn)
             disconnect(m_genRespConn);
-        m_genRespConn = m_conn->connection(this, &UDialog::updateGeneralResponse);
+        m_genRespConn = conn->connection(this, &UDialog::updateGeneralResponse);
     }
 }
 
@@ -82,7 +80,7 @@ bool UDialog::disableMessages()
 
 bool UDialog::enableMessages()
 {
-    m_genRespConn = m_conn->connection(this, &UDialog::updateGeneralResponse);
+    m_genRespConn = m_dataUpdater->currentConnection()->connection(this, &UDialog::updateGeneralResponse);
     return m_genRespConn;
 }
 

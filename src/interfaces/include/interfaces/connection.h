@@ -1,8 +1,6 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include "../../module/modulesettings.h"
-
 #include <QTimer>
 #include <gen/error.h>
 #include <gen/logclass.h>
@@ -145,7 +143,7 @@ public:
     /// \brief Функция для присоединения receiver и его слота к текущему соединению для получения данных.
     /// \details Qt::QueuedConnection используется по умолчанию, чтобы
     /// слот вызывался в контексте потока, в котором находится объект receiver.
-    /// \see https://qthub.com/static/doc/qt5/qtcore/qt.html#ConnectionType-enum
+    /// \see https://doc.qt.io/qt-5/qt.html#ConnectionType-enum
     template <typename Class, typename Slot, std::enable_if_t<std::is_member_function_pointer_v<Slot>, bool> = true> //
     inline MetaConnection connection(Class *receiver, Slot slot, Qt::ConnectionType type = Qt::QueuedConnection)
     {

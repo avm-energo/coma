@@ -85,7 +85,8 @@ void FWUploadDialog::loadFirmware()
         EMessageBox::error(this, "Получен файл с некорректным размером.");
         return;
     }
-    Connection::iface()->writeFirmware(firmware);
+    auto conn = Connection::iface();
+    conn->writeFirmware(firmware);
     uploadStatus = FirmwareUploadStatus::Written;
 }
 

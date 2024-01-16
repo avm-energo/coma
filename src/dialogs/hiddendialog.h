@@ -1,74 +1,97 @@
-#ifndef HIDDENDIALOG_H
-#define HIDDENDIALOG_H
+#pragma once
+
+#include "../module/modules.h"
+#include "../module/modulesettings.h"
 #include "../widgets/udialog.h"
 
-#include <QDialog>
-#include <QPaintEvent>
-#include <QVBoxLayout>
+#include <map>
+#include <set>
 
-constexpr int RSTTIMEOUT = 5000; // таймаут на рестарт модуля после отправки ему блока Bhb
+class QBoxLayout;
+class QGroupBox;
+class QPaintEvent;
+class QTabWidget;
 
-constexpr quint16 BNMN = 0x00;
-constexpr quint16 BYMN = 0x01;
-constexpr quint16 BNMY = 0x02;
-constexpr quint16 BYMY = 0x03;
-
-class HiddenDialog : public UDialog
+/// \brief Класс диалога "Секретные операции"
+class HiddenDialog final : public UDialog
 {
     Q_OBJECT
-    struct Bhb_Main
-    {
-        quint32 MType;        // тип платы
-        quint32 SerialNum;    // серийный номер платы
-        quint32 HWVer;        // версия аппаратного обеспечения модуля (платы)
-        quint32 ModSerialNum; // серийный номер модуля целиком
-    };
-    struct Bhb_Overall
-    {
-        Bhb_Main BoardBBhb;
-        Bhb_Main BoardMBhb;
-    };
-    Q_PROPERTY(bool status READ status WRITE setStatus NOTIFY statusChanged)
-public:
-    explicit HiddenDialog(QWidget *parent = nullptr);
-    void fill();
+private:
+    ModuleTypes::HiddenSettings m_settings;
+    std::map<quint32, bool> m_srcAddrStates;
+    QString m_currentBackground;
+    DataTypes::HardwareStruct m_hardwareInfo;
+    bool m_isGodMode, m_isAlreadyFilled;
+    bool m_isSendedEnableCmd, m_isSendedWritingCmd;
 
-    bool status() const
-    {
-        return m_status;
-    }
+    /// \brief Функция для генерации настроек диалога по умолчанию.
+    /// \ingroup Data manipulations
+    void generateDefaultSettings();
+    /// \brief Функция для подготовки внутренних данных диалога
+    /// и настройки запросов диалога к устройству.
+    /// \ingroup Data manipulations
+    void prepareInternalData(const ModuleTypes::SignalMap &sigMap);
+
+    /// \brief Создание и настройка UI диалога.
+    /// \ingroup UI
+    void setupUI();
+    /// \brief Возвращает group box, созданный по переданным настройкам вкладки.
+    /// \ingroup UI
+    QGroupBox *setupGroupBox(const ModuleTypes::HiddenTab &hiddenTab);
+    /// \brief Перегруженная функция для отрисовки фонового изображения.
+    /// \ingroup UI
+    void paintEvent(QPaintEvent *e) override;
+
+    /// \brief Обновление UI, в зависимости от того, включена ли вкладка с виджетами.
+    /// \see isTabEnabled, updateWidget.
+    /// \ingroup Internal logic
+    void updateUI();
+    /// \brief Функция для проверки, включена ли вкладка с виджетами.
+    /// \details Проверка происходит с помощью чек-бокса, отображаемого на всех
+    /// вкладках, кроме вкалдки для базовой платы (она всегда включена по умолчанию).
+    /// \ingroup Internal logic
+    bool isTabEnabled(const ModuleTypes::HiddenTab &tabSettings) const noexcept;
+    /// \brief Обновление (enabling) виджета на вкладке.
+    /// \ingroup Internal logic
+    void updateWidget(const bool enabled, const ModuleTypes::HiddenWidget &widget);
+
+    /// \brief Функция для поиска виджета в диалоге по его адресу.
+    /// \ingroup Internal logic
+    const ModuleTypes::HiddenWidget *findWidgetByAddress(const quint32 addr) const noexcept;
+    /// \brief Функция выполняет проверку, получили ли все виджеты
+    /// диалога данные при выполнении запроса к устройству.
+    /// \ingroup Internal logic
+    void verifyFilling() noexcept;
+    /// \brief Функция для принятия данных в формате BitString, запрошенных у устройства.
+    /// \ingroup Internal logic
+    void updateBitStringData(const DataTypes::BitStringStruct &bs) override;
+    /// \brief Функция для заполнения виджета принятыми от устройства данными.
+    /// \ingroup Internal logic
+    void fillWidget(const quint32 value, const ModuleTypes::HiddenWidget &widgetData);
+
+    /// \brief Функция для парсинга данных из виджета.
+    /// \ingroup Internal logic
+    quint32 getDataFrom(const ModuleTypes::HiddenWidget &widgetData);
+    /// \brief Функция для принятия от устройства данных в формате GeneralResponse.
+    /// \details Запись данных в устройство делится на 2 этапа:
+    /// - отправление команды EnableWritingHardware;
+    /// - если на прошлую команду от устройство пришёл статус Ok,
+    /// то блок с данными отправляется в устройство.
+    /// \ingroup Internal logic
+    void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response) override;
+
+public:
+    explicit HiddenDialog(const ModuleSettings &settings, QWidget *parent = nullptr);
+    /// \brief Устанавливает имя устройства в диалоге.
+    /// \ingroup API
+    void setModuleName(const QString &moduleName);
 
 public slots:
-    void setStatus(bool status)
-    {
-        if (m_status == status)
-            return;
-
-        m_status = status;
-        emit statusChanged(m_status);
-    }
-
-signals:
-    void statusChanged(bool status);
-
-private:
-    void setupUI();
-    void setVersion(quint32 number, QString lename);
-    quint32 getVersion(QString lename);
-    void sendBhb();
-    void updateMode(bool status);
-
-    QString m_BGImage;
-    char m_type;
-    bool m_withMezzanine;
-    Bhb_Overall m_bhb;
-    bool m_status = false;
-private slots:
-    void acceptChanges();
-    void setMezzanineEnabled(int Enabled);
-
-protected:
-    void paintEvent(QPaintEvent *e);
+    /// \brief Слот для отправки запроса устройству и заполнения
+    /// виджетов диалога данными из пришедшего ответа.
+    /// \ingroup API
+    void fill();
+    /// \brief Слот для записи данных диалога в устройство.
+    /// \ingroup API
+    void write();
 };
-
-#endif // HIDDENDIALOG_H

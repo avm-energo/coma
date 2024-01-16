@@ -19,8 +19,8 @@ static constexpr char name[] = "oscHash";
 
 OscDialog::OscDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
-    m_conn->connection(this, &OscDialog::fillOscInfo);
-    m_conn->connection(this, &OscDialog::fillOsc);
+    m_dataUpdater->currentConnection()->connection(this, &OscDialog::fillOscInfo);
+    m_dataUpdater->currentConnection()->connection(this, &OscDialog::fillOsc);
     setupUI();
 }
 

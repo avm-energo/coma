@@ -69,6 +69,7 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
     return widget;
 }
 
+/// DON'T REMOVE THIS FUNCTION
 template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] quint16 key)
 {
     QWidget *widget = nullptr;

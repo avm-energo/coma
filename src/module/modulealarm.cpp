@@ -21,7 +21,6 @@ ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, const ModuleTypes::Alar
     else
         m_alarmColor = Qt::transparent;
     followToData();
-    m_conn->connection(this, &ModuleAlarm::update);
     setupUI(m_alarms.values());
 }
 
@@ -30,14 +29,15 @@ void ModuleAlarm::followToData()
     auto &sigMap = ConfigStorage::GetInstance().getModuleSettings().getSignals();
     auto &addr = m_alarms.cbegin().key();
     auto search = std::find_if(sigMap.cbegin(), sigMap.cend(), //
-        [&addr](const ModuleTypes::Signal &signal) -> bool {   //
+        [&addr](const SigMapValue &element) -> bool {          //
+            auto &signal = element.second;
             auto acceptStart = signal.startAddr;
             auto acceptEnd = acceptStart + signal.count;
             return (addr >= acceptStart && addr < acceptEnd);
         });
     if (search != sigMap.cend())
     {
-        auto &signal = search.value();
+        auto &signal = search->second;
         engine()->addSp({ signal.startAddr, signal.count });
     }
     engine()->setUpdatesEnabled();
@@ -100,7 +100,7 @@ void ModuleAlarm::updatePixmap(const bool &isSet, const quint32 &position)
     }
 }
 
-void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
+void ModuleAlarm::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
     const quint8 sigval = sp.sigVal;
     if (!(sigval & 0x80))

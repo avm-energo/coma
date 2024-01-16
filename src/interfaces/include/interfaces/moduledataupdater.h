@@ -17,10 +17,19 @@ public:
     };
 
     explicit ModuleDataUpdater(Connection *connection, QObject *parent = nullptr);
-    void updateConnection(Connection *connection);
+
+    void updateConnection(Connection *connection) noexcept;
+    Connection *currentConnection() noexcept;
+
     void requestUpdates();
     bool updatesEnabled();
     void setUpdatesEnabled(bool enabled = true);
+
+    void enableFloatDataUpdates() noexcept;
+    void enableSinglePointDataUpdates() noexcept;
+    void enableBitStringDataUpdates() noexcept;
+    void disableUpdates() noexcept;
+
     void addFloat(const BdQuery &query);
     void addSp(const BdQuery &query);
     void addBs(const BdQuery &query);
@@ -30,17 +39,13 @@ private:
     QList<BdQuery> m_floatQueryList; ///< float
     QList<BdQuery> m_spQueryList;    ///< single-point
     QList<BdQuery> m_bsQueryList;    ///< bit strings
+    QMetaObject::Connection m_floatDataConn, m_singlePointDataConn, m_bitStringDataConn;
     bool m_updatesEnabled;
-
-    void setFloatQuery(const QList<BdQuery> &list);
-    void setSpQuery(const QList<BdQuery> &list);
-    void setBsQuery(const QList<BdQuery> &list);
 
 signals:
     void itsTimeToUpdateFloatSignal(const DataTypes::FloatStruct &fl);
     void itsTimeToUpdateSinglePointSignal(const DataTypes::SinglePointWithTimeStruct &sp);
     void itsTimeToUpdateBitStringSignal(const DataTypes::BitStringStruct &bs);
-    void ifaceChanged();
 
 private slots:
     void updateSinglePointData(const DataTypes::SinglePointWithTimeStruct &sp);
