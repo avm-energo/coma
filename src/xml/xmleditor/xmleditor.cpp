@@ -188,7 +188,7 @@ void XmlEditor::setFontBolding(int row, bool state)
 void XmlEditor::savingAsk()
 {
     auto slaveModel = manager->GetRootModel();
-    if (EMessageBox::question("Сохранить изменения?"))
+    if (EMessageBox::question(this, "Сохранить изменения?"))
     {
         if (slaveModel != nullptr)
             dc->saveFile(masterModel, slaveModel);

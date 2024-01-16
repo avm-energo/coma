@@ -1,7 +1,8 @@
 #include "relaydialog.h"
 
-#include "../interfaces/baseinterface.h"
 #include "../widgets/wd_func.h"
+
+//#include <interfaces/connection.h>
 
 RelayDialog::RelayDialog(int relayCount, QWidget *parent) : UDialog(parent)
 {
@@ -62,11 +63,11 @@ void RelayDialog::changeRelay(int number)
 
 void RelayDialog::changeRelay(int number, bool state)
 {
-    const auto &interface = BaseInterface::iface();
+    const auto &interface = Connection::iface();
     DataTypes::SingleCommand cmd;
     cmd.addr = quint32(number);
     cmd.value = state;
-    interface->writeCommand(C_WriteSingleCommand, QVariant::fromValue(cmd));
+    interface->writeCommand(Commands::C_WriteSingleCommand, QVariant::fromValue(cmd));
     relays.at(number) = state;
     QString text = "Разомкнуто";
     if (state)

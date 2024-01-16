@@ -1,11 +1,11 @@
 #include "board.h"
 
-#include "../interfaces/baseinterface.h"
 #include "modules.h"
 
 #include <QDebug>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <interfaces/connection.h>
 
 using namespace Interface;
 
@@ -24,7 +24,7 @@ bool isKnownModule(quint16 mtypeb, quint16 mtypem)
 
 Board::Board(Singleton::token)
 {
-    m_interfaceType = Unknown;
+    m_interfaceType = Interface::IfaceType::Unknown;
     m_connectionState = ConnectionState::Closed;
     m_boardType = Types::None;
 }
@@ -46,20 +46,20 @@ quint16 Board::type() const
     return quint16(Mtypeb + Mtypem);
 }
 
-quint16 Board::type(Board::Types type) const
-{
-    switch (type)
-    {
-    case Base:
-        return typeB();
-    case Mezzanine:
-        return typeM();
-    case None:
-        return 0;
-    default:
-        return Board::type();
-    }
-}
+// quint16 Board::type(Board::Types type) const
+//{
+//    switch (type)
+//    {
+//    case Base:
+//        return typeB();
+//    case Mezzanine:
+//        return typeM();
+//    case None:
+//        return 0;
+//    default:
+//        return Board::type();
+//    }
+//}
 
 QString Board::moduleName() const
 {
@@ -90,12 +90,12 @@ QString Board::UID() const
         + QString::number(m_startupInfoBlock.UIDLow, 16);
 }
 
-Board::InterfaceType Board::interfaceType() const
+Interface::IfaceType Board::interfaceType() const
 {
     return m_interfaceType;
 }
 
-void Board::setInterfaceType(Board::InterfaceType iface)
+void Board::setInterfaceType(Interface::IfaceType iface)
 {
     m_interfaceType = iface;
     emit interfaceTypeChanged(iface);
@@ -118,47 +118,42 @@ void Board::setConnectionState(ConnectionState connectionState)
     emit connectionStateChanged(connectionState);
 }
 
-// void Board::update(const DataTypes::BitStringStruct &bs)
-void Board::update(const QVariant &data)
+void Board::update(const DataTypes::BitStringStruct &bs)
 {
-    if (data.canConvert<DataTypes::BitStringStruct>())
+    // Only bsi block
+    if (bs.sigAdr < 1 || bs.sigAdr > 15)
+        return updateExt(bs);
+    quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - Regs::bsiStartReg));
+
+    item = bs.sigVal;
+    m_updateCounter++;
+    // Last value updated
+    if (&item == &m_startupInfoBlock.Hth)
     {
-        auto bs = data.value<DataTypes::BitStringStruct>();
-        // Only bsi block
-        if (bs.sigAdr < 1 || bs.sigAdr > 15)
-            return updateExt(bs);
-        quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - Regs::bsiStartReg));
+        emit healthChanged(m_startupInfoBlock.Hth);
+    }
+    else if (&item == &m_startupInfoBlock.MTypeB || &item == &m_startupInfoBlock.MTypeM)
+    {
+        if (!m_updateType)
+            m_updateType = true;
+        else
+        {
+            m_updateType = false;
+            emit typeChanged(type());
+            emit typeChanged();
+        }
+    }
 
-        item = bs.sigVal;
-        m_updateCounter++;
-        // Last value updated
-        if (&item == &m_startupInfoBlock.Hth)
-        {
-            emit healthChanged(m_startupInfoBlock.Hth);
-        }
-        else if (&item == &m_startupInfoBlock.MTypeB || &item == &m_startupInfoBlock.MTypeM)
-        {
-            if (!m_updateType)
-                m_updateType = true;
-            else
-            {
-                m_updateType = false;
-                emit typeChanged(type());
-                emit typeChanged();
-            }
-        }
-
-        if (m_updateCounter == StartupInfoBlockMembers)
-        {
-            emit readyRead();
-            m_updateCounter = 0;
-        }
+    if (m_updateCounter == StartupInfoBlockMembers)
+    {
+        emit readyRead();
+        m_updateCounter = 0;
     }
 }
 
 void Board::reset()
 {
-    m_interfaceType = Unknown;
+    m_interfaceType = Interface::IfaceType::Unknown;
     m_connectionState = ConnectionState::Closed;
     m_boardType = Types::None;
     m_startupInfoBlock = {};
@@ -214,13 +209,13 @@ void Board::setBoardType(const Types &boardType)
     emit boardTypeChanged(boardType);
 }
 
-Board::DeviceType Board::deviceType() const
-{
-    return m_deviceType;
-}
+// Board::DeviceType Board::deviceType() const
+//{
+//    return m_deviceType;
+//}
 
-void Board::setDeviceType(const DeviceType &deviceType)
-{
-    m_deviceType = deviceType;
-    emit deviceTypeChanged(deviceType);
-}
+// void Board::setDeviceType(const DeviceType &deviceType)
+//{
+//    m_deviceType = deviceType;
+//    emit deviceTypeChanged(deviceType);
+//}

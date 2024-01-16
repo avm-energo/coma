@@ -3,12 +3,12 @@
 
 #include "../datablocks/datablock.h"
 #include "../models/report.h"
-#include "../s2/s2configuration.h"
 #include "../widgets/tunetabwidget.h"
 
 #include <QByteArray>
 #include <QCloseEvent>
 #include <QDialog>
+#include <s2/s2configuration.h>
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 

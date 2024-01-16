@@ -11,8 +11,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <gen/colors.h>
-#include <gen/datamanager/datamanager.h>
-#include <gen/datamanager/typesproxy.h>
 #include <gen/error.h>
 #include <gen/timefunc.h>
 
@@ -129,7 +127,7 @@ void TimeDialog::writePCDate()
 void TimeDialog::writeTime(QDateTime &myDateTime)
 {
     uint time = myDateTime.toSecsSinceEpoch();
-    BaseInterface::iface()->writeTime(time);
+    Connection::iface()->writeTime(time);
 }
 
 void TimeDialog::writeDate()
@@ -160,7 +158,7 @@ void TimeDialog::reqUpdate()
 {
     if (updatesEnabled())
     {
-        BaseInterface::iface()->reqTime();
+        Connection::iface()->reqTime();
     }
 }
 

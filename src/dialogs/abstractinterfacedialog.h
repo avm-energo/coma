@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../interfaces/settingstypes.h"
-
 #include <QDialog>
 #include <QTableView>
+#include <interfaces/types/settingstypes.h>
 
 class AbstractInterfaceDialog : public QDialog
 {
@@ -30,5 +29,5 @@ protected:
 
     QTableView *tableView;
 signals:
-    void accepted(ConnectStruct);
+    void accepted(const ConnectStruct &st);
 };

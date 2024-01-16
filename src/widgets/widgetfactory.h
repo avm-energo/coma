@@ -1,7 +1,5 @@
 #pragma once
 #include "../module/configstorage.h"
-#include "../s2/s2configuration.h"
-#include "../widgets/delegate_common.h"
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
 #include "gasdensitywidget.h"
@@ -9,6 +7,8 @@
 #include <QStandardItemModel>
 #include <bitset>
 #include <gen/std_ext.h>
+#include <s2/delegate_common.h>
+#include <s2/s2configuration.h>
 
 class WidgetFactory
 {

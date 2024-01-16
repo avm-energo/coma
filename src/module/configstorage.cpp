@@ -1,7 +1,7 @@
 #include "configstorage.h"
 
-#include "../interfaces/baseinterface.h"
-#include "../interfaces/interfacesettings.h"
+#include <interfaces/connection.h>
+#include <interfaces/types/interfacesettings.h>
 
 ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent)
 {
@@ -63,25 +63,23 @@ void ConfigStorage::measJourDataReceive(const quint32 index, const QString &head
     m_settings.appendMeasJournal(index, header, type, visib);
 }
 
-void ConfigStorage::protocolDescriptionReceived(const parseXChangeStruct &str)
+void ConfigStorage::protocolDescriptionReceived(const AbstractGroup &str)
 {
     auto &sigMap = m_settings.getSignals();
     if (sigMap.contains(str.sigId))
     {
         auto signal = sigMap.value(str.sigId);
-        Board::InterfaceType ifaceType = str.interfaceType.value<Board::InterfaceType>();
-        ProtocolDescription *descr = Interface::BaseInterface::iface()->settings();
-        switch (ifaceType)
+        ProtocolDescription *descr = Interface::Connection::iface()->settings();
+        switch (str.ifaceType)
         {
-        case Board::USB:
-            descr->addGroup(ProtocomGroup({ signal.startAddr, signal.count, str.par2.value<quint16>() }));
+        case Interface::IfaceType::USB:
+            descr->addGroup(ProtocomGroup { signal.startAddr, signal.count, str.arg1 });
             break;
-        case Board::RS485:
-            descr->addGroup(ModbusGroup({ signal.startAddr, signal.count, str.par2.value<quint16>() }));
+        case Interface::IfaceType::RS485:
+            descr->addGroup(ModbusGroup { signal.startAddr, signal.count, str.arg1 });
             break;
-        case Board::Ethernet:
-            descr->addGroup(
-                Iec104Group({ signal.startAddr, signal.count, str.par2.value<quint16>(), str.par3.value<quint16>() }));
+        case Interface::IfaceType::Ethernet:
+            descr->addGroup(Iec104Group { signal.startAddr, signal.count, str.arg1, str.arg2 });
             break;
         default:
             break;

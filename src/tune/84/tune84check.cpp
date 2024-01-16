@@ -1,7 +1,6 @@
 #include "tune84check.h"
 
 #include "../../datablocks/kiv/bda.h"
-#include "../../interfaces/protocom.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/wd_func.h"
 

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../s2/s2datatypes.h"
-
 #include <QWidget>
 #include <array>
+#include <s2/s2datatypes.h>
 
 class QComboBox;
 class QDoubleSpinBox;

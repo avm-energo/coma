@@ -4,11 +4,11 @@
 #include "../module/modules.h"
 #include "../module/modulesettings.h"
 #include "../module/s2requestservice.h"
-#include "../s2/s2datamanager.h"
 #include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
 
 #include <QObject>
+#include <s2/s2datamanager.h>
 
 /// \brief Enumeration for application configuration.
 enum class AppConfiguration : bool

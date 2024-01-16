@@ -1,6 +1,5 @@
 #include "module.h"
 
-#include "../s2/s2datamanager.h"
 #include "../xml/xmlparser/xmlmoduleparser.h"
 #include "../xml/xmlparser/xmls2parser.h"
 #include "filehelper.h"
@@ -9,6 +8,7 @@
 #include <QFile>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <s2/s2datamanager.h>
 
 Module::Module(const bool criticalCheck, const Modules::StartupInfoBlock &startupInfoBlock, QObject *parent)
     : QObject(parent), checks(criticalCheck), state(true), typeB(0xFF), typeM(0xFF), sInfoBlock(startupInfoBlock)

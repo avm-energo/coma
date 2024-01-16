@@ -119,7 +119,7 @@ void XmlDialogFabric::RemoveOrEditDialog(BaseEditorModel *model, QModelIndexList
                     EMessageBox::warning(parent, "Выбран недопустимый элемент");
                 else
                 {
-                    if (EMessageBox::question("Удалить выбранный элемент?"))
+                    if (EMessageBox::question(parent, "Удалить выбранный элемент?"))
                         model->remove(row);
                     /*
                     auto resBtn = QMessageBox::question(parent, "Удаление", "Удалить выбранный элемент?",

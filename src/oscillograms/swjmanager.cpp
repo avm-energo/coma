@@ -1,6 +1,5 @@
 #include "swjmanager.h"
 
-#include "../s2/s2util.h"
 #include "oscmanager.h"
 
 #include <QDebug>
@@ -8,6 +7,7 @@
 #include <QStandardItemModel>
 #include <gen/error.h>
 #include <gen/files.h>
+#include <s2/s2util.h>
 
 namespace helper
 {

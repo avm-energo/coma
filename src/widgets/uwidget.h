@@ -1,9 +1,8 @@
 #ifndef UWIDGET_H
 #define UWIDGET_H
 
-#include "../interfaces/moduledataupdater.h"
-
 #include <QWidget>
+#include <interfaces/moduledataupdater.h>
 
 class UWidget : public QWidget
 {
@@ -27,12 +26,13 @@ public:
     ModuleDataUpdater *engine();
 
 protected:
-    QString m_hash;
     bool checkPassword();
+    QString m_hash;
+    Connection *m_conn;
+    ModuleDataUpdater *m_dataUpdater;
 
 private:
     QMap<int, QList<HighlightWarnAlarmStruct>> m_highlightMap;
-    ModuleDataUpdater *m_dataUpdater;
 };
 
 #endif // UWIDGET_H

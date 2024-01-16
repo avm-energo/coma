@@ -1,7 +1,6 @@
 #include "journaltabwidget.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../interfaces/baseinterface.h"
 #include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
@@ -9,6 +8,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <gen/files.h>
+#include <interfaces/connection.h>
 #include <map>
 
 namespace journals
@@ -18,7 +18,7 @@ JournalTabWidget::JournalTabWidget(BaseJournal *jour, QWidget *parent)
     : QWidget(parent)
     , journal(jour)
     , modelView(journal->createModelView(this))
-    , getProgressIndicator(nullptr)
+    , getEProgressIndicator(nullptr)
     , getProgressDialog(nullptr)
     , saveProgressDialog(new QProgressDialog(this))
 {
@@ -34,8 +34,8 @@ void JournalTabWidget::setupProgressDialogs()
         Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint;
     getProgressDialog = new QDialog(this, progressDlgParams);
     auto progressLayout = new QHBoxLayout;
-    getProgressIndicator = new QProgressIndicator(this);
-    progressLayout->addWidget(getProgressIndicator);
+    getEProgressIndicator = new EProgressIndicator(this);
+    progressLayout->addWidget(getEProgressIndicator);
     getProgressDialog->setLayout(progressLayout);
     saveProgressDialog->setCancelButton(nullptr);
     saveProgressDialog->cancel();
@@ -105,8 +105,8 @@ QString JournalTabWidget::getSuggestedFilename()
 void JournalTabWidget::gettingJournal()
 {
     getProgressDialog->show();
-    getProgressIndicator->startAnimation();
-    Interface::BaseInterface::iface()->reqFile(quint32(journal->getType()));
+    getEProgressIndicator->startAnimation();
+    Interface::Connection::iface()->reqFile(quint32(journal->getType()));
     modelView->setUpdatesEnabled(false);
 }
 
@@ -117,7 +117,7 @@ void JournalTabWidget::eraseJournal()
     static constexpr auto hash = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
     auto kpd = new KeyPressDialog;
     if (kpd->CheckPassword(hash))
-        BaseInterface::iface()->writeCommand(Commands::C_EraseJournals, quint8(journal->getType()));
+        Connection::iface()->writeCommand(Commands::C_EraseJournals, quint8(journal->getType()));
 }
 
 void JournalTabWidget::saveExcelJournal()

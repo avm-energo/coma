@@ -13,7 +13,7 @@ public:
     explicit ConnectDialog(QWidget *parent = nullptr);
 
 signals:
-    void accepted(ConnectStruct);
+    void accepted(const ConnectStruct &st);
 
 private slots:
     void setInterface();

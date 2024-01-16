@@ -218,17 +218,17 @@ void Xml::ModuleParser::parseMeasJournal(const QDomNode &jourNode)
 /// \brief Функция для парсинга конфигурации интерфейса, по которому подключен модуль.
 void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 {
-    Board::InterfaceType ifaceType = Board::GetInstance().interfaceType();
+    auto ifaceType = Board::GetInstance().interfaceType();
     switch (ifaceType)
     {
-    case Board::USB:
-    case Board::Emulator:
+    case Interface::IfaceType::USB:
+    case Interface::IfaceType::Emulator:
         parseNode(resNode, tags::protocom, [&](const QDomNode &protocolNode) { parseProtocom(protocolNode); });
         break;
-    case Board::RS485:
+    case Interface::IfaceType::RS485:
         parseNode(resNode, tags::modbus, [&](const QDomNode &protocolNode) { parseModbus(protocolNode); });
         break;
-    case Board::Ethernet:
+    case Interface::IfaceType::Ethernet:
         parseNode(resNode, tags::iec, [&](const QDomNode &protocolNode) { parseIec(protocolNode); });
         break;
     default:
@@ -244,7 +244,7 @@ void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode)
     auto regType = parseNumFromNode<quint16>(modbusNode, tags::reg_type);
     if (signalId != 0)
     {
-        parseXChangeStruct str { Board::RS485, signalId, regType, QVariant() };
+        AbstractGroup str { Interface::IfaceType::RS485, signalId, regType, quint16() };
         emit protocolGroupSending(str);
     }
 }
@@ -256,7 +256,7 @@ void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode)
     auto block = parseNumFromNode<quint16>(protocomNode, tags::block);
     if (signalId != 0)
     {
-        parseXChangeStruct str { Board::USB, signalId, block, QVariant() };
+        AbstractGroup str { Interface::IfaceType::USB, signalId, block, quint16() };
         emit protocolGroupSending(str);
     }
 }
@@ -269,7 +269,7 @@ void Xml::ModuleParser::parseIec(const QDomNode &iecNode)
     auto sigGroup = parseNumFromNode<quint16>(iecNode, tags::sig_group);
     if (signalId != 0)
     {
-        parseXChangeStruct str { Board::Ethernet, signalId, transType, sigGroup };
+        AbstractGroup str { Interface::IfaceType::Ethernet, signalId, transType, sigGroup };
         emit protocolGroupSending(str);
     }
 }

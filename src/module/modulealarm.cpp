@@ -5,7 +5,6 @@
 
 #include <QScrollArea>
 #include <QVBoxLayout>
-#include <gen/datamanager/typesproxy.h>
 
 const std::map<Modules::AlarmType, QColor> ModuleAlarm::s_colors = {
     { Modules::AlarmType::Critical, Qt::red },   //
@@ -13,9 +12,8 @@ const std::map<Modules::AlarmType, QColor> ModuleAlarm::s_colors = {
     { Modules::AlarmType::Info, Qt::green }      //
 };
 
-ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, //
-    const ModuleTypes::AlarmValue &alarms, QWidget *parent)
-    : BaseAlarm(parent), m_alarms(std::move(alarms)), m_proxy(new DataTypesProxy)
+ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, const ModuleTypes::AlarmValue &alarms, QWidget *parent)
+    : BaseAlarm(parent), m_alarms(std::move(alarms))
 {
     auto search = s_colors.find(type);
     if (search != s_colors.cend())
@@ -23,8 +21,7 @@ ModuleAlarm::ModuleAlarm(const Modules::AlarmType &type, //
     else
         m_alarmColor = Qt::transparent;
     followToData();
-    m_proxy->RegisterType<DataTypes::SinglePointWithTimeStruct>();
-    connect(m_proxy.get(), &DataTypesProxy::DataStorable, this, qOverload<const QVariant &>(&ModuleAlarm::update));
+    m_conn->connection(this, &ModuleAlarm::update);
     setupUI(m_alarms.values());
 }
 
@@ -103,9 +100,8 @@ void ModuleAlarm::updatePixmap(const bool &isSet, const quint32 &position)
     }
 }
 
-void ModuleAlarm::update(const QVariant &msg)
+void ModuleAlarm::update(const DataTypes::SinglePointWithTimeStruct &sp)
 {
-    auto sp = msg.value<DataTypes::SinglePointWithTimeStruct>();
     const quint8 sigval = sp.sigVal;
     if (!(sigval & 0x80))
     {

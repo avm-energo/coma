@@ -1,24 +1,23 @@
 #include "s2requestservice.h"
 
-#include "../interfaces/baseinterface.h"
 #include "board.h"
 
-S2RequestService::S2RequestService(QObject *parent)
-    : QObject(parent), m_proxy(new DataTypesProxy(this)), m_lastRequestedFile(0xffff)
+S2RequestService::S2RequestService(QObject *parent) : QObject(parent), m_conn(nullptr), m_lastRequestedFile(0xffff)
 {
-    m_proxy->RegisterType<QByteArray>();
-    connect(m_proxy.get(), &DataTypesProxy::DataStorable, this, &S2RequestService::responseReceived);
 }
 
-void S2RequestService::responseReceived(const QVariant &var)
+void S2RequestService::updateConnection(Interface::Connection *connection)
 {
-    if (var.isValid() && var.canConvert<QByteArray>())
-    {
-        const auto bytes = var.value<QByteArray>();
-        auto filenum = *reinterpret_cast<quint16 *>(bytes.left(sizeof(quint16)).data());
-        if (filenum == m_lastRequestedFile)
-            emit response(bytes);
-    }
+    m_conn = connection;
+    if (m_conn != nullptr)
+        m_conn->connection(this, &S2RequestService::responseReceived);
+}
+
+void S2RequestService::responseReceived(const QByteArray &file)
+{
+    auto filenum = *reinterpret_cast<quint16 *>(file.left(sizeof(quint16)).data());
+    if (filenum == m_lastRequestedFile)
+        emit response(file);
 }
 
 void S2RequestService::request(const S2::FilesEnum filenum, bool withCheck)
@@ -30,5 +29,6 @@ void S2RequestService::request(const S2::FilesEnum filenum, bool withCheck)
     }
 
     m_lastRequestedFile = std_ext::to_underlying(filenum);
-    Interface::BaseInterface::iface()->reqFile(m_lastRequestedFile, DataTypes::FileFormat::DefaultS2);
+    if (m_conn != nullptr)
+        m_conn->reqFile(m_lastRequestedFile, DataTypes::FileFormat::DefaultS2);
 }

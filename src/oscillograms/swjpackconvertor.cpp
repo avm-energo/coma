@@ -136,12 +136,16 @@ void SwjPackConvertor::writeData(QXlsx::Worksheet *sheet)
         {
             for (int indexCol = 1; indexCol < 4; indexCol++)
             {
-                auto detailDataStr = detail->data(detail->index(indexRow, indexCol)).toString();
-                auto detailData = detailDataStr.toDouble(&ok);
-                if (ok)
-                    sheet->writeNumeric(QXlsx::CellReference { row, column++ }, detailData);
-                else
-                    sheet->writeString(QXlsx::CellReference { row, column++ }, detailDataStr);
+                auto index = detail->index(indexRow, indexCol);
+                if (index.isValid())
+                {
+                    auto detailDataStr = detail->data(index).toString();
+                    auto detailData = detailDataStr.toDouble(&ok);
+                    if (ok)
+                        sheet->writeNumeric(QXlsx::CellReference { row, column++ }, detailData);
+                    else
+                        sheet->writeString(QXlsx::CellReference { row, column++ }, detailDataStr);
+                }
             }
         }
 

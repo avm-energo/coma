@@ -1,14 +1,13 @@
 #include "mip.h"
 
-#include "../interfaces/settingstypes.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
 #include <QEventLoop>
 #include <QSettings>
-#include <gen/datamanager/typesproxy.h>
 #include <gen/settings.h>
 #include <gen/stdfunc.h>
+#include <interfaces/types/settingstypes.h>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent) : QObject()
 {
@@ -82,13 +81,13 @@ bool Mip::start()
 {
     using namespace settings;
     auto sets = std::make_unique<QSettings>();
-    m_device = new IEC104;
+    // m_device = new IEC104;
     IEC104Settings settings;
     settings.ip = sets->value(regMap[MIPIP].name, regMap[MIPIP].defValue).toString();
     settings.baseadr = sets->value(regMap[MIPAddress].name, regMap[MIPAddress].defValue).toUInt();
     ConnectStruct st { "mip", settings };
-    if (!m_device->start(st))
-        return false;
+    // if (!m_device->start(st))
+    //    return false;
     if (m_withGUI)
     {
         setupWidget();
@@ -99,7 +98,7 @@ bool Mip::start()
     }
     else
     {
-        m_updater = new ModuleDataUpdater(m_device);
+        //    m_updater = new ModuleDataUpdater(m_device);
         // Отключим обновление виджета по умолчанию
         m_updater->setUpdatesEnabled(false);
         m_updater->addFloat({ 0, 46 });
@@ -118,7 +117,7 @@ void Mip::stop()
     m_updateTimer->stop();
     m_updateTimer->deleteLater();
     m_updater->setUpdatesEnabled(false);
-    m_device->disconnect();
+    // m_device->disconnect();
     emit finished();
 }
 

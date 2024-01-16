@@ -1,7 +1,6 @@
 #include "abstracttunedialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../interfaces/protocom.h"
 #include "../module/board.h"
 #include "../module/modules.h"
 #include "../widgets/epopup.h"
@@ -22,6 +21,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
+//#include <interfaces/protocom.h>
 
 namespace crypto
 {
@@ -255,7 +255,7 @@ void AbstractTuneDialog::startTune()
     readTuneCoefs();
     if (saveAllTuneCoefs() != Error::Msg::NoError)
     {
-        if (!EMessageBox::question("Сохранение настроечных коэффициентов не произведено, продолжать?"))
+        if (!EMessageBox::question(this, "Сохранение настроечных коэффициентов не произведено, продолжать?"))
             return;
     }
     StdFunc::ClearCancel();
@@ -361,7 +361,7 @@ Error::Msg AbstractTuneDialog::sendChangedConfig(const std::vector<std::pair<QSt
     for (const auto &[name, value] : changes)
         configCopy.setRecord(name, value);
     auto s2file = configCopy.toByteArray();
-    return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+    return Connection::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
 }
 
 // void AbstractTuneDialog::loadTuneCoefsSlot()
@@ -473,7 +473,7 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
     QByteArray ba;
-    if (BaseInterface::iface()->readFileSync(S2::FilesEnum::Config, ba) != Error::Msg::NoError)
+    if (Connection::iface()->readFileSync(S2::FilesEnum::Config, ba) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     return Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba);
 }
@@ -483,7 +483,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
     QByteArray ba;
     if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba)
         != Error::Msg::NoError)
-        return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, ba);
+        return Connection::iface()->writeFileSync(S2::FilesEnum::Config, ba);
     return Error::Msg::GeneralError;
 }
 

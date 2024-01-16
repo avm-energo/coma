@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../interfaces/interfacesettings.h"
-#include "../s2/dataitem.h"
 #include "modules.h"
 
 #include <QHash>
 #include <gen/datatypes.h>
+#include <interfaces/types/interfacesettings.h>
+#include <s2/dataitem.h>
 
 constexpr auto baseConfigIndex = 0;
 

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../../widgets/delegate_common.h"
 #include "xmlbaseparser.h"
+
+#include <s2/delegate_common.h>
 
 namespace Xml
 {
