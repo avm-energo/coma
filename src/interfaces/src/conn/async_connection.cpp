@@ -1,8 +1,5 @@
 #include "interfaces/conn/async_connection.h"
 
-/// TODO: этого инклуда здесь быть не должно...
-#include "../../module/modules.h"
-
 #include <gen/std_ext.h>
 #include <s2/s2util.h>
 
@@ -58,8 +55,7 @@ void AsyncConnection::reqBSI()
 
 void AsyncConnection::reqBSIExt()
 {
-    quint32 regCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
-    setToQueue(CommandStruct { Commands::C_ReqBSIExt, addr::bsiExtStartReg, regCount });
+    setToQueue(CommandStruct { Commands::C_ReqBSIExt, addr::bsiExtStartReg, addr::bsiExtCountRegs });
 }
 
 void AsyncConnection::reqFile(quint32 id, FileFormat format, quint32 expectedSize)
