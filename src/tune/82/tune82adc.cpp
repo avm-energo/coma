@@ -11,11 +11,10 @@
 #include <gen/stdfunc.h>
 
 Tune82ADC::Tune82ADC(S2::Configuration &config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+    : AbstractTuneDialog(config, tuneStep, parent), m_typeM(type)
 {
-    m_typeM = type;
     m_bac = new Bac82(this);
-    m_bd1 = new Bd182(type, this);
+    m_bd1 = new Bd182(m_typeM, this);
     m_bda = new Bda82(this);
     m_bd0 = new Bd0(this);
     setBac(m_bac);
@@ -205,10 +204,11 @@ Error::Msg Tune82ADC::checkTune()
 
 void Tune82ADC::setCurrentsTo(float i)
 {
-    saveWorkConfig();
     // set nominal currents in config to i A
     S2::FLOAT_6t i2NomConfig { i, i, i, i, i, i };
     config.setRecord("I2nom", i2NomConfig);
+    m_async->writeConfiguration(config.toByteArray());
+    StdFunc::Wait(500);
 }
 
 void Tune82ADC::getBd1()

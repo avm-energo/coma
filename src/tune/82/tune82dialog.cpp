@@ -4,6 +4,7 @@
 #include "../tunesteps.h"
 #include "tune82adc.h"
 #include "tune82check.h"
+#include "tune82verification.h"
 
 #include <gen/colors.h>
 #include <gen/error.h>
@@ -33,7 +34,8 @@ Tune82Dialog::Tune82Dialog(S2::Configuration &config, Modules::MezzanineBoard ty
     }
     m_dialogList = {
         { "Проверка правильности измерения входных сигналов", new Tune82Check(config, TS82_CHECKING, typeM, this) }, //
-        { step2Caption, new Tune82ADC(config, typeM, TS82_ADC, this) }                                               //
+        { step2Caption, new Tune82ADC(config, typeM, TS82_ADC, this) },                                              //
+        { "Поверка", new Tune82Verification(config, typeM, TS82_VERIFICATION, this) }                                //
     };
 
     m_calibrSteps = m_dialogList.size() + 1;
