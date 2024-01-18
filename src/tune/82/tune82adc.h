@@ -32,7 +32,7 @@ private:
     };
 
     MidTuneStruct m_midTuneStruct;
-    Mip::MipDataStruct mipdata;
+    MipDataStruct mipdata;
 
     void setTuneFunctions() override;
 

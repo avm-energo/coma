@@ -31,18 +31,20 @@ Mip::~Mip() noexcept
 
 void Mip::updateData(const DataTypes::FloatStruct &fl)
 {
-    if (fl.sigAdr < 42)
+    constexpr quint32 size = sizeof(m_mipData) / sizeof(float);
+    if (fl.sigAdr < size)
     {
         float *mipdata = reinterpret_cast<float *>(&m_mipData);
         *(mipdata + fl.sigAdr) = fl.sigVal;
-        if (fl.sigAdr == 41)
+        // Last information object received
+        if (fl.sigAdr == size - 1)
             emit oneMeasurementReceived();
     }
     if (m_withGUI)
         m_widget->updateFloatData(fl);
 }
 
-Mip::MipDataStruct Mip::getData()
+MipDataStruct Mip::getData()
 {
     return m_mipData;
 }
@@ -281,7 +283,7 @@ UWidget *Mip::widget()
     return m_widget;
 }
 
-Mip::MipDataStruct Mip::takeOneMeasurement(float i2nom)
+MipDataStruct Mip::takeOneMeasurement(float i2nom)
 {
     setNominalCurrent(i2nom);
     start();

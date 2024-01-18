@@ -1,18 +1,14 @@
 #pragma once
 
+#include "../../datablocks/82/bd1.h"
 #include "../abstracttunedialog.h"
 
-class Bd182;
 class Mip;
+struct MipDataStruct;
+struct RetomSettings;
+struct VerificationOffset;
 
-struct RetomSettings
-{
-    float phiLoad; // phi
-    float voltage; // U
-    float current; // I
-};
-
-class Tune82Verification : public AbstractTuneDialog
+class Tune82Verification final : public AbstractTuneDialog
 {
 private:
     std::map<QString, QString> m_reportData;
@@ -25,6 +21,10 @@ private:
 
     void setCurrentsTo(float value);
     void writeReportData(const QString &name, const QString &value);
+    void writeReportData(const MipDataStruct &mipData, const std::size_t iter);
+    void writeReportData(const Bd182::BlockData &deviceData, const std::size_t iter);
+    void writeReportData(const VerificationOffset &offset, const std::size_t iter);
+
     void init();
     Error::Msg verification();
 

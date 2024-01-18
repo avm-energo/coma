@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
+#include <interfaces/conn/sync_connection.h>
 
 Tune82ADC::Tune82ADC(S2::Configuration &config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent), m_typeM(type)
@@ -76,9 +77,9 @@ Error::Msg Tune82ADC::calcPhaseCorrection()
     if (m_typeM == Modules::MezzanineBoard::MTM_82)
     {
         for (int i = 3; i < 6; ++i)
-            m_bacNewBlock.data()->DPsi[i] = m_bac->data()->DPsi[i] + mipdata.loadAnglePhase[i - 3];
+            m_bacNewBlock.data()->DPsi[i] = m_bac->data()->DPsi[i] + mipdata.phiLoadPhase[i - 3];
     }
-    m_bacNewBlock.data()->K_freq = m_bac->data()->K_freq / mipdata.freq[0];
+    m_bacNewBlock.data()->K_freq = m_bac->data()->K_freq / mipdata.freqUPhase[0];
     return Error::Msg::NoError;
 }
 
@@ -207,8 +208,7 @@ void Tune82ADC::setCurrentsTo(float i)
     // set nominal currents in config to i A
     S2::FLOAT_6t i2NomConfig { i, i, i, i, i, i };
     config.setRecord("I2nom", i2NomConfig);
-    m_async->writeConfiguration(config.toByteArray());
-    StdFunc::Wait(500);
+    m_sync->writeConfigurationSync(config.toByteArray());
 }
 
 void Tune82ADC::getBd1()
