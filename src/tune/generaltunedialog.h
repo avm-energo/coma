@@ -8,6 +8,8 @@
 #include <QDomDocument>
 #include <QWidget>
 
+class TuneReporter;
+
 class GeneralTuneDialog : public UDialog
 {
     Q_OBJECT
@@ -20,7 +22,6 @@ public:
 
     int m_calibrSteps;
     QList<TuneDialogStruct> m_dialogList;
-    LimeReport::ReportEngine *m_Report;
 
     GeneralTuneDialog(S2::Configuration &workConfig, QWidget *parent = nullptr);
     void SetupUI();
@@ -29,6 +30,7 @@ public:
 
 protected:
     S2::Configuration &config;
+    TuneReporter *m_reporter;
 
 private:
     TuneTabWidget *m_tuneTabWidget;

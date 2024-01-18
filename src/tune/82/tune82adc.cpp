@@ -203,14 +203,6 @@ Error::Msg Tune82ADC::checkTune()
     return Error::Msg::NoError;
 }
 
-void Tune82ADC::setCurrentsTo(float i)
-{
-    // set nominal currents in config to i A
-    S2::FLOAT_6t i2NomConfig { i, i, i, i, i, i };
-    config.setRecord("I2nom", i2NomConfig);
-    m_sync->writeConfigurationSync(config.toByteArray());
-}
-
 void Tune82ADC::getBd1()
 {
     Mip *mip = new Mip(false, m_typeM, this);

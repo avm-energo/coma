@@ -100,6 +100,7 @@ Tune82Verification::Tune82Verification(S2::Configuration &config, //
     , m_mip(new Mip(false, type, this))
     , m_typeM(type)
 {
+    setupUI();
 }
 
 void Tune82Verification::setTuneFunctions()
@@ -113,11 +114,13 @@ void Tune82Verification::showRetomDialog(const RetomSettings &retomData)
 {
     auto retomDialog = new QDialog(this);
     retomDialog->setAttribute(Qt::WA_DeleteOnClose);
+    retomDialog->setWindowTitle("Настройки РЕТОМ");
+    retomDialog->setMinimumSize(400, 200);
     auto layout = new QVBoxLayout;
 
     QString tempStr( //
         "Задайте на РЕТОМ трёхфазный режим токов и напряжений "
-        "(Uabc, Iabc) с углами нагрузки по всем фазам %1 град. и частотой 51 Гц;");
+        "(Uabc, Iabc) \nс углами нагрузки по всем фазам %1 град. и частотой 51 Гц;");
     auto phiLabel = new QLabel(tempStr.arg(retomData.phiLoad), retomDialog);
     layout->addWidget(phiLabel);
 
@@ -138,32 +141,14 @@ void Tune82Verification::showRetomDialog(const RetomSettings &retomData)
     connect(readyBtn, &QPushButton::clicked, retomDialog, &QDialog::close);
     layout->addWidget(readyBtn);
     auto cancelBtn = new QPushButton("Отмена", retomDialog);
-    connect(cancelBtn, &QPushButton::clicked, this, &Tune82Verification::cancelTune);
+    connect(cancelBtn, &QPushButton::clicked, this, &AbstractTuneDialog::CancelTune);
     connect(cancelBtn, &QPushButton::clicked, retomDialog, &QDialog::close);
     layout->addWidget(cancelBtn);
     retomDialog->setLayout(layout);
     retomDialog->exec();
 }
 
-void Tune82Verification::cancelTune()
-{
-    StdFunc::Cancel();
-    EMessageBox::information(this, "Действие отменено");
-}
-
-void Tune82Verification::setCurrentsTo(float value)
-{
-    S2::FLOAT_6t i2NomConfig { value, value, value, value, value, value };
-    config.setRecord("I2nom", i2NomConfig);
-    m_sync->writeConfigurationSync(config.toByteArray());
-}
-
-void Tune82Verification::writeReportData(const QString &name, const QString &value)
-{
-    m_reportData.insert({ name, value });
-}
-
-void Tune82Verification::writeReportData(const MipDataStruct &mipData, const std::size_t iter)
+void Tune82Verification::writeMipDataToReport(const MipDataStruct &mipData, const std::size_t iter)
 {
     writeReportData("FreqMIP", QString::number(mipData.freqUPhase[0], 'f', 3));
     writeReportData(QString("UA_MIP.%1").arg(iter), QString::number(mipData.uPhase[0], 'f', 3));
@@ -179,7 +164,7 @@ void Tune82Verification::writeReportData(const MipDataStruct &mipData, const std
     writeReportData(QString("PhiUbc_MIP.%1").arg(iter), QString::number(mipData.phiUbc, 'f', 3));
 }
 
-void Tune82Verification::writeReportData(const Bd182::BlockData &deviceData, const std::size_t iter)
+void Tune82Verification::writeDeviceDataToReport(const Bd182::BlockData &deviceData, const std::size_t iter)
 {
     writeReportData(QString("Freq.%1").arg(iter), QString::number(deviceData.Frequency, 'f', 3));
     writeReportData(QString("UA.%1").arg(iter), QString::number(deviceData.IUefNat_filt[0], 'f', 3));
@@ -190,7 +175,7 @@ void Tune82Verification::writeReportData(const Bd182::BlockData &deviceData, con
     writeReportData(QString("IC.%1").arg(iter), QString::number(deviceData.IUefNat_filt[5], 'f', 3));
 }
 
-void Tune82Verification::writeReportData(const VerificationOffset &offset, const std::size_t iter)
+void Tune82Verification::writeOffsetDataToReport(const VerificationOffset &offset, const std::size_t iter)
 {
     writeReportData(QString("PhiLA.%1").arg(iter), QString::number(offset.phiLoad[0], 'f', 3));
     writeReportData(QString("PhiLB.%1").arg(iter), QString::number(offset.phiLoad[1], 'f', 3));
@@ -214,8 +199,8 @@ void Tune82Verification::writeReportData(const VerificationOffset &offset, const
 void Tune82Verification::init()
 {
     StdFunc::ClearCancel();
-    if (!m_reportData.empty())
-        m_reportData.clear();
+    if (!s_reportData.empty())
+        s_reportData.clear();
 
     writeReportData("Organization", "ООО АСУ-ВЭИ");
     writeReportData("Day", QDateTime::currentDateTime().toString("dd"));
@@ -238,12 +223,14 @@ Error::Msg Tune82Verification::verification()
         if (iter == 0)
         {
             i2nom = 1.0;
-            setCurrentsTo(i2nom);
+            if (setCurrentsTo(i2nom) != Error::Msg::NoError)
+                return Error::Msg::GeneralError;
         }
         if (iter == 6)
         {
             i2nom = 5.0;
-            setCurrentsTo(i2nom);
+            if (setCurrentsTo(i2nom) != Error::Msg::NoError)
+                return Error::Msg::GeneralError;
         }
 
         retomData = settings[iter];
@@ -256,9 +243,9 @@ Error::Msg Tune82Verification::verification()
         deviceData = *(m_bd1->data());
         offsetData.update(mipData, deviceData, retomData);
 
-        writeReportData(mipData, iter);
-        writeReportData(deviceData, iter);
-        writeReportData(offsetData, iter);
+        writeMipDataToReport(mipData, iter);
+        writeDeviceDataToReport(deviceData, iter);
+        writeOffsetDataToReport(offsetData, iter);
     }
     return Error::Msg::NoError;
 }

@@ -15,8 +15,6 @@ class Tune82Dialog : public GeneralTuneDialog
 public:
     explicit Tune82Dialog(S2::Configuration &config, Modules::MezzanineBoard typeM, QWidget *parent = nullptr);
 
-public slots:
-
 private:
     //    LimeReport::ReportEngine *m_Report;
     void prepareReport() override;

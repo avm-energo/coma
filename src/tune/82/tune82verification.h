@@ -11,19 +11,14 @@ struct VerificationOffset;
 class Tune82Verification final : public AbstractTuneDialog
 {
 private:
-    std::map<QString, QString> m_reportData;
     Bd182 *m_bd1;
     Mip *m_mip;
     Modules::MezzanineBoard m_typeM;
 
     void showRetomDialog(const RetomSettings &retomData);
-    void cancelTune();
-
-    void setCurrentsTo(float value);
-    void writeReportData(const QString &name, const QString &value);
-    void writeReportData(const MipDataStruct &mipData, const std::size_t iter);
-    void writeReportData(const Bd182::BlockData &deviceData, const std::size_t iter);
-    void writeReportData(const VerificationOffset &offset, const std::size_t iter);
+    void writeMipDataToReport(const MipDataStruct &mipData, const std::size_t iter);
+    void writeDeviceDataToReport(const Bd182::BlockData &deviceData, const std::size_t iter);
+    void writeOffsetDataToReport(const VerificationOffset &offset, const std::size_t iter);
 
     void init();
     Error::Msg verification();

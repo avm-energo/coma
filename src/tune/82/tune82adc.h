@@ -45,8 +45,6 @@ private:
     Error::Msg calcIcoef5();
     Error::Msg showPreWarning();
     Error::Msg checkTune();
-
-    void setCurrentsTo(float i);
     void getBd1();
 
 private slots:

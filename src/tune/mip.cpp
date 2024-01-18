@@ -15,7 +15,7 @@
 #include <interfaces/types/settingstypes.h>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
-    : QObject(parent), m_iface(nullptr), m_parent(parent), m_withGUI(withGUI), m_moduleType(moduleType)
+    : QObject(parent), m_iface(nullptr), m_mipData { 0 }, m_parent(parent), m_withGUI(withGUI), m_moduleType(moduleType)
 {
 }
 
@@ -286,10 +286,16 @@ UWidget *Mip::widget()
 MipDataStruct Mip::takeOneMeasurement(float i2nom)
 {
     setNominalCurrent(i2nom);
-    start();
-    QEventLoop el;
-    connect(this, &Mip::oneMeasurementReceived, &el, &QEventLoop::quit);
-    el.exec();
-    stop();
+    if (start())
+    {
+        QTimer timeoutTimer;
+        timeoutTimer.setSingleShot(true);
+        timeoutTimer.setInterval(2000); // 2 sec - timeout
+        QEventLoop el;
+        connect(this, &Mip::oneMeasurementReceived, &el, &QEventLoop::quit);
+        connect(&timeoutTimer, &QTimer::timeout, &el, &QEventLoop::quit);
+        el.exec();
+        stop();
+    }
     return m_mipData;
 }
