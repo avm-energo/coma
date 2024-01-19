@@ -289,7 +289,7 @@ MipDataStruct Mip::takeOneMeasurement(float i2nom)
     if (start())
     {
         QTimer timeoutTimer;
-        timeoutTimer.setSingleShot(true);
+        timeoutTimer.setSingleShot(false);
         timeoutTimer.setInterval(2000); // 2 sec - timeout
         QEventLoop el;
         connect(this, &Mip::oneMeasurementReceived, &el, &QEventLoop::quit);

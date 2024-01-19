@@ -80,7 +80,8 @@ void GeneralTuneDialog::generateReport()
             m_reporter->saveToFile(filename);
             EMessageBox::information(this, "Записано успешно!");
         }
-        EMessageBox::information(this, "Действие отменено");
+        else
+            EMessageBox::warning(this, "Действие отменено");
     }
 }
 

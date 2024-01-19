@@ -4,6 +4,7 @@
 #include "../../widgets/wd_func.h"
 #include "../mip.h"
 
+#include <cmath>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 
@@ -51,7 +52,7 @@ struct VerificationOffset
 
     inline float calculateOffset(const float deviceMeasure, const float mipMeasure) noexcept
     {
-        return (100 * ((deviceMeasure / mipMeasure) - 1));
+        return (100 * std::fabsf((deviceMeasure / mipMeasure) - 1));
     }
 
     void update(MipDataStruct &mipData, Bd182::BlockData &deviceData, RetomSettings &retomData) noexcept
@@ -82,14 +83,14 @@ struct VerificationOffset
             // Играемся с углами, чтобы все было в одних значениях и с одинаковыми знаками
             if ((mipData.phiLoadPhase[i] > 0 && phiLoad[i] < 0) || (mipData.phiLoadPhase[i] < 0 && phiLoad[i] > 0))
             {
-                offsetPhiLoad[i] = mipData.phiLoadPhase[i] + phiLoad[i];
+                offsetPhiLoad[i] = std::fabsf(mipData.phiLoadPhase[i] + phiLoad[i]);
                 mipData.phiLoadPhase[i] = -mipData.phiLoadPhase[i];
             }
             else
-                offsetPhiLoad[i] = mipData.phiLoadPhase[i] - phiLoad[i];
+                offsetPhiLoad[i] = std::fabsf(mipData.phiLoadPhase[i] - phiLoad[i]);
         }
-        offsetPhiUab = mipData.phiUab - phiUab;
-        offsetPhiUbc = mipData.phiUbc - phiUbc;
+        offsetPhiUab = std::fabsf(mipData.phiUab - phiUab);
+        offsetPhiUbc = std::fabsf(mipData.phiUbc - phiUbc);
     }
 };
 
@@ -213,10 +214,10 @@ Error::Msg Tune82Verification::verification()
     float i2nom = 0.0;
     init();
 
-    MipDataStruct mipData;
-    Bd182::BlockData deviceData;
-    VerificationOffset offsetData;
-    RetomSettings retomData;
+    MipDataStruct mipData { 0 };
+    Bd182::BlockData deviceData { 0 };
+    VerificationOffset offsetData { 0 };
+    RetomSettings retomData { 0 };
 
     for (std::size_t iter = 0; iter < iterCount; ++iter)
     {
@@ -225,12 +226,14 @@ Error::Msg Tune82Verification::verification()
             i2nom = 1.0;
             if (setCurrentsTo(i2nom) != Error::Msg::NoError)
                 return Error::Msg::GeneralError;
+            StdFunc::Wait(500);
         }
         if (iter == 6)
         {
             i2nom = 5.0;
             if (setCurrentsTo(i2nom) != Error::Msg::NoError)
                 return Error::Msg::GeneralError;
+            StdFunc::Wait(500);
         }
 
         retomData = settings[iter];
@@ -241,6 +244,7 @@ Error::Msg Tune82Verification::verification()
         mipData = m_mip->takeOneMeasurement(i2nom);
         m_bd1->readBlockFromModule();
         deviceData = *(m_bd1->data());
+        QCoreApplication::processEvents();
         offsetData.update(mipData, deviceData, retomData);
 
         writeMipDataToReport(mipData, iter);

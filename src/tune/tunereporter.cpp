@@ -29,6 +29,6 @@ void TuneReporter::saveToFile(const QString &filepath) noexcept
     {
         // m_engine->designReport();
         m_engine->printToPDF(filepath);
-        // m_engine->previewReport();
+        m_engine->previewReport();
     }
 }
