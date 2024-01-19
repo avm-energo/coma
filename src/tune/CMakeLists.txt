@@ -29,4 +29,9 @@ target_link_libraries(
   datablocks
   widgets)
 
+# Linking libm for using C-math
+if(UNIX)
+  target_link_libraries(${PROJECT_NAME} m)
+endif()
+
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
