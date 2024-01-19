@@ -47,5 +47,5 @@ Tune82Dialog::Tune82Dialog(S2::Configuration &config, Modules::MezzanineBoard ty
 
 void Tune82Dialog::prepareReport()
 {
-    m_reporter->setTemplatePath(StdFunc::GetSystemHomeDir() + "82report.lrxml");
+    m_reporter->setTemplatePath(StdFunc::GetSystemHomeDir() + "reports/82report.lrxml");
 }

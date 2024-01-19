@@ -55,7 +55,7 @@ if(NOT EXISTS ${SVC_CHECK_PATH})
     TARGET ${PROJECT_NAME} POST_BUILD COMMAND
     ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/../../reports
-    ${APPDATA})
+    ${APPDATA}/reports)
 endif()
 
 # Cross-platform deploy target
