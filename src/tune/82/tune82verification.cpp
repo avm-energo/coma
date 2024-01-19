@@ -52,7 +52,7 @@ struct VerificationOffset
 
     inline float calculateOffset(const float deviceMeasure, const float mipMeasure) noexcept
     {
-        return (100 * std::fabsf((deviceMeasure / mipMeasure) - 1));
+        return (100 * std::fabs((deviceMeasure / mipMeasure) - 1));
     }
 
     void update(MipDataStruct &mipData, Bd182::BlockData &deviceData, RetomSettings &retomData) noexcept
@@ -83,14 +83,14 @@ struct VerificationOffset
             // Играемся с углами, чтобы все было в одних значениях и с одинаковыми знаками
             if ((mipData.phiLoadPhase[i] > 0 && phiLoad[i] < 0) || (mipData.phiLoadPhase[i] < 0 && phiLoad[i] > 0))
             {
-                offsetPhiLoad[i] = std::fabsf(mipData.phiLoadPhase[i] + phiLoad[i]);
+                offsetPhiLoad[i] = std::fabs(mipData.phiLoadPhase[i] + phiLoad[i]);
                 mipData.phiLoadPhase[i] = -mipData.phiLoadPhase[i];
             }
             else
-                offsetPhiLoad[i] = std::fabsf(mipData.phiLoadPhase[i] - phiLoad[i]);
+                offsetPhiLoad[i] = std::fabs(mipData.phiLoadPhase[i] - phiLoad[i]);
         }
-        offsetPhiUab = std::fabsf(mipData.phiUab - phiUab);
-        offsetPhiUbc = std::fabsf(mipData.phiUbc - phiUbc);
+        offsetPhiUab = std::fabs(mipData.phiUab - phiUab);
+        offsetPhiUbc = std::fabs(mipData.phiUbc - phiUbc);
     }
 };
 
