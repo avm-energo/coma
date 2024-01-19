@@ -79,7 +79,7 @@ bool compare(const SinglePoints &lhs, const SinglePoints &rhs) noexcept
     if (lhs.size() == rhs.size())
     {
         bool flag = true;
-        for (auto i = 0; i < lhs.size(); ++i)
+        for (std::size_t i = 0; i < lhs.size(); ++i)
         {
             const auto &lhsItem = lhs[i], &rhsItem = rhs[i];
             if ((lhsItem.sigAdr != rhsItem.sigAdr)             //
