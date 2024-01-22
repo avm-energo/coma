@@ -125,7 +125,7 @@ void JournalTabWidget::saveExcelJournal()
     if (!suggestedFilename.isEmpty())
     {
         suggestedFilename += ".xlsx";
-        auto filename = WDFunc::ChooseFileForSave(nullptr, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
+        auto filename = WDFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
         if (!filename.isEmpty())
         {
             saveProgressDialog->setMinimumDuration(0);
@@ -140,7 +140,7 @@ void JournalTabWidget::saveBinaryJournal()
     if (!suggestedFilename.isEmpty())
     {
         suggestedFilename += ".jn";
-        auto filename = WDFunc::ChooseFileForSave(nullptr, "Journal files (*.jn)", "jn", suggestedFilename);
+        auto filename = WDFunc::ChooseFileForSave(this, "Journal files (*.jn)", "jn", suggestedFilename);
         if (!filename.isEmpty())
         {
             auto &fileHeader = journalFile.header;

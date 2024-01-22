@@ -42,6 +42,8 @@ private slots:
     void workDataReceived(const quint32 id, const QString &desc);
     /// \brief Слот для сохранения настроек журнала измерений.
     void measDataReceived(const quint32 index, const QString &header, const ModuleTypes::BinaryType type, bool visib);
+    /// \brief Слот для сохранения журнала в Excel-таблицу.
+    void saveExcelJournal();
 
 public:
     explicit JournalViewer(const QString &filepath, QWidget *parent = nullptr);

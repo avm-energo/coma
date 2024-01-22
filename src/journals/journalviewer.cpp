@@ -1,7 +1,7 @@
 #include "journalviewer.h"
 
-#include <s2/s2util.h>
-//#include "../widgets/epopup.h"
+#include "../widgets/epopup.h"
+#include "../widgets/wd_func.h"
 #include "../xml/xmlparser/xmlmoduleparser.h"
 #include "measjournal.h"
 #include "sysjournal.h"
@@ -11,6 +11,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <gen/files.h>
+#include <s2/s2util.h>
 
 namespace journals
 {
@@ -107,11 +108,30 @@ void JournalViewer::measDataReceived(const quint32 index, const QString &header,
     measSettings.push_back(ModuleTypes::MeasJournal { index, type, visib, header });
 }
 
+void JournalViewer::saveExcelJournal()
+{
+    auto filename = WDFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx");
+    if (!filename.isEmpty())
+    {
+        journal->save(filename);
+        EMessageBox::information(this, "Записано успешно!");
+    }
+}
+
 void JournalViewer::setupUI(const S2::S2BFile &file)
 {
     auto layout = new QVBoxLayout;
     auto modelView = journal->createModelView(this);
     layout->addWidget(modelView);
+
+    auto saveExcelButton = new QPushButton("Сохранить журнал в Excel файл", this);
+    connect(saveExcelButton, &QPushButton::clicked, this, &JournalViewer::saveExcelJournal);
+    layout->addWidget(saveExcelButton);
+
+    auto closeButton = new QPushButton("Закрыть", this);
+    connect(closeButton, &QPushButton::clicked, this, &QDialog::close);
+    layout->addWidget(closeButton);
+
     setLayout(layout);
     journal->fill(file.data);
 }
