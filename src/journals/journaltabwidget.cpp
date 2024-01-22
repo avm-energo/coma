@@ -14,18 +14,23 @@
 namespace journals
 {
 
-JournalTabWidget::JournalTabWidget(BaseJournal *jour, QWidget *parent)
+const std::map<JournalType, QString> JournalTabWidget::s_prefixByType {
+    { JournalType::System, "SysJ" }, //
+    { JournalType::Work, "WorkJ" },  //
+    { JournalType::Meas, "MeasJ" }   //
+};
+
+JournalTabWidget::JournalTabWidget(const JournalType type, QWidget *parent)
     : QWidget(parent)
-    , journal(jour)
-    , modelView(journal->createModelView(this))
+    , m_mainLayout(new QVBoxLayout)
+    , modelView(nullptr)
     , progressIndicator(nullptr)
     , progressDialog(nullptr)
     , saveProgressDialog(new QProgressDialog(this))
+    , m_type(type)
 {
     setupProgressDialogs();
     setupUI();
-    connect(journal, &BaseJournal::done, this, &JournalTabWidget::done);
-    connect(journal, &BaseJournal::error, this, &JournalTabWidget::error);
 }
 
 void JournalTabWidget::setupProgressDialogs()
@@ -39,16 +44,13 @@ void JournalTabWidget::setupProgressDialogs()
     progressDialog->setLayout(progressLayout);
     saveProgressDialog->setCancelButton(nullptr);
     saveProgressDialog->cancel();
-    connect(journal, &BaseJournal::resendMaxResult, saveProgressDialog, &QProgressDialog::setMaximum);
-    connect(journal, &BaseJournal::resendResult, saveProgressDialog, &QProgressDialog::setValue);
 }
 
 void JournalTabWidget::setupUI()
 {
     auto hLayout1 = new QHBoxLayout;
     auto hLayout2 = new QHBoxLayout;
-    auto vLayout = new QVBoxLayout;
-    auto str = journal->getName().toLower();
+    auto str = getTabName().toLower();
 
     auto getButton = new QPushButton("Получить " + str, this);
     connect(getButton, &QPushButton::clicked, this, &JournalTabWidget::gettingJournal);
@@ -68,30 +70,26 @@ void JournalTabWidget::setupUI()
     saveBinaryButton->setEnabled(false);
     hLayout2->addWidget(saveBinaryButton);
 
-    connect(journal, &BaseJournal::done, this, [this, saveExcelButton, saveBinaryButton] {
+    connect(this, &JournalTabWidget::ready, this, [this, saveExcelButton, saveBinaryButton] {
         progressDialog->close();
         modelView->setUpdatesEnabled(true);
         saveExcelButton->setEnabled(true);
         saveBinaryButton->setEnabled(true);
     });
 
-    vLayout->addLayout(hLayout1);
-    vLayout->addLayout(hLayout2);
-    vLayout->addWidget(modelView, 89);
-    setLayout(vLayout);
+    m_mainLayout->setAlignment(Qt::AlignTop);
+    m_mainLayout->addLayout(hLayout1);
+    m_mainLayout->addLayout(hLayout2);
+    setLayout(m_mainLayout);
 }
 
 QString JournalTabWidget::getSuggestedFilename()
 {
     QString suggestedFilename = "";
-    static const std::map<JournalType, QString> names {
-        { JournalType::System, "SysJ" }, //
-        { JournalType::Work, "WorkJ" },  //
-        { JournalType::Meas, "MeasJ" }   //
-    };
-    auto search = names.find(journal->getType());
-    if (search != names.end())
+    auto search = s_prefixByType.find(m_type);
+    if (search != s_prefixByType.cend())
     {
+        const auto &journalFile = journal->getFile();
         const auto &board = Board::GetInstance();
         suggestedFilename = search->second + " ";
         suggestedFilename += QString::number(journalFile.header.typeB, 16);
@@ -104,10 +102,11 @@ QString JournalTabWidget::getSuggestedFilename()
 
 void JournalTabWidget::gettingJournal()
 {
+    if (modelView != nullptr)
+        modelView->deleteLater();
     progressDialog->show();
     progressIndicator->startAnimation();
-    ActiveConnection::async()->reqFile(quint32(journal->getType()));
-    modelView->setUpdatesEnabled(false);
+    ActiveConnection::async()->reqFile(static_cast<quint16>(m_type));
 }
 
 void JournalTabWidget::eraseJournal()
@@ -116,7 +115,7 @@ void JournalTabWidget::eraseJournal()
     static constexpr auto hash = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
     auto kpd = new KeyPressDialog;
     if (kpd->CheckPassword(hash))
-        ActiveConnection::async()->writeCommand(Interface::Commands::C_EraseJournals, quint8(journal->getType()));
+        ActiveConnection::async()->writeCommand(Interface::Commands::C_EraseJournals, static_cast<quint16>(m_type));
 }
 
 void JournalTabWidget::saveExcelJournal()
@@ -129,7 +128,7 @@ void JournalTabWidget::saveExcelJournal()
         if (!filename.isEmpty())
         {
             saveProgressDialog->setMinimumDuration(0);
-            journal->save(filename);
+            journal->saveToExcel(filename);
         }
     }
 }
@@ -143,6 +142,7 @@ void JournalTabWidget::saveBinaryJournal()
         auto filename = WDFunc::ChooseFileForSave(this, "Journal files (*.jn)", "jn", suggestedFilename);
         if (!filename.isEmpty())
         {
+            const auto &journalFile = journal->getFile();
             auto &fileHeader = journalFile.header;
             auto file = QByteArray::fromRawData(reinterpret_cast<const char *>(&fileHeader), sizeof(fileHeader));
             file.append(journalFile.data);
@@ -156,6 +156,7 @@ void JournalTabWidget::saveBinaryJournal()
 
 void JournalTabWidget::done(const QString &message)
 {
+    emit ready();
     EMessageBox::information(this, message);
 }
 
@@ -165,19 +166,24 @@ void JournalTabWidget::error(const QString &message)
     qCritical() << message;
 }
 
-void JournalTabWidget::setJournalFile(const S2::S2BFile &jourFile)
+void JournalTabWidget::update(BaseJournal *newJournal)
 {
-    auto storedType = quint32(journal->getType());
-    if (storedType == jourFile.header.fname)
-    {
-        journalFile = jourFile;
-        journal->fill(journalFile.data);
-    }
+    if (newJournal == nullptr)
+        return;
+
+    connect(newJournal, &BaseJournal::done, this, &JournalTabWidget::done);
+    connect(newJournal, &BaseJournal::error, this, &JournalTabWidget::error);
+    connect(newJournal, &BaseJournal::resendMaxResult, saveProgressDialog, &QProgressDialog::setMaximum);
+    connect(newJournal, &BaseJournal::resendResult, saveProgressDialog, &QProgressDialog::setValue);
+    modelView = newJournal->createModelView(this);
+    modelView->setUpdatesEnabled(false);
+    m_mainLayout->addWidget(modelView, 89);
+    journal.reset(newJournal);
 }
 
-const QString &JournalTabWidget::getTabName() const
+QString JournalTabWidget::getTabName() const
 {
-    return journal->getName();
+    return BaseJournal::getJournalName(m_type);
 }
 
 }

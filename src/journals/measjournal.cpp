@@ -1,5 +1,9 @@
 #include "measjournal.h"
 
+#include "../models/edynamictablemodel.h"
+
+#include <QSortFilterProxyModel>
+
 namespace journals
 {
 
@@ -10,10 +14,8 @@ MeasJournal::MeasJournal(const MeasSettings &settings, QObject *parent)
         [](const ModuleTypes::MeasJournal &lhs, const ModuleTypes::MeasJournal &rhs) { //
             return lhs.index < rhs.index;
         });
-    jourName = "Журнал измерений";
     viewName = "meas";
     headers = getHeaders();
-    type = JournalType::Meas;
     setUserTimezone(headers);
 }
 

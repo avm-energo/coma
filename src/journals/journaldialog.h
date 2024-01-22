@@ -18,20 +18,24 @@ public:
 
 private:
     std::map<JournalType, JournalTabWidget *> journals;
+    std::reference_wrapper<const ModuleSettings> m_settings;
 
     /// \brief Метод для создания объектов журналов по полученным настройкам.
     /// \param settings[in] - настройки, полученные от DialogCreator.
     /// \see DialogCreator
-    void createJournals(const ModuleSettings &settings);
+    void createJournalTabs();
 
     /// \brief Метод для создания UI отображаемого диалога.
     void setupUI();
+
+    /// \brief Метод для создания объекта журнала указанного типа с указанным родителем.
+    BaseJournal *createJournal(JournalType type, QObject *parent = nullptr) noexcept;
 
 private slots:
     /// \brief Слот для получения файла журнала от устройства.
     /// \details В зависимости от указанного типа журнала, пересылает
     /// журнал в формате S2B одной из вкладок.
-    void receivedJournalFile(const S2::S2BFile &s2bFile);
+    void receivedJournalFile(const S2::S2BFile &journalFile);
 };
 
 }

@@ -1,14 +1,15 @@
 #pragma once
 
-#include "../models/edynamictablemodel.h"
 #include "../module/modulesettings.h"
-#include "../widgets/etableview.h"
 
 #include <QObject>
-#include <QSortFilterProxyModel>
 #include <QTimeZone>
 #include <gen/stdfunc.h>
-#include <s2/filestruct.h>
+#include <s2/s2datatypes.h>
+
+class EDynamicTableModel;
+class ETableView;
+class QSortFilterProxyModel;
 
 namespace journals
 {
@@ -25,12 +26,13 @@ class BaseJournal : public QObject
 {
     Q_OBJECT
 protected:
-    const static QStringList eventJourHeaders;
+    static const QStringList s_eventJourHeaders;
+    static const std::map<JournalType, QString> s_nameByType;
+    static const std::map<JournalType, QString> s_prefixByType;
 
-    QString jourName;
+    S2::S2BFile m_file;
     QString viewName;
     QStringList headers;
-    JournalType type;
     QTimeZone timezone;
     UniquePointer<EDynamicTableModel> dataModel;
     UniquePointer<QSortFilterProxyModel> proxyModel;
@@ -53,24 +55,17 @@ public:
     /// \see JournalDialog
     ETableView *createModelView(QWidget *parent) const;
 
-    /// \brief Возвращает имя журнала.
-    /// \return Возвращает строку "Системный журнал", "Рабочий журнал"
-    /// или "Журнал измерений" в зависимости от типа журнала.
-    const QString &getName() const;
-
-    /// \brief Возвращает имя объекта ETableView для текущего журнала.
-    /// \return Возвращает строку "system", "work" или "meas" в зависимости от типа журнала.
-    const QString &getViewName() const;
-
-    /// \brief Возвращает тип текущего журнала.
-    const JournalType getType() const;
-
     /// \brief Заполняет модель данными, приходящими извне.
-    /// \param data[in] - массив байт, содержащий прочитанный бинарный файл журнала.
-    void fill(const QByteArray &data);
+    /// \param journalFile[in] - файл в формате S2B, содержащий прочитанный бинарный файл журнала.
+    void fill(const S2::S2BFile &journalFile);
+
+    const S2::S2BFile &getFile() const noexcept;
 
     /// \brief Сохраняет модель в Excel-файл с указанным именем.
-    void save(const QString &filename);
+    void saveToExcel(const QString &filename);
+
+    /// \brief Возвращает имя журнала по его типу.
+    static const QString &getJournalName(const JournalType type, const QString &defaultValue = "") noexcept;
 
 signals:
     /// \brief Сигнал об успешном выполнении операции.

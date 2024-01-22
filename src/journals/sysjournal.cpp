@@ -1,5 +1,9 @@
 #include "sysjournal.h"
 
+#include "../models/edynamictablemodel.h"
+
+#include <QSortFilterProxyModel>
+
 namespace journals
 {
 
@@ -51,10 +55,8 @@ const QMap<quint32, QString> SysJournal::desriptions = {
 
 SysJournal::SysJournal(QObject *parent) : BaseJournal(parent), parser(new EventParser(this))
 {
-    jourName = "Системный журнал";
     viewName = "system";
-    headers = BaseJournal::eventJourHeaders;
-    type = JournalType::System;
+    headers = BaseJournal::s_eventJourHeaders;
     setUserTimezone(headers);
 }
 

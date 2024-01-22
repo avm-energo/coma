@@ -1,22 +1,31 @@
 #include "basejournal.h"
 
+#include "../models/edynamictablemodel.h"
 #include "../module/board.h"
+#include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>
 #include <QFile>
+#include <QSortFilterProxyModel>
 #include <gen/timefunc.h>
 #include <xlsxdocument.h>
 
 namespace journals
 {
 
-const QStringList BaseJournal::eventJourHeaders = {
+const QStringList BaseJournal::s_eventJourHeaders = {
     " № ",              //
     "Дата/Время UTC",   //
     "Описание события", //
     "Тип события",      //
     "Доп поле"          //
+};
+
+const std::map<JournalType, QString> BaseJournal::s_nameByType {
+    { JournalType::System, "Системный журнал" }, //
+    { JournalType::Work, "Рабочий журнал" },     //
+    { JournalType::Meas, "Журнал измерений" }    //
 };
 
 BaseJournal::BaseJournal(QObject *parent)
@@ -40,32 +49,32 @@ ETableView *BaseJournal::createModelView(QWidget *parent) const
     return modelView;
 }
 
-const QString &BaseJournal::getName() const
+void BaseJournal::fill(const S2::S2BFile &journalFile)
 {
-    return jourName;
-}
-
-const QString &BaseJournal::getViewName() const
-{
-    return viewName;
-}
-
-const JournalType BaseJournal::getType() const
-{
-    return type;
-}
-
-void BaseJournal::fill(const QByteArray &data)
-{
+    m_file = journalFile;
     if (!dataModel->isEmpty())
         dataModel->clearModel();
     dataModel->setHorizontalHeaderLabels(headers);
-    fillModel(data);
+    fillModel(m_file.data);
     proxyModel->setSourceModel(dataModel.get());
     emit done("Прочитано успешно");
 }
 
-void BaseJournal::save(const QString &filename)
+const S2::S2BFile &BaseJournal::getFile() const noexcept
+{
+    return m_file;
+}
+
+const QString &BaseJournal::getJournalName(const JournalType type, const QString &defaultValue) noexcept
+{
+    auto search = s_nameByType.find(type);
+    if (search != s_nameByType.cend())
+        return search->second;
+    else
+        return defaultValue;
+}
+
+void BaseJournal::saveToExcel(const QString &filename)
 {
     // Если не удалить прошлый существующий файл, то QXlsx откроет его и
     // начнёт читать. Для больших файлов (например, журналов измерений)
@@ -80,16 +89,17 @@ void BaseJournal::save(const QString &filename)
     QXlsx::CellReference cellDate(3, 1);
     QXlsx::CellReference cellTime(4, 1);
 
-    workSheet->writeString(cellJourType, jourName);
+    const quint16 type = (m_file.header.typeM << 8) | m_file.header.typeB;
+    workSheet->writeString(cellJourType, getJournalName(static_cast<JournalType>(m_file.header.fname)));
     workSheet->writeString(cellModuleType, "Модуль: ");
     cellModuleType.setColumn(2);
-    workSheet->writeString(cellModuleType, Board::GetInstance().moduleName());
+    workSheet->writeString(cellModuleType, QString::number(type, 16));
     cellModuleType.setColumn(3);
     workSheet->writeString(cellModuleType, "сер. ном. ");
     cellModuleType.setColumn(4);
     workSheet->writeString(cellModuleType, QString::number(Board::GetInstance().serialNumber(Board::BaseMezzAdd), 16));
 
-    auto datetime = QDateTime::currentDateTimeUtc().toTimeZone(timezone);
+    auto datetime = QDateTime::fromSecsSinceEpoch(m_file.header.thetime);
     workSheet->writeString(cellDate, "Дата: ");
     cellDate.setColumn(2);
     workSheet->writeDate(cellDate, datetime.date());

@@ -113,7 +113,7 @@ void JournalViewer::saveExcelJournal()
     auto filename = WDFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx");
     if (!filename.isEmpty())
     {
-        journal->save(filename);
+        journal->saveToExcel(filename);
         EMessageBox::information(this, "Записано успешно!");
     }
 }
@@ -133,7 +133,7 @@ void JournalViewer::setupUI(const S2::S2BFile &file)
     layout->addWidget(closeButton);
 
     setLayout(layout);
-    journal->fill(file.data);
+    journal->fill(file);
 }
 
 }

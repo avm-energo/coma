@@ -1,5 +1,6 @@
 #include "journaldialog.h"
 
+#include "journaltabwidget.h"
 #include "measjournal.h"
 #include "sysjournal.h"
 #include "workjournal.h"
@@ -11,31 +12,31 @@
 namespace journals
 {
 
-JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent) : UDialog(parent)
+JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent) : UDialog(parent), m_settings(settings)
 {
     disableSuccessMessage();
     m_dataUpdater->currentConnection()->connection(this, &JournalDialog::receivedJournalFile);
-    createJournals(settings);
+    createJournalTabs();
     setupUI();
 }
 
-void JournalDialog::createJournals(const ModuleSettings &settings)
+void JournalDialog::createJournalTabs()
 {
     using namespace journals;
-    auto sysJour = new SysJournal(this);
-    auto sysJourTab = new JournalTabWidget(sysJour, this);
-    journals.insert({ sysJour->getType(), sysJourTab });
-    if (!settings.getWorkJours().isEmpty())
+    auto journalType = JournalType::System;
+    auto sysJourTab = new JournalTabWidget(journalType, this);
+    journals.insert({ journalType, sysJourTab });
+    if (!m_settings.get().getWorkJours().isEmpty())
     {
-        auto workJour = new WorkJournal(settings.getWorkJours(), this);
-        auto workJourTab = new JournalTabWidget(workJour, this);
-        journals.insert({ workJour->getType(), workJourTab });
+        journalType = JournalType::Work;
+        auto workJourTab = new JournalTabWidget(journalType, this);
+        journals.insert({ journalType, workJourTab });
     }
-    if (!settings.getMeasJours().empty())
+    if (!m_settings.get().getMeasJours().empty())
     {
-        auto measJour = new MeasJournal(settings.getMeasJours(), this);
-        auto measJourTab = new JournalTabWidget(measJour, this);
-        journals.insert({ measJour->getType(), measJourTab });
+        journalType = JournalType::Meas;
+        auto measJourTab = new JournalTabWidget(journalType, this);
+        journals.insert({ journalType, measJourTab });
     }
 }
 
@@ -52,12 +53,40 @@ void JournalDialog::setupUI()
     setLayout(layout);
 }
 
-void JournalDialog::receivedJournalFile(const S2::S2BFile &s2bFile)
+BaseJournal *JournalDialog::createJournal(JournalType type, QObject *parent) noexcept
 {
-    auto jourType = static_cast<JournalType>(s2bFile.header.fname);
-    auto search = journals.find(jourType);
+    BaseJournal *journal = nullptr;
+    switch (type)
+    {
+    case JournalType::System:
+        journal = new SysJournal(parent);
+        break;
+    case JournalType::Work:
+        journal = new WorkJournal(m_settings.get().getWorkJours(), parent);
+        break;
+    case JournalType::Meas:
+        journal = new MeasJournal(m_settings.get().getMeasJours(), parent);
+        break;
+    default:
+        journal = nullptr;
+        break;
+    }
+    return journal;
+}
+
+void JournalDialog::receivedJournalFile(const S2::S2BFile &journalFile)
+{
+    auto journalType = static_cast<JournalType>(journalFile.header.fname);
+    auto search = journals.find(journalType);
     if (search != journals.end())
-        search->second->setJournalFile(s2bFile);
+    {
+        auto journal = createJournal(search->first, search->second);
+        if (journal != nullptr)
+        {
+            search->second->update(journal);
+            journal->fill(journalFile);
+        }
+    }
 }
 
 }
