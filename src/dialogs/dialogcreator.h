@@ -21,16 +21,6 @@ enum class AppConfiguration : bool
 class DialogCreator : public QObject
 {
     Q_OBJECT
-public:
-    DialogCreator(const ModuleSettings &settings, const Board &board, //
-        S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent = nullptr);
-    /// \brief Creating the list with dialogs based on module settings for the current connected device.
-    void createDialogs(const AppConfiguration appCfg);
-    /// \brief Removing all dialogs in the dialog list.
-    void deleteDialogs();
-    /// \brief Returns the list with dialogs.
-    QList<UDialog *> &getDialogs();
-
 private:
     Modules::Model m_boxModel;
     Modules::BaseBoard m_typeB;
@@ -42,10 +32,21 @@ private:
     QWidget *m_parent;
     QList<UDialog *> m_dialogs;
 
-    /// \brief Returns true if module in box, otherwise false.
-    bool isBoxModule(const quint16 &type) const;
+public:
+    DialogCreator(const ModuleSettings &settings, const Board &board, //
+        S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent = nullptr);
+    /// \brief Creating the list with dialogs based on module settings for the current connected device.
+    void createDialogs(const AppConfiguration appCfg);
+    /// \brief Removing all dialogs in the dialog list.
+    void deleteDialogs();
+    /// \brief Returns the list with dialogs.
+    QList<UDialog *> &getDialogs();
+
+private:
     /// \brief Adding the created dialog to the list for saving.
     void addDialogToList(UDialog *dlg, const QString &caption, const QString &name);
+    /// \brief Updating creator's internal data.
+    void updateTypes();
     /// \brief Creating config dialogs.
     void createConfigDialogs();
     /// \brief Creating check dialogs.

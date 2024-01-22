@@ -21,9 +21,6 @@
 DialogCreator::DialogCreator(const ModuleSettings &settings, const Board &board, //
     S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent)
     : QObject(parent)
-    , m_boxModel(Modules::Model(board.type()))
-    , m_typeB(Modules::BaseBoard(board.typeB()))
-    , m_typeM(Modules::MezzanineBoard(board.typeM()))
     , m_settings(settings)
     , m_board(board)
     , m_s2manager(s2DataManager)
@@ -35,6 +32,7 @@ DialogCreator::DialogCreator(const ModuleSettings &settings, const Board &board,
 void DialogCreator::createDialogs(const AppConfiguration appCfg)
 {
     deleteDialogs();
+    updateTypes();
     createConfigDialogs();
     createCheckDialogs();
     createJournalDialog();
@@ -64,6 +62,13 @@ void DialogCreator::addDialogToList(UDialog *dlg, const QString &caption, const 
     m_dialogs.append(dlg);
 }
 
+void DialogCreator::updateTypes()
+{
+    m_boxModel = Modules::Model(m_board.type());
+    m_typeB = Modules::BaseBoard(m_board.typeB());
+    m_typeM = Modules::MezzanineBoard(m_board.typeM());
+}
+
 void DialogCreator::deleteDialogs()
 {
     while (!m_dialogs.isEmpty())
@@ -76,11 +81,6 @@ void DialogCreator::deleteDialogs()
 QList<UDialog *> &DialogCreator::getDialogs()
 {
     return m_dialogs;
-}
-
-bool DialogCreator::isBoxModule(const quint16 &type) const
-{
-    return (type == Modules::Model::KDV || type == Modules::Model::KTF || type == Modules::Model::KIV);
 }
 
 void DialogCreator::createConfigDialogs()
