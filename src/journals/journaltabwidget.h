@@ -20,12 +20,12 @@ class JournalTabWidget : public QWidget
 private:
     static const std::map<JournalType, QString> s_prefixByType;
 
-    UniquePointer<BaseJournal> journal;
+    UniquePointer<BaseJournal> m_currentJournal;
     QVBoxLayout *m_mainLayout;
-    ETableView *modelView;
-    QDialog *progressDialog;
-    EProgressIndicator *progressIndicator;
-    QProgressDialog *saveProgressDialog;
+    ETableView *m_modelView;
+    QDialog *m_progressDialog;
+    EProgressIndicator *m_progressIndicator;
+    QProgressDialog *m_saveProgressDialog;
     JournalType m_type;
 
     /// \brief Метод для создания виджетов, сигнализирующих

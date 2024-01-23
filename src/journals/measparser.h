@@ -16,12 +16,12 @@ class MeasParser : public QObject
 {
     Q_OBJECT
 private:
-    QTimeZone timezone;
-    const quint8 *iter;
-    std::size_t recordSize;
-    std::size_t size;
-    int timeIndex;
-    QVector<QVariant> record;
+    QTimeZone m_timezone;
+    const quint8 *m_iter;
+    std::size_t m_recordSize;
+    std::size_t m_totalSize;
+    int m_timeIndex;
+    QVector<QVariant> m_record;
 
     /// \brief Парсинг одной записи из файла журнала.
     /// \details В данном случае под одной записью понимается одна строка с данными
@@ -53,8 +53,8 @@ private:
     /// равное длине указанном простого типа T.
     template <class T> QVariant iterateValue()
     {
-        auto value = *reinterpret_cast<const T *>(iter);
-        iter += sizeof(T);
+        auto value = *reinterpret_cast<const T *>(m_iter);
+        m_iter += sizeof(T);
         return value;
     }
 
@@ -67,14 +67,14 @@ private:
     template <class T> QVariant iterateTime(bool &status)
     {
         constexpr auto max = std::numeric_limits<T>().max();
-        auto value = *reinterpret_cast<const T *>(iter);
-        iter += sizeof(T);
+        auto value = *reinterpret_cast<const T *>(m_iter);
+        m_iter += sizeof(T);
         if (value == max)
             status = false;
         if constexpr (std::is_same_v<T, quint32>)
-            return TimeFunc::UnixTime32ToInvString(value, timezone);
+            return TimeFunc::UnixTime32ToInvString(value, m_timezone);
         else if constexpr (std::is_same_v<T, quint64>)
-            return TimeFunc::UnixTime64ToInvStringFractional(value, timezone);
+            return TimeFunc::UnixTime64ToInvStringFractional(value, m_timezone);
         else
         {
             status = false;

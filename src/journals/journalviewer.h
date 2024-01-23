@@ -15,9 +15,9 @@ class JournalViewer : public QDialog
 {
     Q_OBJECT
 private:
-    UniquePointer<BaseJournal> journal;
-    ModuleTypes::WorkJourMap workSettings;
-    ModuleTypes::MeasJourList measSettings;
+    UniquePointer<BaseJournal> m_journal;
+    ModuleTypes::WorkJourMap m_workSettings;
+    ModuleTypes::MeasJourList m_measSettings;
 
     /// \brief Парсинг и отображение полученного файла журнала.
     void showJournal(const S2::S2BFile &file);

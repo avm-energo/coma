@@ -1,13 +1,9 @@
 #include "sysjournal.h"
 
-#include "../models/edynamictablemodel.h"
-
-#include <QSortFilterProxyModel>
-
 namespace journals
 {
 
-const QMap<quint32, QString> SysJournal::desriptions = {
+const QMap<quint32, QString> SysJournal::s_desriptions = {
     { 1, "Рестарт модуля" },                                                         //
     { 2, "Произошла запись и переход на новую конфигурацию" },                       //
     { 3, "Произошла запись и переход на новую версию ВПО" },                         //
@@ -53,18 +49,18 @@ const QMap<quint32, QString> SysJournal::desriptions = {
     { 43, "Отключение питания датчиков" }                                            //
 }; ///< Статическая хэш-карта с описанием событий системного журнала.
 
-SysJournal::SysJournal(QObject *parent) : BaseJournal(parent), parser(new EventParser(this))
+SysJournal::SysJournal(QObject *parent) : BaseJournal(parent), m_parser(new EventParser(this))
 {
-    viewName = "system";
-    headers = BaseJournal::s_eventJourHeaders;
-    setUserTimezone(headers);
+    m_viewName = "system";
+    m_modelHeaders = BaseJournal::s_eventJourHeaders;
+    setUserTimezone(m_modelHeaders);
 }
 
 void SysJournal::fillModel(const QByteArray &ba)
 {
-    parser->update(ba);
-    const auto data = parser->parse(desriptions, timezone);
-    dataModel->fillModel(data);
+    m_parser->update(ba);
+    const auto data = m_parser->parse(s_desriptions, m_timezone);
+    m_dataModel->fillModel(data);
 }
 
 }

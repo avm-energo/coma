@@ -1,13 +1,11 @@
 #include "basejournal.h"
 
-#include "../models/edynamictablemodel.h"
 #include "../module/board.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>
 #include <QFile>
-#include <QSortFilterProxyModel>
 #include <gen/timefunc.h>
 #include <xlsxdocument.h>
 
@@ -30,9 +28,9 @@ const std::map<JournalType, QString> BaseJournal::s_nameByType {
 
 BaseJournal::BaseJournal(QObject *parent)
     : QObject(parent)
-    , timezone(TimeFunc::userTimeZone())
-    , dataModel(new EDynamicTableModel(this))
-    , proxyModel(new QSortFilterProxyModel(this))
+    , m_timezone(TimeFunc::userTimeZone())
+    , m_dataModel(new EDynamicTableModel(this))
+    , m_proxyModel(new QSortFilterProxyModel(this))
 {
 }
 
@@ -45,18 +43,18 @@ void BaseJournal::setUserTimezone(QStringList &data)
 
 ETableView *BaseJournal::createModelView(QWidget *parent) const
 {
-    auto modelView = WDFunc::NewTV(parent, viewName, proxyModel.get());
+    auto modelView = WDFunc::NewTV(parent, m_viewName, m_proxyModel.get());
     return modelView;
 }
 
 void BaseJournal::fill(const S2::S2BFile &journalFile)
 {
     m_file = journalFile;
-    if (!dataModel->isEmpty())
-        dataModel->clearModel();
-    dataModel->setHorizontalHeaderLabels(headers);
+    if (!m_dataModel->isEmpty())
+        m_dataModel->clearModel();
+    m_dataModel->setHorizontalHeaderLabels(m_modelHeaders);
     fillModel(m_file.data);
-    proxyModel->setSourceModel(dataModel.get());
+    m_proxyModel->setSourceModel(m_dataModel.get());
     emit done("Прочитано успешно");
 }
 
@@ -110,10 +108,10 @@ void BaseJournal::saveToExcel(const QString &filename)
     workSheet->writeString(cellTime, TimeFunc::userTimeZoneName());
 
     // пишем в файл заголовки
-    for (int i = 0; i < dataModel->columnCount(); ++i)
+    for (int i = 0; i < m_dataModel->columnCount(); ++i)
     {
         QXlsx::CellReference cellHeader(5, i + 1);
-        QString tempString = dataModel->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString();
+        QString tempString = m_dataModel->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString();
         if (tempString.length() > 10)
         {
             if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 2))
@@ -130,20 +128,20 @@ void BaseJournal::saveToExcel(const QString &filename)
         workSheet->writeString(cellHeader, tempString);
     }
     // теперь по всем строкам модели пишем данные
-    auto modelSize = dataModel->itemCount();
+    auto modelSize = m_dataModel->itemCount();
     emit resendMaxResult(modelSize);
     for (int i = 0; i < modelSize; ++i)
     {
         QXlsx::CellReference currentCell(6 + i, 1);
         // номер события
-        workSheet->writeNumeric(currentCell, dataModel->data(dataModel->index(i, 0), Qt::DisplayRole).toInt());
+        workSheet->writeNumeric(currentCell, m_dataModel->data(m_dataModel->index(i, 0), Qt::DisplayRole).toInt());
         currentCell.setColumn(2);
         // время события
-        workSheet->writeString(currentCell, dataModel->data(dataModel->index(i, 1), Qt::DisplayRole).toString());
-        for (int j = 2; j < dataModel->columnCount(); ++j)
+        workSheet->writeString(currentCell, m_dataModel->data(m_dataModel->index(i, 1), Qt::DisplayRole).toString());
+        for (int j = 2; j < m_dataModel->columnCount(); ++j)
         {
             currentCell.setColumn(1 + j);
-            QVariant value = dataModel->data(dataModel->index(i, j), Qt::DisplayRole);
+            QVariant value = m_dataModel->data(m_dataModel->index(i, j), Qt::DisplayRole);
             switch (value.type())
             {
             case QVariant::Type::Double:
@@ -162,7 +160,7 @@ void BaseJournal::saveToExcel(const QString &filename)
     }
     doc->save();
     doc->deleteLater();
-    emit resendResult(dataModel->itemCount());
+    emit resendResult(m_dataModel->itemCount());
     emit done("Файл создан успешно");
 }
 

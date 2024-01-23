@@ -56,7 +56,7 @@ void JournalViewer::showJournal(const S2::S2BFile &file)
     auto jour = createJournal(type, file.header.typeB, file.header.typeM);
     if (jour)
     {
-        journal.reset(jour);
+        m_journal.reset(jour);
         setupUI(file);
         showMaximized();
     }
@@ -74,12 +74,12 @@ BaseJournal *JournalViewer::createJournal(const JournalType type, const quint16 
     case JournalType::Work:
         setWindowTitle("[WORK JOURNAL] " + windowTitle());
         parseSettings(typeB, typeM);
-        retJournal = new WorkJournal(workSettings, this);
+        retJournal = new WorkJournal(m_workSettings, this);
         break;
     case JournalType::Meas:
         setWindowTitle("[MEAS JOURNAL] " + windowTitle());
         parseSettings(typeB, typeM);
-        retJournal = new MeasJournal(measSettings, this);
+        retJournal = new MeasJournal(m_measSettings, this);
         break;
     default:
         QMessageBox::critical(this, "Ошибка", "Получен журнал неизвестного формата");
@@ -99,13 +99,13 @@ void JournalViewer::parseSettings(const quint16 typeB, const quint16 typeM)
 
 void JournalViewer::workDataReceived(const quint32 id, const QString &desc)
 {
-    workSettings.insert(id, desc);
+    m_workSettings.insert(id, desc);
 }
 
 void JournalViewer::measDataReceived(const quint32 index, const QString &header, //
     const ModuleTypes::BinaryType type, bool visib)
 {
-    measSettings.push_back(ModuleTypes::MeasJournal { index, type, visib, header });
+    m_measSettings.push_back(ModuleTypes::MeasJournal { index, type, visib, header });
 }
 
 void JournalViewer::saveExcelJournal()
@@ -113,7 +113,7 @@ void JournalViewer::saveExcelJournal()
     auto filename = WDFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx");
     if (!filename.isEmpty())
     {
-        journal->saveToExcel(filename);
+        m_journal->saveToExcel(filename);
         EMessageBox::information(this, "Записано успешно!");
     }
 }
@@ -121,7 +121,7 @@ void JournalViewer::saveExcelJournal()
 void JournalViewer::setupUI(const S2::S2BFile &file)
 {
     auto layout = new QVBoxLayout;
-    auto modelView = journal->createModelView(this);
+    auto modelView = m_journal->createModelView(this);
     layout->addWidget(modelView);
 
     auto saveExcelButton = new QPushButton("Сохранить журнал в Excel файл", this);
@@ -133,7 +133,7 @@ void JournalViewer::setupUI(const S2::S2BFile &file)
     layout->addWidget(closeButton);
 
     setLayout(layout);
-    journal->fill(file);
+    m_journal->fill(file);
 }
 
 }

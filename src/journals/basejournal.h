@@ -1,15 +1,15 @@
 #pragma once
 
+#include "../models/edynamictablemodel.h"
 #include "../module/modulesettings.h"
 
 #include <QObject>
+#include <QSortFilterProxyModel>
 #include <QTimeZone>
 #include <gen/stdfunc.h>
 #include <s2/s2datatypes.h>
 
-class EDynamicTableModel;
 class ETableView;
-class QSortFilterProxyModel;
 
 namespace journals
 {
@@ -31,11 +31,11 @@ protected:
     static const std::map<JournalType, QString> s_prefixByType;
 
     S2::S2BFile m_file;
-    QString viewName;
-    QStringList headers;
-    QTimeZone timezone;
-    UniquePointer<EDynamicTableModel> dataModel;
-    UniquePointer<QSortFilterProxyModel> proxyModel;
+    QString m_viewName;
+    QStringList m_modelHeaders;
+    QTimeZone m_timezone;
+    UniquePointer<EDynamicTableModel> m_dataModel;
+    UniquePointer<QSortFilterProxyModel> m_proxyModel;
 
     /// \brief Форматирует заголовки в соответствии с текущим часовым поясом.
     /// \details В полученном списке строк data находит строку,

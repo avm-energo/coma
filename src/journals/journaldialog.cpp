@@ -25,18 +25,18 @@ void JournalDialog::createJournalTabs()
     using namespace journals;
     auto journalType = JournalType::System;
     auto sysJourTab = new JournalTabWidget(journalType, this);
-    journals.insert({ journalType, sysJourTab });
+    m_journals.insert({ journalType, sysJourTab });
     if (!m_settings.get().getWorkJours().isEmpty())
     {
         journalType = JournalType::Work;
         auto workJourTab = new JournalTabWidget(journalType, this);
-        journals.insert({ journalType, workJourTab });
+        m_journals.insert({ journalType, workJourTab });
     }
     if (!m_settings.get().getMeasJours().empty())
     {
         journalType = JournalType::Meas;
         auto measJourTab = new JournalTabWidget(journalType, this);
-        journals.insert({ journalType, measJourTab });
+        m_journals.insert({ journalType, measJourTab });
     }
 }
 
@@ -44,7 +44,7 @@ void JournalDialog::setupUI()
 {
     auto layout = new QVBoxLayout;
     auto tabWidget = new QTabWidget(this);
-    for (const auto &journal : journals)
+    for (const auto &journal : m_journals)
     {
         auto journalTab = journal.second;
         tabWidget->addTab(journalTab, journalTab->getTabName());
@@ -77,8 +77,8 @@ BaseJournal *JournalDialog::createJournal(JournalType type, QObject *parent) noe
 void JournalDialog::receivedJournalFile(const S2::S2BFile &journalFile)
 {
     auto journalType = static_cast<JournalType>(journalFile.header.fname);
-    auto search = journals.find(journalType);
-    if (search != journals.end())
+    auto search = m_journals.find(journalType);
+    if (search != m_journals.end())
     {
         auto journal = createJournal(search->first, search->second);
         if (journal != nullptr)
