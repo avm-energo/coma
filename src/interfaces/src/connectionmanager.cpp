@@ -10,7 +10,7 @@
 namespace Interface
 {
 
-ConnectionManager::ConnectionManager(QWidget *parent)
+ConnectionManager::ConnectionManager(QObject *parent)
     : QObject(parent)
     , m_currentConnection(nullptr)
     , m_silentTimer(new QTimer(this))

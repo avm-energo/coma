@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QTimer>
-#include <QWidget>
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/connectioncontext.h>
 #include <interfaces/types/settingstypes.h>
@@ -39,7 +38,7 @@ private:
     void reconnect();
 
 public:
-    explicit ConnectionManager(QWidget *parent = nullptr);
+    explicit ConnectionManager(QObject *parent = nullptr);
     AsyncConnection *createConnection(const ConnectStruct &connectionData);
     void setReconnectMode(const ReconnectMode newMode) noexcept;
 

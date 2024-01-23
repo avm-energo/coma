@@ -18,7 +18,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 ##### OPTIONS #####
 option(ENABLE_EMULATOR "Enable emulator interface" OFF)
 option(ENABLE_PVS "Enable PVS-Studio" OFF)
-option(BUILD_TESTS "Build tests" ON)
+option(COMA_BUILD_TESTS "Build tests" ON)
 
 # Including cmake scripts for some functions usage
 include(DetermineTargetArchitecture)
@@ -125,6 +125,11 @@ if(NOT DEFINED CPACK_PACKAGING_INSTALL_PREFIX)
 endif()
 message(STATUS "Packaging install prefix: ${CPACK_PACKAGING_INSTALL_PREFIX}")
 
+# Including ctest
+if(COMA_BUILD_TESTS)
+  include(CTest)
+endif()
+
 # Building libraries and targets
 # Step 1: Build dependencies
 include(gen)
@@ -148,7 +153,7 @@ add_subdirectory(xml)
 add_subdirectory(journals)
 add_subdirectory(coma_core)
 # Step 2: Build tests
-if(BUILD_TESTS)
+if(COMA_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 # Step 3: Build executable targets
