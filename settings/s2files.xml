@@ -4317,14 +4317,20 @@
 		<id>1208</id>
 		<name>Sensors</name>
 		<description>Подключенные датчики</description>
-		<type>DWORD </type>
+		<type>DWORD</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>CheckBoxGroup</type>
 			<group>9</group>
 			<string>Подключенные датчики вибрации</string>
-			<min>0</min>
-			<max>10000</max>
-			<decimals>0</decimals>
+            <string-array>
+				<item>Датчик 1</item>
+				<item>Датчик 2</item>
+				<item>Датчик 3</item>
+				<item>Датчик 4</item>
+				<item>Датчик 5</item>
+				<item>Датчик 6</item>
+			</string-array>
+			<count>6</count>
 		</widget>
 	</record>
 	<record>
