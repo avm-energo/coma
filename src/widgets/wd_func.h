@@ -79,6 +79,8 @@ public:
     template <typename T> static T CBData(const QWidget *parent, const QString &cbname)
     {
         auto buffer = CBData(parent, cbname);
+        if constexpr (std::is_floating_point_v<T>)
+            buffer.replace(',', '.');
         return QVariant(buffer).value<T>();
     }
 
