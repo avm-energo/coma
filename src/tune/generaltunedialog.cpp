@@ -3,9 +3,9 @@
 #include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
+#include "tunereporter.h"
 #include "tunesequencefile.h"
 
-#include <LimeReport>
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QPainter>
@@ -16,7 +16,7 @@
 #include <gen/stdfunc.h>
 
 GeneralTuneDialog::GeneralTuneDialog(S2::Configuration &workConfig, QWidget *parent)
-    : UDialog(parent), config(workConfig)
+    : UDialog(parent), config(workConfig), m_reporter(new TuneReporter(this))
 {
     m_tuneTabWidget = new TuneTabWidget;
     TuneSequenceFile::init();
@@ -37,7 +37,7 @@ void GeneralTuneDialog::SetupUI()
             this, tns, [&d]() { d.dialog->show(); }, ":/tunes/" + tns + ".svg", d.caption));
     }
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tnprotocol", [this]() { prepareReport(); }, ":/tunes/tnprotocol.svg",
+        this, "tnprotocol", [this]() { generateReport(); }, ":/tunes/tnprotocol.svg",
         "Генерация протокола регулировки"));
     lyout->addStretch(100);
     hlyout->addLayout(lyout);
@@ -70,23 +70,19 @@ void GeneralTuneDialog::setCalibrButtons()
 
 void GeneralTuneDialog::generateReport()
 {
-    /*    m_Report = new LimeReport::ReportEngine;
-        prepareReport();
-        if (EMessageBox::question("Сохранить протокол поверки?"))
+    if (EMessageBox::question(this, "Сохранить протокол поверки?"))
+    {
+        QString filename = WDFunc::ChooseFileForSave(this, "*.pdf", "pdf");
+        if (!filename.isEmpty())
         {
-            QString filename = WDFunc::ChooseFileForSave(this, "*.pdf", "pdf");
-            if (!filename.isEmpty())
-            {
-                m_Report->designReport();
-                m_Report->printToPDF(filename);
-                //        report->previewReport();
-                //  report->designReport();
-                EMessageBox::information(this, "Записано успешно!");
-            }
-            else
-                EMessageBox::information(this, "Действие отменено");
+            prepareReport();
+            m_reporter->setupReportData(AbstractTuneDialog::getReportData());
+            m_reporter->saveToFile(filename);
+            EMessageBox::information(this, "Записано успешно!");
         }
-        delete m_Report; */
+        else
+            EMessageBox::warning(this, "Действие отменено");
+    }
 }
 
 void GeneralTuneDialog::setIconProcessed(const QString &name)

@@ -32,6 +32,8 @@ class AsyncConnection;
 class SyncConnection;
 }
 
+using ReportData = std::map<QString, QString>;
+
 class AbstractTuneDialog : public QDialog
 {
     Q_OBJECT
@@ -53,9 +55,9 @@ public:
     };
 
     explicit AbstractTuneDialog(S2::Configuration &workConfig, int tuneStep, QWidget *parent = nullptr);
-    ~AbstractTuneDialog();
 
-    template <typename T> void addTuneFunc(const QString &msg, Error::Msg (T::*func)())
+    template <typename T> //
+    void addTuneFunc(const QString &msg, Error::Msg (T::*func)())
     {
         m_tuneFunctions.append({ msg, reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(func) });
     }
@@ -92,10 +94,16 @@ public:
     Error::Msg writeTuneCoefs(bool isUserChoosingRequired);
     Error::Msg readTuneCoefs();
     Error::Msg sendChangedConfig(const std::vector<std::pair<QString, S2::valueType>> &changes) const;
+    static ReportData &getReportData();
 
 protected:
+    S2::Configuration &config;
     Interface::AsyncConnection *m_async;
     Interface::SyncConnection *m_sync;
+    static ReportData s_reportData;
+
+    Error::Msg setCurrentsTo(const float value);
+    static void writeReportData(const QString &name, const QString &value);
 
 private:
     QMap<int, DataBlock *> AbsBac;
@@ -125,8 +133,6 @@ private slots:
 protected:
     void closeEvent(QCloseEvent *e);
     void keyPressEvent(QKeyEvent *e);
-
-    S2::Configuration &config;
 };
 
 using TuneFunc = Error::Msg (AbstractTuneDialog::*)();
