@@ -472,6 +472,12 @@ void Coma::setProgressBarCount(int prbnum, int count)
     {
         prb->setValue(count);
         WDFunc::SetLBLText(this, lblname, QString::number(count) + " из " + QString::number(prb->maximum()));
+        // Сброс прогресс-бара после окончания операции чтения/записи
+        if (prb->value() >= prb->maximum())
+        {
+            prb->setValue(0);
+            WDFunc::SetLBLText(this, lblname, " ");
+        }
     }
 }
 
