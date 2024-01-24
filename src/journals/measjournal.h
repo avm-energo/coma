@@ -10,8 +10,8 @@ namespace journals
 class MeasJournal : public BaseJournal
 {
 private:
-    MeasSettings settings;
-    UniquePointer<MeasParser> parser;
+    MeasSettings m_settings;
+    UniquePointer<MeasParser> m_parser;
 
     /// \brief Метод для получения названия столбцов модели из настроек описания модели.
     QStringList getHeaders();

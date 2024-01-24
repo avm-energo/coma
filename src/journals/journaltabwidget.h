@@ -8,6 +8,8 @@
 #include <QWidget>
 #include <s2/s2datatypes.h>
 
+class QVBoxLayout;
+
 namespace journals
 {
 
@@ -16,12 +18,15 @@ class JournalTabWidget : public QWidget
 {
     Q_OBJECT
 private:
-    BaseJournal *journal;
-    ETableView *modelView;
-    QDialog *progressDialog;
-    EProgressIndicator *progressIndicator;
-    QProgressDialog *saveProgressDialog;
-    S2::S2BFile journalFile;
+    static const std::map<JournalType, QString> s_prefixByType;
+
+    UniquePointer<BaseJournal> m_currentJournal;
+    QVBoxLayout *m_mainLayout;
+    ETableView *m_modelView;
+    QDialog *m_progressDialog;
+    EProgressIndicator *m_progressIndicator;
+    QProgressDialog *m_saveProgressDialog;
+    JournalType m_type;
 
     /// \brief Метод для создания виджетов, сигнализирующих
     /// пользователю состояние обмена данными и сохранения данных в файл.
@@ -51,14 +56,18 @@ private slots:
     void error(const QString &message);
 
 public:
-    JournalTabWidget(BaseJournal *jour, QWidget *parent = nullptr);
+    explicit JournalTabWidget(const JournalType type, QWidget *parent = nullptr);
 
-    /// \brief Обновление содержимого виджета по полученному файлу журнала.
-    /// \param jourFile[in] - файл журнала в формате S2B, полученный от устройства.
-    void setJournalFile(const S2::S2BFile &jourFile);
+    /// \brief Обновление содержимого виджета по полученному объекту журнала.
+    /// \param newJournal[in] - журнала, полученный от родительского класса JournalDialog.
+    void update(BaseJournal *newJournal);
 
     /// \brief Функция, возвращающая имя вкладки.
-    const QString &getTabName() const;
+    QString getTabName() const;
+
+signals:
+    /// \brief Сигнал для уведомления UI о том, что журнал загружен успешно.
+    void ready();
 };
 
 }

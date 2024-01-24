@@ -10,8 +10,8 @@ namespace journals
 class WorkJournal : public BaseJournal
 {
 private:
-    QMap<quint32, QString> desriptions;
-    UniquePointer<EventParser> parser;
+    QMap<quint32, QString> m_desriptions;
+    UniquePointer<EventParser> m_parser;
 
     /// \brief Перегрузка виртуального метода для заполнения модели.
     /// \details Используется экземпляр класса EventParser.
