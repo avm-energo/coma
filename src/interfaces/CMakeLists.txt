@@ -92,28 +92,57 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-if (MSVC)
+if(MSVC)
   target_compile_options(${PROJECT_NAME} PRIVATE /W4)
 else()
   target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+# Linking dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::SerialPort
-  Qt${QT_VERSION_MAJOR}::Widgets
-  s2
-)
-
+  s2)
 target_link_libraries(${PROJECT_NAME} PUBLIC tl::expected)
 
+# Linking libhidapi
 if(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
 endif()
 if(WIN32)
   find_package(hidapi REQUIRED)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi::hidapi)
+endif()
+
+# Adding test target
+if(COMA_BUILD_TESTS)
+  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
+  set(INTERFACES_TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+  set(INTERFACES_TESTS_SOURCES
+    "${INTERFACES_TESTS_DIR}/interfaces_test_obj.h"
+    "${INTERFACES_TESTS_DIR}/interfaces_test_obj.cpp"
+    "${INTERFACES_TESTS_DIR}/modbus_compat_test.cpp"
+    "${INTERFACES_TESTS_DIR}/iec104_apci_asdu_test.cpp"
+    "${INTERFACES_TESTS_DIR}/iec104_cblock_test.cpp")
+
+  # interfaces_tests target
+  add_executable(${PROJECT_NAME}_tests ${INTERFACES_TESTS_SOURCES})
+  target_include_directories(${PROJECT_NAME}_tests PUBLIC
+    "$<BUILD_INTERFACE:${INTERFACES_TESTS_DIR}>")
+  target_link_libraries(${PROJECT_NAME}_tests PUBLIC
+    gen interfaces
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Test)
+
+  # Adding target as test
+  add_test(NAME ${PROJECT_NAME}_tests COMMAND ${PROJECT_NAME}_tests)
+  # Black magic for ctest using under windows
+  if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+    get_filename_component(hidapi_BIN_DIR ${hidapi_LIB_DIRS}/../bin ABSOLUTE)
+    set_tests_properties(${PROJECT_NAME}_tests PROPERTIES ENVIRONMENT
+      "PATH=${hidapi_BIN_DIR}\;$<TARGET_FILE_DIR:Qt${QT_VERSION_MAJOR}::Core>\;$<TARGET_FILE_DIR:gen>\;")
+  endif()
 endif()
 
 message(STATUS "Interfaces import dirs: ${hidapi_LIB_DIRS}/../bin")
