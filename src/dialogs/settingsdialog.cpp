@@ -1,26 +1,133 @@
 #include "settingsdialog.h"
 
+#include "../widgets/epopup.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 
 #include <QDateTime>
+#include <QGroupBox>
+#include <QGuiApplication>
+#include <QListWidget>
 #include <QMessageBox>
 #include <QMetaEnum>
+#include <QScreen>
 #include <QSettings>
+#include <QStackedWidget>
+#include <QTabWidget>
 #include <QTimeZone>
 #include <QVBoxLayout>
 #include <QtDebug>
 #include <gen/settings.h>
 
-SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
+SettingsDialog::SettingsDialog(QWidget *parent)
+    : QDialog(parent), m_workspace(new QStackedWidget(this)), m_sidebar(new QListWidget(this))
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle("Настройки");
-    SetupUI();
-    Fill();
+    setupUI();
+    // setupUI_old();
+    fill();
 }
 
-void SettingsDialog::SetupUI()
+void SettingsDialog::setupUI()
+{
+    int width = 700, height = 500;
+    // Настройки окна (размер, положение)
+    auto center = QGuiApplication::primaryScreen()->geometry().center();
+    setGeometry(center.x() - width / 2, center.y() - height / 2, width, height);
+    setFixedSize(this->size());
+
+    auto mainLayout = new QVBoxLayout;
+    auto workspaceLayout = new QHBoxLayout;
+    connect(m_sidebar, &QListWidget::currentRowChanged, m_workspace, &QStackedWidget::setCurrentIndex);
+    setupGeneralTab();
+    setupConnectionTab();
+    setupTuneTab();
+    workspaceLayout->addWidget(m_sidebar, 1);
+    workspaceLayout->addWidget(m_workspace, 3);
+    mainLayout->addLayout(workspaceLayout);
+    auto saveBtn = new QPushButton("Сохранить настройки");
+    connect(saveBtn, &QAbstractButton::clicked, this, &SettingsDialog::acceptSettings);
+    mainLayout->addWidget(saveBtn);
+    setLayout(mainLayout);
+}
+
+QVBoxLayout *SettingsDialog::createTabWidget(const QString &tabName)
+{
+    auto tabWidget = new QGroupBox(tabName, m_workspace);
+    auto tabLayout = new QVBoxLayout;
+    tabLayout->setAlignment(Qt::AlignTop);
+    tabWidget->setLayout(tabLayout);
+    m_workspace->addWidget(tabWidget);
+    auto item = new QListWidgetItem(tabName, m_sidebar);
+    item->setSizeHint(QSize(0, 30));
+    item->setTextAlignment(Qt::AlignCenter);
+    m_sidebar->addItem(item);
+    return tabLayout;
+}
+
+void SettingsDialog::setupGeneralTab()
+{
+    auto tabLayout = createTabWidget("Общие настройки");
+
+    // Изменение темы
+    auto themeEnum = QMetaEnum::fromType<Style::Name>;
+    QStringList values;
+    for (int i = 0; i < themeEnum().keyCount(); i++)
+        values.push_back(themeEnum().key(i));
+    auto themeComboBox = WDFunc::NewCB2(m_workspace, values);
+    int position = StyleLoader::GetInstance().styleNumber();
+    themeComboBox->setCurrentIndex(position);
+    connect(themeComboBox, &QComboBox::currentTextChanged, this, &SettingsDialog::themeChanged);
+    auto themeLayout = new QHBoxLayout;
+    themeLayout->addWidget(new QLabel("Тема", m_workspace));
+    themeLayout->addWidget(themeComboBox);
+    tabLayout->addLayout(themeLayout);
+    tabLayout->addWidget(WDFunc::newHLine(m_workspace));
+
+    // Изменение таймзоны
+    auto zoneList = QTimeZone::availableTimeZoneIds();
+    QStringList zonestrList;
+    std::copy_if(zoneList.cbegin(), zoneList.cend(), std::back_inserter(zonestrList),
+        [](const auto array) { return (array.contains("UTC+")); });
+    auto timezoneCB = WDFunc::NewCB2(m_workspace, "timezone", zonestrList);
+    auto timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
+    timezoneCB->setCurrentText(timezone);
+    auto timezoneLayout = new QHBoxLayout;
+    timezoneLayout->addWidget(new QLabel("Часовой пояс", m_workspace));
+    timezoneLayout->addWidget(timezoneCB);
+    tabLayout->addLayout(timezoneLayout);
+    tabLayout->addWidget(WDFunc::newHLine(m_workspace));
+}
+
+void SettingsDialog::setupConnectionTab()
+{
+    using namespace settings;
+    auto tabLayout = createTabWidget("Настройки соединения");
+    // Логгирование обмена данными по интерфейсу
+    tabLayout->addWidget(WDFunc::NewChB2(this, regMap[logKey].name, "Запись обмена данными в файл"));
+    // Обновление сигнализации
+    auto pb = new QPushButton("Выключить обновление сигнализации");
+    connect(pb, &QCheckBox::clicked, this, &SettingsDialog::disableAlarmUpdate);
+    tabLayout->addWidget(pb);
+    // Таймаут по HID
+    tabLayout->addWidget(WDFunc::NewLBLAndLE(this,
+        "Таймаут для HID-порта, мс * 100\n"
+        "Необходимо переподключение для обновления",
+        regMap[hidTimeout].name, true));
+}
+
+void SettingsDialog::setupTuneTab()
+{
+    using namespace settings;
+    auto tabLayout = createTabWidget("Настройки регулировки");
+    tabLayout->addWidget(
+        WDFunc::NewLBLAndLE(this, "Степень усреднения для регулировки", regMap[tuneCountKey].name, true));
+    tabLayout->addWidget(WDFunc::NewLBLAndLE(this, "IP устройства МИП-02", regMap[MIPIP].name, true));
+    tabLayout->addWidget(WDFunc::NewLBLAndLE(this, "Адрес устройства МИП-02", regMap[MIPAddress].name, true));
+}
+
+void SettingsDialog::setupUI_old()
 {
     using namespace Style;
     using namespace settings;
@@ -77,12 +184,12 @@ void SettingsDialog::SetupUI()
     vlyout->addWidget(WDFunc::NewLBLAndLE(this, "IP устройства МИП-02", regMap[MIPIP].name, true));
     vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Адрес устройства МИП-02", regMap[MIPAddress].name, true));
     pb = new QPushButton("Готово");
-    connect(pb, &QAbstractButton::clicked, this, &SettingsDialog::AcceptSettings);
+    connect(pb, &QAbstractButton::clicked, this, &SettingsDialog::acceptSettings);
     vlyout->addWidget(pb);
     setLayout(vlyout);
 }
 
-void SettingsDialog::Fill()
+void SettingsDialog::fill()
 {
     using namespace settings;
     auto sets = std::make_unique<QSettings>();
@@ -101,7 +208,7 @@ void SettingsDialog::Fill()
     WDFunc::SetLEData(this, regMap[MIPIP].name, mipip);
 }
 
-void SettingsDialog::AcceptSettings()
+void SettingsDialog::acceptSettings()
 {
     using namespace settings;
     bool tmpb = false;
@@ -132,4 +239,19 @@ void SettingsDialog::AcceptSettings()
     sets->setValue(regMap[MIPIP].name, WDFunc::LEData(this, regMap[MIPIP].name));
     sets->setValue(regMap[MIPAddress].name, WDFunc::LEData(this, regMap[MIPAddress].name));
     close();
+}
+
+void SettingsDialog::themeChanged(const QString &newTheme)
+{
+    auto answer = QMessageBox::question(this, "Предупреждение", //
+        "Тема будет изменена\n Приложение может не отвечать некоторое время");
+    if (answer == QMessageBox::Yes)
+    {
+        auto themeEnum = QMetaEnum::fromType<Style::Name>;
+        auto key = Style::Name(themeEnum().keyToValue(newTheme.toStdString().c_str()));
+        auto &styleLoader = StyleLoader::GetInstance();
+        styleLoader.setStyleFile(Style::themes.value(key));
+        styleLoader.setAppStyleSheet();
+        styleLoader.save();
+    }
 }
