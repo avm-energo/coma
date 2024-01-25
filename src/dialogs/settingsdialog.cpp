@@ -4,20 +4,16 @@
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 
-#include <QDateTime>
 #include <QGroupBox>
 #include <QGuiApplication>
 #include <QListWidget>
 #include <QMessageBox>
-#include <QMetaEnum>
 #include <QScreen>
-#include <QSettings>
 #include <QStackedWidget>
 #include <QTabWidget>
 #include <QTimeZone>
 #include <QVBoxLayout>
 #include <QtDebug>
-#include <gen/settings.h>
 
 using namespace Settings;
 
@@ -56,7 +52,7 @@ void SettingsDialog::setupUI()
     setLayout(mainLayout);
 }
 
-QVBoxLayout *SettingsDialog::createTabWidget(const QString &tabName)
+QVBoxLayout *SettingsDialog::createWorkspaceLayout(const QString &tabName)
 {
     auto tabWidget = new QGroupBox(tabName, m_workspace);
     auto tabLayout = new QVBoxLayout;
@@ -70,9 +66,26 @@ QVBoxLayout *SettingsDialog::createTabWidget(const QString &tabName)
     return tabLayout;
 }
 
-void SettingsDialog::setupGeneralTab()
+QTabWidget *SettingsDialog::createTabWidget(QVBoxLayout *layout)
 {
-    auto tabLayout = createTabWidget("Общие настройки");
+    auto tabWidget = new QTabWidget(m_workspace);
+    layout->addWidget(tabWidget);
+    return tabWidget;
+}
+
+QVBoxLayout *SettingsDialog::createTabLayout(QTabWidget *destination, const QString &tabName)
+{
+    auto tab = new QWidget(destination);
+    auto tabLayout = new QVBoxLayout;
+    tabLayout->setAlignment(Qt::AlignTop);
+    tab->setLayout(tabLayout);
+    destination->addTab(tab, tabName);
+    return tabLayout;
+}
+
+void SettingsDialog::setupGeneralTab() noexcept
+{
+    auto workspaceLayout = createWorkspaceLayout("Общие настройки");
     // Изменение темы
     auto themeComboBox = WDFunc::NewCB2(m_workspace, StyleLoader::availableStyles());
     int position = StyleLoader::GetInstance().styleNumber();
@@ -81,8 +94,8 @@ void SettingsDialog::setupGeneralTab()
     auto themeLayout = new QHBoxLayout;
     themeLayout->addWidget(new QLabel("Тема", m_workspace));
     themeLayout->addWidget(themeComboBox);
-    tabLayout->addLayout(themeLayout);
-    tabLayout->addWidget(WDFunc::newHLine(m_workspace));
+    workspaceLayout->addLayout(themeLayout);
+    workspaceLayout->addWidget(WDFunc::newHLine(m_workspace));
 
     // Изменение таймзоны
     auto zoneList = QTimeZone::availableTimeZoneIds();
@@ -94,20 +107,35 @@ void SettingsDialog::setupGeneralTab()
     auto timezoneLayout = new QHBoxLayout;
     timezoneLayout->addWidget(new QLabel("Часовой пояс", m_workspace));
     timezoneLayout->addWidget(timezoneCB);
-    tabLayout->addLayout(timezoneLayout);
-    tabLayout->addWidget(WDFunc::newHLine(m_workspace));
+    workspaceLayout->addLayout(timezoneLayout);
+    workspaceLayout->addWidget(WDFunc::newHLine(m_workspace));
 }
 
-void SettingsDialog::setupConnectionTab()
+void SettingsDialog::setupConnectionTab() noexcept
 {
-    auto tabLayout = createTabWidget("Настройки соединения");
-    // Логгирование обмена данными по интерфейсу
+    auto setupTabs = createTabWidget(createWorkspaceLayout("Настройки соединения"));
+    // Вкладка "Общие"
+    auto generalLayout = createTabLayout(setupTabs, "Общие");
     auto widgetName = m_settings.nameof(SettingType::LoggingEnabled);
-    tabLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Запись обмена данными в файл"));
-    tabLayout->addWidget(WDFunc::newHLine(m_workspace));
-    // Обновление сигнализации
+    generalLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Запись обмена данными в файл"));
+    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof(SettingType::AlarmsEnabled);
-    tabLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Постоянное обновление сигнализации"));
+    generalLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Постоянное обновление сигнализации"));
+
+    // Вкладка "USB HID"
+    auto protocomLayout = createTabLayout(setupTabs, "USB HID");
+    /// TODO
+    Q_UNUSED(protocomLayout);
+
+    // Вкладка "Modbus"
+    auto modbusLayout = createTabLayout(setupTabs, "Modbus");
+    /// TODO
+    Q_UNUSED(modbusLayout);
+
+    // Вкладка "МЭК 61850-104"
+    auto iec104Layout = createTabLayout(setupTabs, "МЭК 61850-104");
+    /// TODO
+    Q_UNUSED(iec104Layout);
 
     // Таймаут по HID
     //    tabLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace,
@@ -116,17 +144,23 @@ void SettingsDialog::setupConnectionTab()
     //        regMap[hidTimeout].name, true));
 }
 
-void SettingsDialog::setupTuneTab()
+void SettingsDialog::setupTuneTab() noexcept
 {
-    auto tabLayout = createTabWidget("Настройки регулировки");
+    auto tuneTabs = createTabWidget(createWorkspaceLayout("Настройки регулировки"));
+    // Вкладка "Общие"
+    auto generalLayout = createTabLayout(tuneTabs, "Общие");
     auto widgetName = m_settings.nameof(SettingType::TuneCount);
-    tabLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Степень усреднения для регулировки", widgetName, true));
+    generalLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Степень усреднения для регулировки", widgetName, true));
+    // Вкладка "МИП-02"
+    auto mipLayout = createTabLayout(tuneTabs, "МИП-02");
     widgetName = m_settings.nameof(SettingType::MipIp);
-    tabLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "IP устройства МИП-02", widgetName, true));
+    mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "IP адрес устройства", widgetName, true));
+    mipLayout->addWidget(WDFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof(SettingType::MipPort);
-    tabLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Порт устройства МИП-02", widgetName, true));
+    mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Порт устройства", widgetName, true));
+    mipLayout->addWidget(WDFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof(SettingType::MipBsAddress);
-    tabLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Адрес устройства МИП-02", widgetName, true));
+    mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Адрес базовой станции", widgetName, true));
 }
 
 void SettingsDialog::fill()

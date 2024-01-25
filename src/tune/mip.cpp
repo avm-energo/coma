@@ -7,12 +7,12 @@
 #include <QGroupBox>
 #include <QSettings>
 #include <QThread>
-#include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/ifaces/ethernet.h>
 #include <interfaces/parsers/iec104parser.h>
 #include <interfaces/types/settingstypes.h>
+#include <settings/app_settings.h>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
     : QObject(parent), m_iface(nullptr), m_parent(parent), m_withGUI(withGUI), m_moduleType(moduleType)
@@ -112,13 +112,13 @@ void Mip::setupWidget()
 
 bool Mip::start()
 {
-    using namespace settings;
-    QSettings sets;
-    IEC104Settings settings;
-    settings.ip = sets.value(regMap[MIPIP].name, regMap[MIPIP].defValue).toString();
-    settings.port = 2404; // TODO: в настройки...
-    settings.bsAddress = sets.value(regMap[MIPAddress].name, regMap[MIPAddress].defValue).toUInt();
-    if (!initConnection(settings))
+    using namespace Settings;
+    auto &settings = ApplicationSettings::GetInstance();
+    IEC104Settings conn_settings;
+    conn_settings.ip = settings.getMipIp();
+    conn_settings.port = settings.getMipPort().toUInt();
+    conn_settings.bsAddress = settings.getMipBsAddr().toUInt();
+    if (!initConnection(conn_settings))
         return false;
     if (m_withGUI)
     {

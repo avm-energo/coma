@@ -23,15 +23,6 @@ enum class SettingType
     MipIp,
     MipPort,
     MipBsAddress,
-
-    /*
-    logKey,
-    tuneCountKey,
-    hidTimeout,
-    timezoneKey,
-    MIPIP,
-    MIPAddress
-    */
 };
 
 } // namespace Settings

@@ -8,6 +8,7 @@
 class QStackedWidget;
 class QListWidget;
 class QVBoxLayout;
+class QTabWidget;
 
 class SettingsDialog : public QDialog
 {
@@ -22,11 +23,13 @@ public:
 
 private:
     void setupUI();
-    QVBoxLayout *createTabWidget(const QString &tabName);
+    QVBoxLayout *createWorkspaceLayout(const QString &tabName);
+    QTabWidget *createTabWidget(QVBoxLayout *layout);
+    QVBoxLayout *createTabLayout(QTabWidget *destination, const QString &tabName);
 
-    void setupGeneralTab();
-    void setupConnectionTab();
-    void setupTuneTab();
+    void setupGeneralTab() noexcept;
+    void setupConnectionTab() noexcept;
+    void setupTuneTab() noexcept;
     void fill();
 
 private slots:
