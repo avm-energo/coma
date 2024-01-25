@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypeb="a2" mtypem="82">
+<module mtypem="82" mtypeb="a2">
     <name>AVM-KTF</name>
     <version>0.6-0004</version>
     <resources>
@@ -983,29 +983,29 @@
         <sections desc="Разделы">
             <section header="Текущие данные">
                 <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
-                    <mwidget desc="Vst" view="float">
+                    <mwidget view="float" desc="Vst">
                         <start-addr>4000</start-addr>
                         <toolTip>Относительная скорость старения изоляции</toolTip>
                     </mwidget>
-                    <mwidget desc="Age" view="float">
+                    <mwidget view="float" desc="Age">
                         <start-addr>4001</start-addr>
                         <toolTip>Интегральное старение изоляции, час</toolTip>
                     </mwidget>
-                    <mwidget desc="RESURS" view="float">
+                    <mwidget view="float" desc="RESURS">
                         <start-addr>4002</start-addr>
                         <toolTip>Остаточный ресурс изоляции, час</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="1" header="Оставшееся время работы">
-                    <mwidget desc="Tpred" view="float">
+                    <mwidget view="float" desc="Tpred">
                         <start-addr>4010</start-addr>
                         <toolTip>Температура обмотки (расчетная), °С</toolTip>
                     </mwidget>
-                    <mwidget desc="Tdop" view="float">
+                    <mwidget view="float" desc="Tdop">
                         <start-addr>4011</start-addr>
                         <toolTip>Допустимое оставшееся время работы при данной нагрузке</toolTip>
                     </mwidget>
-                    <mwidget desc="Tdop%1%" view="float">
+                    <mwidget view="float" desc="Tdop%1%">
                         <start-addr>4012</start-addr>
                         <count>20</count>
                         <toolTip>Допустимое оставшееся время работы при нагрузке %1%</toolTip>
@@ -1034,37 +1034,37 @@
                     </mwidget>
                 </sgroup>
                 <sgroup tab="1" header="Температура">
-                    <mwidget desc="Tw, °С" view="float">
+                    <mwidget view="float" desc="Tw, °С">
                         <start-addr>4500</start-addr>
                         <toolTip>Температура обмотки (расчетная), °С</toolTip>
                     </mwidget>
-                    <mwidget desc="Ta, °С" view="float">
+                    <mwidget view="float" desc="Ta, °С">
                         <start-addr>4501</start-addr>
                         <toolTip>Температура окружающей среды, °С</toolTip>
                     </mwidget>
-                    <mwidget desc="Rterm" view="float">
+                    <mwidget view="float" desc="Rterm">
                         <start-addr>4502</start-addr>
                         <toolTip>Сопротивление термометра окружающей среды</toolTip>
                     </mwidget>
-                    <mwidget desc="ExtTempWin%1" view="float">
+                    <mwidget view="float" desc="ExtTempWin%1">
                         <start-addr>4503</start-addr>
                         <count>4</count>
                         <toolTip>Температура обмотки, измеренная встроенным датчиком %1</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="10" header="Данные по частоте и углам сдвига сигналов">
-                    <mwidget desc="Frequency" view="float">
+                    <mwidget view="float" desc="Frequency">
                         <start-addr>2400</start-addr>
                         <toolTip>Частота в сети, Гц</toolTip>
                     </mwidget>
-                    <mwidget desc="Ψ%10" view="float">
+                    <mwidget view="float" desc="Ψ%10">
                         <start-addr>2401</start-addr>
                         <count>6</count>
                         <toolTip>Угол сдвига между каналами %1-0, градусов</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="10" header="Мощности">
-                    <mwidget desc="P%1, кВт" view="float">
+                    <mwidget view="float" desc="P%1, кВт">
                         <start-addr>2420</start-addr>
                         <count>3</count>
                         <toolTip>Истинная активная мощность фазы %1, кВт</toolTip>
@@ -1074,11 +1074,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="P сумм, кВт" view="float">
+                    <mwidget view="float" desc="P сумм, кВт">
                         <start-addr>2423</start-addr>
                         <toolTip>Истинная активная мощность суммарная, кВт</toolTip>
                     </mwidget>
-                    <mwidget desc="Q%1, кВАр" view="float">
+                    <mwidget view="float" desc="Q%1, кВАр">
                         <start-addr>2424</start-addr>
                         <count>3</count>
                         <toolTip>Реактивная мощность фазы %1, кВАр</toolTip>
@@ -1088,11 +1088,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="Q сумм, кВАр" view="float">
+                    <mwidget view="float" desc="Q сумм, кВАр">
                         <start-addr>2427</start-addr>
                         <toolTip>Реактивная мощность суммарная, кВАр</toolTip>
                     </mwidget>
-                    <mwidget desc="S%1, кВА" view="float">
+                    <mwidget view="float" desc="S%1, кВА">
                         <start-addr>2428</start-addr>
                         <count>3</count>
                         <toolTip>Полная (кажущаяся) мощность фазы %1 по эфф. току и напряжению, кВА</toolTip>
@@ -1102,11 +1102,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="S сумм, кВА" view="float">
+                    <mwidget view="float" desc="S сумм, кВА">
                         <start-addr>2431</start-addr>
                         <toolTip>Полная мощность по эфф. току и напряжению суммарная, кВА</toolTip>
                     </mwidget>
-                    <mwidget desc="Cos ϕ %1" view="float">
+                    <mwidget view="float" desc="Cos ϕ %1">
                         <start-addr>2432</start-addr>
                         <count>3</count>
                         <toolTip>Коэффициент мощности фазы %1 (по S и P)</toolTip>
@@ -1116,13 +1116,13 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="Cos ϕ ср" view="float">
+                    <mwidget view="float" desc="Cos ϕ ср">
                         <start-addr>2435</start-addr>
                         <toolTip>Коэффициент мощности средний (по S и P)</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="10" header="Мощности по 1-й гармонике">
-                    <mwidget desc="P1%1, кВт" view="float">
+                    <mwidget view="float" desc="P1%1, кВт">
                         <start-addr>2436</start-addr>
                         <count>3</count>
                         <toolTip>Истинная активная мощность фазы %1 по 1-й гармонике, кВт</toolTip>
@@ -1132,11 +1132,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="P1 сумм, кВт" view="float">
+                    <mwidget view="float" desc="P1 сумм, кВт">
                         <start-addr>2439</start-addr>
                         <toolTip>Истинная активная мощность суммарная по 1-й гармонике, кВт</toolTip>
                     </mwidget>
-                    <mwidget desc="Q1%1, кВАр" view="float">
+                    <mwidget view="float" desc="Q1%1, кВАр">
                         <start-addr>2440</start-addr>
                         <count>3</count>
                         <toolTip>Реактивная мощность фазы %1 по 1-й гармонике, кВАр</toolTip>
@@ -1146,11 +1146,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="Q1 сумм, кВАр" view="float">
+                    <mwidget view="float" desc="Q1 сумм, кВАр">
                         <start-addr>2443</start-addr>
                         <toolTip>Реактивная мощность суммарная по 1-й гармонике, кВАр</toolTip>
                     </mwidget>
-                    <mwidget desc="S1%1, кВА" view="float">
+                    <mwidget view="float" desc="S1%1, кВА">
                         <start-addr>2444</start-addr>
                         <count>3</count>
                         <toolTip>Полная (кажущаяся) мощность фазы %1 по эфф. току и напряжению по 1-й гармонике, кВА</toolTip>
@@ -1160,11 +1160,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="S1 сумм, кВА" view="float">
+                    <mwidget view="float" desc="S1 сумм, кВА">
                         <start-addr>2447</start-addr>
                         <toolTip>Полная мощность по эфф. току и напряжению суммарная по 1-й гармонике, кВА</toolTip>
                     </mwidget>
-                    <mwidget desc="Cos ϕ1 %1" view="float">
+                    <mwidget view="float" desc="Cos ϕ1 %1">
                         <start-addr>2448</start-addr>
                         <count>3</count>
                         <toolTip>Коэффициент мощности фазы %1 (по S и P) по 1-й гармонике</toolTip>
@@ -1174,140 +1174,48 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="Cos ϕ1 ср" view="float">
+                    <mwidget view="float" desc="Cos ϕ1 ср">
                         <start-addr>2451</start-addr>
                         <toolTip>Коэффициент мощности средний (по S и P) по 1-й гармонике</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="3" header="Дискретные входы">
-                    <mwidget desc="Состояние дискретных входов" view="bitset">
+                <sgroup tab="3" header="Состояние дискретных входов">
+                    <mwidget view="bitset" desc="Дискретный вход DI24">
                         <start-addr>4521</start-addr>
-                        <toolTip>Дискретные входы (DIO_1)</toolTip>
+                        <toolTip>Дискретный вход DI24</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="3" header="Дискретные выходы">
-                    <mwidget desc="Состояние дискретных выходов" view="bitset">
+                <sgroup tab="3" header="Состояние дискретных выходов">
+                    <mwidget view="bitset" desc="DO%1">
                         <start-addr>4520</start-addr>
                         <count>3</count>
-                        <toolTip>Дискретные выходы (DIO_0)</toolTip>
-                    </mwidget>
-                </sgroup>
-            </section>
-            <section header="Текущие данные. Вторая тройка">
-                <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
-                    <mwidget desc="I0, А" view="float">
-                        <start-addr>1411</start-addr>
-                        <toolTip>Ток нулевой последовательности гр.1, А</toolTip>
-                    </mwidget>
-                    <mwidget desc="I1, А" view="float">
-                        <start-addr>1412</start-addr>
-                        <toolTip>Ток прямой последовательности гр.1, А</toolTip>
-                    </mwidget>
-                    <mwidget desc="I2, А" view="float">
-                        <start-addr>1413</start-addr>
-                        <toolTip>Ток обратной последовательности гр.1, А</toolTip>
-                    </mwidget>
-                    <mwidget desc="KuI2, %" view="float">
-                        <start-addr>1414</start-addr>
-                        <toolTip>Коэффициент несимметрии тока по обратной последовательности гр.1, %</toolTip>
-                    </mwidget>
-                    <mwidget desc="KuI0, %" view="float">
-                        <start-addr>1415</start-addr>
-                        <toolTip>Коэффициент несимметрии тока по нулевой последовательности гр.1, %</toolTip>
-                    </mwidget>
-                    <mwidget desc="THD_I ф.%1" view="float">
-                        <start-addr>1416</start-addr>
-                        <count>3</count>
-                        <toolTip>Общий коэффициент гарм. искажений тока ф.%1 гр.1</toolTip>
-                        <string-array>
-                            <item>A</item>
-                            <item>B</item>
-                            <item>C</item>
-                        </string-array>
-                    </mwidget>
-                </sgroup>
-                <sgroup tab="1" header="Действующие значения и крест-факторы сигналов">
-                    <mwidget desc="I ф.%1, А" view="float">
-                        <start-addr>1400</start-addr>
-                        <count>3</count>
-                        <toolTip>Фазное истинное действующее значение тока ф.%1, А</toolTip>
-                        <string-array>
-                            <item>A</item>
-                            <item>B</item>
-                            <item>C</item>
-                        </string-array>
-                    </mwidget>
-                    <mwidget desc="I ср., А" view="float">
-                        <start-addr>1403</start-addr>
-                        <toolTip>Среднее истинное фазное действующее значение тока, А</toolTip>
-                    </mwidget>
-                    <mwidget desc="IhA1 ф.%1, А" view="float">
-                        <start-addr>1404</start-addr>
-                        <count>3</count>
-                        <toolTip>Фазное действующее значение тока ф.%1 по 1-й гармонике, А</toolTip>
-                        <string-array>
-                            <item>A</item>
-                            <item>B</item>
-                            <item>C</item>
-                        </string-array>
-                    </mwidget>
-                    <mwidget desc="IhA1 ср., А" view="float">
-                        <start-addr>1407</start-addr>
-                        <toolTip>Среднее фазное действующее значение тока по 1-й гарм., А</toolTip>
-                    </mwidget>
-                    <mwidget desc="KrF_I ф.%1, А" view="float">
-                        <start-addr>1408</start-addr>
-                        <count>3</count>
-                        <toolTip>Крест-фактор тока в фазе %1, А</toolTip>
-                        <string-array>
-                            <item>A</item>
-                            <item>B</item>
-                            <item>C</item>
-                        </string-array>
-                    </mwidget>
-                </sgroup>
-                <sgroup tab="311" header="Данные по гармоническому составу сигналов фазы A">
-                    <mwidget desc="Гм %1" view="float">
-                        <start-addr>3420</start-addr>
-                        <count>61</count>
-                    </mwidget>
-                </sgroup>
-                <sgroup tab="312" header="Данные по гармоническому составу сигналов фазы В">
-                    <mwidget desc="Гм %1" view="float">
-                        <start-addr>3546</start-addr>
-                        <count>61</count>
-                    </mwidget>
-                </sgroup>
-                <sgroup tab="313" header="Данные по гармоническому составу сигналов фазы C">
-                    <mwidget desc="Гм %1" view="float">
-                        <start-addr>3670</start-addr>
-                        <count>61</count>
+                        <toolTip>Дискретный выход DO%1</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
             <section header="Текущие данные. Первая тройка">
                 <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
-                    <mwidget desc="U0, кВ" view="float">
+                    <mwidget view="float" desc="U0, кВ">
                         <start-addr>1011</start-addr>
                         <toolTip>Напряжение нулевой последовательности гр.1, кВ</toolTip>
                     </mwidget>
-                    <mwidget desc="U1, кВ" view="float">
+                    <mwidget view="float" desc="U1, кВ">
                         <start-addr>1012</start-addr>
                         <toolTip>Напряжение прямой последовательности гр.1, кВ</toolTip>
                     </mwidget>
-                    <mwidget desc="U2, кВ" view="float">
+                    <mwidget view="float" desc="U2, кВ">
                         <start-addr>1013</start-addr>
                         <toolTip>Напряжение обратной последовательности гр.1, кВ</toolTip>
                     </mwidget>
-                    <mwidget desc="KuU2, %" view="float">
+                    <mwidget view="float" desc="KuU2, %">
                         <start-addr>1014</start-addr>
                         <toolTip>Коэффициент несимметрии напряжения по обратной последовательности гр.1, %</toolTip>
                     </mwidget>
-                    <mwidget desc="KuU0, %" view="float">
+                    <mwidget view="float" desc="KuU0, %">
                         <start-addr>1015</start-addr>
                         <toolTip>Коэффициент несимметрии напряжения по нулевой последовательности гр.1, %</toolTip>
                     </mwidget>
-                    <mwidget desc="THD_U ф.%1" view="float">
+                    <mwidget view="float" desc="THD_U ф.%1">
                         <start-addr>1016</start-addr>
                         <count>3</count>
                         <toolTip>Общий коэффициент гарм. искажений напряжения ф.%1 гр.1</toolTip>
@@ -1319,7 +1227,7 @@
                     </mwidget>
                 </sgroup>
                 <sgroup tab="1" header="Действующие значения и крест-факторы сигналов">
-                    <mwidget desc="U ф.%1, кВ" view="float">
+                    <mwidget view="float" desc="U ф.%1, кВ">
                         <start-addr>1000</start-addr>
                         <count>3</count>
                         <toolTip>Фазное истинное действующее напряжение ф.%1</toolTip>
@@ -1329,11 +1237,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="U ср., кВ" view="float">
+                    <mwidget view="float" desc="U ср., кВ">
                         <start-addr>1003</start-addr>
                         <toolTip>Среднее истинное фазное действующее напряжение</toolTip>
                     </mwidget>
-                    <mwidget desc="UhA1 ф.%1, кВ" view="float">
+                    <mwidget view="float" desc="UhA1 ф.%1, кВ">
                         <start-addr>1004</start-addr>
                         <count>3</count>
                         <toolTip>Фазное действующее напряжение ф.%1 по 1-й гармонике</toolTip>
@@ -1343,11 +1251,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="UhA1 ср., кВ" view="float">
+                    <mwidget view="float" desc="UhA1 ср., кВ">
                         <start-addr>1007</start-addr>
                         <toolTip>Среднее фазное действующее напряжение по 1-й гарм., кВ</toolTip>
                     </mwidget>
-                    <mwidget desc="KrF_U ф.%1" view="float">
+                    <mwidget view="float" desc="KrF_U ф.%1">
                         <start-addr>1008</start-addr>
                         <count>3</count>
                         <toolTip>Крест-фактор напряжения в фазе %1</toolTip>
@@ -1359,7 +1267,7 @@
                     </mwidget>
                 </sgroup>
                 <sgroup tab="1" header="Линейные напряжения">
-                    <mwidget desc="U ф.%1, кВ" view="float">
+                    <mwidget view="float" desc="U ф.%1, кВ">
                         <start-addr>1220</start-addr>
                         <count>3</count>
                         <toolTip>Истинное среднеквадр. линейное напряжение ф.%1, кВ</toolTip>
@@ -1369,11 +1277,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="U ср., кВ" view="float">
+                    <mwidget view="float" desc="U ср., кВ">
                         <start-addr>1223</start-addr>
                         <toolTip>Истинное среднеквадр. линейное напряжение среднее в гр.1, кВ</toolTip>
                     </mwidget>
-                    <mwidget desc="UhA1 ф.%1, кВ" view="float">
+                    <mwidget view="float" desc="UhA1 ф.%1, кВ">
                         <start-addr>1224</start-addr>
                         <count>3</count>
                         <toolTip>Действ. линейное напряжение по 1-й гармонике ф.%1, кВ</toolTip>
@@ -1383,26 +1291,118 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="UhA1 ср., кВ" view="float">
+                    <mwidget view="float" desc="UhA1 ср., кВ">
                         <start-addr>1227</start-addr>
                         <toolTip>Действ. линейное напряжение по 1-й гармонике среднее, кВ</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="311" header="Данные по гармоническому составу сигналов фазы A">
-                    <mwidget desc="Гм %1" view="float">
+                    <mwidget view="float" desc="Гм %1">
                         <start-addr>3020</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="312" header="Данные по гармоническому составу сигналов фазы В">
-                    <mwidget desc="Гм %1" view="float">
+                    <mwidget view="float" desc="Гм %1">
                         <start-addr>3146</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
                 <sgroup tab="313" header="Данные по гармоническому составу сигналов фазы C">
-                    <mwidget desc="Гм %1" view="float">
+                    <mwidget view="float" desc="Гм %1">
                         <start-addr>3270</start-addr>
+                        <count>61</count>
+                    </mwidget>
+                </sgroup>
+            </section>
+            <section header="Текущие данные. Вторая тройка">
+                <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
+                    <mwidget view="float" desc="I0, А">
+                        <start-addr>1411</start-addr>
+                        <toolTip>Ток нулевой последовательности гр.1, А</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="I1, А">
+                        <start-addr>1412</start-addr>
+                        <toolTip>Ток прямой последовательности гр.1, А</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="I2, А">
+                        <start-addr>1413</start-addr>
+                        <toolTip>Ток обратной последовательности гр.1, А</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="KuI2, %">
+                        <start-addr>1414</start-addr>
+                        <toolTip>Коэффициент несимметрии тока по обратной последовательности гр.1, %</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="KuI0, %">
+                        <start-addr>1415</start-addr>
+                        <toolTip>Коэффициент несимметрии тока по нулевой последовательности гр.1, %</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="THD_I ф.%1">
+                        <start-addr>1416</start-addr>
+                        <count>3</count>
+                        <toolTip>Общий коэффициент гарм. искажений тока ф.%1 гр.1</toolTip>
+                        <string-array>
+                            <item>A</item>
+                            <item>B</item>
+                            <item>C</item>
+                        </string-array>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="1" header="Действующие значения и крест-факторы сигналов">
+                    <mwidget view="float" desc="I ф.%1, А">
+                        <start-addr>1400</start-addr>
+                        <count>3</count>
+                        <toolTip>Фазное истинное действующее значение тока ф.%1, А</toolTip>
+                        <string-array>
+                            <item>A</item>
+                            <item>B</item>
+                            <item>C</item>
+                        </string-array>
+                    </mwidget>
+                    <mwidget view="float" desc="I ср., А">
+                        <start-addr>1403</start-addr>
+                        <toolTip>Среднее истинное фазное действующее значение тока, А</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="IhA1 ф.%1, А">
+                        <start-addr>1404</start-addr>
+                        <count>3</count>
+                        <toolTip>Фазное действующее значение тока ф.%1 по 1-й гармонике, А</toolTip>
+                        <string-array>
+                            <item>A</item>
+                            <item>B</item>
+                            <item>C</item>
+                        </string-array>
+                    </mwidget>
+                    <mwidget view="float" desc="IhA1 ср., А">
+                        <start-addr>1407</start-addr>
+                        <toolTip>Среднее фазное действующее значение тока по 1-й гарм., А</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="KrF_I ф.%1, А">
+                        <start-addr>1408</start-addr>
+                        <count>3</count>
+                        <toolTip>Крест-фактор тока в фазе %1, А</toolTip>
+                        <string-array>
+                            <item>A</item>
+                            <item>B</item>
+                            <item>C</item>
+                        </string-array>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="311" header="Данные по гармоническому составу сигналов фазы A">
+                    <mwidget view="float" desc="Гм %1">
+                        <start-addr>3420</start-addr>
+                        <count>61</count>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="312" header="Данные по гармоническому составу сигналов фазы В">
+                    <mwidget view="float" desc="Гм %1">
+                        <start-addr>3546</start-addr>
+                        <count>61</count>
+                    </mwidget>
+                </sgroup>
+                <sgroup tab="313" header="Данные по гармоническому составу сигналов фазы C">
+                    <mwidget view="float" desc="Гм %1">
+                        <start-addr>3670</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
