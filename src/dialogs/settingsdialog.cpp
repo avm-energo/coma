@@ -19,13 +19,17 @@
 #include <QtDebug>
 #include <gen/settings.h>
 
+using namespace Settings;
+
 SettingsDialog::SettingsDialog(QWidget *parent)
-    : QDialog(parent), m_workspace(new QStackedWidget(this)), m_sidebar(new QListWidget(this))
+    : QDialog(parent)
+    , m_settings(ApplicationSettings::GetInstance())
+    , m_workspace(new QStackedWidget(this))
+    , m_sidebar(new QListWidget(this))
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle("Настройки");
     setupUI();
-    // setupUI_old();
     fill();
 }
 
@@ -69,13 +73,8 @@ QVBoxLayout *SettingsDialog::createTabWidget(const QString &tabName)
 void SettingsDialog::setupGeneralTab()
 {
     auto tabLayout = createTabWidget("Общие настройки");
-
     // Изменение темы
-    auto themeEnum = QMetaEnum::fromType<Style::Name>;
-    QStringList values;
-    for (int i = 0; i < themeEnum().keyCount(); i++)
-        values.push_back(themeEnum().key(i));
-    auto themeComboBox = WDFunc::NewCB2(m_workspace, values);
+    auto themeComboBox = WDFunc::NewCB2(m_workspace, StyleLoader::availableStyles());
     int position = StyleLoader::GetInstance().styleNumber();
     themeComboBox->setCurrentIndex(position);
     connect(themeComboBox, &QComboBox::currentTextChanged, this, &SettingsDialog::themeChanged);
@@ -90,9 +89,8 @@ void SettingsDialog::setupGeneralTab()
     QStringList zonestrList;
     std::copy_if(zoneList.cbegin(), zoneList.cend(), std::back_inserter(zonestrList),
         [](const auto array) { return (array.contains("UTC+")); });
-    auto timezoneCB = WDFunc::NewCB2(m_workspace, "timezone", zonestrList);
-    auto timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
-    timezoneCB->setCurrentText(timezone);
+    auto timezoneCB = WDFunc::NewCB2(m_workspace, m_settings.nameof(SettingType::Timezone), zonestrList);
+    timezoneCB->setCurrentText(m_settings.defaultValue(SettingType::Timezone).toString());
     auto timezoneLayout = new QHBoxLayout;
     timezoneLayout->addWidget(new QLabel("Часовой пояс", m_workspace));
     timezoneLayout->addWidget(timezoneCB);
@@ -102,143 +100,75 @@ void SettingsDialog::setupGeneralTab()
 
 void SettingsDialog::setupConnectionTab()
 {
-    using namespace settings;
     auto tabLayout = createTabWidget("Настройки соединения");
     // Логгирование обмена данными по интерфейсу
-    tabLayout->addWidget(WDFunc::NewChB2(this, regMap[logKey].name, "Запись обмена данными в файл"));
+    auto widgetName = m_settings.nameof(SettingType::LoggingEnabled);
+    tabLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Запись обмена данными в файл"));
+    tabLayout->addWidget(WDFunc::newHLine(m_workspace));
     // Обновление сигнализации
-    auto pb = new QPushButton("Выключить обновление сигнализации");
-    connect(pb, &QCheckBox::clicked, this, &SettingsDialog::disableAlarmUpdate);
-    tabLayout->addWidget(pb);
+    widgetName = m_settings.nameof(SettingType::AlarmsEnabled);
+    tabLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Постоянное обновление сигнализации"));
+
     // Таймаут по HID
-    tabLayout->addWidget(WDFunc::NewLBLAndLE(this,
-        "Таймаут для HID-порта, мс * 100\n"
-        "Необходимо переподключение для обновления",
-        regMap[hidTimeout].name, true));
+    //    tabLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace,
+    //        "Таймаут для HID-порта, мс * 100\n"
+    //        "Необходимо переподключение для обновления",
+    //        regMap[hidTimeout].name, true));
 }
 
 void SettingsDialog::setupTuneTab()
 {
-    using namespace settings;
     auto tabLayout = createTabWidget("Настройки регулировки");
-    tabLayout->addWidget(
-        WDFunc::NewLBLAndLE(this, "Степень усреднения для регулировки", regMap[tuneCountKey].name, true));
-    tabLayout->addWidget(WDFunc::NewLBLAndLE(this, "IP устройства МИП-02", regMap[MIPIP].name, true));
-    tabLayout->addWidget(WDFunc::NewLBLAndLE(this, "Адрес устройства МИП-02", regMap[MIPAddress].name, true));
-}
-
-void SettingsDialog::setupUI_old()
-{
-    using namespace Style;
-    using namespace settings;
-    auto vlyout = new QVBoxLayout;
-    vlyout->addWidget(WDFunc::NewChB2(this, regMap[logKey].name, "Запись обмена данными в файл"));
-    auto pb = new QPushButton("Выключить обновление сигнализации");
-    connect(pb, &QCheckBox::clicked, this, &SettingsDialog::disableAlarmUpdate);
-    vlyout->addWidget(pb);
-    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Степень усреднения для регулировки", regMap[tuneCountKey].name, true));
-    vlyout->addWidget(WDFunc::NewLBLAndLE(this,
-        "Таймаут для HID-порта, мс * 100\n"
-        "Необходимо переподключение для обновления",
-        regMap[hidTimeout].name, true));
-    auto themeEnum = QMetaEnum::fromType<Name>;
-    QStringList values;
-    for (int i = 0; i < themeEnum().keyCount(); i++)
-    {
-        values.push_back(themeEnum().key(i));
-    }
-    auto themeCB = WDFunc::NewCB2(this, values);
-    int position = StyleLoader::GetInstance().styleNumber();
-    themeCB->setCurrentIndex(position);
-
-    auto hlyout = new QHBoxLayout;
-    hlyout->addWidget(new QLabel("Тема", this));
-    hlyout->addWidget(themeCB);
-    vlyout->addLayout(hlyout);
-    connect(themeCB, &QComboBox::currentTextChanged, [=](const QString &text) {
-        auto answer = QMessageBox::question(
-            this, "Предупреждение", "Тема будет изменена\n Приложение может не отвечать некоторое время");
-        if (answer == QMessageBox::Yes)
-        {
-            auto key = Name(themeEnum().keyToValue(text.toStdString().c_str()));
-            auto &styleLoader = StyleLoader::GetInstance();
-            styleLoader.setStyleFile(themes.value(key));
-            styleLoader.setAppStyleSheet();
-            styleLoader.save();
-        }
-    });
-
-    auto zoneList = QTimeZone::availableTimeZoneIds();
-    QStringList zonestrList;
-    std::copy_if(zoneList.cbegin(), zoneList.cend(), std::back_inserter(zonestrList),
-        [](const auto array) { return (array.contains("UTC+")); });
-
-    auto timezoneCB = WDFunc::NewCB2(this, regMap[timezoneKey].name, zonestrList);
-    auto timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
-    timezoneCB->setCurrentText(timezone);
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(new QLabel("Часовой пояс", this));
-    hlyout->addWidget(timezoneCB);
-    vlyout->addLayout(hlyout);
-    vlyout->addWidget(WDFunc::newHLine(this));
-    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "IP устройства МИП-02", regMap[MIPIP].name, true));
-    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Адрес устройства МИП-02", regMap[MIPAddress].name, true));
-    pb = new QPushButton("Готово");
-    connect(pb, &QAbstractButton::clicked, this, &SettingsDialog::acceptSettings);
-    vlyout->addWidget(pb);
-    setLayout(vlyout);
+    auto widgetName = m_settings.nameof(SettingType::TuneCount);
+    tabLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Степень усреднения для регулировки", widgetName, true));
+    widgetName = m_settings.nameof(SettingType::MipIp);
+    tabLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "IP устройства МИП-02", widgetName, true));
+    widgetName = m_settings.nameof(SettingType::MipPort);
+    tabLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Порт устройства МИП-02", widgetName, true));
+    widgetName = m_settings.nameof(SettingType::MipBsAddress);
+    tabLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Адрес устройства МИП-02", widgetName, true));
 }
 
 void SettingsDialog::fill()
 {
-    using namespace settings;
-    auto sets = std::make_unique<QSettings>();
-    bool writeUSBLog = sets->value(regMap[logKey].name, regMap[logKey].defValue).toBool();
-    WDFunc::SetChBData(this, regMap[logKey].name, writeUSBLog);
-    int N = sets->value(regMap[tuneCountKey].name, regMap[tuneCountKey].defValue).toInt();
-    WDFunc::SetLEData(this, regMap[tuneCountKey].name, QString::number(N));
-    int timeout = sets->value(regMap[hidTimeout].name, regMap[hidTimeout].defValue).toInt();
-    WDFunc::SetLEData(this, regMap[hidTimeout].name, QString::number(timeout));
-    QString timezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
-    timezone = sets->value(regMap[timezoneKey].name, regMap[timezoneKey].defValue).toString();
-    WDFunc::SetCBData(this, regMap[timezoneKey].name, timezone);
-    QString mipip = sets->value(regMap[MIPIP].name, regMap[MIPIP].defValue).toString();
-    QString mipaddress = sets->value(regMap[MIPAddress].name, regMap[MIPAddress].defValue).toString();
-    WDFunc::SetLEData(this, regMap[MIPAddress].name, mipaddress);
-    WDFunc::SetLEData(this, regMap[MIPIP].name, mipip);
+    WDFunc::SetCBData(this, m_settings.nameof(SettingType::Timezone), m_settings.getTimezone());
+    WDFunc::SetChBData(this, m_settings.nameof(SettingType::LoggingEnabled), m_settings.getLoggingState());
+    WDFunc::SetChBData(this, m_settings.nameof(SettingType::AlarmsEnabled), m_settings.getAlarmsState());
+    WDFunc::SetLEData(this, m_settings.nameof(SettingType::TuneCount), m_settings.getTuneCount());
+    WDFunc::SetLEData(this, m_settings.nameof(SettingType::MipIp), m_settings.getMipIp());
+    WDFunc::SetLEData(this, m_settings.nameof(SettingType::MipPort), m_settings.getMipPort());
+    WDFunc::SetLEData(this, m_settings.nameof(SettingType::MipBsAddress), m_settings.getMipBsAddr());
+
+    // int timeout = sets->value(regMap[hidTimeout].name, regMap[hidTimeout].defValue).toInt();
+    // WDFunc::SetLEData(this, regMap[hidTimeout].name, QString::number(timeout));
 }
 
 void SettingsDialog::acceptSettings()
 {
-    using namespace settings;
     bool tmpb = false;
-    auto sets = std::make_unique<QSettings>();
-
-    WDFunc::ChBData(this, regMap[logKey].name, tmpb);
-    sets->setValue(regMap[logKey].name, (tmpb) ? "1" : "0");
-    {
-        int N = WDFunc::LEData(this, regMap[tuneCountKey].name).toInt();
-        if ((N < 0) || (N > 100))
-        {
-            N = 20;
-            qWarning() << "Неверное число степени усреднения, установлено по умолчанию 20";
-        }
-        sets->setValue(regMap[tuneCountKey].name, N);
-    }
-    {
-        int N = WDFunc::LEData(this, regMap[hidTimeout].name).toInt();
-        if (N > 100)
-        {
-            qWarning() << "Слишком большой таймаут";
-        }
-        sets->setValue(regMap[hidTimeout].name, N);
-    }
-    QString timezone = WDFunc::CBData(this, regMap[timezoneKey].name);
+    QString timezone = WDFunc::CBData(this, m_settings.nameof(SettingType::Timezone));
     if (!timezone.isEmpty())
-        sets->setValue(regMap[timezoneKey].name, timezone);
-    sets->setValue(regMap[MIPIP].name, WDFunc::LEData(this, regMap[MIPIP].name));
-    sets->setValue(regMap[MIPAddress].name, WDFunc::LEData(this, regMap[MIPAddress].name));
+        m_settings.setTimezone(timezone);
+    if (WDFunc::ChBData(this, m_settings.nameof(SettingType::LoggingEnabled), tmpb))
+        m_settings.setLoggingState(tmpb);
+    if (WDFunc::ChBData(this, m_settings.nameof(SettingType::AlarmsEnabled), tmpb))
+        m_settings.setAlarmsState(tmpb);
+    auto tuneCount = WDFunc::LEData(this, m_settings.nameof(SettingType::TuneCount)).toInt(&tmpb);
+    if (tmpb)
+        m_settings.setTuneCount(tuneCount);
+    m_settings.setMipIp(WDFunc::LEData(this, m_settings.nameof(SettingType::MipIp)));
+    m_settings.setMipPort(WDFunc::LEData(this, m_settings.nameof(SettingType::MipPort)));
+    m_settings.setMipBsAddr(WDFunc::LEData(this, m_settings.nameof(SettingType::MipBsAddress)));
     close();
+
+    //    {
+    //        int N = WDFunc::LEData(this, regMap[hidTimeout].name).toInt();
+    //        if (N > 100)
+    //        {
+    //            qWarning() << "Слишком большой таймаут";
+    //        }
+    //        sets->setValue(regMap[hidTimeout].name, N);
+    //    }
 }
 
 void SettingsDialog::themeChanged(const QString &newTheme)
@@ -247,10 +177,8 @@ void SettingsDialog::themeChanged(const QString &newTheme)
         "Тема будет изменена\n Приложение может не отвечать некоторое время");
     if (answer == QMessageBox::Yes)
     {
-        auto themeEnum = QMetaEnum::fromType<Style::Name>;
-        auto key = Style::Name(themeEnum().keyToValue(newTheme.toStdString().c_str()));
         auto &styleLoader = StyleLoader::GetInstance();
-        styleLoader.setStyleFile(Style::themes.value(key));
+        styleLoader.setStyle(newTheme);
         styleLoader.setAppStyleSheet();
         styleLoader.save();
     }

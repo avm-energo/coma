@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QMap>
+#include <settings/app_settings.h>
 
 class QStackedWidget;
 class QListWidget;
@@ -12,6 +13,7 @@ class SettingsDialog : public QDialog
 {
     Q_OBJECT
 private:
+    Settings::ApplicationSettings &m_settings;
     QStackedWidget *m_workspace;
     QListWidget *m_sidebar;
 
@@ -25,9 +27,6 @@ private:
     void setupGeneralTab();
     void setupConnectionTab();
     void setupTuneTab();
-
-    void setupUI_old();
-
     void fill();
 
 private slots:

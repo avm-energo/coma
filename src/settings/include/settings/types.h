@@ -19,6 +19,10 @@ enum class SettingType
     Timezone,
     LoggingEnabled,
     AlarmsEnabled,
+    TuneCount,
+    MipIp,
+    MipPort,
+    MipBsAddress,
 
     /*
     logKey,

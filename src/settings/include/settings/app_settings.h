@@ -28,7 +28,7 @@ private:
 public:
     explicit ApplicationSettings(token) noexcept;
 
-    const QString &settingName(const SettingType type, const QString &defaultName = "") noexcept;
+    const QString &nameof(const SettingType type, const QString &defaultName = "") noexcept;
     const QVariant &defaultValue(const SettingType type, const QVariant &defaultValue = QVariant()) noexcept;
     const SettingPair &operator[](const SettingType type);
 
@@ -38,18 +38,30 @@ public:
     QString getTheme() noexcept;
     void setTheme(const QString &theme) noexcept;
 
-    bool getLoggingEnabled() noexcept;
-    void setLoggingEnabled(const bool isLogging) noexcept;
+    bool getLoggingState() noexcept;
+    void setLoggingState(const bool isLogging) noexcept;
 
-    bool getAlarmsEnabled() noexcept;
-    void setAlarmsEnabled(const bool isAlarms) noexcept;
+    bool getAlarmsState() noexcept;
+    void setAlarmsState(const bool isAlarms) noexcept;
+
+    QString getTuneCount() noexcept;
+    void setTuneCount(int count) noexcept;
+
+    QString getMipIp() noexcept;
+    void setMipIp(const QString &ip) noexcept;
+
+    QString getMipPort() noexcept;
+    void setMipPort(const QString &port) noexcept;
+
+    QString getMipBsAddr() noexcept;
+    void setMipBsAddr(const QString &bsAddress) noexcept;
 };
 
 template <SettingType type> //
 inline QVariant ApplicationSettings::getValue() noexcept
 {
     m_settings.beginGroup("settings");
-    auto value = m_settings.value(settingName(type), defaultValue(type));
+    auto value = m_settings.value(nameof(type), defaultValue(type));
     m_settings.endGroup();
     return value;
 }
@@ -58,7 +70,7 @@ template <SettingType type> //
 inline void ApplicationSettings::setValue(const QVariant &value) noexcept
 {
     m_settings.beginGroup("settings");
-    m_settings.setValue(settingName(type), value);
+    m_settings.setValue(nameof(type), value);
     m_settings.endGroup();
 }
 
