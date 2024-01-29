@@ -32,7 +32,6 @@ else()
 endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  Qt${QT_VERSION_MAJOR}::Core
-  tl::expected gen s2
+  Qt${QT_VERSION_MAJOR}::Core s2
 )
 

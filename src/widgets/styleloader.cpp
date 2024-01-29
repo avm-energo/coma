@@ -62,7 +62,7 @@ void StyleLoader::setAppStyleSheet()
 
 QString StyleLoader::load()
 {
-    const auto styleName = Settings::ApplicationSettings::GetInstance().getTheme();
+    const QString styleName = Settings::ApplicationSettings::GetInstance().get<Settings::Theme>();
     if (styleName.isEmpty())
         return defaultStyleFile;
     const int key = s_themeEnum.keyToValue(styleName.toStdString().c_str());
@@ -71,7 +71,7 @@ QString StyleLoader::load()
 
 void StyleLoader::save()
 {
-    Settings::ApplicationSettings::GetInstance().setTheme(styleName());
+    Settings::ApplicationSettings::GetInstance().set<Settings::Theme>(styleName());
 }
 
 void StyleLoader::setStyle(const QString &styleName)

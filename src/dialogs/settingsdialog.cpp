@@ -102,8 +102,8 @@ void SettingsDialog::setupGeneralTab() noexcept
     QStringList zonestrList;
     std::copy_if(zoneList.cbegin(), zoneList.cend(), std::back_inserter(zonestrList),
         [](const auto array) { return (array.contains("UTC+")); });
-    auto timezoneCB = WDFunc::NewCB2(m_workspace, m_settings.nameof(SettingType::Timezone), zonestrList);
-    timezoneCB->setCurrentText(m_settings.defaultValue(SettingType::Timezone).toString());
+    auto timezoneCB = WDFunc::NewCB2(m_workspace, m_settings.nameof<Timezone>(), zonestrList);
+    timezoneCB->setCurrentText(m_settings.defaultValue(Timezone).toString());
     auto timezoneLayout = new QHBoxLayout;
     timezoneLayout->addWidget(new QLabel("Часовой пояс", m_workspace));
     timezoneLayout->addWidget(timezoneCB);
@@ -116,10 +116,10 @@ void SettingsDialog::setupConnectionTab() noexcept
     auto setupTabs = createTabWidget(createWorkspaceLayout("Настройки соединения"));
     // Вкладка "Общие"
     auto generalLayout = createTabLayout(setupTabs, "Общие");
-    auto widgetName = m_settings.nameof(SettingType::LoggingEnabled);
+    auto widgetName = m_settings.nameof<LoggingEnabled>();
     generalLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Запись обмена данными в файл"));
     generalLayout->addWidget(WDFunc::newHLine(m_workspace));
-    widgetName = m_settings.nameof(SettingType::AlarmsEnabled);
+    widgetName = m_settings.nameof<AlarmsEnabled>();
     generalLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Постоянное обновление сигнализации"));
 
     // Вкладка "USB HID"
@@ -136,12 +136,6 @@ void SettingsDialog::setupConnectionTab() noexcept
     auto iec104Layout = createTabLayout(setupTabs, "МЭК 61850-104");
     /// TODO
     Q_UNUSED(iec104Layout);
-
-    // Таймаут по HID
-    //    tabLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace,
-    //        "Таймаут для HID-порта, мс * 100\n"
-    //        "Необходимо переподключение для обновления",
-    //        regMap[hidTimeout].name, true));
 }
 
 void SettingsDialog::setupTuneTab() noexcept
@@ -149,60 +143,57 @@ void SettingsDialog::setupTuneTab() noexcept
     auto tuneTabs = createTabWidget(createWorkspaceLayout("Настройки регулировки"));
     // Вкладка "Общие"
     auto generalLayout = createTabLayout(tuneTabs, "Общие");
-    auto widgetName = m_settings.nameof(SettingType::TuneCount);
+    auto widgetName = m_settings.nameof<TuneCount>();
     generalLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Степень усреднения для регулировки", widgetName, true));
     // Вкладка "МИП-02"
     auto mipLayout = createTabLayout(tuneTabs, "МИП-02");
-    widgetName = m_settings.nameof(SettingType::MipIp);
+    widgetName = m_settings.nameof<MipIp>();
     mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "IP адрес устройства", widgetName, true));
     mipLayout->addWidget(WDFunc::newHLine(m_workspace));
-    widgetName = m_settings.nameof(SettingType::MipPort);
+    widgetName = m_settings.nameof<MipPort>();
     mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Порт устройства", widgetName, true));
     mipLayout->addWidget(WDFunc::newHLine(m_workspace));
-    widgetName = m_settings.nameof(SettingType::MipBsAddress);
+    widgetName = m_settings.nameof<MipBsAddress>();
     mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Адрес базовой станции", widgetName, true));
 }
 
 void SettingsDialog::fill()
 {
-    WDFunc::SetCBData(this, m_settings.nameof(SettingType::Timezone), m_settings.getTimezone());
-    WDFunc::SetChBData(this, m_settings.nameof(SettingType::LoggingEnabled), m_settings.getLoggingState());
-    WDFunc::SetChBData(this, m_settings.nameof(SettingType::AlarmsEnabled), m_settings.getAlarmsState());
-    WDFunc::SetLEData(this, m_settings.nameof(SettingType::TuneCount), m_settings.getTuneCount());
-    WDFunc::SetLEData(this, m_settings.nameof(SettingType::MipIp), m_settings.getMipIp());
-    WDFunc::SetLEData(this, m_settings.nameof(SettingType::MipPort), m_settings.getMipPort());
-    WDFunc::SetLEData(this, m_settings.nameof(SettingType::MipBsAddress), m_settings.getMipBsAddr());
-
-    // int timeout = sets->value(regMap[hidTimeout].name, regMap[hidTimeout].defValue).toInt();
-    // WDFunc::SetLEData(this, regMap[hidTimeout].name, QString::number(timeout));
+    WDFunc::SetCBData(this, m_settings.nameof<Timezone>(), m_settings.get<Timezone>());
+    WDFunc::SetChBData(this, m_settings.nameof<LoggingEnabled>(), m_settings.get<LoggingEnabled>());
+    WDFunc::SetChBData(this, m_settings.nameof<AlarmsEnabled>(), m_settings.get<AlarmsEnabled>());
+    WDFunc::SetLEData(this, m_settings.nameof<TuneCount>(), m_settings.get<TuneCount>());
+    WDFunc::SetLEData(this, m_settings.nameof<MipIp>(), m_settings.get<MipIp>());
+    WDFunc::SetLEData(this, m_settings.nameof<MipPort>(), m_settings.get<MipPort>());
+    WDFunc::SetLEData(this, m_settings.nameof<MipBsAddress>(), m_settings.get<MipBsAddress>());
 }
 
 void SettingsDialog::acceptSettings()
 {
     bool tmpb = false;
-    QString timezone = WDFunc::CBData(this, m_settings.nameof(SettingType::Timezone));
+    QString timezone = WDFunc::CBData(this, m_settings.nameof<Timezone>());
     if (!timezone.isEmpty())
-        m_settings.setTimezone(timezone);
-    if (WDFunc::ChBData(this, m_settings.nameof(SettingType::LoggingEnabled), tmpb))
-        m_settings.setLoggingState(tmpb);
-    if (WDFunc::ChBData(this, m_settings.nameof(SettingType::AlarmsEnabled), tmpb))
-        m_settings.setAlarmsState(tmpb);
-    auto tuneCount = WDFunc::LEData(this, m_settings.nameof(SettingType::TuneCount)).toInt(&tmpb);
+        m_settings.set<Timezone>(timezone);
+    if (WDFunc::ChBData(this, m_settings.nameof<LoggingEnabled>(), tmpb))
+        m_settings.set<LoggingEnabled>(tmpb);
+    if (WDFunc::ChBData(this, m_settings.nameof<AlarmsEnabled>(), tmpb))
+        m_settings.set<AlarmsEnabled>(tmpb);
+    auto tuneCount = WDFunc::LEData(this, m_settings.nameof<TuneCount>()).toInt(&tmpb);
     if (tmpb)
-        m_settings.setTuneCount(tuneCount);
-    m_settings.setMipIp(WDFunc::LEData(this, m_settings.nameof(SettingType::MipIp)));
-    m_settings.setMipPort(WDFunc::LEData(this, m_settings.nameof(SettingType::MipPort)));
-    m_settings.setMipBsAddr(WDFunc::LEData(this, m_settings.nameof(SettingType::MipBsAddress)));
+    {
+        if ((tuneCount < 0) || (tuneCount > 100))
+        {
+            tuneCount = m_settings.defaultValue(SettingType::TuneCount).toInt();
+            qWarning() << QString("Неверное число степени усреднения, "
+                                  "установлено значение по умолчанию %1")
+                              .arg(tuneCount);
+        }
+        m_settings.set<TuneCount>(tuneCount);
+    }
+    m_settings.set<MipIp>(WDFunc::LEData(this, m_settings.nameof<MipIp>()));
+    m_settings.set<MipPort>(WDFunc::LEData(this, m_settings.nameof<MipPort>()));
+    m_settings.set<MipBsAddress>(WDFunc::LEData(this, m_settings.nameof<MipBsAddress>()));
     close();
-
-    //    {
-    //        int N = WDFunc::LEData(this, regMap[hidTimeout].name).toInt();
-    //        if (N > 100)
-    //        {
-    //            qWarning() << "Слишком большой таймаут";
-    //        }
-    //        sets->setValue(regMap[hidTimeout].name, N);
-    //    }
 }
 
 void SettingsDialog::themeChanged(const QString &newTheme)

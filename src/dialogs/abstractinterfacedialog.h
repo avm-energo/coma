@@ -5,6 +5,9 @@
 #include <QTableView>
 #include <interfaces/types/settingstypes.h>
 
+// how much entries can we have for interfaces of each type in registry
+constexpr int MAXREGISTRYINTERFACECOUNT = 5;
+
 class AbstractInterfaceDialog : public QDialog
 {
     Q_OBJECT

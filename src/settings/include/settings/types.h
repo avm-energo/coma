@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <QVariant>
+#include <cstdint>
 
 namespace Settings
 {
@@ -13,7 +14,7 @@ struct SettingPair
     QVariant defaultValue; ///< Значение настройки по умолчанию.
 };
 
-enum class SettingType
+enum SettingType
 {
     Theme,
     Timezone,

@@ -115,9 +115,9 @@ bool Mip::start()
     using namespace Settings;
     auto &settings = ApplicationSettings::GetInstance();
     IEC104Settings conn_settings;
-    conn_settings.ip = settings.getMipIp();
-    conn_settings.port = settings.getMipPort().toUInt();
-    conn_settings.bsAddress = settings.getMipBsAddr().toUInt();
+    conn_settings.ip = settings.get<MipIp>();
+    conn_settings.port = settings.get<MipPort>();
+    conn_settings.bsAddress = settings.get<MipBsAddress>();
     if (!initConnection(conn_settings))
         return false;
     if (m_withGUI)
