@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QMap>
-#include <settings/app_settings.h>
+#include <settings/user_settings.h>
 
 class QStackedWidget;
 class QListWidget;
@@ -14,12 +14,13 @@ class SettingsDialog : public QDialog
 {
     Q_OBJECT
 private:
-    Settings::ApplicationSettings &m_settings;
+    Settings::UserSettings &m_settings;
     QStackedWidget *m_workspace;
     QListWidget *m_sidebar;
 
 public:
     explicit SettingsDialog(QWidget *parent = nullptr);
+    ~SettingsDialog() noexcept;
 
 private:
     void setupUI();

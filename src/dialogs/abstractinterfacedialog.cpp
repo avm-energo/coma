@@ -3,7 +3,8 @@
 #include <QLayout>
 #include <QPushButton>
 
-AbstractInterfaceDialog::AbstractInterfaceDialog(QWidget *parent) : QDialog(parent)
+AbstractInterfaceDialog::AbstractInterfaceDialog(QWidget *parent)
+    : QDialog(parent), m_settings(Settings::UserSettings::GetInstance())
 {
     setAttribute(Qt::WA_DeleteOnClose);
 }
@@ -14,17 +15,6 @@ void AbstractInterfaceDialog::setupUI()
     connect(pb, &QAbstractButton::clicked, this, &QDialog::close);
     QVBoxLayout *lyout = static_cast<QVBoxLayout *>(layout());
     lyout->addWidget(pb);
-}
-
-void AbstractInterfaceDialog::removeConnection(const QString &connName)
-{
-    if (isConnectionExist(connName))
-        m_settings.remove(connName);
-}
-
-bool AbstractInterfaceDialog::isConnectionExist(const QString &connName)
-{
-    return m_settings.childGroups().contains(connName);
 }
 
 bool AbstractInterfaceDialog::checkSize()

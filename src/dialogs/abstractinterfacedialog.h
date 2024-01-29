@@ -4,6 +4,7 @@
 #include <QSettings>
 #include <QTableView>
 #include <interfaces/types/settingstypes.h>
+#include <settings/user_settings.h>
 
 // how much entries can we have for interfaces of each type in registry
 constexpr int MAXREGISTRYINTERFACECOUNT = 5;
@@ -18,7 +19,8 @@ public:
     virtual bool updateModel() = 0;
 
 protected:
-    QSettings m_settings;
+    Settings::UserSettings &m_settings;
+    // QSettings m_settings;
     QTableView *m_tableView;
 
     virtual void acceptedInterface() {};
@@ -27,8 +29,6 @@ protected:
     {
     }
 
-    void removeConnection(const QString &connName);
-    bool isConnectionExist(const QString &connName);
     bool checkSize();
 
 signals:

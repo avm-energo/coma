@@ -12,7 +12,7 @@
 #include <interfaces/ifaces/ethernet.h>
 #include <interfaces/parsers/iec104parser.h>
 #include <interfaces/types/settingstypes.h>
-#include <settings/app_settings.h>
+#include <settings/user_settings.h>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
     : QObject(parent), m_iface(nullptr), m_parent(parent), m_withGUI(withGUI), m_moduleType(moduleType)
@@ -113,9 +113,9 @@ void Mip::setupWidget()
 bool Mip::start()
 {
     using namespace Settings;
-    auto &settings = ApplicationSettings::GetInstance();
+    auto &settings = UserSettings::GetInstance();
     IEC104Settings conn_settings;
-    conn_settings.ip = settings.get<MipIp>();
+    conn_settings.ip = QString(settings.get<MipIp>());
     conn_settings.port = settings.get<MipPort>();
     conn_settings.bsAddress = settings.get<MipBsAddress>();
     if (!initConnection(conn_settings))

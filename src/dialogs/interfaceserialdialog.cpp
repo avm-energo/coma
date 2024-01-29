@@ -13,13 +13,13 @@
 
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
-    m_settings.beginGroup("RS485");
+    m_settings.native().beginGroup("RS485");
     setWindowTitle("RS485 соединения");
 }
 
 InterfaceSerialDialog::~InterfaceSerialDialog() noexcept
 {
-    m_settings.endGroup();
+    m_settings.native().endGroup();
 }
 
 void InterfaceSerialDialog::setupUI()
@@ -33,7 +33,7 @@ void InterfaceSerialDialog::setupUI()
     auto addButton = WDFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceSerialDialog::addInterface);
     auto removeButton = WDFunc::NewPB(this, "", "Удалить", this, [this] {
         auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
-        removeConnection(name);
+        m_settings.remove(name);
         updateModel();
     });
     firstRow->addWidget(addButton);
@@ -141,20 +141,19 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
     hlyout->addWidget(WDFunc::NewPB(dialog, "acceptpb", "Сохранить", dialog, [=] {
         auto newName = namele->text();
         // Новое имя не совпадает со старым, но уже имеется в настройках
-        if (newName != name && isConnectionExist(newName))
+        if (newName != name && m_settings.isExist(newName))
         {
             EMessageBox::error(this, "Такое имя уже имеется");
             return;
         }
-        removeConnection(name);
-        m_settings.beginGroup(newName);
-        m_settings.setValue("port", portcb->currentText());
-        m_settings.setValue("speed", speedcb->currentText());
-        m_settings.setValue("parity", paritycb->currentText());
-        m_settings.setValue("stop", stopbitcb->currentText());
-        int spbdata = static_cast<int>(addressspb->value());
-        m_settings.setValue("address", QString::number(spbdata));
-        m_settings.endGroup();
+        m_settings.remove(name);
+
+        Settings::ScopedSettingsGroup _ { m_settings, newName };
+        m_settings.set<Settings::SerialPort>(portcb->currentText());
+        m_settings.set<Settings::SerialSpeed>(speedcb->currentText());
+        m_settings.set<Settings::SerialParity>(paritycb->currentText());
+        m_settings.set<Settings::SerialStop>(stopbitcb->currentText());
+        m_settings.set<Settings::ModbusAddress>(static_cast<int>(addressspb->value()));
         if (!updateModel())
             qCritical() << Error::GeneralError;
         dialog->close();
@@ -217,20 +216,21 @@ bool InterfaceSerialDialog::updateModel()
         tableViewModel->clear();
     tableViewModel->setHorizontalHeaderLabels(headers);
 
-    auto rslist = m_settings.childGroups();
+    auto rslist = m_settings.native().childGroups();
     for (const auto &item : qAsConst(rslist))
     {
-        m_settings.beginGroup(item);
+        Settings::ScopedSettingsGroup _ { m_settings, item };
+        // m_settings.beginGroup(item);
         QList<QStandardItem *> items {
-            new QStandardItem(item),                                           //
-            new QStandardItem(m_settings.value("port", "COM-1").toString()),   //
-            new QStandardItem(m_settings.value("speed", "115200").toString()), //
-            new QStandardItem(m_settings.value("parity", "Нет").toString()),   //
-            new QStandardItem(m_settings.value("stop", "1").toString()),       //
-            new QStandardItem(m_settings.value("address", "1").toString())     //
+            new QStandardItem(item),                                               //
+            new QStandardItem(QString(m_settings.get<Settings::SerialPort>())),    //
+            new QStandardItem(QString(m_settings.get<Settings::SerialSpeed>())),   //
+            new QStandardItem(QString(m_settings.get<Settings::SerialParity>())),  //
+            new QStandardItem(QString(m_settings.get<Settings::SerialStop>())),    //
+            new QStandardItem(QString(m_settings.get<Settings::ModbusAddress>())), //
         };
         tableViewModel->appendRow(items);
-        m_settings.endGroup();
+        // m_settings.endGroup();
     }
     m_tableView->setModel(tableViewModel);
     m_tableView->resizeColumnsToContents();
@@ -244,20 +244,21 @@ void InterfaceSerialDialog::acceptedInterface()
         return;
     QString name = WDFunc::LEData(dialog, "namele");
     // check if there's such name in registry
-    if (isConnectionExist(name))
+    if (m_settings.isExist(name))
     {
         EMessageBox::error(this, "Такое имя уже имеется");
         return;
     }
-    m_settings.beginGroup(name);
-    m_settings.setValue("port", WDFunc::CBData(dialog, "portcb"));
-    m_settings.setValue("speed", WDFunc::CBData(dialog, "speedcb"));
-    m_settings.setValue("parity", WDFunc::CBData(dialog, "paritycb"));
-    m_settings.setValue("stop", WDFunc::CBData(dialog, "stopbitcb"));
-    int spbdata;
-    WDFunc::SPBData(dialog, "addressspb", spbdata);
-    m_settings.setValue("address", QString::number(spbdata));
-    m_settings.endGroup();
+    {
+        int spbdata;
+        Settings::ScopedSettingsGroup _ { m_settings, name };
+        m_settings.set<Settings::SerialPort>(WDFunc::CBData(dialog, "portcb"));
+        m_settings.set<Settings::SerialSpeed>(WDFunc::CBData(dialog, "speedcb"));
+        m_settings.set<Settings::SerialParity>(WDFunc::CBData(dialog, "paritycb"));
+        m_settings.set<Settings::SerialStop>(WDFunc::CBData(dialog, "stopbitcb"));
+        if (WDFunc::SPBData(dialog, "addressspb", spbdata))
+            m_settings.set<Settings::ModbusAddress>(spbdata);
+    }
     if (!updateModel())
         qCritical() << Error::GeneralError;
     dialog->close();

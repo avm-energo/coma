@@ -19,14 +19,20 @@ using namespace Settings;
 
 SettingsDialog::SettingsDialog(QWidget *parent)
     : QDialog(parent)
-    , m_settings(ApplicationSettings::GetInstance())
+    , m_settings(UserSettings::GetInstance())
     , m_workspace(new QStackedWidget(this))
     , m_sidebar(new QListWidget(this))
 {
+    m_settings.native().beginGroup("settings");
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle("Настройки");
     setupUI();
     fill();
+}
+
+SettingsDialog::~SettingsDialog() noexcept
+{
+    m_settings.native().endGroup();
 }
 
 void SettingsDialog::setupUI()
@@ -108,7 +114,6 @@ void SettingsDialog::setupGeneralTab() noexcept
     timezoneLayout->addWidget(new QLabel("Часовой пояс", m_workspace));
     timezoneLayout->addWidget(timezoneCB);
     workspaceLayout->addLayout(timezoneLayout);
-    workspaceLayout->addWidget(WDFunc::newHLine(m_workspace));
 }
 
 void SettingsDialog::setupConnectionTab() noexcept

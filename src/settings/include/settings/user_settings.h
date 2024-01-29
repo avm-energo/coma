@@ -8,14 +8,18 @@
 namespace Settings
 {
 
-class ApplicationSettings : public Singleton<ApplicationSettings>
+class UserSettings : public Singleton<UserSettings>
 {
 private:
     static const std::map<SettingType, SettingPair> s_params;
     QSettings m_settings;
 
 public:
-    explicit ApplicationSettings(token) noexcept;
+    explicit UserSettings(token) noexcept;
+
+    QSettings &native() noexcept;
+    bool isExist(const QString &name) noexcept;
+    void remove(const QString &name) noexcept;
 
     const QVariant &defaultValue(const SettingType type, const QVariant &defaultValue = QVariant()) const noexcept;
 
@@ -25,15 +29,21 @@ public:
 
     /// \brief Возвращает значение настройки указанного типа.
     template <SettingType type> //
-    inline utils::Convertable get(const QString &groupName = "settings") noexcept;
+    inline utils::Convertable get() noexcept
+    {
+        return utils::Convertable { m_settings.value(nameof<type>(), defaultValue(type)) };
+    }
 
     /// \brief Записывает значение настройки указанного типа.
     template <SettingType type> //
-    inline void set(const QVariant &value, const QString &groupName = "settings") noexcept;
+    inline void set(const QVariant &value) noexcept
+    {
+        m_settings.setValue(nameof<type>(), value);
+    }
 };
 
 template <SettingType type> //
-inline const QString &ApplicationSettings::nameof(const QString &defaultName) noexcept
+inline const QString &UserSettings::nameof(const QString &defaultName) noexcept
 {
     const auto search = s_params.find(type);
     if (search != s_params.cend())
@@ -42,21 +52,22 @@ inline const QString &ApplicationSettings::nameof(const QString &defaultName) no
         return defaultName;
 }
 
-template <SettingType type> //
-inline utils::Convertable ApplicationSettings::get(const QString &groupName) noexcept
+/// \brief Структура для использования определённой группы настроек в рамках скоупа кода.
+struct ScopedSettingsGroup final
 {
-    m_settings.beginGroup(groupName);
-    utils::Convertable value { m_settings.value(nameof<type>(), defaultValue(type)) };
-    m_settings.endGroup();
-    return value;
-}
+private:
+    QSettings &m_settings;
 
-template <SettingType type> //
-inline void ApplicationSettings::set(const QVariant &value, const QString &groupName) noexcept
-{
-    m_settings.beginGroup(groupName);
-    m_settings.setValue(nameof<type>(), value);
-    m_settings.endGroup();
-}
+public:
+    ScopedSettingsGroup(UserSettings &settings, const QString &groupName) noexcept : m_settings(settings.native())
+    {
+        m_settings.beginGroup(groupName);
+    }
+
+    ~ScopedSettingsGroup() noexcept
+    {
+        m_settings.endGroup();
+    }
+};
 
 } // namespace Settings

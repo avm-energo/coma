@@ -103,10 +103,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::SerialPort
   Qt${QT_VERSION_MAJOR}::Widgets
-  s2
+  s2 settings tl::expected
 )
-
-target_link_libraries(${PROJECT_NAME} PUBLIC tl::expected)
 
 if(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)

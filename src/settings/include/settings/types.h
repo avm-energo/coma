@@ -18,12 +18,28 @@ enum SettingType
 {
     Theme,
     Timezone,
+
     LoggingEnabled,
     AlarmsEnabled,
+    ReconnectInterval,
+    ProtocomTimeout,
+    ModbusTimeout,
+    Iec104Timeout,
+
     TuneCount,
     MipIp,
     MipPort,
     MipBsAddress,
+
+    IpAddress,
+    IpPort,
+    Iec104BsAddress,
+
+    SerialPort,
+    SerialSpeed,
+    SerialParity,
+    SerialStop,
+    ModbusAddress,
 };
 
 } // namespace Settings

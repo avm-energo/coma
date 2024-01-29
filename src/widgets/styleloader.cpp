@@ -6,7 +6,7 @@
 #include <QKeyEvent>
 #include <QMetaEnum>
 #include <QSettings>
-#include <settings/app_settings.h>
+#include <settings/user_settings.h>
 
 const QMetaEnum StyleLoader::s_themeEnum = QMetaEnum::fromType<Style::Name>();
 
@@ -62,7 +62,7 @@ void StyleLoader::setAppStyleSheet()
 
 QString StyleLoader::load()
 {
-    const QString styleName = Settings::ApplicationSettings::GetInstance().get<Settings::Theme>();
+    const QString styleName = Settings::UserSettings::GetInstance().get<Settings::Theme>();
     if (styleName.isEmpty())
         return defaultStyleFile;
     const int key = s_themeEnum.keyToValue(styleName.toStdString().c_str());
@@ -71,7 +71,7 @@ QString StyleLoader::load()
 
 void StyleLoader::save()
 {
-    Settings::ApplicationSettings::GetInstance().set<Settings::Theme>(styleName());
+    Settings::UserSettings::GetInstance().set<Settings::Theme>(styleName());
 }
 
 void StyleLoader::setStyle(const QString &styleName)
