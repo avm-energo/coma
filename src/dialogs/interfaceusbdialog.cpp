@@ -33,13 +33,18 @@ void InterfaceUSBDialog::setInterface(QModelIndex index)
     int row = index.row();
 
     UsbHidSettings settings;
-
     settings.vendor_id = mdl->data(mdl->index(row, 0)).toString().toUInt(nullptr, 16);
     settings.product_id = mdl->data(mdl->index(row, 1)).toString().toUInt(nullptr, 16);
     settings.serial = mdl->data(mdl->index(row, 2)).toString();
 #ifdef QT_DEBUG
     settings.path = mdl->data(mdl->index(row, 3)).toString();
 #endif
+    m_settings.native().beginGroup("settings");
+    settings.m_timeout = m_settings.get<Settings::ProtocomTimeout>();
+    settings.m_reconnectInterval = m_settings.get<Settings::ProtocomReconnect>();
+    fill(settings);
+    m_settings.native().endGroup();
+
     ConnectStruct st { QString(), settings };
     emit accepted(st);
 }

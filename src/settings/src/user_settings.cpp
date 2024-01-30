@@ -61,6 +61,12 @@ void UserSettings::remove(const QString &name) noexcept
         m_settings.remove(name);
 }
 
+void UserSettings::switchTo(const QString &name) noexcept
+{
+    m_settings.endGroup();
+    m_settings.beginGroup(name);
+}
+
 const QVariant &UserSettings::defaultValue(const SettingType type, const QVariant &defaultValue) const noexcept
 {
     const auto search = s_params.find(type);

@@ -32,6 +32,7 @@ set(files_h
     "${INCLUDE_PATH}/parsers/modbus_response_parser.h"
     "${INCLUDE_PATH}/parsers/protocom_request_parser.h"
     "${INCLUDE_PATH}/parsers/protocom_response_parser.h"
+    "${INCLUDE_PATH}/types/base_settings.h"
     "${INCLUDE_PATH}/types/common_types.h"
     "${INCLUDE_PATH}/types/iec104/apci.h"
     "${INCLUDE_PATH}/types/iec104/asdu.h"

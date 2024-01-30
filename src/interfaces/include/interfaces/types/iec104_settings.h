@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QStringList>
-#include <cstdint>
+#include <interfaces/types/base_settings.h>
 
 struct IEC104ConnectionParams
 {
@@ -13,7 +13,7 @@ struct IEC104ConnectionParams
     std::uint16_t w = 8; ///< После приёма w APDU формата I требуется подтверждение.
 };
 
-struct IEC104Settings
+struct IEC104Settings final : public BaseSettings
 {
     QString ip;
     std::uint16_t port;

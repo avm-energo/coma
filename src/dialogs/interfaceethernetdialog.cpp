@@ -58,6 +58,12 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
     settings.ip = mdl->data(mdl->index(row, 1)).toString();
     settings.port = mdl->data(mdl->index(row, 2)).toUInt();
     settings.bsAddress = mdl->data(mdl->index(row, 3)).toUInt();
+    m_settings.switchTo("settings");
+    settings.m_timeout = m_settings.get<Settings::Iec104Timeout>();
+    settings.m_reconnectInterval = m_settings.get<Settings::Iec104Reconnect>();
+    fill(settings);
+    m_settings.switchTo("Ethernet");
+
     if (!settings.isValid())
         return;
     ConnectStruct st { name, settings };

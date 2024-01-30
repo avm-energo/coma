@@ -5,7 +5,7 @@
 #include <interfaces/types/usbhidsettings.h>
 #include <variant>
 
-struct SerialPortSettings
+struct SerialPortSettings final : public BaseSettings
 {
     QString name;
     quint32 baud;

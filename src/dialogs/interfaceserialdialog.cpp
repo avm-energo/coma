@@ -77,6 +77,12 @@ void InterfaceSerialDialog::setInterface(QModelIndex index)
     auto stopStr = model->data(model->index(row, 4)).toString();
     portSettings.stop = stopStr == "1" ? QSerialPort::OneStop : QSerialPort::TwoStop;
     portSettings.address = model->data(model->index(row, 5)).toUInt();
+    m_settings.switchTo("settings");
+    portSettings.m_timeout = m_settings.get<Settings::ModbusTimeout>();
+    portSettings.m_reconnectInterval = m_settings.get<Settings::ModbusReconnect>();
+    fill(portSettings);
+    m_settings.switchTo("RS485");
+
     if (!portSettings.isValid())
         return;
     ConnectStruct st { name, portSettings };

@@ -8,6 +8,7 @@
 namespace Settings
 {
 
+/// \brief Класс, предоставляющий возможность обрабатывать и хранить пользовательские настройки.
 class UserSettings : public Singleton<UserSettings>
 {
 private:
@@ -17,10 +18,16 @@ private:
 public:
     explicit UserSettings(token) noexcept;
 
+    /// \brief Возвращает ссылку на хранимый эксземпляр QSettings для прямого доступа к данным.
     QSettings &native() noexcept;
+    /// \brief Проверяет, существует ли параметр с указанным именем.
     bool isExist(const QString &name) noexcept;
+    /// \brief Удаляет параметр с указанным именем.
     void remove(const QString &name) noexcept;
+    /// \brief Функция для переключения с текущей группы настроек на другую.
+    void switchTo(const QString &name) noexcept;
 
+    /// \brief Возвращает значение по умолчанию настройки указанного типа.
     const QVariant &defaultValue(const SettingType type, const QVariant &defaultValue = QVariant()) const noexcept;
 
     /// \brief Возвращает имя настройки указанного типа.

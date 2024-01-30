@@ -20,7 +20,6 @@ public:
 
 protected:
     Settings::UserSettings &m_settings;
-    // QSettings m_settings;
     QTableView *m_tableView;
 
     virtual void acceptedInterface() {};
@@ -30,6 +29,8 @@ protected:
     }
 
     bool checkSize();
+
+    void fill(BaseSettings &connection);
 
 signals:
     void accepted(const ConnectStruct &st);
