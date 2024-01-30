@@ -21,10 +21,22 @@ enum SettingType
 
     LoggingEnabled,
     AlarmsEnabled,
-    ReconnectInterval,
+    SilentInterval,
+    TimeoutCount,
+    ErrorCount,
+
     ProtocomTimeout,
+    ProtocomReconnect,
     ModbusTimeout,
+    ModbusReconnect,
     Iec104Timeout,
+    Iec104Reconnect,
+    Iec104T0,
+    Iec104T1,
+    Iec104T2,
+    Iec104T3,
+    Iec104K,
+    Iec104W,
 
     TuneCount,
     MipIp,
