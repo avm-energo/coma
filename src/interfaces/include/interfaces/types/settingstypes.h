@@ -19,7 +19,7 @@ struct SerialPortSettings final : public BaseSettings
     }
 };
 
-struct EmulatorSettings
+struct EmulatorSettings final : public BaseSettings
 {
     quint16 typeB;
     quint16 typeM;

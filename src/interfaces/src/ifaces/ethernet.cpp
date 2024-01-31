@@ -4,7 +4,7 @@
 #include <QNetworkProxy>
 
 Ethernet::Ethernet(const IEC104Settings &settings, QObject *parent)
-    : BaseInterface("Ethernet", parent), m_settings(settings), m_socket(new QTcpSocket(this))
+    : BaseInterface("Ethernet", settings, parent), m_settings(settings), m_socket(new QTcpSocket(this))
 {
     m_socket->setProxy(QNetworkProxy::NoProxy);
     QObject::connect(m_socket, &QAbstractSocket::stateChanged, //
