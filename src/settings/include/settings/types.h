@@ -18,6 +18,7 @@ enum SettingType
 {
     Theme,
     Timezone,
+    PasswordHash,
 
     LoggingEnabled,
     AlarmsInterval,

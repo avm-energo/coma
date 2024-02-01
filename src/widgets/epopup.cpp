@@ -11,6 +11,7 @@
 #include <QPropertyAnimation>
 #include <QScreen>
 #include <QTimer>
+#include <settings/user_settings.h>
 
 QPoint PointContainer::s_point = { 0, 0 };
 
@@ -63,7 +64,9 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
         setWindowTitle(c_captions.at(type));
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL2(parent, "", "", new QPixmap(map[type].pxFile)));
+    auto icon = WDFunc::NewLBL2(parent, "", "", new QPixmap(map[type].pxFile));
+    icon->setStyleSheet("QWidget {background-color: #" + map[type].bgrdColor + ";}");
+    hlyout->addWidget(icon);
     hlyout->addWidget(w);
     lyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
@@ -99,6 +102,13 @@ void ESimplePopup::cancelSlot()
 }
 
 bool EMessageBox::m_result = false;
+
+bool EMessageBox::password(QWidget *parent)
+{
+    auto &settings = Settings::UserSettings::GetInstance();
+    Settings::ScopedSettingsGroup _ { settings, "settings" };
+    return EMessageBox::password(parent, settings.get<Settings::PasswordHash>());
+}
 
 bool EMessageBox::password(QWidget *parent, const QString &hash)
 {
@@ -308,24 +318,30 @@ void EEditablePopup::keyPressEvent(QKeyEvent *e)
 
 EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(parent)
 {
+    constexpr auto dialogStyle = "QDialog { background-color: #ffe3f9; }";
+    constexpr auto widgetStyle = "QWidget { background-color: #ffe3f9; }";
     isAboutToClose = false;
     m_hash = hash;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL2(parent, "", "", new QPixmap(":/icons/psw-hex.svg")));
-    hlyout->addWidget(
-        WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
+    auto icon = WDFunc::NewLBL2(parent, "", "", new QPixmap(":/icons/psw-hex.svg"));
+    icon->setStyleSheet(widgetStyle);
+    hlyout->addWidget(icon);
+    auto text = WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl");
+    text->setStyleSheet(widgetStyle);
+    hlyout->addWidget(text);
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addLayout(hlyout);
     vlyout->addWidget(WDFunc::NewPswLE2(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
-    this->adjustSize();
+    adjustSize();
+    setStyleSheet(dialogStyle);
     adjustPosition();
 }
 
-bool EPasswordPopup::checkPassword(const QString &psw)
+bool EPasswordPopup::checkPassword(const QString &password)
 {
     QCryptographicHash hasher(QCryptographicHash::Sha3_256);
-    hasher.addData(psw.toUtf8());
+    hasher.addData(password.toUtf8());
     auto buffer = QString::fromUtf8(hasher.result().toHex());
     return (m_hash == buffer);
 }
@@ -346,7 +362,10 @@ void EPasswordPopup::keyPressEvent(QKeyEvent *e)
             aboutToClose();
         }
         else
+        {
+            qCritical("Пароль введён неверно");
             EMessageBox::warning(this, "Пароль неверен");
+        }
     }
     if ((e->key() == Qt::Key_Escape) && !isAboutToClose)
     {

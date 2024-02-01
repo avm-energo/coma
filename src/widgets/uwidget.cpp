@@ -1,6 +1,7 @@
 #include "uwidget.h"
 
-#include "../dialogs/keypressdialog.h"
+//#include "../dialogs/keypressdialog.h"
+#include "epopup.h"
 #include "wd_func.h"
 
 #include <QCoreApplication>
@@ -76,7 +77,8 @@ void UWidget::uponInterfaceSetting()
 
 bool UWidget::checkPassword()
 {
-    Q_ASSERT(!m_hash.isEmpty());
-    auto dialog = new KeyPressDialog(this);
-    return dialog->CheckPassword(m_hash);
+    return EMessageBox::password(this);
+    // Q_ASSERT(!m_hash.isEmpty());
+    // auto dialog = new KeyPressDialog(this);
+    // return dialog->CheckPassword(m_hash);
 }

@@ -117,6 +117,7 @@ class EMessageBox
 {
 public:
     static bool m_result;
+    static bool password(QWidget *parent);
     static bool password(QWidget *parent, const QString &hash);
     static void information(QWidget *parent, const QString &msg);
     static bool question(QWidget *parent, const QString &msg); // yes (1) / no (0)
