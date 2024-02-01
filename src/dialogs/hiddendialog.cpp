@@ -10,14 +10,8 @@
 #include <QTabWidget>
 #include <QtSvg/QSvgRenderer>
 
-namespace crypto
-{
-static constexpr char hash[] = "fb001dfcffd1c899f3297871406242f097aecf1a5342ccf3ebcd116146188e4b";
-static constexpr char name[] = "hiddenHash";
-}
-
 HiddenDialog::HiddenDialog(const ModuleSettings &settings, QWidget *parent)
-    : UDialog(crypto::hash, crypto::name, parent)
+    : UDialog(parent)
     , m_settings(settings.getHiddenSettings())
     , m_isGodMode(false)
     , m_isAlreadyFilled(false)
