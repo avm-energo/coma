@@ -20,6 +20,7 @@ enum SettingType
     Timezone,
 
     LoggingEnabled,
+    AlarmsInterval,
     AlarmsEnabled,
     SilentInterval,
     TimeoutCount,

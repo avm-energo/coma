@@ -127,8 +127,11 @@ void SettingsDialog::setupConnectionTab() noexcept
     auto widgetName = m_settings.nameof<LoggingEnabled>();
     generalLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Запись обмена данными в файл"));
     generalLayout->addWidget(WDFunc::newHLine(m_workspace));
+    widgetName = m_settings.nameof<AlarmsInterval>();
+    generalLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Интервал запроса сигнализации, мс", widgetName, true));
+    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<AlarmsEnabled>();
-    generalLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Постоянное обновление сигнализации"));
+    generalLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Обновление сигнализации"));
     generalLayout->addWidget(WDFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<SilentInterval>();
     auto widget = WDFunc::NewLBLAndLE(m_workspace, "Время \"тихого\" переподключения, мс", widgetName, true);
@@ -234,6 +237,7 @@ void SettingsDialog::fill()
 {
     WDFunc::SetCBData(this, m_settings.nameof<Timezone>(), m_settings.get<Timezone>());
     WDFunc::SetChBData(this, m_settings.nameof<LoggingEnabled>(), m_settings.get<LoggingEnabled>());
+    WDFunc::SetLEData(this, m_settings.nameof<AlarmsInterval>(), m_settings.get<AlarmsInterval>());
     WDFunc::SetChBData(this, m_settings.nameof<AlarmsEnabled>(), m_settings.get<AlarmsEnabled>());
     WDFunc::SetLEData(this, m_settings.nameof<SilentInterval>(), m_settings.get<SilentInterval>());
     WDFunc::SetLEData(this, m_settings.nameof<TimeoutCount>(), m_settings.get<TimeoutCount>());
@@ -281,8 +285,17 @@ void SettingsDialog::acceptSettings()
 
     if (WDFunc::ChBData(this, m_settings.nameof<LoggingEnabled>(), tmpb))
         m_settings.set<LoggingEnabled>(tmpb);
+    auto alarmsInterval = WDFunc::LEData(this, m_settings.nameof<AlarmsInterval>()).toInt(&tmpb);
+    if (tmpb)
+    {
+        m_settings.set<AlarmsInterval>(alarmsInterval);
+        emit alarmIntervalUpdate(alarmsInterval);
+    }
     if (WDFunc::ChBData(this, m_settings.nameof<AlarmsEnabled>(), tmpb))
+    {
         m_settings.set<AlarmsEnabled>(tmpb);
+        emit alarmOperationUpdate(tmpb);
+    }
     m_settings.set<SilentInterval>(WDFunc::LEData(this, m_settings.nameof<SilentInterval>()));
     m_settings.set<TimeoutCount>(WDFunc::LEData(this, m_settings.nameof<TimeoutCount>()));
     m_settings.set<ErrorCount>(WDFunc::LEData(this, m_settings.nameof<ErrorCount>()));

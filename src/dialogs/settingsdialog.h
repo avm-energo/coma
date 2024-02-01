@@ -38,7 +38,8 @@ private slots:
     void themeChanged(const QString &newTheme);
 
 signals:
-    void disableAlarmUpdate();
+    void alarmOperationUpdate(const bool status);
+    void alarmIntervalUpdate(const int interval);
 };
 
 #endif // SETTINGSDIALOG_H

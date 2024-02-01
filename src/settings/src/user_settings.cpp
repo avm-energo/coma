@@ -11,6 +11,7 @@ const std::map<SettingType, SettingPair> UserSettings::s_params {
     { SettingType::Theme, { "Theme", "Light" } },                     //
     { SettingType::Timezone, { "Timezone", systemTimezone } },        //
     { SettingType::LoggingEnabled, { "LoggingEnabled", true } },      //
+    { SettingType::AlarmsInterval, { "AlarmsInterval", 10000 } },     //
     { SettingType::AlarmsEnabled, { "AlarmsEnabled", true } },        //
     { SettingType::SilentInterval, { "SilentInterval", 10000 } },     //
     { SettingType::TimeoutCount, { "TimeoutCount", 5 } },             //
