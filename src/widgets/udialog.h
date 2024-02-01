@@ -9,8 +9,7 @@ class UDialog : public UWidget
 {
     Q_OBJECT
 public:
-    UDialog(QWidget *parent = nullptr);
-    UDialog(const QString &hash, const QString &key, QWidget *parent = nullptr);
+    explicit UDialog(QWidget *parent = nullptr);
     void updateConnection(AsyncConnection *conn);
     virtual void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response);
 

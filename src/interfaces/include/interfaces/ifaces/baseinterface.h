@@ -7,6 +7,7 @@
 #include <gen/error.h>
 #include <gen/logclass.h>
 #include <gen/stdfunc.h>
+#include <interfaces/types/base_settings.h>
 #include <interfaces/types/common_types.h>
 
 enum class InterfaceError : quint16
@@ -21,7 +22,7 @@ class BaseInterface : public QObject
 {
     Q_OBJECT
 public:
-    explicit BaseInterface(const QString &logFilename, QObject *parent = nullptr);
+    explicit BaseInterface(const QString &logFilename, const BaseSettings &settings, QObject *parent = nullptr);
 
 signals:
     void dataReceived(const QByteArray &ba);
@@ -35,6 +36,7 @@ signals:
 protected:
     std::atomic<Interface::State> m_state;
     quint16 m_reconnectInterval;
+    bool m_isLoggingEnabled;
     LogClass m_log;
     QMutex m_dataGuard;
 

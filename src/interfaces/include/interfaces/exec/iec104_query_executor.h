@@ -25,7 +25,7 @@ private:
     /// \brief Приватный конструктор.
     /// \details Создание экземпляров класса доступно только через QueryExecutorFabric.
     /// \see QueryExecutorFabric.
-    explicit Iec104QueryExecutor(RequestQueue &queue, const IEC104ConnectionParams params, QObject *parent = nullptr);
+    explicit Iec104QueryExecutor(RequestQueue &queue, const IEC104Settings &settings, QObject *parent = nullptr);
 
     /// \brief Преобразование хранимого парсера запросов к primary типу.
     inline Iec104ResponseParser *getResponseParser() noexcept;

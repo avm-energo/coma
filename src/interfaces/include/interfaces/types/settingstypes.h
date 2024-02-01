@@ -5,7 +5,7 @@
 #include <interfaces/types/usbhidsettings.h>
 #include <variant>
 
-struct SerialPortSettings
+struct SerialPortSettings final : public BaseSettings
 {
     QString name;
     quint32 baud;
@@ -19,7 +19,7 @@ struct SerialPortSettings
     }
 };
 
-struct EmulatorSettings
+struct EmulatorSettings final : public BaseSettings
 {
     quint16 typeB;
     quint16 typeM;
@@ -30,6 +30,3 @@ struct ConnectStruct
     QString name;
     std::variant<IEC104Settings, SerialPortSettings, UsbHidSettings, EmulatorSettings> settings;
 };
-
-// how much entries can we have for interfaces of each type in registry
-constexpr int MAXREGISTRYINTERFACECOUNT = 5;

@@ -20,8 +20,13 @@
 
 InterfaceEthernetDialog::InterfaceEthernetDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
-    m_settings.beginGroup("Ethernet");
+    m_settings.native().beginGroup("Ethernet");
     setWindowTitle("Ethernet соединения");
+}
+
+InterfaceEthernetDialog::~InterfaceEthernetDialog() noexcept
+{
+    m_settings.native().endGroup();
 }
 
 void InterfaceEthernetDialog::setupUI()
@@ -35,7 +40,7 @@ void InterfaceEthernetDialog::setupUI()
     hlyout->addWidget(WDFunc::NewPB(this, "", tr("Сканировать"), this, &InterfaceEthernetDialog::scanInterface));
     hlyout->addWidget(WDFunc::NewPB(this, "", tr("Удалить"), this, [this] {
         auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
-        removeConnection(name);
+        m_settings.remove(name);
         updateModel();
     }));
     lyout->addLayout(hlyout);
@@ -53,6 +58,12 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
     settings.ip = mdl->data(mdl->index(row, 1)).toString();
     settings.port = mdl->data(mdl->index(row, 2)).toUInt();
     settings.bsAddress = mdl->data(mdl->index(row, 3)).toUInt();
+    m_settings.switchTo("settings");
+    settings.m_timeout = m_settings.get<Settings::Iec104Timeout>();
+    settings.m_reconnectInterval = m_settings.get<Settings::Iec104Reconnect>();
+    fill(settings);
+    m_settings.switchTo("Ethernet");
+
     if (!settings.isValid())
         return;
     ConnectStruct st { name, settings };
@@ -158,7 +169,7 @@ void InterfaceEthernetDialog::acceptedInterface()
         return;
     QString name = WDFunc::LEData(dialog, "namele");
     // check if there's such name in registry
-    if (isConnectionExist(name))
+    if (m_settings.isExist(name))
     {
         EMessageBox::error(this, "Такое имя уже имеется");
         return;
@@ -176,13 +187,12 @@ void InterfaceEthernetDialog::acceptedInterface()
         EMessageBox::error(this, "Адрес базовой станции не может быть равен нулю");
         return;
     }
-
-    m_settings.beginGroup(name);
-    m_settings.setValue("ipAddress", ipstr);
-    m_settings.setValue("port", QString::number(port));
-    m_settings.setValue("bsAddress", QString::number(bsAddress));
-    m_settings.endGroup();
-
+    {
+        Settings::ScopedSettingsGroup _ { m_settings, name };
+        m_settings.set<Settings::IpAddress>(ipstr);
+        m_settings.set<Settings::IpPort>(port);
+        m_settings.set<Settings::Iec104BsAddress>(port);
+    }
     if (!updateModel())
         qCritical() << Error::GeneralError;
     dialog->close();
@@ -243,7 +253,6 @@ void InterfaceEthernetDialog::createPortTask()
 {
     QFutureWatcher<QList<quint32>> *watcher = new QFutureWatcher<QList<quint32>>;
     quint16 port = 2404;
-
     m_progress->setLabelText(tr("Port scanning"));
     connect(watcher, &QFutureWatcher<QList<quint32>>::progressRangeChanged, m_progress, &QProgressDialog::setRange);
     connect(watcher, &QFutureWatcher<QList<quint32>>::progressValueChanged, m_progress, &QProgressDialog::setValue);
@@ -268,18 +277,17 @@ bool InterfaceEthernetDialog::updateModel()
         model->clear();
     model->setHorizontalHeaderLabels(headers);
 
-    QStringList ethList = m_settings.childGroups();
+    QStringList ethList = m_settings.native().childGroups();
     for (const auto &item : qAsConst(ethList))
     {
-        m_settings.beginGroup(item);
+        Settings::ScopedSettingsGroup _ { m_settings, item };
         QList<QStandardItem *> items {
-            new QStandardItem(item),                                                  //
-            new QStandardItem(m_settings.value("ipAddress", "127.0.0.1").toString()), //
-            new QStandardItem(m_settings.value("port", "2404").toString()),           //
-            new QStandardItem(m_settings.value("bsAddress", "205").toString())        //
+            new QStandardItem(item),                                                //
+            new QStandardItem(QString(m_settings.get<Settings::IpAddress>())),      //
+            new QStandardItem(QString(m_settings.get<Settings::IpPort>())),         //
+            new QStandardItem(QString(m_settings.get<Settings::Iec104BsAddress>())) //
         };
         model->appendRow(items);
-        m_settings.endGroup();
     }
 
     m_tableView->setModel(model);

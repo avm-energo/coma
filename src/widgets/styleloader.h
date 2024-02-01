@@ -46,14 +46,16 @@ class StyleLoader : public QObject, public Singleton<StyleLoader>
 public:
     StyleLoader(Singleton::token, QObject *parent);
     explicit StyleLoader(token);
-    void attach(const QString &filename = GetInstance().load(), QKeySequence key = QKeySequence(defaultStyleKey));
 
+    static QStringList availableStyles();
+
+    void attach(const QString &filename = GetInstance().load(), QKeySequence key = QKeySequence(defaultStyleKey));
     bool eventFilter(QObject *obj, QEvent *event);
 
-    QString styleFile();
     Style::Name styleNumber();
     QString styleName();
 
+    void setStyle(const QString &styleName);
     void setStyleFile(const QString &styleFile);
     void setAppStyleSheet();
 
@@ -61,6 +63,8 @@ public:
     void save();
 
 private:
+    static const QMetaEnum s_themeEnum;
+
     QString m_filename;
     QKeySequence m_key;
 };

@@ -4,7 +4,7 @@
 #include <QThread>
 
 SerialPort::SerialPort(const SerialPortSettings &settings, QObject *parent)
-    : BaseInterface("ModbusPort", parent), m_port(new QSerialPort(settings.name, this))
+    : BaseInterface("ModbusPort", settings, parent), m_port(new QSerialPort(settings.name, this))
 {
     m_port->setBaudRate(settings.baud);
     m_port->setDataBits(QSerialPort::Data8);

@@ -18,13 +18,10 @@ ConnectionManager::ConnectionManager(QObject *parent)
     , m_isReconnectOccurred(false)
     , m_isInitialBSIRequest(true)
     , m_timeoutCounter(0)
+    , m_timeoutMax(5)
     , m_errorCounter(0)
+    , m_errorMax(5)
 {
-    /// TODO: брать значение из настроек
-    m_silentTimer->setInterval(10000);
-    m_errorMax = 5;
-    m_timeoutMax = 5;
-
     m_silentTimer->setSingleShot(true);
     connect(m_silentTimer, &QTimer::timeout, this, [this] { emit reconnectUI(); });
 }
@@ -38,17 +35,17 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
         [this] { setReconnectMode(ReconnectMode::Silent); });
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
 
+    std::visit([this](const auto &settings) { setup(settings); }, connectionData.settings);
     std::visit( // Инициализация контекста для обмена данными
         overloaded {
             [this](const UsbHidSettings &settings) {
                 auto interface = new UsbHidPort(settings);
-                auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->getQueue());
+                auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->getQueue(), settings);
                 m_context.init(interface, executor, Strategy::Sync, Qt::DirectConnection);
             },
             [this](const SerialPortSettings &settings) {
                 auto interface = new SerialPort(settings);
-                auto executor
-                    = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->getQueue(), settings.address);
+                auto executor = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->getQueue(), settings);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const IEC104Settings &settings) {
@@ -56,8 +53,8 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
                 auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->getQueue(), settings);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
-            [this](const EmulatorSettings &settings) {
-                /// TODO
+            [](const EmulatorSettings &settings) {
+                /// TODO: доделать
                 Q_UNUSED(settings);
             } //
         },
@@ -81,6 +78,13 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
         m_currentConnection = nullptr;
     }
     return m_currentConnection;
+}
+
+void ConnectionManager::setup(const BaseSettings &settings) noexcept
+{
+    m_silentTimer->setInterval(settings.m_silentInterval);
+    m_errorMax = settings.m_maxErrors;
+    m_timeoutMax = settings.m_maxTimeouts;
 }
 
 void ConnectionManager::setReconnectMode(const ReconnectMode newMode) noexcept

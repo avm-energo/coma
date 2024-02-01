@@ -14,8 +14,7 @@ private:
     UsbHidSettings m_settings;
 
 public:
-    explicit UsbHidPort(const UsbHidSettings &settings, QObject *parent = 0);
-    ~UsbHidPort() = default;
+    explicit UsbHidPort(const UsbHidSettings &settings, QObject *parent = nullptr);
     const UsbHidSettings &deviceInfo() const;
 
 public slots:

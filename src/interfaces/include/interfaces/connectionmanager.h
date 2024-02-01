@@ -36,6 +36,7 @@ private:
     quint16 m_errorCounter, m_errorMax;
 
     void reconnect();
+    void setup(const BaseSettings &settings) noexcept;
 
 public:
     explicit ConnectionManager(QObject *parent = nullptr);

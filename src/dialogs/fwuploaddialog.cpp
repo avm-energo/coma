@@ -10,16 +10,8 @@
 #include <map>
 #include <s2/s2util.h>
 
-namespace crypto
-{
-static constexpr char hash[] = "fb001dfcffd1c899f3297871406242f097aecf1a5342ccf3ebcd116146188e4b";
-static constexpr char name[] = "fwHash";
-}
-
 FWUploadDialog::FWUploadDialog(QWidget *parent)
-    : UDialog(crypto::hash, crypto::name, parent)
-    , uploadStatus(FirmwareUploadStatus::Start)
-    , parser(new S2::HexParser(this))
+    : UDialog(parent), uploadStatus(FirmwareUploadStatus::Start), parser(new S2::HexParser(this))
 {
     QObject::connect(parser, &S2::HexParser::error, this, &FWUploadDialog::errorHandle);
     setSuccessMsg("Переход на новое ПО выполнен успешно");

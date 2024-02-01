@@ -3,8 +3,11 @@
 #include <QCoreApplication>
 #include <QElapsedTimer>
 
-BaseInterface::BaseInterface(const QString &logFilename, QObject *parent)
-    : QObject(parent), m_state(Interface::State::Connect), m_reconnectInterval(100)
+BaseInterface::BaseInterface(const QString &logFilename, const BaseSettings &settings, QObject *parent)
+    : QObject(parent)
+    , m_state(Interface::State::Connect)
+    , m_reconnectInterval(settings.m_reconnectInterval)
+    , m_isLoggingEnabled(settings.m_isLoggingEnabled)
 {
     qRegisterMetaType<InterfaceError>();
     m_log.init(logFilename + "." + ::logExt);
@@ -23,26 +26,30 @@ Interface::State BaseInterface::getState() const noexcept
 
 void BaseInterface::writeLog(const QByteArray &ba, Interface::Direction dir)
 {
-    QByteArray tmpba = QByteArray(metaObject()->className());
-    switch (dir)
+    if (m_isLoggingEnabled)
     {
-    case Interface::FromDevice:
-        tmpba.append(": -> ");
-        break;
-    case Interface::ToDevice:
-        tmpba.append(": <- ");
-        break;
-    default:
-        tmpba.append(":  ");
-        break;
+        QByteArray tmpba = QByteArray(metaObject()->className());
+        switch (dir)
+        {
+        case Interface::FromDevice:
+            tmpba.append(": -> ");
+            break;
+        case Interface::ToDevice:
+            tmpba.append(": <- ");
+            break;
+        default:
+            tmpba.append(":  ");
+            break;
+        }
+        tmpba.append(ba).append("\n");
+        m_log.writeRaw(tmpba);
     }
-    tmpba.append(ba).append("\n");
-    m_log.writeRaw(tmpba);
 }
 
 void BaseInterface::writeLog(const Error::Msg msg, Interface::Direction dir)
 {
-    writeLog(QVariant::fromValue(msg).toByteArray(), dir);
+    if (m_isLoggingEnabled)
+        writeLog(QVariant::fromValue(msg).toByteArray(), dir);
 }
 
 void BaseInterface::poll()

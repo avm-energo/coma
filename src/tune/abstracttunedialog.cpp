@@ -23,16 +23,9 @@
 #include <gen/timefunc.h>
 #include <interfaces/conn/active_connection.h>
 
-namespace crypto
-{
-static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
-static constexpr char name[] = "tuneHash";
-}
-
 ReportData AbstractTuneDialog::s_reportData {};
 
-AbstractTuneDialog::AbstractTuneDialog(S2::Configuration &workConfig, //
-    int tuneStep, QWidget *parent)
+AbstractTuneDialog::AbstractTuneDialog(S2::Configuration &workConfig, int tuneStep, QWidget *parent)
     : QDialog(parent), config(workConfig), m_async(ActiveConnection::async()), m_sync(ActiveConnection::sync())
 {
     TuneVariant = 0;
@@ -192,7 +185,7 @@ void AbstractTuneDialog::stopWait()
 
 Error::Msg AbstractTuneDialog::CheckPassword()
 {
-    return (EMessageBox::password(this, crypto::hash) ? Error::Msg::NoError : Error::Msg::GeneralError);
+    return (EMessageBox::password(this) ? Error::Msg::NoError : Error::Msg::GeneralError);
 }
 
 int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
