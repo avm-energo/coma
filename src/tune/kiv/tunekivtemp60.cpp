@@ -124,17 +124,16 @@ Error::Msg TuneKIVTemp60::waitForTempToRise()
 
 Error::Msg TuneKIVTemp60::showSignalsDialog()
 {
-    //    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-
     QWidget *w = new QWidget(this);
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
+    QVBoxLayout *lyout = new QVBoxLayout;
+    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
         "по напряжению 60 В, по току - 2,5 А;"));
     lyout->addWidget(WDFunc::newHLine(w));
+
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(WDFunc::NewLBL2(w, "РЕТОМ-51"));
@@ -155,22 +154,6 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
 
     if (!EMessageBox::next(this, w))
         CancelTune();
-
-    //    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
-    //    lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых
-    //    картинок;")); lyout->addWidget(WDFunc::NewLBL2(this,
-    //        "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
-    //        "и напряжения в однофазной сети переменного тока, установите предел измерения"
-    //        "по напряжению 60 В, по току - 2,5 А;"));
-    //    lyout->addWidget(WDFunc::NewLBL2(this,
-    //        "3. Задайте на РЕТОМ-51 или имитаторе АВМ-КИВ трёхфазный режим токов и напряжений (Uabc, Iabc)"
-    //        "Угол между токами и напряжениями: 89.9 град. (tg 2 % в имитаторе),\n"
-    //        "Значения напряжений: 57.75 В, токов: 140 мА"));
-    //    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [&dlg] { dlg->close(); }));
-    //    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [&dlg] { dlg->close(); }));
-    //    dlg->setLayout(lyout);
-    //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
-    //    dlg->exec();
     return Error::Msg::NoError;
 }
 

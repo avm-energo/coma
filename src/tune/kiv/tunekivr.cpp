@@ -38,7 +38,7 @@ Error::Msg TuneKIVR::showPreWarning()
     auto widget = new QWidget(this);
     auto layout = new QVBoxLayout;
 
-    layout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")), 0);
+    layout->addWidget(WDFunc::NewIcon(this, ":/tunes/tunekiv1.png"), 0);
     layout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     layout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока "

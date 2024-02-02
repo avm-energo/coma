@@ -90,24 +90,6 @@ bool WDFunc::SetLEColor(QWidget *parent, const QString &lename, const QColor &co
     return true;
 }
 
-QLabel *WDFunc::NewLBL(QWidget *parent, const QString &text, const QString &lblcolor, const QString &lblname,
-    const QPixmap *pm, const QString &lbltip)
-{
-    auto lbl = new QLabel(parent);
-    lbl->setText(text);
-    if (!lblname.isEmpty())
-        lbl->setObjectName(lblname);
-    if (!lblcolor.isEmpty())
-    {
-        auto tmps = "QLabel {background-color: " + lblcolor + ";}";
-        lbl->setStyleSheet(tmps);
-    }
-    if (pm != nullptr)
-        lbl->setPixmap(*pm);
-    lbl->setToolTip(lbltip);
-    return lbl;
-}
-
 QLabel *WDFunc::NewLBL2(
     QWidget *parent, const QString &text, const QString &lblname, const QPixmap *pm, const QString &lbltip)
 {
@@ -123,25 +105,13 @@ QLabel *WDFunc::NewLBL2(
     return lbl;
 }
 
-/*! \brief Копирует содержимое из исходной области памяти в целевую область память
- *  \param w Родитель будущего виджета
- *  \param text Текст для QLabel
- *  \param lblname Имя для QLabel
- *  \param lblstyle StyleSheet для QLabel
- *  \param lbltip ToolTip для QLabel
- *  \param Fixed Фиксированного размера?
- */
-QLabel *WDFunc::NewLBLT(QWidget *parent, const QString &text, const QString &lblname, const QString &lblstyle,
-    const QString &lbltip, bool Fixed)
+QLabel *WDFunc::NewIcon(QWidget *parent, const QString &iconpath)
 {
-    auto lbl = new QLabel(parent);
-    lbl->setText(text);
-    lbl->setObjectName(lblname);
-    lbl->setStyleSheet(lblstyle);
-    lbl->setToolTip(lbltip);
-    if (Fixed == true)
-        lbl->setFixedSize(120, 15);
-    return lbl;
+    auto label = new QLabel(parent);
+    label->setStyleSheet("QLabel {border: none;}");
+    if (!iconpath.isEmpty())
+        label->setPixmap(QPixmap(iconpath));
+    return label;
 }
 
 QLabel *WDFunc::NewLBLT2(

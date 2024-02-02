@@ -110,10 +110,13 @@ void ConnectionContext::reset()
 {
     if (isValid())
     {
-        m_iface->close();
+        QEventLoop waiter;
+        QObject::connect(m_iface, &BaseInterface::finished, &waiter, &QEventLoop::quit);
+        QObject::connect(m_executor, &DefaultQueryExecutor::finished, &waiter, &QEventLoop::quit);
         m_executor->stop();
-        if (m_strategy == Strategy::Sync)
-            StdFunc::Wait(20);
+        waiter.exec();
+        m_iface->close();
+        waiter.exec();
         m_iface = nullptr;
         m_executor = nullptr;
     }

@@ -64,7 +64,8 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
         setWindowTitle(c_captions.at(type));
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    auto icon = WDFunc::NewLBL2(parent, "", "", new QPixmap(map[type].pxFile));
+
+    auto icon = WDFunc::NewIcon(parent, map[type].pxFile);
     icon->setStyleSheet("QWidget {background-color: #" + map[type].bgrdColor + ";}");
     hlyout->addWidget(icon);
     hlyout->addWidget(w);
@@ -323,7 +324,7 @@ EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(pa
     isAboutToClose = false;
     m_hash = hash;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    auto icon = WDFunc::NewLBL2(parent, "", "", new QPixmap(":/icons/psw-hex.svg"));
+    auto icon = WDFunc::NewIcon(parent, ":/icons/psw-hex.svg");
     icon->setStyleSheet(widgetStyle);
     hlyout->addWidget(icon);
     auto text = WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl");

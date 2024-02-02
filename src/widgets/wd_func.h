@@ -161,14 +161,10 @@ public:
     }
 
     static bool SetLEColor(QWidget *parent, const QString &lename, const QColor &color);
-    [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBL(QWidget *parent,
-        const QString &text, const QString &lblcolor = "", const QString &lblname = "", const QPixmap *pm = Q_NULLPTR,
-        const QString &lbltip = "");
+
     static QLabel *NewLBL2(QWidget *parent, const QString &text, const QString &lblname = "",
-        const QPixmap *pm = Q_NULLPTR, const QString &lbltip = "");
-    [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBLT(QWidget *parent,
-        const QString &text, const QString &lblname = "", const QString &lblstyle = "", const QString &lbltip = "",
-        bool Fixed = false);
+        const QPixmap *pm = nullptr, const QString &lbltip = "");
+    static QLabel *NewIcon(QWidget *parent, const QString &iconpath = "");
     static QLabel *NewLBLT2(QWidget *parent, const QString &text, const QString &lblname = "",
         const QString &lbltip = "", bool fixed = false);
 

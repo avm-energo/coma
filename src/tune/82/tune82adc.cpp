@@ -171,7 +171,7 @@ Error::Msg Tune82ADC::showPreWarning()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tune82.png")));
+    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tune82.png"));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Задайте на РЕТОМ трехфазный режим токов и напряжений с углами сдвига"

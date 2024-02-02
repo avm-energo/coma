@@ -57,8 +57,7 @@ Error::Msg Tune82Check::showScheme()
     }
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    auto label = WDFunc::NewLBL2(this, "", "", new QPixmap(pmpfile));
-    lyout->addWidget(label);
+    lyout->addWidget(WDFunc::NewIcon(this, pmpfile));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Отключите выходы РЕТОМ;"));
     lyout->addWidget(WDFunc::NewLBL2(w, "2. Соберите схему подключения по вышеприведённой картинке;"));
     lyout->addWidget(WDFunc::NewLBL2(w,

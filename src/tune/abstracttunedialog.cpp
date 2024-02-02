@@ -201,24 +201,24 @@ int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
 
 void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int msg, bool visible)
 {
-    QPixmap *pm;
+    QPixmap pm;
     switch (type)
     {
     case OkMsg:
-        pm = new QPixmap(":/tunes/ok.png");
+        pm = QPixmap(":/tunes/ok.png");
         break;
     case ErMsg:
-        pm = new QPixmap(":/tunes/cross.png");
+        pm = QPixmap(":/tunes/cross.png");
         break;
     case SkMsg:
-        pm = new QPixmap(":/tunes/hr.png");
+        pm = QPixmap(":/tunes/hr.png");
         break;
     case NoMsg:
         WDFunc::SetVisible(this, "tunemsg" + QString::number(msg), visible);
         return;
     }
     WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), visible);
-    WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
+    WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), &pm);
 }
 
 void AbstractTuneDialog::MsgClear()
