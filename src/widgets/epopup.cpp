@@ -5,7 +5,6 @@
 
 #include <QApplication>
 #include <QCryptographicHash>
-//#include <QDesktopWidget>
 #include <QEventLoop>
 #include <QGuiApplication>
 #include <QPropertyAnimation>
@@ -13,32 +12,14 @@
 #include <QTimer>
 #include <settings/user_settings.h>
 
-QPoint PointContainer::s_point = { 0, 0 };
-
-PointContainer::PointContainer(QObject *parent) : QObject(parent)
-{
-}
-
-QPoint PointContainer::getPoint() noexcept
-{
-    return s_point;
-}
-
-void PointContainer::receivePoint(const QPoint &point)
-{
-    s_point = point;
-}
-
 ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent) : EPopup(parent)
 {
     Create(type, WDFunc::NewLBL2(parent, msg), parent);
-    adjustPosition();
 }
 
 ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent) : EPopup(parent)
 {
     Create(type, w, parent);
-    adjustPosition();
 }
 
 void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
@@ -199,30 +180,6 @@ void EPopup::aboutToClose()
     close();
 }
 
-void EPopup::adjustPosition()
-{
-    QPoint appCenterPoint = PointContainer::getPoint();
-    auto currentScreen = QGuiApplication::screenAt(appCenterPoint);
-    if (!currentScreen)
-        currentScreen = QGuiApplication::primaryScreen();
-
-    QRect currentGeometry = currentScreen->geometry();
-    int screenWidth = currentGeometry.width();
-    int screenHeight = currentGeometry.height();
-    int halfWidth = width() * 0.5;
-    int halfHeight = height() * 0.5;
-    int right = appCenterPoint.x() + halfWidth;
-    int down = appCenterPoint.y() + halfHeight;
-
-    if ((right > screenWidth) || (down > screenHeight))
-        move(0, 0);
-    // Если главное окно отсутствует или прекратило своё существование
-    else if ((appCenterPoint.x() == 0) || (appCenterPoint.y() == 0))
-        move(currentGeometry.center() - QPoint { halfWidth, halfHeight });
-    else
-        move(appCenterPoint.x() - halfWidth, appCenterPoint.y() - halfHeight);
-}
-
 void EPopup::showEvent(QShowEvent *e)
 {
     QDialog::showEvent(e);
@@ -280,7 +237,6 @@ void EEditablePopup::execPopup()
     lyout->addLayout(hlyout);
     setLayout(lyout);
     this->adjustSize();
-    adjustPosition();
     exec();
 }
 
@@ -336,7 +292,6 @@ EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(pa
     setLayout(vlyout);
     adjustSize();
     setStyleSheet(dialogStyle);
-    adjustPosition();
 }
 
 bool EPasswordPopup::checkPassword(const QString &password)

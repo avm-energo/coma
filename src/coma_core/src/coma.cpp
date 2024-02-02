@@ -88,10 +88,6 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     connect(connectionManager.get(), &ConnectionManager::connectSuccesfull, this, &Coma::prepare);
     connect(connectionManager.get(), &ConnectionManager::connectFailed, this, //
         [this](const QString &errMsg) { EMessageBox::error(this, errMsg); });
-
-    // registering center of coma main window for epopup message boxes
-    auto pointContainer = new PointContainer(this);
-    connect(this, &Coma::positionChanged, pointContainer, &PointContainer::receivePoint);
 }
 
 Coma::~Coma()
@@ -556,24 +552,6 @@ void Coma::disconnectAndClear()
         ActiveConnection::reset();
         connectionManager->breakConnection();
     }
-}
-
-void Coma::resizeEvent(QResizeEvent *event)
-{
-    emit positionChanged(geometry().center());
-    QMainWindow::resizeEvent(event);
-}
-
-void Coma::moveEvent(QMoveEvent *event)
-{
-    emit positionChanged(geometry().center());
-    QMainWindow::moveEvent(event);
-}
-
-void Coma::showEvent(QShowEvent *event)
-{
-    emit positionChanged(geometry().center());
-    QMainWindow::showEvent(event);
 }
 
 void Coma::keyPressEvent(QKeyEvent *event)
