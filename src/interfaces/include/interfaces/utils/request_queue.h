@@ -30,6 +30,7 @@ public:
     std::optional<CommandStruct> getFromQueue() noexcept;
     /// \brief Функция для очистки очереди запросов.
     void clear() noexcept;
+    std::size_t size() noexcept;
 
     /// \brief Функция для ожидания момента, когда в пустую очередь попадёт запрос.
     void waitFillingQueue() noexcept;

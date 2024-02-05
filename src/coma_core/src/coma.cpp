@@ -503,7 +503,16 @@ void Coma::initConnection(const ConnectStruct &st)
     saveSettings();
     auto currentConnection = connectionManager->createConnection(st);
     if (currentConnection)
+    {
+        // Показываем размер очереди только в Наладке
+        if (mAppConfig == AppConfiguration::Debug)
+        {
+            auto queueSizeMsg = this->findChild<QLabel *>("QueueSize");
+            connect(currentConnection, &Interface::AsyncConnection::queueSizeChanged, this, //
+                [=](const std::size_t size) { queueSizeMsg->setText(QString("Queue size: %1").arg(size)); });
+        }
         initInterfaceConnection(currentConnection);
+    }
     QApplication::restoreOverrideCursor();
 }
 

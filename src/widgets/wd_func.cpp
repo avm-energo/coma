@@ -453,6 +453,10 @@ QStatusBar *WDFunc::NewSB(QWidget *parent)
     layout->setSpacing(parent->width() / 20);
     layout->setContentsMargins(1, 1, 1, 1);
 
+    auto queueSize = new QLabel(bar);
+    queueSize->setObjectName("QueueSize");
+    layout->addWidget(queueSize);
+
     auto msgModel = new QLabel(bar);
     msgModel->setObjectName("Model");
     layout->addWidget(msgModel);

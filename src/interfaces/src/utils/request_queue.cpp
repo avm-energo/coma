@@ -35,6 +35,11 @@ void RequestQueue::clear() noexcept
     m_requests.swap(empty);
 }
 
+std::size_t RequestQueue::size() noexcept
+{
+    return m_requests.size();
+}
+
 void RequestQueue::waitFillingQueue() noexcept
 {
     std::unique_lock<std::mutex> locker { m_queueAccess };

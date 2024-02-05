@@ -123,6 +123,7 @@ void AsyncConnection::responseHandle(const Interface::DeviceResponse &resp)
 void AsyncConnection::setToQueue(CommandStruct &&cmd)
 {
     m_queue.addToQueue(std::move(cmd));
+    emit queueSizeChanged(m_queue.size());
 }
 
 } // namespace Interface
