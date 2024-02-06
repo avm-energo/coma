@@ -55,7 +55,7 @@ signals:
     void stateChanged(Interface::State m_state);
     void silentReconnectMode();
     void protocolSettingsUpdated(const ProtocolDescription &desc);
-    void queueSizeChanged(const std::size_t size);
+    void queueSizeChanged(const quint64 size);
 
     // Response signals
     // clazy:excludeall=overloaded-signal
