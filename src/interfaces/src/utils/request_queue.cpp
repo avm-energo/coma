@@ -31,7 +31,7 @@ std::optional<CommandStruct> RequestQueue::getFromQueue() noexcept
 void RequestQueue::clear() noexcept
 {
     std::lock_guard<std::mutex> locker { m_queueAccess };
-    std::queue<CommandStruct> empty;
+    Utils::UniqueQueue<CommandStruct> empty;
     m_requests.swap(empty);
 }
 

@@ -118,6 +118,11 @@ struct CommandStruct
     QVariant arg2; // reqFile: format, reqStartup: sigCount, WriteFile: &bytearray, WriteCommand: value
 };
 
+inline bool operator==(const CommandStruct &lhs, const CommandStruct &rhs) noexcept
+{
+    return (lhs.command == rhs.command) && (lhs.arg1 == rhs.arg1) && (lhs.arg2 == rhs.arg2);
+}
+
 using DeviceResponse = std::variant<QByteArray, DataTypes::BitStringStruct,   //
     DataTypes::GeneralResponseStruct, DataTypes::FloatStruct, S2::FileStruct, //
 #ifdef Q_OS_LINUX
