@@ -118,6 +118,7 @@ void AsyncConnection::writeCommand(Commands cmd, const QVariantList &list)
 void AsyncConnection::responseHandle(const Interface::DeviceResponse &resp)
 {
     std::visit([this](auto &&var) { emit response(var); }, resp);
+    emit queueSizeChanged(m_queue.size());
 }
 
 void AsyncConnection::setToQueue(CommandStruct &&cmd)

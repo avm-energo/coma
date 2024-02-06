@@ -93,7 +93,8 @@ public:
 
     void pop()
     {
-        m_unique.erase(std::ref(front()));
+        [[maybe_unused]] auto result = m_unique.erase(std::ref(m_data.front()));
+        assert(result && "Not found value");
         m_data.pop();
     }
 
