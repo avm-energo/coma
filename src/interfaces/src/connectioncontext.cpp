@@ -81,7 +81,7 @@ bool ConnectionContext::run(AsyncConnection *connection)
     QObject::connect(m_executor, &DefaultQueryExecutor::responseSend, //
         connection, &AsyncConnection::responseHandle, Qt::DirectConnection);
     QObject::connect(m_iface, &BaseInterface::stateChanged, connection, //
-        &AsyncConnection::stateChanged, Qt::QueuedConnection);
+        &AsyncConnection::setState, Qt::QueuedConnection);
     // Обновление описания протокола
     QObject::connect(connection, &AsyncConnection::protocolSettingsUpdated, //
         m_executor, &DefaultQueryExecutor::receiveProtocolDescription, Qt::QueuedConnection);

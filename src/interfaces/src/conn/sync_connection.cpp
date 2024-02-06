@@ -1,6 +1,7 @@
 #include "interfaces/conn/sync_connection.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <gen/std_ext.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/async_connection.h>
@@ -13,6 +14,22 @@ SyncConnection::SyncConnection(AsyncConnection *connection) noexcept
 {
     m_timeoutTimer->setInterval(MAINTIMEOUT);
     connect(m_timeoutTimer, &QTimer::timeout, this, &SyncConnection::timeout);
+}
+
+void SyncConnection::eventloop() noexcept
+{
+    m_timeoutTimer->start();
+    while (m_busy)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        StdFunc::Wait();
+    }
+}
+
+void SyncConnection::reset() noexcept
+{
+    m_busy = true;
+    m_timeout = false;
 }
 
 void SyncConnection::resultReady(const DataTypes::BlockStruct &result)
@@ -42,10 +59,28 @@ void SyncConnection::timeout()
     m_timeout = true;
 }
 
+Error::Msg SyncConnection::reqBSI()
+{
+    reset();
+    int count = 0;
+    auto conn = m_connection->connection(this, [&, &busy = m_busy](const DataTypes::BitStringStruct &bs) {
+        if (bs.sigAdr >= addr::bsiStartReg && bs.sigAdr < addr::bsiStartReg + addr::bsiCountRegs)
+            ++count;
+        if (count == addr::bsiCountRegs)
+            busy = false;
+    });
+    m_connection->reqBSI();
+    eventloop();
+    QObject::disconnect(conn);
+    if (m_timeout)
+        return Error::Msg::Timeout;
+    else
+        return Error::Msg::NoError;
+}
+
 bool SyncConnection::supportBSIExt()
 {
-    m_busy = true;
-    m_timeout = false;
+    reset();
     bool status = false;
     auto connBitString = m_connection->connection(this, [&, &busy = m_busy](const DataTypes::BitStringStruct &bs) {
         if (bs.sigAdr != addr::bsiExtStartReg)
@@ -62,13 +97,8 @@ bool SyncConnection::supportBSIExt()
         }
     });
 
-    m_timeoutTimer->start();
     m_connection->reqBSIExt();
-    while (m_busy)
-    {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-        StdFunc::Wait();
-    }
+    eventloop();
     QObject::disconnect(connBitString);
     QObject::disconnect(connError);
     return status;
@@ -77,8 +107,7 @@ bool SyncConnection::supportBSIExt()
 Error::Msg SyncConnection::reqBlockSync(
     quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize)
 {
-    m_busy = true;
-    m_timeout = false;
+    reset();
     auto conn = m_connection->connection(this, &SyncConnection::resultReady);
     QMap<DataTypes::DataBlockTypes, Commands> blockmap;
     blockmap[DataTypes::DataBlockTypes::BacBlock] = Commands::C_ReqTuningCoef;
@@ -87,12 +116,7 @@ Error::Msg SyncConnection::reqBlockSync(
 
     Q_ASSERT(blockmap.contains(blocktype));
     m_connection->writeCommand(blockmap.value(blocktype), blocknum);
-
-    m_timeoutTimer->start();
-    while (m_busy)
-    {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    }
+    eventloop();
     QObject::disconnect(conn);
 
     quint32 resultsize = m_byteArrayResult.size();
@@ -109,18 +133,12 @@ Error::Msg SyncConnection::writeBlockSync(
     bs.ID = blocknum;
     bs.data.resize(blocksize);
     memcpy(&bs.data.data()[0], block, blocksize);
-    m_busy = true;
-    m_timeout = false;
+    reset();
     if (blocktype == DataTypes::DataBlockTypes::BacBlock)
     {
         auto conn = m_connection->connection(this, &SyncConnection::responseReceived);
         m_connection->writeCommand(Commands::C_WriteTuningCoef, QVariant::fromValue(bs));
-        m_timeoutTimer->start();
-        while (m_busy)
-        {
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-            StdFunc::Wait();
-        }
+        eventloop();
         QObject::disconnect(conn);
         if (m_timeout)
             return Error::Msg::Timeout;
@@ -135,16 +153,10 @@ Error::Msg SyncConnection::writeBlockSync(
 
 Error::Msg SyncConnection::writeFileSync(S2::FilesEnum filenum, const QByteArray &ba)
 {
-    m_busy = true;
-    m_timeout = false;
+    reset();
     auto conn = m_connection->connection(this, &SyncConnection::responseReceived);
     m_connection->writeFile(quint32(filenum), ba);
-    m_timeoutTimer->start();
-    while (m_busy)
-    {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-        StdFunc::Wait();
-    }
+    eventloop();
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;
@@ -158,16 +170,10 @@ Error::Msg SyncConnection::writeConfigurationSync(const QByteArray &ba)
 
 Error::Msg SyncConnection::readS2FileSync(S2::FilesEnum filenum)
 {
-    m_busy = true;
-    m_timeout = false;
+    reset();
     auto conn = m_connection->connection(this, [=](const QList<S2::DataItem> &) { m_busy = false; });
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::DefaultS2);
-    m_timeoutTimer->start();
-    while (m_busy)
-    {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-        StdFunc::Wait();
-    }
+    eventloop();
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;
@@ -177,16 +183,10 @@ Error::Msg SyncConnection::readS2FileSync(S2::FilesEnum filenum)
 
 Error::Msg SyncConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
 {
-    m_busy = true;
-    m_timeout = false;
+    reset();
     auto conn = m_connection->connection(this, &SyncConnection::fileReceived);
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::Binary);
-    m_timeoutTimer->start();
-    while (m_busy)
-    {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-        StdFunc::Wait();
-    }
+    eventloop();
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;
@@ -197,8 +197,7 @@ Error::Msg SyncConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
 Error::Msg SyncConnection::reqTimeSync(void *block, quint32 blocksize)
 {
     Q_ASSERT(blocksize == sizeof(timespec) || blocksize == sizeof(DataTypes::BitStringStruct));
-    m_busy = true;
-    m_timeout = false;
+    reset();
     QMetaObject::Connection conn;
     if (blocksize == sizeof(DataTypes::BitStringStruct))
     {
@@ -216,13 +215,8 @@ Error::Msg SyncConnection::reqTimeSync(void *block, quint32 blocksize)
         });
     }
 #endif
-    m_timeoutTimer->start();
     m_connection->reqTime();
-    while (m_busy)
-    {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-        StdFunc::Wait();
-    }
+    eventloop();
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;

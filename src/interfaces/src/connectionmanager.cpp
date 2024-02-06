@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <gen/std_ext.h>
+#include <interfaces/conn/sync_connection.h>
 #include <interfaces/exec/query_executor_fabric.h>
 #include <interfaces/ifaces/ethernet.h>
 #include <interfaces/ifaces/serialport.h>
@@ -41,16 +42,19 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
             [this](const UsbHidSettings &settings) {
                 auto interface = new UsbHidPort(settings);
                 auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->getQueue(), settings);
+                m_currentConnection->setInterfaceType(IfaceType::USB);
                 m_context.init(interface, executor, Strategy::Sync, Qt::DirectConnection);
             },
             [this](const SerialPortSettings &settings) {
                 auto interface = new SerialPort(settings);
                 auto executor = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->getQueue(), settings);
+                m_currentConnection->setInterfaceType(IfaceType::RS485);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const IEC104Settings &settings) {
                 auto interface = new Ethernet(settings);
                 auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->getQueue(), settings);
+                m_currentConnection->setInterfaceType(IfaceType::Ethernet);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [](const EmulatorSettings &settings) {
@@ -76,6 +80,13 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
     {
         m_currentConnection->deleteLater();
         m_currentConnection = nullptr;
+    }
+    else
+    {
+        SyncConnection sync { m_currentConnection };
+        auto status = sync.reqBSI();
+        if (status != Error::Msg::NoError)
+            breakConnection();
     }
     return m_currentConnection;
 }
@@ -142,7 +153,6 @@ void ConnectionManager::handleQueryExecutorTimeout()
         QString errMsg("Превышено время ожидания блока BSI. Disconnect...");
         qCritical() << errMsg;
         emit connectFailed(errMsg);
-        breakConnection();
     }
     if (m_timeoutCounter > m_timeoutMax && !m_isReconnectOccurred)
         reconnect();
@@ -156,7 +166,7 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
         if (m_isInitialBSIRequest)
         {
             m_isInitialBSIRequest = false;
-            emit connectSuccesfull();
+            // emit connectSuccesfull();
         }
         else if (m_isReconnectOccurred)
         {

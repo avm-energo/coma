@@ -118,6 +118,27 @@ struct CommandStruct
     QVariant arg2; // reqFile: format, reqStartup: sigCount, WriteFile: &bytearray, WriteCommand: value
 };
 
+inline QString stateToString(State state) noexcept
+{
+    switch (state)
+    {
+    case State::Connect:
+        return "Connection";
+        break;
+    case State::Disconnect:
+        return "Disconnected";
+        break;
+    case State::Reconnect:
+        return "TryToReconnect";
+        break;
+    case State::Run:
+        return "Connected";
+        break;
+    default:
+        return "Undefined";
+    }
+}
+
 using DeviceResponse = std::variant<QByteArray, DataTypes::BitStringStruct,   //
     DataTypes::GeneralResponseStruct, DataTypes::FloatStruct, S2::FileStruct, //
 #ifdef Q_OS_LINUX

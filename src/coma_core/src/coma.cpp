@@ -348,7 +348,7 @@ void Coma::newTimers()
 
 void Coma::prepare()
 {
-    StdFunc::Wait(20); // Подождём, пока BSI долетит до Board
+    StdFunc::Wait(40); // Подождём, пока BSI долетит до Board
     auto &board = Board::GetInstance();
     // disconnect(&board, &Board::readyRead, this, &Coma::prepare);
     EMessageBox::information(this, "Установлена связь с " + board.moduleName());
@@ -512,6 +512,7 @@ void Coma::initConnection(const ConnectStruct &st)
                 [=](const std::size_t size) { queueSizeMsg->setText(QString("Queue size: %1").arg(size)); });
         }
         initInterfaceConnection(currentConnection);
+        prepare();
     }
     QApplication::restoreOverrideCursor();
 }
