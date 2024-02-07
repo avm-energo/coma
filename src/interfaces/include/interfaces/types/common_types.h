@@ -118,7 +118,7 @@ struct CommandStruct
     QVariant arg2; // reqFile: format, reqStartup: sigCount, WriteFile: &bytearray, WriteCommand: value
 };
 
-inline QString stateToString(State state) noexcept
+inline QString stateToString(const State state) noexcept
 {
     switch (state)
     {

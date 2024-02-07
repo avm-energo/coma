@@ -28,7 +28,7 @@ public:
     virtual ~Coma();
 
     void go();
-    void connectSB();
+    void connectSetupBar();
     void setupMenubar();
     QWidget *least();
     static QPoint ComaCenter();
@@ -53,7 +53,8 @@ private slots:
     void showReconnectDialog();
 
 private:
-    UniquePointer<Interface::ConnectionManager> connectionManager;
+    Interface::AsyncConnection *m_currentConnection;
+    Interface::ConnectionManager *m_connectionManager;
     UniquePointer<Module> module;
     UniquePointer<S2DataManager> s2dataManager;
     UniquePointer<S2RequestService> s2requestService;
@@ -66,7 +67,7 @@ private:
     AppConfiguration mAppConfig;
     UniquePointer<DialogManager> mDlgManager;
 
-    void initInterfaceConnection(AsyncConnection *conn);
+    void initInterfaceConnection();
     void loadSettings();
     void saveSettings();
     void setProgressBarSize(int prbnum, int size);

@@ -1,6 +1,9 @@
 #include "xmlmoduleparser.h"
 
-#include <gen/stdfunc.h>
+//#include "../../module/board.h"
+//#include <gen/stdfunc.h>
+
+#include <interfaces/conn/active_connection.h>
 
 Xml::ModuleParser::ModuleParser(const quint16 typeB, const quint16 typeM, const bool check, QObject *parent)
     : BaseParser(parent)
@@ -52,8 +55,10 @@ bool Xml::ModuleParser::isCorrectModuleVersion(const QDomElement &moduleNode)
         auto version = versionNode.text();
         if (!version.isEmpty())
         {
-            auto &sInfoBlock = Board::GetInstance().baseSerialInfo();
-            return !(sInfoBlock.isOutdated(StdFunc::StrToVer(version)));
+            // auto &sInfoBlock = Board::GetInstance().baseSerialInfo();
+            // return !(sInfoBlock.isOutdated(StdFunc::StrToVer(version)));
+            /// TODO: get back version checking
+            return true;
         }
     }
     return false;
@@ -226,7 +231,7 @@ void Xml::ModuleParser::parseMeasJournal(const QDomNode &jourNode)
 /// \brief Функция для парсинга конфигурации интерфейса, по которому подключен модуль.
 void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 {
-    auto ifaceType = Board::GetInstance().interfaceType();
+    auto ifaceType = Interface::ActiveConnection::async()->getInterfaceType();
     switch (ifaceType)
     {
     case Interface::IfaceType::USB:

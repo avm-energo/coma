@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../module/board.h"
 #include "../../module/modulesettings.h"
 #include "xmlbaseparser.h"
 
