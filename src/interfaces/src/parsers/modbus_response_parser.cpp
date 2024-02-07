@@ -1,6 +1,7 @@
 #include "interfaces/parsers/modbus_response_parser.h"
 
 #include <QDebug>
+#include <bitset>
 #include <gen/utils/crc16.h>
 #include <interfaces/utils/modbus_convertations.h>
 

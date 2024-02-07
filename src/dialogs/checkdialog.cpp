@@ -6,6 +6,7 @@
 
 #include <QGroupBox>
 #include <QTabWidget>
+#include <bitset>
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>

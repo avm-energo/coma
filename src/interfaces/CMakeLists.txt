@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 project(interfaces LANGUAGES CXX)
 
 find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network SerialPort
+  COMPONENTS Network SerialPort
   REQUIRED)
 
 set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/interfaces")
@@ -101,11 +101,9 @@ endif()
 
 # Linking dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::SerialPort
-  Qt${QT_VERSION_MAJOR}::Widgets
-  s2 settings tl::expected
+  s2 tl::expected
 )
 
 if(UNIX)

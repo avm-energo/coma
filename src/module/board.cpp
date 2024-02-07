@@ -9,24 +9,9 @@
 
 using namespace Interface;
 
-bool isKnownModule(quint16 mtypeb, quint16 mtypem)
-{
-    if (Modules::BaseBoards.contains(mtypeb))
-    {
-        if (mtypeb != Modules::MTM_00)
-        {
-            return Modules::MezzanineBoards.contains(mtypem);
-        }
-        return true;
-    }
-    return false;
-}
-
 Board::Board(Singleton::token)
 {
     m_interfaceType = Interface::IfaceType::Unknown;
-    m_connectionState = ConnectionState::Closed;
-    m_boardType = Types::None;
 }
 
 quint16 Board::typeB() const
@@ -45,21 +30,6 @@ quint16 Board::type() const
     const quint16 Mtypeb = typeB() << 8;
     return quint16(Mtypeb + Mtypem);
 }
-
-// quint16 Board::type(Board::Types type) const
-//{
-//    switch (type)
-//    {
-//    case Base:
-//        return typeB();
-//    case Mezzanine:
-//        return typeM();
-//    case None:
-//        return 0;
-//    default:
-//        return Board::type();
-//    }
-//}
 
 QString Board::moduleName() const
 {
@@ -101,23 +71,6 @@ void Board::setInterfaceType(Interface::IfaceType iface)
     emit interfaceTypeChanged(iface);
 }
 
-Board::ConnectionState Board::connectionState() const
-{
-    return m_connectionState;
-}
-
-void Board::setConnectionState(ConnectionState connectionState)
-{
-    // Q_ASSERT(connectionState != m_connectionState);
-    if (m_connectionState == connectionState && m_connectionState == ConnectionState::Connected)
-        qDebug() << "Try to connect while still connected";
-    //        Q_ASSERT("Try to connect while still connected");
-    if (connectionState == m_connectionState)
-        return;
-    m_connectionState = connectionState;
-    emit connectionStateChanged(connectionState);
-}
-
 void Board::update(const DataTypes::BitStringStruct &bs)
 {
     // Only bsi block
@@ -154,8 +107,6 @@ void Board::update(const DataTypes::BitStringStruct &bs)
 void Board::reset()
 {
     m_interfaceType = Interface::IfaceType::Unknown;
-    m_connectionState = ConnectionState::Closed;
-    m_boardType = Types::None;
     m_startupInfoBlock = {};
     m_startupInfoBlockExt = {};
 }
@@ -192,30 +143,3 @@ void Board::updateExt(const DataTypes::BitStringStruct &bs)
         m_updateCounterExt = 0;
     }
 }
-
-bool Board::isUSIO(Modules::BaseBoard &typeB, Modules::MezzanineBoard &typeM)
-{
-    return ((typeB > 0x1F) && (typeB < 0x40) && (typeM > 0x1F) && (typeM < 0x40));
-}
-
-Board::Types Board::boardType() const
-{
-    return m_boardType;
-}
-
-void Board::setBoardType(const Types &boardType)
-{
-    m_boardType = boardType;
-    emit boardTypeChanged(boardType);
-}
-
-// Board::DeviceType Board::deviceType() const
-//{
-//    return m_deviceType;
-//}
-
-// void Board::setDeviceType(const DeviceType &deviceType)
-//{
-//    m_deviceType = deviceType;
-//    emit deviceTypeChanged(deviceType);
-//}

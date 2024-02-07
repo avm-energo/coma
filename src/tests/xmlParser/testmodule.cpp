@@ -127,7 +127,7 @@ void TestModule::checkA284USB()
 void TestModule::checkA284Eth()
 {
     createInterfaceContext(Interface::IfaceType::Ethernet);
-    Board::GetInstance().setInterfaceType(Interface::IfaceType::Ethernet);
+    // Board::GetInstance().setInterfaceType(Interface::IfaceType::Ethernet);
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings(storage, *s2Manager));
@@ -136,7 +136,7 @@ void TestModule::checkA284Eth()
 void TestModule::checkA284Modbus()
 {
     createInterfaceContext(Interface::IfaceType::RS485);
-    Board::GetInstance().setInterfaceType(Interface::IfaceType::RS485);
+    // Board::GetInstance().setInterfaceType(Interface::IfaceType::RS485);
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings(storage, *s2Manager));

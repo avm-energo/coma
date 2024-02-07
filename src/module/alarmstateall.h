@@ -2,6 +2,8 @@
 
 #include "../module/basealarm.h"
 
+#include <bitset>
+
 constexpr quint32 BSIWARNMASK = 0x00005F55;  ///< Warning alarms bit mask.
 constexpr quint32 BSIALARMMASK = 0x000020AA; ///< Critical alarms bit mask.
 

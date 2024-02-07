@@ -25,10 +25,10 @@ void AlarmStateAll::update(quint32 health)
         bool state = healthSet.test(i);
         if (state)
         {
-            if (state != m_alarmFlags.test(i))
-                color = Qt::yellow;
-            else
+            if (m_alarmFlags.test(i))
                 color = Qt::red;
+            else
+                color = Qt::yellow;
         }
         auto circle = WDFunc::NewCircle(color, circleRadius);
         WDFunc::SetLBLImage(this, QString::number(i), &circle);

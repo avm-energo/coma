@@ -1,5 +1,6 @@
 #include "interfaces_test_obj.h"
 
+#include <bitset>
 #include <gen/datatypes.h>
 #include <gen/stdfunc.h>
 #include <interfaces/utils/modbus_convertations.h>
