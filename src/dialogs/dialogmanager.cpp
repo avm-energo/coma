@@ -7,6 +7,7 @@ DialogManager::DialogManager(const ModuleSettings &settings, //
     , m_dlgCreator(new DialogCreator(settings, Board::GetInstance(), s2DataManager, s2ReqService, this))
     , m_workspace(new QStackedWidget(this))
     , m_sidebar(new QListWidget(this))
+    , m_reqTimer(new QTimer(this))
 {
     // Init settings for sidebar and main workspace.
     auto sizePoliсy = m_workspace->sizePolicy();
@@ -16,6 +17,9 @@ DialogManager::DialogManager(const ModuleSettings &settings, //
     sizePoliсy.setRetainSizeWhenHidden(true);
     m_sidebar->setSizePolicy(sizePoliсy);
     connect(m_sidebar.get(), &QListWidget::currentRowChanged, m_workspace.get(), &QStackedWidget::setCurrentIndex);
+    /// TODO: Вынести интервал запроса в настройки
+    m_reqTimer->setInterval(1000);
+    connect(m_reqTimer.get(), &QTimer::timeout, this, &DialogManager::reqUpdate);
     hideUI();
 }
 
@@ -39,6 +43,7 @@ QPair<QListWidget *, QStackedWidget *> DialogManager::getUI()
 void DialogManager::dialogChanged(int newIndex)
 {
     auto &dialogs = m_dlgCreator->getDialogs();
+    // Индекс -1 норма, когда удаляются диалоги
     if (newIndex >= 0 && newIndex < dialogs.size())
     {
         auto oldDialog = dialogs[m_currentDialogIndex];
@@ -48,9 +53,6 @@ void DialogManager::dialogChanged(int newIndex)
         newDialog->setEnabled(true);
         m_currentDialogIndex = newIndex;
     }
-    // Индекс -1 норма, когда удаляются диалоги
-    // else
-    //    qWarning() << "Неправильный индекс диалога: " << newIndex;
 }
 
 void DialogManager::reqUpdate()
@@ -80,10 +82,12 @@ void DialogManager::setupUI(const AppConfiguration appCfg, const QSize size)
     m_sidebar->setMinimumWidth(size.width() / 6);
     m_sidebar->setMaximumWidth(size.width() / 5);
     showUI();
+    m_reqTimer->start();
 }
 
 void DialogManager::clearDialogs()
 {
+    m_reqTimer->stop();
     hideUI();
     while (m_workspace->count())
     {

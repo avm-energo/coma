@@ -24,7 +24,7 @@ class Coma : public QMainWindow
     Q_OBJECT
 
 public:
-    Coma(const AppConfiguration &appCfg, QWidget *parent = nullptr);
+    explicit Coma(const AppConfiguration appCfg, QWidget *parent = nullptr);
     virtual ~Coma();
 
     void go();
@@ -53,26 +53,24 @@ private slots:
     void showReconnectDialog();
 
 private:
+    AppConfiguration m_appConfig;
     Interface::AsyncConnection *m_currentConnection;
     Interface::ConnectionManager *m_connectionManager;
     UniquePointer<Module> module;
     UniquePointer<S2DataManager> s2dataManager;
     UniquePointer<S2RequestService> s2requestService;
+    UniquePointer<DialogManager> m_dlgManager;
 
-    QTimer *BdaTimer;
     AlarmWidget *AlarmW;
     OscManager oscManager;
     XmlEditor *editor;
     File::Vector fileVector;
-    AppConfiguration mAppConfig;
-    UniquePointer<DialogManager> mDlgManager;
 
     void initInterfaceConnection();
     void loadSettings();
     void saveSettings();
     void setProgressBarSize(int prbnum, int size);
     void setProgressBarCount(int prbnum, int count);
-    void newTimers();
     void setupUI();
     void prepare();
     QToolBar *createToolBar();

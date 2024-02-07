@@ -6,6 +6,7 @@
 #include <QListWidget>
 #include <QPair>
 #include <QStackedWidget>
+#include <QTimer>
 
 /// \brief Class for managing dialogs.
 class DialogManager : public UDialog
@@ -16,6 +17,7 @@ private:
     UniquePointer<DialogCreator> m_dlgCreator;
     UniquePointer<QStackedWidget> m_workspace;
     UniquePointer<QListWidget> m_sidebar;
+    UniquePointer<QTimer> m_reqTimer;
 
     /// \brief Hiding sidebar and main workspace.
     void hideUI();

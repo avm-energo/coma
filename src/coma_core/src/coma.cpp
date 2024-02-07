@@ -71,16 +71,16 @@
 namespace Core
 {
 
-Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
+Coma::Coma(const AppConfiguration appCfg, QWidget *parent)
     : QMainWindow(parent)
+    , m_appConfig(appCfg)
     , m_currentConnection(nullptr)
     , m_connectionManager(new ConnectionManager(this))
     , s2dataManager(new S2DataManager(this))
     , s2requestService(new S2RequestService(this))
-    , editor(nullptr)
-    , mAppConfig(appCfg)
-    , mDlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), //
+    , m_dlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), //
           *s2dataManager, *s2requestService, this))
+    , editor(nullptr)
 {
     // connections
     connect(s2requestService.get(), &S2RequestService::response, //
@@ -175,7 +175,7 @@ QWidget *Coma::least()
     auto lyout = new QVBoxLayout;
     auto inlyout = new QHBoxLayout;
     lyout->addLayout(inlyout);
-    auto workspace = mDlgManager->getUI();
+    auto workspace = m_dlgManager->getUI();
     inlyout->addWidget(workspace.first);
     inlyout->addWidget(workspace.second);
 
@@ -211,7 +211,7 @@ void Coma::setupMenubar()
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Конвертация файлов переключений", this, &Coma::loadSwjPackConvertor);
-    if (mAppConfig == AppConfiguration::Debug)
+    if (m_appConfig == AppConfiguration::Debug)
         menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
     menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
     menubar->addMenu(menu);
@@ -317,12 +317,6 @@ void Coma::showAboutDialog()
     aboutDialog->exec();
 }
 
-void Coma::newTimers()
-{
-    BdaTimer = new QTimer(this);
-    BdaTimer->setInterval(1000);
-}
-
 void Coma::go()
 {
     // Load settings before anything
@@ -333,7 +327,6 @@ void Coma::go()
     if (!dir.exists())
         dir.mkpath(".");
     qInfo("=== Log started ===\n");
-    newTimers();
     loadSettings();
     setStatusBar(WDFunc::NewSB(this));
     setupUI();
@@ -425,7 +418,7 @@ void Coma::initInterfaceConnection()
     // Update global storage for current connection
     ActiveConnection::update(ActiveConnection::AsyncConnectionPtr { m_currentConnection });
     m_currentConnection->connection(this, &Coma::update);
-    mDlgManager->updateConnection(m_currentConnection);
+    m_dlgManager->updateConnection(m_currentConnection);
     s2requestService->updateConnection(m_currentConnection);
     connectSetupBar();
     m_currentConnection->reqBSI();
@@ -468,7 +461,7 @@ void Coma::connectSetupBar()
         msgConnectionImage->setPixmap(pixmap);
 
         // Показываем размер очереди только в Наладке
-        if (mAppConfig == AppConfiguration::Debug && msgQueueSize)
+        if (m_appConfig == AppConfiguration::Debug && msgQueueSize)
         {
             connect(m_currentConnection, &Interface::AsyncConnection::queueSizeChanged, this, //
                 [=](const std::size_t size) { msgQueueSize->setText(QString("Queue size: %1").arg(size)); });
@@ -490,7 +483,6 @@ void Coma::prepare()
     if (board.noRegPars())
         qCritical() << Error::Msg::NoTuneError;
 
-    BdaTimer->start();
     auto msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
     msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
     auto msgModel = statusBar()->findChild<QLabel *>("Model");
@@ -515,19 +507,17 @@ void Coma::prepareDialogs()
             ActiveConnection::async()->updateProtocol(storage.getProtocolDescription());
     }
     AlarmW->configure();
-    mDlgManager->setupUI(mAppConfig, size());
+    m_dlgManager->setupUI(m_appConfig, size());
     // Запрашиваем s2 конфигурацию от модуля
     s2requestService->request(S2::FilesEnum::Config, true);
-    connect(BdaTimer, &QTimer::timeout, mDlgManager.get(), &DialogManager::reqUpdate);
 }
 
 void Coma::disconnectAndClear()
 {
     if (m_currentConnection && (m_currentConnection->getConnectionState() != Interface::State::Disconnect))
     {
-        BdaTimer->stop();
         AlarmW->clear();
-        mDlgManager->clearDialogs();
+        m_dlgManager->clearDialogs();
         ConfigStorage::GetInstance().clear();
         s2dataManager->clear();
         Board::GetInstance().reset();
