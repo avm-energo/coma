@@ -1,22 +1,24 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(device LANGUAGES CXX)
+project(alarms LANGUAGES CXX)
 
-set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/device")
+set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/alarms")
 set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 set(files_h
-    "${INCLUDE_PATH}/bsi.h"
-    "${INCLUDE_PATH}/configstorage.h"
-    "${INCLUDE_PATH}/current_device.h"
-    "${INCLUDE_PATH}/device_list.h"
-    "${INCLUDE_PATH}/modulesettings.h"
+    "${INCLUDE_PATH}/alarmbutton.h"
+    "${INCLUDE_PATH}/alarmstateall.h"
+    "${INCLUDE_PATH}/alarmwidget.h"
+    "${INCLUDE_PATH}/basealarm.h"
+    "${INCLUDE_PATH}/modulealarm.h"
 )
 
 set(files_cpp
-    "${SRC_PATH}/configstorage.cpp"
-    "${SRC_PATH}/current_device.cpp"
-    "${SRC_PATH}/modulesettings.cpp"
+    "${SRC_PATH}/alarmbutton.cpp"
+    "${SRC_PATH}/alarmstateall.cpp"
+    "${SRC_PATH}/alarmwidget.cpp"
+    "${SRC_PATH}/basealarm.cpp"
+    "${SRC_PATH}/modulealarm.cpp"
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
@@ -33,4 +35,4 @@ else()
 endif()
 
 # Linking dependencies
-target_link_libraries(${PROJECT_NAME} PUBLIC interfaces)
+target_link_libraries(${PROJECT_NAME} PUBLIC widgets)

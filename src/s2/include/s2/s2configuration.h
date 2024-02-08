@@ -102,11 +102,8 @@ public:
 
     /// \brief Конвертация хранимых данных согласно формату S2 в массив байт.
     [[nodiscard]] QByteArray toByteArray() const;
-    /// \brief Парсинг бинарного файла согласно формату S2 в хранилище данных.
-    /// \param rawData[in] - полученный бинарный файл.
-    // bool updateByRawData(const QByteArray &rawData);
-
-    void merge(const Configuration &rhs);
+    /// \brief Объединяет текущую конфигурацию с другой.
+    void merge(const Configuration &other);
 
     /// \brief Сравнение двух конфигураций
     /// \returns Возвращает вектор с ID элементов, которые отличаются в

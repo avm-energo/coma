@@ -1,9 +1,13 @@
 #pragma once
 
-#include "../module/alarmstateall.h"
-#include "../module/modulealarm.h"
-
 #include <QWidget>
+#include <alarms/alarmstateall.h>
+#include <alarms/modulealarm.h>
+
+namespace Device
+{
+class CurrentDevice;
+}
 
 /// \brief Alarm widget with buttons for alarms dialogs.
 /// \see AlarmStateAll, ModuleAlarm.
@@ -19,7 +23,7 @@ private:
 
 public:
     explicit AlarmWidget(QWidget *parent = nullptr);
-    void configure();
+    void configure(Device::CurrentDevice &device);
     void clear();
 
 public slots:

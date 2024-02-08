@@ -1,4 +1,4 @@
-#include <gen/datatypes.h>
+#include <gen/integers.h>
 
 namespace Device
 {
@@ -21,31 +21,6 @@ struct BlockStartupInfo final
     u32 SerialNum;  ///< Серийный номер устройства.
     u32 Cfcrc;      ///< Контрольная сумма регулировочных коэффициентов.
     u32 Hth;        ///< Состояние устройства.
-};
-
-/// \brief Класс для работы с блоком BSI.
-class BsiHolder final : public QObject
-{
-private:
-    BlockStartupInfo m_bsi;
-
-public:
-    /// \brief Default c-tor.
-    explicit BsiHolder(QObject *parent = nullptr) noexcept;
-
-    /// \brief Возвращает ссылку на хранимый блок BSI.
-    const BlockStartupInfo &getBSI() const noexcept;
-    /// \brief Возвращает тип устройства из блока BSI.
-    u16 getDeviceType() const noexcept;
-    /// \brief Возвращает имя устройства.
-    QString getDeviceName() const noexcept;
-    /// \brief Возвращает UID устройства из блока BSI.
-    QString getUID() const noexcept;
-
-    bool isOutdatedFirmware(const u32 configVersion) const noexcept;
-
-public slots:
-    void update(const DataTypes::BitStringStruct &value);
 };
 
 } // namespace Device

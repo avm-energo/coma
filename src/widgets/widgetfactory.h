@@ -1,11 +1,12 @@
 #pragma once
-#include "../module/configstorage.h"
+
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
 #include "gasdensitywidget.h"
 
 #include <QStandardItemModel>
 #include <bitset>
+#include <device/configstorage.h>
 #include <gen/std_ext.h>
 #include <s2/delegate_common.h>
 #include <s2/s2configuration.h>

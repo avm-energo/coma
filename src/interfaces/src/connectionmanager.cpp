@@ -17,7 +17,7 @@ ConnectionManager::ConnectionManager(QObject *parent)
     , m_silentTimer(new QTimer(this))
     , m_reconnectMode(ReconnectMode::Loud)
     , m_isReconnectOccurred(false)
-    , m_isInitialBSIRequest(true)
+    /*, m_isInitialBSIRequest(true) */
     , m_timeoutCounter(0)
     , m_timeoutMax(5)
     , m_errorCounter(0)
@@ -81,13 +81,13 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
         m_currentConnection->deleteLater();
         m_currentConnection = nullptr;
     }
-    else
-    {
-        SyncConnection sync { m_currentConnection };
-        auto status = sync.reqBSI();
-        if (status != Error::Msg::NoError)
-            breakConnection();
-    }
+    //    else
+    //    {
+    //        SyncConnection sync { m_currentConnection };
+    //        auto status = sync.reqBSI();
+    //        if (status != Error::Msg::NoError)
+    //            breakConnection();
+    //    }
     return m_currentConnection;
 }
 
@@ -121,7 +121,6 @@ void ConnectionManager::breakConnection()
 {
     m_context.reset();
     m_currentConnection = nullptr;
-    m_isInitialBSIRequest = true;
 }
 
 void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
@@ -135,12 +134,9 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
             reconnect();
         break;
     case InterfaceError::OpenError:
-        if (m_isInitialBSIRequest)
-        {
-            QString errMsg("Произошла ошибка открытия интерфейса. Disconnect...");
-            qCritical() << errMsg;
-            emit connectFailed(errMsg);
-        }
+        QString errMsg("Произошла ошибка открытия интерфейса. Disconnect...");
+        qCritical() << errMsg;
+        emit connectFailed(errMsg);
         break;
     }
 }
@@ -148,12 +144,6 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
 void ConnectionManager::handleQueryExecutorTimeout()
 {
     ++m_timeoutCounter;
-    if (m_isInitialBSIRequest)
-    {
-        QString errMsg("Превышено время ожидания блока BSI. Disconnect...");
-        qCritical() << errMsg;
-        emit connectFailed(errMsg);
-    }
     if (m_timeoutCounter > m_timeoutMax && !m_isReconnectOccurred)
         reconnect();
 }
@@ -163,12 +153,7 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
     // fast checking
     if (data.sigAdr == addr::bsiStartReg)
     {
-        if (m_isInitialBSIRequest)
-        {
-            m_isInitialBSIRequest = false;
-            // emit connectSuccesfull();
-        }
-        else if (m_isReconnectOccurred)
+        if (m_isReconnectOccurred)
         {
             /// TODO: проверять BSI
             // при реконнекте отключить устройство и подключить другое -> что будет? (modbus same)

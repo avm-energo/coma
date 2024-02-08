@@ -145,10 +145,10 @@ QByteArray Configuration::toByteArray() const
     return m_util.convert(*this, std_ext::to_underlying(FilesEnum::Config));
 }
 
-void Configuration::merge(const Configuration &rhs)
+void Configuration::merge(const Configuration &other)
 {
     // Copying data from rhs container
-    auto rhs_data_copy { rhs.m_data };
+    auto rhs_data_copy { other.m_data };
     // Extract nodes from rhs_data_copy
     // and merge them to current container
     m_data.merge(rhs_data_copy);

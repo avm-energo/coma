@@ -1,4 +1,4 @@
-#include "basealarm.h"
+#include "alarms/basealarm.h"
 
 BaseAlarm::BaseAlarm(QWidget *parent) : UWidget(parent), m_normalColor(Qt::transparent), m_alarmColor(Qt::red)
 {

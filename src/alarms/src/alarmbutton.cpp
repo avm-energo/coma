@@ -1,4 +1,4 @@
-#include "alarmbutton.h"
+#include "alarms/alarmbutton.h"
 
 #include <QPainter>
 

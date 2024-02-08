@@ -1,11 +1,12 @@
-#include "alarmwidget.h"
+#include "alarms/alarmwidget.h"
 
-#include "../module/configstorage.h"
-#include "alarmbutton.h"
-#include "wd_func.h"
+#include "../../module/modules.h"
+#include "../../widgets/wd_func.h"
 
 #include <QDialogButtonBox>
 #include <QTimer>
+#include <alarms/alarmbutton.h>
+#include <device/current_device.h>
 #include <settings/user_settings.h>
 
 AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent), m_timer(new QTimer(this))
@@ -20,33 +21,36 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent), m_timer(new QTimer(
 }
 
 /// \brief Filling alarms in this alarm widget.
-void AlarmWidget::configure()
+void AlarmWidget::configure(Device::CurrentDevice &device)
 {
-    const static std::vector<std::pair<Modules::AlarmType, std::string_view>> alarmSettings {
-        { Modules::AlarmType::Info, "Информационная сигнализация" },       //
-        { Modules::AlarmType::Warning, "Предупредительная сигнализация" }, //
-        { Modules::AlarmType::Critical, "Аварийная сигнализация" }         //
+    const static std::vector<std::pair<ModuleTypes::AlarmType, std::string_view>> alarmSettings {
+        { ModuleTypes::AlarmType::Info, "Информационная сигнализация" },       //
+        { ModuleTypes::AlarmType::Warning, "Предупредительная сигнализация" }, //
+        { ModuleTypes::AlarmType::Critical, "Аварийная сигнализация" }         //
     };
 
     auto alarmStateAll = new AlarmStateAll();
     alarmStateAll->setupUI(AVM::HthToolTip);
+    QObject::connect(&device, &Device::CurrentDevice::healthChanged, alarmStateAll, &AlarmStateAll::update);
     addAlarm(alarmStateAll, "Состояние устройства");
-    const auto &alarmMap = ConfigStorage::GetInstance().getModuleSettings().getAlarms();
-
+    const auto &moduleSettings = device.getConfigStorage()->getModuleSettings();
+    const auto &alarmMap = moduleSettings.getAlarms();
+    const auto &sigMap = moduleSettings.getSignals();
     for (const auto &[type, title] : alarmSettings)
     {
         const auto &alarms = alarmMap.value(type);
         if (!alarms.isEmpty())
         {
             auto moduleAlarm = new ModuleAlarm(type, alarms);
+            moduleAlarm->followToData(sigMap);
             addAlarm(moduleAlarm, title.data());
         }
     }
 
-    auto &settings = Settings::UserSettings::GetInstance();
-    Settings::ScopedSettingsGroup _ { settings, "settings" };
-    updateAlarmInterval(settings.get<Settings::AlarmsInterval>());
-    updateAlarmOperation(settings.get<Settings::AlarmsEnabled>());
+    auto &userSettings = Settings::UserSettings::GetInstance();
+    Settings::ScopedSettingsGroup _ { userSettings, "settings" };
+    updateAlarmInterval(userSettings.get<Settings::AlarmsInterval>());
+    updateAlarmOperation(userSettings.get<Settings::AlarmsEnabled>());
 }
 
 /// \brief Adding a received alarm in list and creating a button for a received alarm.

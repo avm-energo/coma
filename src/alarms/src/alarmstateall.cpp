@@ -1,8 +1,7 @@
-#include "alarmstateall.h"
+#include "alarms/alarmstateall.h"
 
-#include "../widgets/wd_func.h"
-#include "board.h"
-#include "modules.h"
+#include "../../module/modules.h"
+#include "../../widgets/wd_func.h"
 
 #include <QBoxLayout>
 
@@ -59,6 +58,4 @@ void AlarmStateAll::setupUI(const QStringList &events)
     }
     mainLayout->addWidget(WDFunc::NewPB(this, "", "Ok", static_cast<QWidget *>(this), &QWidget::hide), 0);
     setLayout(mainLayout);
-    const auto &board = Board::GetInstance();
-    connect(&board, &Board::healthChanged, this, &AlarmStateAll::update);
 }

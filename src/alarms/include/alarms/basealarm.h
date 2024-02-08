@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../widgets/uwidget.h"
+#include "../../widgets/uwidget.h"
 
 constexpr int circleRadius = 15; ///< Indicator's circle radius.
 

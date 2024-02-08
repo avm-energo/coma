@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../module/basealarm.h"
-
+#include <alarms/basealarm.h>
 #include <bitset>
 
 constexpr quint32 BSIWARNMASK = 0x00005F55;  ///< Warning alarms bit mask.
