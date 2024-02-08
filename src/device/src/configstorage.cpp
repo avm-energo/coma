@@ -1,6 +1,6 @@
-#include "configstorage.h"
+#include "device/configstorage.h"
 
-ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent)
+ConfigStorage::ConfigStorage(QObject *parent) : QObject(parent)
 {
 }
 
@@ -48,11 +48,11 @@ void ConfigStorage::sectionDataReceive(const ModuleTypes::SGMap &sgmap, const QS
     m_settings.appendSection({ secHead, sgmap });
 }
 
-void ConfigStorage::alarmDataReceive(const Modules::AlarmType aType, const quint32 addr, //
+void ConfigStorage::alarmDataReceive(const ModuleTypes::AlarmType type, const quint32 addr, //
     const QString &desc, const QList<quint32> &highlights)
 {
-    m_settings.appendAlarm(aType, addr, desc);
-    m_settings.appendHighlight(aType, addr, highlights);
+    m_settings.appendAlarm(type, addr, desc);
+    m_settings.appendHighlight(type, addr, highlights);
 }
 
 void ConfigStorage::workJourDataReceive(const quint32 id, const QString &desc)

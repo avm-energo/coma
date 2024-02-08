@@ -33,9 +33,13 @@ public:
     /// \brief Default c-tor.
     explicit BsiHolder(QObject *parent = nullptr) noexcept;
 
+    /// \brief Возвращает ссылку на хранимый блок BSI.
     const BlockStartupInfo &getBSI() const noexcept;
+    /// \brief Возвращает тип устройства из блока BSI.
     u16 getDeviceType() const noexcept;
+    /// \brief Возвращает имя устройства.
     QString getDeviceName() const noexcept;
+    /// \brief Возвращает UID устройства из блока BSI.
     QString getUID() const noexcept;
 
     bool isOutdatedFirmware(const u32 configVersion) const noexcept;

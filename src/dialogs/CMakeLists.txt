@@ -6,7 +6,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Widgets Xml SerialPort Concurrent Svg
+  COMPONENTS Concurrent
   REQUIRED)
 
 file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
@@ -17,20 +17,14 @@ add_library(
   ${files_cpp} ${files_h})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-  interfaces
   oscillograms
   models
   module
   tune
   startup
   journals
-  Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Widgets
-  Qt${QT_VERSION_MAJOR}::Xml
-  Qt${QT_VERSION_MAJOR}::SerialPort
   Qt${QT_VERSION_MAJOR}::Concurrent
-  Qt${QT_VERSION_MAJOR}::Svg
-  qcustomplot)
+)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
 

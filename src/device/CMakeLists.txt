@@ -7,11 +7,17 @@ set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 set(files_h
     "${INCLUDE_PATH}/bsi.h"
+    "${INCLUDE_PATH}/configstorage.h"
+    "${INCLUDE_PATH}/current_device.h"
     "${INCLUDE_PATH}/device_list.h"
+    "${INCLUDE_PATH}/modulesettings.h"
 )
 
 set(files_cpp
     "${SRC_PATH}/bsi.cpp"
+    "${SRC_PATH}/configstorage.cpp"
+    "${SRC_PATH}/current_device.cpp"
+    "${SRC_PATH}/modulesettings.cpp"
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})

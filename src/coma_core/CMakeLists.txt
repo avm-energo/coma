@@ -1,7 +1,3 @@
-find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Widgets
-  REQUIRED)
-
 set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/coma_core")
 set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
@@ -21,8 +17,5 @@ target_include_directories(coma_core PUBLIC
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 # Linking libraries for current target
 target_link_libraries(coma_core PUBLIC
-  Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Widgets
-  gen s2 interfaces dialogs module
-  oscillograms xml comaresources
+  dialogs module xml comaresources comaversion
 )

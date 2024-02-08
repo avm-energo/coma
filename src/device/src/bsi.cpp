@@ -47,4 +47,9 @@ bool BsiHolder::isOutdatedFirmware(const u32 configVersion) const noexcept
     return m_bsi.Fwver < configVersion;
 }
 
+void BsiHolder::update(const DataTypes::BitStringStruct &value)
+{
+    Q_UNUSED(value);
+}
+
 } // namespace Device
