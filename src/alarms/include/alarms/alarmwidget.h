@@ -23,7 +23,7 @@ private:
 
 public:
     explicit AlarmWidget(QWidget *parent = nullptr);
-    void configure(Device::CurrentDevice &device);
+    void configure(Device::CurrentDevice *device);
     void clear();
 
 public slots:

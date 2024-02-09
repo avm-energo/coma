@@ -63,6 +63,10 @@ public:
     /// \brief Возвращает провайдер файлов текущего устройства.
     [[nodiscard]] FileProvider *getFileProvider() noexcept;
 
+    /// \brief Возвращает тип базовой платы устройства из блока BSI.
+    [[nodiscard]] u16 getBaseType() const noexcept;
+    /// \brief Возвращает тип мезонинной платы устройства из блока BSI.
+    [[nodiscard]] u16 getMezzType() const noexcept;
     /// \brief Возвращает тип устройства из блока BSI.
     [[nodiscard]] u16 getDeviceType() const noexcept;
     /// \brief Возвращает имя устройства.
@@ -77,8 +81,12 @@ public:
 
     /// \brief Метод для инициализации BSI.
     void initBSI() noexcept;
+    /// \brief Обновление внутренних данных протокола для работы с текущим устройством.
+    void internalProtocolUpdate() noexcept;
 
 private slots:
+    /// \brief Слот для обновления блока BSI.
+    /// \see compareAndUpdate
     void updateBSI(const DataTypes::BitStringStruct &value);
 
 signals:

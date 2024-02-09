@@ -21,7 +21,7 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent), m_timer(new QTimer(
 }
 
 /// \brief Filling alarms in this alarm widget.
-void AlarmWidget::configure(Device::CurrentDevice &device)
+void AlarmWidget::configure(Device::CurrentDevice *device)
 {
     const static std::vector<std::pair<AlarmType, std::string_view>> alarmSettings {
         { AlarmType::Info, "Информационная сигнализация" },       //
@@ -31,9 +31,9 @@ void AlarmWidget::configure(Device::CurrentDevice &device)
 
     auto alarmStateAll = new AlarmStateAll();
     alarmStateAll->setupUI(AVM::HthToolTip);
-    QObject::connect(&device, &Device::CurrentDevice::healthChanged, alarmStateAll, &AlarmStateAll::update);
+    QObject::connect(device, &Device::CurrentDevice::healthChanged, alarmStateAll, &AlarmStateAll::update);
     addAlarm(alarmStateAll, "Состояние устройства");
-    const auto &moduleSettings = device.getConfigStorage()->getModuleSettings();
+    const auto &moduleSettings = device->getConfigStorage()->getModuleSettings();
     const auto &alarmMap = moduleSettings.getAlarms();
     const auto &sigMap = moduleSettings.getSignals();
     for (const auto &[type, title] : alarmSettings)

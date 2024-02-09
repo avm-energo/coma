@@ -42,6 +42,7 @@
 #include "../../widgets/styleloader.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
+#include "../../xml/xmlconfigloader.h"
 #include "../../xml/xmleditor/xmleditor.h"
 
 #include <QApplication>
@@ -517,23 +518,33 @@ void Coma::prepareDialogs()
     // auto &board = Board::GetInstance();
     EMessageBox::information(this, "Установлена связь с " + m_currentDevice->getDeviceName());
 
-    auto &storage = ConfigStorage::GetInstance();
-    module.reset(new Module(true, Board::GetInstance().baseSerialInfo(), this));
-    if (module->loadS2Settings(s2dataManager->getStorage()))
+    auto cfgLoader = new Xml::ConfigLoader(m_currentDevice);
+    if (!cfgLoader->loadSettings())
     {
-        if (!module->loadSettings(storage, *s2dataManager))
-        {
-            EMessageBox::error(this,
-                "Не удалось найти конфигурацию для модуля.\n"
-                "Проверьте журнал сообщений.\n"
-                "Доступны минимальные функции.");
-        }
-        // Обновляем описание протокола
-        else
-            ActiveConnection::async()->updateProtocol(storage.getProtocolDescription());
+        EMessageBox::error(this,
+            "Не удалось найти конфигурацию для модуля.\n"
+            "Проверьте журнал сообщений.\n"
+            "Доступны минимальные функции.");
     }
-    /// TODO: ???
-    // AlarmW->configure();
+    cfgLoader->deleteLater();
+
+    //    auto &storage = ConfigStorage::GetInstance();
+    //    module.reset(new Module(true, Board::GetInstance().baseSerialInfo(), this));
+    //    if (module->loadS2Settings(s2dataManager->getStorage()))
+    //    {
+    //        if (!module->loadSettings(storage, *s2dataManager))
+    //        {
+    //            EMessageBox::error(this,
+    //                "Не удалось найти конфигурацию для модуля.\n"
+    //                "Проверьте журнал сообщений.\n"
+    //                "Доступны минимальные функции.");
+    //        }
+    //        // Обновляем описание протокола
+    //        else
+    //            ActiveConnection::async()->updateProtocol(storage.getProtocolDescription());
+    //    }
+
+    AlarmW->configure(m_currentDevice);
     m_dlgManager->setupUI(m_appConfig, size());
     // Запрашиваем s2 конфигурацию от модуля
     s2requestService->request(S2::FilesEnum::Config, true);

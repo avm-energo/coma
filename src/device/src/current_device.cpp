@@ -59,6 +59,16 @@ S2DataManager *CurrentDevice::getS2Datamanager() noexcept
     return &m_s2manager;
 }
 
+u16 CurrentDevice::getBaseType() const noexcept
+{
+    return m_bsi.MTypeB;
+}
+
+u16 CurrentDevice::getMezzType() const noexcept
+{
+    return m_bsi.MTypeM;
+}
+
 u16 CurrentDevice::getDeviceType() const noexcept
 {
     return u16((m_bsi.MTypeB << 8) + m_bsi.MTypeM);
@@ -102,6 +112,12 @@ void CurrentDevice::initBSI() noexcept
     m_isInitStage = true;
     m_async->reqBSI();
     m_timeoutTimer.stop();
+}
+
+void CurrentDevice::internalProtocolUpdate() noexcept
+{
+    Q_ASSERT(m_cfgStorage.getProtocolDescription().groups().size() > 0);
+    m_async->updateProtocol(m_cfgStorage.getProtocolDescription());
 }
 
 void CurrentDevice::updateBSI(const DataTypes::BitStringStruct &value)

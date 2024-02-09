@@ -63,7 +63,7 @@ private:
     // Interface::AsyncConnection *m_currentConnection;
     Interface::ConnectionManager *m_connectionManager;
     Device::CurrentDevice *m_currentDevice;
-    UniquePointer<Module> module;
+    // UniquePointer<Module> module;
     UniquePointer<S2DataManager> s2dataManager;
     UniquePointer<S2RequestService> s2requestService;
     UniquePointer<DialogManager> m_dlgManager;
