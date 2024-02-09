@@ -7,14 +7,18 @@
 #include <device/modulesettings.h>
 #include <gen/datatypes.h>
 
+using AlarmType = Device::ModuleTypes::AlarmType;
+using AlarmValue = Device::ModuleTypes::AlarmValue;
+using SignalMap = Device::ModuleTypes::SignalMap;
+
 /// \brief The class for alarm dialog, that displaying critical,
 /// warning and info alarms from XML configuration files.
 class ModuleAlarm final : public BaseAlarm
 {
     Q_OBJECT
 private:
-    static const std::map<ModuleTypes::AlarmType, QColor> s_colors;
-    const ModuleTypes::AlarmValue m_alarms;
+    static const std::map<AlarmType, QColor> s_colors;
+    const AlarmValue m_alarms;
     QList<QPair<QLabel *, bool>> m_labelStateStorage;
 
     /// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
@@ -25,12 +29,11 @@ private:
     void updatePixmap(const bool &isSet, const quint32 &position);
 
 public:
-    explicit ModuleAlarm(const ModuleTypes::AlarmType &type, //
-        const ModuleTypes::AlarmValue &alarms, QWidget *parent = nullptr);
+    explicit ModuleAlarm(const AlarmType type, const AlarmValue &alarms, QWidget *parent = nullptr);
 
     /// \brief Folowing the data: search a signal group whose range
     /// includes the address of the first alarm from the list.
-    void followToData(const ModuleTypes::SignalMap &sigMap);
+    void followToData(const SignalMap &sigMap);
 
 public slots:
     /// \brief This slot called when a SinglePoint data is received from the device.

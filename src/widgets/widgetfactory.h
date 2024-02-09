@@ -6,7 +6,7 @@
 
 #include <QStandardItemModel>
 #include <bitset>
-#include <device/configstorage.h>
+//#include <device/configstorage.h>
 #include <gen/std_ext.h>
 #include <s2/delegate_common.h>
 #include <s2/s2configuration.h>

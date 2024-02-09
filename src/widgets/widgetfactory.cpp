@@ -2,6 +2,7 @@
 
 #include "../ctti/type_id.hpp"
 #include "../models/comboboxdelegate.h"
+#include "../module/configstorage.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"
 #include "../widgets/ipctrl.h"

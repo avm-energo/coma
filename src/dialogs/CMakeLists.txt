@@ -16,7 +16,8 @@ add_library(
   ${PROJECT_NAME} STATIC
   ${files_cpp} ${files_h})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  alarms
   oscillograms
   models
   module

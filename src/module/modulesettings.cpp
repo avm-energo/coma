@@ -1,7 +1,4 @@
-#include "device/modulesettings.h"
-
-namespace Device
-{
+#include "modulesettings.h"
 
 void ModuleSettings::clear() noexcept
 {
@@ -17,12 +14,12 @@ void ModuleSettings::clear() noexcept
     m_hiddenSettings.clear();
 }
 
-void ModuleSettings::appendSignal(const u32 id, const ModuleTypes::Signal sig)
+void ModuleSettings::appendSignal(const quint32 id, const ModuleTypes::Signal sig)
 {
     m_signals.insert({ id, sig });
 }
 
-void ModuleSettings::appendTab(const u32 id, const QString &tabName)
+void ModuleSettings::appendTab(const quint32 id, const QString &tabName)
 {
     m_tabs.insert(id, tabName);
 }
@@ -32,31 +29,31 @@ void ModuleSettings::appendSection(const ModuleTypes::Section &section)
     m_sections.push_back(section);
 }
 
-void ModuleSettings::appendAlarm(const ModuleTypes::AlarmType key, const u32 addr, const QString &desc)
+void ModuleSettings::appendAlarm(const ModuleTypes::AlarmKey key, const quint32 addr, const QString &desc)
 {
     m_alarms[key].insert(addr, desc);
 }
 
-void ModuleSettings::appendHighlight(const ModuleTypes::AlarmType type, const u32 key, const QList<u32> &values)
+void ModuleSettings::appendHighlight(const Modules::AlarmType type, const quint32 key, const QList<quint32> &values)
 {
-    if (type == ModuleTypes::AlarmType::Critical)
+    if (type == Modules::AlarmType::Critical)
     {
         for (auto &value : values)
             m_critHighlight.insert(key, value);
     }
-    else if (type == ModuleTypes::AlarmType::Warning)
+    else if (type == Modules::AlarmType::Warning)
     {
         for (auto &value : values)
             m_warnHighlight.insert(key, value);
     }
 }
 
-void ModuleSettings::appendWorkJournal(const u32 id, const QString &desc)
+void ModuleSettings::appendWorkJournal(const quint32 id, const QString &desc)
 {
     m_workJournals.insert(id, desc);
 }
 
-void ModuleSettings::appendMeasJournal(const u32 index, const QString &header, //
+void ModuleSettings::appendMeasJournal(const quint32 index, const QString &header, //
     const ModuleTypes::BinaryType type, bool visib)
 {
     m_measJournals.push_back(ModuleTypes::MeasJournal { index, type, visib, header });
@@ -92,9 +89,9 @@ const ModuleTypes::AlarmMap &ModuleSettings::getAlarms() const
     return m_alarms;
 }
 
-const ModuleTypes::HighlightMap &ModuleSettings::getHighlights(const ModuleTypes::AlarmType type) const
+const ModuleTypes::HighlightMap &ModuleSettings::getHighlights(const Modules::AlarmType &type) const
 {
-    if (type == ModuleTypes::AlarmType::Critical)
+    if (type == Modules::AlarmType::Critical)
         return m_critHighlight;
     else
         return m_warnHighlight;
@@ -114,5 +111,3 @@ const ModuleTypes::HiddenSettings &ModuleSettings::getHiddenSettings() const
 {
     return m_hiddenSettings;
 }
-
-} // namespace Device

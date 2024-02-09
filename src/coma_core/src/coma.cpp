@@ -36,7 +36,6 @@
 #include "../../module/s2requestservice.h"
 #include "../../oscillograms/swjmanager.h"
 #include "../../oscillograms/swjpackconvertor.h"
-#include "../../widgets/alarmwidget.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/gasdensitywidget.h"
 #include "../../widgets/splashscreen.h"
@@ -53,6 +52,7 @@
 #include <QProgressBar>
 #include <QToolBar>
 #include <QtGlobal>
+#include <alarms/alarmwidget.h>
 #include <comaresources/manage.h>
 #include <functional>
 #include <gen/errorqueue.h>
@@ -506,7 +506,8 @@ void Coma::prepareDialogs()
         else
             ActiveConnection::async()->updateProtocol(storage.getProtocolDescription());
     }
-    AlarmW->configure();
+    /// TODO: ???
+    // AlarmW->configure();
     m_dlgManager->setupUI(m_appConfig, size());
     // Запрашиваем s2 конфигурацию от модуля
     s2requestService->request(S2::FilesEnum::Config, true);

@@ -5,13 +5,13 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 
-const std::map<ModuleTypes::AlarmType, QColor> ModuleAlarm::s_colors = {
-    { ModuleTypes::AlarmType::Critical, Qt::red },   //
-    { ModuleTypes::AlarmType::Warning, Qt::yellow }, //
-    { ModuleTypes::AlarmType::Info, Qt::green }      //
+const std::map<AlarmType, QColor> ModuleAlarm::s_colors = {
+    { AlarmType::Critical, Qt::red },   //
+    { AlarmType::Warning, Qt::yellow }, //
+    { AlarmType::Info, Qt::green }      //
 };
 
-ModuleAlarm::ModuleAlarm(const ModuleTypes::AlarmType &type, const ModuleTypes::AlarmValue &alarms, QWidget *parent)
+ModuleAlarm::ModuleAlarm(const AlarmType type, const AlarmValue &alarms, QWidget *parent)
     : BaseAlarm(parent), m_alarms(std::move(alarms))
 {
     auto search = s_colors.find(type);
@@ -22,11 +22,11 @@ ModuleAlarm::ModuleAlarm(const ModuleTypes::AlarmType &type, const ModuleTypes::
     setupUI(m_alarms.values());
 }
 
-void ModuleAlarm::followToData(const ModuleTypes::SignalMap &sigMap)
+void ModuleAlarm::followToData(const SignalMap &sigMap)
 {
     auto &addr = m_alarms.cbegin().key();
     auto search = std::find_if(sigMap.cbegin(), sigMap.cend(), //
-        [&addr](const SigMapValue &element) -> bool {          //
+        [&addr](const Device::SigMapValue &element) -> bool {  //
             auto &signal = element.second;
             auto acceptStart = signal.startAddr;
             auto acceptEnd = acceptStart + signal.count;

@@ -4,7 +4,6 @@
 #include "../module/modules.h"
 #include "../module/modulesettings.h"
 #include "../module/s2requestservice.h"
-#include "../widgets/alarmwidget.h"
 #include "../widgets/udialog.h"
 
 #include <QObject>

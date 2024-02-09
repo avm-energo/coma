@@ -5,118 +5,121 @@
 #include <interfaces/types/protocol_settings.h>
 #include <s2/dataitem.h>
 
+namespace Device
+{
+
 namespace ModuleTypes
 {
-using SignalType = DataTypes::SignalTypes; ///< Перечисление для типа сигналов.
+    using SignalType = DataTypes::SignalTypes; ///< Перечисление для типа сигналов.
 
-/// \brief Структура для хранения информации узла <signal> из XML.
-struct Signal final
-{
-    u32 startAddr;
-    u16 count;
-    SignalType sigType;
-};
+    /// \brief Структура для хранения информации узла <signal> из XML.
+    struct Signal final
+    {
+        u32 startAddr;
+        u16 count;
+        SignalType sigType;
+    };
 
-/// \brief Перечисление для хранения типа отображения мультивиджета.
-enum class ViewType : u8
-{
-    Float = 0, ///< отображение чисел с плавающей точкой
-    Bitset,    ///< отображение битового поля
-    LineEdit,  ///< ввод данных
-    Version    ///< ввод или отображение версии
-};
+    /// \brief Перечисление для хранения типа отображения мультивиджета.
+    enum class ViewType : u8
+    {
+        Float = 0, ///< отображение чисел с плавающей точкой
+        Bitset,    ///< отображение битового поля
+        LineEdit,  ///< ввод данных
+        Version    ///< ввод или отображение версии
+    };
 
-/// \brief Структура для хранения информации узла <mwidget> из XML.
-struct MWidget final
-{
-    QString desc;                    ///< атрибут "desc"
-    u32 startAddr;                   ///< узел <start-addr>
-    u32 count = 1;                   ///< узел <count>
-    QString tooltip = "";            ///< узел <toolTip>
-    ViewType view = ViewType::Float; ///< атрибут "view"
-    QStringList subItemList = {};    ///< узел <string-array>
-};
+    /// \brief Структура для хранения информации узла <mwidget> из XML.
+    struct MWidget final
+    {
+        QString desc;                    ///< атрибут "desc"
+        u32 startAddr;                   ///< узел <start-addr>
+        u32 count = 1;                   ///< узел <count>
+        QString tooltip = "";            ///< узел <toolTip>
+        ViewType view = ViewType::Float; ///< атрибут "view"
+        QStringList subItemList = {};    ///< узел <string-array>
+    };
 
-/// \brief Структура для хранения информации узла <sgroup> из XML.
-struct SGroup final
-{
-    QString name;                 ///< атрибут "header"
-    std::vector<MWidget> widgets; ///< узлы <mwidget>
-};
+    /// \brief Структура для хранения информации узла <sgroup> из XML.
+    struct SGroup final
+    {
+        QString name;                 ///< атрибут "header"
+        std::vector<MWidget> widgets; ///< узлы <mwidget>
+    };
 
-using SGMap = QMultiMap<u32, SGroup>; ///< u32 - id вкладки, SGroup - группы для вкладки.
+    using SGMap = QMultiMap<u32, SGroup>; ///< u32 - id вкладки, SGroup - группы для вкладки.
 
-/// \brief Структура для хранения информации узла <section> из XML.
-struct Section final
-{
-    QString name; ///< атрибут "header"
-    SGMap sgMap;  ///< узлы <sgroup>
-};
+    /// \brief Структура для хранения информации узла <section> из XML.
+    struct Section final
+    {
+        QString name; ///< атрибут "header"
+        SGMap sgMap;  ///< узлы <sgroup>
+    };
 
-/// \brief Перечисление для хранение типа, читаемого из бинарного файла.
-enum class BinaryType : u8
-{
-    uint32 = 0,
-    float32,
-    time32,
-    time64
-};
+    /// \brief Перечисление для хранение типа, читаемого из бинарного файла.
+    enum class BinaryType : u8
+    {
+        uint32 = 0,
+        float32,
+        time32,
+        time64
+    };
 
-/// \brief Структура для хранения информации узла <item> из <journals/meas>.
-struct MeasJournal final
-{
-    u32 index;       ///< атрибут "index"
-    BinaryType type; ///< атрибут "type"
-    bool visibility; ///< атрибут "visibility"
-    QString header;  ///< атрибут "header"
-};
+    /// \brief Структура для хранения информации узла <item> из <journals/meas>.
+    struct MeasJournal final
+    {
+        u32 index;       ///< атрибут "index"
+        BinaryType type; ///< атрибут "type"
+        bool visibility; ///< атрибут "visibility"
+        QString header;  ///< атрибут "header"
+    };
 
-/// \brief Структура для хранения информации узла <mwidget> из <hidden/tab>.
-struct HiddenWidget final
-{
-    QString name;    ///< узел <name>
-    QString title;   ///< атрибут "title"
-    u32 address;     ///< узел <addr>
-    u16 index;       ///< узел <index>
-    BinaryType type; ///< узел <type>
-    ViewType view;   ///< атрибут "view"
-    bool visibility; ///< узел <visibility>
-};
+    /// \brief Структура для хранения информации узла <mwidget> из <hidden/tab>.
+    struct HiddenWidget final
+    {
+        QString name;    ///< узел <name>
+        QString title;   ///< атрибут "title"
+        u32 address;     ///< узел <addr>
+        u16 index;       ///< узел <index>
+        BinaryType type; ///< узел <type>
+        ViewType view;   ///< атрибут "view"
+        bool visibility; ///< узел <visibility>
+    };
 
-/// \brief Структура для хранения информации узла <tab> из <hidden>.
-struct HiddenTab final
-{
-    QString title;                     ///< атрибут "desc"
-    QString background;                ///< атрибут "background"
-    QString prefix;                    ///< атрибут "prefix"
-    u16 flag;                          ///< атрибут "flag", возможные значения:
-                                       ///< 0x01 - базовая;
-                                       ///< 0x02 - мезонин;
-                                       ///< 0x04 - дополнительная.
-    std::vector<HiddenWidget> widgets; ///< узлы <mwdiget>.
-};
+    /// \brief Структура для хранения информации узла <tab> из <hidden>.
+    struct HiddenTab final
+    {
+        QString title;                     ///< атрибут "desc"
+        QString background;                ///< атрибут "background"
+        QString prefix;                    ///< атрибут "prefix"
+        u16 flag;                          ///< атрибут "flag", возможные значения:
+                                           ///< 0x01 - базовая;
+                                           ///< 0x02 - мезонин;
+                                           ///< 0x04 - дополнительная.
+        std::vector<HiddenWidget> widgets; ///< узлы <mwdiget>.
+    };
 
-/// \brief Перечисление типов сигнализации
-enum AlarmType : u8
-{
-    Info,
-    Warning,
-    Critical
-};
+    /// \brief Перечисление типов сигнализации
+    enum AlarmType : u8
+    {
+        Info,
+        Warning,
+        Critical
+    };
 
-using SignalMap = std::map<u32, Signal>;  ///< Хранит узлы <signal> секции <signals>.
-using TabsMap = QHash<u32, QString>;      ///< Хранит узлы <tab> секции <section-tabs>.
-using HighlightMap = QMultiMap<u32, u32>; ///< Для подсветки элементов.
-using SectionList = std::vector<Section>; ///< Хранит узлы <section> секции <sections>.
-using AlarmValue = QMap<u32, QString>; ///< u32 - адрес сигнализации, QString - узел <desc> (описание).
-using WorkJourMap = QMap<u32, QString>;        ///< Хранит узлы <item> секции <work> из <journals>.
-using AlarmMap = QHash<AlarmType, AlarmValue>; ///< Хранит узлы <item> секции <alarms>.
-using MeasJourList = std::vector<MeasJournal>; ///< Хранит узлы <item> секции <meas> из <journals>.
-using HiddenSettings = std::vector<HiddenTab>; ///< Хранит узлы <tab> секции <hidden>.
-using DetailCountMap
-    = QHash<u16, u16>; ///< Хранит количество элементов для конфигурационных параметров, имеющих одинаковые id.
+    using SignalMap = std::map<u32, Signal>;  ///< Хранит узлы <signal> секции <signals>.
+    using TabsMap = QHash<u32, QString>;      ///< Хранит узлы <tab> секции <section-tabs>.
+    using HighlightMap = QMultiMap<u32, u32>; ///< Для подсветки элементов.
+    using SectionList = std::vector<Section>; ///< Хранит узлы <section> секции <sections>.
+    using AlarmValue = QMap<u32, QString>; ///< u32 - адрес сигнализации, QString - узел <desc> (описание).
+    using WorkJourMap = QMap<u32, QString>; ///< Хранит узлы <item> секции <work> из <journals>.
+    using AlarmMap = QHash<AlarmType, AlarmValue>; ///< Хранит узлы <item> секции <alarms>.
+    using MeasJourList = std::vector<MeasJournal>; ///< Хранит узлы <item> секции <meas> из <journals>.
+    using HiddenSettings = std::vector<HiddenTab>; ///< Хранит узлы <tab> секции <hidden>.
+    using DetailCountMap
+        = QHash<u16, u16>; ///< Хранит количество элементов для конфигурационных параметров, имеющих одинаковые id.
 
-}
+} // namespace ModuleTypes
 
 /// \brief Class for storing module settings.
 class ModuleSettings final
@@ -174,3 +177,5 @@ private:
 };
 
 typedef ModuleTypes::SignalMap::value_type SigMapValue;
+
+} // namespace Device

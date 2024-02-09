@@ -1,12 +1,16 @@
-#pragma once
+#ifndef CONFIGSTORAGE_H
+#define CONFIGSTORAGE_H
 
-#include <device/modulesettings.h>
+#include "board.h"
+#include "modulesettings.h"
 
-namespace Device
-{
+#include <QObject>
+#include <gen/singleton.h>
+#include <s2/delegate_common.h>
+#include <s2/s2datafactory.h>
 
 /// \brief Class for storaging XML settings for a selected device in ConnectionDialog.
-class ConfigStorage final : public QObject
+class ConfigStorage : public QObject, public Singleton<ConfigStorage>
 {
     Q_OBJECT
 private:
@@ -14,13 +18,13 @@ private:
     ProtocolDescription m_protocol;
 
 public:
-    /// \brief Default c-tor.
-    explicit ConfigStorage(QObject *parent = nullptr);
+    /// \brief C-tor.
+    explicit ConfigStorage(token, QObject *parent = nullptr);
 
     /// \brief Constant getter for module settings.
-    [[nodiscard]] const ModuleSettings &getModuleSettings() const noexcept;
+    const ModuleSettings &getModuleSettings() const noexcept;
     /// \brief Constant getter for protocol description.
-    [[nodiscard]] const ProtocolDescription &getProtocolDescription() const noexcept;
+    const ProtocolDescription &getProtocolDescription() const noexcept;
     /// \brief Cleaning connected device's settings.
     void clear() noexcept;
 
@@ -33,7 +37,7 @@ public slots:
     /// \brief Slot for saving check's section records.
     void sectionDataReceive(const ModuleTypes::SGMap &sgmap, const QString &secHead);
     /// \brief Slot for saving device's alarm records.
-    void alarmDataReceive(const ModuleTypes::AlarmType type, const quint32 addr, //
+    void alarmDataReceive(const Modules::AlarmType aType, const quint32 addr, //
         const QString &desc, const QList<quint32> &highlights);
     /// \brief Slot for saving module a work journal's record.
     void workJourDataReceive(const quint32 id, const QString &desc);
@@ -46,4 +50,4 @@ public slots:
     void protocolGroupReceived(const Protocol::AbstractGroup &group);
 };
 
-} // namespace Device
+#endif // CONFIGSTORAGE_H

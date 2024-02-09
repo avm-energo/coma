@@ -23,10 +23,10 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent), m_timer(new QTimer(
 /// \brief Filling alarms in this alarm widget.
 void AlarmWidget::configure(Device::CurrentDevice &device)
 {
-    const static std::vector<std::pair<ModuleTypes::AlarmType, std::string_view>> alarmSettings {
-        { ModuleTypes::AlarmType::Info, "Информационная сигнализация" },       //
-        { ModuleTypes::AlarmType::Warning, "Предупредительная сигнализация" }, //
-        { ModuleTypes::AlarmType::Critical, "Аварийная сигнализация" }         //
+    const static std::vector<std::pair<AlarmType, std::string_view>> alarmSettings {
+        { AlarmType::Info, "Информационная сигнализация" },       //
+        { AlarmType::Warning, "Предупредительная сигнализация" }, //
+        { AlarmType::Critical, "Аварийная сигнализация" }         //
     };
 
     auto alarmStateAll = new AlarmStateAll();
