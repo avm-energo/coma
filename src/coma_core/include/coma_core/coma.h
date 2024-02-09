@@ -16,6 +16,11 @@ class Module;
 class S2RequestService;
 class XmlEditor;
 
+namespace Device
+{
+class CurrentDevice;
+} // namespace Device
+
 namespace Core
 {
 
@@ -42,6 +47,7 @@ public slots:
 private slots:
     void connectDialog();
     void initConnection(const ConnectStruct &st);
+    void initDevice(Interface::AsyncConnection *connection);
     void loadOsc();
     void loadSwj();
     void loadSwjPackConvertor();
@@ -54,8 +60,9 @@ private slots:
 
 private:
     AppConfiguration m_appConfig;
-    Interface::AsyncConnection *m_currentConnection;
+    // Interface::AsyncConnection *m_currentConnection;
     Interface::ConnectionManager *m_connectionManager;
+    Device::CurrentDevice *m_currentDevice;
     UniquePointer<Module> module;
     UniquePointer<S2DataManager> s2dataManager;
     UniquePointer<S2RequestService> s2requestService;
@@ -72,7 +79,7 @@ private:
     void setProgressBarSize(int prbnum, int size);
     void setProgressBarCount(int prbnum, int count);
     void setupUI();
-    void prepare();
+    // void prepare();
     QToolBar *createToolBar();
     void keyPressEvent(QKeyEvent *event) override;
     void prepareDialogs();

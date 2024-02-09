@@ -9,11 +9,13 @@ ActiveConnection::ActiveConnection(token) noexcept : m_asyncConnection(nullptr),
 
 AsyncConnection *ActiveConnection::getAsync() noexcept
 {
+    Q_ASSERT(m_asyncConnection.get() != nullptr);
     return m_asyncConnection.get();
 }
 
 SyncConnection *ActiveConnection::getSync() noexcept
 {
+    Q_ASSERT(m_syncConnection.get() != nullptr);
     return m_syncConnection.get();
 }
 

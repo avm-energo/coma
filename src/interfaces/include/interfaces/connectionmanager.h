@@ -45,7 +45,7 @@ public:
 
 signals:
     /// \brief Сигнал, который вызывается, если соединение к устройству произошло успешно.
-    void connectSuccesfull();
+    // void connectSuccesfull();
     /// \brief Сигнал, который вызывается, если соединение к устройству провалилось.
     void connectFailed(const QString &message);
     /// \brief Сигнал, который вызывается при переподключении к устройству.

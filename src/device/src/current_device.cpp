@@ -6,9 +6,21 @@ namespace Device
 {
 
 CurrentDevice::CurrentDevice(AsyncConnection *conn)
-    : QObject(conn), m_async(conn), m_sync(m_async), m_bsi {}, m_cfgStorage(this), m_s2manager(this), m_bsiCounter(0)
+    : QObject(conn)
+    , m_async(conn)
+    , m_sync(m_async)
+    , m_bsi {}
+    , m_previous {}
+    , m_cfgStorage(this)
+    , m_s2manager(this)
+    , m_fileProvider(this)
+    , m_timeoutTimer(this)
+    , m_bsiCounter(0)
+    , m_isInitStage(true)
 {
     m_async->connection(this, &CurrentDevice::updateBSI);
+    m_timeoutTimer.setInterval(m_async->getTimeout());
+    connect(&m_timeoutTimer, &QTimer::timeout, this, [this] { initBSIEvent(Error::Msg::Timeout); });
 }
 
 CurrentDevice *DeviceFabric::create(AsyncConnection *connection)
@@ -30,6 +42,11 @@ SyncConnection *CurrentDevice::sync() noexcept
 const BlockStartupInfo &CurrentDevice::bsi() const noexcept
 {
     return m_bsi;
+}
+
+Health CurrentDevice::health() const noexcept
+{
+    return Health(m_bsi.Hth);
 }
 
 ConfigStorage *CurrentDevice::getConfigStorage() noexcept
@@ -70,23 +87,61 @@ QString CurrentDevice::getUID() const noexcept
     return QString::number(m_bsi.UIDHigh, 16) + QString::number(m_bsi.UIDMid, 16) + QString::number(m_bsi.UIDLow, 16);
 }
 
+u32 CurrentDevice::getSerialNumber() const noexcept
+{
+    return m_bsi.SerialNum;
+}
+
 bool CurrentDevice::isOutdatedFirmware(const u32 configVersion) const noexcept
 {
     return m_bsi.Fwver < configVersion;
 }
 
+void CurrentDevice::initBSI() noexcept
+{
+    m_isInitStage = true;
+    m_async->reqBSI();
+    m_timeoutTimer.stop();
+}
+
 void CurrentDevice::updateBSI(const DataTypes::BitStringStruct &value)
 {
     using namespace Interface;
+    constexpr auto bsiMembers = sizeof(BlockStartupInfo) / sizeof(u32);
     if (value.sigAdr >= addr::bsiStartReg && value.sigAdr <= addr::bsiCountRegs)
     {
         u32 &item = *(reinterpret_cast<u32 *>(&m_bsi) + (value.sigAdr - addr::bsiStartReg));
         item = value.sigVal;
-        m_bsiCounter++;
-        if (&item == &m_bsi.Hth)
+        ++m_bsiCounter;
+        if (m_bsiCounter == bsiMembers)
         {
-            emit healthChanged(m_bsi.Hth);
+            initBSIEvent(Error::Msg::NoError);
+            m_bsiCounter = 0;
+            compareAndUpdate();
         }
+    }
+}
+
+void CurrentDevice::compareAndUpdate() noexcept
+{
+    if (m_bsi.Hth != m_previous.Hth)
+        emit healthChanged(m_bsi.Hth);
+    if ((m_bsi.MTypeB != m_previous.MTypeB) || (m_bsi.MTypeM != m_previous.MTypeM))
+        emit typeChanged(getDeviceType());
+    if (m_bsi.SerialNum != m_previous.SerialNum)
+        emit serialChanged(m_bsi.SerialNum);
+
+    m_previous = m_bsi;
+    emit bsiReceived();
+}
+
+void CurrentDevice::initBSIEvent(const Error::Msg status) noexcept
+{
+    if (m_isInitStage)
+    {
+        m_timeoutTimer.stop();
+        m_isInitStage = false;
+        emit initBSIFinished(status);
     }
 }
 

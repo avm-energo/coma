@@ -54,6 +54,7 @@
 #include <QtGlobal>
 #include <alarms/alarmwidget.h>
 #include <comaresources/manage.h>
+#include <device/current_device.h>
 #include <functional>
 #include <gen/errorqueue.h>
 #include <gen/files.h>
@@ -74,8 +75,9 @@ namespace Core
 Coma::Coma(const AppConfiguration appCfg, QWidget *parent)
     : QMainWindow(parent)
     , m_appConfig(appCfg)
-    , m_currentConnection(nullptr)
+    //, m_currentConnection(nullptr)
     , m_connectionManager(new ConnectionManager(this))
+    , m_currentDevice(nullptr)
     , s2dataManager(new S2DataManager(this))
     , s2requestService(new S2RequestService(this))
     , m_dlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), //
@@ -86,7 +88,7 @@ Coma::Coma(const AppConfiguration appCfg, QWidget *parent)
     connect(s2requestService.get(), &S2RequestService::response, //
         s2dataManager.get(), &S2DataManager::parseS2File);
     connect(m_connectionManager, &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
-    connect(m_connectionManager, &ConnectionManager::connectSuccesfull, this, &Coma::prepare);
+    // connect(m_connectionManager, &ConnectionManager::connectSuccesfull, this, &Coma::prepare);
     connect(m_connectionManager, &ConnectionManager::connectFailed, this, //
         [this](const QString &errMsg) { EMessageBox::error(this, errMsg); });
 }
@@ -388,7 +390,7 @@ void Coma::connectDialog()
     auto action = qobject_cast<QAction *>(sender());
     Q_ASSERT(action);
     action->setDisabled(true);
-    if (m_currentConnection)
+    if (m_currentDevice)
     {
         action->setEnabled(true);
         return;
@@ -404,24 +406,49 @@ void Coma::initConnection(const ConnectStruct &st)
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     saveSettings();
-    m_currentConnection = m_connectionManager->createConnection(st);
-    if (m_currentConnection && (m_currentConnection->getConnectionState() != Interface::State::Disconnect))
+    auto connection = m_connectionManager->createConnection(st);
+    if (connection && (connection->getConnectionState() != Interface::State::Disconnect))
     {
-        initInterfaceConnection();
-        prepare();
+        // initInterfaceConnection();
+        // prepare();
+        initDevice(connection);
+        prepareDialogs();
     }
-    QApplication::restoreOverrideCursor();
+    else
+        QApplication::restoreOverrideCursor();
+}
+
+void Coma::initDevice(Interface::AsyncConnection *connection)
+{
+    using namespace Device;
+    m_currentDevice = DeviceFabric::create(connection);
+    if (m_currentDevice)
+    {
+        connect(m_currentDevice, &CurrentDevice::initBSIFinished, this, [this](const Error::Msg err) {
+            if (err == Error::Msg::NoError)
+                initInterfaceConnection();
+            else if (err == Error::Msg::Timeout)
+                EMessageBox::error(this, "");
+            else
+            {
+                /// TODO: Handle other error types?
+            }
+            QApplication::restoreOverrideCursor();
+        });
+        m_currentDevice->initBSI();
+    }
 }
 
 void Coma::initInterfaceConnection()
 {
     // Update global storage for current connection
-    ActiveConnection::update(ActiveConnection::AsyncConnectionPtr { m_currentConnection });
-    m_currentConnection->connection(this, &Coma::update);
-    m_dlgManager->updateConnection(m_currentConnection);
-    s2requestService->updateConnection(m_currentConnection);
+    // ActiveConnection::update(ActiveConnection::AsyncConnectionPtr { m_currentConnection });
+    // m_currentConnection->connection(this, &Coma::update);
+    auto currentConnection = m_currentDevice->async();
+    currentConnection->connection(this, &Coma::update);
+    m_dlgManager->updateConnection(currentConnection);
+    s2requestService->updateConnection(currentConnection);
     connectSetupBar();
-    m_currentConnection->reqBSI();
 }
 
 void Coma::connectSetupBar()
@@ -432,21 +459,31 @@ void Coma::connectSetupBar()
         { IfaceType::Ethernet, ":/icons/ethernet.svg" }, //
         { IfaceType::Unknown, ":/icons/stop.svg" }       //
     };
+    auto currentConnection = m_currentDevice->async();
 
-    auto msgModel = this->findChild<QLabel *>("Model");
-    auto msgConnectionState = this->findChild<QLabel *>("ConnectionState");
-    auto msgConnectionType = this->findChild<QLabel *>("ConnectionType");
-    auto msgConnectionImage = this->findChild<QLabel *>("ConnectionImage");
-    auto msgQueueSize = this->findChild<QLabel *>("QueueSize");
-    if (msgModel && msgConnectionState && msgConnectionType && msgConnectionImage)
+    auto msgModel = statusBar()->findChild<QLabel *>("Model");
+    auto msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
+    auto msgConnectionState = statusBar()->findChild<QLabel *>("ConnectionState");
+    auto msgConnectionType = statusBar()->findChild<QLabel *>("ConnectionType");
+    auto msgConnectionImage = statusBar()->findChild<QLabel *>("ConnectionImage");
+    auto msgQueueSize = statusBar()->findChild<QLabel *>("QueueSize");
+
+    if (msgModel && msgSerialNumber && msgConnectionState && msgConnectionType && msgConnectionImage)
     {
+        // auto board = &Board::GetInstance();
+        //        connect(board, qOverload<>(&Board::typeChanged), msgModel, //
+        //            [=]() { msgModel->setText(board->moduleName()); });
         int height = this->statusBar()->height() - this->statusBar()->layout()->contentsMargins().bottom();
-        auto board = &Board::GetInstance();
-        connect(board, qOverload<>(&Board::typeChanged), msgModel, //
-            [=]() { msgModel->setText(board->moduleName()); });
+        msgModel->setText(m_currentDevice->getDeviceName());
+        connect(m_currentDevice, &Device::CurrentDevice::typeChanged, this,
+            [=](auto) { msgModel->setText(m_currentDevice->getDeviceName()); });
+
+        msgSerialNumber->setText(QString::number(m_currentDevice->getSerialNumber(), 16));
+        connect(m_currentDevice, &Device::CurrentDevice::serialChanged, this,
+            [=](u32 serialNumber) { msgSerialNumber->setText(QString::number(serialNumber, 16)); });
 
         connect(
-            m_currentConnection, &Interface::AsyncConnection::stateChanged, this,
+            currentConnection, &Interface::AsyncConnection::stateChanged, this,
             [=](const Interface::State state) {
                 msgConnectionState->setText(Interface::stateToString(state));
                 msgConnectionState->setForegroundRole(QPalette::Highlight);
@@ -454,7 +491,7 @@ void Coma::connectSetupBar()
             },
             Qt::QueuedConnection);
 
-        const auto interfaceType = m_currentConnection->getInterfaceType();
+        const auto interfaceType = currentConnection->getInterfaceType();
         QString connName = QVariant::fromValue(interfaceType).toString();
         msgConnectionType->setText(connName);
         QPixmap pixmap = QIcon(QString(images.value(interfaceType))).pixmap(QSize(height, height));
@@ -463,34 +500,23 @@ void Coma::connectSetupBar()
         // Показываем размер очереди только в Наладке
         if (m_appConfig == AppConfiguration::Debug && msgQueueSize)
         {
-            connect(m_currentConnection, &Interface::AsyncConnection::queueSizeChanged, this, //
+            connect(currentConnection, &Interface::AsyncConnection::queueSizeChanged, this, //
                 [=](const std::size_t size) { msgQueueSize->setText(QString("Queue size: %1").arg(size)); });
         }
     }
 }
 
-void Coma::prepare()
-{
-    StdFunc::Wait(40); // Подождём, пока BSI долетит до Board
-    auto &board = Board::GetInstance();
-    EMessageBox::information(this, "Установлена связь с " + board.moduleName());
-    prepareDialogs();
-
-    // нет конфигурации
-    if (board.noConfig())
-        qCritical() << Error::Msg::NoConfError;
-    // нет коэффициентов
-    if (board.noRegPars())
-        qCritical() << Error::Msg::NoTuneError;
-
-    auto msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
-    msgSerialNumber->setText(QString::number(board.serialNumber(Board::BaseMezzAdd), 16));
-    auto msgModel = statusBar()->findChild<QLabel *>("Model");
-    msgModel->setText(board.moduleName());
-}
+// void Coma::prepare()
+//{
+//    prepareDialogs();
+//}
 
 void Coma::prepareDialogs()
 {
+    // StdFunc::Wait(40); // Подождём, пока BSI долетит до Board
+    // auto &board = Board::GetInstance();
+    EMessageBox::information(this, "Установлена связь с " + m_currentDevice->getDeviceName());
+
     auto &storage = ConfigStorage::GetInstance();
     module.reset(new Module(true, Board::GetInstance().baseSerialInfo(), this));
     if (module->loadS2Settings(s2dataManager->getStorage()))
@@ -511,11 +537,18 @@ void Coma::prepareDialogs()
     m_dlgManager->setupUI(m_appConfig, size());
     // Запрашиваем s2 конфигурацию от модуля
     s2requestService->request(S2::FilesEnum::Config, true);
+
+    // нет конфигурации
+    if (m_currentDevice->health().isNoConfig())
+        qCritical() << Error::Msg::NoConfError;
+    // нет коэффициентов
+    if (m_currentDevice->health().isNoTuneCoef())
+        qCritical() << Error::Msg::NoTuneError;
 }
 
 void Coma::disconnectAndClear()
 {
-    if (m_currentConnection && (m_currentConnection->getConnectionState() != Interface::State::Disconnect))
+    if (m_currentDevice && (m_currentDevice->async()->getConnectionState() != Interface::State::Disconnect))
     {
         AlarmW->clear();
         m_dlgManager->clearDialogs();
@@ -524,7 +557,7 @@ void Coma::disconnectAndClear()
         Board::GetInstance().reset();
         ActiveConnection::reset();
         m_connectionManager->breakConnection();
-        m_currentConnection = nullptr;
+        m_currentDevice = nullptr;
     }
 }
 

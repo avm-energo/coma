@@ -17,7 +17,6 @@ ConnectionManager::ConnectionManager(QObject *parent)
     , m_silentTimer(new QTimer(this))
     , m_reconnectMode(ReconnectMode::Loud)
     , m_isReconnectOccurred(false)
-    /*, m_isInitialBSIRequest(true) */
     , m_timeoutCounter(0)
     , m_timeoutMax(5)
     , m_errorCounter(0)
@@ -93,6 +92,7 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
 
 void ConnectionManager::setup(const BaseSettings &settings) noexcept
 {
+    m_currentConnection->setTimeout(settings.m_timeout);
     m_silentTimer->setInterval(settings.m_silentInterval);
     m_errorMax = settings.m_maxErrors;
     m_timeoutMax = settings.m_maxTimeouts;

@@ -24,6 +24,7 @@ private:
     RequestQueue m_queue;
     IfaceType m_ifaceType;
     State m_connectionState;
+    quint32 m_timeout;
 
 public:
     explicit AsyncConnection(QObject *parent = nullptr);
@@ -32,6 +33,8 @@ public:
 
     IfaceType getInterfaceType() const noexcept;
     State getConnectionState() const noexcept;
+    quint32 getTimeout() const noexcept;
+    void setTimeout(const quint32 timeout) noexcept;
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);

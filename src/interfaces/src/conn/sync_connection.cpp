@@ -12,7 +12,7 @@ namespace Interface
 SyncConnection::SyncConnection(AsyncConnection *connection) noexcept
     : QObject(connection), m_connection(connection), m_timeoutTimer(new QTimer(this))
 {
-    m_timeoutTimer->setInterval(MAINTIMEOUT);
+    m_timeoutTimer->setInterval(m_connection->getTimeout());
     connect(m_timeoutTimer, &QTimer::timeout, this, &SyncConnection::timeout);
 }
 

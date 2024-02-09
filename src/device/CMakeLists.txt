@@ -9,13 +9,16 @@ set(files_h
     "${INCLUDE_PATH}/bsi.h"
     "${INCLUDE_PATH}/configstorage.h"
     "${INCLUDE_PATH}/current_device.h"
+    "${INCLUDE_PATH}/file_provider.h"
     "${INCLUDE_PATH}/device_list.h"
+    "${INCLUDE_PATH}/health.h"
     "${INCLUDE_PATH}/modulesettings.h"
 )
 
 set(files_cpp
     "${SRC_PATH}/configstorage.cpp"
     "${SRC_PATH}/current_device.cpp"
+    "${SRC_PATH}/file_provider.cpp"
     "${SRC_PATH}/modulesettings.cpp"
 )
 
