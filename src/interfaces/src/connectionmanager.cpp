@@ -17,6 +17,7 @@ ConnectionManager::ConnectionManager(QObject *parent)
     , m_silentTimer(new QTimer(this))
     , m_reconnectMode(ReconnectMode::Loud)
     , m_isReconnectOccurred(false)
+    , m_isInitial(true)
     , m_timeoutCounter(0)
     , m_timeoutMax(5)
     , m_errorCounter(0)
@@ -79,14 +80,11 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
     {
         m_currentConnection->deleteLater();
         m_currentConnection = nullptr;
+        m_isInitial = true;
     }
-    //    else
-    //    {
-    //        SyncConnection sync { m_currentConnection };
-    //        auto status = sync.reqBSI();
-    //        if (status != Error::Msg::NoError)
-    //            breakConnection();
-    //    }
+    else
+        m_isInitial = false;
+
     return m_currentConnection;
 }
 
@@ -121,6 +119,7 @@ void ConnectionManager::breakConnection()
 {
     m_context.reset();
     m_currentConnection = nullptr;
+    m_isInitial = true;
 }
 
 void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
@@ -134,9 +133,12 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
             reconnect();
         break;
     case InterfaceError::OpenError:
-        QString errMsg("Произошла ошибка открытия интерфейса. Disconnect...");
-        qCritical() << errMsg;
-        emit connectFailed(errMsg);
+        if (m_isInitial)
+        {
+            QString errMsg("Произошла ошибка открытия интерфейса. Disconnect...");
+            qCritical() << errMsg;
+            emit connectFailed(errMsg);
+        }
         break;
     }
 }

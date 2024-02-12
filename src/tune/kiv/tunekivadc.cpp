@@ -9,7 +9,7 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <interfaces/conn/active_connection.h>
+//#include <interfaces/conn/active_connection.h>
 
 TuneKIVADC::TuneKIVADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(tuneStep, device, parent)

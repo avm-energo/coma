@@ -5,12 +5,14 @@
 
 #include <QMessageBox>
 #include <QSettings>
+#include <device/current_device.h>
 
 UDialog::UDialog(Device::CurrentDevice *device, QWidget *parent) : UWidget(device, parent)
 {
     showSuccessMessageFlag = true;
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
+    m_genRespConn = m_device->async()->connection(this, &UDialog::updateGeneralResponse);
 }
 
 // void UDialog::updateConnection(AsyncConnection *conn)

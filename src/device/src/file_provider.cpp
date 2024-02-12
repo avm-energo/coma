@@ -8,6 +8,8 @@ namespace Device
 FileProvider::FileProvider(CurrentDevice *device)
     : QObject(device), m_currentDevice(device), m_lastRequestedFile(0xffff)
 {
+    m_currentDevice->async()->connection(this, &FileProvider::responseReceived);
+    connect(this, &FileProvider::response, m_currentDevice->getS2Datamanager(), &S2DataManager::parseS2File);
 }
 
 void FileProvider::responseReceived(const QByteArray &file)

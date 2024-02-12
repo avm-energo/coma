@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../module/errconfstate.h"
-#include "../module/modules.h"
-#include "../module/s2requestservice.h"
+//#include "../module/modules.h"
+#include "errconfstate.h"
+//#include "../module/s2requestservice.h"
 #include "../widgets/udialog.h"
 #include "../widgets/widgetfactory.h"
 

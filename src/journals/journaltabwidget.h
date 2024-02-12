@@ -6,6 +6,7 @@
 #include <QDialog>
 #include <QProgressDialog>
 #include <QWidget>
+#include <interfaces/conn/async_connection.h>
 #include <s2/s2datatypes.h>
 
 class QVBoxLayout;
@@ -26,6 +27,7 @@ private:
     QDialog *m_progressDialog;
     EProgressIndicator *m_progressIndicator;
     QProgressDialog *m_saveProgressDialog;
+    Interface::AsyncConnection *m_async;
     JournalType m_type;
 
     /// \brief Метод для создания виджетов, сигнализирующих
@@ -56,7 +58,7 @@ private slots:
     void error(const QString &message);
 
 public:
-    explicit JournalTabWidget(const JournalType type, QWidget *parent = nullptr);
+    explicit JournalTabWidget(const JournalType type, Interface::AsyncConnection *async, QWidget *parent = nullptr);
 
     /// \brief Обновление содержимого виджета по полученному объекту журнала.
     /// \param newJournal[in] - журнала, полученный от родительского класса JournalDialog.

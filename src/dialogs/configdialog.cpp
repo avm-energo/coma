@@ -1,8 +1,8 @@
 #include "configdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../module/board.h"
-#include "../module/configstorage.h"
+//#include "../module/board.h"
+//#include "../module/configstorage.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -131,12 +131,10 @@ QWidget *ConfigDialog::ConfButtons()
 {
     auto wdgt = new QWidget;
     auto wdgtlyout = new QGridLayout;
-    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    auto button = new QPushButton("Прочитать из " + tmps);
+    auto button = new QPushButton("Прочитать из модуля");
     connect(button, &QPushButton::clicked, this, &ConfigDialog::readConfig);
     wdgtlyout->addWidget(button, 0, 0, 1, 1);
-    tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
-    button = new QPushButton("Записать в " + tmps);
+    button = new QPushButton("Записать в модуль");
     button->setObjectName("WriteConfPB");
     connect(button, &QPushButton::clicked, this, &ConfigDialog::writeConfig);
     wdgtlyout->addWidget(button, 0, 1, 1, 1);

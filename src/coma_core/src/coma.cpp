@@ -31,9 +31,9 @@
 #include "../../dialogs/settingsdialog.h"
 #include "../../dialogs/switchjournaldialog.h"
 #include "../../journals/journalviewer.h"
-#include "../../module/board.h"
-#include "../../module/module.h"
-#include "../../module/s2requestservice.h"
+//#include "../../module/board.h"
+//#include "../../module/module.h"
+//#include "../../module/s2requestservice.h"
 #include "../../oscillograms/swjmanager.h"
 #include "../../oscillograms/swjpackconvertor.h"
 #include "../../widgets/epopup.h"
@@ -62,7 +62,7 @@
 #include <gen/logger.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <interfaces/conn/active_connection.h>
+//#include <interfaces/conn/active_connection.h>
 #include <interfaces/types/settingstypes.h>
 #include <iostream>
 #include <memory>
@@ -79,8 +79,8 @@ Coma::Coma(const AppConfiguration appCfg, QWidget *parent)
     //, m_currentConnection(nullptr)
     , m_connectionManager(new ConnectionManager(this))
     , m_currentDevice(nullptr)
-    , s2dataManager(new S2DataManager(this))
-    , s2requestService(new S2RequestService(this))
+    //, s2dataManager(new S2DataManager(this))
+    //, s2requestService(new S2RequestService(this))
     , m_dlgManager(new DialogManager(this))
     , editor(nullptr)
 {
@@ -427,7 +427,7 @@ void Coma::initDevice(Interface::AsyncConnection *connection)
             if (err == Error::Msg::NoError)
                 initInterfaceConnection();
             else if (err == Error::Msg::Timeout)
-                EMessageBox::error(this, "");
+                EMessageBox::error(this, "Превышено время ожидания блока BSI. Disconnect...");
             else
             {
                 /// TODO: Handle other error types?
@@ -446,7 +446,7 @@ void Coma::initInterfaceConnection()
     auto currentConnection = m_currentDevice->async();
     currentConnection->connection(this, &Coma::update);
     // m_dlgManager->updateConnection(currentConnection);
-    s2requestService->updateConnection(currentConnection);
+    // s2requestService->updateConnection(currentConnection);
     connectSetupBar();
     prepareDialogs();
 }
@@ -546,7 +546,8 @@ void Coma::prepareDialogs()
     AlarmW->configure(m_currentDevice);
     m_dlgManager->setupUI(m_currentDevice, m_appConfig, size());
     // Запрашиваем s2 конфигурацию от модуля
-    s2requestService->request(S2::FilesEnum::Config, true);
+    // s2requestService->request(S2::FilesEnum::Config, true);
+    m_currentDevice->getFileProvider()->request(S2::FilesEnum::Config, true);
 
     // нет конфигурации
     if (m_currentDevice->health().isNoConfig())
@@ -565,7 +566,7 @@ void Coma::disconnectAndClear()
         // ConfigStorage::GetInstance().clear();
         // s2dataManager->clear();
         // Board::GetInstance().reset();
-        ActiveConnection::reset();
+        // ActiveConnection::reset();
         m_connectionManager->breakConnection();
         m_currentDevice = nullptr;
     }

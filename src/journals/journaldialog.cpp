@@ -27,19 +27,19 @@ void JournalDialog::createJournalTabs()
 {
     using namespace journals;
     auto journalType = JournalType::System;
-    auto sysJourTab = new JournalTabWidget(journalType, this);
+    auto sysJourTab = new JournalTabWidget(journalType, m_device->async(), this);
     m_journals.insert({ journalType, sysJourTab });
     auto &settings = m_device->getConfigStorage()->getDeviceSettings();
     if (!settings.getWorkJours().isEmpty())
     {
         journalType = JournalType::Work;
-        auto workJourTab = new JournalTabWidget(journalType, this);
+        auto workJourTab = new JournalTabWidget(journalType, m_device->async(), this);
         m_journals.insert({ journalType, workJourTab });
     }
     if (!settings.getMeasJours().empty())
     {
         journalType = JournalType::Meas;
-        auto measJourTab = new JournalTabWidget(journalType, this);
+        auto measJourTab = new JournalTabWidget(journalType, m_device->async(), this);
         m_journals.insert({ journalType, measJourTab });
     }
 }

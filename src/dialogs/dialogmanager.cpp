@@ -82,6 +82,8 @@ void DialogManager::setupUI(Device::CurrentDevice *device, const AppConfiguratio
     m_currentDialogIndex = 0;
     m_dlgCreator->getDialogs()[m_currentDialogIndex]->engine()->setUpdatesEnabled(true);
     connect(m_workspace.get(), &QStackedWidget::currentChanged, this, &DialogManager::dialogChanged);
+    m_sidebar->setMinimumWidth(size.width() / 6);
+    m_sidebar->setMaximumWidth(size.width() / 5);
 
     showUI();
     m_reqTimer->start();

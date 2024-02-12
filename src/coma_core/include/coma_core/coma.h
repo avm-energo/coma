@@ -9,11 +9,11 @@
 #include <QStackedWidget>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/types/settingstypes.h>
-#include <s2/s2datamanager.h>
+//#include <s2/s2datamanager.h>
 
 class AlarmWidget;
 class Module;
-class S2RequestService;
+// class S2RequestService;
 class XmlEditor;
 
 namespace Device
@@ -64,8 +64,8 @@ private:
     Interface::ConnectionManager *m_connectionManager;
     Device::CurrentDevice *m_currentDevice;
     // UniquePointer<Module> module;
-    UniquePointer<S2DataManager> s2dataManager;
-    UniquePointer<S2RequestService> s2requestService;
+    // UniquePointer<S2DataManager> s2dataManager;
+    // UniquePointer<S2RequestService> s2requestService;
     UniquePointer<DialogManager> m_dlgManager;
 
     AlarmWidget *AlarmW;

@@ -7,7 +7,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <gen/files.h>
-#include <interfaces/conn/active_connection.h>
+//#include <interfaces/conn/active_connection.h>
 #include <map>
 
 namespace journals
@@ -19,13 +19,14 @@ const std::map<JournalType, QString> JournalTabWidget::s_prefixByType {
     { JournalType::Meas, "MeasJ" }   //
 };
 
-JournalTabWidget::JournalTabWidget(const JournalType type, QWidget *parent)
+JournalTabWidget::JournalTabWidget(const JournalType type, Interface::AsyncConnection *async, QWidget *parent)
     : QWidget(parent)
     , m_mainLayout(new QVBoxLayout)
     , m_modelView(nullptr)
     , m_progressIndicator(nullptr)
     , m_progressDialog(nullptr)
     , m_saveProgressDialog(new QProgressDialog(this))
+    , m_async(async)
     , m_type(type)
 {
     setupProgressDialogs();
@@ -105,13 +106,13 @@ void JournalTabWidget::gettingJournal()
         m_modelView->deleteLater();
     m_progressDialog->show();
     m_progressIndicator->startAnimation();
-    ActiveConnection::async()->reqFile(static_cast<quint16>(m_type));
+    m_async->reqFile(static_cast<quint16>(m_type));
 }
 
 void JournalTabWidget::eraseJournal()
 {
     if (EMessageBox::password(this))
-        ActiveConnection::async()->writeCommand(Interface::Commands::C_EraseJournals, static_cast<quint16>(m_type));
+        m_async->writeCommand(Interface::Commands::C_EraseJournals, static_cast<quint16>(m_type));
 }
 
 void JournalTabWidget::saveExcelJournal()
