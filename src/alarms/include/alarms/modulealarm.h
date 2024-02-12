@@ -4,12 +4,12 @@
 #include <QList>
 #include <QPair>
 #include <alarms/basealarm.h>
-#include <device/modulesettings.h>
+#include <device/xml_settings.h>
 #include <gen/datatypes.h>
 
-using AlarmType = Device::ModuleTypes::AlarmType;
-using AlarmValue = Device::ModuleTypes::AlarmValue;
-using SignalMap = Device::ModuleTypes::SignalMap;
+using AlarmType = Device::XmlDataTypes::AlarmType;
+using AlarmValue = Device::XmlDataTypes::AlarmValue;
+using SignalMap = Device::XmlDataTypes::SignalMap;
 
 /// \brief The class for alarm dialog, that displaying critical,
 /// warning and info alarms from XML configuration files.

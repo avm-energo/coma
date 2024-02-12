@@ -7,7 +7,7 @@ ConfigStorage::ConfigStorage(QObject *parent) : QObject(parent)
 {
 }
 
-const ModuleSettings &ConfigStorage::getModuleSettings() const noexcept
+const XmlSettings &ConfigStorage::getDeviceSettings() const noexcept
 {
     return m_settings;
 }
@@ -23,8 +23,8 @@ void ConfigStorage::clear() noexcept
     m_protocol.clear();
 }
 
-void ConfigStorage::signalDataReceive(const quint32 id, const quint32 addr, //
-    const quint16 count, const ModuleTypes::SignalType sigType)
+void ConfigStorage::signalDataReceive(const u32 id, const u32 addr, //
+    const u16 count, const XmlDataTypes::SignalType type)
 {
     if (id == 0)
         qWarning() << "Invalid signal id: " << id;
@@ -33,10 +33,10 @@ void ConfigStorage::signalDataReceive(const quint32 id, const quint32 addr, //
     else if (count == 0)
         qWarning() << "Invalid signal count, signal id: " << id;
     else
-        m_settings.appendSignal(id, { addr, count, sigType });
+        m_settings.appendSignal(id, { addr, count, type });
 }
 
-void ConfigStorage::tabDataReceive(const quint32 id, const QString &name)
+void ConfigStorage::tabDataReceive(const u32 id, const QString &name)
 {
     if (id == 0)
         qWarning() << "Invalid tab id: " << id;
@@ -46,30 +46,30 @@ void ConfigStorage::tabDataReceive(const quint32 id, const QString &name)
         m_settings.appendTab(id, name);
 }
 
-void ConfigStorage::sectionDataReceive(const ModuleTypes::SGMap &sgmap, const QString &secHead)
+void ConfigStorage::sectionDataReceive(const XmlDataTypes::SGMap &sgmap, const QString &secHead)
 {
     m_settings.appendSection({ secHead, sgmap });
 }
 
-void ConfigStorage::alarmDataReceive(const ModuleTypes::AlarmType type, const quint32 addr, //
-    const QString &desc, const QList<quint32> &highlights)
+void ConfigStorage::alarmDataReceive(const XmlDataTypes::AlarmType type, const u32 addr, //
+    const QString &desc, const QList<u32> &highlights)
 {
     m_settings.appendAlarm(type, addr, desc);
     m_settings.appendHighlight(type, addr, highlights);
 }
 
-void ConfigStorage::workJourDataReceive(const quint32 id, const QString &desc)
+void ConfigStorage::workJourDataReceive(const u32 id, const QString &desc)
 {
     m_settings.appendWorkJournal(id, desc);
 }
 
-void ConfigStorage::measJourDataReceive(const quint32 index, const QString &header, //
-    const ModuleTypes::BinaryType type, bool visib)
+void ConfigStorage::measJourDataReceive(const u32 index, const QString &header, //
+    const XmlDataTypes::BinaryType type, bool visib)
 {
     m_settings.appendMeasJournal(index, header, type, visib);
 }
 
-void ConfigStorage::hiddenTabDataReceived(const ModuleTypes::HiddenTab &hiddenTab)
+void ConfigStorage::hiddenTabDataReceived(const XmlDataTypes::HiddenTab &hiddenTab)
 {
     m_settings.appendHiddenTab(hiddenTab);
 }

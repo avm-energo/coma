@@ -68,33 +68,33 @@ bool Module::loadS2Settings(S2::ConfigStorage &s2Storage)
 /// \brief Загрузка настроек из файла/файлов настроек модуля с помощью ModuleXmlParser.
 void Module::loadModuleSettings(ConfigStorage &mStorage, S2::DataManager &s2manager)
 {
-    auto moduleParser = new Xml::ModuleParser(typeB, typeM, checks, this);
-    QObject::connect(moduleParser, &Xml::ModuleParser::startNewConfig,       //
-        &s2manager, &S2::DataManager::startNewConfig);                       //
-    QObject::connect(moduleParser, &Xml::ModuleParser::configDataSending,    //
-        &s2manager, &S2::DataManager::configDataReceive);                    //
-    QObject::connect(moduleParser, &Xml::ModuleParser::configNameSending,    //
-        &s2manager, &S2::DataManager::configNameReceive);                    //
-    QObject::connect(moduleParser, &Xml::ModuleParser::signalDataSending,    //
-        &mStorage, &ConfigStorage::signalDataReceive);                       //
-    QObject::connect(moduleParser, &Xml::ModuleParser::tabDataSending,       //
-        &mStorage, &ConfigStorage::tabDataReceive);                          //
-    QObject::connect(moduleParser, &Xml::ModuleParser::sectionDataSending,   //
-        &mStorage, &ConfigStorage::sectionDataReceive);                      //
-    QObject::connect(moduleParser, &Xml::ModuleParser::alarmDataSending,     //
-        &mStorage, &ConfigStorage::alarmDataReceive);                        //
-    QObject::connect(moduleParser, &Xml::ModuleParser::workJourDataSending,  //
-        &mStorage, &ConfigStorage::workJourDataReceive);                     //
-    QObject::connect(moduleParser, &Xml::ModuleParser::measJourDataSending,  //
-        &mStorage, &ConfigStorage::measJourDataReceive);                     //
-    QObject::connect(moduleParser, &Xml::ModuleParser::protocolGroupSending, //
-        &mStorage, &ConfigStorage::protocolGroupReceived);                   //
-    QObject::connect(moduleParser, &Xml::ModuleParser::hiddenTabDataSending, //
-        &mStorage, &ConfigStorage::hiddenTabDataReceived);                   //
-    QObject::connect(moduleParser, &Xml::ModuleParser::parseError,           //
-        this, &Module::parseErrorHandle);                                    //
-    moduleParser->parse();
-    moduleParser->deleteLater();
+    //    auto moduleParser = new Xml::ModuleParser(typeB, typeM, checks, this);
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::startNewConfig,       //
+    //        &s2manager, &S2::DataManager::startNewConfig);                       //
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::configDataSending,    //
+    //        &s2manager, &S2::DataManager::configDataReceive);                    //
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::configNameSending,    //
+    //        &s2manager, &S2::DataManager::configNameReceive);                    //
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::signalDataSending,    //
+    //        &mStorage, &ConfigStorage::signalDataReceive);                       //
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::tabDataSending,       //
+    //        &mStorage, &ConfigStorage::tabDataReceive);                          //
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::sectionDataSending,   //
+    //        &mStorage, &ConfigStorage::sectionDataReceive);                      //
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::alarmDataSending,     //
+    //        &mStorage, &ConfigStorage::alarmDataReceive);                        //
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::workJourDataSending,  //
+    //        &mStorage, &ConfigStorage::workJourDataReceive);                     //
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::measJourDataSending,  //
+    //        &mStorage, &ConfigStorage::measJourDataReceive);                     //
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::protocolGroupSending, //
+    //        &mStorage, &ConfigStorage::protocolGroupReceived);                   //
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::hiddenTabDataSending, //
+    //        &mStorage, &ConfigStorage::hiddenTabDataReceived);                   //
+    //    QObject::connect(moduleParser, &Xml::ModuleParser::parseError,           //
+    //        this, &Module::parseErrorHandle);                                    //
+    //    moduleParser->parse();
+    //    moduleParser->deleteLater();
 }
 
 void Module::parseErrorHandle(const QString errMsg)

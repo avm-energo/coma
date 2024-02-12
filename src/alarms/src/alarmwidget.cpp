@@ -33,7 +33,7 @@ void AlarmWidget::configure(Device::CurrentDevice *device)
     alarmStateAll->setupUI(AVM::HthToolTip);
     QObject::connect(device, &Device::CurrentDevice::healthChanged, alarmStateAll, &AlarmStateAll::update);
     addAlarm(alarmStateAll, "Состояние устройства");
-    const auto &moduleSettings = device->getConfigStorage()->getModuleSettings();
+    const auto &moduleSettings = device->getConfigStorage()->getDeviceSettings();
     const auto &alarmMap = moduleSettings.getAlarms();
     const auto &sigMap = moduleSettings.getSignals();
     for (const auto &[type, title] : alarmSettings)

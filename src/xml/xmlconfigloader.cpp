@@ -49,10 +49,9 @@ bool ConfigLoader::loadS2Data() noexcept
 
 bool ConfigLoader::loadDeviceData() noexcept
 {
-    const u16 typeB = m_device->getBaseType(), typeM = m_device->getMezzType();
     auto s2manager = m_device->getS2Datamanager();
     auto cfgStorage = m_device->getConfigStorage();
-    auto moduleParser = new Xml::ModuleParser(typeB, typeM, true, this);
+    auto moduleParser = new Xml::ModuleParser(this);
 
     QObject::connect(moduleParser, &Xml::ModuleParser::startNewConfig,       //
         s2manager, &S2::DataManager::startNewConfig);                        //
@@ -78,7 +77,7 @@ bool ConfigLoader::loadDeviceData() noexcept
         cfgStorage, &Device::ConfigStorage::hiddenTabDataReceived);          //
     QObject::connect(moduleParser, &Xml::ModuleParser::parseError,           //
         this, &Xml::ConfigLoader::parseErrorHandle);                         //
-    moduleParser->parse();
+    moduleParser->parse(m_device);
     moduleParser->deleteLater();
     return m_parseStatus;
 }

@@ -12,14 +12,14 @@ set(files_h
     "${INCLUDE_PATH}/file_provider.h"
     "${INCLUDE_PATH}/device_list.h"
     "${INCLUDE_PATH}/health.h"
-    "${INCLUDE_PATH}/modulesettings.h"
+    "${INCLUDE_PATH}/xml_settings.h"
 )
 
 set(files_cpp
     "${SRC_PATH}/configstorage.cpp"
     "${SRC_PATH}/current_device.cpp"
     "${SRC_PATH}/file_provider.cpp"
-    "${SRC_PATH}/modulesettings.cpp"
+    "${SRC_PATH}/xml_settings.cpp"
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
