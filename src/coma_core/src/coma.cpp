@@ -544,7 +544,7 @@ void Coma::prepareDialogs()
     //    }
 
     AlarmW->configure(m_currentDevice);
-    m_dlgManager->setupUI(m_appConfig, size());
+    m_dlgManager->setupUI(m_currentDevice, m_appConfig, size());
     // Запрашиваем s2 конфигурацию от модуля
     s2requestService->request(S2::FilesEnum::Config, true);
 

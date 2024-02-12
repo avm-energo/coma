@@ -155,16 +155,15 @@ void DialogCreator::createTuneDialogs()
         return;
     }
 
-    auto &workConfig = m_device->getS2Datamanager()->getCurrentConfiguration().m_workingConfig;
     if (m_typeB == BaseBoard::MTB_80)
     {
         if (m_typeM == Device::MezzanineBoard::MTM_81 || m_typeM == MezzanineBoard::MTM_82
             || m_typeM == MezzanineBoard::MTM_83)
-            addDialogToList(new Tune82Dialog(workConfig, m_typeM, m_parent), "Регулировка", "tune");
+            addDialogToList(new Tune82Dialog(m_device, m_parent), "Регулировка", "tune");
         else if (m_typeM == MezzanineBoard::MTM_84)
-            addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
+            addDialogToList(new TuneKIVDialog(m_device, m_parent), "Регулировка", "tune");
         else if (m_boxModel == Model::KIV)
-            addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
+            addDialogToList(new TuneKIVDialog(m_device, m_parent), "Регулировка", "tune");
         else
         {
             // TODO: Добавить регулировку для других модулей

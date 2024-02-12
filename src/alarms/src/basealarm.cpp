@@ -1,6 +1,7 @@
 #include "alarms/basealarm.h"
 
-BaseAlarm::BaseAlarm(QWidget *parent) : UWidget(parent), m_normalColor(Qt::transparent), m_alarmColor(Qt::red)
+BaseAlarm::BaseAlarm(Device::CurrentDevice *device, QWidget *parent)
+    : UWidget(device, parent), m_normalColor(Qt::transparent), m_alarmColor(Qt::red)
 {
 }
 

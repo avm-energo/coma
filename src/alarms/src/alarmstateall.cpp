@@ -5,7 +5,7 @@
 
 #include <QBoxLayout>
 
-AlarmStateAll::AlarmStateAll(QWidget *parent) : BaseAlarm(parent)
+AlarmStateAll::AlarmStateAll(Device::CurrentDevice *device, QWidget *parent) : BaseAlarm(device, parent)
 {
     m_alarmFlags = BSIALARMMASK;
 }

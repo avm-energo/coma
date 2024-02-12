@@ -60,6 +60,11 @@ S2DataManager *CurrentDevice::getS2Datamanager() noexcept
     return &m_s2manager;
 }
 
+FileProvider *CurrentDevice::getFileProvider() noexcept
+{
+    return &m_fileProvider;
+}
+
 u16 CurrentDevice::getBaseType() const noexcept
 {
     return m_bsi.MTypeB;

@@ -23,7 +23,7 @@ ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boar
     , m_datamanager(*m_device->getS2Datamanager())
     , m_boardConfig(m_datamanager.getConfiguration(boardType))
     , m_factory(m_boardConfig.m_workingConfig)
-    , m_errConfState(new ErrConfState)
+    , m_errConfState(new ErrConfState(device))
 {
     connect(&m_datamanager, &S2DataManager::parseStatus, this, &ConfigDialog::parseStatusHandle);
     connect(m_device->getFileProvider(), &Device::FileProvider::noConfigurationError, //

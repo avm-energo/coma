@@ -41,7 +41,7 @@ private:
     virtual void closeEvent(QCloseEvent *event) override;
 
 public:
-    explicit ErrConfState(QWidget *parent = nullptr);
+    explicit ErrConfState(Device::CurrentDevice *device, QWidget *parent = nullptr);
     /// \brief Function for showing this dialog window.
     void show();
 };

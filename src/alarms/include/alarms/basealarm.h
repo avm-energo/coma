@@ -10,7 +10,7 @@ class BaseAlarm : public UWidget
 {
     Q_OBJECT
 public:
-    explicit BaseAlarm(QWidget *parent = nullptr);
+    explicit BaseAlarm(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
     /// \brief Setter for the alarm color.
     void setAlarmColor(const QColor &newAlarmColor) noexcept;

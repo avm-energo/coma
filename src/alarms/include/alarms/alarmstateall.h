@@ -14,7 +14,7 @@ private:
     std::bitset<128> m_alarmFlags; // '1' equals alarm
 
 public:
-    explicit AlarmStateAll(QWidget *parent = nullptr);
+    explicit AlarmStateAll(Device::CurrentDevice *device, QWidget *parent = nullptr);
     /// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
     virtual void setupUI(const QStringList &events) override;
     /// \brief Request for updating a BSI data.

@@ -6,7 +6,8 @@
 #include <QLabel>
 #include <vector>
 
-ErrConfState::ErrConfState(QWidget *parent) : UWidget(parent), m_requestTimer(new QTimer(this))
+ErrConfState::ErrConfState(Device::CurrentDevice *device, QWidget *parent)
+    : UWidget(device, parent), m_requestTimer(new QTimer(this))
 {
     setupUI();
     configureRequest();

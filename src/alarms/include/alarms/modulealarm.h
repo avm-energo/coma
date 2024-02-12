@@ -29,7 +29,8 @@ private:
     void updatePixmap(const bool &isSet, const quint32 &position);
 
 public:
-    explicit ModuleAlarm(const AlarmType type, const AlarmValue &alarms, QWidget *parent = nullptr);
+    explicit ModuleAlarm(const AlarmType type, const AlarmValue &alarms, //
+        Device::CurrentDevice *device, QWidget *parent = nullptr);
 
     /// \brief Folowing the data: search a signal group whose range
     /// includes the address of the first alarm from the list.

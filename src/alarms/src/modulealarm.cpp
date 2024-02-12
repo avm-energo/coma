@@ -11,8 +11,9 @@ const std::map<AlarmType, QColor> ModuleAlarm::s_colors = {
     { AlarmType::Info, Qt::green }      //
 };
 
-ModuleAlarm::ModuleAlarm(const AlarmType type, const AlarmValue &alarms, QWidget *parent)
-    : BaseAlarm(parent), m_alarms(std::move(alarms))
+ModuleAlarm::ModuleAlarm(const AlarmType type, const AlarmValue &alarms, //
+    Device::CurrentDevice *device, QWidget *parent)
+    : BaseAlarm(device, parent), m_alarms(std::move(alarms))
 {
     auto search = s_colors.find(type);
     if (search != s_colors.cend())
