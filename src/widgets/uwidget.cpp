@@ -6,13 +6,15 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>
+#include <device/current_device.h>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/active_connection.h>
 
-UWidget::UWidget(QWidget *parent)
-    : QWidget(parent), m_dataUpdater(new ModuleDataUpdater(ActiveConnection::async(), this))
+UWidget::UWidget(Device::CurrentDevice *device, QWidget *parent)
+    : QWidget(parent), m_dataUpdater(new ModuleDataUpdater(device->async(), this)), m_device(device)
 {
+    Q_ASSERT(m_device != nullptr);
     // Отключим обновление виджета по умолчанию
     m_dataUpdater->setUpdatesEnabled(false);
     connect(m_dataUpdater, &ModuleDataUpdater::itsTimeToUpdateSinglePointSignal, this, &UWidget::updateSPData);
@@ -58,6 +60,11 @@ void UWidget::updateBitStringData(const DataTypes::BitStringStruct &bs)
 ModuleDataUpdater *UWidget::engine()
 {
     return m_dataUpdater;
+}
+
+Device::CurrentDevice *UWidget::device()
+{
+    return m_device;
 }
 
 bool UWidget::updatesEnabled()

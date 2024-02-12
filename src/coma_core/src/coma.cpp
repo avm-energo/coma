@@ -81,13 +81,12 @@ Coma::Coma(const AppConfiguration appCfg, QWidget *parent)
     , m_currentDevice(nullptr)
     , s2dataManager(new S2DataManager(this))
     , s2requestService(new S2RequestService(this))
-    , m_dlgManager(new DialogManager(ConfigStorage::GetInstance().getModuleSettings(), //
-          *s2dataManager, *s2requestService, this))
+    , m_dlgManager(new DialogManager(this))
     , editor(nullptr)
 {
     // connections
-    connect(s2requestService.get(), &S2RequestService::response, //
-        s2dataManager.get(), &S2DataManager::parseS2File);
+    // connect(s2requestService.get(), &S2RequestService::response, //
+    //    s2dataManager.get(), &S2DataManager::parseS2File);
     connect(m_connectionManager, &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
     // connect(m_connectionManager, &ConnectionManager::connectSuccesfull, this, &Coma::prepare);
     connect(m_connectionManager, &ConnectionManager::connectFailed, this, //
@@ -413,7 +412,6 @@ void Coma::initConnection(const ConnectStruct &st)
         // initInterfaceConnection();
         // prepare();
         initDevice(connection);
-        prepareDialogs();
     }
     else
         QApplication::restoreOverrideCursor();
@@ -447,9 +445,10 @@ void Coma::initInterfaceConnection()
     // m_currentConnection->connection(this, &Coma::update);
     auto currentConnection = m_currentDevice->async();
     currentConnection->connection(this, &Coma::update);
-    m_dlgManager->updateConnection(currentConnection);
+    // m_dlgManager->updateConnection(currentConnection);
     s2requestService->updateConnection(currentConnection);
     connectSetupBar();
+    prepareDialogs();
 }
 
 void Coma::connectSetupBar()
@@ -563,9 +562,9 @@ void Coma::disconnectAndClear()
     {
         AlarmW->clear();
         m_dlgManager->clearDialogs();
-        ConfigStorage::GetInstance().clear();
-        s2dataManager->clear();
-        Board::GetInstance().reset();
+        // ConfigStorage::GetInstance().clear();
+        // s2dataManager->clear();
+        // Board::GetInstance().reset();
         ActiveConnection::reset();
         m_connectionManager->breakConnection();
         m_currentDevice = nullptr;

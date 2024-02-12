@@ -19,6 +19,7 @@ CurrentDevice::CurrentDevice(AsyncConnection *conn)
     , m_isInitStage(true)
 {
     m_async->connection(this, &CurrentDevice::updateBSI);
+    connect(&m_fileProvider, &FileProvider::response, &m_s2manager, &S2DataManager::parseS2File);
     m_timeoutTimer.setInterval(m_async->getTimeout());
     connect(&m_timeoutTimer, &QTimer::timeout, this, [this] { initBSIEvent(Error::Msg::Timeout); });
 }

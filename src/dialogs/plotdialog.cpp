@@ -17,7 +17,7 @@ constexpr auto Uc = 120;
 constexpr auto Ic = -150;
 }
 
-PlotDialog::PlotDialog(QWidget *parent) : UDialog(parent)
+PlotDialog::PlotDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
     setupUI();
     engine()->addFloat({ 2400, 7 });

@@ -1,17 +1,18 @@
 #include "oscdialog.h"
 
 #include "../models/etablemodel.h"
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "../widgets/etableview.h"
 #include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
 
+#include <device/current_device.h>
 #include <gen/datatypes.h>
 #include <gen/files.h>
 #include <gen/timefunc.h>
 #include <s2/s2util.h>
 
-OscDialog::OscDialog(QWidget *parent) : UDialog(parent)
+OscDialog::OscDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
     m_dataUpdater->currentConnection()->connection(this, &OscDialog::fillOscInfo);
     m_dataUpdater->currentConnection()->connection(this, &OscDialog::fillOsc);
@@ -81,11 +82,13 @@ void OscDialog::eraseOsc()
 
 QString OscDialog::filename(quint64 time, quint32 oscNum) const
 {
-    const auto &board = Board::GetInstance();
+    // const auto &board = Board::GetInstance();
     QString filename = StdFunc::GetSystemHomeDir();
-    filename.push_back(board.UID());
+    filename.push_back(m_device->getUID());
+    // filename.push_back(board.UID());
     filename.push_back("-");
-    filename.push_back(QString::number(board.type(), 16));
+    filename.push_back(QString::number(m_device->getDeviceType(), 16));
+    // filename.push_back(QString::number(board.type(), 16));
     filename.push_back("-");
     filename.push_back(QString::number(oscNum));
     filename.push_back("-");

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <gen/integers.h>
 #include <string_view>
 #include <unordered_map>

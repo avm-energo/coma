@@ -4,7 +4,7 @@
 
 //#include <interfaces/connection.h>
 
-RelayDialog::RelayDialog(int relayCount, QWidget *parent) : UDialog(parent)
+RelayDialog::RelayDialog(int relayCount, Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(RelayWidget(relayCount, this));

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <gen/integers.h>
 
 namespace Device

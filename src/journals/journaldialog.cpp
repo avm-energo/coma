@@ -7,15 +7,18 @@
 
 #include <QTabWidget>
 #include <QVBoxLayout>
+#include <device/current_device.h>
 #include <s2/s2datatypes.h>
 
 namespace journals
 {
 
-JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent) : UDialog(parent), m_settings(settings)
+JournalDialog::JournalDialog(Device::CurrentDevice *device, QWidget *parent)
+    : UDialog(device, parent) //, m_settings(device)
 {
     disableSuccessMessage();
-    m_dataUpdater->currentConnection()->connection(this, &JournalDialog::receivedJournalFile);
+    m_device->async()->connection(this, &JournalDialog::receivedJournalFile);
+    // m_dataUpdater->currentConnection()->connection(this, &JournalDialog::receivedJournalFile);
     createJournalTabs();
     setupUI();
 }
@@ -26,13 +29,14 @@ void JournalDialog::createJournalTabs()
     auto journalType = JournalType::System;
     auto sysJourTab = new JournalTabWidget(journalType, this);
     m_journals.insert({ journalType, sysJourTab });
-    if (!m_settings.get().getWorkJours().isEmpty())
+    auto &settings = m_device->getConfigStorage()->getDeviceSettings();
+    if (!settings.getWorkJours().isEmpty())
     {
         journalType = JournalType::Work;
         auto workJourTab = new JournalTabWidget(journalType, this);
         m_journals.insert({ journalType, workJourTab });
     }
-    if (!m_settings.get().getMeasJours().empty())
+    if (!settings.getMeasJours().empty())
     {
         journalType = JournalType::Meas;
         auto measJourTab = new JournalTabWidget(journalType, this);
@@ -56,17 +60,17 @@ void JournalDialog::setupUI()
 BaseJournal *JournalDialog::createJournal(JournalType type, QObject *parent) noexcept
 {
     BaseJournal *journal = nullptr;
+    auto &settings = m_device->getConfigStorage()->getDeviceSettings();
     switch (type)
     {
     case JournalType::System:
         journal = new SysJournal(parent);
         break;
     case JournalType::Work:
-        journal = new WorkJournal(m_settings.get().getWorkJours(), parent);
+        journal = new WorkJournal(settings.getWorkJours(), parent);
         break;
     case JournalType::Meas:
-        /// TODO: make journal uwidget
-        // journal = new MeasJournal(m_settings.get().getMeasJours(), parent);
+        journal = new MeasJournal(settings.getMeasJours(), parent);
         break;
     default:
         journal = nullptr;

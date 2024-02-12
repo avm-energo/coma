@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../module/modules.h"
-#include "../module/modulesettings.h"
+//#include "../module/modules.h"
+//#include "../module/modulesettings.h"
 #include "../widgets/udialog.h"
 
+#include <device/xml_settings.h>
 #include <map>
 #include <set>
 
@@ -17,7 +18,8 @@ class HiddenDialog final : public UDialog
 {
     Q_OBJECT
 private:
-    ModuleTypes::HiddenSettings m_settings;
+    Device::XmlDataTypes::HiddenSettings m_settings;
+    // ModuleTypes::HiddenSettings m_settings;
     std::map<quint32, bool> m_srcAddrStates;
     QString m_currentBackground;
     DataTypes::HardwareStruct m_hardwareInfo;
@@ -30,14 +32,14 @@ private:
     /// \brief Функция для подготовки внутренних данных диалога
     /// и настройки запросов диалога к устройству.
     /// \ingroup Data manipulations
-    void prepareInternalData(const ModuleTypes::SignalMap &sigMap);
+    void prepareInternalData(const Device::XmlDataTypes::SignalMap &sigMap);
 
     /// \brief Создание и настройка UI диалога.
     /// \ingroup UI
     void setupUI();
     /// \brief Возвращает group box, созданный по переданным настройкам вкладки.
     /// \ingroup UI
-    QGroupBox *setupGroupBox(const ModuleTypes::HiddenTab &hiddenTab);
+    QGroupBox *setupGroupBox(const Device::XmlDataTypes::HiddenTab &hiddenTab);
     /// \brief Перегруженная функция для отрисовки фонового изображения.
     /// \ingroup UI
     void paintEvent(QPaintEvent *e) override;
@@ -50,14 +52,14 @@ private:
     /// \details Проверка происходит с помощью чек-бокса, отображаемого на всех
     /// вкладках, кроме вкалдки для базовой платы (она всегда включена по умолчанию).
     /// \ingroup Internal logic
-    bool isTabEnabled(const ModuleTypes::HiddenTab &tabSettings) const noexcept;
+    bool isTabEnabled(const Device::XmlDataTypes::HiddenTab &tabSettings) const noexcept;
     /// \brief Обновление (enabling) виджета на вкладке.
     /// \ingroup Internal logic
-    void updateWidget(const bool enabled, const ModuleTypes::HiddenWidget &widget);
+    void updateWidget(const bool enabled, const Device::XmlDataTypes::HiddenWidget &widget);
 
     /// \brief Функция для поиска виджета в диалоге по его адресу.
     /// \ingroup Internal logic
-    const ModuleTypes::HiddenWidget *findWidgetByAddress(const quint32 addr) const noexcept;
+    const Device::XmlDataTypes::HiddenWidget *findWidgetByAddress(const quint32 addr) const noexcept;
     /// \brief Функция выполняет проверку, получили ли все виджеты
     /// диалога данные при выполнении запроса к устройству.
     /// \ingroup Internal logic
@@ -67,11 +69,11 @@ private:
     void updateBitStringData(const DataTypes::BitStringStruct &bs) override;
     /// \brief Функция для заполнения виджета принятыми от устройства данными.
     /// \ingroup Internal logic
-    void fillWidget(const quint32 value, const ModuleTypes::HiddenWidget &widgetData);
+    void fillWidget(const quint32 value, const Device::XmlDataTypes::HiddenWidget &widgetData);
 
     /// \brief Функция для парсинга данных из виджета.
     /// \ingroup Internal logic
-    quint32 getDataFrom(const ModuleTypes::HiddenWidget &widgetData);
+    quint32 getDataFrom(const Device::XmlDataTypes::HiddenWidget &widgetData);
     /// \brief Функция для принятия от устройства данных в формате GeneralResponse.
     /// \details Запись данных в устройство делится на 2 этапа:
     /// - отправление команды EnableWritingHardware;
@@ -81,7 +83,7 @@ private:
     void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response) override;
 
 public:
-    explicit HiddenDialog(const ModuleSettings &settings, QWidget *parent = nullptr);
+    explicit HiddenDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
     /// \brief Устанавливает имя устройства в диалоге.
     /// \ingroup API
     void setModuleName(const QString &moduleName);

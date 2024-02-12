@@ -9,7 +9,7 @@ class InfoDialog : public UDialog
 {
     Q_OBJECT
 public:
-    explicit InfoDialog(QWidget *parent = nullptr);
+    explicit InfoDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
     void SetupUI();
 

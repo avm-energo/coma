@@ -10,29 +10,31 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QScrollArea>
+#include <device/current_device.h>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 #include <set>
 
-ConfigDialog::ConfigDialog(S2RequestService &s2service, //
-    S2DataManager &s2manager, const S2BoardType boardType, QWidget *parent)
-    : UDialog(parent)
-    , m_requestService(s2service)
-    , m_datamanager(s2manager)
+ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent)
+    : UDialog(device, parent)
+    //, m_requestService(device)
+    , m_datamanager(*m_device->getS2Datamanager())
     , m_boardConfig(m_datamanager.getConfiguration(boardType))
     , m_factory(m_boardConfig.m_workingConfig)
     , m_errConfState(new ErrConfState)
 {
     connect(&m_datamanager, &S2DataManager::parseStatus, this, &ConfigDialog::parseStatusHandle);
-    connect(&m_requestService, &S2RequestService::noConfigurationError, this, &ConfigDialog::noConfigurationHandle);
+    connect(m_device->getFileProvider(), &Device::FileProvider::noConfigurationError, //
+        this, &ConfigDialog::noConfigurationHandle);
 }
 
 void ConfigDialog::readConfig()
 {
     setSuccessMsg(tr("Конфигурация прочитана успешно"));
-    m_requestService.request(S2::FilesEnum::Config);
+    m_device->getFileProvider()->request(S2::FilesEnum::Config);
+    // m_requestService.request(S2::FilesEnum::Config);
 }
 
 void ConfigDialog::writeConfig()

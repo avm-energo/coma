@@ -10,8 +10,8 @@
 #include <map>
 #include <s2/s2util.h>
 
-FWUploadDialog::FWUploadDialog(QWidget *parent)
-    : UDialog(parent), uploadStatus(FirmwareUploadStatus::Start), parser(new S2::HexParser(this))
+FWUploadDialog::FWUploadDialog(Device::CurrentDevice *device, QWidget *parent)
+    : UDialog(device, parent), uploadStatus(FirmwareUploadStatus::Start), parser(new S2::HexParser(this))
 {
     QObject::connect(parser, &S2::HexParser::error, this, &FWUploadDialog::errorHandle);
     setSuccessMsg("Переход на новое ПО выполнен успешно");

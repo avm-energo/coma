@@ -1,9 +1,10 @@
 #pragma once
-#include "../module/modulesettings.h"
+//#include "../module/modulesettings.h"
 #include "../widgets/udialog.h"
 
 #include <QHBoxLayout>
 #include <QLabel>
+#include <device/xml_settings.h>
 
 /// \brief Абстрактный класс проверки работы модулей АВ-ТУК
 class CheckDialog : public UDialog
@@ -11,9 +12,11 @@ class CheckDialog : public UDialog
     Q_OBJECT
 public:
     using HighlightMap = QMultiMap<quint32, quint32>;
-    explicit CheckDialog(const ModuleTypes::Section &mSection, QWidget *parent = nullptr);
+
+    explicit CheckDialog(
+        const Device::XmlDataTypes::Section &mSection, Device::CurrentDevice *device, QWidget *parent = nullptr);
     ~CheckDialog() override;
-    void setHighlights(Modules::AlarmType type, const HighlightMap &map);
+    void setHighlights(Device::XmlDataTypes::AlarmType type, const HighlightMap &map);
 
 public slots:
     void reqUpdate() override;
@@ -39,22 +42,23 @@ private:
      */
     QList<TabWidget> m_TabList;
     QMap<int, BdBlocks *> Bd_blocks;
-    const ModuleTypes::Section &mSection;
+    const Device::XmlDataTypes::Section &mSection;
     int currentTabIndex;
     HighlightMap m_highlightWarn, m_highlightCrit;
 
     void setupUI();
     void setupTabWidget();
-    void addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *widget);
+    void addSignals(const QList<Device::XmlDataTypes::SGroup> &groups, UWidget *widget);
     void uponInterfaceSetting() override;
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
-    QString getFormatted(const ModuleTypes::MWidget &widget, //
+    QString getFormatted(const Device::XmlDataTypes::MWidget &widget, //
         const QString &form, const quint32 number, const quint32 start = 1);
-    void updatePixmap(const ModuleTypes::MWidget &mwidget, const DataTypes::BitStringStruct &bs, UWidget *uwidget);
-    QLabel *createPixmapIndicator(const ModuleTypes::MWidget &mwidget, const quint32 index);
-    QVBoxLayout *setupGroup(const ModuleTypes::SGroup &arg, UWidget *uwidget);
-    QGridLayout *setupFloatWidget(const ModuleTypes::MWidget &mwidget, const int wCount);
-    QVBoxLayout *setupBitsetWidget(const ModuleTypes::MWidget &mwidget, UWidget *dataUpdater);
+    void updatePixmap(const Device::XmlDataTypes::MWidget &mwidget, //
+        const DataTypes::BitStringStruct &bs, UWidget *uwidget);
+    QLabel *createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const quint32 index);
+    QVBoxLayout *setupGroup(const Device::XmlDataTypes::SGroup &arg, UWidget *uwidget);
+    QGridLayout *setupFloatWidget(const Device::XmlDataTypes::MWidget &mwidget, const int wCount);
+    QVBoxLayout *setupBitsetWidget(const Device::XmlDataTypes::MWidget &mwidget, UWidget *dataUpdater);
 
 private slots:
     void tabChanged(int newIndex);

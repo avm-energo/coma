@@ -1,7 +1,7 @@
 #include "infodialog.h"
 
 // #include <interfaces/utils/datamanager.h>
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "../widgets/wd_func.h"
 
 #include <QMessageBox>
@@ -9,15 +9,16 @@
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <interfaces/conn/active_connection.h>
+//#include <interfaces/conn/active_connection.h>
+#include <device/current_device.h>
 
-InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
+InfoDialog::InfoDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
     auto conn = engine()->currentConnection();
-    connect(&Board::GetInstance(), &Board::readyRead, this, &InfoDialog::sync);
-    connect(&Board::GetInstance(), &Board::readyReadExt, this, &InfoDialog::syncExt);
+    // connect(&Board::GetInstance(), &Board::readyRead, this, &InfoDialog::sync);
+    // connect(&Board::GetInstance(), &Board::readyReadExt, this, &InfoDialog::syncExt);
     connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSI);
-    if (ActiveConnection::sync()->supportBSIExt())
+    if (device->sync()->supportBSIExt())
     {
         connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSIExt);
     }
@@ -33,21 +34,21 @@ void InfoDialog::SetupUI()
     QGridLayout *slyout = new QGridLayout;
 
     const QList<QPair<QString, QString>> dialogPage {
-        { Board::GetInstance().moduleName(), "Тип устройства:" }, //
-        { "namepo", "Наименование программы:" },                  //
-        { "snle", "Серийный номер устройства:" },                 //
-        { "fwverle", "Версия ПО:" },                              //
-        { "verloader", "Верcия Loader:" },                        //
-        { "cfcrcle", "КС конфигурации:" },                        //
-        { "rstle", "Последний сброс:" },                          //
-        { "rstcountle", "Количество сбросов:" },                  //
-        { "cpuidle", "ИД процессора:" },                          //
-        { "typeble", "Тип базовой платы:" },                      //
-        { "snble", "Серийный номер базовой платы:" },             //
-        { "hwble", "Аппаратная версия базовой платы:" },          //
-        { "typemle", "Тип мезонинной платы:" },                   //
-        { "snmle", "Серийный номер мезонинной платы:" },          //
-        { "hwmle", "Аппаратная версия мезонинной платы:" }        //
+        { m_device->getDeviceName(), "Тип устройства:" },  //
+        { "namepo", "Наименование программы:" },           //
+        { "snle", "Серийный номер устройства:" },          //
+        { "fwverle", "Версия ПО:" },                       //
+        { "verloader", "Верcия Loader:" },                 //
+        { "cfcrcle", "КС конфигурации:" },                 //
+        { "rstle", "Последний сброс:" },                   //
+        { "rstcountle", "Количество сбросов:" },           //
+        { "cpuidle", "ИД процессора:" },                   //
+        { "typeble", "Тип базовой платы:" },               //
+        { "snble", "Серийный номер базовой платы:" },      //
+        { "hwble", "Аппаратная версия базовой платы:" },   //
+        { "typemle", "Тип мезонинной платы:" },            //
+        { "snmle", "Серийный номер мезонинной платы:" },   //
+        { "hwmle", "Аппаратная версия мезонинной платы:" } //
 
     };
     for (int i = 0; i < dialogPage.size(); ++i)
@@ -64,10 +65,11 @@ void InfoDialog::SetupUI()
 
 void InfoDialog::FillBsi()
 {
+    // const auto bsi = Board::GetInstance().baseSerialInfo();
+    // WDFunc::SetLBLText(this, Board::GetInstance().moduleName(), Board::GetInstance().moduleName());
 
-    const auto bsi = Board::GetInstance().baseSerialInfo();
-
-    WDFunc::SetLBLText(this, Board::GetInstance().moduleName(), Board::GetInstance().moduleName());
+    const auto &bsi = m_device->bsi();
+    WDFunc::SetLBLText(this, m_device->getDeviceName(), m_device->getDeviceName());
     WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
     WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
     WDFunc::SetLBLText(this, "cfcrcle", "0x" + QString::number(static_cast<uint>(bsi.Cfcrc), 16));
@@ -85,11 +87,12 @@ void InfoDialog::FillBsi()
 
 void InfoDialog::FillBsiExt()
 {
-    const auto bsi = Board::GetInstance().baseSerialInfoExt();
-    WDFunc::SetLBLText(this, "verloader", StdFunc::VerToStr(bsi.VerLoader));
-    const char *str = reinterpret_cast<const char *>(&bsi.NamePO);
-    std::string string(str, sizeof(quint32));
-    WDFunc::SetLBLText(this, "namepo", QString::fromStdString(string));
+    /// TODO: после вынесения BSI EXT в XML обновить этот метод
+    // const auto bsi = Board::GetInstance().baseSerialInfoExt();
+    // WDFunc::SetLBLText(this, "verloader", StdFunc::VerToStr(bsi.VerLoader));
+    // const char *str = reinterpret_cast<const char *>(&bsi.NamePO);
+    // std::string string(str, sizeof(quint32));
+    // WDFunc::SetLBLText(this, "namepo", QString::fromStdString(string));
 }
 
 void InfoDialog::uponInterfaceSetting()

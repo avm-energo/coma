@@ -1,16 +1,19 @@
 #include "checkdialog.h"
 
-#include "../module/board.h"
-#include "../module/configstorage.h"
+//#include "../module/board.h"
+//#include "../module/configstorage.h"
 #include "../widgets/wd_func.h"
 
 #include <QGroupBox>
 #include <QTabWidget>
 #include <bitset>
+#include <device/current_device.h>
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <set>
+
+using namespace Device::XmlDataTypes;
 
 constexpr auto maxIndicatorCountInRow = 10;
 constexpr auto circleRadius = 12;
@@ -20,8 +23,12 @@ constexpr auto defaultStyle = "QLabel {border: 1px solid green; border-radius: 4
 constexpr auto errStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
                           "background-color: %1; color: black;}";
 
-CheckDialog::CheckDialog(const ModuleTypes::Section &section, QWidget *parent) : UDialog(parent), mSection(section)
+CheckDialog::CheckDialog(const Section &section, Device::CurrentDevice *device, QWidget *parent)
+    : UDialog(device, parent), mSection(section)
 {
+    auto &settings = m_device->getConfigStorage()->getDeviceSettings();
+    setHighlights(AlarmType::Critical, settings.getHighlights(AlarmType::Critical));
+    setHighlights(AlarmType::Warning, settings.getHighlights(AlarmType::Warning));
 }
 
 CheckDialog::~CheckDialog()
@@ -30,14 +37,14 @@ CheckDialog::~CheckDialog()
     Bd_blocks.clear();
 }
 
-void CheckDialog::setHighlights(Modules::AlarmType type, const HighlightMap &map)
+void CheckDialog::setHighlights(AlarmType type, const HighlightMap &map)
 {
     switch (type)
     {
-    case Modules::AlarmType::Warning:
+    case AlarmType::Warning:
         m_highlightWarn = map;
         break;
-    case Modules::AlarmType::Critical:
+    case AlarmType::Critical:
         m_highlightCrit = map;
         break;
     default:
@@ -109,10 +116,12 @@ void CheckDialog::tabChanged(int newIndex)
 
 void CheckDialog::setupUI()
 {
+    const auto &tabs = m_device->getConfigStorage()->getDeviceSettings().getTabs();
+    // const auto &tabs = ConfigStorage::GetInstance().getModuleSettings().getTabs();
     const auto tabIds = mSection.sgMap.uniqueKeys();
     for (auto &&tabId : tabIds)
     {
-        auto widget = new UWidget(this);
+        auto widget = new UWidget(m_device, this);
         auto layout = new QVBoxLayout;
         const auto groups = mSection.sgMap.values(tabId);
         for (auto &&group : groups)
@@ -125,7 +134,6 @@ void CheckDialog::setupUI()
         layout->addStretch(100);
         widget->setLayout(layout);
         addSignals(groups, widget);
-        const auto &tabs = ConfigStorage::GetInstance().getModuleSettings().getTabs();
         m_TabList.push_back({ tabs.value(tabId), widget });
     }
     m_TabList.first().widget->engine()->setUpdatesEnabled();
@@ -147,10 +155,11 @@ void CheckDialog::setupTabWidget()
     connect(checkTabWidget, &QTabWidget::currentChanged, this, &CheckDialog::tabChanged);
 }
 
-void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *widget)
+void CheckDialog::addSignals(const QList<SGroup> &groups, UWidget *widget)
 {
     std::set<quint32> sigIds;
-    auto &sigMap = ConfigStorage::GetInstance().getModuleSettings().getSignals();
+    // auto &sigMap = ConfigStorage::GetInstance().getModuleSettings().getSignals();
+    auto &sigMap = m_device->getConfigStorage()->getDeviceSettings().getSignals();
 
     // Для каждой группы...
     for (auto &&group : groups)
@@ -161,10 +170,10 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
             // ... среди сигналов ищем такой, чтобы...
             auto search = std::find_if(sigMap.cbegin(), sigMap.cend(),
                 // ... виджет попадал в допустимый диапазон сигнала...
-                [&](const SigMapValue &element) -> bool {
+                [&](const Device::SigMapValue &element) -> bool {
                     auto &signal = element.second;
                     auto start = widget.startAddr;
-                    auto end = (widget.view == ModuleTypes::ViewType::Bitset) ? (start + 1) : (start + widget.count);
+                    auto end = (widget.view == ViewType::Bitset) ? (start + 1) : (start + widget.count);
                     auto acceptStart = signal.startAddr;
                     auto acceptEnd = acceptStart + signal.count;
                     return ((start >= acceptStart && start < acceptEnd) && (end > acceptStart && end <= acceptEnd));
@@ -183,13 +192,13 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
         auto signal = sigMap.at(id);
         switch (signal.sigType)
         {
-        case ModuleTypes::SignalType::Float:
+        case SignalType::Float:
             widget->engine()->addFloat({ signal.startAddr, signal.count });
             break;
-        case ModuleTypes::SignalType::SinglePointWithTime:
+        case SignalType::SinglePointWithTime:
             widget->engine()->addSp({ signal.startAddr, signal.count });
             break;
-        case ModuleTypes::SignalType::BitString:
+        case SignalType::BitString:
             widget->engine()->addBs({ signal.startAddr, signal.count });
             break;
         default:
@@ -199,7 +208,7 @@ void CheckDialog::addSignals(const QList<ModuleTypes::SGroup> &groups, UWidget *
     }
 }
 
-QString CheckDialog::getFormatted(const ModuleTypes::MWidget &widget, //
+QString CheckDialog::getFormatted(const MWidget &widget, //
     const QString &form, const quint32 number, const quint32 start)
 {
     if (!widget.subItemList.empty() && number < widget.subItemList.count())
@@ -208,20 +217,20 @@ QString CheckDialog::getFormatted(const ModuleTypes::MWidget &widget, //
         return (widget.count > 1) ? form.arg(start + number) : form;
 }
 
-QVBoxLayout *CheckDialog::setupGroup(const ModuleTypes::SGroup &arg, UWidget *uwidget)
+QVBoxLayout *CheckDialog::setupGroup(const SGroup &arg, UWidget *uwidget)
 {
     auto groupLayout = new QVBoxLayout;
     for (auto &&mwidget : arg.widgets)
     {
         // Float
-        if (mwidget.view == ModuleTypes::ViewType::Float)
+        if (mwidget.view == ViewType::Float)
         {
             auto widgetLayout = setupFloatWidget(mwidget, arg.widgets.size());
             if (widgetLayout != nullptr)
                 groupLayout->addLayout(widgetLayout);
         }
         // Bitset
-        else if (mwidget.view == ModuleTypes::ViewType::Bitset)
+        else if (mwidget.view == ViewType::Bitset)
         {
             auto widgetLayout = setupBitsetWidget(mwidget, uwidget);
             if (widgetLayout != nullptr)
@@ -231,7 +240,7 @@ QVBoxLayout *CheckDialog::setupGroup(const ModuleTypes::SGroup &arg, UWidget *uw
     return groupLayout;
 }
 
-QGridLayout *CheckDialog::setupFloatWidget(const ModuleTypes::MWidget &mwidget, const int wCount)
+QGridLayout *CheckDialog::setupFloatWidget(const MWidget &mwidget, const int wCount)
 {
     auto gridLayout = new QGridLayout;
     auto count = mwidget.count;
@@ -257,8 +266,7 @@ QGridLayout *CheckDialog::setupFloatWidget(const ModuleTypes::MWidget &mwidget, 
     return gridLayout;
 }
 
-void CheckDialog::updatePixmap(
-    const ModuleTypes::MWidget &mwidget, const DataTypes::BitStringStruct &bs, UWidget *uwidget)
+void CheckDialog::updatePixmap(const MWidget &mwidget, const DataTypes::BitStringStruct &bs, UWidget *uwidget)
 {
     if (bs.sigAdr == mwidget.startAddr && bs.sigQuality == DataTypes::Quality::Good)
     {
@@ -273,7 +281,7 @@ void CheckDialog::updatePixmap(
     }
 }
 
-QLabel *CheckDialog::createPixmapIndicator(const ModuleTypes::MWidget &mwidget, const quint32 index)
+QLabel *CheckDialog::createPixmapIndicator(const MWidget &mwidget, const quint32 index)
 {
     // TODO: Must be member of mwidget
     constexpr auto startIndex = 0;
@@ -287,7 +295,7 @@ QLabel *CheckDialog::createPixmapIndicator(const ModuleTypes::MWidget &mwidget, 
     return indicatorLabel;
 }
 
-QVBoxLayout *CheckDialog::setupBitsetWidget(const ModuleTypes::MWidget &mwidget, UWidget *widget)
+QVBoxLayout *CheckDialog::setupBitsetWidget(const MWidget &mwidget, UWidget *widget)
 {
     auto widgetLayout = new QVBoxLayout;
     auto bitsetWidget = new QWidget(this);

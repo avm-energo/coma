@@ -6,23 +6,23 @@
 #include <QMessageBox>
 #include <QSettings>
 
-UDialog::UDialog(QWidget *parent) : UWidget(parent)
+UDialog::UDialog(Device::CurrentDevice *device, QWidget *parent) : UWidget(device, parent)
 {
     showSuccessMessageFlag = true;
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
 }
 
-void UDialog::updateConnection(AsyncConnection *conn)
-{
-    m_dataUpdater->updateConnection(conn);
-    if (conn != nullptr)
-    {
-        if (m_genRespConn)
-            disconnect(m_genRespConn);
-        m_genRespConn = conn->connection(this, &UDialog::updateGeneralResponse);
-    }
-}
+// void UDialog::updateConnection(AsyncConnection *conn)
+//{
+//    m_dataUpdater->updateConnection(conn);
+//    if (conn != nullptr)
+//    {
+//        if (m_genRespConn)
+//            disconnect(m_genRespConn);
+//        m_genRespConn = conn->connection(this, &UDialog::updateGeneralResponse);
+//    }
+//}
 
 void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
 {

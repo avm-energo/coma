@@ -1,6 +1,6 @@
 #include "../dialogs/timedialog.h"
 
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "../widgets/wd_func.h"
 
 #include <QDateTime>
@@ -17,7 +17,8 @@
 constexpr char directOrder[] = "dd-MM-yyyy HH:mm:ss";
 constexpr char reverseOrder[] = "yyyy-MM-ddTHH:mm:ss";
 
-TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent), First(false), Timer(new QTimer(this))
+TimeDialog::TimeDialog(Device::CurrentDevice *device, QWidget *parent)
+    : UDialog(device, parent), First(false), Timer(new QTimer(this))
 {
 }
 

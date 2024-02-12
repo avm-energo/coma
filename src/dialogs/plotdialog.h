@@ -79,7 +79,7 @@ struct GraphData
 class PlotDialog : public UDialog
 {
 public:
-    PlotDialog(QWidget *parent = nullptr);
+    PlotDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
     void updateFloatData(const DataTypes::FloatStruct &fl) override;
     void reqUpdate() override;

@@ -1,13 +1,14 @@
 #pragma once
 
-#include "../module/board.h"
-#include "../module/modules.h"
-#include "../module/modulesettings.h"
-#include "../module/s2requestservice.h"
+//#include "../module/board.h"
+//#include "../module/modules.h"
+//#include "../module/modulesettings.h"
+//#include "../module/s2requestservice.h"
 #include "../widgets/udialog.h"
 
 #include <QObject>
-#include <s2/s2datamanager.h>
+#include <device/device_list.h>
+//#include <s2/s2datamanager.h>
 
 /// \brief Enumeration for application configuration.
 enum class AppConfiguration : bool
@@ -21,19 +22,28 @@ class DialogCreator : public QObject
 {
     Q_OBJECT
 private:
-    Modules::Model m_boxModel;
-    Modules::BaseBoard m_typeB;
-    Modules::MezzanineBoard m_typeM;
-    const ModuleSettings &m_settings;
-    const Board &m_board;
-    S2DataManager &m_s2manager;
-    S2RequestService &m_s2service;
+    Device::CurrentDevice *m_device;
+    Device::Model m_boxModel;
+    Device::BaseBoard m_typeB;
+    Device::MezzanineBoard m_typeM;
+
+    // Modules::Model m_boxModel;
+    // Modules::BaseBoard m_typeB;
+    // Modules::MezzanineBoard m_typeM;
+    // const ModuleSettings &m_settings;
+    // const Board &m_board;
+    // S2DataManager &m_s2manager;
+    // S2RequestService &m_s2service;
+
     QWidget *m_parent;
     QList<UDialog *> m_dialogs;
 
 public:
-    DialogCreator(const ModuleSettings &settings, const Board &board, //
-        S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent = nullptr);
+    explicit DialogCreator(Device::CurrentDevice *device, QWidget *parent = nullptr);
+
+    // DialogCreator(const ModuleSettings &settings, const Board &board, //
+    //    S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent = nullptr);
+
     /// \brief Creating the list with dialogs based on module settings for the current connected device.
     void createDialogs(const AppConfiguration appCfg);
     /// \brief Removing all dialogs in the dialog list.
@@ -44,8 +54,8 @@ public:
 private:
     /// \brief Adding the created dialog to the list for saving.
     void addDialogToList(UDialog *dlg, const QString &caption, const QString &name);
-    /// \brief Updating creator's internal data.
-    void updateTypes();
+    // \brief Updating creator's internal data.
+    // void updateTypes();
     /// \brief Creating config dialogs.
     void createConfigDialogs();
     /// \brief Creating check dialogs.

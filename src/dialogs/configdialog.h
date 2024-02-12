@@ -16,8 +16,7 @@ class QTabWidget;
 class ConfigDialog : public UDialog
 {
 public:
-    explicit ConfigDialog(S2RequestService &s2service, S2DataManager &s2manager, //
-        const S2BoardType boardType, QWidget *parent = nullptr);
+    explicit ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent = nullptr);
     void setDefaultConfig();
 
 private slots:
@@ -43,7 +42,7 @@ private:
     bool isVisible(const quint16 id) const;
     void showConfigErrState();
 
-    S2RequestService &m_requestService;
+    // S2RequestService &m_requestService;
     S2DataManager &m_datamanager;
     S2BoardConfig &m_boardConfig;
     WidgetFactory m_factory;

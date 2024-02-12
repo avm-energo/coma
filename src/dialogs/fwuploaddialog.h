@@ -23,7 +23,7 @@ private:
     S2::HexParser *parser;
 
 public:
-    explicit FWUploadDialog(QWidget *parent = nullptr);
+    explicit FWUploadDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
     void setupUI();
     bool writeCheckPassword();
     virtual void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response) override;

@@ -1,13 +1,14 @@
 #include "switchjournaldialog.h"
 
 #include "../models/etablemodel.h"
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "../oscillograms/swjmanager.h"
 #include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
 
 #include <QHeaderView>
 #include <QMessageBox>
+#include <device/current_device.h>
 #include <gen/files.h>
 #include <gen/timefunc.h>
 #include <s2/s2util.h>
@@ -15,7 +16,7 @@
 // constexpr int MAXSWJNUM = 262144;
 constexpr unsigned char TECH_SWJ = 0x04;
 
-SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : UDialog(parent)
+SwitchJournalDialog::SwitchJournalDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
     m_dataUpdater->currentConnection()->connection(this, &SwitchJournalDialog::fillSwJInfo);
     m_dataUpdater->currentConnection()->connection(this, &SwitchJournalDialog::fillJour);
@@ -231,11 +232,13 @@ bool SwitchJournalDialog::loadIfExist(quint32 size)
 
 QString SwitchJournalDialog::filename(quint64 time) const
 {
-    const auto &board = Board::GetInstance();
+    // const auto &board = Board::GetInstance();
     QString filename = StdFunc::GetSystemHomeDir();
-    filename.push_back(board.UID());
+    filename.push_back(m_device->getUID());
+    // filename.push_back(board.UID());
     filename.push_back("-");
-    filename.push_back(QString::number(board.type(), 16));
+    filename.push_back(QString::number(m_device->getDeviceType(), 16));
+    // filename.push_back(QString::number(board.type(), 16));
     filename.push_back("-");
     filename.push_back(QString::number(reqSwJNum));
     filename.push_back("-");

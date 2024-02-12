@@ -1,10 +1,10 @@
 #include "dialogmanager.h"
 
-DialogManager::DialogManager(const ModuleSettings &settings, //
-    S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent)
-    : UDialog(parent)
+DialogManager::DialogManager(QWidget *parent)
+    : QWidget(parent)
     , m_currentDialogIndex(0)
-    , m_dlgCreator(new DialogCreator(settings, Board::GetInstance(), s2DataManager, s2ReqService, this))
+    , m_dlgCreator { nullptr }
+    //, m_dlgCreator(new DialogCreator(settings, Board::GetInstance(), s2DataManager, s2ReqService, this))
     , m_workspace(new QStackedWidget(this))
     , m_sidebar(new QListWidget(this))
     , m_reqTimer(new QTimer(this))
@@ -42,6 +42,7 @@ QPair<QListWidget *, QStackedWidget *> DialogManager::getUI()
 
 void DialogManager::dialogChanged(int newIndex)
 {
+    Q_ASSERT(m_dlgCreator.get() != nullptr);
     auto &dialogs = m_dlgCreator->getDialogs();
     // Индекс -1 норма, когда удаляются диалоги
     if (newIndex >= 0 && newIndex < dialogs.size())
@@ -57,19 +58,21 @@ void DialogManager::dialogChanged(int newIndex)
 
 void DialogManager::reqUpdate()
 {
+    Q_ASSERT(m_dlgCreator.get() != nullptr);
     auto currentDialog = m_dlgCreator->getDialogs()[m_currentDialogIndex];
     currentDialog->reqUpdate();
 }
 
-void DialogManager::setupUI(const AppConfiguration appCfg, const QSize size)
+void DialogManager::setupUI(Device::CurrentDevice *device, const AppConfiguration appCfg, const QSize size)
 {
     Q_ASSERT(m_workspace->count() == 0);
+    m_dlgCreator.reset(new DialogCreator(device, this));
     m_dlgCreator->createDialogs(appCfg);
     for (auto &dialog : m_dlgCreator->getDialogs())
     {
         dialog->engine()->setUpdatesEnabled(false);
         dialog->uponInterfaceSetting();
-        dialog->updateConnection(m_dataUpdater->currentConnection());
+        // dialog->updateConnection(m_dataUpdater->currentConnection());
         auto item = new QListWidgetItem(dialog->getCaption(), m_sidebar.get());
         item->setSizeHint(QSize(0, size.height() / 20));
         item->setTextAlignment(Qt::AlignCenter);
@@ -79,8 +82,7 @@ void DialogManager::setupUI(const AppConfiguration appCfg, const QSize size)
     m_currentDialogIndex = 0;
     m_dlgCreator->getDialogs()[m_currentDialogIndex]->engine()->setUpdatesEnabled(true);
     connect(m_workspace.get(), &QStackedWidget::currentChanged, this, &DialogManager::dialogChanged);
-    m_sidebar->setMinimumWidth(size.width() / 6);
-    m_sidebar->setMaximumWidth(size.width() / 5);
+
     showUI();
     m_reqTimer->start();
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <device/bsi.h>
 #include <device/configstorage.h>
 #include <device/file_provider.h>
