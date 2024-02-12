@@ -65,7 +65,8 @@ BaseJournal *JournalDialog::createJournal(JournalType type, QObject *parent) noe
         journal = new WorkJournal(m_settings.get().getWorkJours(), parent);
         break;
     case JournalType::Meas:
-        journal = new MeasJournal(m_settings.get().getMeasJours(), parent);
+        /// TODO: make journal uwidget
+        // journal = new MeasJournal(m_settings.get().getMeasJours(), parent);
         break;
     default:
         journal = nullptr;

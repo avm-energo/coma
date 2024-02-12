@@ -1,14 +1,15 @@
 #pragma once
 
-#include "../module/modulesettings.h"
+//#include "../module/modulesettings.h"
 
 #include <QTimeZone>
+#include <device/xml_settings.h>
 #include <gen/timefunc.h>
 
 namespace journals
 {
 
-using MeasSettings = ModuleTypes::MeasJourList;
+using MeasSettings = Device::XmlDataTypes::MeasJourList;
 using JournalData = QVector<QVector<QVariant>>;
 
 /// \brief Класс для парсинга событий из журналов измерений.

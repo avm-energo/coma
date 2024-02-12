@@ -90,22 +90,23 @@ BaseJournal *JournalViewer::createJournal(const JournalType type, const quint16 
 
 void JournalViewer::parseSettings(const quint16 typeB, const quint16 typeM)
 {
-    auto moduleParser = new Xml::ModuleParser(typeB, typeM, false, this);
+    auto moduleParser = new Xml::ModuleParser(this);
     QObject::connect(moduleParser, &Xml::ModuleParser::workJourDataSending, this, &JournalViewer::workDataReceived);
     QObject::connect(moduleParser, &Xml::ModuleParser::measJourDataSending, this, &JournalViewer::measDataReceived);
-    moduleParser->parse({ "journals" });
+    moduleParser->parse(typeB, typeM, { "journals" });
     moduleParser->deleteLater();
 }
 
-void JournalViewer::workDataReceived(const quint32 id, const QString &desc)
+void JournalViewer::workDataReceived(const u32 id, const QString &desc)
 {
     m_workSettings.insert(id, desc);
 }
 
-void JournalViewer::measDataReceived(const quint32 index, const QString &header, //
-    const ModuleTypes::BinaryType type, bool visib)
+void JournalViewer::measDataReceived(const u32 index, const QString &header, //
+    const journals::BinaryType type, bool visib)
 {
-    m_measSettings.push_back(ModuleTypes::MeasJournal { index, type, visib, header });
+    using MeasJournal = Device::XmlDataTypes::MeasJournal;
+    m_measSettings.push_back(MeasJournal { index, type, visib, header });
 }
 
 void JournalViewer::saveExcelJournal()

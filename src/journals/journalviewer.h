@@ -1,13 +1,18 @@
 #pragma once
 
-#include "../module/modulesettings.h"
+//#include "../module/modulesettings.h"
 #include "basejournal.h"
 
 #include <QDialog>
+#include <device/xml_settings.h>
 #include <s2/s2datatypes.h>
 
 namespace journals
 {
+
+using MeasSettings = Device::XmlDataTypes::MeasJourList;
+using WorkSettings = Device::XmlDataTypes::WorkJourMap;
+using BinaryType = Device::XmlDataTypes::BinaryType;
 
 /// \brief Просмотрщик журналов.
 /// \details Класс для отображения журналов в бинарном формате.
@@ -16,8 +21,8 @@ class JournalViewer : public QDialog
     Q_OBJECT
 private:
     UniquePointer<BaseJournal> m_journal;
-    ModuleTypes::WorkJourMap m_workSettings;
-    ModuleTypes::MeasJourList m_measSettings;
+    WorkSettings m_workSettings;
+    MeasSettings m_measSettings;
 
     /// \brief Парсинг и отображение полученного файла журнала.
     void showJournal(const S2::S2BFile &file);
@@ -39,9 +44,9 @@ private:
 
 private slots:
     /// \brief Слот для сохранения настроек рабочего журнала.
-    void workDataReceived(const quint32 id, const QString &desc);
+    void workDataReceived(const u32 id, const QString &desc);
     /// \brief Слот для сохранения настроек журнала измерений.
-    void measDataReceived(const quint32 index, const QString &header, const ModuleTypes::BinaryType type, bool visib);
+    void measDataReceived(const u32 index, const QString &header, const journals::BinaryType type, bool visib);
     /// \brief Слот для сохранения журнала в Excel-таблицу.
     void saveExcelJournal();
 
