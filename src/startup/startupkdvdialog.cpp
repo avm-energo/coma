@@ -1,6 +1,6 @@
 #include "startupkdvdialog.h"
 
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
@@ -11,7 +11,8 @@
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 
-StartupKDVDialog::StartupKDVDialog(QWidget *parent) : AbstractStartupDialog(parent)
+StartupKDVDialog::StartupKDVDialog(Device::CurrentDevice *device, QWidget *parent)
+    : AbstractStartupDialog(device, parent)
 {
     Bd9Block = new Bd9;
     WBd7Block = new WBd7;

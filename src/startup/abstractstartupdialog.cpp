@@ -1,7 +1,7 @@
 #include "abstractstartupdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -11,8 +11,8 @@
 #include <gen/stdfunc.h>
 #include <tuple>
 
-AbstractStartupDialog::AbstractStartupDialog(QWidget *parent)
-    : UDialog(parent), m_updateState(ThereWasNoUpdatesRecently)
+AbstractStartupDialog::AbstractStartupDialog(Device::CurrentDevice *device, QWidget *parent)
+    : UDialog(device, parent), m_updateState(ThereWasNoUpdatesRecently)
 {
     m_updateState = ThereWasNoUpdatesRecently;
     m_corNeedsToCheck = NoChecks;

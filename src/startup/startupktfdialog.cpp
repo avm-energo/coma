@@ -1,6 +1,6 @@
 #include "startupktfdialog.h"
 
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -13,7 +13,8 @@
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 
-StartupKTFDialog::StartupKTFDialog(QWidget *parent) : AbstractStartupDialog(parent)
+StartupKTFDialog::StartupKTFDialog(Device::CurrentDevice *device, QWidget *parent)
+    : AbstractStartupDialog(device, parent)
 {
     Bd9Block = new Bd9;
     WBd7Block = new WBd7;

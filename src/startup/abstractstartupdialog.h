@@ -29,7 +29,7 @@ public:
         quint32 size;
     };
 
-    explicit AbstractStartupDialog(QWidget *parent = nullptr);
+    explicit AbstractStartupDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
     void SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr);
     QWidget *buttonWidget();
 
