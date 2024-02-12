@@ -3,9 +3,6 @@
 #include "../../models/report.h"
 #include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
-#include "tune85adc.h"
-#include "tune85check.h"
-#include "tune85temp60.h"
 
 #include <QHBoxLayout>
 #include <QLineEdit>
@@ -16,7 +13,7 @@ class Tune85Dialog : public GeneralTuneDialog
 {
     Q_OBJECT
 public:
-    explicit Tune85Dialog(S2::Configuration &config, QWidget *parent = nullptr);
+    explicit Tune85Dialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 public slots:
 

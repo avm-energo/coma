@@ -11,8 +11,8 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-Tune84Check::Tune84Check(S2::Configuration &config, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+Tune84Check::Tune84Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
 {
     setupUI();
 }

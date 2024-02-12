@@ -1,8 +1,9 @@
 #pragma once
 
 #include "../datablock.h"
-#include "../module/modules.h"
+//#include "../module/modules.h"
 
+#include <device/device_list.h>
 #include <s2/s2datatypes.h>
 
 class Bda82 : public DataBlock
@@ -19,7 +20,7 @@ public:
 
     void setupValuesDesc() override;
 
-    Error::Msg checkValues(Modules::MezzanineBoard mtypeM,
+    Error::Msg checkValues(Device::MezzanineBoard mtypeM,
         S2::FLOAT_6t i2Noms); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0:
                               // начальная точность, 1 - повышенная
     BlockData *data();

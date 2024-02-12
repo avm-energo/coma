@@ -1,8 +1,8 @@
 #include "abstracttunedialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../module/board.h"
-#include "../module/modules.h"
+//#include "../module/board.h"
+//#include "../module/modules.h"
 #include "../widgets/epopup.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
@@ -21,13 +21,19 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <interfaces/conn/active_connection.h>
 
 ReportData AbstractTuneDialog::s_reportData {};
 
-AbstractTuneDialog::AbstractTuneDialog(S2::Configuration &workConfig, int tuneStep, QWidget *parent)
-    : QDialog(parent), config(workConfig), m_async(ActiveConnection::async()), m_sync(ActiveConnection::sync())
+AbstractTuneDialog::AbstractTuneDialog(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : QDialog(parent)
+    , m_device(device)
+    , config(m_device->getS2Datamanager()->getCurrentConfiguration().m_workingConfig)
+    , m_async(m_device->async())
+    , m_sync(m_device->sync())
+    , m_typeB(static_cast<Device::BaseBoard>(m_device->getBaseType()))
+    , m_typeM(static_cast<Device::MezzanineBoard>(m_device->getMezzType()))
 {
+    Q_ASSERT(device != nullptr);
     TuneVariant = 0;
     IsNeededDefConf = false;
     m_blockCount = 0;

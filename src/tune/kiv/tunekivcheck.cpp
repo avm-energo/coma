@@ -16,8 +16,8 @@
 #include <gen/stdfunc.h>
 #include <interfaces/conn/active_connection.h>
 
-TuneKIVCheck::TuneKIVCheck(S2::Configuration &config, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+TuneKIVCheck::TuneKIVCheck(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
 {
     setupUI();
 }

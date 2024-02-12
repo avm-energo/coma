@@ -1,6 +1,6 @@
 #include "generaltunedialog.h"
 
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 #include "tunereporter.h"
@@ -12,11 +12,14 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QSvgRenderer>
+#include <device/current_device.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-GeneralTuneDialog::GeneralTuneDialog(S2::Configuration &workConfig, QWidget *parent)
-    : UDialog(parent), config(workConfig), m_reporter(new TuneReporter(this))
+GeneralTuneDialog::GeneralTuneDialog(Device::CurrentDevice *device, QWidget *parent)
+    : UDialog(device, parent)
+    //, config(m_device->getS2Datamanager()->getCurrentConfiguration().m_workingConfig)
+    , m_reporter(new TuneReporter(this))
 {
     m_tuneTabWidget = new TuneTabWidget;
     TuneSequenceFile::init();

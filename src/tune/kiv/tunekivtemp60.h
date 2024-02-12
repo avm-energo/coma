@@ -12,7 +12,7 @@ class TuneKIVTemp60 : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVTemp60(S2::Configuration &config, int tuneStep, QWidget *parent = nullptr);
+    TuneKIVTemp60(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
     struct MidTuneStruct

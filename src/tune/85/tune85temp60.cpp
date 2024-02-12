@@ -16,8 +16,8 @@
 
 using namespace Interface;
 
-Tune85Temp60::Tune85Temp60(S2::Configuration &config, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+Tune85Temp60::Tune85Temp60(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
 {
     TuneSequenceFile::clearTuneDescrVector();
     for (int i = 0; i < 6; ++i)

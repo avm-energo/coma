@@ -94,12 +94,11 @@ struct VerificationOffset
     }
 };
 
-Tune82Verification::Tune82Verification(S2::Configuration &config, //
-    Modules::MezzanineBoard type, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
-    , m_bd1(new Bd182(type, this))
-    , m_mip(new Mip(false, type, this))
-    , m_typeM(type)
+Tune82Verification::Tune82Verification(int tuneStep, //
+    Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
+    , m_bd1(new Bd182(m_typeM, this))
+    , m_mip(new Mip(false, m_typeM, this))
 {
     setupUI();
 }
@@ -125,13 +124,13 @@ void Tune82Verification::showRetomDialog(const RetomSettings &retomData)
     auto phiLabel = new QLabel(tempStr.arg(retomData.phiLoad), retomDialog);
     layout->addWidget(phiLabel);
 
-    if (m_typeM != Modules::MezzanineBoard::MTM_81)
+    if (m_typeM != Device::MezzanineBoard::MTM_81)
     {
         tempStr = "Значения напряжений по фазам %1 В;";
         auto uLabel = new QLabel(tempStr.arg(retomData.voltage), retomDialog);
         layout->addWidget(uLabel);
     }
-    if (m_typeM != Modules::MezzanineBoard::MTM_83)
+    if (m_typeM != Device::MezzanineBoard::MTM_83)
     {
         tempStr = "Значения токов по фазам %1 А;";
         auto iLabel = new QLabel(tempStr.arg(retomData.current), retomDialog);

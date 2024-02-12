@@ -13,10 +13,9 @@
 
 using namespace Interface;
 
-Tune85ADC::Tune85ADC(S2::Configuration &config, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+Tune85ADC::Tune85ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
 {
-
     m_bac = new BacA284;
     m_bda = new BdaA284;
     m_bdain = new BdaIn;

@@ -11,8 +11,8 @@
 #include <gen/stdfunc.h>
 #include <interfaces/conn/active_connection.h>
 
-TuneKIVADC::TuneKIVADC(S2::Configuration &config, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+TuneKIVADC::TuneKIVADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
 {
     m_bac = new BacA284(this);
     m_bac2 = new Bac2A284(this);

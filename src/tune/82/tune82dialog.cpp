@@ -12,21 +12,20 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-Tune82Dialog::Tune82Dialog(S2::Configuration &config, Modules::MezzanineBoard typeM, QWidget *parent)
-    : GeneralTuneDialog(config, parent)
+Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-
     QString step2Caption = "Регулировка каналов %1";
+    auto typeM = static_cast<Device::MezzanineBoard>(device->getMezzType());
     switch (typeM)
     {
-    case Modules::MezzanineBoard::MTM_81:
+    case Device::MezzanineBoard::MTM_81:
         step2Caption = step2Caption.arg("тока");
         break;
-    case Modules::MezzanineBoard::MTM_82:
+    case Device::MezzanineBoard::MTM_82:
         step2Caption = step2Caption.arg("тока и напряжения");
         break;
-    case Modules::MezzanineBoard::MTM_83:
+    case Device::MezzanineBoard::MTM_83:
         step2Caption = step2Caption.arg("напряжения");
         break;
     default:
@@ -34,9 +33,9 @@ Tune82Dialog::Tune82Dialog(S2::Configuration &config, Modules::MezzanineBoard ty
         break;
     }
     m_dialogList = {
-        { "Проверка правильности измерения входных сигналов", new Tune82Check(config, TS82_CHECKING, typeM, this) }, //
-        { step2Caption, new Tune82ADC(config, typeM, TS82_ADC, this) },                                              //
-        { "Поверка", new Tune82Verification(config, typeM, TS82_VERIFICATION, this) }                                //
+        { "Проверка правильности измерения входных сигналов", new Tune82Check(TS82_CHECKING, device, this) }, //
+        { step2Caption, new Tune82ADC(TS82_ADC, device, this) },                                              //
+        { "Поверка", new Tune82Verification(TS82_VERIFICATION, device, this) }                                //
     };
 
     m_calibrSteps = m_dialogList.size() + 1;

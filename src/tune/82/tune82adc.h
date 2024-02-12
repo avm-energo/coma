@@ -7,14 +7,15 @@
 #include "../abstracttunedialog.h"
 #include "../mip.h"
 
+#include <device/device_list.h>
+
 class Tune82ADC : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune82ADC(S2::Configuration &config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent = nullptr);
+    Tune82ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
-    Modules::MezzanineBoard m_typeM;
     Bac82 *m_bac, m_bacNewBlock;
     Bd182 *m_bd1;
     Bda82 *m_bda;
