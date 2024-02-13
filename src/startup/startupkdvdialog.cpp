@@ -1,6 +1,5 @@
 #include "startupkdvdialog.h"
 
-//#include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"

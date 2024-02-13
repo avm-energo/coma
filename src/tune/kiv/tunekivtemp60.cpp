@@ -1,6 +1,5 @@
 #include "tunekivtemp60.h"
 
-//#include "../../module/board.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"

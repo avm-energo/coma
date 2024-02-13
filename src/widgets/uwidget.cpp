@@ -9,7 +9,6 @@
 #include <device/current_device.h>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-//#include <interfaces/conn/active_connection.h>
 
 UWidget::UWidget(Device::CurrentDevice *device, QWidget *parent)
     : QWidget(parent), m_dataUpdater(new ModuleDataUpdater(device->async(), this)), m_device(device)

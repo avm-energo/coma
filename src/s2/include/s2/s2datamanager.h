@@ -32,7 +32,7 @@ class DataManager final : public QObject
 {
     Q_OBJECT
 private:
-    S2ConfigStorage &m_storage;
+    S2ConfigStorage m_storage;
     std::map<BoardType, BoardConfiguration> m_data;
     S2Util m_util;
     BoardType m_currentParseTarget;

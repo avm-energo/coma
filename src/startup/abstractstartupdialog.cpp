@@ -1,7 +1,6 @@
 #include "abstractstartupdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-//#include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -16,8 +15,6 @@ AbstractStartupDialog::AbstractStartupDialog(Device::CurrentDevice *device, QWid
 {
     m_updateState = ThereWasNoUpdatesRecently;
     m_corNeedsToCheck = NoChecks;
-    // connect(this, &AbstractStartupDialog::corWasChecked, this, &AbstractStartupDialog::setMessageUponCheck);
-    // disableMessages();
 }
 
 void AbstractStartupDialog::SetStartupBlock(int blocknum, void *block, quint32 blocksize, quint32 startAdr)
@@ -31,7 +28,6 @@ QWidget *AbstractStartupDialog::buttonWidget()
     auto layout = new QVBoxLayout;
     auto group = new QDialogButtonBox(widget);
 
-    // const QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     using VoidFunction = std::function<void()>;
     const QList<std::tuple<QString, QString, VoidFunction>> funcs {
         { "Задать все начальные значения", ":/icons/tnapprove.svg", [this]() { SetupCor(); } }, //

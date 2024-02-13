@@ -36,7 +36,6 @@ public:
 
     quint32 serialNumber(Types type) const;
     QString UID() const;
-    bool noConfig() const;
 
     const Modules::StartupInfoBlock &baseSerialInfo() const
     {

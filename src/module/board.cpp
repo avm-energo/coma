@@ -44,11 +44,6 @@ QString Board::UID() const
         + QString::number(m_startupInfoBlock.UIDLow, 16);
 }
 
-bool Board::noConfig() const
-{
-    return (m_startupInfoBlock.Hth & HTH_CONFIG);
-}
-
 void Board::updateExt(const DataTypes::BitStringStruct &bs)
 {
     constexpr auto minCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);

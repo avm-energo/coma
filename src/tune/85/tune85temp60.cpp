@@ -1,6 +1,5 @@
 #include "tune85temp60.h"
 
-//#include "../../module/board.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -12,9 +11,6 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-//#include <interfaces/conn/active_connection.h>
-
-using namespace Interface;
 
 Tune85Temp60::Tune85Temp60(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(tuneStep, device, parent)

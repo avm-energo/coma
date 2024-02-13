@@ -5,9 +5,8 @@
 namespace S2
 {
 
-ConfigStorage::ConfigStorage(token token, QObject *parent) : QObject(parent), m_status(ParseStatus::NotYetParsed)
+ConfigStorage::ConfigStorage(QObject *parent) : QObject(parent), m_status(ParseStatus::NotYetParsed)
 {
-    Q_UNUSED(token);
 }
 
 ParseStatus ConfigStorage::getParseStatus() const

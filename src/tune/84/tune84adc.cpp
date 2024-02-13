@@ -9,7 +9,6 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-//#include <interfaces/conn/active_connection.h>
 
 using namespace Interface;
 

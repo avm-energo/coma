@@ -1,7 +1,6 @@
 #include "tune84dialog.h"
 
 #include "../../widgets/wd_func.h"
-//#include "../kiv/tunekivtemp60.h"
 #include "../tunesteps.h"
 #include "tune84adc.h"
 #include "tune84check.h"

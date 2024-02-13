@@ -1,6 +1,5 @@
 #include "udialog.h"
 
-//#include "../module/board.h"
 #include "epopup.h"
 
 #include <QMessageBox>
@@ -14,17 +13,6 @@ UDialog::UDialog(Device::CurrentDevice *device, QWidget *parent) : UWidget(devic
     setErrorMsg("При записи произошла ошибка");
     m_genRespConn = m_device->async()->connection(this, &UDialog::updateGeneralResponse);
 }
-
-// void UDialog::updateConnection(AsyncConnection *conn)
-//{
-//    m_dataUpdater->updateConnection(conn);
-//    if (conn != nullptr)
-//    {
-//        if (m_genRespConn)
-//            disconnect(m_genRespConn);
-//        m_genRespConn = conn->connection(this, &UDialog::updateGeneralResponse);
-//    }
-//}
 
 void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
 {

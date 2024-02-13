@@ -10,7 +10,6 @@ class UDialog : public UWidget
     Q_OBJECT
 public:
     explicit UDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
-    // void updateConnection(AsyncConnection *conn);
     virtual void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response);
 
     void disableSuccessMessage();

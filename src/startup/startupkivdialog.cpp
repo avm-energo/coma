@@ -5,7 +5,6 @@
 
 #include <QGridLayout>
 #include <QGroupBox>
-//#include <QMessageBox>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <tuple>

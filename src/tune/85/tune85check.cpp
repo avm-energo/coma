@@ -10,7 +10,6 @@
 #include <QVBoxLayout>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-//#include <interfaces/conn/protocom.h>
 
 Tune85Check::Tune85Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(tuneStep, device, parent)

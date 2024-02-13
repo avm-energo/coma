@@ -9,9 +9,6 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-//#include <interfaces/conn/active_connection.h>
-
-using namespace Interface;
 
 Tune85ADC::Tune85ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(tuneStep, device, parent)
@@ -110,7 +107,7 @@ Error::Msg Tune85ADC::checkTuneCoefs()
 
 Error::Msg Tune85ADC::setSMode2()
 {
-    m_async->writeCommand(Commands::C_SetMode, 0x02);
+    m_async->writeCommand(Interface::Commands::C_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 
