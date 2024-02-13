@@ -1,5 +1,5 @@
 #pragma once
-//#include "../module/modulesettings.h"
+
 #include "../widgets/udialog.h"
 
 #include <QHBoxLayout>

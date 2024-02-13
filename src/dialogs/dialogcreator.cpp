@@ -33,17 +33,6 @@ DialogCreator::DialogCreator(Device::CurrentDevice *device, QWidget *parent)
     Q_ASSERT(m_device != nullptr);
 }
 
-// DialogCreator::DialogCreator(const ModuleSettings &settings, const Board &board, //
-//    S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent)
-//    : QObject(parent)
-//    , m_settings(settings)
-//    , m_board(board)
-//    , m_s2manager(s2DataManager)
-//    , m_s2service(s2ReqService)
-//    , m_parent(parent)
-//{
-//}
-
 void DialogCreator::createDialogs(const AppConfiguration appCfg)
 {
     auto ifaceType = m_device->async()->getInterfaceType();
@@ -77,13 +66,6 @@ void DialogCreator::addDialogToList(UDialog *dlg, const QString &caption, const 
         dlg->setCaption(caption);
     m_dialogs.append(dlg);
 }
-
-// void DialogCreator::updateTypes()
-//{
-//    m_boxModel = Modules::Model(m_board.type());
-//    m_typeB = Modules::BaseBoard(m_board.typeB());
-//    m_typeM = Modules::MezzanineBoard(m_board.typeM());
-//}
 
 void DialogCreator::deleteDialogs()
 {
@@ -119,10 +101,6 @@ void DialogCreator::createCheckDialogs()
     {
         auto indexStr = QString::number(index);
         auto checkDialog = new CheckDialog(section, m_device, m_parent);
-        // checkDialog->setHighlights(
-        // Modules::AlarmType::Critical, m_settings.getHighlights(Modules::AlarmType::Critical));
-        // checkDialog->setHighlights(Modules::AlarmType::Warning,
-        // m_settings.getHighlights(Modules::AlarmType::Warning));
         addDialogToList(checkDialog, section.name, "check" + indexStr);
         index++;
     }

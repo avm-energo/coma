@@ -31,9 +31,6 @@
 #include "../../dialogs/settingsdialog.h"
 #include "../../dialogs/switchjournaldialog.h"
 #include "../../journals/journalviewer.h"
-//#include "../../module/board.h"
-//#include "../../module/module.h"
-//#include "../../module/s2requestservice.h"
 #include "../../oscillograms/swjmanager.h"
 #include "../../oscillograms/swjpackconvertor.h"
 #include "../../widgets/epopup.h"
@@ -62,7 +59,6 @@
 #include <gen/logger.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-//#include <interfaces/conn/active_connection.h>
 #include <interfaces/types/settingstypes.h>
 #include <iostream>
 #include <memory>
@@ -76,19 +72,12 @@ namespace Core
 Coma::Coma(const AppConfiguration appCfg, QWidget *parent)
     : QMainWindow(parent)
     , m_appConfig(appCfg)
-    //, m_currentConnection(nullptr)
     , m_connectionManager(new ConnectionManager(this))
     , m_currentDevice(nullptr)
-    //, s2dataManager(new S2DataManager(this))
-    //, s2requestService(new S2RequestService(this))
     , m_dlgManager(new DialogManager(this))
     , editor(nullptr)
 {
-    // connections
-    // connect(s2requestService.get(), &S2RequestService::response, //
-    //    s2dataManager.get(), &S2DataManager::parseS2File);
     connect(m_connectionManager, &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
-    // connect(m_connectionManager, &ConnectionManager::connectSuccesfull, this, &Coma::prepare);
     connect(m_connectionManager, &ConnectionManager::connectFailed, this, //
         [this](const QString &errMsg) { EMessageBox::error(this, errMsg); });
 }
@@ -408,11 +397,7 @@ void Coma::initConnection(const ConnectStruct &st)
     saveSettings();
     auto connection = m_connectionManager->createConnection(st);
     if (connection && (connection->getConnectionState() != Interface::State::Disconnect))
-    {
-        // initInterfaceConnection();
-        // prepare();
         initDevice(connection);
-    }
     else
         QApplication::restoreOverrideCursor();
 }
@@ -440,13 +425,8 @@ void Coma::initDevice(Interface::AsyncConnection *connection)
 
 void Coma::initInterfaceConnection()
 {
-    // Update global storage for current connection
-    // ActiveConnection::update(ActiveConnection::AsyncConnectionPtr { m_currentConnection });
-    // m_currentConnection->connection(this, &Coma::update);
     auto currentConnection = m_currentDevice->async();
     currentConnection->connection(this, &Coma::update);
-    // m_dlgManager->updateConnection(currentConnection);
-    // s2requestService->updateConnection(currentConnection);
     connectSetupBar();
     prepareDialogs();
 }
@@ -470,9 +450,6 @@ void Coma::connectSetupBar()
 
     if (msgModel && msgSerialNumber && msgConnectionState && msgConnectionType && msgConnectionImage)
     {
-        // auto board = &Board::GetInstance();
-        //        connect(board, qOverload<>(&Board::typeChanged), msgModel, //
-        //            [=]() { msgModel->setText(board->moduleName()); });
         int height = this->statusBar()->height() - this->statusBar()->layout()->contentsMargins().bottom();
         msgModel->setText(m_currentDevice->getDeviceName());
         connect(m_currentDevice, &Device::CurrentDevice::typeChanged, this,
@@ -506,17 +483,9 @@ void Coma::connectSetupBar()
     }
 }
 
-// void Coma::prepare()
-//{
-//    prepareDialogs();
-//}
-
 void Coma::prepareDialogs()
 {
-    // StdFunc::Wait(40); // Подождём, пока BSI долетит до Board
-    // auto &board = Board::GetInstance();
     EMessageBox::information(this, "Установлена связь с " + m_currentDevice->getDeviceName());
-
     auto cfgLoader = new Xml::ConfigLoader(m_currentDevice);
     if (!cfgLoader->loadSettings())
     {
@@ -527,28 +496,11 @@ void Coma::prepareDialogs()
     }
     cfgLoader->deleteLater();
 
-    //    auto &storage = ConfigStorage::GetInstance();
-    //    module.reset(new Module(true, Board::GetInstance().baseSerialInfo(), this));
-    //    if (module->loadS2Settings(s2dataManager->getStorage()))
-    //    {
-    //        if (!module->loadSettings(storage, *s2dataManager))
-    //        {
-    //            EMessageBox::error(this,
-    //                "Не удалось найти конфигурацию для модуля.\n"
-    //                "Проверьте журнал сообщений.\n"
-    //                "Доступны минимальные функции.");
-    //        }
-    //        // Обновляем описание протокола
-    //        else
-    //            ActiveConnection::async()->updateProtocol(storage.getProtocolDescription());
-    //    }
-
     AlarmW->configure(m_currentDevice);
     m_dlgManager->setupUI(m_currentDevice, m_appConfig, size());
     // Запрашиваем s2 конфигурацию от модуля
     // s2requestService->request(S2::FilesEnum::Config, true);
     m_currentDevice->getFileProvider()->request(S2::FilesEnum::Config, true);
-
     // нет конфигурации
     if (m_currentDevice->health().isNoConfig())
         qCritical() << Error::Msg::NoConfError;
@@ -563,10 +515,6 @@ void Coma::disconnectAndClear()
     {
         AlarmW->clear();
         m_dlgManager->clearDialogs();
-        // ConfigStorage::GetInstance().clear();
-        // s2dataManager->clear();
-        // Board::GetInstance().reset();
-        // ActiveConnection::reset();
         m_connectionManager->breakConnection();
         m_currentDevice = nullptr;
     }

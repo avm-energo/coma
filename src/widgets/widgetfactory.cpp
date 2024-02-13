@@ -2,7 +2,6 @@
 
 #include "../ctti/type_id.hpp"
 #include "../models/comboboxdelegate.h"
-//#include "../module/configstorage.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"
 #include "../widgets/ipctrl.h"
@@ -93,7 +92,6 @@ template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_un
 template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey) const
 {
     const auto mbMasterId = m_s2storage.getIdFor("MBMaster");
-    // const auto mbMasterId = S2Util::GetIdByName("MBMaster");
     if (parentKey == mbMasterId)
     {
         return fillBackModbus(key, parent, ctti::unnamed_type_id<QTableView>(), parentKey);
@@ -115,7 +113,6 @@ WidgetFactory::WidgetFactory(S2::Configuration &workingConfig, Device::CurrentDe
 QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
 {
     QWidget *widget = nullptr;
-    // auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto &widgetMap = m_s2storage.getWidgetMap();
     auto search = widgetMap.find(key);
     if (search == widgetMap.end())
@@ -206,7 +203,6 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
 bool WidgetFactory::fillBack(quint16 key, const QWidget *parent) const
 {
     bool status = false;
-    // auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto &widgetMap = m_s2storage.getWidgetMap();
     auto search = widgetMap.find(key);
     if (search == widgetMap.end())
@@ -224,7 +220,6 @@ bool WidgetFactory::fillBack(quint16 key, const QWidget *parent) const
             [&](const delegate::QComboBox &arg) { status = fillBackComboBox(key, parent, arg.primaryField); },
             [&](const delegate::QComboBoxGroup &arg) { status = fillBackComboBoxGroup(key, parent, arg.count); },
             [&](const config::Item &arg) {
-                // auto record = configV->getRecord(key);
                 auto &record = m_config[key];
                 std::visit(
                     [&](auto &&type) {
@@ -282,7 +277,6 @@ QList<QStandardItem *> WidgetFactory::createItem(
     quint16 key, const S2::BYTE_8t &value, [[maybe_unused]] const QWidget *parent)
 {
     QList<QStandardItem *> items {};
-    // auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto &widgetMap = m_s2storage.getWidgetMap();
     auto search = widgetMap.find(key);
     if (search == widgetMap.end())
@@ -389,7 +383,6 @@ const QString WidgetFactory::widgetName(int group, int item)
 /// TODO: ОЧЕНЬ ПЛОХОЕ РЕШЕНИЕ, МАКСИМАЛЬНЫЙ КОСТЫЛЬ
 quint16 WidgetFactory::getRealCount(const quint16 key)
 {
-    // auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto &widgetMap = m_s2storage.getWidgetMap();
     auto widgetSearch = widgetMap.find(key);
     if (widgetSearch != widgetMap.end())
@@ -492,7 +485,6 @@ bool WidgetFactory::fillBackModbus(
         }
 
         S2::BYTE_8t masterBuffer = *reinterpret_cast<S2::BYTE_8t *>(&master);
-        // configV->setRecordValue({ key, masterBuffer });
         m_config.setRecord(id, masterBuffer);
     }
     return true;
@@ -503,7 +495,6 @@ bool WidgetFactory::fillBackIpCtrl(quint32 id, const QWidget *parent) const
     auto widget = parent->findChild<IPCtrl *>(QString::number(id));
     if (!widget)
         return false;
-    // configV->setRecordValue({ key, widget->getIP() });
     m_config.setRecord(id, widget->getIP());
     return true;
 }
@@ -515,7 +506,6 @@ bool WidgetFactory::fillBackCheckBox(quint32 id, const QWidget *parent) const
     if (!widget)
         return status;
     bool state = widget->isChecked();
-    // auto record = configV->getRecord(key);
     auto &record = m_config[id];
     std::visit(
         [&](auto &&arg) {
@@ -528,7 +518,6 @@ bool WidgetFactory::fillBackCheckBox(quint32 id, const QWidget *parent) const
             }
         },
         record.getData());
-    // configV->setRecordValue(record);
     return status;
 }
 
@@ -539,7 +528,6 @@ bool WidgetFactory::fillBackLineEdit(quint32 id, const QWidget *parent) const
     if (!widget)
         return status;
     const QString text = widget->text();
-    // auto record = configV->getRecord(key);
     auto &record = m_config[id];
     std::visit(
         [&](auto &&arg) {
@@ -560,14 +548,12 @@ bool WidgetFactory::fillBackLineEdit(quint32 id, const QWidget *parent) const
                 }
         },
         record.getData());
-    // configV->setRecordValue(record);
     return status;
 }
 
 bool WidgetFactory::fillBackSPBG(quint32 id, const QWidget *parent) const
 {
     bool status = false;
-    // auto record = configV->getRecord(key);
     auto &record = m_config[id];
     std::visit(
         [&](auto &&arg) {
@@ -582,7 +568,6 @@ bool WidgetFactory::fillBackSPBG(quint32 id, const QWidget *parent) const
                     internalType buffer {};
                     status = WDFunc::SPBGData(parent, QString::number(id), buffer);
                     if (status)
-                        // configV->setRecordValue({ id, buffer });
                         record.setData(buffer);
                 }
             }
@@ -594,7 +579,6 @@ bool WidgetFactory::fillBackSPBG(quint32 id, const QWidget *parent) const
 bool WidgetFactory::fillBackSPB(quint32 id, const QWidget *parent) const
 {
     bool status = false;
-    // auto record = configV->getRecord(id);
     auto &record = m_config[id];
     std::visit(
         [&](auto &&arg) {
@@ -602,7 +586,6 @@ bool WidgetFactory::fillBackSPB(quint32 id, const QWidget *parent) const
             if constexpr (!std_ext::is_container<internalType>())
             {
                 auto buffer = WDFunc::SPBData<internalType>(parent, QString::number(id));
-                // configV->setRecordValue({ id, buffer });
                 record.setData(buffer);
                 status = true;
             }
@@ -614,7 +597,6 @@ bool WidgetFactory::fillBackSPB(quint32 id, const QWidget *parent) const
 bool WidgetFactory::fillBackChBG(quint32 id, const QWidget *parent) const
 {
     bool status = false;
-    // auto record = configV->getRecord(id);
     auto &record = m_config[id];
     std::visit(
         [&](auto &&arg) {
@@ -626,10 +608,7 @@ bool WidgetFactory::fillBackChBG(quint32 id, const QWidget *parent) const
                     internalType buffer = 0;
                     status = WDFunc::ChBGData(parent, QString::number(id), buffer);
                     if (status)
-                    {
-                        // configV->setRecordValue({ id, buffer });
                         record.setData(buffer);
-                    }
                 }
             }
 
@@ -642,10 +621,7 @@ bool WidgetFactory::fillBackChBG(quint32 id, const QWidget *parent) const
                     Container buffer;
                     status = WDFunc::ChBGData(parent, QString::number(id), buffer);
                     if (status)
-                    {
-                        // configV->setRecordValue({ id, buffer });
                         record.setData(buffer);
-                    }
                 }
             }
         },
@@ -656,7 +632,6 @@ bool WidgetFactory::fillBackChBG(quint32 id, const QWidget *parent) const
 bool WidgetFactory::fillBackComboBox(quint32 id, const QWidget *parent, delegate::QComboBox::PrimaryField field) const
 {
     bool status = false;
-    // auto record = configV->getRecord(id);
     auto &record = m_config[id];
     std::visit(
         [&](auto &&arg) {
@@ -668,7 +643,6 @@ bool WidgetFactory::fillBackComboBox(quint32 id, const QWidget *parent, delegate
                 case delegate::QComboBox::data:
                 {
                     auto buffer = WDFunc::CBData<internalType>(parent, QString::number(id));
-                    // configV->setRecordValue({ id, buffer });
                     record.setData(buffer);
                     break;
                 }
@@ -683,7 +657,6 @@ bool WidgetFactory::fillBackComboBox(quint32 id, const QWidget *parent, delegate
                         int status_code = WDFunc::CBIndex(parent, QString::number(id));
                         if (status_code == -1)
                             return;
-                        // configV->setRecordValue({ id, static_cast<internalType>(status_code) });
                         record.setData(static_cast<internalType>(status_code));
                     }
                     break;
@@ -699,7 +672,6 @@ bool WidgetFactory::fillBackComboBox(quint32 id, const QWidget *parent, delegate
 bool WidgetFactory::fillBackComboBoxGroup(quint32 id, const QWidget *parent, int count) const
 {
     bool status = false;
-    // auto record = configV->getRecord(id);
     auto &record = m_config[id];
     std::visit(
         [&](auto &&arg) {
@@ -719,7 +691,6 @@ bool WidgetFactory::fillBackComboBoxGroup(quint32 id, const QWidget *parent, int
                     }
                     bitset.set(i, bool(status_code));
                 }
-                // configV->setRecordValue({ id, static_cast<internalType>(bitset.to_ullong()) });
                 record.setData(static_cast<internalType>(bitset.to_ullong()));
             }
             else if constexpr (std_ext::is_container<internalType>())
@@ -741,7 +712,6 @@ bool WidgetFactory::fillBackComboBoxGroup(quint32 id, const QWidget *parent, int
                         }
                         container.at(i) = iType(status_code);
                     }
-                    // configV->setRecordValue({ id, container });
                     record.setData(container);
                 }
             }

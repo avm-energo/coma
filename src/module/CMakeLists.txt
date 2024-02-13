@@ -16,9 +16,6 @@ add_library(
   ${files_cpp} ${files_h})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  comaversion
-  widgets
-  dialogs
   interfaces
   xml
   Qt${QT_VERSION_MAJOR}::Core

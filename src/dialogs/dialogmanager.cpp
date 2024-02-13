@@ -4,7 +4,6 @@ DialogManager::DialogManager(QWidget *parent)
     : QWidget(parent)
     , m_currentDialogIndex(0)
     , m_dlgCreator { nullptr }
-    //, m_dlgCreator(new DialogCreator(settings, Board::GetInstance(), s2DataManager, s2ReqService, this))
     , m_workspace(new QStackedWidget(this))
     , m_sidebar(new QListWidget(this))
     , m_reqTimer(new QTimer(this))

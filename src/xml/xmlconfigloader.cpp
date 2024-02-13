@@ -52,7 +52,6 @@ bool ConfigLoader::loadDeviceData() noexcept
     auto s2manager = m_device->getS2Datamanager();
     auto cfgStorage = m_device->getConfigStorage();
     auto moduleParser = new Xml::ModuleParser(this);
-
     QObject::connect(moduleParser, &Xml::ModuleParser::startNewConfig,       //
         s2manager, &S2::DataManager::startNewConfig);                        //
     QObject::connect(moduleParser, &Xml::ModuleParser::configDataSending,    //

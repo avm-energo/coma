@@ -1,7 +1,6 @@
 #include "switchjournaldialog.h"
 
 #include "../models/etablemodel.h"
-//#include "../module/board.h"
 #include "../oscillograms/swjmanager.h"
 #include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"

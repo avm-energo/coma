@@ -1,8 +1,6 @@
 #include "configdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-//#include "../module/board.h"
-//#include "../module/configstorage.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -19,7 +17,6 @@
 
 ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent)
     : UDialog(device, parent)
-    //, m_requestService(device)
     , m_datamanager(*m_device->getS2Datamanager())
     , m_boardConfig(m_datamanager.getConfiguration(boardType))
     , m_factory(m_boardConfig.m_workingConfig, device)
@@ -34,7 +31,6 @@ void ConfigDialog::readConfig()
 {
     setSuccessMsg(tr("Конфигурация прочитана успешно"));
     m_device->getFileProvider()->request(S2::FilesEnum::Config);
-    // m_requestService.request(S2::FilesEnum::Config);
 }
 
 void ConfigDialog::writeConfig()
@@ -64,7 +60,6 @@ void ConfigDialog::checkForDiff()
 
 bool ConfigDialog::isVisible(const quint16 id) const
 {
-    // const auto &detailMap = S2::ConfigStorage::GetInstance().getWidgetDetailMap();
     const auto &detailMap = m_datamanager.getStorage().getWidgetDetailMap();
     auto search = detailMap.find(id);
     if (search != detailMap.cend())
@@ -160,7 +155,6 @@ QWidget *ConfigDialog::ConfButtons()
 
 quint32 ConfigDialog::tabForId(quint16 id)
 {
-    // auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
     auto &widgetMap = m_datamanager.getStorage().getWidgetMap();
     auto search = widgetMap.find(id);
     if (search == widgetMap.end())
@@ -177,7 +171,6 @@ quint32 ConfigDialog::tabForId(quint16 id)
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
     std::set<delegate::WidgetGroup> uniqueTabs;
-    // auto &tabs = S2::ConfigStorage::GetInstance().getConfigTabs();
     auto &tabs = m_datamanager.getStorage().getConfigTabs();
     for (const auto &record : m_boardConfig.m_defaultConfig)
     {

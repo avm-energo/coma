@@ -1,6 +1,7 @@
 #include "xmlmoduleparser.h"
 
 #include <device/current_device.h>
+#include <gen/files.h>
 #include <gen/stdfunc.h>
 
 Xml::ModuleParser::ModuleParser(QObject *parent) : BaseParser(parent), m_ifaceType(Interface::IfaceType::Unknown)
@@ -9,14 +10,10 @@ Xml::ModuleParser::ModuleParser(QObject *parent) : BaseParser(parent), m_ifaceTy
 
 QString Xml::ModuleParser::getFileName(const quint16 typeB, const quint16 typeM)
 {
-    auto typeBStr = QString::number(typeB, 16);
-    typeBStr = (typeBStr.length() < 2) ? "0" + typeBStr : typeBStr;
-    auto typeMStr = QString::number(typeM, 16);
-    typeMStr = (typeMStr.length() < 2) ? "0" + typeMStr : typeMStr;
-    return typeBStr + typeMStr + ".xml";
+    return QString("%1%2.xml").arg(typeB, 2, 16, QChar('0')).arg(typeM, 2, 16, QChar('0'));
 }
 
-bool Xml::ModuleParser::isCorrectDeviceType(const QDomElement &moduleNode, Device::CurrentDevice *device)
+bool Xml::ModuleParser::isCorrectDeviceType(const QDomElement &moduleNode, const Device::CurrentDevice *device)
 {
     if (moduleNode.hasAttribute(tags::mtypeb) && moduleNode.hasAttribute(tags::mtypem))
     {
@@ -30,7 +27,7 @@ bool Xml::ModuleParser::isCorrectDeviceType(const QDomElement &moduleNode, Devic
     return false;
 }
 
-bool Xml::ModuleParser::isCorrectFirmwareVersion(const QDomElement &moduleNode, Device::CurrentDevice *device)
+bool Xml::ModuleParser::isCorrectFirmwareVersion(const QDomElement &moduleNode, const Device::CurrentDevice *device)
 {
     auto versionNode = moduleNode.firstChildElement(tags::version);
     if (!versionNode.isNull())
@@ -42,7 +39,7 @@ bool Xml::ModuleParser::isCorrectFirmwareVersion(const QDomElement &moduleNode, 
     return false;
 }
 
-bool Xml::ModuleParser::isCorrectDevice(const QDomElement &moduleNode, Device::CurrentDevice *device)
+bool Xml::ModuleParser::isCorrectDevice(const QDomElement &moduleNode, const Device::CurrentDevice *device)
 {
     if (isCorrectDeviceType(moduleNode, device))
     {
@@ -337,10 +334,9 @@ void Xml::ModuleParser::parseResources(const QDomElement &resourcesNode, const Q
         emit parseError("В файле не найден узел <resources>");
 }
 
-void Xml::ModuleParser::parse(const u16 typeB, const u16 typeM, const QStringList &nodes)
+void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList &nodes)
 {
-    auto xmlFilename = getFileName(typeB, typeM);
-    auto document = getFileContent(xmlFilename);
+    auto document = getFileContent(filename);
     auto moduleNode = document.firstChildElement(tags::module);
     if (!moduleNode.isNull())
     {
@@ -348,29 +344,60 @@ void Xml::ModuleParser::parse(const u16 typeB, const u16 typeM, const QStringLis
         parseResources(resources, nodes);
     }
     else
-        emit parseError("В файле не найден узел <module>");
+        emit parseError(QString("В файле %1 не найден узел <module>").arg(filename));
+}
+
+void Xml::ModuleParser::parseDocument(const QString &filename, const Device::CurrentDevice *device)
+{
+    auto document = getFileContent(filename);
+    auto moduleNode = document.firstChildElement(tags::module);
+    if (!moduleNode.isNull())
+    {
+        if (isCorrectDevice(moduleNode, device))
+        {
+            auto resources = moduleNode.firstChildElement(tags::res);
+            parseResources(resources);
+        }
+    }
+    else
+        emit parseError(QString("В файле %1 не найден узел <module>").arg(filename));
+}
+
+void Xml::ModuleParser::parse(const u16 typeB, const u16 typeM, const QStringList &nodes)
+{
+    auto xmlFilename = getFileName(typeB, typeM);
+    if (Files::isFileExist(xmlFilename))
+        parseDocument(xmlFilename, nodes);
+    else
+    {
+        auto baseXmlFilename = getFileName(typeB, 0);
+        auto mezzXmlFilename = getFileName(0, typeM);
+        if (Files::isFileExist(baseXmlFilename))
+            parseDocument(baseXmlFilename, nodes);
+        if (Files::isFileExist(mezzXmlFilename))
+            parseDocument(mezzXmlFilename, nodes);
+    }
 }
 
 void Xml::ModuleParser::parse(Device::CurrentDevice *device)
 {
     if (device)
     {
+        m_ifaceType = device->async()->getInterfaceType();
         const auto typeB = device->getBaseType();
         const auto typeM = device->getMezzType();
         auto xmlFilename = getFileName(typeB, typeM);
-        auto document = getFileContent(xmlFilename);
-        auto moduleNode = document.firstChildElement(tags::module);
-        if (!moduleNode.isNull())
-        {
-            if (isCorrectDevice(moduleNode, device))
-            {
-                m_ifaceType = device->async()->getInterfaceType();
-                auto resources = moduleNode.firstChildElement(tags::res);
-                parseResources(resources);
-            }
-        }
+        if (Files::isFileExist(xmlFilename))
+            parseDocument(xmlFilename, device);
         else
-            emit parseError("В файле не найден узел <module>");
+        {
+            auto baseXmlFilename = getFileName(typeB, 0);
+            auto mezzXmlFilename = getFileName(0, typeM);
+            if (Files::isFileExist(baseXmlFilename))
+                parseDocument(baseXmlFilename, device);
+            if (Files::isFileExist(mezzXmlFilename))
+                parseDocument(mezzXmlFilename, device);
+        }
     }
     else
         emit parseError("Получен нулевой указатель на устройство");

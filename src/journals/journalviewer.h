@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "../module/modulesettings.h"
 #include "basejournal.h"
 
 #include <QDialog>

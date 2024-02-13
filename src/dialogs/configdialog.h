@@ -1,15 +1,10 @@
 #pragma once
 
-//#include "../module/modules.h"
-#include "errconfstate.h"
-//#include "../module/s2requestservice.h"
 #include "../widgets/udialog.h"
 #include "../widgets/widgetfactory.h"
+#include "errconfstate.h"
 
 #include <s2/s2datamanager.h>
-
-//#define MAXBYTEARRAY 65535
-//#define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
 
 class QTabWidget;
 
@@ -42,7 +37,6 @@ private:
     bool isVisible(const quint16 id) const;
     void showConfigErrState();
 
-    // S2RequestService &m_requestService;
     S2DataManager &m_datamanager;
     S2BoardConfig &m_boardConfig;
     WidgetFactory m_factory;

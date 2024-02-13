@@ -1,7 +1,5 @@
 #pragma once
 
-//#include "../module/modules.h"
-//#include "../module/modulesettings.h"
 #include "../widgets/udialog.h"
 
 #include <device/xml_settings.h>
@@ -19,7 +17,6 @@ class HiddenDialog final : public UDialog
     Q_OBJECT
 private:
     Device::XmlDataTypes::HiddenSettings m_settings;
-    // ModuleTypes::HiddenSettings m_settings;
     std::map<quint32, bool> m_srcAddrStates;
     QString m_currentBackground;
     DataTypes::HardwareStruct m_hardwareInfo;

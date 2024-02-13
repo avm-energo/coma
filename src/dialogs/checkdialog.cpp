@@ -1,7 +1,5 @@
 #include "checkdialog.h"
 
-//#include "../module/board.h"
-//#include "../module/configstorage.h"
 #include "../widgets/wd_func.h"
 
 #include <QGroupBox>
@@ -117,7 +115,6 @@ void CheckDialog::tabChanged(int newIndex)
 void CheckDialog::setupUI()
 {
     const auto &tabs = m_device->getConfigStorage()->getDeviceSettings().getTabs();
-    // const auto &tabs = ConfigStorage::GetInstance().getModuleSettings().getTabs();
     const auto tabIds = mSection.sgMap.uniqueKeys();
     for (auto &&tabId : tabIds)
     {
@@ -158,7 +155,6 @@ void CheckDialog::setupTabWidget()
 void CheckDialog::addSignals(const QList<SGroup> &groups, UWidget *widget)
 {
     std::set<quint32> sigIds;
-    // auto &sigMap = ConfigStorage::GetInstance().getModuleSettings().getSignals();
     auto &sigMap = m_device->getConfigStorage()->getDeviceSettings().getSignals();
 
     // Для каждой группы...

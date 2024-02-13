@@ -2,8 +2,6 @@
 
 #include "../widgets/wd_func.h"
 
-//#include <interfaces/connection.h>
-
 RelayDialog::RelayDialog(int relayCount, Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;

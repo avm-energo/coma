@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "../widgets/udialog.h"
 #include "dialogcreator.h"
 
 #include <QListWidget>

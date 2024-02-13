@@ -1,7 +1,5 @@
 #pragma once
 
-//#include "../module/modulesettings.h"
-
 #include <QTimeZone>
 #include <device/xml_settings.h>
 #include <gen/timefunc.h>

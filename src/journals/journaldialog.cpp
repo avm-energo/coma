@@ -13,12 +13,10 @@
 namespace journals
 {
 
-JournalDialog::JournalDialog(Device::CurrentDevice *device, QWidget *parent)
-    : UDialog(device, parent) //, m_settings(device)
+JournalDialog::JournalDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
     disableSuccessMessage();
     m_device->async()->connection(this, &JournalDialog::receivedJournalFile);
-    // m_dataUpdater->currentConnection()->connection(this, &JournalDialog::receivedJournalFile);
     createJournalTabs();
     setupUI();
 }

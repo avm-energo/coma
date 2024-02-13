@@ -17,7 +17,7 @@ add_library(
   ${files_h})
 
 target_link_libraries(
-  ${PROJECT_NAME} PRIVATE
+  ${PROJECT_NAME} PUBLIC
   widgets
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network

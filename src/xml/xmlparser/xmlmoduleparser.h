@@ -52,50 +52,54 @@ private:
 
     /// \brief Коплексная проверка на корректность подключённого устройства.
     /// \see isCorrectModuleVersion, isCorrectModuleType.
-    bool isCorrectDevice(const QDomElement &moduleNode, Device::CurrentDevice *device);
+    bool isCorrectDevice(const QDomElement &moduleNode, const Device::CurrentDevice *device);
     /// \brief Проверяет, совпадают ли переданные типы плат с указанными в XML-файле.
-    bool isCorrectDeviceType(const QDomElement &moduleNode, Device::CurrentDevice *device);
+    bool isCorrectDeviceType(const QDomElement &moduleNode, const Device::CurrentDevice *device);
     /// \brief Проверка корректности версии ВПО модуля.
-    bool isCorrectFirmwareVersion(const QDomElement &moduleNode, Device::CurrentDevice *device);
+    bool isCorrectFirmwareVersion(const QDomElement &moduleNode, const Device::CurrentDevice *device);
 
-    /// \brief Функция для парсинга типа группы сигналов.
+    /// \brief Парсинг типа группы сигналов.
     SignalType parseSignalType(const QDomNode &signalNode);
-    /// \brief Функция для парсинга типа отображения мультивиджета.
+    /// \brief Парсинг типа отображения мультивиджета.
     ViewType parseViewType(const QString &viewString);
-    /// \brief Функция для парсинга типа отображаемых/отправляемых данных.
+    /// \brief Парсинг типа отображаемых/отправляемых данных.
     BinaryType parseBinaryType(const QString &typeStr);
 
-    /// \brief Функция для парсинга XML файла конфигурации устройства.
+    /// \brief Парсинг указанного XML файла для выбранных узлов.
+    void parseDocument(const QString &filename, const QStringList &nodes = {});
+    /// \brief Парсинг указанного XML файла для подключённого устройства.
+    void parseDocument(const QString &filename, const Device::CurrentDevice *device);
+    /// \brief Парсинг XML файла конфигурации устройства.
     void parseResources(const QDomElement &resourcesNode, const QStringList &nodes = {});
-    /// \brief Функция для парсинга содержимого узла <resources>.
+    /// \brief Парсинг содержимого узла <resources>.
     void parseDetector(const QDomNode &node);
-    /// \brief Функция для парсинга узла <signals>.
+    /// \brief Парсинг узла <signals>.
     void parseSignal(const QDomNode &sigNode);
-    /// \brief Функция для парсинга узла <section-tabs>.
+    /// \brief Парсинг узла <section-tabs>.
     void parseSTab(const QDomNode &sTabNode);
-    /// \brief Функция для парсинга узла <sections>.
+    /// \brief Парсинг узла <sections>.
     void parseSection(const QDomNode &sectionNode);
-    /// \brief Функция для парсинга узла <alarms>.
+    /// \brief Парсинг узла <alarms>.
     void parseAlarms(const QDomNode &alarmsNode);
-    /// \brief Функция для парсинга узлов <critical>, <warning> и <info> внутри <alarms>.
+    /// \brief Парсинг узлов <critical>, <warning> и <info> внутри <alarms>.
     void parseAlarm(const QDomNode &alarmNode, const AlarmType &type);
-    /// \brief Функция для парсинга узла <journals>.
+    /// \brief Парсинг узла <journals>.
     void parseJournals(const QDomNode &joursNode);
-    /// \brief Функция для парсинга узла <work> внутри <journals>.
+    /// \brief Парсинг узла <work> внутри <journals>.
     void parseWorkJournal(const QDomNode &jourNode);
-    /// \brief Функция для парсинга узла <meas> внутри <journals>.
+    /// \brief Парсинг узла <meas> внутри <journals>.
     void parseMeasJournal(const QDomNode &jourNode);
-    /// \brief Функция для парсинга конфигурации интерфейса, по которому подключен модуль.
+    /// \brief Парсинг конфигурации интерфейса, по которому подключен модуль.
     void parseInterface(const QDomNode &root);
-    /// \brief Функция для парсинга узла <modbus>.
+    /// \brief Парсинг узла <modbus>.
     void parseModbus(const QDomNode &modbusNode);
-    /// \brief Функция для парсинга узла <protocom>.
+    /// \brief Парсинг узла <protocom>.
     void parseProtocom(const QDomNode &protocomNode);
-    /// \brief Функция для парсинга узла <iec60870>.
+    /// \brief Парсинг узла <iec60870>.
     void parseIec(const QDomNode &iecNode);
-    /// \brief Функция для парсинга узла <config>.
+    /// \brief Парсинг узла <config>.
     void parseConfig(const QDomNode &configNode);
-    /// \brief Функция для парсинга узлов <tab> внутри <hidden>.
+    /// \brief Парсинг узлов <tab> внутри <hidden>.
     void parseHiddenTab(const QDomNode &hiddenTabNode);
 };
 

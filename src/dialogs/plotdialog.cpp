@@ -41,7 +41,6 @@ static bool processPhase(GraphData &data, const DataTypes::FloatStruct &fl)
     return false;
 }
 
-// void PlotDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 void PlotDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     if (!processPhase(graphPhaseA, fl))

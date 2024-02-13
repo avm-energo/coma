@@ -1,6 +1,5 @@
 #include "../dialogs/timedialog.h"
 
-//#include "../module/board.h"
 #include "../widgets/wd_func.h"
 
 #include <QDateTime>
@@ -29,9 +28,7 @@ TimeDialog::~TimeDialog()
 void TimeDialog::setupUI()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
-
     QWidget *time = new QWidget;
-
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(new QLabel("Часовой пояс", this));
     hlyout->addWidget(new QLabel("UTC", this));

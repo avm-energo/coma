@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "../module/modulesettings.h"
 #include "../widgets/udialog.h"
 #include "journaltabwidget.h"
 
@@ -19,7 +18,6 @@ public:
 
 private:
     std::map<JournalType, JournalTabWidget *> m_journals;
-    // std::reference_wrapper<const ModuleSettings> m_settings;
 
     /// \brief Метод для создания объектов журналов по полученным настройкам.
     /// \param settings[in] - настройки, полученные от DialogCreator.
