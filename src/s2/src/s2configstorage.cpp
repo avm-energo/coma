@@ -45,6 +45,15 @@ const std::map<quint32, WidgetDetail> &ConfigStorage::getWidgetDetailMap() const
     return m_widgetDetailMap;
 }
 
+quint32 ConfigStorage::getIdFor(const QString &name) const noexcept
+{
+    auto search = m_idByName.find(name);
+    if (search == m_idByName.cend())
+        return 0;
+    else
+        return search->second;
+}
+
 void ConfigStorage::nameDataReceive(const quint32 id, const QString &name)
 {
     if (id == 0)

@@ -56,6 +56,10 @@ public:
     /// value - уточнённые данные для отображения виджета с указанным S2 ID.
     const std::map<quint32, WidgetDetail> &getWidgetDetailMap() const;
 
+    /// \brief Возвращает ID записи S2 по её имени.
+    /// \details В случае, если данной записи не существует, функция вернёт ID равный 0.
+    quint32 getIdFor(const QString &name) const noexcept;
+
 public slots:
     /// \brief Слот для сохранения S2 ID по его имени.
     /// \see getIdByNameMap.

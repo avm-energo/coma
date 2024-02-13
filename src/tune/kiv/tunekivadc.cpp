@@ -119,8 +119,6 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
 {
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
-    //  CKIV->Bci_block.Unom1 = 220;
-    // configV->setRecordValue({ S2Util::GetIdByName("Unom1"), float(220) });
     config.setRecord("Unom1", float(220));
 
     Error::Msg res = setADCCoef(coef);

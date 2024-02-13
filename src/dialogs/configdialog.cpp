@@ -22,7 +22,7 @@ ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boar
     //, m_requestService(device)
     , m_datamanager(*m_device->getS2Datamanager())
     , m_boardConfig(m_datamanager.getConfiguration(boardType))
-    , m_factory(m_boardConfig.m_workingConfig)
+    , m_factory(m_boardConfig.m_workingConfig, device)
     , m_errConfState(new ErrConfState(device))
 {
     connect(&m_datamanager, &S2DataManager::parseStatus, this, &ConfigDialog::parseStatusHandle);
@@ -64,7 +64,8 @@ void ConfigDialog::checkForDiff()
 
 bool ConfigDialog::isVisible(const quint16 id) const
 {
-    const auto &detailMap = S2::ConfigStorage::GetInstance().getWidgetDetailMap();
+    // const auto &detailMap = S2::ConfigStorage::GetInstance().getWidgetDetailMap();
+    const auto &detailMap = m_datamanager.getStorage().getWidgetDetailMap();
     auto search = detailMap.find(id);
     if (search != detailMap.cend())
         return search->second.first;
@@ -159,7 +160,8 @@ QWidget *ConfigDialog::ConfButtons()
 
 quint32 ConfigDialog::tabForId(quint16 id)
 {
-    auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
+    // auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
+    auto &widgetMap = m_datamanager.getStorage().getWidgetMap();
     auto search = widgetMap.find(id);
     if (search == widgetMap.end())
     {
@@ -175,7 +177,8 @@ quint32 ConfigDialog::tabForId(quint16 id)
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
     std::set<delegate::WidgetGroup> uniqueTabs;
-    auto &tabs = S2::ConfigStorage::GetInstance().getConfigTabs();
+    // auto &tabs = S2::ConfigStorage::GetInstance().getConfigTabs();
+    auto &tabs = m_datamanager.getStorage().getConfigTabs();
     for (const auto &record : m_boardConfig.m_defaultConfig)
     {
         auto tab = tabForId(record.first);

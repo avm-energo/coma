@@ -175,15 +175,15 @@ bool Util::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
     return true;
 }
 
-quint16 Util::GetIdByName(const QString &name)
-{
-    static const auto &nameMap = S2::ConfigStorage::GetInstance().getIdByNameMap();
-    auto search = nameMap.find(name);
-    if (search == nameMap.cend())
-        return 0;
-    else
-        return search->second;
-}
+// quint16 Util::GetIdByName(const QString &name)
+//{
+//    static const auto &nameMap = S2::ConfigStorage::GetInstance().getIdByNameMap();
+//    auto search = nameMap.find(name);
+//    if (search == nameMap.cend())
+//        return 0;
+//    else
+//        return search->second;
+//}
 
 std::size_t Util::getFileSize(const QByteArray &s2file) const
 {

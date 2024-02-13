@@ -37,7 +37,7 @@ public:
     static void StoreDataMem(QByteArray &mem, const std::vector<FileStruct> &dr, int fname);
     static void StoreDataMem(QByteArray &mem, const std::vector<DataRec> &dr, int fname);
     static bool RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist);
-    [[deprecated]] static quint16 GetIdByName(const QString &name);
+    //[[deprecated]] static quint16 GetIdByName(const QString &name);
 
 private:
     static quint32 getTime32() noexcept;
