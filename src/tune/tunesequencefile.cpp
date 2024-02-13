@@ -1,6 +1,6 @@
 #include "tunesequencefile.h"
 
-#include "../module/board.h"
+//#include "../module/board.h"
 
 #include <QDebug>
 #include <gen/stdfunc.h>
@@ -14,11 +14,11 @@ TuneSequenceFile::TuneSequenceFile()
 {
 }
 
-void TuneSequenceFile::init()
+void TuneSequenceFile::init(const QString &UID)
 {
     const QString tsFilename = StdFunc::GetSystemHomeDir() + TS_FILENAME;
     s_tsSettings = std::unique_ptr<QSettings>(new QSettings(tsFilename, QSettings::IniFormat));
-    s_cpuSerialNum = Board::GetInstance().UID();
+    s_cpuSerialNum = UID;
     s_tsfInitialized = true;
     saveTuneSequenceFile(1); // if there's no any steps for this module force writing it
 }

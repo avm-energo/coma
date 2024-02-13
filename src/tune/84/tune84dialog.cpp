@@ -24,6 +24,7 @@ Tune84Dialog::Tune84Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
               { "Настройка температурной коррекции -20 °С", new Tune84Temp60(TS84_20TUNING, device, this) } };
     //    m_calibrSteps = m_dialogList.size() + 1;
     BacA284 *bac = new BacA284(this);
+    bac->setup(m_device->getUID(), m_device->sync());
     addWidgetToTabWidget(bac->widget(), "Регулировка");
     SetupUI();
 }

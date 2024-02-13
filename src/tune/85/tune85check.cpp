@@ -69,7 +69,8 @@ Error::Msg Tune85Check::showScheme()
 
 Error::Msg Tune85Check::check()
 {
-    BdaA284 *bda = new BdaA284;
+    BdaA284 *bda = new BdaA284(this);
+    bda->setup(m_device->getUID(), m_sync);
     bda->readAndUpdate();
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)

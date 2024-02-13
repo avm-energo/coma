@@ -10,10 +10,11 @@
 #include <gen/stdfunc.h>
 
 TuneKIVR::TuneKIVR(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent)
+    : AbstractTuneDialog(tuneStep, device, parent), m_bac(new Bac2A284(this)), m_bda(new BdaA284(this))
 {
-    m_bac = new Bac2A284(this);
-    m_bda = new BdaA284(this);
+    m_bac->setup(m_device->getUID(), m_sync);
+    m_bda->setup(m_device->getUID(), m_sync);
+
     setBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");

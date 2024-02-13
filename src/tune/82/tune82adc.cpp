@@ -12,11 +12,16 @@
 
 Tune82ADC::Tune82ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(tuneStep, device, parent)
+    , m_bac(new Bac82(this))
+    , m_bd1(new Bd182(m_typeM, this))
+    , m_bda(new Bda82(this))
+    , m_bd0(new Bd0(this))
 {
-    m_bac = new Bac82(this);
-    m_bd1 = new Bd182(m_typeM, this);
-    m_bda = new Bda82(this);
-    m_bd0 = new Bd0(this);
+    m_bac->setup(m_device->getUID(), m_sync);
+    m_bd1->setup(m_device->getUID(), m_sync);
+    m_bda->setup(m_device->getUID(), m_sync);
+    m_bd0->setup(m_device->getUID(), m_sync);
+
     setBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");

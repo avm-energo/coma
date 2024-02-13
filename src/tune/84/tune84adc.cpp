@@ -15,12 +15,18 @@ using namespace Interface;
 
 Tune84ADC::Tune84ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(tuneStep, device, parent)
+    , m_bac(new BacA284(this))
+    , m_bac2(new Bac2A284(this))
+    , m_bda(new BdaA284(this))
+    , m_bdain(new BdaIn(this))
+    , m_bd0(new Bd0(this))
 {
-    m_bac = new BacA284(this);
-    m_bac2 = new Bac2A284(this);
-    m_bda = new BdaA284(this);
-    m_bdain = new BdaIn(this);
-    m_bd0 = new Bd0(this);
+    m_bac->setup(m_device->getUID(), m_sync);
+    m_bac2->setup(m_device->getUID(), m_sync);
+    m_bda->setup(m_device->getUID(), m_sync);
+    m_bdain->setup(m_device->getUID(), m_sync);
+    m_bd0->setup(m_device->getUID(), m_sync);
+
     setBac(m_bac);
     setBac(m_bac2);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");

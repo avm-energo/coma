@@ -12,7 +12,6 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QSvgRenderer>
-#include <device/current_device.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
@@ -22,7 +21,7 @@ GeneralTuneDialog::GeneralTuneDialog(Device::CurrentDevice *device, QWidget *par
     , m_reporter(new TuneReporter(this))
 {
     m_tuneTabWidget = new TuneTabWidget;
-    TuneSequenceFile::init();
+    TuneSequenceFile::init(m_device->getUID());
     m_calibrSteps = 0;
 }
 

@@ -1,6 +1,6 @@
 #include "tunekivtemp60.h"
 
-#include "../../module/board.h"
+//#include "../../module/board.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -18,7 +18,14 @@ using namespace Interface;
 
 TuneKIVTemp60::TuneKIVTemp60(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(tuneStep, device, parent)
+    , m_bac(new BacA284(this))
+    , m_bdain(new BdaIn(this))
+    , m_bd0(new Bd0(this))
 {
+    m_bac->setup(m_device->getUID(), m_sync);
+    m_bdain->setup(m_device->getUID(), m_sync);
+    m_bd0->setup(m_device->getUID(), m_sync);
+
     TuneSequenceFile::clearTuneDescrVector();
     for (int i = 0; i < 6; ++i)
         TuneSequenceFile::addItemToTuneDescrVector("u_p" + QString::number(i), m_midTuneStruct.u[i]);
@@ -30,9 +37,6 @@ TuneKIVTemp60::TuneKIVTemp60(int tuneStep, Device::CurrentDevice *device, QWidge
     TuneSequenceFile::addItemToTuneDescrVector("yet_p", m_midTuneStruct.yet);
 
     // CKIV = ckiv;
-    m_bac = new BacA284(this);
-    m_bdain = new BdaIn(this);
-    m_bd0 = new Bd0(this);
     setBac(m_bac);
     addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");

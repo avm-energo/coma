@@ -75,7 +75,8 @@ Error::Msg Tune82Check::showScheme()
 
 Error::Msg Tune82Check::check()
 {
-    Bda82 *bda = new Bda82;
+    Bda82 *bda = new Bda82(this);
+    bda->setup(m_device->getUID(), m_sync);
     bda->readAndUpdate();
 #ifndef NO_LIMITS
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();

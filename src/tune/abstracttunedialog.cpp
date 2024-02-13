@@ -478,14 +478,13 @@ Error::Msg AbstractTuneDialog::saveWorkConfig()
     QByteArray ba;
     if (m_sync->readFileSync(S2::FilesEnum::Config, ba) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
-    return Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba);
+    return Files::SaveToFile(StdFunc::GetSystemHomeDir() + m_device->getUID() + ".cf", ba);
 }
 
 Error::Msg AbstractTuneDialog::loadWorkConfig()
 {
     QByteArray ba;
-    if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba)
-        != Error::Msg::NoError)
+    if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + m_device->getUID() + ".cf", ba) != Error::Msg::NoError)
         return m_sync->writeFileSync(S2::FilesEnum::Config, ba);
     return Error::Msg::GeneralError;
 }

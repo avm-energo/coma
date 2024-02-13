@@ -39,7 +39,8 @@ Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
     };
 
     m_calibrSteps = m_dialogList.size() + 1;
-    Bac82 *bac = new Bac82;
+    Bac82 *bac = new Bac82(this);
+    bac->setup(m_device->getUID(), m_device->sync());
     addWidgetToTabWidget(bac->widget(), "Регулировка");
     SetupUI();
 }

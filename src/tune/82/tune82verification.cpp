@@ -100,6 +100,7 @@ Tune82Verification::Tune82Verification(int tuneStep, //
     , m_bd1(new Bd182(m_typeM, this))
     , m_mip(new Mip(false, m_typeM, this))
 {
+    m_bd1->setup(m_device->getUID(), m_sync);
     setupUI();
 }
 

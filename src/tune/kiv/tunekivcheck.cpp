@@ -101,7 +101,8 @@ Error::Msg TuneKIVCheck::check()
     while (tmr->elapsed() < TIMEFORBDATOSETINMS)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     ww->Stop();
-    BdaA284 *bda = new BdaA284;
+    BdaA284 *bda = new BdaA284(this);
+    bda->setup(m_device->getUID(), m_sync);
     bda->readAndUpdate();
     auto s2file = config.toByteArray();
 

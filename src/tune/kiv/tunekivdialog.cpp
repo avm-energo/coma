@@ -10,7 +10,6 @@
 
 TuneKIVDialog::TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {
-
     setAttribute(Qt::WA_DeleteOnClose);
     TKIVADCUDialog = new TuneKIVADC(KIVTS_ADCU, device, this);
     TKIVADCIDialog = new TuneKIVADC(KIVTS_ADCI, device, this);
@@ -21,6 +20,8 @@ TuneKIVDialog::TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent) : G
         { "Регулировка каналов тока", TKIVADCIDialog } };
     BacA284 *bac = new BacA284(this);
     Bac2A284 *bac2 = new Bac2A284(this);
+    bac->setup(m_device->getUID(), m_device->sync());
+    bac2->setup(m_device->getUID(), m_device->sync());
     addWidgetToTabWidget(bac->widget(), "Первая часть");
     addWidgetToTabWidget(bac2->widget(), "Вторая часть");
     SetupUI();

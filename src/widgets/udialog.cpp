@@ -1,6 +1,6 @@
 #include "udialog.h"
 
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "epopup.h"
 
 #include <QMessageBox>
@@ -44,7 +44,7 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
     {
         QString msg {};
         auto errorCode = Error::Msg(response.data);
-        if (errorCode == Error::Msg::FlashError && !Board::GetInstance().isCrcValid())
+        if (errorCode == Error::Msg::FlashError && !(m_device->bsi().Cfcrc))
             msg = tr("Запрошенный файл отсутствует");
         else
             msg = Error::MsgStr.value(errorCode, "Неизвестная ошибка");
