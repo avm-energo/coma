@@ -175,8 +175,9 @@ void ModbusResponseParser::processError(const quint8 functionCode, const QByteAr
 {
     auto responseExceptionCode(static_cast<Modbus::ExceptionCode>(response.at(0)));
     auto pureFunctionCode(static_cast<Modbus::FunctionCode>(functionCode - errorModbusConst));
-    qWarning() << pureFunctionCode << " error: " << responseExceptionCode;
-    BaseResponseParser::processError(static_cast<int>(responseExceptionCode));
+    qWarning() << pureFunctionCode << " for address " << m_request.arg1.value<quint16>()
+               << " device error: " << responseExceptionCode;
+    // BaseResponseParser::processError(static_cast<int>(responseExceptionCode));
 }
 
 void ModbusResponseParser::processSinglePointSignals(const QByteArray &response, const quint16 address) noexcept
@@ -201,8 +202,8 @@ void ModbusResponseParser::processFloatSignals(const QByteArray &response, const
     for (int pos = 0, i = 0; pos < response.size(); pos += step, ++i)
     {
         DataTypes::FloatStruct signal;
-        signal.sigAdr = address + (i / step);
-        signal.sigVal = Modbus::unpackRegister<float>(response.mid(i, step));
+        signal.sigAdr = address + i;
+        signal.sigVal = Modbus::unpackRegister<float>(response.mid(pos, step));
         signal.sigQuality = DataTypes::Quality::Good;
         emit responseParsed(signal);
     }

@@ -398,8 +398,7 @@ void Coma::initConnection(const ConnectStruct &st)
     auto connection = m_connectionManager->createConnection(st);
     if (connection && (connection->getConnectionState() != Interface::State::Disconnect))
         initDevice(connection);
-    else
-        QApplication::restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
 }
 
 void Coma::initDevice(Interface::AsyncConnection *connection)
@@ -417,7 +416,6 @@ void Coma::initDevice(Interface::AsyncConnection *connection)
             {
                 /// TODO: Handle other error types?
             }
-            QApplication::restoreOverrideCursor();
         });
         m_currentDevice->initBSI();
     }
@@ -425,8 +423,7 @@ void Coma::initDevice(Interface::AsyncConnection *connection)
 
 void Coma::initInterfaceConnection()
 {
-    auto currentConnection = m_currentDevice->async();
-    currentConnection->connection(this, &Coma::update);
+    m_currentDevice->async()->connection(this, &Coma::update);
     connectSetupBar();
     prepareDialogs();
 }

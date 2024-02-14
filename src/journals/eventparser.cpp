@@ -72,7 +72,11 @@ void EventParser::sortBinaryFile()
 
         if (range)
         {
+#ifdef DEBUG_JOURNALS
+            rangeSize = range.end - range.begin;
+#else
             auto rangeSize = range.end - range.begin;
+#endif
             auto result = m_eventFile.move(range.end, m_eventFile.end(), m_eventFile.begin());
             if (!result)
                 return;

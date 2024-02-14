@@ -91,9 +91,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-if(MSVC)
+# Visual Studio C++ compile options
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options(${PROJECT_NAME} PRIVATE /W4)
-else()
+# GCC and Clang compile options
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
@@ -104,10 +106,10 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   s2 tl::expected
 )
 
+# Linking hidapi library
 if(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
-endif()
-if(WIN32)
+elseif(WIN32)
   find_package(hidapi REQUIRED)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi::hidapi)
 endif()

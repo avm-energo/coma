@@ -82,8 +82,6 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
         m_currentConnection = nullptr;
         m_isInitial = true;
     }
-    else
-        m_isInitial = false;
 
     return m_currentConnection;
 }
@@ -145,6 +143,14 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
 
 void ConnectionManager::handleQueryExecutorTimeout()
 {
+    if (m_isInitial)
+    {
+        QString errMsg("Превышено время ожидания блока BSI. Disconnect...");
+        qCritical() << errMsg;
+        emit connectFailed(errMsg);
+        breakConnection();
+    }
+
     ++m_timeoutCounter;
     if (m_timeoutCounter > m_timeoutMax && !m_isReconnectOccurred)
         reconnect();
@@ -155,6 +161,9 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
     // fast checking
     if (data.sigAdr == addr::bsiStartReg)
     {
+        if (m_isInitial)
+            m_isInitial = false;
+
         if (m_isReconnectOccurred)
         {
             /// TODO: проверять BSI

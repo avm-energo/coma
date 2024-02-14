@@ -52,9 +52,9 @@ void ConnectDialog::setInterface()
         if (connectionType == "USB")
             m_idialog = new InterfaceUSBDialog(this);
         else if (connectionType == "RS485")
-            m_idialog = new InterfaceEthernetDialog(this);
-        else if (connectionType == "Ethernet")
             m_idialog = new InterfaceSerialDialog(this);
+        else if (connectionType == "Ethernet")
+            m_idialog = new InterfaceEthernetDialog(this);
 #ifdef ENABLE_EMULATOR
         else if (connectionType == "Emulator")
             m_idialog = new InterfaceEmuDialog(this);
