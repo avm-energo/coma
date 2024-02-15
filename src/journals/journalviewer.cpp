@@ -111,11 +111,15 @@ void JournalViewer::measDataReceived(const u32 index, const QString &header, //
 
 void JournalViewer::saveExcelJournal()
 {
-    auto filename = WDFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx");
-    if (!filename.isEmpty())
+    auto suggestedFilename = m_journal->getSuggestedFilename();
+    if (!suggestedFilename.isEmpty())
     {
-        m_journal->saveToExcel(filename);
-        EMessageBox::information(this, "Записано успешно!");
+        auto filename = WDFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
+        if (!filename.isEmpty())
+        {
+            m_journal->saveToExcel(filename);
+            EMessageBox::information(this, "Записано успешно!");
+        }
     }
 }
 
