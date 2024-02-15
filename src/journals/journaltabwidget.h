@@ -18,8 +18,6 @@ class JournalTabWidget : public QWidget
 {
     Q_OBJECT
 private:
-    static const std::map<JournalType, QString> s_prefixByType;
-
     UniquePointer<BaseJournal> m_currentJournal;
     QVBoxLayout *m_mainLayout;
     ETableView *m_modelView;
@@ -34,10 +32,6 @@ private:
 
     /// \brief Создание UI виджета: кнопки, слои, TableViewModel.
     void setupUI();
-
-    /// \brief Функция, возвращающая рекомендуемое имя файла.
-    /// \see saveExcelJournal, saveBinaryJournal
-    QString getSuggestedFilename();
 
 private slots:
     /// \brief Слот для получения журнала от устройства по нажатию на кнопку.

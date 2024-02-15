@@ -71,6 +71,12 @@
                 <desc>BSI</desc>
             </group>
             <group>
+                <signal-id>7</signal-id>
+                <reg-type>4</reg-type>
+                <type>uint32</type>
+                <desc>bsi_ext</desc>
+            </group>
+            <group>
                 <signal-id>2</signal-id>
                 <reg-type>4</reg-type>
                 <type>float</type>
@@ -144,6 +150,12 @@
                 <count>15</count>
                 <id>1</id>
                 <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>40</start-addr>
+                <count>5</count>
+                <id>7</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>100</start-addr>

@@ -13,12 +13,6 @@
 namespace journals
 {
 
-const std::map<JournalType, QString> JournalTabWidget::s_prefixByType {
-    { JournalType::System, "SysJ" }, //
-    { JournalType::Work, "WorkJ" },  //
-    { JournalType::Meas, "MeasJ" }   //
-};
-
 JournalTabWidget::JournalTabWidget(const JournalType type, QWidget *parent)
     : QWidget(parent)
     , m_mainLayout(new QVBoxLayout)
@@ -82,22 +76,6 @@ void JournalTabWidget::setupUI()
     setLayout(m_mainLayout);
 }
 
-QString JournalTabWidget::getSuggestedFilename()
-{
-    QString suggestedFilename = "";
-    auto search = s_prefixByType.find(m_type);
-    if (search != s_prefixByType.cend())
-    {
-        const auto &journalFile = m_currentJournal->getFile();
-        suggestedFilename = search->second + " ";
-        suggestedFilename += QString::number(journalFile.header.typeB, 16);
-        suggestedFilename += QString::number(journalFile.header.typeM, 16) + " #";
-        suggestedFilename += QString("%1").arg(journalFile.tail.serialnum, 8, 10, QChar('0'));
-        suggestedFilename += " " + QDate::currentDate().toString("dd-MM-yyyy");
-    }
-    return suggestedFilename;
-}
-
 void JournalTabWidget::gettingJournal()
 {
     if (m_modelView != nullptr)
@@ -115,7 +93,7 @@ void JournalTabWidget::eraseJournal()
 
 void JournalTabWidget::saveExcelJournal()
 {
-    auto suggestedFilename = getSuggestedFilename();
+    auto suggestedFilename = m_currentJournal->getSuggestedFilename();
     if (!suggestedFilename.isEmpty())
     {
         suggestedFilename += ".xlsx";
@@ -130,7 +108,7 @@ void JournalTabWidget::saveExcelJournal()
 
 void JournalTabWidget::saveBinaryJournal()
 {
-    auto suggestedFilename = getSuggestedFilename();
+    auto suggestedFilename = m_currentJournal->getSuggestedFilename();
     if (!suggestedFilename.isEmpty())
     {
         suggestedFilename += ".jn";

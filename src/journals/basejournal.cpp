@@ -26,6 +26,12 @@ const std::map<JournalType, QString> BaseJournal::s_nameByType {
     { JournalType::Meas, "Журнал измерений" }    //
 };
 
+const std::map<JournalType, QString> BaseJournal::s_prefixByType {
+    { JournalType::System, "SysJ" }, //
+    { JournalType::Work, "WorkJ" },  //
+    { JournalType::Meas, "MeasJ" }   //
+};
+
 BaseJournal::BaseJournal(QObject *parent)
     : QObject(parent)
     , m_timezone(TimeFunc::userTimeZone())
@@ -61,6 +67,28 @@ void BaseJournal::fill(const S2::S2BFile &journalFile)
 const S2::S2BFile &BaseJournal::getFile() const noexcept
 {
     return m_file;
+}
+
+JournalType BaseJournal::getType() const noexcept
+{
+    return static_cast<JournalType>(m_file.header.fname);
+}
+
+QString BaseJournal::getSuggestedFilename() const noexcept
+{
+    QString suggestedFilename = "";
+    auto search = s_prefixByType.find(getType());
+    if (search != s_prefixByType.cend())
+    {
+        suggestedFilename = //
+            QString("%1 %2%3 #%4 %5")
+                .arg(search->second)
+                .arg(m_file.header.typeB, 2, 16, QChar('0'))
+                .arg(m_file.header.typeM, 2, 16, QChar('0'))
+                .arg(m_file.tail.serialnum, 8, 10, QChar('0'))
+                .arg(QDate::currentDate().toString("dd-MM-yyyy"));
+    }
+    return suggestedFilename;
 }
 
 const QString &BaseJournal::getJournalName(const JournalType type, const QString &defaultValue) noexcept
