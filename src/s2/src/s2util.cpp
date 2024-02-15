@@ -22,7 +22,7 @@ QByteArray Util::convert(const quint32 id, const DataItem &item) const
 QByteArray Util::convert(const Configuration &config, quint32 fileType) const
 {
     utils::CRC32 crc;
-    S2::S2FileHeader header;
+    S2FileHeader header;
     QByteArray retValue, temp;
     header.size = 0;
     // Append data from configuration
@@ -52,7 +52,6 @@ QByteArray Util::convert(const Configuration &config, quint32 fileType) const
 Error::Msg Util::convert(const QByteArray &rawFile, const DataFactory &factory, //
     std::map<quint32, DataItem> &result) const
 {
-    using namespace S2;
     if (rawFile.size() < sizeof(S2FileHeader))
         return Error::Msg::HeaderSizeError;
     auto headerBytes = rawFile.left(sizeof(S2FileHeader));
@@ -88,7 +87,7 @@ Error::Msg Util::convert(const QByteArray &rawFile, const DataFactory &factory, 
 void Util::StoreDataMem(QByteArray &mem, const std::vector<DataRec> &dr, int fname)
 {
     utils::CRC32 crc;
-    S2::S2FileHeader header;
+    S2FileHeader header;
     QByteArray ba;
     header.size = 0;
     for (const S2::DataRec &record : dr)
@@ -197,20 +196,21 @@ std::size_t Util::getFileSize(const QByteArray &s2file) const
     return 0;
 }
 
-S2BFile Util::emulateS2B(const QByteArray &data, quint16 fname, quint16 typeB, quint16 typeM) const
+S2BFile Util::emulateS2B(const QByteArray &data, quint16 fname, const EmulateData &emulData) const
 {
-    using namespace S2;
     constexpr quint32 tailEnd = 0xEEEE1111;
     utils::CRC32 crc;
     S2BFileHeader header;
     crc.update(data);
     header.fname = fname;
     header.types2b = 0;
-    header.typeB = typeB;
-    header.typeM = typeM;
+    header.typeB = emulData.m_typeB;
+    header.typeM = emulData.m_typeM;
     header.thetime = getTime32();
     S2BFileTail tail;
     tail.crc32 = crc;
+    tail.serialnum = emulData.m_serialnum;
+    tail.reserved = std::numeric_limits<quint32>::max();
     tail.end = tailEnd;
     header.size = data.size() + sizeof(tail);
     return S2BFile { header, data, tail };
@@ -218,7 +218,6 @@ S2BFile Util::emulateS2B(const QByteArray &data, quint16 fname, quint16 typeB, q
 
 Error::Msg Util::parseS2B(const QByteArray &file, S2BFile &result) const
 {
-    using namespace S2;
     constexpr auto minSize = sizeof(S2BFileHeader) + sizeof(S2BFileTail);
     if (file.size() < minSize)
         return Error::Msg::SizeError;

@@ -1,6 +1,6 @@
 #include "journaltabwidget.h"
 
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -89,11 +89,10 @@ QString JournalTabWidget::getSuggestedFilename()
     if (search != s_prefixByType.cend())
     {
         const auto &journalFile = m_currentJournal->getFile();
-        const auto &board = Board::GetInstance();
         suggestedFilename = search->second + " ";
         suggestedFilename += QString::number(journalFile.header.typeB, 16);
         suggestedFilename += QString::number(journalFile.header.typeM, 16) + " #";
-        suggestedFilename += QString("%1").arg(board.serialNumber(Board::BaseAdd), 8, 10, QChar('0'));
+        suggestedFilename += QString("%1").arg(journalFile.tail.serialnum, 8, 10, QChar('0'));
         suggestedFilename += " " + QDate::currentDate().toString("dd-MM-yyyy");
     }
     return suggestedFilename;

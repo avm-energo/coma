@@ -1,6 +1,6 @@
 #include "basejournal.h"
 
-#include "../module/board.h"
+//#include "../module/board.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -87,15 +87,15 @@ void BaseJournal::saveToExcel(const QString &filename)
     QXlsx::CellReference cellDate(3, 1);
     QXlsx::CellReference cellTime(4, 1);
 
-    const quint16 type = (m_file.header.typeM << 8) | m_file.header.typeB;
+    auto type = QString("%1%2").arg(m_file.header.typeB, 2, 16, QChar('0')).arg(m_file.header.typeM, 2, 16, QChar('0'));
     workSheet->writeString(cellJourType, getJournalName(static_cast<JournalType>(m_file.header.fname)));
     workSheet->writeString(cellModuleType, "Модуль: ");
     cellModuleType.setColumn(2);
-    workSheet->writeString(cellModuleType, QString::number(type, 16));
+    workSheet->writeString(cellModuleType, type);
     cellModuleType.setColumn(3);
     workSheet->writeString(cellModuleType, "сер. ном. ");
     cellModuleType.setColumn(4);
-    workSheet->writeString(cellModuleType, QString::number(Board::GetInstance().serialNumber(Board::BaseMezzAdd), 16));
+    workSheet->writeString(cellModuleType, QString::number(m_file.tail.serialnum, 16));
 
     auto datetime = QDateTime::fromSecsSinceEpoch(m_file.header.thetime);
     workSheet->writeString(cellDate, "Дата: ");

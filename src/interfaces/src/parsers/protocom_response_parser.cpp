@@ -72,12 +72,16 @@ void ProtocomResponseParser::parse()
             processU32(m_responseBuffer, addr);
         break;
     case Proto::Commands::ReadBlkStartInfo:
-    case Proto::Commands::ReadBlkStartInfoExt:
+    {
         // Update data
-        if (boardType.mTypeB != m_responseBuffer[0])
-            boardType.mTypeB = m_responseBuffer[0];
-        if (boardType.mTypeM != m_responseBuffer[4])
-            boardType.mTypeM = m_responseBuffer[4];
+        Q_ASSERT(m_responseBuffer.size() == sizeof(quint32) * 15); // check bsi size
+        auto bsiPtr = reinterpret_cast<quint32 *>(m_responseBuffer.data());
+        m_deviceData.m_typeB = bsiPtr[0];
+        m_deviceData.m_typeM = bsiPtr[1];
+        m_deviceData.m_serialnum = bsiPtr[12];
+        [[fallthrough]];
+    }
+    case Proto::Commands::ReadBlkStartInfoExt:
         processU32(m_responseBuffer, addr);
         break;
     case Proto::Commands::ReadBlkAC:
@@ -131,9 +135,9 @@ void ProtocomResponseParser::parse()
 
 void ProtocomResponseParser::receiveJournalData(const S2::FilesEnum fileNum, const QByteArray &file)
 {
-    if (!boardType.isEmpty())
+    if (!m_deviceData.isEmpty())
     {
-        auto s2bFile = m_util.emulateS2B(file, std_ext::to_underlying(fileNum), boardType.mTypeB, boardType.mTypeM);
+        auto s2bFile = m_util.emulateS2B(file, std_ext::to_underlying(fileNum), m_deviceData);
         DataTypes::GeneralResponseStruct genResp {
             DataTypes::GeneralResponseTypes::Ok,      //
             static_cast<quint64>(s2bFile.header.size) //
