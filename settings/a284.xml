@@ -896,6 +896,12 @@
                 <desc>bsi</desc>
             </group>
             <group>
+                <signal-id>20</signal-id>
+                <reg-type>4</reg-type>
+                <type>uint32</type>
+                <desc>bsi_ext</desc>
+            </group>
+            <group>
                 <signal-id>2</signal-id>
                 <reg-type>4</reg-type>
                 <type>float</type>
