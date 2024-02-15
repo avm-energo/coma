@@ -70,7 +70,7 @@ QString UDialog::successMsg() const
     return showSuccessMessageFlag ? m_successMsg : ""; // while empty string message will not appear
 }
 
-void UDialog::setSuccessMsg(const QString successMsg)
+void UDialog::setSuccessMsg(const QString &successMsg)
 {
     m_successMsg = successMsg;
 }
@@ -80,7 +80,17 @@ QString UDialog::errorMsg() const
     return m_errorMsg;
 }
 
-void UDialog::setErrorMsg(const QString errorMsg)
+void UDialog::setErrorMsg(const QString &errorMsg)
 {
     m_errorMsg = errorMsg;
+}
+
+QString UDialog::getFilenameForDevice() const
+{
+    Q_ASSERT(m_device != nullptr);
+    const auto &bsi = m_device->bsi();
+    return QString("%1%2-%3")
+        .arg(bsi.MTypeB, 2, 16, QChar('0'))
+        .arg(bsi.MTypeM, 2, 16, QChar('0'))
+        .arg(bsi.SerialNum, 8, 10, QChar('0'));
 }

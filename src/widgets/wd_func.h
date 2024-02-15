@@ -21,6 +21,7 @@ class PasswordLineEdit;
 class QMainWindow;
 class QStatusBar;
 class QWidget;
+class UDialog;
 
 class WDFunc
 {
@@ -328,8 +329,8 @@ public:
     static QString ChooseFileForOpen(QWidget *parent, QString mask);
     /// Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)";
     /// QString ext - расширение по умолчанию Output: QString filename
-    static QString ChooseFileForSave(
-        QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr = "");
+    static QString ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filename);
+    static QString ChooseFileForSave(UDialog *parent, const QString &mask, const QString &ext);
     static QString ChooseDirectoryForOpen(QWidget *parent);
 
     static QValidator *getRegExpValidator(const QString &pattern, QObject *parent = nullptr);

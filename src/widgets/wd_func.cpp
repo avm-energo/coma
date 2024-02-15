@@ -8,6 +8,7 @@
 #include "etableview.h"
 #include "ipctrl.h"
 #include "passwordlineedit.h"
+#include "udialog.h"
 
 #include <QApplication>
 #include <QFileDialog>
@@ -659,21 +660,26 @@ QString WDFunc::ChooseFileForOpen(QWidget *parent, QString mask)
     return filename;
 }
 
-QString WDFunc::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr)
+QString WDFunc::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filename)
 {
     auto workPath = StdFunc::GetHomeDir();
-    auto tmps = Files::ChooseFileForSave(FileHelper::ChooseFileForSave(ext), filenamestr);
     auto dlg = new QFileDialog(parent);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    auto filename = dlg->getSaveFileName(parent, "Сохранить файл", workPath + "/" + tmps, mask, Q_NULLPTR);
-    if (!filename.isEmpty())
+    auto fullpath = workPath + "/" + filename + "." + ext;
+    auto filepath = dlg->getSaveFileName(parent, "Сохранить файл", fullpath, mask, Q_NULLPTR);
+    if (!filepath.isEmpty())
     {
-        QFileInfo info(filename);
+        QFileInfo info(filepath);
         StdFunc::SetHomeDir(info.absolutePath());
     }
     dlg->close();
-    return filename;
+    return filepath;
+}
+
+QString WDFunc::ChooseFileForSave(UDialog *parent, const QString &mask, const QString &ext)
+{
+    return WDFunc::ChooseFileForSave(parent, mask, ext, parent->getFilenameForDevice());
 }
 
 QString WDFunc::ChooseDirectoryForOpen(QWidget *parent)
