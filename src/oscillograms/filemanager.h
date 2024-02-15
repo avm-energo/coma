@@ -1,5 +1,6 @@
 #pragma once
-#include "../module/modules.h"
+
+#include "osc_ids.h"
 #include "trendview/trendviewmodels.h"
 
 #include <QAbstractItemModel>

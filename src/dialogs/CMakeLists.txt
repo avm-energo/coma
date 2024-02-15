@@ -19,8 +19,6 @@ add_library(
 target_link_libraries(${PROJECT_NAME} PUBLIC
   alarms
   oscillograms
-  models
-  module
   tune
   startup
   journals

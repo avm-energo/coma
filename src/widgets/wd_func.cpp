@@ -1,8 +1,6 @@
 #include "wd_func.h"
 
 #include "../models/etablemodel.h"
-#include "../module/filehelper.h"
-#include "../module/modules.h"
 #include "edoublespinbox.h"
 #include "epopup.h"
 #include "etableview.h"

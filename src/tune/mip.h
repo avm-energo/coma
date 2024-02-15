@@ -1,7 +1,6 @@
 #ifndef MIP_H
 #define MIP_H
 
-//#include "../module/modules.h"
 #include "../widgets/udialog.h"
 
 #include <device/device_list.h>

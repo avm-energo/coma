@@ -2,7 +2,6 @@
 #define DELEGATE_COMMON_H
 
 #include "../../ctti/type_id.hpp"
-//#include "../module/modules.h"
 
 #include <QMap>
 #include <QString>

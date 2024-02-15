@@ -1,6 +1,5 @@
 #include "alarms/alarmwidget.h"
 
-#include "../../module/modules.h"
 #include "../../widgets/wd_func.h"
 
 #include <QDialogButtonBox>
