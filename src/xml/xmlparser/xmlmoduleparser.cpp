@@ -22,7 +22,15 @@ bool Xml::ModuleParser::isCorrectDeviceType(const QDomElement &moduleNode, const
         bool status1 = false, status2 = false;
         const u16 mtypeB = mTypeB.toUShort(&status1, 16);
         const u16 mtypeM = mTypeM.toUShort(&status2, 16);
-        return (status1 && status2 && mtypeB == device->getBaseType() && mtypeM == device->getMezzType());
+        if (status1 && status2)
+        {
+            if (mtypeB == 0)
+                return (mtypeM == device->getMezzType());
+            else if (mtypeM == 0)
+                return (mtypeB == device->getBaseType());
+            else
+                return ((mtypeB == device->getBaseType()) && (mtypeM == device->getMezzType()));
+        }
     }
     return false;
 }
@@ -44,19 +52,18 @@ bool Xml::ModuleParser::isCorrectDevice(const QDomElement &moduleNode, const Dev
     if (isCorrectDeviceType(moduleNode, device))
     {
         // Проверяем корректность версии только для базы
-        auto isBase = (device == 0) ? false : true;
-        if (isBase)
+        if (moduleNode.attribute(tags::mtypeb, "").toUShort(nullptr, 16) != 0)
         {
             if (isCorrectFirmwareVersion(moduleNode, device))
                 return true;
             else
-                qCritical() << "Устаревшая версия ВПО, обновите ВПО";
+                emit parseError("Устаревшая версия ВПО, обновите ВПО");
         }
         else
             return true;
     }
     else
-        qCritical() << "Типы плат устройства не соответствуют указанным в XML конфигурации";
+        emit parseError("Типы плат устройства не соответствуют указанным в XML конфигурации");
     return false;
 }
 
@@ -336,31 +343,46 @@ void Xml::ModuleParser::parseResources(const QDomElement &resourcesNode, const Q
 
 void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList &nodes)
 {
-    auto document = getFileContent(filename);
-    auto moduleNode = document.firstChildElement(tags::module);
-    if (!moduleNode.isNull())
+    if (Files::isFileExist(filename))
     {
-        auto resources = moduleNode.firstChildElement(tags::res);
-        parseResources(resources, nodes);
-    }
-    else
-        emit parseError(QString("В файле %1 не найден узел <module>").arg(filename));
-}
-
-void Xml::ModuleParser::parseDocument(const QString &filename, const Device::CurrentDevice *device)
-{
-    auto document = getFileContent(filename);
-    auto moduleNode = document.firstChildElement(tags::module);
-    if (!moduleNode.isNull())
-    {
-        if (isCorrectDevice(moduleNode, device))
+        auto document = getFileContent(filename);
+        auto moduleNode = document.firstChildElement(tags::module);
+        if (!moduleNode.isNull())
         {
             auto resources = moduleNode.firstChildElement(tags::res);
-            parseResources(resources);
+            parseResources(resources, nodes);
         }
+        else
+            emit parseError(QString("В файле %1 не найден узел <module>").arg(filename));
     }
     else
-        emit parseError(QString("В файле %1 не найден узел <module>").arg(filename));
+        emit parseError(QString("Файл %1 не найден").arg(filename));
+}
+
+void Xml::ModuleParser::parseDocument(const QStringList &filenames, const Device::CurrentDevice *device)
+{
+    for (const auto &filename : qAsConst(filenames))
+    {
+        if (Files::isFileExist(filename))
+        {
+            auto document = getFileContent(filename);
+            auto moduleNode = document.firstChildElement(tags::module);
+            if (!moduleNode.isNull())
+            {
+                if (isCorrectDevice(moduleNode, device))
+                {
+                    auto resources = moduleNode.firstChildElement(tags::res);
+                    parseResources(resources);
+                }
+                else
+                    break;
+            }
+            else
+                emit parseError(QString("В файле %1 не найден узел <module>").arg(filename));
+        }
+        else
+            emit parseError(QString("Файл %1 не найден").arg(filename));
+    }
 }
 
 void Xml::ModuleParser::parse(const u16 typeB, const u16 typeM, const QStringList &nodes)
@@ -372,10 +394,8 @@ void Xml::ModuleParser::parse(const u16 typeB, const u16 typeM, const QStringLis
     {
         auto baseXmlFilename = getFileName(typeB, 0);
         auto mezzXmlFilename = getFileName(0, typeM);
-        if (Files::isFileExist(baseXmlFilename))
-            parseDocument(baseXmlFilename, nodes);
-        if (Files::isFileExist(mezzXmlFilename))
-            parseDocument(mezzXmlFilename, nodes);
+        parseDocument(baseXmlFilename, nodes);
+        parseDocument(mezzXmlFilename, nodes);
     }
 }
 
@@ -388,15 +408,12 @@ void Xml::ModuleParser::parse(Device::CurrentDevice *device)
         const auto typeM = device->getMezzType();
         auto xmlFilename = getFileName(typeB, typeM);
         if (Files::isFileExist(xmlFilename))
-            parseDocument(xmlFilename, device);
+            parseDocument({ xmlFilename }, device);
         else
         {
             auto baseXmlFilename = getFileName(typeB, 0);
             auto mezzXmlFilename = getFileName(0, typeM);
-            if (Files::isFileExist(baseXmlFilename))
-                parseDocument(baseXmlFilename, device);
-            if (Files::isFileExist(mezzXmlFilename))
-                parseDocument(mezzXmlFilename, device);
+            parseDocument({ baseXmlFilename, mezzXmlFilename }, device);
         }
     }
     else

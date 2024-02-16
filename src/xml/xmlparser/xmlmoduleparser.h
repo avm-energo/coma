@@ -68,7 +68,7 @@ private:
     /// \brief Парсинг указанного XML файла для выбранных узлов.
     void parseDocument(const QString &filename, const QStringList &nodes = {});
     /// \brief Парсинг указанного XML файла для подключённого устройства.
-    void parseDocument(const QString &filename, const Device::CurrentDevice *device);
+    void parseDocument(const QStringList &filenames, const Device::CurrentDevice *device);
     /// \brief Парсинг XML файла конфигурации устройства.
     void parseResources(const QDomElement &resourcesNode, const QStringList &nodes = {});
     /// \brief Парсинг содержимого узла <resources>.
