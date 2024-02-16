@@ -475,7 +475,7 @@ void Coma::connectSetupBar()
         if (m_appConfig == AppConfiguration::Debug && msgQueueSize)
         {
             connect(currentConnection, &Interface::AsyncConnection::queueSizeChanged, this, //
-                [=](const std::size_t size) { msgQueueSize->setText(QString("Queue size: %1").arg(size)); });
+                [=](const quint64 size) { msgQueueSize->setText(QString("Queue size: %1").arg(size)); });
         }
     }
 }
