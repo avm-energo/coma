@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../../ctti/type_id.hpp"
-
+#include <ctti/type_id.hpp>
 #include <s2/dataitem.h>
 #include <s2/s2configstorage.h>
 

@@ -1,10 +1,9 @@
 #ifndef DELEGATE_COMMON_H
 #define DELEGATE_COMMON_H
 
-#include "../../ctti/type_id.hpp"
-
 #include <QMap>
 #include <QString>
+#include <ctti/type_id.hpp>
 #include <variant>
 
 namespace delegate
@@ -28,21 +27,10 @@ struct Widget
     }
 
     Widget(
-        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
+        const ctti::unnamed_type_id_t type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
         : type(type_), desc(desc_), group(group_), toolTip(toolTip_)
     {
     }
-
-    //    Widget &merge(const Widget &rhs)
-    //    {
-    //        if (!rhs.desc.isEmpty())
-    //            desc = rhs.desc;
-    //        if (!rhs.toolTip.isEmpty())
-    //            desc = rhs.desc;
-    //        if (rhs.group)
-    //            group = rhs.group;
-    //        return *this;
-    //    }
 
     ctti::unnamed_type_id_t type;
     QString desc;
@@ -61,33 +49,12 @@ struct DoubleSpinBoxWidget : Widget
     double min;
     double max;
     quint32 decimals;
-
-    //    DoubleSpinBoxWidget &merge(const DoubleSpinBoxWidget &rhs)
-    //    {
-    //        if (rhs.min)
-    //            min = rhs.min;
-    //        if (rhs.max)
-    //            max = rhs.max;
-    //        if (rhs.decimals)
-    //            decimals = rhs.decimals;
-    //        Widget::merge(rhs);
-    //        return *this;
-    //    }
 };
 
 struct Group
 {
     quint32 count;
     QStringList items;
-
-    //    Group &merge(const Group &rhs)
-    //    {
-    //        if (rhs.count)
-    //            count = rhs.count;
-    //        if (!rhs.items.isEmpty())
-    //            items = rhs.items;
-    //        return *this;
-    //    }
 };
 
 struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
@@ -97,13 +64,6 @@ struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
         : DoubleSpinBoxWidget(type_, desc_, group_, toolTip_)
     {
     }
-
-    //    DoubleSpinBoxGroup &merge(const DoubleSpinBoxGroup &rhs)
-    //    {
-    //        DoubleSpinBoxWidget::merge(rhs);
-    //        Group::merge(rhs);
-    //        return *this;
-    //    }
 };
 
 struct CheckBoxGroup : Widget, Group
@@ -113,13 +73,6 @@ struct CheckBoxGroup : Widget, Group
         : Widget(type_, desc_, group_, toolTip_)
     {
     }
-
-    //    CheckBoxGroup &merge(const CheckBoxGroup &rhs)
-    //    {
-    //        Widget::merge(rhs);
-    //        Group::merge(rhs);
-    //        return *this;
-    //    }
 };
 
 struct QComboBox : Widget
@@ -139,16 +92,6 @@ struct QComboBox : Widget
 
     PrimaryField primaryField = index;
     QStringList model;
-
-    //    QComboBox &merge(const QComboBox &rhs)
-    //    {
-    //        if (!rhs.model.isEmpty())
-    //            model = rhs.model;
-    //        if (rhs.primaryField)
-    //            primaryField = rhs.primaryField;
-    //        Widget::merge(rhs);
-    //        return *this;
-    //    }
 };
 
 struct QComboBoxGroup : QComboBox, Group
@@ -158,13 +101,6 @@ struct QComboBoxGroup : QComboBox, Group
         : QComboBox(type_, desc_, group_, toolTip_)
     {
     }
-
-    //    QComboBoxGroup &merge(const QComboBoxGroup &rhs)
-    //    {
-    //        QComboBox::merge(rhs);
-    //        Group::merge(rhs);
-    //        return *this;
-    //    }
 };
 }
 
