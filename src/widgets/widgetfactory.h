@@ -214,7 +214,15 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                            {
                            case delegate::QComboBox::data:
                            {
-                               auto index = arg.model.indexOf(QString::number(value));
+                               QString strValue;
+                               if constexpr (std::is_floating_point_v<T>)
+                               {
+                                   strValue = QString::number(value, 'f', 2);
+                                   strValue.replace('.', ',');
+                               }
+                               else
+                                   strValue = QString::number(value);
+                               auto index = arg.model.indexOf(strValue);
                                if (index != -1)
                                    status = WDFunc::SetCBIndex(parent, QString::number(key), index);
                                break;
