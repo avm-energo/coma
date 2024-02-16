@@ -24,7 +24,9 @@ enum class ModelType : quint16
     Modbus,
     Protocom,
     IEC60870,
-    Config
+    Config,
+    Hidden,
+    HiddenTab,
 };
 
 /// \brief Base class for models that used in XML editor.

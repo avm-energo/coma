@@ -15,7 +15,8 @@ QString XmlContainerModel::getModelTagName() const
         { ModelType::Alarms, tags::alarms },     //
         { ModelType::Journals, tags::journals }, //
         { ModelType::Sections, tags::sections }, //
-        { ModelType::Section, tags::section }    //
+        { ModelType::Section, tags::section },   //
+        { ModelType::Hidden, tags::hidden },     //
     };
     auto search = tagByModelType.find(mType);
     if (search != tagByModelType.cend())
@@ -34,6 +35,14 @@ void XmlContainerModel::parseNode(QDomNode &node, int &row)
         if (mType == ModelType::Section)             //
             parseAttribute(node, tags::tab, row, 1); // ID вкладки
     }
+    // Для узлов <hidden>
+    else if (mType == ModelType::Hidden)
+    {
+        parseAttribute(node, tags::desc, row, 0);
+        parseAttribute(node, tags::prefix, row, 1);
+        parseAttribute(node, tags::flag, row, 2, "0");
+        parseAttribute(node, tags::background, row, 3);
+    }
     // Для узлов <resources>, <alarms> и <journals>
     else
     {
@@ -48,7 +57,7 @@ void XmlContainerModel::parseNode(QDomNode &node, int &row)
 void XmlContainerModel::create(const QStringList &saved, int *row)
 {
     // Создание дочерних элементов доступно для узлов <sections> и <section>
-    if (mType == ModelType::Sections || mType == ModelType::Section)
+    if (mType == ModelType::Sections || mType == ModelType::Section || mType == ModelType::Hidden)
     {
         BaseEditorModel::create(saved, row);
         if (*row >= 0)
@@ -60,6 +69,12 @@ void XmlContainerModel::create(const QStringList &saved, int *row)
                 node.modelType = ModelType::Section;
                 labels = XmlModel::headers.find(node.modelType)->second;
                 // Так как узел <sections> содержит узлы <section>
+                node.modelPtr = new XmlContainerModel(1, labels.count(), node.modelType, this);
+            }
+            else if (mType == ModelType::Hidden)
+            {
+                node.modelType = ModelType::HiddenTab;
+                labels = XmlModel::headers.find(node.modelType)->second;
                 node.modelPtr = new XmlContainerModel(1, labels.count(), node.modelType, this);
             }
             else

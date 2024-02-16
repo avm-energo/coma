@@ -19,27 +19,31 @@ const std::map<QString, ModelType> XmlModel::types {
     { tags::modbus, ModelType::Modbus },     //
     { tags::protocom, ModelType::Protocom }, //
     { tags::iec, ModelType::IEC60870 },      //
-    { tags::config, ModelType::Config }      //
+    { tags::config, ModelType::Config },     //
+    { tags::hidden, ModelType::Hidden },     //
+    { tags::hidden_tab, ModelType::HiddenTab },
 };
 
 const std::map<ModelType, QStringList> XmlModel::headers {
-    { ModelType::Resources, { "XML", "Описание" } },                                                 //
-    { ModelType::Signals, { "Стартовый адрес", "Количество", "ID сигнала", "Тип" } },                //
-    { ModelType::SectionTabs, { "ID вкладки", "Название" } },                                        //
-    { ModelType::Sections, { "Название" } },                                                         //
-    { ModelType::Section, { "Название", "ID вкладки" } },                                            //
-    { ModelType::SGroup, { "Адрес", "Имя" } },                                                       //
-    { ModelType::Alarms, { "XML", "Описание" } },                                                    //
-    { ModelType::AlarmsCrit, { "Адрес", "Описание", "Подсветка" } },                                 //
-    { ModelType::AlarmsWarn, { "Адрес", "Описание", "Подсветка" } },                                 //
-    { ModelType::AlarmsInfo, { "Адрес", "Описание" } },                                              //
-    { ModelType::Journals, { "XML", "Описание" } },                                                  //
-    { ModelType::WorkJours, { "Адрес", "Описание" } },                                               //
-    { ModelType::MeasJours, { "Индекс", "Заголовок", "Тип", "Видимость" } },                         //
-    { ModelType::Modbus, { "ID сигнала", "Тип регистра", "Возвращаемый тип", "Описание" } },         //
-    { ModelType::Protocom, { "Блок", "ID сигнала" } },                                               //
-    { ModelType::IEC60870, { "ID сигнала", "Тип сигнала", "Тип передачи", "Группа" } },              //
-    { ModelType::Config, { "ID виджета", "Значение по умолчанию", "Изм. количество", "Видимость" } } //
+    { ModelType::Resources, { "XML", "Описание" } },                                                     //
+    { ModelType::Signals, { "Стартовый адрес", "Количество", "ID сигнала", "Тип" } },                    //
+    { ModelType::SectionTabs, { "ID вкладки", "Название" } },                                            //
+    { ModelType::Sections, { "Название" } },                                                             //
+    { ModelType::Section, { "Название", "ID вкладки" } },                                                //
+    { ModelType::SGroup, { "Адрес", "Имя" } },                                                           //
+    { ModelType::Alarms, { "XML", "Описание" } },                                                        //
+    { ModelType::AlarmsCrit, { "Адрес", "Описание", "Подсветка" } },                                     //
+    { ModelType::AlarmsWarn, { "Адрес", "Описание", "Подсветка" } },                                     //
+    { ModelType::AlarmsInfo, { "Адрес", "Описание" } },                                                  //
+    { ModelType::Journals, { "XML", "Описание" } },                                                      //
+    { ModelType::WorkJours, { "Адрес", "Описание" } },                                                   //
+    { ModelType::MeasJours, { "Индекс", "Заголовок", "Тип", "Видимость" } },                             //
+    { ModelType::Modbus, { "ID сигнала", "Тип регистра", "Возвращаемый тип", "Описание" } },             //
+    { ModelType::Protocom, { "Блок", "ID сигнала" } },                                                   //
+    { ModelType::IEC60870, { "ID сигнала", "Тип сигнала", "Тип передачи", "Группа" } },                  //
+    { ModelType::Config, { "ID виджета", "Значение по умолчанию", "Изм. количество", "Видимость" } },    //
+    { ModelType::Hidden, { "Название", "Префикс", "Флаг", "Задний фон" } },                              //
+    { ModelType::HiddenTab, { "Индекс", "Название", "Виджет", "Тип", "Данные", "Адрес", "Видимость" } }, //
 };
 
 /// \brief Base XML model class ctor
@@ -188,9 +192,9 @@ void XmlModel::parseTag(QDomNode &node, const QString &tagName, int row, int col
  *  \details Frequently called by implementations of parseNode virtual function.
  *  \see parseTag, parseNode
  */
-void XmlModel::parseAttribute(QDomNode &node, const QString &attrName, int row, int col)
+void XmlModel::parseAttribute(QDomNode &node, const QString &attrName, int row, int col, const QString &defValue)
 {
-    auto attr = node.toElement().attribute(attrName, "");
+    auto attr = node.toElement().attribute(attrName, defValue);
     if (!attr.isNull())
     {
         auto attrIndex = index(row, col);
