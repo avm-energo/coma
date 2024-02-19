@@ -4,6 +4,7 @@
 #include "../module/modules.h"
 #include "../widgets/udialog.h"
 
+#include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/settingstypes.h>
 

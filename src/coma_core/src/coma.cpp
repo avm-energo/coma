@@ -509,7 +509,7 @@ void Coma::initConnection(const ConnectStruct &st)
         {
             auto queueSizeMsg = this->findChild<QLabel *>("QueueSize");
             connect(currentConnection, &Interface::AsyncConnection::queueSizeChanged, this, //
-                [=](const std::size_t size) { queueSizeMsg->setText(QString("Queue size: %1").arg(size)); });
+                [=](const quint64 size) { queueSizeMsg->setText(QString("Queue size: %1").arg(size)); });
         }
         initInterfaceConnection(currentConnection);
     }

@@ -21,7 +21,7 @@ std::optional<CommandStruct> RequestQueue::getFromQueue() noexcept
     std::lock_guard<std::mutex> locker { m_queueAccess };
     if (!m_requests.empty())
     {
-        CommandStruct retVal { std::move(m_requests.front()) };
+        CommandStruct retVal { m_requests.front() };
         m_requests.pop();
         return std::optional<CommandStruct> { std::move(retVal) };
     }
@@ -31,7 +31,7 @@ std::optional<CommandStruct> RequestQueue::getFromQueue() noexcept
 void RequestQueue::clear() noexcept
 {
     std::lock_guard<std::mutex> locker { m_queueAccess };
-    std::queue<CommandStruct> empty;
+    Utils::UniqueQueue<CommandStruct> empty;
     m_requests.swap(empty);
 }
 

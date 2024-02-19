@@ -5,6 +5,7 @@
 
 #include <QMessageBox>
 #include <QSettings>
+#include <gen/error.h>
 
 UDialog::UDialog(QWidget *parent) : UWidget(parent)
 {

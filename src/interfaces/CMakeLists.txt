@@ -50,6 +50,7 @@ set(files_h
     "${INCLUDE_PATH}/utils/modbus_convertations.h"
     "${INCLUDE_PATH}/utils/request_queue.h"
     "${INCLUDE_PATH}/utils/slot_trait.h"
+    "${INCLUDE_PATH}/utils/unique_queue.h"
 )
 
 set(files_cpp
