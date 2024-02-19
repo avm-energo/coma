@@ -39,6 +39,7 @@ void Tune82ADC::setTuneFunctions()
     addTuneFunc("Расчёт коррекции смещения по токам и напряжениям...", &Tune82ADC::calcIUcoef1);
     if (m_typeM != Modules::MezzanineBoard::MTM_83) // not 6U0I
         addTuneFunc("Расчёт коррекции смещения по токам 5 А...", &Tune82ADC::calcIcoef5);
+    addTuneFunc("Сохранениt нового блока Bac...", &Tune82ADC::saveNewBac);
     addTuneFunc(
         "Запись настроечных коэффициентов и восстановление конфигурации...", &AbstractTuneDialog::writeTuneCoefs);
     addTuneFunc("Проверка регулировки...", &Tune82ADC::checkTune);
@@ -184,6 +185,12 @@ Error::Msg Tune82ADC::showPreWarning()
         CancelTune();
         return Error::GeneralError;
     }
+    return Error::NoError;
+}
+
+Error::Msg Tune82ADC::saveNewBac()
+{
+    *m_bac->data() = *m_bacNewBlock.data();
     return Error::NoError;
 }
 

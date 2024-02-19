@@ -44,6 +44,7 @@ private:
     Error::Msg calcIUcoef1();
     Error::Msg calcIcoef5();
     Error::Msg showPreWarning();
+    Error::Msg saveNewBac();
     Error::Msg checkTune();
     void getBd1();
 

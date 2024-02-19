@@ -25,6 +25,7 @@
 
 #include "datablock.h"
 
+#include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
 #include <QDialogButtonBox>
@@ -130,7 +131,7 @@ QWidget *DataBlock::blockButtonsUI()
 
         const QList<QPair<QPair<QString, QString>, std::function<void()>>> funcs {
             { { "Получить", ":/icons/tnread.svg" }, [this]() { readAndUpdate(); } },
-            { { "Записать", ":/icons/tnwrite.svg" }, [this]() { writeBlockToModule(); } },
+            { { "Записать", ":/icons/tnwrite.svg" }, [this]() { writeBlockToModule(true); } },
             { { "Задать по умолчанию", ":/icons/tnyes.svg" }, [this]() { setDefBlockAndUpdate(); } },
             { { "Прочитать из файла и записать в устройство", ":/icons/tnload.svg" },
                 [this]() { readFromFileUserChoose(); } },
@@ -220,7 +221,7 @@ void DataBlock::updateFromWidget()
     }
 }
 
-Error::Msg DataBlock::writeBlockToModule()
+Error::Msg DataBlock::writeBlockToModule(const bool showMessage)
 {
     auto conn = ActiveConnection::sync();
     switch (m_block.blocktype)
@@ -250,6 +251,8 @@ Error::Msg DataBlock::writeBlockToModule()
     default:
         break;
     }
+    if (showMessage)
+        EMessageBox::information(widget(), "Коэффициенты записаны успешно!");
     return Error::Msg::NoError;
 }
 

@@ -132,7 +132,7 @@ public:
     }
 
     void readBlockFromModule();
-    Error::Msg writeBlockToModule();
+    Error::Msg writeBlockToModule(const bool showMessage = false);
     QWidget *blockButtonsUI();
     void setEnabled(bool isEnabled);
 
