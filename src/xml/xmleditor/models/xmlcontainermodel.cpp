@@ -1,5 +1,6 @@
 #include "xmlcontainermodel.h"
 
+#include "xmldatamodel.h"
 #include "xmlhidedatamodel.h"
 
 XmlContainerModel::XmlContainerModel(int rows, int cols, ModelType type, QObject *parent)
@@ -75,7 +76,7 @@ void XmlContainerModel::create(const QStringList &saved, int *row)
             {
                 node.modelType = ModelType::HiddenTab;
                 labels = XmlModel::headers.find(node.modelType)->second;
-                node.modelPtr = new XmlContainerModel(1, labels.count(), node.modelType, this);
+                node.modelPtr = new XmlDataModel(1, labels.count(), node.modelType, this);
             }
             else
             {
@@ -118,6 +119,14 @@ QDomElement XmlContainerModel::toNode(QDomDocument &doc)
                     // Добавляем номер вкладки (атрибут tab)
                     if (mType == ModelType::Section)
                         setAttribute(doc, childNode, tags::tab, data(index(row, 1)));
+                }
+                // Для узлов <hidden>
+                else if (mType == ModelType::Hidden)
+                {
+                    setAttribute(doc, childNode, tags::desc, data(index(row, 0)));
+                    setAttribute(doc, childNode, tags::prefix, data(index(row, 1)));
+                    setAttribute(doc, childNode, tags::flag, data(index(row, 2)));
+                    setAttribute(doc, childNode, tags::background, data(index(row, 3)));
                 }
                 // Для узлов <resources>, <alarms> и <journals>
                 else
