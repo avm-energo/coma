@@ -18,7 +18,7 @@ struct MipDataStruct
     float iPhase[3];       // 7-9
     float iZero;           // 10
     float phiLoadPhase[3]; // 11-13
-    float uAnglePhase[3];  // 14-16
+    float phiUPhase[3];    // 14-16
     float temp;            // 17
     float reserved2;       // 18
     float uLinearPhase[3]; // 19-21
