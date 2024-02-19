@@ -14,9 +14,7 @@ void XmlHiddenTabDialog::setupUI(QVBoxLayout *mainLayout)
     auto flagLayout = new QHBoxLayout;
     auto backgroundLayout = new QHBoxLayout;
 
-    mTitle += "раздела";
-
-    // { ModelType::Hidden, { "Название", "Префикс", "Флаг", "Задний фон" } },
+    mTitle += "вкладки раздела \"Секретные операции\"";
 
     // Виджеты для имени вкладки
     auto tabNameLabel = new QLabel("Имя вкладки: ", this);
