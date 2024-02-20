@@ -39,7 +39,7 @@ void Tune82ADC::setTuneFunctions()
     addTuneFunc("Расчёт коррекции смещения по токам и напряжениям...", &Tune82ADC::calcIUcoef1);
     if (m_typeM != Modules::MezzanineBoard::MTM_83) // not 6U0I
         addTuneFunc("Расчёт коррекции смещения по токам 5 А...", &Tune82ADC::calcIcoef5);
-    addTuneFunc("Сохранениt нового блока Bac...", &Tune82ADC::saveNewBac);
+    addTuneFunc("Сохранение нового блока Bac...", &Tune82ADC::saveNewBac);
     addTuneFunc(
         "Запись настроечных коэффициентов и восстановление конфигурации...", &AbstractTuneDialog::writeTuneCoefs);
     addTuneFunc("Проверка регулировки...", &Tune82ADC::checkTune);
@@ -55,6 +55,7 @@ Error::Msg Tune82ADC::getAnalogData()
 {
     waitNSeconds(1);
     m_bda->readAndUpdate();
+    m_bd1->readBlockFromModule();
     waitNSeconds(1);
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
     return m_bda->checkValues(m_typeM, inom);
@@ -79,13 +80,9 @@ Error::Msg Tune82ADC::calcPhaseCorrection()
         mipdata.phiLoadPhase[1] + mipdata.phiUab,                 //
         mipdata.phiLoadPhase[2] + mipdata.phiUab + mipdata.phiUbc //
     };
+    m_bacNewBlock.data()->DPsi[0] = 0;
     for (int i = 1; i < 6; ++i)
         m_bacNewBlock.data()->DPsi[i] = m_bac->data()->DPsi[i] - phiMip[i] - m_bd1->data()->phi_next_f[i];
-
-    //    if (m_typeM == Modules::MezzanineBoard::MTM_82)
-    //        for (int i = 3; i < 6; ++i)
-    //            m_bacNewBlock.data()->DPsi[i] = m_bac->data()->DPsi[i] + mipdata.phiLoadPhase[i - 3];
-
     m_bacNewBlock.data()->K_freq = m_bac->data()->K_freq * mipdata.freqUPhase[0] / m_bd1->data()->Frequency;
     return Error::Msg::NoError;
 }
@@ -96,9 +93,7 @@ Error::Msg Tune82ADC::calcInterChannelCorrelation()
     m_bd1->readBlockFromModule();
     float fTmp = 0;
     for (int i : { 0, 3 })
-    {
         fTmp += (m_bd1->data()->IUefNat_filt[i] / IUefNat_filt_old[i]);
-    }
     fTmp /= 2;
     m_bacNewBlock.data()->Kinter = (fTmp * (1 + 6 * m_bac->data()->Kinter) - 1) / 6;
     return Error::NoError;
@@ -204,7 +199,8 @@ Error::Msg Tune82ADC::checkTune()
 {
     getBd1();
     EMessageBox::information(this,
-        "После закрытия данного сообщения для завершения настройки нажмите Enter\nДля отказа от настройки нажмите Esc");
+        "После закрытия данного сообщения для завершения настройки нажмите Enter\n"
+        "Для отказа от настройки нажмите Esc");
     m_finished = false;
     while ((!StdFunc::IsCancelled()) && !m_finished)
     {
