@@ -15,7 +15,8 @@ public:
 
 private:
     Modules::MezzanineBoard m_typeM;
-    Bac82 *m_bac, m_bacNewBlock;
+    Bac82 *m_bac;
+    Bac82::BlockData m_bacNewBlock;
     Bd182 *m_bd1;
     Bda82 *m_bda;
     Bd0 *m_bd0;

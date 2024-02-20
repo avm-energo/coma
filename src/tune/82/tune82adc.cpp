@@ -12,7 +12,7 @@
 #include <interfaces/conn/sync_connection.h>
 
 Tune82ADC::Tune82ADC(S2::Configuration &config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent), m_typeM(type)
+    : AbstractTuneDialog(config, tuneStep, parent), m_typeM(type), m_bacNewBlock {}
 {
     m_bac = new Bac82(this);
     m_bd1 = new Bd182(m_typeM, this);
@@ -48,7 +48,8 @@ void Tune82ADC::setTuneFunctions()
 Error::Msg Tune82ADC::setDefBac()
 {
     m_bac->setDefBlock();
-    return Error::Msg::NoError;
+    m_bac->setDefBlock(m_bacNewBlock);
+    return m_bac->writeBlockToModule(true);
 }
 
 Error::Msg Tune82ADC::getAnalogData()
@@ -80,10 +81,10 @@ Error::Msg Tune82ADC::calcPhaseCorrection()
         mipdata.phiLoadPhase[1] + mipdata.phiUab,                 //
         mipdata.phiLoadPhase[2] + mipdata.phiUab + mipdata.phiUbc //
     };
-    m_bacNewBlock.data()->DPsi[0] = 0;
+    m_bacNewBlock.DPsi[0] = 0;
     for (int i = 1; i < 6; ++i)
-        m_bacNewBlock.data()->DPsi[i] = m_bac->data()->DPsi[i] - phiMip[i] - m_bd1->data()->phi_next_f[i];
-    m_bacNewBlock.data()->K_freq = m_bac->data()->K_freq * mipdata.freqUPhase[0] / m_bd1->data()->Frequency;
+        m_bacNewBlock.DPsi[i] = m_bac->data()->DPsi[i] - phiMip[i] - m_bd1->data()->phi_next_f[i];
+    m_bacNewBlock.K_freq = m_bac->data()->K_freq * mipdata.freqUPhase[0] / m_bd1->data()->Frequency;
     return Error::Msg::NoError;
 }
 
@@ -95,7 +96,7 @@ Error::Msg Tune82ADC::calcInterChannelCorrelation()
     for (int i : { 0, 3 })
         fTmp += (m_bd1->data()->IUefNat_filt[i] / IUefNat_filt_old[i]);
     fTmp /= 2;
-    m_bacNewBlock.data()->Kinter = (fTmp * (1 + 6 * m_bac->data()->Kinter) - 1) / 6;
+    m_bacNewBlock.Kinter = (fTmp * (1 + 6 * m_bac->data()->Kinter) - 1) / 6;
     return Error::NoError;
 }
 
@@ -109,25 +110,25 @@ Error::Msg Tune82ADC::calcIUcoef1()
         CancelTune();
         return Error::GeneralError;
     }
+    waitNSeconds(5);
     getBd1();
     for (int i = 0; i < 3; ++i)
     {
         switch (m_typeM)
         {
         case Modules::MezzanineBoard::MTM_83: // 0I6U
-            m_bacNewBlock.data()->KmU[i] = m_bac->data()->KmU[i] * mipdata.uPhase[i] / m_bd1->data()->IUefNat_filt[i];
-            m_bacNewBlock.data()->KmU[i + 3]
+            m_bacNewBlock.KmU[i] = m_bac->data()->KmU[i] * mipdata.uPhase[i] / m_bd1->data()->IUefNat_filt[i];
+            m_bacNewBlock.KmU[i + 3]
                 = m_bac->data()->KmU[i + 3] * mipdata.uPhase[i] / m_bd1->data()->IUefNat_filt[i + 3];
             break;
         case Modules::MezzanineBoard::MTM_82: // 3I3U
-            m_bacNewBlock.data()->KmU[i] = m_bac->data()->KmU[i] * mipdata.uPhase[i] / m_bd1->data()->IUefNat_filt[i];
-            m_bacNewBlock.data()->KmI_1[i + 3]
+            m_bacNewBlock.KmU[i] = m_bac->data()->KmU[i] * mipdata.uPhase[i] / m_bd1->data()->IUefNat_filt[i];
+            m_bacNewBlock.KmI_1[i + 3]
                 = m_bac->data()->KmI_1[i + 3] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i + 3];
             break;
         case Modules::MezzanineBoard::MTM_81: // 6I0U
-            m_bacNewBlock.data()->KmI_1[i]
-                = m_bac->data()->KmI_1[0] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i];
-            m_bacNewBlock.data()->KmI_1[i + 3]
+            m_bacNewBlock.KmI_1[i] = m_bac->data()->KmI_1[0] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i];
+            m_bacNewBlock.KmI_1[i + 3]
                 = m_bac->data()->KmI_1[i + 3] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i + 3];
             break;
         default:
@@ -152,13 +153,12 @@ Error::Msg Tune82ADC::calcIcoef5()
         switch (m_typeM)
         {
         case Modules::MezzanineBoard::MTM_82: // 3I3U
-            m_bacNewBlock.data()->KmI_5[i + 3]
+            m_bacNewBlock.KmI_5[i + 3]
                 = m_bac->data()->KmI_5[i + 3] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i + 3];
             break;
         case Modules::MezzanineBoard::MTM_81: // 6I0U
-            m_bacNewBlock.data()->KmI_5[i]
-                = m_bac->data()->KmI_5[0] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i];
-            m_bacNewBlock.data()->KmI_5[i + 3]
+            m_bacNewBlock.KmI_5[i] = m_bac->data()->KmI_5[0] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i];
+            m_bacNewBlock.KmI_5[i + 3]
                 = m_bac->data()->KmI_5[i + 3] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i + 3];
             break;
         default:
@@ -191,7 +191,8 @@ Error::Msg Tune82ADC::showPreWarning()
 
 Error::Msg Tune82ADC::saveNewBac()
 {
-    *m_bac->data() = *m_bacNewBlock.data();
+    auto &bacRef = *m_bac->data();
+    bacRef = m_bacNewBlock;
     return Error::NoError;
 }
 
