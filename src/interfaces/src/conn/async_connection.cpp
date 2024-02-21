@@ -71,13 +71,13 @@ void AsyncConnection::reqFile(quint32 id, FileFormat format, quint32 expectedSiz
 void AsyncConnection::writeFile(quint32 id, const QByteArray &ba)
 {
     setToQueue(CommandStruct { Commands::C_WriteFile, id, ba });
+    emit silentReconnectMode();
 }
 
 void AsyncConnection::writeConfiguration(const QByteArray &ba)
 {
     constexpr auto fileType = std_ext::to_underlying(S2::FilesEnum::Config);
     writeFile(fileType, ba);
-    emit silentReconnectMode();
 }
 
 void AsyncConnection::writeFirmware(const QByteArray &ba)

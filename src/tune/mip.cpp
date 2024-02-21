@@ -184,7 +184,7 @@ bool Mip::initConnection(const IEC104Settings &settings)
     QObject::connect(parser, &IEC104Parser::writeData, //
         m_iface, &BaseInterface::writeData, Qt::QueuedConnection);
     QObject::connect(m_iface, &BaseInterface::finished, //
-        parser, &IEC104Parser::stop, Qt::DirectConnection);
+        parser, &IEC104Parser::stop, Qt::QueuedConnection);
     QObject::connect(parser, &IEC104Parser::responseSend, //
         conn, &AsyncConnection::responseHandle, Qt::DirectConnection);
     // Потоки

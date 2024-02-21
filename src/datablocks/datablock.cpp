@@ -67,7 +67,7 @@ QWidget *DataBlock::widget(bool showButtons)
 void DataBlock::createWidget()
 {
     auto mainWidget = new QWidget;
-    auto scrollWidget = new QWidget;
+    auto scrollWidget = new QWidget(mainWidget);
     auto mainLayout = new QVBoxLayout;
     int count = 0;
     for (auto &group : m_valuesDesc)

@@ -139,6 +139,8 @@ Error::Msg SyncConnection::writeFileSync(S2::FilesEnum filenum, const QByteArray
     m_timeout = false;
     auto conn = m_connection->connection(this, &SyncConnection::responseReceived);
     m_connection->writeFile(quint32(filenum), ba);
+    auto oldTimeout = m_timeoutTimer->interval();
+    m_timeoutTimer->setInterval(oldTimeout * 5);
     m_timeoutTimer->start();
     while (m_busy)
     {
@@ -146,6 +148,7 @@ Error::Msg SyncConnection::writeFileSync(S2::FilesEnum filenum, const QByteArray
         StdFunc::Wait();
     }
     QObject::disconnect(conn);
+    m_timeoutTimer->setInterval(oldTimeout);
     if (m_timeout)
         return Error::Msg::Timeout;
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
@@ -181,12 +184,15 @@ Error::Msg SyncConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
     m_timeout = false;
     auto conn = m_connection->connection(this, &SyncConnection::fileReceived);
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::Binary);
+    auto oldTimeout = m_timeoutTimer->interval();
+    m_timeoutTimer->setInterval(oldTimeout * 5);
     m_timeoutTimer->start();
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
         StdFunc::Wait();
     }
+    m_timeoutTimer->setInterval(oldTimeout);
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;

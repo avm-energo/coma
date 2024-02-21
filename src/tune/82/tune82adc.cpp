@@ -20,9 +20,9 @@ Tune82ADC::Tune82ADC(S2::Configuration &config, Modules::MezzanineBoard type, in
     m_bd0 = new Bd0(this);
     setBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
-    m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
+    m_BacWidgetIndex = addWidgetToTabWidget(m_bd1->widget(), "Текущие данные");
+    m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Данные в единицах АЦП");
     m_Bd0WidgetIndex = addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
-    //    m_isEnergoMonitorDialogCreated = false;
     m_curTuneStep = 0;
     setupUI();
 }
@@ -56,8 +56,7 @@ Error::Msg Tune82ADC::getAnalogData()
 {
     waitNSeconds(1);
     m_bda->readAndUpdate();
-    m_bd1->readBlockFromModule();
-    waitNSeconds(1);
+    m_bd1->readAndUpdate();
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
     return m_bda->checkValues(m_typeM, inom);
 }
@@ -105,12 +104,13 @@ Error::Msg Tune82ADC::calcIUcoef1()
     saveWorkConfig();
     // set nominal currents in config to 1.0 A
     setCurrentsTo(1.0);
+    waitNSeconds(5);
     if (!EMessageBox::next(this, "Задайте напряжения равными 60,0 В и токи, равными 1,0 А"))
     {
         CancelTune();
         return Error::GeneralError;
     }
-    waitNSeconds(5);
+    waitNSeconds(2);
     getBd1();
     for (int i = 0; i < 3; ++i)
     {
@@ -142,11 +142,13 @@ Error::Msg Tune82ADC::calcIcoef5()
 {
     // set nominal currents in config to 5.0 A
     setCurrentsTo(5.0);
+    waitNSeconds(5);
     if (!EMessageBox::next(this, "Задайте токи, равными 5,0 А"))
     {
         CancelTune();
         return Error::GeneralError;
     }
+    waitNSeconds(2);
     getBd1();
     for (int i = 0; i < 3; ++i)
     {
@@ -198,6 +200,8 @@ Error::Msg Tune82ADC::saveNewBac()
 
 Error::Msg Tune82ADC::checkTune()
 {
+    /// Возвращаем виджет обратно на диалоговое окно
+    m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     getBd1();
     EMessageBox::information(this,
         "После закрытия данного сообщения для завершения настройки нажмите Enter\n"
@@ -205,6 +209,7 @@ Error::Msg Tune82ADC::checkTune()
     m_finished = false;
     while ((!StdFunc::IsCancelled()) && !m_finished)
     {
+        m_bd1->readAndUpdate();
         m_bda->readAndUpdate();
         StdFunc::Wait(500);
     }
