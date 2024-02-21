@@ -226,14 +226,14 @@ Error::Msg Tune82Verification::verification()
             i2nom = 1.0;
             if (setCurrentsTo(i2nom) != Error::Msg::NoError)
                 return Error::Msg::GeneralError;
-            StdFunc::Wait(500);
+            waitNSeconds(5);
         }
         if (iter == 6)
         {
             i2nom = 5.0;
             if (setCurrentsTo(i2nom) != Error::Msg::NoError)
                 return Error::Msg::GeneralError;
-            StdFunc::Wait(500);
+            waitNSeconds(5);
         }
 
         retomData = settings[iter];
