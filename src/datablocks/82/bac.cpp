@@ -26,14 +26,19 @@ void Bac82::setupValuesDesc()
 
 void Bac82::setDefBlock()
 {
-    m_blockData->Kinter = 0.0;
-    m_blockData->K_freq = 1.0;
+    setDefBlock(*m_blockData);
+}
+
+void Bac82::setDefBlock(Bac82::BlockData &blck)
+{
+    blck.Kinter = 0.0;
+    blck.K_freq = 1.0;
     for (int i = 0; i < 6; i++)
     {
-        m_blockData->DPsi[i] = 0.0;
-        m_blockData->KmI_1[i] = 1.0;
-        m_blockData->KmI_5[i] = 1.0;
-        m_blockData->KmU[i] = 1.0;
+        blck.DPsi[i] = 0.0;
+        blck.KmI_1[i] = 1.0;
+        blck.KmI_5[i] = 1.0;
+        blck.KmU[i] = 1.0;
     }
 }
 

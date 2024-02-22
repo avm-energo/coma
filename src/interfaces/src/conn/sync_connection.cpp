@@ -26,6 +26,14 @@ void SyncConnection::eventloop() noexcept
     }
 }
 
+void SyncConnection::longEventLoop(int scale) noexcept
+{
+    auto oldInterval = m_timeoutTimer->interval();
+    m_timeoutTimer->setInterval(oldInterval * scale);
+    eventloop();
+    m_timeoutTimer->setInterval(oldInterval);
+}
+
 void SyncConnection::reset() noexcept
 {
     m_busy = true;
@@ -156,7 +164,7 @@ Error::Msg SyncConnection::writeFileSync(S2::FilesEnum filenum, const QByteArray
     reset();
     auto conn = m_connection->connection(this, &SyncConnection::responseReceived);
     m_connection->writeFile(quint32(filenum), ba);
-    eventloop();
+    longEventLoop(5);
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;
@@ -186,7 +194,7 @@ Error::Msg SyncConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
     reset();
     auto conn = m_connection->connection(this, &SyncConnection::fileReceived);
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::Binary);
-    eventloop();
+    longEventLoop(5);
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;

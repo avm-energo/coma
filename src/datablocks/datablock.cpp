@@ -25,6 +25,7 @@
 
 #include "datablock.h"
 
+#include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
 #include <QDialogButtonBox>
@@ -83,7 +84,7 @@ QWidget *DataBlock::widget(bool showButtons)
 void DataBlock::createWidget()
 {
     auto mainWidget = new QWidget;
-    auto scrollWidget = new QWidget;
+    auto scrollWidget = new QWidget(mainWidget);
     auto mainLayout = new QVBoxLayout;
     int count = 0;
     for (auto &group : m_valuesDesc)
@@ -147,7 +148,7 @@ QWidget *DataBlock::blockButtonsUI()
 
         const QList<QPair<QPair<QString, QString>, std::function<void()>>> funcs {
             { { "Получить", ":/icons/tnread.svg" }, [this]() { readAndUpdate(); } },
-            { { "Записать", ":/icons/tnwrite.svg" }, [this]() { writeBlockToModule(); } },
+            { { "Записать", ":/icons/tnwrite.svg" }, [this]() { writeBlockToModule(true); } },
             { { "Задать по умолчанию", ":/icons/tnyes.svg" }, [this]() { setDefBlockAndUpdate(); } },
             { { "Прочитать из файла и записать в устройство", ":/icons/tnload.svg" },
                 [this]() { readFromFileUserChoose(); } },
@@ -233,7 +234,7 @@ void DataBlock::updateFromWidget()
     }
 }
 
-Error::Msg DataBlock::writeBlockToModule()
+Error::Msg DataBlock::writeBlockToModule(const bool showMessage)
 {
     Q_ASSERT(m_conn != nullptr);
     // auto conn = ActiveConnection::sync();
@@ -264,6 +265,8 @@ Error::Msg DataBlock::writeBlockToModule()
     default:
         break;
     }
+    if (showMessage)
+        EMessageBox::information(widget(), "Коэффициенты записаны успешно!");
     return Error::Msg::NoError;
 }
 

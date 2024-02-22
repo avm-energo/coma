@@ -474,7 +474,8 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
     QByteArray ba;
-    if (m_sync->readFileSync(S2::FilesEnum::Config, ba) != Error::Msg::NoError)
+    auto status = m_sync->readFileSync(S2::FilesEnum::Config, ba);
+    if (status != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     return Files::SaveToFile(StdFunc::GetSystemHomeDir() + m_device->getUID() + ".cf", ba);
 }

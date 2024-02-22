@@ -19,6 +19,7 @@ private:
     bool m_busy, m_timeout, m_responseResult;
 
     void eventloop() noexcept;
+    void longEventLoop(int scale) noexcept;
     void reset() noexcept;
 
 public:

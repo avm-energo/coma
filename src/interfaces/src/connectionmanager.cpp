@@ -32,8 +32,9 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
     if (m_currentConnection != nullptr)
         breakConnection();
     m_currentConnection = new AsyncConnection(this);
-    connect(m_currentConnection, &AsyncConnection::silentReconnectMode, this, //
-        [this] { setReconnectMode(ReconnectMode::Silent); });
+    connect(
+        m_currentConnection, &AsyncConnection::silentReconnectMode, this, //
+        [this] { setReconnectMode(ReconnectMode::Silent); }, Qt::DirectConnection);
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
 
     std::visit([this](const auto &settings) { setup(settings); }, connectionData.settings);
