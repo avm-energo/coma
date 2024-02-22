@@ -41,5 +41,8 @@
 
         <config desc="Конфигурация">
         </config>
+        
+        <hidden desc="Секретные операции">
+        </hidden>
     </resources>
 </module>

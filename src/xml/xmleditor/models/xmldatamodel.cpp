@@ -210,7 +210,6 @@ QDomElement XmlDataModel::toNode(QDomDocument &doc)
 {
     const auto prefs = getModelSettings();
     auto node = makeElement(doc, std::get<0>(prefs));
-    // Записываем со второго элемента, т.к. первый элемент - возврат назад
     for (auto row = 0; row < rowCount(); row++)
     {
         // TODO: костыль
