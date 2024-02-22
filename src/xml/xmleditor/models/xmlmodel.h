@@ -24,7 +24,7 @@ protected:
     void parseDataNode(QDomNode &child, int &row);
     void parseTag(QDomNode &node, const QString &tagName, int row, int col, //
         const QString &defValue = "", bool isInt = false);
-    void parseAttribute(QDomNode &node, const QString &attrName, int row, int col);
+    void parseAttribute(QDomNode &node, const QString &attrName, int row, int col, const QString &defValue = "");
 
 public:
     static const std::map<QString, ModelType> types;       ///< Types Map with enumeration, key = name of group type

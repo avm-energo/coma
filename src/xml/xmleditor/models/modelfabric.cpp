@@ -25,6 +25,7 @@ void ModelFabric::CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         case ModelType::Sections:
         case ModelType::Section:
         case ModelType::Journals:
+        case ModelType::Hidden:
             mNode.modelPtr = new XmlContainerModel(rows, cols, mNode.modelType, parent);
             break;
         case ModelType::Signals:
@@ -38,6 +39,7 @@ void ModelFabric::CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         case ModelType::Protocom:
         case ModelType::IEC60870:
         case ModelType::Config:
+        case ModelType::HiddenTab:
             mNode.modelPtr = new XmlDataModel(rows, cols, mNode.modelType, parent);
             break;
         default:

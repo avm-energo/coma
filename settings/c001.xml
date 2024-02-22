@@ -189,7 +189,7 @@
             </signal>
         </signals>
         <hidden desc="Секретные операции">
-            <tab desc="Базовая плата" background="" prefix="base" flag="1">
+            <hidden-tab desc="Базовая плата" background="" prefix="base" flag="1">
                 <mwidget view="LineEdit" title="Тип базовой платы">
                     <name>basetype</name>
                     <type>uint32</type>
@@ -218,8 +218,8 @@
                     <index>4</index>
                     <visibility>true</visibility>
                 </mwidget>
-            </tab>
-            <tab desc="Плата датчиков" background="" prefix="mezz" flag="2">
+            </hidden-tab>
+            <hidden-tab desc="Плата датчиков" background="" prefix="mezz" flag="2">
                 <mwidget view="LineEdit" title="Тип платы датчиков">
                     <name>mezztype</name>
                     <type>uint32</type>
@@ -248,7 +248,7 @@
                     <index>8</index>
                     <visibility>false</visibility>
                 </mwidget>
-            </tab>
+            </hidden-tab>
         </hidden>
     </resources>
 </module>
