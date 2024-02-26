@@ -4,6 +4,58 @@
     <version>0.6-0000</version>
     <resources>
         <alarms desc="Сигнализация">
+            <state-all desc="Состояние устройства">
+                <item>
+                    <addr>7</addr>
+                    <string>Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>8</addr>
+                    <string>Некорректная Hardware информация (базовая)</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>9</addr>
+                    <string>Некорректная Hardware информация (датчиков)</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>24</addr>
+                    <string>Ошибка I2C</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>25</addr>
+                    <string>Нет связи с датчиком HDC1080</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>26</addr>
+                    <string>Нет связи с датчиком MS58</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>27</addr>
+                    <string>Ошибка связи с датчиком HDC1080</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>28</addr>
+                    <string>Ошибка связи с датчиком MS58</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>29</addr>
+                    <string>Нет связи с датчиком LM75B</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>30</addr>
+                    <string>Ошибка связи с датчиком LM75B</string>
+                    <type>critical</type>
+                </item>
+            </state-all>
             <critical desc="Критичные">
                 <item>
                     <addr>301</addr>
