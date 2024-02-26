@@ -49,7 +49,7 @@ const QStringList HthToolTip {
 }
 
 /// \brief The class for alarm dialog, that displaying the device general status.
-class AlarmStateAll : public BaseAlarm
+class AlarmStateAll final : public BaseAlarm
 {
     Q_OBJECT
 private:
@@ -57,10 +57,11 @@ private:
 
 public:
     explicit AlarmStateAll(Device::CurrentDevice *device, QWidget *parent = nullptr);
+
     /// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
-    virtual void setupUI(const QStringList &events) override;
+    void setupUI(const QStringList &events);
     /// \brief Request for updating a BSI data.
-    virtual void reqUpdate() override;
+    void reqUpdate() override;
 
 public slots:
     /// \brief The slot called when a device health changed for updating alarms.

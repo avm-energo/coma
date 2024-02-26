@@ -36,6 +36,7 @@ signals:
         const u16 count, const Xml::SignalType sigType);
     void tabDataSending(const u32 id, const QString &name);
     void sectionDataSending(const Xml::SGMap &sgmap, const QString &secHead);
+    void alarmStateAllDataSending(const Xml::AlarmType type, const u32 index, const QString &desc);
     void alarmDataSending(const Xml::AlarmType type, const u32 addr, //
         const QString &desc, const QList<u32> &highlights);
     void workJourDataSending(const u32 id, const QString &desc);
@@ -64,6 +65,8 @@ private:
     ViewType parseViewType(const QString &viewString);
     /// \brief Парсинг типа отображаемых/отправляемых данных.
     BinaryType parseBinaryType(const QString &typeStr);
+    /// \brief Парсинг типа сигнализации в узле <state-all>.
+    AlarmType parseAlarmType(const QString &typeStr);
 
     /// \brief Парсинг указанного XML файла для выбранных узлов.
     void parseDocument(const QString &filename, const QStringList &nodes = {});
@@ -81,6 +84,8 @@ private:
     void parseSection(const QDomNode &sectionNode);
     /// \brief Парсинг узла <alarms>.
     void parseAlarms(const QDomNode &alarmsNode);
+    /// \brief Парсинг узла <state-all> внутри <alarms>.
+    void parseAlarmStateAll(const QDomNode &alarmStateAllNode);
     /// \brief Парсинг узлов <critical>, <warning> и <info> внутри <alarms>.
     void parseAlarm(const QDomNode &alarmNode, const AlarmType &type);
     /// \brief Парсинг узла <journals>.

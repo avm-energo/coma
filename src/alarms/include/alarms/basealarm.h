@@ -22,9 +22,6 @@ protected:
     QColor m_normalColor;
     QColor m_alarmColor;
 
-    /// \details Pure virtual function for UI setup.
-    virtual void setupUI(const QStringList &events) = 0;
-
 signals:
     /// \details This signal is emitted when indicator color is changed.
     void updateColor(const QColor &color);

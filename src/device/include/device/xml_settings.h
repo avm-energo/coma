@@ -97,7 +97,7 @@ struct HiddenTab final
     std::vector<HiddenWidget> widgets; ///< узлы <mwdiget>.
 };
 
-/// \brief Перечисление типов сигнализации
+/// \brief Перечисление типов сигнализации.
 enum AlarmType : u8
 {
     Info,
@@ -105,13 +105,22 @@ enum AlarmType : u8
     Critical
 };
 
+/// \brief Структура для хранения узла <item> секции <state-all> из <alarms>.
+struct AlarmStateAllRecord
+{
+    u32 index;      ///< узел <addr>
+    AlarmType type; ///< узел <type>
+    QString desc;   ///< узел <string>
+};
+
 using SignalMap = std::map<u32, Signal>;  ///< Хранит узлы <signal> секции <signals>.
 using TabsMap = QHash<u32, QString>;      ///< Хранит узлы <tab> секции <section-tabs>.
 using HighlightMap = QMultiMap<u32, u32>; ///< Для подсветки элементов.
 using SectionList = std::vector<Section>; ///< Хранит узлы <section> секции <sections>.
 using AlarmValue = QMap<u32, QString>; ///< u32 - адрес сигнализации, QString - узел <desc> (описание).
-using WorkJourMap = QMap<u32, QString>;        ///< Хранит узлы <item> секции <work> из <journals>.
-using AlarmMap = QHash<AlarmType, AlarmValue>; ///< Хранит узлы <item> секции <alarms>.
+using WorkJourMap = QMap<u32, QString>; ///< Хранит узлы <item> секции <work> из <journals>.
+using AlarmStateAllConfig = std::vector<AlarmStateAllRecord>; ///< Хранит узлы <item> секции <state-all> из <alarms>.
+using AlarmMap = QHash<AlarmType, AlarmValue>; ///< Хранит узлы <item> секций <critical>, <warning>, <info> из <alarms>.
 using MeasJourList = std::vector<MeasJournal>; ///< Хранит узлы <item> секции <meas> из <journals>.
 using HiddenSettings = std::vector<HiddenTab>; ///< Хранит узлы <tab> секции <hidden>.
 using DetailCountMap
@@ -130,6 +139,8 @@ public:
     void appendTab(const u32 id, const QString &tabName);
     /// \brief Добавление раздела в список разделов.
     void appendSection(const Section &section);
+    /// \brief Добавление сигнализации состояния устройства.
+    void appendAlarmStateAll(const AlarmType type, const u32 index, const QString &desc);
     /// \brief Добавление сигнализации в список сигнализаций по заданному типу сигнализации (key).
     void appendAlarm(const AlarmType type, const u32 addr, const QString &desc);
     /// \brief Добавление подсветки указанных полей для подсветки при появлении сигнализации.
@@ -149,6 +160,8 @@ public:
     [[nodiscard]] const TabsMap &getTabs() const;
     /// \brief Constant getter for sections list.
     [[nodiscard]] const SectionList &getSections() const;
+    /// \brief Constant getter for state all alarms config.
+    [[nodiscard]] const AlarmStateAllConfig &getStateAllConfig() const;
     /// \brief Constant getter for alarms hashmap.
     [[nodiscard]] const AlarmMap &getAlarms() const;
     /// \brief Constant getter for alarm's highlights.
@@ -166,6 +179,7 @@ private:
     TabsMap m_tabs;
     SectionList m_sections;
     AlarmMap m_alarms;
+    AlarmStateAllConfig m_stateAllCfg;
     HighlightMap m_critHighlight, m_warnHighlight;
     WorkJourMap m_workJournals;
     MeasJourList m_measJournals;
