@@ -3,12 +3,12 @@ include(FetchContent)
 FetchContent_Declare(
   gen
   GIT_REPOSITORY https://github.com/avm-energo/gen.git
-  GIT_TAG        origin/develop
+  GIT_TAG        f2d5f044be3551bf331e79b42d143fcd230ebdd7 # v1.3.0
 )
 # Building gen as dynamic library
 set(GEN_STATIC OFF)
 set(GEN_BUILD_TESTS OFF)
-set(GEN_USING_SANITIZERS OFF)
+set(GEN_USING_SANITIZERS OFF) # Because we already set global sanitizer flags
 FetchContent_MakeAvailable(gen)
 
 # Create install component for deb packages
