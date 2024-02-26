@@ -8,6 +8,7 @@ FetchContent_Declare(
 # Building gen as dynamic library
 set(GEN_STATIC OFF)
 set(GEN_BUILD_TESTS OFF)
+set(GEN_USING_SANITIZERS OFF)
 FetchContent_MakeAvailable(gen)
 
 # Create install component for deb packages
