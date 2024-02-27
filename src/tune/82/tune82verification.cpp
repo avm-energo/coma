@@ -3,19 +3,12 @@
 #include "../../widgets/epopup.h"
 #include "../../widgets/wd_func.h"
 #include "../mip.h"
+#include "verification_offset.h"
 
 #include <cmath>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 
-struct RetomSettings
-{
-    float phiLoad; // phi
-    float voltage; // U
-    float current; // I
-};
-
-constexpr std::size_t phasesCount = 3;
 constexpr std::size_t iterCount = 21;
 constexpr inline std::array<RetomSettings, iterCount> settings = {
     RetomSettings { 0.0, 60.0, 0.2 },   //
@@ -39,59 +32,6 @@ constexpr inline std::array<RetomSettings, iterCount> settings = {
     RetomSettings { 90.0, 60.0, 5.0 },  //
     RetomSettings { 180.0, 60.0, 5.0 }, //
     RetomSettings { 270.0, 60.0, 5.0 }  //
-};
-
-struct VerificationOffset
-{
-    float phiLoad[phasesCount];
-    float phiUab, phiUbc, offsetF;
-    float offsetU[phasesCount];
-    float offsetI[phasesCount];
-    float offsetPhiLoad[phasesCount];
-    float offsetPhiUab, offsetPhiUbc;
-
-    inline float calculateOffset(const float deviceMeasure, const float mipMeasure) noexcept
-    {
-        return (100 * std::fabs((deviceMeasure / mipMeasure) - 1));
-    }
-
-    void update(MipDataStruct &mipData, Bd182::BlockData &deviceData, RetomSettings &retomData) noexcept
-    {
-        if (retomData.phiLoad >= 180)
-        {
-            phiLoad[0] = 360 + deviceData.phi_next_f[3];
-            mipData.phiLoadPhase[0] = 360 - mipData.phiLoadPhase[0];
-            mipData.phiLoadPhase[1] = 360 - mipData.phiLoadPhase[1];
-            mipData.phiLoadPhase[2] = 360 - mipData.phiLoadPhase[2];
-        }
-        else
-            phiLoad[0] = deviceData.phi_next_f[3];
-        phiLoad[1] = deviceData.phi_next_f[4] - deviceData.phi_next_f[1];
-        if (retomData.phiLoad >= 90)
-            phiLoad[2] = 360 + deviceData.phi_next_f[5] - deviceData.phi_next_f[2];
-        else
-            phiLoad[2] = deviceData.phi_next_f[5] - deviceData.phi_next_f[2];
-        phiUab = -deviceData.phi_next_f[1];
-        phiUbc = 360 - deviceData.phi_next_f[2] + deviceData.phi_next_f[1];
-
-        offsetF = calculateOffset(deviceData.Frequency, mipData.freqUPhase[0]);
-        for (std::size_t i = 0; i < phasesCount; ++i)
-        {
-            offsetU[i] = calculateOffset(deviceData.IUefNat_filt[i], mipData.uPhase[i]);
-            offsetI[i] = calculateOffset(deviceData.IUefNat_filt[i + 3], mipData.iPhase[i]);
-
-            // Играемся с углами, чтобы все было в одних значениях и с одинаковыми знаками
-            if ((mipData.phiLoadPhase[i] > 0 && phiLoad[i] < 0) || (mipData.phiLoadPhase[i] < 0 && phiLoad[i] > 0))
-            {
-                offsetPhiLoad[i] = std::fabs(mipData.phiLoadPhase[i] + phiLoad[i]);
-                mipData.phiLoadPhase[i] = -mipData.phiLoadPhase[i];
-            }
-            else
-                offsetPhiLoad[i] = std::fabs(mipData.phiLoadPhase[i] - phiLoad[i]);
-        }
-        offsetPhiUab = std::fabs(mipData.phiUab - phiUab);
-        offsetPhiUbc = std::fabs(mipData.phiUbc - phiUbc);
-    }
 };
 
 Tune82Verification::Tune82Verification(S2::Configuration &config, //
@@ -245,7 +185,7 @@ Error::Msg Tune82Verification::verification()
         m_bd1->readBlockFromModule();
         deviceData = *(m_bd1->data());
         QCoreApplication::processEvents();
-        offsetData.update(mipData, deviceData, retomData);
+        offsetData.update(mipData, deviceData);
 
         writeMipDataToReport(mipData, iter);
         writeDeviceDataToReport(deviceData, iter);

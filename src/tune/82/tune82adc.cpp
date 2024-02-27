@@ -72,17 +72,15 @@ Error::Msg Tune82ADC::saveUeff()
 Error::Msg Tune82ADC::calcPhaseCorrection()
 {
     getBd1();
-    float phiMip[6] {
-        0,                                                        //
-        mipdata.phiUab,                                           //
-        mipdata.phiUab + mipdata.phiUbc,                          //
-        mipdata.phiLoadPhase[0],                                  //
-        mipdata.phiLoadPhase[1] + mipdata.phiUab,                 //
-        mipdata.phiLoadPhase[2] + mipdata.phiUab + mipdata.phiUbc //
-    };
     m_bacNewBlock.DPsi[0] = 0;
-    for (int i = 1; i < 6; ++i)
-        m_bacNewBlock.DPsi[i] = m_bac->data()->DPsi[i] - phiMip[i] - m_bd1->data()->phi_next_f[i];
+    const auto limit = (m_typeM == Modules::MezzanineBoard::MTM_82) ? 3 : 6;
+    for (int i = 1; i < limit; ++i)
+        m_bacNewBlock.DPsi[i] = m_bac->data()->DPsi[i] - m_bd1->data()->phi_next_f[i];
+    if (m_typeM == Modules::MezzanineBoard::MTM_82)
+    {
+        for (int i = 3; i < 6; ++i)
+            m_bacNewBlock.DPsi[i] = m_bacNewBlock.DPsi[i] + mipdata.phiLoadPhase[i - 3];
+    }
     m_bacNewBlock.K_freq = m_bac->data()->K_freq * mipdata.freqUPhase[0] / m_bd1->data()->Frequency;
     return Error::Msg::NoError;
 }
