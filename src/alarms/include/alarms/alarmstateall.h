@@ -13,14 +13,17 @@ private:
     /// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
     void setupUI();
 
+    /// \brief Generating default alarm widget configuration.
+    void generateDefaultConfig();
+
     /// \brief Update current strongest color for alarm.
     void updateStrongestColor(const QColor &newColor);
 
-public:
-    explicit AlarmStateAll(Device::CurrentDevice *device, QWidget *parent = nullptr);
-
     /// \brief Request for updating a BSI data.
     void reqUpdate() override;
+
+public:
+    explicit AlarmStateAll(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 public slots:
     /// \brief The slot called when a device health changed for updating alarms.
