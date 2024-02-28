@@ -3,6 +3,7 @@
 #include "../../widgets/wd_func.h"
 #include "../mip.h"
 
+#include <QGroupBox>
 #include <QScrollArea>
 
 Tune82IoWidget::Tune82IoWidget(Modules::MezzanineBoard type, QWidget *parent)
@@ -16,10 +17,13 @@ Tune82IoWidget::Tune82IoWidget(Modules::MezzanineBoard type, QWidget *parent)
 void Tune82IoWidget::setupUI()
 {
     auto mainLayout = new QHBoxLayout;
-    auto areaLayout = new QGridLayout;
+    auto boxLayout = new QGridLayout;
     auto mipLayout = new QVBoxLayout;
     auto deviceLayout = new QVBoxLayout;
-    auto area = new QScrollArea(this);
+    auto scrollArea = new QScrollArea(this);
+    scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setWidgetResizable(true);
+    auto box = new QGroupBox("Данные", this);
 
     mipLayout->addWidget(new QLabel("Данные МИП:", this));
     mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "FreqMIP", "Частота", true));
@@ -69,10 +73,11 @@ void Tune82IoWidget::setupUI()
 
     mipLayout->addWidget(startBtn);
     deviceLayout->addWidget(cancelBtn);
-    areaLayout->addLayout(mipLayout, 1, 0, 1, 1);
-    areaLayout->addLayout(deviceLayout, 1, 1, 1, 1);
-    area->setLayout(areaLayout);
-    mainLayout->addWidget(area);
+    boxLayout->addLayout(mipLayout, 0, 0, 1, 1);
+    boxLayout->addLayout(deviceLayout, 0, 1, 1, 1);
+    box->setLayout(boxLayout);
+    scrollArea->setWidget(box);
+    mainLayout->addWidget(scrollArea);
     setLayout(mainLayout);
 }
 
@@ -123,5 +128,5 @@ void Tune82IoWidget::updateUI(const Bd182::BlockData &devData)
     WDFunc::SetLBLText(this, "PhiLC", QString::number(m_calcValues.phiLoad[2], 'f', 3));
     WDFunc::SetLBLText(this, "PhiUab", QString::number(m_calcValues.phiUab, 'f', 3));
     WDFunc::SetLBLText(this, "PhiUbc", QString::number(m_calcValues.phiUbc, 'f', 3));
-    WDFunc::SetLBLText(this, "PhiUca", QString::number(m_calcValues.phiUbc, 'f', 3));
+    WDFunc::SetLBLText(this, "PhiUca", QString::number(m_calcValues.phiUca, 'f', 3));
 }

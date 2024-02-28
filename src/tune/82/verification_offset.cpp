@@ -13,7 +13,7 @@ float VerificationOffset::calculatePhi(const float phiA, const float phiB) noexc
     if (std::fabs(y) > 180.0)
     {
         float z = 360.0 - std::fabs(y);
-        if (z > 0)
+        if (z > 0 && phiA > phiB)
             z = z * -1.0;
         return z;
     }
@@ -25,7 +25,7 @@ void VerificationOffset::update(MipDataStruct &mipData, Bd182::BlockData &device
 {
     phiUab = calculatePhi(deviceData.phi_next_f[0], deviceData.phi_next_f[1]);
     phiUbc = calculatePhi(deviceData.phi_next_f[1], deviceData.phi_next_f[2]);
-    phiUca = calculatePhi(deviceData.phi_next_f[2], deviceData.phi_next_f[3]);
+    phiUca = calculatePhi(deviceData.phi_next_f[2], deviceData.phi_next_f[0]);
     offsetPhiUab = std::fabs(mipData.phiUab - phiUab);
     offsetPhiUbc = std::fabs(mipData.phiUbc - phiUbc);
     offsetF = calculateOffset(deviceData.Frequency, mipData.freqUPhase[0]);

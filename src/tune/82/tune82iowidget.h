@@ -7,7 +7,7 @@
 
 class Mip;
 
-class Tune82IoWidget : public QWidget
+class Tune82IoWidget final : public QWidget
 {
     Q_OBJECT
 private:

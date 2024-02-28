@@ -40,8 +40,8 @@ void Tune82ADC::setTuneFunctions()
     if (m_typeM != Modules::MezzanineBoard::MTM_83) // not 6U0I
         addTuneFunc("Расчёт коррекции смещения по токам 5 А...", &Tune82ADC::calcIcoef5);
     addTuneFunc("Сохранение нового блока Bac...", &Tune82ADC::saveNewBac);
-    addTuneFunc(
-        "Запись настроечных коэффициентов и восстановление конфигурации...", &AbstractTuneDialog::writeTuneCoefs);
+    addTuneFunc("Запись настроечных коэффициентов...", &AbstractTuneDialog::writeTuneCoefs);
+    addTuneFunc("Восстановление рабочей конфигурации...", &AbstractTuneDialog::loadWorkConfig);
     addTuneFunc("Проверка регулировки...", &Tune82ADC::checkTune);
 }
 
@@ -99,10 +99,8 @@ Error::Msg Tune82ADC::calcInterChannelCorrelation()
 
 Error::Msg Tune82ADC::calcIUcoef1()
 {
-    saveWorkConfig();
     // set nominal currents in config to 1.0 A
     setCurrentsTo(1.0);
-    waitNSeconds(5);
     if (!EMessageBox::next(this, "Задайте напряжения равными 60,0 В и токи, равными 1,0 А"))
     {
         CancelTune();
@@ -140,7 +138,6 @@ Error::Msg Tune82ADC::calcIcoef5()
 {
     // set nominal currents in config to 5.0 A
     setCurrentsTo(5.0);
-    waitNSeconds(5);
     if (!EMessageBox::next(this, "Задайте токи, равными 5,0 А"))
     {
         CancelTune();

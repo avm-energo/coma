@@ -363,7 +363,9 @@ Error::Msg AbstractTuneDialog::setCurrentsTo(const float value)
 {
     S2::FLOAT_6t i2NomConfig { value, value, value, value, value, value };
     config.setRecord("I2nom", i2NomConfig);
-    return m_sync->writeConfigurationSync(config.toByteArray());
+    auto result = m_sync->writeConfigurationSync(config.toByteArray());
+    waitNSeconds(5);
+    return result;
 }
 
 void AbstractTuneDialog::writeReportData(const QString &name, const QString &value)
@@ -479,9 +481,15 @@ Error::Msg AbstractTuneDialog::saveWorkConfig()
 Error::Msg AbstractTuneDialog::loadWorkConfig()
 {
     QByteArray ba;
-    if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba)
-        != Error::Msg::NoError)
-        return m_sync->writeFileSync(S2::FilesEnum::Config, ba);
+    auto res = Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba);
+    if (res != Error::Msg::NoError)
+        return res;
+    else
+    {
+        res = m_sync->writeFileSync(S2::FilesEnum::Config, ba);
+        waitNSeconds(5); // device reconnect
+        return res;
+    }
     return Error::Msg::GeneralError;
 }
 

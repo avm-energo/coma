@@ -48,7 +48,17 @@ void Tune82Verification::setTuneFunctions()
 {
     addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
+    addTuneFunc("Уменьшение интервала усреднения данных...", &Tune82Verification::setupNFiltrValue);
     addTuneFunc("Поверка...", &Tune82Verification::verification);
+    addTuneFunc("Восстановление рабочей конфигурации...", &AbstractTuneDialog::loadWorkConfig);
+}
+
+Error::Msg Tune82Verification::setupNFiltrValue()
+{
+    config.setRecord("NFiltr_ID", S2::DWORD(10));
+    auto result = m_sync->writeConfigurationSync(config.toByteArray());
+    waitNSeconds(10);
+    return result;
 }
 
 void Tune82Verification::showRetomDialog(const RetomSettings &retomData)
@@ -166,14 +176,12 @@ Error::Msg Tune82Verification::verification()
             i2nom = 1.0;
             if (setCurrentsTo(i2nom) != Error::Msg::NoError)
                 return Error::Msg::GeneralError;
-            waitNSeconds(5);
         }
         if (iter == 6)
         {
             i2nom = 5.0;
             if (setCurrentsTo(i2nom) != Error::Msg::NoError)
                 return Error::Msg::GeneralError;
-            waitNSeconds(5);
         }
 
         retomData = settings[iter];
@@ -181,6 +189,7 @@ Error::Msg Tune82Verification::verification()
         if (StdFunc::IsCancelled())
             return Error::Msg::GeneralError;
 
+        waitNSeconds(1);
         mipData = m_mip->takeOneMeasurement(i2nom);
         m_bd1->readBlockFromModule();
         deviceData = *(m_bd1->data());
