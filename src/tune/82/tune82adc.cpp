@@ -4,6 +4,7 @@
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
+#include "verification_offset.h"
 
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -79,7 +80,14 @@ Error::Msg Tune82ADC::calcPhaseCorrection()
     if (m_typeM == Modules::MezzanineBoard::MTM_82)
     {
         for (int i = 3; i < 6; ++i)
-            m_bacNewBlock.DPsi[i] = m_bacNewBlock.DPsi[i] + mipdata.phiLoadPhase[i - 3];
+        {
+            // Из блока текущих данных рассчитываем угол нагрузки
+            auto phiLoad = calculatePhi(m_bd1->data()->phi_next_f[i - 3], m_bd1->data()->phi_next_f[i]);
+            // Рассчитываем разницу между рассчитанным углом и показаниями МИП-02
+            auto delta = mipdata.phiLoadPhase[i - 3] - phiLoad;
+            // Вычитаем и сохраняем в новом блоке Bac
+            m_bacNewBlock.DPsi[i] = m_bac->data()->DPsi[i] - delta;
+        }
     }
     m_bacNewBlock.K_freq = m_bac->data()->K_freq * mipdata.freqUPhase[0] / m_bd1->data()->Frequency;
     return Error::Msg::NoError;

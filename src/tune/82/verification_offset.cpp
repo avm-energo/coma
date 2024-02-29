@@ -2,12 +2,7 @@
 
 #include "../mip.h"
 
-float VerificationOffset::calculateOffset(const float deviceMeasure, const float mipMeasure) noexcept
-{
-    return (100 * std::fabs((deviceMeasure / mipMeasure) - 1));
-}
-
-float VerificationOffset::calculatePhi(const float phiA, const float phiB) noexcept
+float calculatePhi(const float phiA, const float phiB) noexcept
 {
     float x = 0 - phiA, y = phiB + x;
     if (std::fabs(y) > 180.0)
@@ -21,7 +16,12 @@ float VerificationOffset::calculatePhi(const float phiA, const float phiB) noexc
         return (y * -1.0);
 }
 
-void VerificationOffset::update(MipDataStruct &mipData, Bd182::BlockData &deviceData) noexcept
+float VerificationOffset::calculateOffset(const float deviceMeasure, const float mipMeasure) noexcept
+{
+    return (100 * std::fabs((deviceMeasure / mipMeasure) - 1));
+}
+
+void VerificationOffset::update(const MipDataStruct &mipData, const Bd182::BlockData &deviceData) noexcept
 {
     phiUab = calculatePhi(deviceData.phi_next_f[0], deviceData.phi_next_f[1]);
     phiUbc = calculatePhi(deviceData.phi_next_f[1], deviceData.phi_next_f[2]);
