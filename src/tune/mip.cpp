@@ -103,6 +103,8 @@ void Mip::setupWidget()
     computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "39", "Ток нулевой последовательности", true), 6, 0);
     computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "40", "Ток прямой последовательности", true), 6, 1);
     computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "41", "Ток обратной последовательности", true), 6, 2);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "43", "phiUab", true), 7, 0);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "44", "phiUbc", true), 7, 1);
     computedGroup->setLayout(computedLayout);
     mipWidgetLayout->addWidget(computedGroup);
 

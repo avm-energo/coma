@@ -4,6 +4,7 @@
 #include "../tunesteps.h"
 #include "tune82adc.h"
 #include "tune82check.h"
+#include "tune82iowidget.h"
 #include "tune82verification.h"
 #include "tunereporter.h"
 
@@ -41,7 +42,9 @@ Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
     m_calibrSteps = m_dialogList.size() + 1;
     Bac82 *bac = new Bac82(this);
     bac->setup(m_device->getUID(), m_device->sync());
+    auto io = new Tune82IoWidget(m_device, this);
     addWidgetToTabWidget(bac->widget(), "Регулировка");
+    addWidgetToTabWidget(io, "Данные");
     SetupUI();
 }
 

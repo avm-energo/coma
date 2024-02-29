@@ -4,6 +4,7 @@
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
+#include "verification_offset.h"
 
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -45,8 +46,8 @@ void Tune82ADC::setTuneFunctions()
     if (m_typeM != Device::MezzanineBoard::MTM_83) // not 6U0I
         addTuneFunc("Расчёт коррекции смещения по токам 5 А...", &Tune82ADC::calcIcoef5);
     addTuneFunc("Сохранение нового блока Bac...", &Tune82ADC::saveNewBac);
-    addTuneFunc(
-        "Запись настроечных коэффициентов и восстановление конфигурации...", &AbstractTuneDialog::writeTuneCoefs);
+    addTuneFunc("Запись настроечных коэффициентов...", &AbstractTuneDialog::writeTuneCoefs);
+    addTuneFunc("Восстановление рабочей конфигурации...", &AbstractTuneDialog::loadWorkConfig);
     addTuneFunc("Проверка регулировки...", &Tune82ADC::checkTune);
 }
 
@@ -59,7 +60,8 @@ Error::Msg Tune82ADC::setDefBac()
 
 Error::Msg Tune82ADC::getAnalogData()
 {
-    waitNSeconds(1);
+    StdFunc::Wait(1000);
+    // waitNSeconds(1);
     m_bda->readAndUpdate();
     m_bd1->readAndUpdate();
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
@@ -77,17 +79,22 @@ Error::Msg Tune82ADC::saveUeff()
 Error::Msg Tune82ADC::calcPhaseCorrection()
 {
     getBd1();
-    float phiMip[6] {
-        0,                                                        //
-        mipdata.phiUab,                                           //
-        mipdata.phiUab + mipdata.phiUbc,                          //
-        mipdata.phiLoadPhase[0],                                  //
-        mipdata.phiLoadPhase[1] + mipdata.phiUab,                 //
-        mipdata.phiLoadPhase[2] + mipdata.phiUab + mipdata.phiUbc //
-    };
     m_bacNewBlock.DPsi[0] = 0;
-    for (int i = 1; i < 6; ++i)
-        m_bacNewBlock.DPsi[i] = m_bac->data()->DPsi[i] - phiMip[i] - m_bd1->data()->phi_next_f[i];
+    const auto limit = (m_typeM == Modules::MezzanineBoard::MTM_82) ? 3 : 6;
+    for (int i = 1; i < limit; ++i)
+        m_bacNewBlock.DPsi[i] = m_bac->data()->DPsi[i] - m_bd1->data()->phi_next_f[i];
+    if (m_typeM == Modules::MezzanineBoard::MTM_82)
+    {
+        for (int i = 3; i < 6; ++i)
+        {
+            // Из блока текущих данных рассчитываем угол нагрузки
+            auto phiLoad = calculatePhi(m_bd1->data()->phi_next_f[i - 3], m_bd1->data()->phi_next_f[i]);
+            // Рассчитываем разницу между рассчитанным углом и показаниями МИП-02
+            auto delta = mipdata.phiLoadPhase[i - 3] - phiLoad;
+            // Вычитаем и сохраняем в новом блоке Bac
+            m_bacNewBlock.DPsi[i] = m_bac->data()->DPsi[i] - delta;
+        }
+    }
     m_bacNewBlock.K_freq = m_bac->data()->K_freq * mipdata.freqUPhase[0] / m_bd1->data()->Frequency;
     return Error::Msg::NoError;
 }
@@ -106,16 +113,15 @@ Error::Msg Tune82ADC::calcInterChannelCorrelation()
 
 Error::Msg Tune82ADC::calcIUcoef1()
 {
-    saveWorkConfig();
     // set nominal currents in config to 1.0 A
     setCurrentsTo(1.0);
-    waitNSeconds(5);
     if (!EMessageBox::next(this, "Задайте напряжения равными 60,0 В и токи, равными 1,0 А"))
     {
         CancelTune();
         return Error::GeneralError;
     }
-    waitNSeconds(2);
+    StdFunc::Wait(2000);
+    // waitNSeconds(2);
     getBd1();
     for (int i = 0; i < 3; ++i)
     {
@@ -147,13 +153,13 @@ Error::Msg Tune82ADC::calcIcoef5()
 {
     // set nominal currents in config to 5.0 A
     setCurrentsTo(5.0);
-    waitNSeconds(5);
     if (!EMessageBox::next(this, "Задайте токи, равными 5,0 А"))
     {
         CancelTune();
         return Error::GeneralError;
     }
-    waitNSeconds(2);
+    StdFunc::Wait(2000);
+    // waitNSeconds(2);
     getBd1();
     for (int i = 0; i < 3; ++i)
     {
