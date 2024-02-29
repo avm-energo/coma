@@ -57,7 +57,13 @@ Error::Msg Tune82Verification::setupNFiltrValue()
 {
     config.setRecord("NFiltr_ID", S2::DWORD(10));
     auto result = m_sync->writeConfigurationSync(config.toByteArray());
-    waitNSeconds(10);
+    StdFunc::Wait(5000);
+    // waitNSeconds(10);
+    if (!EMessageBox::next(this, "Убедитесь в корректности подключения с устройством"))
+    {
+        CancelTune();
+        return Error::GeneralError;
+    }
     return result;
 }
 
@@ -189,7 +195,8 @@ Error::Msg Tune82Verification::verification()
         if (StdFunc::IsCancelled())
             return Error::Msg::GeneralError;
 
-        waitNSeconds(1);
+        StdFunc::Wait(1000);
+        // waitNSeconds(1);
         mipData = m_mip->takeOneMeasurement(i2nom);
         m_bd1->readBlockFromModule();
         deviceData = *(m_bd1->data());

@@ -364,7 +364,8 @@ Error::Msg AbstractTuneDialog::setCurrentsTo(const float value)
     S2::FLOAT_6t i2NomConfig { value, value, value, value, value, value };
     config.setRecord("I2nom", i2NomConfig);
     auto result = m_sync->writeConfigurationSync(config.toByteArray());
-    waitNSeconds(5);
+    StdFunc::Wait(5000);
+    // waitNSeconds(5);
     return result;
 }
 
@@ -487,7 +488,8 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
     else
     {
         res = m_sync->writeFileSync(S2::FilesEnum::Config, ba);
-        waitNSeconds(5); // device reconnect
+        StdFunc::Wait(5000);
+        // waitNSeconds(5); // device reconnect
         return res;
     }
     return Error::Msg::GeneralError;

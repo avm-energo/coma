@@ -55,7 +55,8 @@ Error::Msg Tune82ADC::setDefBac()
 
 Error::Msg Tune82ADC::getAnalogData()
 {
-    waitNSeconds(1);
+    StdFunc::Wait(1000);
+    // waitNSeconds(1);
     m_bda->readAndUpdate();
     m_bd1->readAndUpdate();
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
@@ -114,7 +115,8 @@ Error::Msg Tune82ADC::calcIUcoef1()
         CancelTune();
         return Error::GeneralError;
     }
-    waitNSeconds(2);
+    StdFunc::Wait(2000);
+    // waitNSeconds(2);
     getBd1();
     for (int i = 0; i < 3; ++i)
     {
@@ -151,7 +153,8 @@ Error::Msg Tune82ADC::calcIcoef5()
         CancelTune();
         return Error::GeneralError;
     }
-    waitNSeconds(2);
+    StdFunc::Wait(2000);
+    // waitNSeconds(2);
     getBd1();
     for (int i = 0; i < 3; ++i)
     {
