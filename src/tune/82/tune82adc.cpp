@@ -55,7 +55,8 @@ Error::Msg Tune82ADC::setDefBac()
 {
     m_bac->setDefBlock();
     m_bac->setDefBlock(m_bacNewBlock);
-    return m_bac->writeBlockToModule(true);
+    m_bac->updateWidget();
+    return m_bac->writeBlockToModule(false);
 }
 
 Error::Msg Tune82ADC::getAnalogData()
@@ -80,10 +81,10 @@ Error::Msg Tune82ADC::calcPhaseCorrection()
 {
     getBd1();
     m_bacNewBlock.DPsi[0] = 0;
-    const auto limit = (m_typeM == Modules::MezzanineBoard::MTM_82) ? 3 : 6;
+    const auto limit = (m_typeM == Device::MezzanineBoard::MTM_82) ? 3 : 6;
     for (int i = 1; i < limit; ++i)
         m_bacNewBlock.DPsi[i] = m_bac->data()->DPsi[i] - m_bd1->data()->phi_next_f[i];
-    if (m_typeM == Modules::MezzanineBoard::MTM_82)
+    if (m_typeM == Device::MezzanineBoard::MTM_82)
     {
         for (int i = 3; i < 6; ++i)
         {

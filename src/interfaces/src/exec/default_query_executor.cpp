@@ -10,13 +10,15 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, const BaseSettin
     : QObject(parent)
     , m_state(ExecutorState::Starting)
     , m_queue(std::ref(queue))
-    , m_timeoutTimer(new QTimer(this))
+    , m_timeoutTimer(this)
+    , m_waitMutex {}
+    , m_waiter {}
     , m_requestParser(nullptr)
     , m_responseParser(nullptr)
 {
-    m_timeoutTimer->setSingleShot(true);
-    m_timeoutTimer->setInterval(settings.m_timeout);
-    connect(m_timeoutTimer, &QTimer::timeout, this, [this] {
+    m_timeoutTimer.setSingleShot(true);
+    m_timeoutTimer.setInterval(settings.m_timeout);
+    connect(&m_timeoutTimer, &QTimer::timeout, this, [this] {
         qCritical() << "Timeout, command: " << m_lastRequestedCommand.load();
         m_log.error("Timeout");
         cancelQuery();
@@ -51,7 +53,7 @@ void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponse
         m_requestParser->basicProtocolSetup(); // basic protocol setup
         connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
             setState(ExecutorState::WritingLongData);
-            m_timeoutTimer->setInterval(m_timeoutTimer->interval() * 5);
+            m_timeoutTimer.setInterval(m_timeoutTimer.interval() * 5);
             m_queue.get().deactivate();
         });
         connect(m_responseParser, &BaseResponseParser::readingLongData, this, [this] {
@@ -73,6 +75,18 @@ void DefaultQueryExecutor::setState(const ExecutorState newState) noexcept
         m_state.store(newState);
         emit stateChanged(newState);
     }
+}
+
+void DefaultQueryExecutor::waitEvent()
+{
+    std::unique_lock<std::mutex> locker { m_waitMutex };
+    m_waiter.wait(locker);
+}
+
+void DefaultQueryExecutor::wakeUp()
+{
+    std::lock_guard<std::mutex> locker { m_waitMutex };
+    m_waiter.notify_one();
 }
 
 void DefaultQueryExecutor::parseFromQueue() noexcept
@@ -98,7 +112,8 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
     else
     {
         // Если нет запросов в очереди, то ждём, пока они появятся
-        m_queue.get().waitFillingQueue();
+        waitEvent();
+        // m_queue.get().waitFillingQueue();
     }
 }
 
@@ -106,7 +121,7 @@ void DefaultQueryExecutor::writeToInterface(const QByteArray &request, bool isCo
 {
     Q_UNUSED(isCounted);
     emit sendDataToInterface(request);
-    m_timeoutTimer->start();
+    m_timeoutTimer.start();
     writeToLog(request, Direction::ToDevice);
 }
 
@@ -187,7 +202,7 @@ void DefaultQueryExecutor::receiveDataFromInterface(const QByteArray &response)
     m_responseParser->accumulateToResponseBuffer(response);
     if (m_responseParser->isCompleteResponse())
     {
-        m_timeoutTimer->stop();
+        m_timeoutTimer.stop();
         writeToLog(m_responseParser->getResponseBuffer(), Direction::FromDevice);
     }
     else
@@ -220,7 +235,7 @@ void DefaultQueryExecutor::receiveDataFromInterface(const QByteArray &response)
             // Если чанк пустой, то отправили файл полностью
             else
             {
-                m_timeoutTimer->setInterval(m_timeoutTimer->interval() / 5);
+                m_timeoutTimer.setInterval(m_timeoutTimer.interval() / 5);
                 run();
             }
             break;
@@ -254,10 +269,10 @@ void DefaultQueryExecutor::cancelQuery()
     m_log.warning("Command canceled");
     m_responseParser->clearResponseBuffer();
     m_queue.get().activate();
-    if (m_timeoutTimer->isActive())
-        m_timeoutTimer->stop();
+    if (m_timeoutTimer.isActive())
+        m_timeoutTimer.stop();
     if (getState() == ExecutorState::WritingLongData)
-        m_timeoutTimer->setInterval(m_timeoutTimer->interval() / 5);
+        m_timeoutTimer.setInterval(m_timeoutTimer.interval() / 5);
     setState(ExecutorState::RequestParsing);
 }
 

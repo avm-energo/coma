@@ -116,7 +116,7 @@ void CurrentDevice::initBSI() noexcept
 {
     m_isInitStage = true;
     m_async->reqBSI();
-    m_timeoutTimer.stop();
+    m_timeoutTimer.start();
 }
 
 void CurrentDevice::internalProtocolUpdate() noexcept

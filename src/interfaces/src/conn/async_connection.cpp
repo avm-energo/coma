@@ -155,6 +155,7 @@ void AsyncConnection::setInterfaceType(const Interface::IfaceType ifaceType) noe
 void AsyncConnection::setToQueue(CommandStruct &&cmd)
 {
     m_queue.addToQueue(std::move(cmd));
+    emit executorWakeUp();
     emit queueSizeChanged(m_queue.size());
 }
 

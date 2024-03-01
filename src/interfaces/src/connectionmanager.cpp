@@ -102,16 +102,13 @@ void ConnectionManager::setReconnectMode(const ReconnectMode newMode) noexcept
 
 void ConnectionManager::reconnect()
 {
-    if (!m_isReconnectOccurred)
-    {
-        qCritical() << "Произошла ошибка соединения";
-        emit reconnectInterface();
-        if (m_reconnectMode == ReconnectMode::Loud)
-            emit reconnectUI();
-        else
-            m_silentTimer->start();
-        m_isReconnectOccurred = true;
-    }
+    qCritical() << "Произошла ошибка соединения";
+    emit reconnectInterface();
+    if (m_reconnectMode == ReconnectMode::Loud)
+        emit reconnectUI();
+    else
+        m_silentTimer->start();
+    m_isReconnectOccurred = true;
 }
 
 void ConnectionManager::breakConnection()
@@ -119,6 +116,8 @@ void ConnectionManager::breakConnection()
     m_context.reset();
     m_currentConnection = nullptr;
     m_isInitial = true;
+    m_isReconnectOccurred = false;
+    m_reconnectMode = ReconnectMode::Loud;
 }
 
 void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
@@ -128,7 +127,7 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
     case InterfaceError::ReadError:
     case InterfaceError::WriteError:
         ++m_errorCounter;
-        if (m_errorCounter > m_errorMax && !m_isReconnectOccurred)
+        if (m_errorCounter > m_errorMax)
             reconnect();
         break;
     case InterfaceError::OpenError:
@@ -153,7 +152,7 @@ void ConnectionManager::handleQueryExecutorTimeout()
     }
 
     ++m_timeoutCounter;
-    if (m_timeoutCounter > m_timeoutMax && !m_isReconnectOccurred)
+    if (m_timeoutCounter > m_timeoutMax)
         reconnect();
 }
 
@@ -174,8 +173,9 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
             setReconnectMode(ReconnectMode::Loud);
             m_errorCounter = 0;
             m_timeoutCounter = 0;
-            qCritical() << "Соединение восстановлено";
+            m_currentConnection->getQueue().activate();
             m_isReconnectOccurred = false;
+            qCritical() << "Соединение восстановлено";
             emit reconnectSuccess(); // Сообщаем, что переподключение прошло успешно
         }
         disconnect(m_connBSI);
@@ -185,8 +185,10 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
 void ConnectionManager::interfaceReconnected()
 {
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
-    m_context.m_executor->run();
+    m_currentConnection->getQueue().activate();
     m_currentConnection->reqBSI();
+    m_context.m_executor->run();
+    m_currentConnection->getQueue().deactivate();
 }
 
 } // namespace Interface

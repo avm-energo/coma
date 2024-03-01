@@ -57,13 +57,14 @@ Error::Msg Tune82Verification::setupNFiltrValue()
 {
     config.setRecord("NFiltr_ID", S2::DWORD(10));
     auto result = m_sync->writeConfigurationSync(config.toByteArray());
-    StdFunc::Wait(5000);
+    StdFunc::Wait(12000);
+    // StdFunc::Wait(5000);
     // waitNSeconds(10);
-    if (!EMessageBox::next(this, "Убедитесь в корректности подключения с устройством"))
-    {
-        CancelTune();
-        return Error::GeneralError;
-    }
+    //    if (!EMessageBox::next(this, "Убедитесь в корректности подключения с устройством"))
+    //    {
+    //        CancelTune();
+    //        return Error::GeneralError;
+    //    }
     return result;
 }
 

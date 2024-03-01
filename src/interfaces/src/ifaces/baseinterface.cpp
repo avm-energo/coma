@@ -69,6 +69,7 @@ void BaseInterface::poll()
             {
                 writeLog(data.toHex(), Interface::Direction::FromDevice);
                 emit dataReceived(data);
+                emit executorWakeUp();
             }
         }
         else

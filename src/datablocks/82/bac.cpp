@@ -11,7 +11,7 @@ Bac82::Bac82(QObject *parent) : DataBlock(parent), m_blockData(std::make_unique<
 {
     setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData),
         true });
-    readBlockFromModule();
+    // readBlockFromModule();
 }
 
 void Bac82::setupValuesDesc()

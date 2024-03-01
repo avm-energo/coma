@@ -29,6 +29,8 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
             m_executor, &DefaultQueryExecutor::receiveDataFromInterface, Qt::QueuedConnection);
         QObject::connect(m_executor, &DefaultQueryExecutor::sendDataToInterface, //
             m_iface, &BaseInterface::writeData, connPolicy);
+        QObject::connect(m_iface, &BaseInterface::executorWakeUp, //
+            m_executor, &DefaultQueryExecutor::wakeUp, Qt::DirectConnection);
         // Отмена команды
         QObject::connect(m_iface, &BaseInterface::clearQueries, //
             m_executor, &DefaultQueryExecutor::cancelQuery, Qt::QueuedConnection);
@@ -78,6 +80,8 @@ bool ConnectionContext::run(AsyncConnection *connection)
         return false;
 
     // Обмен данными для соединения
+    QObject::connect(connection, &AsyncConnection::executorWakeUp, //
+        m_executor, &DefaultQueryExecutor::wakeUp, Qt::DirectConnection);
     QObject::connect(m_executor, &DefaultQueryExecutor::responseSend, //
         connection, &AsyncConnection::responseHandle, Qt::DirectConnection);
     QObject::connect(m_iface, &BaseInterface::stateChanged, connection, //
@@ -114,6 +118,7 @@ void ConnectionContext::reset()
         QObject::connect(m_iface, &BaseInterface::finished, &waiter, &QEventLoop::quit);
         QObject::connect(m_executor, &DefaultQueryExecutor::finished, &waiter, &QEventLoop::quit);
         m_executor->stop();
+        m_executor->wakeUp();
         waiter.exec();
         m_iface->close();
         waiter.exec();

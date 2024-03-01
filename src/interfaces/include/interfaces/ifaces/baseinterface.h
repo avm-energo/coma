@@ -32,6 +32,7 @@ signals:
     void error(const InterfaceError error);
     void stateChanged(Interface::State);
     void clearQueries();
+    void executorWakeUp();
 
 protected:
     std::atomic<Interface::State> m_state;
