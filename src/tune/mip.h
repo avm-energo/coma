@@ -53,7 +53,7 @@ public:
     Error::Msg check();
     void setModuleType(MType type);
     void setNominalCurrent(float inom);
-    UWidget *widget();
+    QWidget *widget();
     MipDataStruct takeOneMeasurement(float i2nom);
 
 private:
@@ -61,7 +61,7 @@ private:
     MipDataStruct m_mipData;
     MType m_moduleType;
     float iNom;
-    UWidget *m_widget;
+    QWidget *m_widget;
     QWidget *m_parent;
     bool m_withGUI;
     ModuleDataUpdater *m_updater;
