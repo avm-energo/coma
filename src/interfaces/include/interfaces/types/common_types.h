@@ -83,7 +83,10 @@ enum class Commands
     C_SetMode,
     C_GetMode,
     C_WriteHardware,
-    C_EnableHardwareWriting
+    C_EnableHardwareWriting,
+
+    C_ReqStateOsc,
+    C_WriteTypeOsc
 };
 Q_ENUM_NS(Commands)
 

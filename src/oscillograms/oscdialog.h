@@ -5,7 +5,6 @@
 #include "../widgets/udialog.h"
 #include "oscmanager.h"
 
-//#include <interfaces/utils/typesproxy.h>
 #include <optional>
 
 class OscDialog : public UDialog

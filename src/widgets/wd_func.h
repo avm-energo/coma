@@ -37,14 +37,14 @@ public:
 
     WDFunc();
     static bool SetCWData(QWidget *parent, const QString &cwname, const QString &cwvalue);
-    static QString CWData(QWidget *parent, const QString &cwname);
+    [[nodiscard]] static QString CWData(QWidget *parent, const QString &cwname);
     static bool SetCWColor(QWidget *parent, const QString &cwname, const QColor &color);
-    static QLineEdit *NewLE2(
+    [[nodiscard]] static QLineEdit *NewLE2(
         QWidget *parent, const QString &lename, const QString &letext = "", const QString &tooltip = "");
-    static PasswordLineEdit *NewPswLE2(
+    [[nodiscard]] static PasswordLineEdit *NewPswLE2(
         QWidget *parent, const QString &lename, QLineEdit::EchoMode echostyle = QLineEdit::Normal);
     static bool SetLEData(QObject *parent, const QString &lename, const QString &levalue, const QString &restring = "");
-    static QString LEData(QObject *parent, const QString &lename);
+    [[nodiscard]] static QString LEData(QObject *parent, const QString &lename);
 
     template <typename T> static void LEData(QObject *parent, const QString &lename, T &value)
     {
@@ -69,8 +69,8 @@ public:
     static bool TEData(QWidget *parent, const QString &tename, QString &tevalue);
     static bool SetLBLTColor(QWidget *parent, const QString &lblname, const QString &color);
 
-    static QComboBox *NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl);
-    static QComboBox *NewCB2(QWidget *parent, const QStringList &cbsl);
+    [[nodiscard]] static QComboBox *NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl);
+    [[nodiscard]] static QComboBox *NewCB2(QWidget *parent, const QStringList &cbsl);
     static bool SetCBData(const QWidget *parent, const QString &cbname, const QString &cbvalue);
     static bool SetCBIndex(const QObject *parent, const QString &cbname, int index);
     static bool SetCBColor(QWidget *parent, const QString &cbname, const QString &color);
@@ -85,11 +85,11 @@ public:
         return QVariant(buffer).value<T>();
     }
 
-    static QDoubleSpinBox *NewSPB2(
+    [[nodiscard]] static QDoubleSpinBox *NewSPB2(
         QWidget *parent, const QString &spbname, const double min, const double max, const int decimals);
-    static DoubleSpinBoxGroup *NewSPBG(
+    [[nodiscard]] static DoubleSpinBoxGroup *NewSPBG(
         QWidget *parent, const QString &spbname, int count, const double min, const double max, const int decimals);
-    static DoubleSpinBoxGroup *NewSPBG(QWidget *parent, const QString &spbname, const QStringList &list,
+    [[nodiscard]] static DoubleSpinBoxGroup *NewSPBG(QWidget *parent, const QString &spbname, const QStringList &list,
         const double min, const double max, const int decimals);
     static bool SetSPBData(const QObject *parent, const QString &spbname, const double &spbvalue);
 
@@ -163,22 +163,22 @@ public:
 
     static bool SetLEColor(QWidget *parent, const QString &lename, const QColor &color);
 
-    static QLabel *NewLBL2(QWidget *parent, const QString &text, const QString &lblname = "",
+    [[nodiscard]] static QLabel *NewLBL2(QWidget *parent, const QString &text, const QString &lblname = "",
         const QPixmap *pm = nullptr, const QString &lbltip = "");
-    static QLabel *NewIcon(QWidget *parent, const QString &iconpath = "");
-    static QLabel *NewLBLT2(QWidget *parent, const QString &text, const QString &lblname = "",
+    [[nodiscard]] static QLabel *NewIcon(QWidget *parent, const QString &iconpath = "");
+    [[nodiscard]] static QLabel *NewLBLT2(QWidget *parent, const QString &text, const QString &lblname = "",
         const QString &lbltip = "", bool fixed = false);
 
     static bool SetLBLImage(QWidget *parent, const QString &lblname, QPixmap *pm);
     static bool SetLBLColor(QWidget *parent, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *parent, const QString &lblname, const QString &lbltext = "", bool enabled = true);
-    static QString LBLText(QWidget *parent, const QString &lblname);
+    [[nodiscard]] static QString LBLText(QWidget *parent, const QString &lblname);
 
-    static QRadioButton *NewRB2(QWidget *parent, const QString &rbtext, const QString &rbname);
-    static QString TVField(QWidget *parent, const QString &tvname, int column, bool isid = false);
+    [[nodiscard]] static QRadioButton *NewRB2(QWidget *parent, const QString &rbtext, const QString &rbname);
+    [[nodiscard]] static QString TVField(QWidget *parent, const QString &tvname, int column, bool isid = false);
     static void TVAutoResize(QWidget *parent, const QString &tvname);
 
-    static QCheckBox *NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext);
+    [[nodiscard]] static QCheckBox *NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext);
     static bool ChBData(const QWidget *parent, const QString &chbname, bool &data);
     static bool ChBData(const QWidget *parent, const QString &chbname);
 
@@ -225,14 +225,14 @@ public:
     //    static void AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled = false);
     static void AddLabelAndLineeditH(
         QWidget *parent, QHBoxLayout *hlyout, QString caption, QString lename, bool enabled = false);
-    static QWidget *NewLBLAndLBL(QWidget *parent, QString lblname, QString caption, bool enabled = false);
-    static QWidget *NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled = false);
+    [[nodiscard]] static QWidget *NewLBLAndLBL(QWidget *parent, QString lblname, QString caption, bool enabled = false);
+    [[nodiscard]] static QWidget *NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled = false);
     static void SetEnabled(QWidget *w, const QString &wname, bool enabled);
     static void SetVisible(QWidget *w, const QString &wname, bool visible);
     static void setMinimumSize(QWidget *w, const QString &wname, int width, int height);
-    static QString StringFloatValueWithCheck(float value, int precision = 5, bool exp = false);
-    static QVariant FloatValueWithCheck(float value);
-    static QImage *TwoImages(const QString &first, const QString &second);
+    [[nodiscard]] static QString StringFloatValueWithCheck(float value, int precision = 5, bool exp = false);
+    [[nodiscard]] static QVariant FloatValueWithCheck(float value);
+    [[nodiscard]] static QImage *TwoImages(const QString &first, const QString &second);
 
     template <typename Functor>
     inline static QPushButton *NewHexagonPB(QWidget *parent, const QString &pbname, Functor &&functor,
@@ -308,35 +308,36 @@ public:
 
     static void SetTVModel(QWidget *parent, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
     static void SetQTVModel(QWidget *parent, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
-    static ETableView *NewTV(QWidget *parent, const QString &tvname, QAbstractItemModel *model);
-    static QTableView *NewQTV(QWidget *parent, const QString &tvname, QAbstractItemModel *model);
-    static QAbstractItemModel *TVModel(QWidget *parent, const QString &tvname);
+    [[nodiscard]] static ETableView *NewTV(QWidget *parent, const QString &tvname, QAbstractItemModel *model);
+    [[nodiscard]] static QTableView *NewQTV(QWidget *parent, const QString &tvname, QAbstractItemModel *model);
+    [[nodiscard]] static QAbstractItemModel *TVModel(QWidget *parent, const QString &tvname);
 
     static void SortTV(QWidget *parent, const QString &tvname, int column, Qt::SortOrder sortorder);
-    static QVariant TVData(QWidget *parent, const QString &tvname, int column);
+    [[nodiscard]] static QVariant TVData(QWidget *parent, const QString &tvname, int column);
 
-    static QStatusBar *NewSB(QWidget *parent);
-    static QPixmap NewCircle(QColor color, int radius);
-    static QPixmap NewLedIndicator(QColor color, float height);
-    static QPixmap NewSVG(QString &str, QSize size);
-    static QFrame *newHLine(QWidget *parent);
-    static QFrame *newVLine(QWidget *parent);
+    [[nodiscard]] static QStatusBar *NewSB(QWidget *parent);
+    [[nodiscard]] static QPixmap NewCircle(QColor color, int radius);
+    [[nodiscard]] static QPixmap NewLedIndicator(QColor color, float height);
+    [[nodiscard]] static QPixmap NewSVG(QString &str, QSize size);
+    [[nodiscard]] static QFrame *newHLine(QWidget *parent);
+    [[nodiscard]] static QFrame *newVLine(QWidget *parent);
 
-    static QMainWindow *getMainWindow();
+    [[nodiscard]] static QMainWindow *getMainWindow();
 
     static bool floatIsWithinLimits(
         const QString &varname, double var, double base, double tolerance, bool showMessage = true);
-    static QString ChooseFileForOpen(QWidget *parent, QString mask);
+    [[nodiscard]] static QString ChooseFileForOpen(QWidget *parent, QString mask);
     /// Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)";
     /// QString ext - расширение по умолчанию Output: QString filename
-    static QString ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filename);
-    static QString ChooseFileForSave(UDialog *parent, const QString &mask, const QString &ext);
-    static QString ChooseDirectoryForOpen(QWidget *parent);
+    [[nodiscard]] static QString ChooseFileForSave(
+        QWidget *parent, const QString &mask, const QString &ext, const QString &filename);
+    [[nodiscard]] static QString ChooseFileForSave(UDialog *parent, const QString &mask, const QString &ext);
+    [[nodiscard]] static QString ChooseDirectoryForOpen(QWidget *parent);
 
-    static QValidator *getRegExpValidator(const QString &pattern, QObject *parent = nullptr);
+    [[nodiscard]] static QValidator *getRegExpValidator(const QString &pattern, QObject *parent = nullptr);
 
 private:
-    static QPushButton *NewPBCommon(QWidget *parent, const QString &pbname, const QString &text,
+    [[nodiscard]] static QPushButton *NewPBCommon(QWidget *parent, const QString &pbname, const QString &text,
         const QString &icon = "", const QString &pbtooltip = "");
 };
 
