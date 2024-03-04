@@ -6,27 +6,24 @@ class QLabel;
 class QPushButton;
 class QTimer;
 
-/// \brief Команда записи осциллограммы.
-struct TypeOsc
-{
-    u8 n_point;
-    u8 phase;
-    u16 reserved;
-};
-Q_DECLARE_METATYPE(TypeOsc)
-
 /// \brief Класс для отправки команд старта осциллограмм и их чтения в АВМ-КИВ.
-class OscKivDialog : public UDialog
+class OscKivDialog final : public UDialog
 {
 private:
     QPushButton *m_commandBtn, *m_readBtn;
     QLabel *m_oscFilenumLbl;
     QTimer *m_reqStateOscTimer;
-    u16 m_oscFilenum, m_oldOscFilenum;
+    u32 m_oscFilenum, m_oldOscFilenum;
 
     void setupUI();
-    void init();
-    void updateOscFilenum(const u16 newOscFilenum);
+    void updateOscFilenum(const u32 newOscFilenum);
+    void enableButtons(const bool enabling);
+
+    void reqOscState();
+    void updateBitStringData(const DataTypes::BitStringStruct &bs) override;
+
+    void writeTypeOsc();
+    void reqOscFile();
 
 public:
     explicit OscKivDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);

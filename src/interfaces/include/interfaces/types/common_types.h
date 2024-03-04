@@ -85,7 +85,6 @@ enum class Commands
     C_WriteHardware,
     C_EnableHardwareWriting,
 
-    C_ReqStateOsc,
     C_WriteTypeOsc
 };
 Q_ENUM_NS(Commands)
@@ -94,6 +93,7 @@ enum CommandRegisters
 {
     StartWorkingChannel = 803,  ///< Старт рабочего канала
     EraseSystemJournal = 807,   ///< Стереть системный журнал
+    WriteTypeOsc = 813,         ///< Команда запуска осциллограммы
     SetStartupValues = 900,     ///< Задать начальные значения по всем фазам
     SetStartupPhaseA = 901,     ///< Задать начальные значения по фазе A
     SetStartupPhaseB = 902,     ///< Задать начальные значения по фазе B
@@ -112,6 +112,14 @@ enum TechBlocks
     T_TechEvent = 0x03,
     T_SwitchJournal = 0x04,
     T_WorkArchive = 0x05
+};
+
+/// \brief Команда записи осциллограммы.
+struct TypeOsc
+{
+    u8 n_point;
+    u8 phase;
+    u16 reserved;
 };
 
 struct CommandStruct
@@ -160,3 +168,4 @@ using DeviceResponse = std::variant<QByteArray, DataTypes::BitStringStruct,   //
 
 Q_DECLARE_METATYPE(Interface::DeviceResponse)
 Q_DECLARE_METATYPE(Interface::Commands)
+Q_DECLARE_METATYPE(Interface::TypeOsc)

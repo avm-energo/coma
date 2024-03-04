@@ -28,7 +28,8 @@ const std::map<Interface::Commands, Proto::Commands> ProtocomRequestParser::s_pr
     { Commands::C_Reboot, Proto::WriteBlkCmd },                    //
     { Commands::C_GetMode, Proto::ReadMode },                      //
     { Commands::C_SetMode, Proto::WriteMode },                     //
-    { Commands::C_WriteHardware, Proto::WriteHardware }            //
+    { Commands::C_WriteHardware, Proto::WriteHardware },           //
+    { Commands::C_WriteTypeOsc, Proto::WriteBlkData }              //
 };
 
 ProtocomRequestParser::ProtocomRequestParser(QObject *parent) : BaseRequestParser(parent)
@@ -156,6 +157,8 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         }
         break;
     }
+    case Commands::C_WriteTypeOsc:
+        break;
     // QVariantList write
     case Commands::C_WriteUserValues:
     {

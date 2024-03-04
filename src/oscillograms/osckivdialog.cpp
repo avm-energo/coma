@@ -1,11 +1,13 @@
 #include "osckivdialog.h"
 
+#include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
 #include <device/current_device.h>
 #include <limits>
 
 constexpr std::string_view oscFilenumLblFmt { "Текущий номер осциллограммы: %1" };
+constexpr u32 oscStateAddr = 13100;
 
 OscKivDialog::OscKivDialog(Device::CurrentDevice *device, QWidget *parent)
     : UDialog(device, parent)
@@ -17,8 +19,9 @@ OscKivDialog::OscKivDialog(Device::CurrentDevice *device, QWidget *parent)
     , m_oldOscFilenum(0)
 {
     m_reqStateOscTimer->setInterval(100);
+    QObject::connect(m_reqStateOscTimer, &QTimer::timeout, this, &OscKivDialog::reqOscState);
     setupUI();
-    init();
+    reqOscState();
 }
 
 void OscKivDialog::setupUI()
@@ -32,29 +35,16 @@ void OscKivDialog::setupUI()
     phaseCombobox->setCurrentIndex(0);
     mainLayout->addWidget(phaseCombobox);
     auto controlLayout = new QHBoxLayout;
-    m_commandBtn = WDFunc::NewPB(this, "commandBtn", "Запуск осциллограмм", this, [this] {
-        m_commandBtn->setEnabled(false);
-        m_readBtn->setEnabled(false);
-        m_device->async()->writeCommand(Commands::C_ReqStateOsc, 1);
-    });
+    m_commandBtn = WDFunc::NewPB(this, "commandBtn", "Запуск осциллограмм", this, &OscKivDialog::writeTypeOsc);
     controlLayout->addWidget(m_commandBtn);
-    m_readBtn = WDFunc::NewPB(this, "readBtn", "Прочитать осциллограмму", this, [this] {
-        m_commandBtn->setEnabled(false);
-        m_readBtn->setEnabled(false);
-        ;
-    });
+    m_readBtn = WDFunc::NewPB(this, "readBtn", "Прочитать осциллограмму", this, &OscKivDialog::reqOscFile);
     m_readBtn->setEnabled(false);
     controlLayout->addWidget(m_readBtn);
     mainLayout->addLayout(controlLayout);
     setLayout(mainLayout);
 }
 
-void OscKivDialog::init()
-{
-    ;
-}
-
-void OscKivDialog::updateOscFilenum(const u16 newOscFilenum)
+void OscKivDialog::updateOscFilenum(const u32 newOscFilenum)
 {
     m_oldOscFilenum = m_oscFilenum;
     m_oscFilenum = newOscFilenum;
@@ -64,4 +54,35 @@ void OscKivDialog::updateOscFilenum(const u16 newOscFilenum)
         m_oscFilenumLbl->setText("Идёт запись осциллограммы");
     else
         m_oscFilenumLbl->setText(QString(oscFilenumLblFmt.data()).arg(m_oscFilenum));
+}
+
+void OscKivDialog::enableButtons(const bool enabling)
+{
+    m_commandBtn->setEnabled(enabling);
+    m_readBtn->setEnabled(enabling);
+}
+
+void OscKivDialog::reqOscState()
+{
+    m_device->async()->reqBitStrings(oscStateAddr, 1);
+}
+
+void OscKivDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
+{
+    if (bs.sigAdr == oscStateAddr)
+        updateOscFilenum(bs.sigVal);
+}
+
+void OscKivDialog::writeTypeOsc()
+{
+    // enableButtons(false);
+    Interface::TypeOsc command { 0, 0, 0 };
+    command.n_point = WDFunc::SPBData<u8>(this, "n_point");
+    command.phase = WDFunc::CBIndex(this, "phase");
+    m_device->async()->writeCommand(Commands::C_WriteTypeOsc, QVariant::fromValue(command));
+}
+
+void OscKivDialog::reqOscFile()
+{
+    // enableButtons(true);
 }
