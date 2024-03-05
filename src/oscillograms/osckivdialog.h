@@ -6,6 +6,14 @@ class QLabel;
 class QPushButton;
 class QTimer;
 
+/// \brief Команда записи осциллограммы.
+struct TypeOsc
+{
+    u8 n_point;
+    u8 phase;
+    u16 reserved;
+};
+
 /// \brief Класс для отправки команд старта осциллограмм и их чтения в АВМ-КИВ.
 class OscKivDialog final : public UDialog
 {

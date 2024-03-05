@@ -4,6 +4,7 @@
 #include "../widgets/wd_func.h"
 
 #include <device/current_device.h>
+#include <gen/stdfunc.h>
 #include <limits>
 
 constexpr std::string_view oscFilenumLblFmt { "Текущий номер осциллограммы: %1" };
@@ -70,16 +71,19 @@ void OscKivDialog::reqOscState()
 void OscKivDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
     if (bs.sigAdr == oscStateAddr)
+    {
         updateOscFilenum(bs.sigVal);
+    }
 }
 
 void OscKivDialog::writeTypeOsc()
 {
     // enableButtons(false);
-    Interface::TypeOsc command { 0, 0, 0 };
+    TypeOsc command { 0, 0, 0 };
     command.n_point = WDFunc::SPBData<u8>(this, "n_point");
     command.phase = WDFunc::CBIndex(this, "phase");
-    m_device->async()->writeCommand(Commands::C_WriteTypeOsc, QVariant::fromValue(command));
+    DataTypes::BlockStruct block { 13, StdFunc::toByteArray(command) };
+    m_device->async()->writeCommand(Commands::C_WriteTypeOsc, QVariant::fromValue(block));
 }
 
 void OscKivDialog::reqOscFile()

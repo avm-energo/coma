@@ -114,14 +114,6 @@ enum TechBlocks
     T_WorkArchive = 0x05
 };
 
-/// \brief Команда записи осциллограммы.
-struct TypeOsc
-{
-    u8 n_point;
-    u8 phase;
-    u16 reserved;
-};
-
 struct CommandStruct
 {
     Commands command;
@@ -168,4 +160,3 @@ using DeviceResponse = std::variant<QByteArray, DataTypes::BitStringStruct,   //
 
 Q_DECLARE_METATYPE(Interface::DeviceResponse)
 Q_DECLARE_METATYPE(Interface::Commands)
-Q_DECLARE_METATYPE(Interface::TypeOsc)

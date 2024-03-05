@@ -147,6 +147,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_WriteBlkDataTech:
     case Commands::C_SetNewConfiguration:
     case Commands::C_WriteTuningCoef:
+    case Commands::C_WriteTypeOsc:
     {
         if (cmd.arg1.canConvert<DataTypes::BlockStruct>())
         {
@@ -157,8 +158,6 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         }
         break;
     }
-    case Commands::C_WriteTypeOsc:
-        break;
     // QVariantList write
     case Commands::C_WriteUserValues:
     {
