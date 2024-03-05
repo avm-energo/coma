@@ -47,6 +47,8 @@ void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponse
             this, &DefaultQueryExecutor::logFromParser);                  //
         connect(m_responseParser, &BaseResponseParser::needToLog,         //
             this, &DefaultQueryExecutor::logFromParser);                  //
+        connect(m_responseParser, &BaseResponseParser::cancelRequest,     //
+            this, &DefaultQueryExecutor::cancelQuery);                    //
 
         m_requestParser->basicProtocolSetup(); // basic protocol setup
         connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
@@ -253,6 +255,7 @@ void DefaultQueryExecutor::cancelQuery()
 {
     m_log.warning("Command canceled");
     m_responseParser->clearResponseBuffer();
+    m_requestParser->clearLongDataSections();
     m_queue.get().activate();
     if (m_timeoutTimer->isActive())
         m_timeoutTimer->stop();

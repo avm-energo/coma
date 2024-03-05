@@ -42,6 +42,11 @@ QByteArray BaseRequestParser::getNextDataSection()
     return QByteArray {};
 }
 
+void BaseRequestParser::clearLongDataSections() noexcept
+{
+    m_longDataSections.clear();
+}
+
 void BaseRequestParser::setExceptionalSituationStatus(bool status) noexcept
 {
     m_isExceptionalSituation = status;

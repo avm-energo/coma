@@ -61,6 +61,7 @@ void BaseResponseParser::processOk() noexcept
 void BaseResponseParser::processError(int errorCode) noexcept
 {
     qCritical() << "Device error code: " << QString::number(errorCode, 16);
+    emit cancelRequest();
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, static_cast<quint64>(errorCode) };
     emit responseParsed(resp);
 }
