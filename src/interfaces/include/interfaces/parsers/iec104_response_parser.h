@@ -49,7 +49,7 @@ public slots:
     void receiveCurrentCommand(const Iec104::Command currCommand) noexcept;
 
 signals:
-    /// \brief Сигнал для информамирования исполнителя
+    /// \brief Сигнал для информирования исполнителя
     /// запросов о пришедешей информации в U-формате.
     void unnumberedFormatReceived(const Iec104::ControlFunc func, const Iec104::ControlArg arg);
     /// \brief Сигнал для информирования исполнителя запросов
