@@ -1,23 +1,20 @@
 #include "journaldialog.h"
 
-#include "../s2/s2datatypes.h"
 #include "measjournal.h"
 #include "sysjournal.h"
 #include "workjournal.h"
 
 #include <QTabWidget>
 #include <QVBoxLayout>
-#include <gen/datamanager/typesproxy.h>
+#include <s2/s2datatypes.h>
 
 namespace journals
 {
 
-JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent)
-    : UDialog(parent), proxy(&DataManager::GetInstance())
+JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent) : UDialog(parent)
 {
     disableSuccessMessage();
-    proxy.RegisterType<S2::S2BFile>();
-    connect(&proxy, &DataTypesProxy::DataStorable, this, &JournalDialog::receivedJournalFile);
+    m_conn->connection(this, &JournalDialog::receivedJournalFile);
     createJournals(settings);
     setupUI();
 }
@@ -34,7 +31,7 @@ void JournalDialog::createJournals(const ModuleSettings &settings)
         auto workJourTab = new JournalTabWidget(workJour, this);
         journals.insert({ workJour->getType(), workJourTab });
     }
-    if (!settings.getMeasJours().isEmpty())
+    if (!settings.getMeasJours().empty())
     {
         auto measJour = new MeasJournal(settings.getMeasJours(), this);
         auto measJourTab = new JournalTabWidget(measJour, this);
@@ -55,16 +52,12 @@ void JournalDialog::setupUI()
     setLayout(layout);
 }
 
-void JournalDialog::receivedJournalFile(const QVariant &jourData)
+void JournalDialog::receivedJournalFile(const S2::S2BFile &s2bFile)
 {
-    if (jourData.canConvert<S2::S2BFile>())
-    {
-        auto s2bFile = jourData.value<S2::S2BFile>();
-        auto jourType = static_cast<JournalType>(s2bFile.header.fname);
-        auto search = journals.find(jourType);
-        if (search != journals.end())
-            search->second->setJournalFile(s2bFile);
-    }
+    auto jourType = static_cast<JournalType>(s2bFile.header.fname);
+    auto search = journals.find(jourType);
+    if (search != journals.end())
+        search->second->setJournalFile(s2bFile);
 }
 
 }

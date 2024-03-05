@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(coma)
+project(coma VERSION 2.6.0)
 
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
@@ -18,10 +18,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 ##### OPTIONS #####
 option(ENABLE_EMULATOR "Enable emulator interface" OFF)
 option(ENABLE_PVS "Enable PVS-Studio" OFF)
-option(BUILD_AVM_DEBUG "Build AVM-Debug" ON)
-option(BUILD_AVM_SERVICE "Build AVM-Service" ON)
 option(BUILD_TESTS "Build tests" ON)
-option(BUILD_WITH_ALISE "Build with alise for AVTUK" OFF)
 
 # Including cmake scripts for some functions usage
 include(DetermineTargetArchitecture)
@@ -42,10 +39,8 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
 # Q: Why?
 # A: LimeReport use Qml and if we want use LimeReport,
 # we must find QmlIntegration for using its private headers.
-if (${QT_VERSION_MAJOR} EQUAL 6)
-    find_package(Qt${QT_VERSION_MAJOR}
-        COMPONENTS QmlIntegration REQUIRED
-    )
+if(${QT_VERSION_MAJOR} EQUAL 6)
+  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS QmlIntegration REQUIRED)
 endif()
 
 # Determine target's architecture and name. Then installing dependencies with conan
@@ -63,7 +58,7 @@ string(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Visual Studio compilation flags
-if (MSVC)
+if(MSVC)
   add_compile_options(/permissive-)
   string(APPEND CMAKE_CXX_FLAGS " /w14456 /w14189 /w14458 /w14100 /w14996")
 # GCC / Clang compilation flags
@@ -72,13 +67,11 @@ else()
   if(${PROJECT_ARCHITECTURE}} MATCHES "x86_64")
     string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
     string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fsanitize=address,undefined -fstack-protector")
-    set(AVTUK-14 TRUE)
     set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE amd64)
   # Compiling flags for armhf architecture
   elseif(${PROJECT_ARCHITECTURE}} MATCHES "armv7")
     string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
     string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fno-omit-frame-pointer -fstack-protector")
-    set(AVTUK-12 TRUE)
     set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE armhf)
   endif()
 endif()
@@ -125,48 +118,44 @@ conan_cmake_install(
   REMOTE conancenter
   SETTINGS ${settings})
 
+# Setup packaging install prefix for DEB generator
+if(NOT DEFINED CPACK_PACKAGING_INSTALL_PREFIX)
+  set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+endif()
+message(STATUS "Packaging install prefix: ${CPACK_PACKAGING_INSTALL_PREFIX}")
+
 # Building libraries and targets
-include(gen)
 # Step 1: Build dependencies
-if (BUILD_AVM_DEBUG OR BUILD_AVM_SERVICE OR AVTUK-14)
-  include(qcustomplot)
-  include(limereport)
-  include(qxlsx)
-  add_subdirectory(comaversion)
-  add_subdirectory(interfaces)
-  add_subdirectory(s2)
-  add_subdirectory(datablocks)
-  add_subdirectory(module)
-  add_subdirectory(oscillograms)
-  add_subdirectory(startup)
-  add_subdirectory(widgets)
-  add_subdirectory(dialogs)
-  add_subdirectory(tune)
-  add_subdirectory(models)
-  add_subdirectory(xml)
-  add_subdirectory(journals)
-  # Step 2: Build tests
-  if (BUILD_TESTS)
-    add_subdirectory(tests)
-  endif()
+include(gen)
+include(qcustomplot)
+include(limereport)
+include(qxlsx)
+add_subdirectory(comaversion)
+add_subdirectory(comaresources)
+add_subdirectory(s2)
+add_subdirectory(interfaces)
+add_subdirectory(datablocks)
+add_subdirectory(module)
+add_subdirectory(oscillograms)
+add_subdirectory(startup)
+add_subdirectory(widgets)
+add_subdirectory(dialogs)
+add_subdirectory(tune)
+add_subdirectory(models)
+add_subdirectory(xml)
+add_subdirectory(journals)
+add_subdirectory(coma_core)
+# Step 2: Build tests
+if(BUILD_TESTS)
+  add_subdirectory(tests)
 endif()
 # Step 3: Build executable targets
-if (BUILD_AVM_DEBUG)
-  add_subdirectory(AVM-Debug)
-endif()
-if (BUILD_AVM_SERVICE)
-  add_subdirectory(AVM-Service)
-endif()
-# Step 4: Build Alise dependencies and executable target
-if (BUILD_WITH_ALISE)
-  # Protobuf settings
-  set(PROTOS_GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/protos/protos)
-  add_subdirectory(protos)
-  # Build details for AVTUK-14
-  #if (AVTUK-14 AND NOT BUILD_AVM_DEBUG AND NOT BUILD_AVM_SERVICE)
-  #  add_subdirectory(interfaces)
-  #endif()
-  add_subdirectory(alise)
+add_subdirectory(AVM-Debug)
+add_subdirectory(AVM-Service)
+
+# Linux deploy with cpack
+if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
+  include(LinuxDeploy)
 endif()
 
 # Running PVS Studio static analyzer

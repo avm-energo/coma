@@ -9,9 +9,9 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 
-UWidget::UWidget(QWidget *parent) : QWidget(parent)
+UWidget::UWidget(QWidget *parent)
+    : QWidget(parent), m_conn(Connection::iface()), m_dataUpdater(new ModuleDataUpdater(m_conn))
 {
-    m_dataUpdater = new ModuleDataUpdater(BaseInterface::iface());
     // Отключим обновление виджета по умолчанию
     m_dataUpdater->setUpdatesEnabled(false);
     connect(m_dataUpdater, &ModuleDataUpdater::itsTimeToUpdateSinglePointSignal, this, &UWidget::updateSPData);

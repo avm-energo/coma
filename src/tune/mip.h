@@ -1,11 +1,11 @@
 #ifndef MIP_H
 #define MIP_H
 
-#include "../interfaces/iec104.h"
 #include "../module/modules.h"
 #include "../widgets/udialog.h"
 
 #include <gen/stdfunc.h>
+//#include <interfaces/conn/iec104.h>
 
 class Mip : public QObject
 {
@@ -46,7 +46,7 @@ public:
     MipDataStruct takeOneMeasurement(float i2nom);
 
 private:
-    IEC104 *m_device;
+    // IEC104 *m_device;
     MipDataStruct m_mipData;
     MType m_moduleType;
     float iNom;

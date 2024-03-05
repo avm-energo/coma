@@ -15,11 +15,11 @@ private:
     /// \brief Returns groups number from all sections.
     int getGroupsCount(const ModuleTypes::SectionList &list);
     /// \brief Returns widgets number from all sections.
-    int getWidgetsCount(const ModuleTypes::SectionList &list);
+    std::size_t getWidgetsCount(const ModuleTypes::SectionList &list);
     /// \brief Returns alarms number from alarm map (list with all alarm types).
     int getAlarmsCount(const ModuleTypes::AlarmMap &map);
 
-    void createInterfaceContext(const Board::InterfaceType &ifaceType);
+    void createInterfaceContext(const Interface::IfaceType &ifaceType);
 
 public:
     explicit TestModule(QObject *parent = nullptr);

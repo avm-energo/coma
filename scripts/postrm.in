@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Folders for XML configuration files
+xml_config_path=$HOME/.local/share/@PROJECT_NAME@
+
+# Remove folder for XML configuration files
+if [ -d "$xml_config_path" ]; then
+  rm -rf "$xml_config_path"
+fi

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="22" mtypeb="00">
+<module mtypeb="00" mtypem="22">
     <name>AVTUK-0022</name>
     <resources>
         <alarms desc="Сигнализация">
@@ -137,7 +137,7 @@
                 </item>
             </warning>
         </alarms>
-        <config desc="Конфигурация">
+        <config desc="Конфигурация мезонин">
             <record>
                 <id>321</id>
                 <defaultValue>1.385,1.385,1.385,1.385,1.385,1.385,1.385,1.385</defaultValue>
@@ -231,15 +231,15 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные мезонин">
-                <sgroup tab="10" header="Текущее значение по каналу, °C">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Текущее значение по каналу, °C" tab="10">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>4501</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение температуры по каналу %1</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="10" header="Текущее значение по каналу, Ом">
-                    <mwidget view="float" desc="Канал №%1">
+                <sgroup header="Текущее значение по каналу, Ом" tab="10">
+                    <mwidget desc="Канал №%1" view="float">
                         <start-addr>4509</start-addr>
                         <count>8</count>
                         <toolTip>Текущее значение сопротивления по каналу %1</toolTip>

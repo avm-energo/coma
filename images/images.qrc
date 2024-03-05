@@ -1,0 +1,95 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- Common icons start -->
+        <file>icons/tnapprove.svg</file>
+        <file>icons/tnemul.svg</file>
+        <file>icons/tnfrosya.svg</file>
+        <file>icons/tnload.svg</file>
+        <file>icons/tnno.svg</file>
+        <file>icons/tnosc.svg</file>
+        <file>icons/tnread.svg</file>
+        <file>icons/tnreset.svg</file>
+        <file>icons/tnsave.svg</file>
+        <file>icons/tnsettings.svg</file>
+        <file>icons/tnstart.svg</file>
+        <file>icons/tnstop.svg</file>
+        <file>icons/tnwrite.svg</file>
+        <file>icons/tnyes.svg</file>
+        <file>icons/pswshow.png</file>
+        <!--  Common icons end  -->
+        <!-- XML Editor icons start -->
+        <file>icons/createModule.svg</file>
+        <file>icons/deleteModule.svg</file>
+        <file>icons/editModule.svg</file>
+        <!--  XML Editor icons end  -->
+        <!-- Interfaces icons start -->
+        <file>icons/ethernet.svg</file>
+        <file>icons/rs485.svg</file>
+        <file>icons/usb.svg</file>
+        <!--  Interfaces icons end  -->
+        <!-- MessageBox icons start -->
+        <file>icons/err-hex.svg</file>
+        <file>icons/info-hex.svg</file>
+        <file>icons/next-hex.svg</file>
+        <file>icons/ordinary-hex.svg</file>
+        <file>icons/psw-hex.svg</file>
+        <file>icons/question-hex.svg</file>
+        <!--  MessageBox icons end  -->
+        <!-- Other icons start -->
+        <file>icons/avm-energo.svg</file>
+        <file>icons/coma.ico</file>
+        <file>icons/coma.svg</file>
+        <file>icons/excel.svg</file>
+        <file>icons/osc.svg</file>
+        <file>icons/resize.svg</file>
+        <!-- Other icons end -->
+    </qresource>
+    <qresource prefix="/">
+        <file>tunes/cross.png</file>
+        <file>tunes/hr.png</file>
+        <file>tunes/ok.png</file>
+        <file>tunes/tn1.svg</file>
+        <file>tunes/tn2.svg</file>
+        <file>tunes/tn3.svg</file>
+        <file>tunes/tn4.svg</file>
+        <file>tunes/tn5.svg</file>
+        <file>tunes/tn6.svg</file>
+        <file>tunes/tn7.svg</file>
+        <file>tunes/tn8.svg</file>
+        <file>tunes/tn9.svg</file>
+        <file>tunes/tnprotocol.svg</file>
+        <file>tunes/tune21.png</file>
+        <file>tunes/tune22.png</file>
+        <file>tunes/tune81.png</file>
+        <file>tunes/tune82.png</file>
+        <file>tunes/tune83.png</file>
+        <file>tunes/tunea1.png</file>
+        <file>tunes/tunekiv.png</file>
+        <file>tunes/tunekiv1.png</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>BM.svg</file>
+        <file>BMn.svg</file>
+        <file>BnM.svg</file>
+        <file>BnMn.svg</file>
+        <file>pkdn.svg</file>
+        <file>surgery.png</file>
+        <file>Koma.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>emulator/00.png</file>
+        <file>emulator/2x.png</file>
+        <file>emulator/3x.png</file>
+        <file>emulator/8x.png</file>
+        <file>emulator/21.png</file>
+        <file>emulator/22.png</file>
+        <file>emulator/31.png</file>
+        <file>emulator/35.png</file>
+        <file>emulator/81.png</file>
+        <file>emulator/82.png</file>
+        <file>emulator/83.png</file>
+        <file>emulator/84.png</file>
+        <file>emulator/85.png</file>
+        <file>emulator/a1.png</file>
+    </qresource>
+</RCC>

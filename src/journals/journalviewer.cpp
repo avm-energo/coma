@@ -1,6 +1,6 @@
 #include "journalviewer.h"
 
-#include "../s2/s2util.h"
+#include <s2/s2util.h>
 //#include "../widgets/epopup.h"
 #include "../xml/xmlparser/xmlmoduleparser.h"
 #include "measjournal.h"
@@ -104,7 +104,7 @@ void JournalViewer::workDataReceived(const quint32 id, const QString &desc)
 void JournalViewer::measDataReceived(const quint32 index, const QString &header, //
     const ModuleTypes::BinaryType type, bool visib)
 {
-    measSettings.append({ index, header, type, visib });
+    measSettings.push_back({ index, header, type, visib });
 }
 
 void JournalViewer::setupUI(const S2::S2BFile &file)

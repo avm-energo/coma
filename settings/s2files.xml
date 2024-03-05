@@ -3855,7 +3855,7 @@
 			<string>Константа расчета расхода ресурса А</string>
 			<min>0</min>
 			<max>10000</max>
-			<decimals>0</decimals>
+			<decimals>3</decimals>
 		</widget>
 	</record>
 	<record>
@@ -3869,7 +3869,7 @@
 			<string>Константа расчета расхода ресурса a</string>
 			<min>0</min>
 			<max>10000</max>
-			<decimals>0</decimals>
+			<decimals>3</decimals>
 		</widget>
 	</record>
 	<record>
@@ -3883,7 +3883,7 @@
 			<string>Константа расчета расхода ресурса n</string>
 			<min>0</min>
 			<max>10000</max>
-			<decimals>0</decimals>
+			<decimals>3</decimals>
 		</widget>
 	</record>
 	<record>
@@ -3897,7 +3897,7 @@
 			<string>Константа расчета расхода ресурса b</string>
 			<min>0</min>
 			<max>10000</max>
-			<decimals>0</decimals>
+			<decimals>3</decimals>
 		</widget>
 	</record>
 	<record>
@@ -3911,7 +3911,7 @@
 			<string>Константа расчета расхода ресурса N</string>
 			<min>0</min>
 			<max>10000</max>
-			<decimals>0</decimals>
+			<decimals>3</decimals>
 		</widget>
 	</record>
 	<record>

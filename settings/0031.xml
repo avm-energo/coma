@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="31" mtypeb="00">
+<module mtypeb="00" mtypem="31">
     <name>AVTUK-0031</name>
     <resources>
         <alarms desc="Сигнализация">
@@ -7,12 +7,12 @@
             <warning desc="Предупреждения"/>
             <info desc="Информационные"/>
         </alarms>
-        <config desc="Конфигурация">
+        <config desc="Конфигурация мезонин">
             <record>
                 <id>231</id>
                 <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
                 <count>11</count>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>232</id>
@@ -27,8 +27,8 @@
             <record>
                 <id>235</id>
                 <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
                 <count>11</count>
+                <visibility>true</visibility>
             </record>
             <record>
                 <id>236</id>
@@ -75,7 +75,7 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные мезонин">
-                <sgroup tab="101" header="Текущее состояние входов">
+                <sgroup header="Текущее состояние входов" tab="101">
                     <mwidget desc="" view="bitset">
                         <start-addr>3002</start-addr>
                         <count>11</count>

@@ -1,6 +1,5 @@
 #include "tune85adc.h"
 
-#include "../../interfaces/baseinterface.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -10,6 +9,7 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
+#include <interfaces/connection.h>
 
 using namespace Interface;
 
@@ -64,7 +64,7 @@ Error::Msg Tune85ADC::showPreWarning()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
+    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
@@ -110,7 +110,7 @@ Error::Msg Tune85ADC::checkTuneCoefs()
 
 Error::Msg Tune85ADC::setSMode2()
 {
-    BaseInterface::iface()->writeCommand(Commands::C_SetMode, 0x02);
+    Connection::iface()->writeCommand(Commands::C_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 
@@ -245,7 +245,7 @@ Error::Msg Tune85ADC::setADCCoef(int coef)
     const auto adcCoef = adcCoefMap.value(coef);
     config.setRecord("C_Pasp_ID", S2::FLOAT_3t { adcCoef, adcCoef, adcCoef });
     const auto s2file = config.toByteArray();
-    return BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+    return Connection::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
 }
 
 Error::Msg Tune85ADC::showRetomDialog(int coef)

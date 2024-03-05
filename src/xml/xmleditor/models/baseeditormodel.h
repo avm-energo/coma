@@ -3,10 +3,8 @@
 #include <QStandardItemModel>
 #include <QtXml>
 
-namespace tags
-{
 /// \brief Enumeration for saving type of submodule.
-enum NodeTypes : quint16
+enum class ModelType : quint16
 {
     None = 0,
     Master,
@@ -28,8 +26,6 @@ enum NodeTypes : quint16
     IEC60870,
     Config
 };
-}
-using ModelType = tags::NodeTypes;
 
 /// \brief Base class for models that used in XML editor.
 class BaseEditorModel : public QStandardItemModel

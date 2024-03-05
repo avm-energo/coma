@@ -9,6 +9,7 @@
 #include "xmlmodbusdialog.h"
 #include "xmlmwidgetdialog.h"
 #include "xmlprotocomdialog.h"
+#include "xmlresdialog.h"
 #include "xmlsectiondialog.h"
 #include "xmlsgroupdialog.h"
 #include "xmlsignaldialog.h"
@@ -73,6 +74,12 @@ void XmlDialogFabric::CreateOrEditDialog(BaseEditorModel *model, int row, QWidge
         case ModelType::SGroup:
             dialog = new XmlMWidgetDialog(parent);
             break;
+        case ModelType::Resources:
+            if (row == createId)
+                EMessageBox::warning(parent, "В данном разделе запрещено создание новых элементов");
+            else
+                dialog = new XmlResDialog(parent);
+            break;
         default:
             if (row == createId)
                 EMessageBox::warning(parent, "В данном разделе запрещено создание новых элементов");
@@ -112,7 +119,7 @@ void XmlDialogFabric::RemoveOrEditDialog(BaseEditorModel *model, QModelIndexList
                     EMessageBox::warning(parent, "Выбран недопустимый элемент");
                 else
                 {
-                    if (EMessageBox::question("Удалить выбранный элемент?"))
+                    if (EMessageBox::question(parent, "Удалить выбранный элемент?"))
                         model->remove(row);
                     /*
                     auto resBtn = QMessageBox::question(parent, "Удаление", "Удалить выбранный элемент?",

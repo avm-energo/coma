@@ -16,8 +16,8 @@ PasswordLineEdit::PasswordLineEdit(QLineEdit::EchoMode echostyle, QWidget *paren
     // le->setText("");
     hlyout->addWidget(le, 10);
     QPushButton *pb = new QPushButton(parent);
-    pb->setIcon(QIcon("images/pswshow.png"));
-    QObject::connect(pb, &QAbstractButton::clicked, [=] {
+    pb->setIcon(QIcon(":/icons/pswshow.png"));
+    QObject::connect(pb, &QAbstractButton::clicked, le, [=] {
         if (le->echoMode() == QLineEdit::Normal)
             le->setEchoMode(QLineEdit::Password);
         else

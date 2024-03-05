@@ -1,16 +1,16 @@
 #include "testmodule.h"
 
-#include "../../interfaces/iec104.h"
-#include "../../interfaces/modbus.h"
-#include "../../interfaces/modbusprivate.h"
-#include "../../interfaces/protocom.h"
-#include "../../interfaces/protocomprivate.h"
 #include "../../module/board.h"
-#include "../../s2/s2datamanager.h"
 #include "testdata.h"
 
 #include <QtXml>
 #include <gen/stdfunc.h>
+//#include <interfaces/conn/iec104.h>
+//#include <interfaces/conn/modbus.h>
+//#include <interfaces/conn/protocom.h>
+#include <interfaces/types/modbus_types.h>
+#include <interfaces/types/protocom_types.h>
+#include <s2/s2datamanager.h>
 
 TestModule::TestModule(QObject *parent)
     : QObject(parent), storage(ConfigStorage::GetInstance()), s2Manager(new S2::DataManager(this))
@@ -27,19 +27,19 @@ int TestModule::getGroupsCount(const ModuleTypes::SectionList &list)
     return groupCount;                                               //
 }
 
-int TestModule::getWidgetsCount(const ModuleTypes::SectionList &list)
+std::size_t TestModule::getWidgetsCount(const ModuleTypes::SectionList &list)
 {
-    auto widgetCount = std::accumulate(list.cbegin(), list.cend(), 0,      //
-        [](int value, const ModuleTypes::Section &section)                 //
-        {                                                                  //
-            const auto &map = section.sgMap;                               //
-            auto innerCount = std::accumulate(map.cbegin(), map.cend(), 0, //
-                [](int inner, auto &&group) {                              //
-                    return inner + group.widgets.count();                  //
-                });                                                        //
-            return value + innerCount;                                     //
-        });                                                                //
-    return widgetCount;                                                    //
+    auto widgetCount = std::accumulate(list.cbegin(), list.cend(), 0ll,      //
+        [](std::size_t value, const ModuleTypes::Section &section)           //
+        {                                                                    //
+            const auto &map = section.sgMap;                                 //
+            auto innerCount = std::accumulate(map.cbegin(), map.cend(), 0ll, //
+                [](std::size_t inner, auto &&group) {                        //
+                    return inner + group.widgets.size();                     //
+                });                                                          //
+            return value + innerCount;                                       //
+        });                                                                  //
+    return widgetCount;                                                      //
 }
 
 int TestModule::getAlarmsCount(const ModuleTypes::AlarmMap &map)
@@ -52,26 +52,27 @@ int TestModule::getAlarmsCount(const ModuleTypes::AlarmMap &map)
     return alarmCount;                                             //
 }
 
-void TestModule::createInterfaceContext(const Board::InterfaceType &ifaceType)
+void TestModule::createInterfaceContext(const Interface::IfaceType &ifaceType)
 {
-    BaseInterface::InterfacePointer device;
-    switch (ifaceType)
-    {
-    case Board::InterfaceType::USB:
-        device = BaseInterface::InterfacePointer(new Protocom());
-        break;
-    case Board::InterfaceType::Ethernet:
-        device = BaseInterface::InterfacePointer(new IEC104());
-        break;
-    case Board::InterfaceType::RS485:
-        device = BaseInterface::InterfacePointer(new ModBus());
-        break;
-    default:
-        device = nullptr;
-        break;
-    }
-    BaseInterface::setIface(std::move(device));
-    Board::GetInstance().setInterfaceType(ifaceType);
+    //    Connection::InterfacePointer device;
+    //    switch (ifaceType)
+    //    {
+    //    case Interface::IfaceType::USB:
+    //        device = Connection::InterfacePointer(new Protocom());
+    //        break;
+    //    case Interface::IfaceType::Ethernet:
+    //        device = Connection::InterfacePointer(new IEC104());
+    //        break;
+    //    case Interface::IfaceType::RS485:
+    //        device = Connection::InterfacePointer(new ModBus());
+    //        break;
+    //    default:
+    //        device = nullptr;
+    //        break;
+    //    }
+    //    Connection::setIface(std::move(device));
+    //    Board::GetInstance().setInterfaceType(ifaceType);
+    Q_UNUSED(ifaceType);
 }
 
 void TestModule::initTestCase()
@@ -117,7 +118,7 @@ void TestModule::checkA284()
 void TestModule::checkA284USB()
 {
     // Interface settings
-    createInterfaceContext(Board::InterfaceType::USB);
+    createInterfaceContext(Interface::IfaceType::USB);
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings(storage, *s2Manager));
@@ -125,8 +126,8 @@ void TestModule::checkA284USB()
 
 void TestModule::checkA284Eth()
 {
-    createInterfaceContext(Board::InterfaceType::Ethernet);
-    Board::GetInstance().setInterfaceType(Board::InterfaceType::Ethernet);
+    createInterfaceContext(Interface::IfaceType::Ethernet);
+    Board::GetInstance().setInterfaceType(Interface::IfaceType::Ethernet);
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings(storage, *s2Manager));
@@ -134,8 +135,8 @@ void TestModule::checkA284Eth()
 
 void TestModule::checkA284Modbus()
 {
-    createInterfaceContext(Board::InterfaceType::RS485);
-    Board::GetInstance().setInterfaceType(Board::InterfaceType::RS485);
+    createInterfaceContext(Interface::IfaceType::RS485);
+    Board::GetInstance().setInterfaceType(Interface::IfaceType::RS485);
     Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
     auto module = new Module(false, bsi, this);
     QVERIFY(module->loadSettings(storage, *s2Manager));

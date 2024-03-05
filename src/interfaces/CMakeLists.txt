@@ -2,67 +2,77 @@ cmake_minimum_required(VERSION 3.14)
 
 project(interfaces LANGUAGES CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Network SerialPort
   REQUIRED)
 
-#file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp EXCLUDE ethernet.cpp)
-#file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h EXCLUDE ethernet.h)
+set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/interfaces")
+set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 set(files_h
-    baseinterface.h
-    baseinterfacethread.h
-    baseport.h
-    emulator.h
-    ethernet.h
-    iec104.h
-    iec104private.h
-    iec104thread.h
-    interfacesettings.h
-    modbus.h
-    modbusprivate.h
-    modbusthread.h
-    moduledataupdater.h
-    protocom.h
-    protocomprivate.h
-    protocomthread.h
-    serialport.h
-    settingstypes.h
-    usbhidport.h
-    usbhidportinfo.h
-    usbhidsettings.h
+    "${INCLUDE_PATH}/connection.h"
+    "${INCLUDE_PATH}/connectioncontext.h"
+    "${INCLUDE_PATH}/connectionmanager.h"
+    "${INCLUDE_PATH}/device_query_executor.h"
+    "${INCLUDE_PATH}/moduledataupdater.h"
+    "${INCLUDE_PATH}/query_executor_fabric.h"
+    "${INCLUDE_PATH}/ifaces/baseinterface.h"
+    "${INCLUDE_PATH}/ifaces/serialport.h"
+    "${INCLUDE_PATH}/ifaces/usbhidport.h"
+    "${INCLUDE_PATH}/parsers/base_request_parser.h"
+    "${INCLUDE_PATH}/parsers/base_response_parser.h"
+    "${INCLUDE_PATH}/parsers/modbus_request_parser.h"
+    "${INCLUDE_PATH}/parsers/modbus_response_parser.h"
+    "${INCLUDE_PATH}/parsers/protocom_request_parser.h"
+    "${INCLUDE_PATH}/parsers/protocom_response_parser.h"
+    "${INCLUDE_PATH}/types/common_types.h"
+    "${INCLUDE_PATH}/types/iec104_types.h"
+    "${INCLUDE_PATH}/types/interfacesettings.h"
+    "${INCLUDE_PATH}/types/modbus_types.h"
+    "${INCLUDE_PATH}/types/protocom_types.h"
+    "${INCLUDE_PATH}/types/settingstypes.h"
+    "${INCLUDE_PATH}/types/usbhidportinfo.h"
+    "${INCLUDE_PATH}/types/usbhidsettings.h"
+    "${INCLUDE_PATH}/utils/device_watcher.h"
+    "${INCLUDE_PATH}/utils/request_queue.h"
+    "${INCLUDE_PATH}/utils/slot_trait.h"
 )
 
 set(files_cpp
-    baseinterface.cpp
-    baseinterfacethread.cpp
-    baseport.cpp
-    emulator.cpp
-    ethernet.cpp
-    iec104.cpp
-    iec104thread.cpp
-    modbus.cpp
-    modbusprivate.cpp
-    modbusthread.cpp
-    moduledataupdater.cpp
-    protocom.cpp
-    protocomthread.cpp
-    serialport.cpp
-    usbhidport.cpp
-    usbhidportinfo.cpp
-    usbhidsettings.cpp
+    "${SRC_PATH}/connection.cpp"
+    "${SRC_PATH}/connectioncontext.cpp"
+    "${SRC_PATH}/connectionmanager.cpp"
+    "${SRC_PATH}/device_query_executor.cpp"
+    "${SRC_PATH}/moduledataupdater.cpp"
+    "${SRC_PATH}/query_executor_fabric.cpp"
+    "${SRC_PATH}/ifaces/baseinterface.cpp"
+    "${SRC_PATH}/ifaces/serialport.cpp"
+    "${SRC_PATH}/ifaces/usbhidport.cpp"
+    "${SRC_PATH}/parsers/base_request_parser.cpp"
+    "${SRC_PATH}/parsers/base_response_parser.cpp"
+    "${SRC_PATH}/parsers/modbus_request_parser.cpp"
+    "${SRC_PATH}/parsers/modbus_response_parser.cpp"
+    "${SRC_PATH}/parsers/protocom_request_parser.cpp"
+    "${SRC_PATH}/parsers/protocom_response_parser.cpp"
+    "${SRC_PATH}/types/usbhidportinfo.cpp"
+    "${SRC_PATH}/types/usbhidsettings.cpp"
+    "${SRC_PATH}/utils/device_watcher.cpp"
+    "${SRC_PATH}/utils/request_queue.cpp"
 )
 
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+# Including directories for library
+target_include_directories(${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+
+target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::SerialPort
+  Qt${QT_VERSION_MAJOR}::Widgets
   s2
-  PUBLIC gen
 )
 
 if(UNIX)
@@ -72,7 +82,6 @@ if(WIN32)
   find_package(hidapi REQUIRED)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi::hidapi)
 endif()
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
 
-message(STATUS "Interfaces import dirs" "${hidapi_LIB_DIRS}/../bin")
+message(STATUS "Interfaces import dirs: ${hidapi_LIB_DIRS}/../bin")
 install(CODE "set(hidapi_BIN_DIRS \"${hidapi_LIB_DIRS}/../bin\")")

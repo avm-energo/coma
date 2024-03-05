@@ -1,6 +1,5 @@
 #include "fwuploaddialog.h"
 
-#include "../s2/s2util.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -9,6 +8,7 @@
 #include <gen/error.h>
 #include <gen/files.h>
 #include <map>
+#include <s2/s2util.h>
 
 namespace crypto
 {
@@ -70,30 +70,29 @@ void FWUploadDialog::loadFirmware()
         return;
     }
 
-    auto fileType = std_ext::to_underlying(S2::FilesEnum::Firmware);
+    constexpr auto fileType = std_ext::to_underlying(S2::FilesEnum::Firmware);
     QByteArray firmware;
     S2Util::StoreDataMem(firmware, s2array, fileType);
     if (firmware.isEmpty())
     {
         qCritical() << Error::SizeError;
-        EMessageBox::error(this, "Получен некорректный размер файла.");
+        EMessageBox::error(this, "Получен файл с некорректным размером.");
         return;
     }
-    BaseInterface::iface()->writeFile(fileType, firmware);
+    Connection::iface()->writeFirmware(firmware);
     uploadStatus = FirmwareUploadStatus::Written;
 }
 
-void FWUploadDialog::updateGeneralResponse(const QVariant &msg)
+void FWUploadDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
 {
     if (!updatesEnabled())
         return;
 
-    auto response = msg.value<DataTypes::GeneralResponseStruct>();
     if (response.type == DataTypes::GeneralResponseTypes::Ok)
     {
         if (uploadStatus == FirmwareUploadStatus::Written)
         {
-            BaseInterface::iface()->writeCommand(Commands::C_StartFirmwareUpgrade);
+            Connection::iface()->writeCommand(Commands::C_StartFirmwareUpgrade);
             uploadStatus = FirmwareUploadStatus::Upgraded;
         }
         else if (uploadStatus == FirmwareUploadStatus::Upgraded)

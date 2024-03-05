@@ -1,6 +1,5 @@
 #include "hiddendialog.h"
 
-#include "../interfaces/baseinterface.h"
 #include "../module/board.h"
 #include "../module/modules.h"
 #include "../widgets/wd_func.h"
@@ -19,6 +18,7 @@
 #include <QtSvg/QSvgRenderer>
 #include <gen/datatypes.h>
 #include <gen/error.h>
+#include <interfaces/connection.h>
 
 namespace crypto
 {
@@ -53,25 +53,25 @@ HiddenDialog::HiddenDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name
 
     m_withMezzanine = false;
     if (m_bhb.BoardBBhb.MType == 0xA1)
-        m_BGImage = ":/icons/pkdn.svg";
+        m_BGImage = ":/images/pkdn.svg";
     else
     {
         switch (m_type)
         {
         case BYMY:
-            m_BGImage = ":/icons/BM.svg";
+            m_BGImage = ":/images/BM.svg";
             m_withMezzanine = true;
             break;
         case BNMY:
-            m_BGImage = ":/icons/BnM.svg";
+            m_BGImage = ":/images/BnM.svg";
             m_type = BYMY;
             m_withMezzanine = true;
             break;
         case BYMN:
-            m_BGImage = ":/icons/BMn.svg";
+            m_BGImage = ":/images/BMn.svg";
             break;
         case BNMN:
-            m_BGImage = ":/icons/BnMn.svg";
+            m_BGImage = ":/images/BnMn.svg";
             m_type = BYMN;
             break;
         default:
@@ -284,7 +284,7 @@ void HiddenDialog::sendBhb()
 
     auto buffer = QByteArray::fromRawData(static_cast<char *>(ptr), size);
     DataTypes::HardwareStruct block { static_cast<quint32>(m_type), buffer };
-    BaseInterface::iface()->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(block));
+    Connection::iface()->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(block));
 }
 
 void HiddenDialog::updateMode(bool status)

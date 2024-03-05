@@ -14,14 +14,18 @@ class ModuleAlarm : public BaseAlarm
 {
     Q_OBJECT
 private:
-    static const QHash<Modules::AlarmType, QColor> colors;
-    const ModuleTypes::AlarmValue mAlarms;
-    UniquePointer<DataTypesProxy> mProxy;
-    QList<QPair<QLabel *, bool>> labelStateStorage;
+    static const std::map<Modules::AlarmType, QColor> s_colors;
+    const ModuleTypes::AlarmValue m_alarms;
+    QList<QPair<QLabel *, bool>> m_labelStateStorage;
 
+    /// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
     virtual void setupUI(const QStringList &events) override;
+    /// \brief Folowing the data: search a signal group whose range
+    /// includes the address of the first alarm from the list.
     void followToData();
+    /// \brief Check if all pixmap labels inactive.
     bool isAllPixmapInactive() const;
+    /// \brief Update a indicator (pixmap) for alarms displaying.
     void updatePixmap(const bool &isSet, const quint32 &position);
 
 public:
@@ -29,5 +33,6 @@ public:
         const ModuleTypes::AlarmValue &alarms, QWidget *parent = nullptr);
 
 public slots:
-    void update(const QVariant &msg);
+    /// \brief This slot called when a SinglePoint data is received from the device.
+    void update(const DataTypes::SinglePointWithTimeStruct &sp);
 };

@@ -7,36 +7,25 @@
 
 #include <gen/datatypes.h>
 #include <gen/singleton.h>
+#include <interfaces/types/common_types.h>
 
 class Board : public QObject, public Singleton<Board>
 {
     Q_OBJECT
 
 public:
-    enum DeviceType
-    {
-        Controller,
-        Module
-    };
+    //    enum DeviceType
+    //    {
+    //        Controller,
+    //        Module
+    //    };
 
-    enum Range
-    {
-        High,
-        Mid,
-        Low
-    };
-
-    /**
-     *  Перечисление для хранения списка интерфейсов
-     */
-    enum InterfaceType
-    {
-        Unknown,
-        USB,
-        Ethernet,
-        RS485,
-        Emulator
-    };
+    //    enum Range
+    //    {
+    //        High,
+    //        Mid,
+    //        Low
+    //    };
 
     // TODO: Здесь мог бы быть ваш рефакторинг ;)
     enum Types
@@ -58,27 +47,23 @@ public:
     {
         Connected,
         Closed,
-        AboutToFinish
+        TryToReconnect
     };
 
-    Q_ENUM(DeviceType)
-    Q_ENUM(InterfaceType)
+    // Q_ENUM(DeviceType)
     Q_ENUM(Types)
     Q_ENUM(ConnectionState)
 
-    Q_PROPERTY(InterfaceType interface READ interfaceType WRITE setInterfaceType NOTIFY interfaceTypeChanged)
-    Q_PROPERTY(DeviceType device READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
+    Q_PROPERTY(Interface::IfaceType interface READ interfaceType WRITE setInterfaceType NOTIFY interfaceTypeChanged)
+    // Q_PROPERTY(DeviceType device READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
     Q_PROPERTY(Types board READ boardType WRITE setBoardType NOTIFY boardTypeChanged)
     Q_PROPERTY(ConnectionState connection READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
 
     explicit Board(token);
 
     quint16 typeB() const;
-
     quint16 typeM() const;
-
     quint16 type() const;
-    quint16 type(Types type) const;
 
     bool isCrcValid() const
     {
@@ -90,11 +75,11 @@ public:
     quint32 serialNumber(Types type) const;
     QString UID() const;
 
-    InterfaceType interfaceType() const;
-    void setInterfaceType(InterfaceType iface);
+    Interface::IfaceType interfaceType() const;
+    void setInterfaceType(Interface::IfaceType iface);
 
-    DeviceType deviceType() const;
-    void setDeviceType(const DeviceType &deviceType);
+    // DeviceType deviceType() const;
+    // void setDeviceType(const DeviceType &deviceType);
 
     Types boardType() const;
     void setBoardType(const Types &boardType);
@@ -102,7 +87,7 @@ public:
     ConnectionState connectionState() const;
     void setConnectionState(ConnectionState connectionState);
 
-    void update(const QVariant &data);
+    void update(const DataTypes::BitStringStruct &bs);
     void reset();
 
     quint32 health() const;
@@ -123,8 +108,8 @@ public:
 
 private:
     static constexpr int StartupInfoBlockMembers = sizeof(Modules::StartupInfoBlock) / sizeof(quint32);
-    InterfaceType m_interfaceType;
-    DeviceType m_deviceType;
+    Interface::IfaceType m_interfaceType;
+    // DeviceType m_deviceType;
     Types m_boardType;
     ConnectionState m_connectionState;
 
@@ -133,23 +118,13 @@ private:
 
     void updateExt(const DataTypes::BitStringStruct &bs);
 
-    template <typename T> bool isSerialNumberSet(T value)
-    {
-        return value == 0xFFFFFFFF;
-    }
-
-    template <typename T, typename... Types> bool isSerialNumberSet(T value, Types... args)
-    {
-        return value || isSerialNumberSet(args...);
-    }
-
     int m_updateCounter = 0;
     int m_updateCounterExt = 0;
     bool m_updateType = false;
 
 signals:
-    void interfaceTypeChanged(Board::InterfaceType);
-    void deviceTypeChanged(Board::DeviceType);
+    void interfaceTypeChanged(Interface::IfaceType);
+    // void deviceTypeChanged(Board::DeviceType);
     void boardTypeChanged(Board::Types);
     void typeChanged();
     void typeChanged(quint16);

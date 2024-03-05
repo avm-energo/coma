@@ -17,7 +17,6 @@ public:
     JournalDialog(const ModuleSettings &settings, QWidget *parent = nullptr);
 
 private:
-    DataTypesProxy proxy;
     std::map<JournalType, JournalTabWidget *> journals;
 
     /// \brief Метод для создания объектов журналов по полученным настройкам.
@@ -32,7 +31,7 @@ private slots:
     /// \brief Слот для получения файла журнала от устройства.
     /// \details В зависимости от указанного типа журнала, пересылает
     /// журнал в формате S2B одной из вкладок.
-    void receivedJournalFile(const QVariant &jourData);
+    void receivedJournalFile(const S2::S2BFile &s2bFile);
 };
 
 }

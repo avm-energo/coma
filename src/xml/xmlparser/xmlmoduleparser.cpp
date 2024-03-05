@@ -218,21 +218,18 @@ void Xml::ModuleParser::parseMeasJournal(const QDomNode &jourNode)
 /// \brief Функция для парсинга конфигурации интерфейса, по которому подключен модуль.
 void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 {
-    Board::InterfaceType ifaceType = Board::GetInstance().interfaceType();
+    auto ifaceType = Board::GetInstance().interfaceType();
     switch (ifaceType)
     {
-    case Board::USB:
-    case Board::Emulator:
-        parseNode(resNode, tags::protocom,                                       //
-            [&](const QDomNode &protocolNode) { parseProtocom(protocolNode); }); // , ifaceSettings); });
+    case Interface::IfaceType::USB:
+    case Interface::IfaceType::Emulator:
+        parseNode(resNode, tags::protocom, [&](const QDomNode &protocolNode) { parseProtocom(protocolNode); });
         break;
-    case Board::RS485:
-        parseNode(resNode, tags::modbus,                                       //
-            [&](const QDomNode &protocolNode) { parseModbus(protocolNode); }); // , ifaceSettings); });
+    case Interface::IfaceType::RS485:
+        parseNode(resNode, tags::modbus, [&](const QDomNode &protocolNode) { parseModbus(protocolNode); });
         break;
-    case Board::Ethernet:
-        parseNode(resNode, tags::iec,                                       //
-            [&](const QDomNode &protocolNode) { parseIec(protocolNode); }); // , ifaceSettings); });
+    case Interface::IfaceType::Ethernet:
+        parseNode(resNode, tags::iec, [&](const QDomNode &protocolNode) { parseIec(protocolNode); });
         break;
     default:
         qCritical() << "Undefined interface type";
@@ -241,38 +238,38 @@ void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 }
 
 /// \brief Функция для парсинга узла <modbus>.
-void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode) //, ProtocolDescription &settings)
+void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode)
 {
     auto signalId = parseNumFromNode<quint32>(modbusNode, tags::sig_id);
     auto regType = parseNumFromNode<quint16>(modbusNode, tags::reg_type);
     if (signalId != 0)
     {
-        parseXChangeStruct str { Board::RS485, signalId, regType, QVariant() };
+        AbstractGroup str { Interface::IfaceType::RS485, signalId, regType, quint16() };
         emit protocolGroupSending(str);
     }
 }
 
 /// \brief Функция для парсинга узла <protocom>.
-void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode) //, ProtocolDescription &settings)
+void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode)
 {
     auto signalId = parseNumFromNode<quint32>(protocomNode, tags::sig_id);
     auto block = parseNumFromNode<quint16>(protocomNode, tags::block);
     if (signalId != 0)
     {
-        parseXChangeStruct str { Board::USB, signalId, block, QVariant() };
+        AbstractGroup str { Interface::IfaceType::USB, signalId, block, quint16() };
         emit protocolGroupSending(str);
     }
 }
 
 /// \brief Функция для парсинга узла <iec60870>.
-void Xml::ModuleParser::parseIec(const QDomNode &iecNode) //, ProtocolDescription &settings)
+void Xml::ModuleParser::parseIec(const QDomNode &iecNode)
 {
     auto signalId = parseNumFromNode<quint32>(iecNode, tags::sig_id);
     auto transType = parseNumFromNode<quint16>(iecNode, tags::trans_type);
     auto sigGroup = parseNumFromNode<quint16>(iecNode, tags::sig_group);
     if (signalId != 0)
     {
-        parseXChangeStruct str { Board::Ethernet, signalId, transType, sigGroup };
+        AbstractGroup str { Interface::IfaceType::Ethernet, signalId, transType, sigGroup };
         emit protocolGroupSending(str);
     }
 }
@@ -299,12 +296,16 @@ void Xml::ModuleParser::parseDetector(const QDomNode &node)
         callForEachChild(node, [this](const QDomNode &sTabNode) { parseSTab(sTabNode); });
     else if (tag == tags::sections)
         callForEachChild(node, [this](const QDomNode &sectionNode) { parseSection(sectionNode); });
-    else if (tag == tags::config)
-        callForEachChild(node, [this](const QDomNode &configNode) { parseConfig(configNode); });
     else if (tag == tags::alarms)
         parseAlarms(node);
     else if (tag == tags::journals)
         parseJournals(node);
+    else if (tag == tags::config)
+    {
+        auto desc = node.toElement().attribute(tags::desc);
+        emit configNameSending(desc);
+        callForEachChild(node, [this](const QDomNode &configNode) { parseConfig(configNode); });
+    }
     else
     {
         if (tag != tags::iec && tag != tags::modbus && tag != tags::protocom)

@@ -16,8 +16,7 @@ add_library(
   ${PROJECT_NAME} STATIC
   ${files_cpp} ${files_h})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-  gen QXlsx
+target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Widgets
-  PUBLIC qcustomplot)
+  gen s2 interfaces qcustomplot QXlsx)

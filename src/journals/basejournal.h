@@ -2,13 +2,13 @@
 
 #include "../models/edynamictablemodel.h"
 #include "../module/modulesettings.h"
-#include "../s2/filestruct.h"
 #include "../widgets/etableview.h"
 
 #include <QObject>
 #include <QSortFilterProxyModel>
 #include <QTimeZone>
 #include <gen/stdfunc.h>
+#include <s2/filestruct.h>
 
 namespace journals
 {

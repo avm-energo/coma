@@ -1,6 +1,6 @@
 #include "infodialog.h"
 
-// #include <gen/datamanager/datamanager.h>
+// #include <interfaces/utils/datamanager.h>
 #include "../module/board.h"
 #include "../widgets/wd_func.h"
 
@@ -16,10 +16,10 @@ InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
     connect(&Board::GetInstance(), &Board::readyRead, this, &InfoDialog::sync);
     connect(&Board::GetInstance(), &Board::readyReadExt, this, &InfoDialog::syncExt);
 
-    connect(this, &InfoDialog::fetchBsi, BaseInterface::iface(), &BaseInterface::reqBSI);
-    if (BaseInterface::iface()->supportBSIExt())
+    connect(this, &InfoDialog::fetchBsi, Connection::iface(), &Connection::reqBSI);
+    if (Connection::iface()->supportBSIExt())
     {
-        connect(this, &InfoDialog::fetchBsi, BaseInterface::iface(), &BaseInterface::reqBSIExt);
+        connect(this, &InfoDialog::fetchBsi, Connection::iface(), &Connection::reqBSIExt);
     }
     else
     {

@@ -10,25 +10,17 @@ class BaseAlarm : public UWidget
 {
     Q_OBJECT
 public:
-    explicit BaseAlarm(QWidget *parent = nullptr) : UWidget(parent), normalColor(Qt::transparent), alarmColor(Qt::red)
-    {
-    }
+    explicit BaseAlarm(QWidget *parent = nullptr);
 
     /// \brief Setter for the alarm color.
-    inline void setAlarmColor(const QColor &newAlarmColor)
-    {
-        alarmColor = newAlarmColor;
-    }
+    void setAlarmColor(const QColor &newAlarmColor) noexcept;
 
     /// \brief Setter for the normal color.
-    inline void setNormalColor(const QColor &newNormalColor)
-    {
-        normalColor = newNormalColor;
-    }
+    void setNormalColor(const QColor &newNormalColor) noexcept;
 
 protected:
-    QColor normalColor;
-    QColor alarmColor;
+    QColor m_normalColor;
+    QColor m_alarmColor;
 
     /// \details Pure virtual function for UI setup.
     virtual void setupUI(const QStringList &events) = 0;

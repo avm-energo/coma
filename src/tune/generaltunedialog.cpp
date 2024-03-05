@@ -34,10 +34,10 @@ void GeneralTuneDialog::SetupUI()
     {
         QString tns = "tn" + QString::number(count++);
         lyout->addWidget(WDFunc::NewHexagonPB(
-            this, tns, [&d]() { d.dialog->show(); }, ":/icons/" + tns + ".svg", d.caption));
+            this, tns, [&d]() { d.dialog->show(); }, ":/tunes/" + tns + ".svg", d.caption));
     }
     lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tnprotocol", [this]() { prepareReport(); }, ":/icons/tnprotocol.svg",
+        this, "tnprotocol", [this]() { prepareReport(); }, ":/tunes/tnprotocol.svg",
         "Генерация протокола регулировки"));
     lyout->addStretch(100);
     hlyout->addLayout(lyout);
@@ -114,7 +114,7 @@ void GeneralTuneDialog::setHexIcon(const QString &name, const QStringList &hexat
     if (pb)
     {
         // open svg resource load contents to qbytearray
-        QFile file("images/" + name + ".svg");
+        QFile file(":/tunes/" + name + ".svg");
         file.open(QIODevice::ReadOnly);
         QByteArray baData = file.readAll();
         // load svg contents to xml document and edit contents

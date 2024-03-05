@@ -1,6 +1,5 @@
 #include "tunekivtemp60.h"
 
-#include "../../interfaces/baseinterface.h"
 #include "../../module/board.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
@@ -13,6 +12,7 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
+#include <interfaces/connection.h>
 
 using namespace Interface;
 
@@ -64,7 +64,7 @@ Error::Msg TuneKIVTemp60::setNewConfAndTune()
     config.setRecord("C_Pasp_ID", S2::FLOAT_3t { 2250, 2250, 2250 });
     config.setRecord("Unom1", float(220));
     auto s2file = config.toByteArray();
-    auto status = BaseInterface::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+    auto status = Connection::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
     if (status != Error::Msg::NoError)
         return Error::Msg::GeneralError;
 
@@ -128,7 +128,7 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
+    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
@@ -156,7 +156,7 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
     if (!EMessageBox::next(this, w))
         CancelTune();
 
-    //    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
+    //    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
     //    lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых
     //    картинок;")); lyout->addWidget(WDFunc::NewLBL2(this,
     //        "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"

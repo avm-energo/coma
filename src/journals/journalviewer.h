@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../module/modulesettings.h"
-#include "../s2/s2datatypes.h"
 #include "basejournal.h"
 
 #include <QDialog>
+#include <s2/s2datatypes.h>
 
 namespace journals
 {

@@ -1,6 +1,5 @@
 #pragma once
 #include "../module/modules.h"
-#include "../s2/s2datatypes.h"
 #include "trendview/trendviewmodels.h"
 
 #include <QAbstractItemModel>
@@ -9,6 +8,7 @@
 #include <gen/datatypes.h>
 #include <gen/timefunc.h>
 #include <memory>
+#include <s2/s2datatypes.h>
 
 struct SwjModel
 {

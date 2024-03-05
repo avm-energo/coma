@@ -47,6 +47,11 @@ void SwjPackConvertor::writeHeader(QXlsx::Worksheet *sheet)
     const static QStringList header {
         "Дата и время",                                                 //
         "Переключение",                                                 //
+        "Тип коммутации",                                               //
+        "Результат переключения",                                       //
+        "Коммутируемые фазы",                                           //
+        "Напряжение питания цепей соленоидов, В",                       //
+        "Температура окружающей среды, Град",                           //
         "Действующее значение тока в момент коммутации ф. A, А",        //
         "Действующее значение тока в момент коммутации ф. B, А",        //
         "Действующее значение тока в момент коммутации ф. C, А",        //
@@ -93,25 +98,54 @@ void SwjPackConvertor::writeData(QXlsx::Worksheet *sheet)
     int row = 2;
     for (auto &item : m_data)
     {
+        bool ok = false;
         int column = 1;
         auto common = item.commonModel.get();
         auto detail = item.detailModel.get();
 
         auto dateStrList = common->data(common->index(1, 1)).toString().split(" ");
-        auto switchType = common->data(common->index(3, 1)).toString();
         dateStrList[0].replace("/", "-");
         dateStrList[1].replace(".", ",");
         auto dateStr = dateStrList.join(' ');
+        auto switchType = common->data(common->index(3, 1)).toString();
+        auto commutationType = common->data(common->index(4, 1)).toString();
+        auto switchResult = common->data(common->index(5, 1)).toString();
+        auto commutationPhases = common->data(common->index(6, 1)).toString();
+        auto solenoidVoltageStr = common->data(common->index(7, 1)).toString();
+        auto ambientTemperatureStr = common->data(common->index(8, 1)).toString();
+
         sheet->writeString(QXlsx::CellReference { row, column++ }, dateStr);
         sheet->writeString(QXlsx::CellReference { row, column++ }, switchType);
+        sheet->writeString(QXlsx::CellReference { row, column++ }, commutationType);
+        sheet->writeString(QXlsx::CellReference { row, column++ }, switchResult);
+        sheet->writeString(QXlsx::CellReference { row, column++ }, commutationPhases);
 
-        for (int indexRow = 1; indexRow < 32; indexRow++)
+        auto solenoidVoltage = solenoidVoltageStr.toDouble(&ok);
+        if (ok)
+            sheet->writeNumeric(QXlsx::CellReference { row, column++ }, solenoidVoltage);
+        else
+            sheet->writeString(QXlsx::CellReference { row, column++ }, solenoidVoltageStr);
+
+        auto ambientTemperature = ambientTemperatureStr.toDouble(&ok);
+        if (ok)
+            sheet->writeNumeric(QXlsx::CellReference { row, column++ }, ambientTemperature);
+        else
+            sheet->writeString(QXlsx::CellReference { row, column++ }, ambientTemperatureStr);
+
+        for (int indexRow = 1; indexRow < 11; indexRow++)
         {
             for (int indexCol = 1; indexCol < 4; indexCol++)
             {
-                auto detailData = detail->data(detail->index(indexRow, indexCol)).toString();
-                detailData.replace(".", ",");
-                sheet->writeString(QXlsx::CellReference { row, column++ }, detailData);
+                auto index = detail->index(indexRow, indexCol);
+                if (index.isValid())
+                {
+                    auto detailDataStr = detail->data(index).toString();
+                    auto detailData = detailDataStr.toDouble(&ok);
+                    if (ok)
+                        sheet->writeNumeric(QXlsx::CellReference { row, column++ }, detailData);
+                    else
+                        sheet->writeString(QXlsx::CellReference { row, column++ }, detailDataStr);
+                }
             }
         }
 

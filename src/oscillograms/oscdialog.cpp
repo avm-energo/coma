@@ -2,15 +2,14 @@
 
 #include "../models/etablemodel.h"
 #include "../module/board.h"
-#include "../s2/s2util.h"
 #include "../widgets/etableview.h"
 #include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
 
-#include <gen/datamanager/typesproxy.h>
 #include <gen/datatypes.h>
 #include <gen/files.h>
 #include <gen/timefunc.h>
+#include <s2/s2util.h>
 
 namespace crypto
 {
@@ -18,15 +17,10 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char name[] = "oscHash";
 }
 
-OscDialog::OscDialog(QWidget *parent)
-    : UDialog(crypto::hash, crypto::name, parent)
-    , proxyOI(new DataTypesProxy(&DataManager::GetInstance()))
-    , proxyFS(new DataTypesProxy(&DataManager::GetInstance()))
+OscDialog::OscDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
-    proxyOI->RegisterType<S2::OscInfo>();
-    proxyFS->RegisterType<S2::FileStruct>();
-    connect(proxyOI.get(), &DataTypesProxy::DataStorable, this, &OscDialog::fillOscInfo);
-    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &OscDialog::fillOsc);
+    m_conn->connection(this, &OscDialog::fillOscInfo);
+    m_conn->connection(this, &OscDialog::fillOsc);
     setupUI();
 }
 
@@ -48,7 +42,7 @@ void OscDialog::setupUI()
         tableModel->setHorizontalHeaderLabels({ "#", "Дата/Время", "ИД", "Длина", "Скачать" });
 
         tv->setModel(tableModel.get());
-        BaseInterface::iface()->writeCommand(Commands::C_ReqOscInfo, 1);
+        Connection::iface()->writeCommand(Commands::C_ReqOscInfo, 1);
     });
 
     hlyout->addWidget(getButton);
@@ -81,14 +75,13 @@ void OscDialog::getOsc(const QModelIndex &idx)
         return;
     }
     if (!loadIfExist(size))
-        BaseInterface::iface()->reqFile(
-            reqOscNum, DataTypes::FileFormat::CustomS2, size + sizeof(S2::DataRecHeader));
+        Connection::iface()->reqFile(reqOscNum, DataTypes::FileFormat::CustomS2, size + sizeof(S2::DataRecHeader));
 }
 
 void OscDialog::eraseOsc()
 {
     if (checkPassword())
-        BaseInterface::iface()->writeCommand(Commands::C_EraseTechBlock, 1);
+        Connection::iface()->writeCommand(Commands::C_EraseTechBlock, 1);
 }
 
 QString OscDialog::filename(quint64 time, quint32 oscNum) const
@@ -131,8 +124,7 @@ bool OscDialog::loadIfExist(quint32 size)
             for (auto &&s2file : outlist)
             {
                 S2::FileStruct resp { S2::FilesEnum(s2file.ID), s2file.data };
-                auto mngr = &DataManager::GetInstance();
-                mngr->addSignalToOutList(resp);
+                fillOsc(resp);
             }
             return true;
         }
@@ -144,74 +136,63 @@ bool OscDialog::loadIfExist(quint32 size)
     return false;
 }
 
-// void OscDialog::fillOscInfo(S2::OscInfo info)
-void OscDialog::fillOscInfo(const QVariant &msg)
+void OscDialog::fillOscInfo(const S2::OscInfo &info)
 {
-    if (msg.canConvert<S2::OscInfo>())
-    {
-        auto info = msg.value<S2::OscInfo>();
-        oscMap.insert(info.typeHeader.id, info);
-        QVector<QVariant> lsl {
-            QString::number(info.typeHeader.id),         //
-            TimeFunc::UnixTime64ToString(info.unixtime), //
-            info.idOsc0,                                 //
-            info.typeHeader.numByte,                     //
-            "Скачать",
-        };
-
-        tableModel->addRowWithData(lsl);
-    }
+    oscMap.insert(info.typeHeader.id, info);
+    QVector<QVariant> lsl {
+        QString::number(info.typeHeader.id),         //
+        TimeFunc::UnixTime64ToString(info.unixtime), //
+        info.idOsc0,                                 //
+        info.typeHeader.numByte,                     //
+        "Скачать",
+    };
+    tableModel->addRowWithData(lsl);
 }
 
-// void OscDialog::fillOsc(const DataTypes::FileStruct file)
-void OscDialog::fillOsc(const QVariant &msg)
+void OscDialog::fillOsc(const S2::FileStruct &file)
 {
     if (!updatesEnabled())
         return;
 
-    if (msg.canConvert<S2::FileStruct>())
+    switch (file.ID)
     {
-        const auto file = msg.value<S2::FileStruct>();
-        switch (file.ID)
+    case MT_HEAD_ID:
+    {
+        auto header = manager.loadCommon(file);
+        manager.setHeader(header);
+        break;
+    }
+    // ignore swj here
+    case AVTUK_85::SWJ_ID:
+    {
+        return;
+    }
+    default:
+    {
+        oscModel = manager.load(file);
+        if (!oscModel)
         {
-        case MT_HEAD_ID:
-        {
-            auto header = manager.loadCommon(file);
-            manager.setHeader(header);
-            break;
-        }
-        // ignore swj here
-        case AVTUK_85::SWJ_ID:
-        {
+            qWarning() << Error::ReadError;
             return;
         }
-        default:
+        manager.loadOsc(oscModel.get());
+    }
+    }
+    fileBuffer.push_back(file);
+    // header, osc
+    if (fileBuffer.size() == 2)
+    {
+        QByteArray ba;
+        S2Util::StoreDataMem(ba, fileBuffer, reqOscNum);
+        auto time = oscMap.value(reqOscNum).unixtime;
+        QString sfile = filename(time, reqOscNum);
+        if (Files::SaveToFile(sfile, ba) == Error::Msg::NoError)
         {
-            oscModel = manager.load(file);
-            if (!oscModel)
-            {
-                qWarning() << Error::ReadError;
-                return;
-            }
-            manager.loadOsc(oscModel.get());
+            qInfo() << "Swj saved: " << sfile;
         }
-        }
-        fileBuffer.push_back(file);
-        // header, osc
-        if (fileBuffer.size() == 2)
+        else
         {
-            QByteArray ba;
-            S2Util::StoreDataMem(ba, fileBuffer, reqOscNum);
-            auto time = oscMap.value(reqOscNum).unixtime;
-            QString sfile = filename(time, reqOscNum);
-            if (Files::SaveToFile(sfile, ba) == Error::Msg::NoError)
-            {
-                qInfo() << "Swj saved: " << sfile;
-            }
-            else
-            {
-                qWarning() << "Fail to save swj: " << sfile;
-            }
+            qWarning() << "Fail to save swj: " << sfile;
         }
     }
 }

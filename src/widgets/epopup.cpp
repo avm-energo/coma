@@ -1,6 +1,5 @@
 #include "epopup.h"
 
-#include "coma.h"
 #include "passwordlineedit.h"
 #include "wd_func.h"
 
@@ -12,6 +11,17 @@
 #include <QPropertyAnimation>
 #include <QScreen>
 #include <QTimer>
+
+QPoint PointContainer::s_point = { 0, 0 };
+
+PointContainer::PointContainer(QObject *parent) : QObject(parent)
+{
+}
+
+void PointContainer::receivePoint(const QPoint &point)
+{
+    s_point = point;
+}
 
 ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent) : EPopup(parent)
 {
@@ -34,12 +44,12 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
     };
 
     QMap<MessageTypes, msgsStruct> map = {
-        { INFOMESSAGE, { "images/info-hex.svg", "c8fcff" } },
-        { WARNMESSAGE, { "images/warn-hex.svg", "ffffc3" } },
-        { QUESTMSG, { "images/question-hex.svg", "b5b6ff" } },
-        { ERMESSAGE, { "images/err-hex.svg", "ffd4d4" } },
-        { NEXTMSG, { "images/next-hex.svg", "d6ffce" } },
-        { WITHOUTANYBUTTONS, { "images/ordinary-hex.svg", "f3ffc5" } },
+        { INFOMESSAGE, { ":/icons/info-hex.svg", "c8fcff" } },
+        { WARNMESSAGE, { ":/icons/warn-hex.svg", "ffffc3" } },
+        { QUESTMSG, { ":/icons/question-hex.svg", "b5b6ff" } },
+        { ERMESSAGE, { ":/icons/err-hex.svg", "ffd4d4" } },
+        { NEXTMSG, { ":/icons/next-hex.svg", "d6ffce" } },
+        { WITHOUTANYBUTTONS, { ":/icons/ordinary-hex.svg", "f3ffc5" } },
     };
     setAttribute(Qt::WA_DeleteOnClose);
     setStyleSheet("QDialog {background-color: #" + map[type].bgrdColor + ";}");
@@ -101,10 +111,10 @@ void EMessageBox::information(QWidget *parent, const QString &msg)
     popup->exec();
 }
 
-bool EMessageBox::question(const QString &msg)
+bool EMessageBox::question(QWidget *parent, const QString &msg)
 {
     m_result = false;
-    auto popup = new ESimplePopup(ESimplePopup::QUESTMSG, msg);
+    auto popup = new ESimplePopup(ESimplePopup::QUESTMSG, msg, parent);
     QObject::connect(popup, &ESimplePopup::accepted, [] { m_result = true; });
     QObject::connect(popup, &ESimplePopup::cancelled, [] { m_result = false; });
     popup->exec();
@@ -180,8 +190,8 @@ void EPopup::adjustPosition()
     int globalHeight = globalGeometry.height();
     int width2 = width() * 0.5;
     int height2 = height() * 0.5;
-    QPoint centerPoint;
-    centerPoint = Coma::ComaCenter();
+    QPoint centerPoint = PointContainer::s_point;
+    // centerPoint = Coma::ComaCenter();
     int right = centerPoint.x() + width2;
     int down = centerPoint.y() + height2;
     if ((right > globalWidth) || (down > globalHeight))
@@ -292,7 +302,7 @@ EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(pa
     isAboutToClose = false;
     m_hash = hash;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL2(parent, "", "", new QPixmap("images/psw-hex.svg")));
+    hlyout->addWidget(WDFunc::NewLBL2(parent, "", "", new QPixmap(":/icons/psw-hex.svg")));
     hlyout->addWidget(
         WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
     QVBoxLayout *vlyout = new QVBoxLayout;

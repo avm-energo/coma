@@ -3,17 +3,16 @@
 #include "../models/etablemodel.h"
 #include "../module/board.h"
 #include "../oscillograms/swjmanager.h"
-#include "../s2/s2util.h"
 #include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
 
 #include <QHeaderView>
 #include <QMessageBox>
-#include <gen/datamanager/typesproxy.h>
 #include <gen/files.h>
 #include <gen/timefunc.h>
-// constexpr int MAXSWJNUM = 262144;
+#include <s2/s2util.h>
 
+// constexpr int MAXSWJNUM = 262144;
 constexpr unsigned char TECH_SWJ = 0x04;
 
 namespace crypto
@@ -22,13 +21,10 @@ static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c393
 static constexpr char name[] = "swjourHash";
 }
 
-SwitchJournalDialog::SwitchJournalDialog(QWidget *parent)
-    : UDialog(crypto::hash, crypto::name, parent), proxySWJ(new DataTypesProxy), proxyFS(new DataTypesProxy)
+SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
 {
-    proxySWJ->RegisterType<S2::SwitchJourInfo>();
-    proxyFS->RegisterType<S2::FileStruct>();
-    connect(proxySWJ.get(), &DataTypesProxy::DataStorable, this, &SwitchJournalDialog::fillSwJInfo);
-    connect(proxyFS.get(), &DataTypesProxy::DataStorable, this, &SwitchJournalDialog::fillJour);
+    m_conn->connection(this, &SwitchJournalDialog::fillSwJInfo);
+    m_conn->connection(this, &SwitchJournalDialog::fillJour);
     setupUI();
 }
 
@@ -37,14 +33,14 @@ void SwitchJournalDialog::setupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Получить журналы переключений");
-    connect(pb, &QAbstractButton::clicked, [&] {
+    connect(pb, &QAbstractButton::clicked, this, [&] {
         swjMap.clear();
         tableModel = UniquePointer<ETableModel>(new ETableModel);
         tableModel->setHorizontalHeaderLabels(
             { "#", "Номер переключения", "Дата/Время", "Аппарат", "Переключение", "Скачать" });
         swjTableView->setModel(tableModel.get());
 
-        BaseInterface::iface()->writeCommand(Commands::C_ReqBlkDataTech, TECH_SWJ);
+        Connection::iface()->writeCommand(Commands::C_ReqBlkDataTech, TECH_SWJ);
     });
 
     hlyout->addWidget(pb);
@@ -64,13 +60,11 @@ void SwitchJournalDialog::setupUI()
     setLayout(lyout);
 }
 
-// void SwitchJournalDialog::fillJour(const DataTypes::FileStruct &fs)
-void SwitchJournalDialog::fillJour(const QVariant &msg)
+void SwitchJournalDialog::fillJour(const S2::FileStruct &fs)
 {
     if (!updatesEnabled())
         return;
 
-    auto fs = msg.value<S2::FileStruct>();
     fileBuffer.push_back(fs);
 
     switch (fs.ID)
@@ -123,10 +117,8 @@ void SwitchJournalDialog::fillJour(const QVariant &msg)
     }
 }
 
-// void SwitchJournalDialog::fillSwJInfo(S2::SwitchJourInfo swjInfo)
-void SwitchJournalDialog::fillSwJInfo(const QVariant &msg)
+void SwitchJournalDialog::fillSwJInfo(const S2::SwitchJourInfo &swjInfo)
 {
-    auto swjInfo = msg.value<S2::SwitchJourInfo>();
     if (swjInfo.num == 0)
         return;
     if (swjMap.contains(swjInfo.num))
@@ -171,7 +163,7 @@ void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
     quint32 size = swjMap.value(reqSwJNum).fileLength;
 
     if (!loadIfExist(size))
-        BaseInterface::iface()->reqFile(
+        Connection::iface()->reqFile(
             fileNum, DataTypes::FileFormat::CustomS2, size + 2 * sizeof(S2::DataRecHeader));
 }
 
@@ -203,7 +195,7 @@ void SwitchJournalDialog::exportSwJ(uint32_t swjNum)
 void SwitchJournalDialog::eraseJournals()
 {
     if (checkPassword())
-        BaseInterface::iface()->writeCommand(Commands::C_EraseTechBlock, TECH_SWJ);
+        Connection::iface()->writeCommand(Commands::C_EraseTechBlock, TECH_SWJ);
 }
 
 bool SwitchJournalDialog::loadIfExist(quint32 size)
@@ -231,8 +223,7 @@ bool SwitchJournalDialog::loadIfExist(quint32 size)
             for (auto &&swjFileIn : outlist)
             {
                 S2::FileStruct resp { swjFileIn.ID, swjFileIn.data };
-                auto mngr = &DataManager::GetInstance();
-                mngr->addSignalToOutList(resp);
+                fillJour(resp);
             }
             return true;
         }

@@ -1,7 +1,6 @@
 #include "tune85check.h"
 
 #include "../../datablocks/kiv/bda.h"
-#include "../../interfaces/protocom.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/wd_func.h"
 
@@ -11,8 +10,10 @@
 #include <QVBoxLayout>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
+//#include <interfaces/conn/protocom.h>
 
-Tune85Check::Tune85Check(S2::Configuration &config, int tuneStep, QWidget *parent) : AbstractTuneDialog(config, tuneStep, parent)
+Tune85Check::Tune85Check(S2::Configuration &config, int tuneStep, QWidget *parent)
+    : AbstractTuneDialog(config, tuneStep, parent)
 {
     setupUI();
 }
@@ -30,7 +31,7 @@ Error::Msg Tune85Check::showScheme()
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap("images/tunekiv1.png")));
+    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"

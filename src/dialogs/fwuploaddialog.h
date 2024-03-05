@@ -1,10 +1,10 @@
 #ifndef FWUPDIALOG_H
 #define FWUPDIALOG_H
 
-#include "../s2/hexparser.h"
 #include "../widgets/udialog.h"
 
 #include <gen/error.h>
+#include <s2/hexparser.h>
 
 enum class FirmwareUploadStatus : quint8
 {
@@ -26,7 +26,7 @@ public:
     explicit FWUploadDialog(QWidget *parent = nullptr);
     void setupUI();
     bool writeCheckPassword();
-    virtual void updateGeneralResponse(const QVariant &msg) override;
+    virtual void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response) override;
 
 public slots:
     void loadFirmware();

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<module mtypem="00" mtypeb="34">
+<module mtypeb="34" mtypem="00">
     <name>AVTUK-3400</name>
     <version>4.1-0000</version>
     <resources>
@@ -8,7 +8,7 @@
             <warning desc="Предупреждения"/>
             <info desc="Информационные"/>
         </alarms>
-        <config desc="Конфигурация">
+        <config desc="Конфигурация базовая">
             <record>
                 <id>10</id>
                 <defaultValue>8</defaultValue>

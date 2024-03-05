@@ -1,7 +1,5 @@
 #pragma once
 #include "../module/configstorage.h"
-#include "../s2/s2configuration.h"
-#include "../widgets/delegate_common.h"
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
 #include "gasdensitywidget.h"
@@ -9,6 +7,8 @@
 #include <QStandardItemModel>
 #include <bitset>
 #include <gen/std_ext.h>
+#include <s2/delegate_common.h>
+#include <s2/s2configuration.h>
 
 class WidgetFactory
 {
@@ -237,7 +237,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                            for (auto i = 0; i != count; ++i)
                            {
                                status = WDFunc::SetCBIndex(parent, widgetName(key, i), bitset.test(i));
-                               Q_ASSERT(status && "Couldn't fill QComboBox");
+                               // Q_ASSERT(status && "Couldn't fill QComboBox");
                                if (!status && !flag)
                                {
                                    flag = true;

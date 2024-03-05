@@ -3,7 +3,7 @@
 #define Name "АВМ-Наладка"
 #define GroupName "АВМ-Наладка"
 #define EngName "AVM-Debug"
-#define Publisher "EvelSoft"
+#define Publisher "AVM-Energo"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "AVM-Debug.exe"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

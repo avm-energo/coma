@@ -1,5 +1,6 @@
 #include "widgetfactory.h"
 
+#include "../ctti/type_id.hpp"
 #include "../models/comboboxdelegate.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"
@@ -68,24 +69,24 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
     return widget;
 }
 
-// template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] quint16 key)
-//{
-//    QWidget *widget = nullptr;
-//    switch (arg.itemType)
-//    {
-//    case delegate::ItemType::ModbusItem:
-//    {
-//        widget = parent->findChild<QTableView *>(WidgetFactory::hashedName(arg.type, arg.parent));
-//        if (!widget)
-//        {
-//            widget = createModbusView(parent);
-//            widget->setObjectName(WidgetFactory::hashedName(arg.type, arg.parent));
-//        }
-//        return widget;
-//    }
-//    }
-//    return nullptr;
-//}
+template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_unused]] quint16 key)
+{
+    QWidget *widget = nullptr;
+    switch (arg.itemType)
+    {
+    case delegate::ItemType::ModbusItem:
+    {
+        widget = parent->findChild<QTableView *>(WidgetFactory::hashedName(arg.type, arg.parent));
+        if (!widget)
+        {
+            widget = createModbusView(parent);
+            widget->setObjectName(WidgetFactory::hashedName(arg.type, arg.parent));
+        }
+        return widget;
+    }
+    }
+    return nullptr;
+}
 
 template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey) const
 {
@@ -463,7 +464,7 @@ bool WidgetFactory::fillBackModbus(
         }
         case config::Item::ModbusColumns::FuncCode:
         {
-            master.func = MBS::Commands(status ? data : 0);
+            master.func = Modbus::FunctionCode(status ? data : 0);
             break;
         }
         case config::Item::ModbusColumns::DataType:

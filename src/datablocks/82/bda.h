@@ -2,7 +2,8 @@
 
 #include "../datablock.h"
 #include "../module/modules.h"
-#include "../s2/s2datatypes.h"
+
+#include <s2/s2datatypes.h>
 
 class Bda82 : public DataBlock
 {
@@ -20,7 +21,7 @@ public:
 
     Error::Msg checkValues(Modules::MezzanineBoard mtypeM,
         S2::FLOAT_6t i2Noms); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0:
-                                       // начальная точность, 1 - повышенная
+                              // начальная точность, 1 - повышенная
     BlockData *data();
 
 private:

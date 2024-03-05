@@ -40,17 +40,17 @@ Error::Msg TuneCheckMipDialog::showScheme()
     {
     case MType::MTM_81: // 2t0n
     {
-        pmpfile = "images/tune81.png";
+        pmpfile = ":/tunes/tune81.png";
         break;
     }
     case MType::MTM_82:
     {
-        pmpfile = "images/tune82.png";
+        pmpfile = ":/tunes/tune82.png";
         break;
     }
     case MType::MTM_83:
     {
-        pmpfile = "images/tune83.png";
+        pmpfile = ":/tunes/tune83.png";
         break;
     }
     default:

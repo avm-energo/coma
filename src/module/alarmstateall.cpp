@@ -8,28 +8,26 @@
 
 AlarmStateAll::AlarmStateAll(QWidget *parent) : BaseAlarm(parent)
 {
-    mAlarmFlags = BSIALARMMASK;
+    m_alarmFlags = BSIALARMMASK;
 }
 
-/// \brief Request for updating a BSI data.
 void AlarmStateAll::reqUpdate()
 {
-    auto iface = BaseInterface::iface();
+    auto iface = Connection::iface();
     if (iface != nullptr)
         iface->reqBSI();
 }
 
-/// \brief The slot called when a device health changed for updating alarms.
 void AlarmStateAll::update(quint32 health)
 {
     const std::bitset<32> healthSet = health;
     for (int i = 0; i < AVM::HthToolTip.size(); ++i)
     {
-        QColor color(normalColor);
+        QColor color(m_normalColor);
         bool state = healthSet.test(i);
         if (state)
         {
-            if (state != mAlarmFlags.test(i))
+            if (state != m_alarmFlags.test(i))
                 color = Qt::yellow;
             else
                 color = Qt::red;
@@ -44,11 +42,10 @@ void AlarmStateAll::update(quint32 health)
     else if (health & BSIWARNMASK)
         color = Qt::yellow;
     else
-        color = normalColor;
+        color = m_normalColor;
     emit updateColor(color);
 }
 
-/// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
 void AlarmStateAll::setupUI(const QStringList &events)
 {
     auto mainLayout = new QVBoxLayout(this);
@@ -56,7 +53,7 @@ void AlarmStateAll::setupUI(const QStringList &events)
     {
         auto hLayout = new QHBoxLayout;
         auto label = WDFunc::NewLBL2(this, "", QString::number(i));
-        auto pixmap = WDFunc::NewCircle(normalColor, circleRadius);
+        auto pixmap = WDFunc::NewCircle(m_normalColor, circleRadius);
         label->setPixmap(pixmap);
         hLayout->addWidget(label);
         hLayout->addWidget(WDFunc::NewLBL2(this, events.at(i)), 1);
