@@ -10,6 +10,9 @@
 constexpr std::string_view oscFilenumLblFmt { "Текущий номер осциллограммы: %1" };
 constexpr u32 oscStateAddr = 13100;
 
+constexpr u32 noOsc = std::numeric_limits<u16>::min();
+constexpr u32 recordingOsc = std::numeric_limits<u16>::max();
+
 OscKivDialog::OscKivDialog(Device::CurrentDevice *device, QWidget *parent)
     : UDialog(device, parent)
     , m_commandBtn(nullptr)
@@ -18,9 +21,12 @@ OscKivDialog::OscKivDialog(Device::CurrentDevice *device, QWidget *parent)
     , m_reqStateOscTimer(new QTimer(this))
     , m_oscFilenum(0)
     , m_oldOscFilenum(0)
+    , m_state(State::Init)
 {
     m_reqStateOscTimer->setInterval(100);
     QObject::connect(m_reqStateOscTimer, &QTimer::timeout, this, &OscKivDialog::reqOscState);
+    m_device->async()->connection(this, &OscKivDialog::updateBitStringData);
+    m_device->async()->connection(this, &OscKivDialog::receiveOscFile);
     setupUI();
     reqOscState();
 }
@@ -39,7 +45,7 @@ void OscKivDialog::setupUI()
     m_commandBtn = WDFunc::NewPB(this, "commandBtn", "Запуск осциллограмм", this, &OscKivDialog::writeTypeOsc);
     controlLayout->addWidget(m_commandBtn);
     m_readBtn = WDFunc::NewPB(this, "readBtn", "Прочитать осциллограмму", this, &OscKivDialog::reqOscFile);
-    m_readBtn->setEnabled(false);
+    // m_readBtn->setEnabled(false);
     controlLayout->addWidget(m_readBtn);
     mainLayout->addLayout(controlLayout);
     setLayout(mainLayout);
@@ -47,14 +53,31 @@ void OscKivDialog::setupUI()
 
 void OscKivDialog::updateOscFilenum(const u32 newOscFilenum)
 {
-    m_oldOscFilenum = m_oscFilenum;
+    if (m_state == State::Init)
+        m_oldOscFilenum = newOscFilenum;
+    else
+        m_oldOscFilenum = m_oscFilenum;
     m_oscFilenum = newOscFilenum;
-    if (m_oscFilenum == std::numeric_limits<u16>::min())
+
+    if (m_oscFilenum == noOsc)
         m_oscFilenumLbl->setText("В памяти нет осциллограммы");
-    else if (m_oscFilenum == std::numeric_limits<u16>::max())
+    else if (m_oscFilenum == recordingOsc)
         m_oscFilenumLbl->setText("Идёт запись осциллограммы");
     else
         m_oscFilenumLbl->setText(QString(oscFilenumLblFmt.data()).arg(m_oscFilenum));
+
+    if (m_state == State::RequestOscState)
+    {
+        // Если отличаются номера осциллограммы и в данный момент не идёт запись осциллограммы
+        if (m_oldOscFilenum != m_oscFilenum && m_oscFilenum != recordingOsc)
+        {
+            m_reqStateOscTimer->stop();
+            auto infoMsg = QString("Записано успешно\n%1").arg(oscFilenumLblFmt.data()).arg(m_oscFilenum);
+            m_state = State::Init;
+            enableButtons(true);
+            EMessageBox::information(this, infoMsg);
+        }
+    }
 }
 
 void OscKivDialog::enableButtons(const bool enabling)
@@ -71,22 +94,63 @@ void OscKivDialog::reqOscState()
 void OscKivDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
     if (bs.sigAdr == oscStateAddr)
-    {
         updateOscFilenum(bs.sigVal);
+}
+
+void OscKivDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
+{
+    if (response.type == DataTypes::GeneralResponseTypes::Ok)
+    {
+        if (m_state == State::WritingTypeOsc)
+        {
+            reqOscState();
+            m_reqStateOscTimer->start();
+            m_state = State::RequestOscState;
+        }
     }
+    else if (response.type == DataTypes::GeneralResponseTypes::Error)
+    {
+        auto errorMsg = //
+            QString("Произошла ошибка: %1")
+                .arg(Error::MsgStr.value(static_cast<Error::Msg>(response.data), "Неизвестная ошибка"));
+        m_state = State::Init;
+        enableButtons(true);
+        EMessageBox::error(this, errorMsg);
+    }
+}
+
+void OscKivDialog::receiveOscFile(const S2::FileStruct &file)
+{
+    ;
 }
 
 void OscKivDialog::writeTypeOsc()
 {
-    // enableButtons(false);
+    enableButtons(false);
     TypeOsc command { 0, 0, 0 };
     command.n_point = WDFunc::SPBData<u8>(this, "n_point");
     command.phase = WDFunc::CBIndex(this, "phase");
     DataTypes::BlockStruct block { 13, StdFunc::toByteArray(command) };
     m_device->async()->writeCommand(Commands::C_WriteTypeOsc, QVariant::fromValue(block));
+    m_state = State::WritingTypeOsc;
 }
 
 void OscKivDialog::reqOscFile()
 {
-    // enableButtons(true);
+    if (m_oscFilenum == noOsc)
+    {
+        EMessageBox::error(this, "Невозможно прочитать файл,\nидёт запись осциллограммы");
+        return;
+    }
+    else if (m_oscFilenum == recordingOsc)
+    {
+        EMessageBox::error(this, "Невозможно прочитать файл,\nидёт запись осциллограммы");
+        return;
+    }
+    else
+    {
+        enableButtons(false);
+        m_device->async()->reqFile(m_oscFilenum, DataTypes::FileFormat::CustomS2);
+        m_state = State::RequestFile;
+    }
 }
