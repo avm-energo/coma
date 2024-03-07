@@ -57,6 +57,18 @@
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
+            <record>
+                <id>1392</id>
+                <defaultValue>-15.0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1393</id>
+                <defaultValue>10</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104"/>
         <journals desc="Журналы">

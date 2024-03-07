@@ -4993,6 +4993,34 @@
 		</widget>
 	</record>
 	<record>
+		<id>1392</id>
+		<name>Heat</name>
+		<description>Уставка вкл. нагрева</description>
+		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>7</group>
+			<string>Уставка вкл. нагрева</string>
+			<min>-100</min>
+			<max>100</max>
+			<decimals>2</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1393</id>
+		<name>GisHeat</name>
+		<description>Гистерезис откл. нагрева</description>
+		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>7</group>
+			<string>Гистерезис откл. нагрева</string>
+			<min>-100</min>
+			<max>100</max>
+			<decimals>2</decimals>
+		</widget>
+	</record>
+	<record>
 		<id>110</id>
 		<name>osc_IDB</name>
 		<description>Признаки источника запуска осциллограмм</description>
