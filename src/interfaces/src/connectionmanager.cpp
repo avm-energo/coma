@@ -104,6 +104,7 @@ void ConnectionManager::reconnect()
 {
     qCritical() << "Произошла ошибка соединения";
     emit reconnectInterface();
+    m_context.m_executor->wakeUp();
     if (m_reconnectMode == ReconnectMode::Loud)
         emit reconnectUI();
     else
