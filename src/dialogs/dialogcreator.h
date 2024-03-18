@@ -21,6 +21,17 @@ enum class AppConfiguration : bool
 class DialogCreator : public QObject
 {
     Q_OBJECT
+private:
+    Modules::Model m_boxModel;
+    Modules::BaseBoard m_typeB;
+    Modules::MezzanineBoard m_typeM;
+    const ModuleSettings &m_settings;
+    const Board &m_board;
+    S2DataManager &m_s2manager;
+    S2RequestService &m_s2service;
+    QWidget *m_parent;
+    QList<UDialog *> m_dialogs;
+
 public:
     DialogCreator(const ModuleSettings &settings, const Board &board, //
         S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent = nullptr);
@@ -32,33 +43,28 @@ public:
     QList<UDialog *> &getDialogs();
 
 private:
-    const ModuleSettings &m_settings;
-    const Board &m_board;
-    S2DataManager &m_s2manager;
-    S2RequestService &m_s2service;
-    QWidget *m_parent;
-    QList<UDialog *> m_dialogs;
-
-    /// \brief Returns true if module in box, otherwise false.
-    bool isBoxModule(const quint16 &type) const;
     /// \brief Adding the created dialog to the list for saving.
     void addDialogToList(UDialog *dlg, const QString &caption, const QString &name);
+    /// \brief Updating creator's internal data.
+    void updateTypes();
     /// \brief Creating config dialogs.
     void createConfigDialogs();
     /// \brief Creating check dialogs.
     void createCheckDialogs();
-    /// \brief Creating tune dialogs for KIV, KTF and KDV.
-    void createBoxTuneDialogs(const Modules::Model boxModel);
-    /// \brief Creating journal dialog.
+    /// \brief Creating a journal dialog.
     void createJournalDialog();
-    /// \brief Creating startup dialog for KIV, KTF and KDV.
-    void createStartupDialog(const Modules::Model boxModel);
-    /// \brief Creating tune dialogs for two-part modules.
-    void createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem);
-    /// \brief Creating oscillogram and switch journal dialogs.
-    void createOscAndSwJourDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem);
-    /// \brief Creating specific dialogs (tune, journal and startup).
-    void createSpecificDialogs(const AppConfiguration appCfg);
+    /// \brief Checking the availability of the S2 configuration.
+    bool isS2Available() noexcept;
+    /// \brief Creating a tune dialog for some devices.
+    void createTuneDialogs();
+    /// \brief Creating a startup dialog for some devices.
+    void createStartupValuesDialog();
+    /// \brief Creating oscillogram dialogs and switch journal dialogs.
+    void createOscAndSwJourDialogs();
+    /// \brief Creating a plot dialog.
+    void createPlotDialog();
+    /// \brief Creating a relay dialog.
+    void createRelayDialog();
     /// \brief Creating common dialogs (all modules).
     void createCommonDialogs(const AppConfiguration appCfg);
 };
