@@ -11,9 +11,9 @@
 namespace Interface
 {
 
-DefaultQueryExecutor *QueryExecutorFabric::makeProtocomExecutor(RequestQueue &queue, quint32 timeout)
+DefaultQueryExecutor *QueryExecutorFabric::makeProtocomExecutor(RequestQueue &queue, const UsbHidSettings &settings)
 {
-    auto executor = new DefaultQueryExecutor(queue, timeout);
+    auto executor = new DefaultQueryExecutor(queue, settings);
     executor->initLogger("Protocom");
     // NOTE: query executor must be parent for all parsers
     auto requestParser = new ProtocomRequestParser(executor);
@@ -28,16 +28,15 @@ DefaultQueryExecutor *QueryExecutorFabric::makeProtocomExecutor(RequestQueue &qu
     return executor;
 }
 
-DefaultQueryExecutor *QueryExecutorFabric::makeModbusExecutor(
-    RequestQueue &queue, quint8 deviceAddress, quint32 timeout)
+DefaultQueryExecutor *QueryExecutorFabric::makeModbusExecutor(RequestQueue &queue, const SerialPortSettings &settings)
 {
-    auto executor = new DefaultQueryExecutor(queue, timeout);
+    auto executor = new DefaultQueryExecutor(queue, settings);
     executor->initLogger("Modbus");
     // NOTE: query executor must be parent for all parsers
     auto requestParser = new ModbusRequestParser(executor);
-    requestParser->setDeviceAddress(deviceAddress);
+    requestParser->setDeviceAddress(settings.address);
     auto responseParser = new ModbusResponseParser(executor);
-    responseParser->setDeviceAddress(deviceAddress);
+    responseParser->setDeviceAddress(settings.address);
     // Передача ожидаемого размера ответа между парсерами
     QObject::connect(requestParser, &ModbusRequestParser::expectedResponseSize, //
         responseParser, &ModbusResponseParser::expectedResponseSize);
@@ -47,7 +46,7 @@ DefaultQueryExecutor *QueryExecutorFabric::makeModbusExecutor(
 
 DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queue, const IEC104Settings &settings)
 {
-    auto executor = new Iec104QueryExecutor(queue, settings.params);
+    auto executor = new Iec104QueryExecutor(queue, settings);
     executor->initLogger("IEC104");
     // NOTE: query executor must be parent for all parsers
     auto requestParser = new Iec104RequestParser(executor);

@@ -2,6 +2,7 @@
 
 #include <QTimer>
 #include <gen/logclass.h>
+#include <interfaces/types/base_settings.h>
 #include <interfaces/types/protocol_settings.h>
 #include <interfaces/utils/request_queue.h>
 
@@ -45,7 +46,7 @@ protected:
     /// таймаут, текущая отправленная команда сбрасывается, о таймауте уведомляется
     /// ConnectionManager с помощью сигнала timeout, из очереди запросов берётся следующий запрос.
     /// \see QueryExecutorFabric.
-    explicit DefaultQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent = nullptr);
+    explicit DefaultQueryExecutor(RequestQueue &queue, const BaseSettings &settings, QObject *parent = nullptr);
 
     /// \brief Инициализация логгера исполнителя запросов.
     /// \details Вызывается при создании исполнителя запросов.

@@ -3,7 +3,8 @@
 #include <QLayout>
 #include <QPushButton>
 
-AbstractInterfaceDialog::AbstractInterfaceDialog(QWidget *parent) : QDialog(parent)
+AbstractInterfaceDialog::AbstractInterfaceDialog(QWidget *parent)
+    : QDialog(parent), m_settings(Settings::UserSettings::GetInstance())
 {
     setAttribute(Qt::WA_DeleteOnClose);
 }
@@ -16,21 +17,18 @@ void AbstractInterfaceDialog::setupUI()
     lyout->addWidget(pb);
 }
 
-void AbstractInterfaceDialog::removeConnection(const QString &connName)
-{
-    if (isConnectionExist(connName))
-        m_settings.remove(connName);
-}
-
-bool AbstractInterfaceDialog::isConnectionExist(const QString &connName)
-{
-    return m_settings.childGroups().contains(connName);
-}
-
 bool AbstractInterfaceDialog::checkSize()
 {
     auto model = m_tableView->model();
     if (model != nullptr)
         return (model->rowCount() == MAXREGISTRYINTERFACECOUNT);
     return false;
+}
+
+void AbstractInterfaceDialog::fill(BaseSettings &connection)
+{
+    connection.m_silentInterval = m_settings.get<Settings::SilentInterval>();
+    connection.m_maxErrors = m_settings.get<Settings::ErrorCount>();
+    connection.m_maxTimeouts = m_settings.get<Settings::TimeoutCount>();
+    connection.m_isLoggingEnabled = m_settings.get<Settings::LoggingEnabled>();
 }

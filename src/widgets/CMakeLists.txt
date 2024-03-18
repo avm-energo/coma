@@ -26,6 +26,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Xml
   Boost::headers
   s2
+  settings
   interfaces
   dialogs
 )

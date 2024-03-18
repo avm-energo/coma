@@ -3,20 +3,45 @@
 
 #include <QDialog>
 #include <QMap>
+#include <settings/user_settings.h>
+
+class QStackedWidget;
+class QListWidget;
+class QVBoxLayout;
+class QTabWidget;
+
 class SettingsDialog : public QDialog
 {
     Q_OBJECT
+private:
+    Settings::UserSettings &m_settings;
+    QStackedWidget *m_workspace;
+    QListWidget *m_sidebar;
+
 public:
-    explicit SettingsDialog(QWidget *parent = 0);
+    explicit SettingsDialog(QWidget *parent = nullptr);
+    ~SettingsDialog() noexcept;
 
 private:
-    void SetupUI();
-    void Fill();
+    void setupUI();
+    QVBoxLayout *createWorkspaceLayout(const QString &tabName);
+    QTabWidget *createTabWidget(QVBoxLayout *layout);
+    QVBoxLayout *createTabLayout(QTabWidget *destination, const QString &tabName);
+
+    void setupGeneralTab() noexcept;
+    void setupConnectionTab() noexcept;
+    void setupTuneTab() noexcept;
+    void fill();
 
 private slots:
-    void AcceptSettings();
+    void acceptSettings();
+    void resetPassword();
+    void updatePassword(const QString &newPassword);
+    void themeChanged(const QString &newTheme);
+
 signals:
-    void disableAlarmUpdate();
+    void alarmOperationUpdate(const bool status);
+    void alarmIntervalUpdate(const int interval);
 };
 
 #endif // SETTINGSDIALOG_H

@@ -6,7 +6,7 @@
 namespace Interface
 {
 
-DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent)
+DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, const BaseSettings &settings, QObject *parent)
     : QObject(parent)
     , m_state(ExecutorState::Starting)
     , m_queue(std::ref(queue))
@@ -15,7 +15,7 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, quint32 timeout,
     , m_responseParser(nullptr)
 {
     m_timeoutTimer->setSingleShot(true);
-    m_timeoutTimer->setInterval(timeout);
+    m_timeoutTimer->setInterval(settings.m_timeout);
     connect(m_timeoutTimer, &QTimer::timeout, this, [this] {
         qCritical() << "Timeout, command: " << m_lastRequestedCommand.load();
         m_log.error("Timeout");

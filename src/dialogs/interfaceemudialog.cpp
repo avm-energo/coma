@@ -11,6 +11,12 @@
 
 InterfaceEmuDialog::InterfaceEmuDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
+    m_settings.native().beginGroup("Emulator");
+}
+
+InterfaceEmuDialog::~InterfaceEmuDialog() noexcept
+{
+    m_settings.native().endGroup();
 }
 
 void InterfaceEmuDialog::setupUI()
@@ -24,7 +30,7 @@ void InterfaceEmuDialog::setupUI()
     hlyout->addWidget(WDFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceEmuDialog::addInterface));
     hlyout->addWidget(WDFunc::NewPB(this, "", tr("Удалить"), this, [this] {
         auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
-        removeConnection(name);
+        m_settings.remove(name);
         updateModel();
     }));
     hlyout->addStretch(10);
@@ -119,7 +125,7 @@ void InterfaceEmuDialog::acceptedInterface()
         return;
     QString name = WDFunc::LEData(dlg, "namele");
     // check if there's such name in registry
-    if (isConnectionExist(name))
+    if (m_settings.isExist(name))
     {
         QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
         return;

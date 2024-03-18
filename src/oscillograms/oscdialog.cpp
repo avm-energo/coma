@@ -11,13 +11,7 @@
 #include <gen/timefunc.h>
 #include <s2/s2util.h>
 
-namespace crypto
-{
-static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
-static constexpr char name[] = "oscHash";
-}
-
-OscDialog::OscDialog(QWidget *parent) : UDialog(crypto::hash, crypto::name, parent)
+OscDialog::OscDialog(QWidget *parent) : UDialog(parent)
 {
     m_dataUpdater->currentConnection()->connection(this, &OscDialog::fillOscInfo);
     m_dataUpdater->currentConnection()->connection(this, &OscDialog::fillOsc);

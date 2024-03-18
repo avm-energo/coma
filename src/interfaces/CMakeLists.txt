@@ -32,6 +32,7 @@ set(files_h
     "${INCLUDE_PATH}/parsers/modbus_response_parser.h"
     "${INCLUDE_PATH}/parsers/protocom_request_parser.h"
     "${INCLUDE_PATH}/parsers/protocom_response_parser.h"
+    "${INCLUDE_PATH}/types/base_settings.h"
     "${INCLUDE_PATH}/types/common_types.h"
     "${INCLUDE_PATH}/types/iec104/apci.h"
     "${INCLUDE_PATH}/types/iec104/asdu.h"
@@ -103,10 +104,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::SerialPort
   Qt${QT_VERSION_MAJOR}::Widgets
-  s2
+  s2 settings tl::expected
 )
-
-target_link_libraries(${PROJECT_NAME} PUBLIC tl::expected)
 
 if(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
