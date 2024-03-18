@@ -12,6 +12,7 @@ namespace addr
     constexpr quint16 bsiStartReg = 1;
     constexpr quint16 bsiCountRegs = 15;
     constexpr quint16 bsiExtStartReg = 40;
+    constexpr quint16 bsiExtCountRegs = 5;
     constexpr quint16 timeReg = 4600;
 }
 
