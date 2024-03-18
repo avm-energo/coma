@@ -9,27 +9,12 @@
 #include <QShowEvent>
 #include <map>
 
-class PointContainer : public QObject
-{
-    Q_OBJECT
-private:
-    static QPoint s_point;
-
-public:
-    explicit PointContainer(QObject *parent = nullptr);
-    static QPoint getPoint() noexcept;
-
-public slots:
-    void receivePoint(const QPoint &point);
-};
-
 class EPopup : public QDialog
 {
     Q_OBJECT
 public:
     EPopup(QWidget *parent = nullptr);
     void aboutToClose();
-    void adjustPosition();
 
 signals:
     void accepted();

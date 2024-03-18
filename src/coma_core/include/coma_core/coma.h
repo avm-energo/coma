@@ -76,13 +76,7 @@ private:
     void prepare();
     QToolBar *createToolBar();
     void keyPressEvent(QKeyEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
-    void moveEvent(QMoveEvent *event) override;
-    void showEvent(QShowEvent *event) override;
     void prepareDialogs();
-
-signals:
-    void positionChanged(const QPoint &center);
 };
 
 class ComaHelper
