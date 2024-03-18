@@ -2,7 +2,7 @@
 
 #include <QByteArray>
 #include <QObject>
-#include <cstdint>
+#include <gen/uint24.h>
 #include <limits>
 
 namespace Iec104
@@ -88,28 +88,29 @@ Q_ENUM_NS(Iec104::MessageDataType)
 /// information objects or elements are addressed.
 enum class StructureQualifier : std::uint8_t
 {
-    Sequence = 0, ///< sequence of information objects.
-    Single = 1    ///< single information object.
+    Sequence = 0, ///< Sequence of information objects.
+    Single = 1    ///< Single information object.
 };
 
 /// \brief The confirmation of an activation
 /// requested by a primary application function.
 enum class Confirmation : std::uint8_t
 {
-    Positive = 0, ///< positive confirmation.
-    Negative = 1  ///< negative confirmation.
+    Positive = 0, ///< Positive confirmation.
+    Negative = 1  ///< Negative confirmation.
 };
 
 /// \brief Cause of transmission (COT) is used to control
 /// the routing of messages both on the communication network.
 enum class CauseOfTransmission : std::uint8_t
 {
+    GroupRequest = 0,       ///< Group request.
     Periodic = 1,           ///< Cyclic data.
     Background,             ///< Background scan.
-    Spontaneous,            ///< Spontaneous data (спорадика).
+    Spontaneous = 3,        ///< Spontaneous data (спорадика).
     Initialized,            ///< End of initialization.
     Request,                ///< Read request.
-    Activation,             ///< Command activation.
+    Activation = 6,         ///< Command activation.
     ActivationConfirm,      ///< Confirmation of command activation.
     Deactivation,           ///< Command abortion.
     DeactivationConfirm,    ///< Confirmation of command abortion.
@@ -122,11 +123,12 @@ enum class CauseOfTransmission : std::uint8_t
 };
 
 inline constexpr auto maxElements = std::numeric_limits<std::uint8_t>::max() >> 1;
+inline constexpr auto asduHeaderSize = 6;
 
-/// \brief
+/// \brief ASDU representation of the IEC-60870-5-104 protocol.
 class ASDU
 {
-private:
+public:
     MessageDataType m_msgType;
     StructureQualifier m_qualifier;
     std::uint8_t m_elements;
@@ -134,13 +136,27 @@ private:
     Confirmation m_confirmation;
     CauseOfTransmission m_cause;
     std::uint8_t m_originatorAddr;
-    std::uint16_t m_address;
+    std::uint16_t m_bsAddress;
     QByteArray m_data;
 
-public:
-    explicit ASDU() noexcept = default;
+    /// \brief Default c-tor.
+    explicit ASDU() noexcept;
+    /// \brief C-tor with params.
+    explicit ASDU(const std::uint16_t bsAddress) noexcept;
 
+    /// \brief Writing a bitstring data.
+    void setRequestData(const uint24 address, const std::uint32_t data) noexcept;
+    /// \brief Writing a float data.
+    void setRequestData(const uint24 address, const float data) noexcept;
+    /// \brief Writing a single command data.
+    void setRequestData(const uint24 address, const bool data) noexcept;
+    /// \brief Requesting an interrogate group.
+    void setRequestData(const std::uint8_t group) noexcept;
+
+    /// \brief Converting the ASDU object to a byte array.
     QByteArray toByteArray() const noexcept;
+    /// \brief Converting the received byte array to an ASDU object.
+    static ASDU fromByteArray(const QByteArray &data) noexcept;
 };
 
 } // namespace Iec104

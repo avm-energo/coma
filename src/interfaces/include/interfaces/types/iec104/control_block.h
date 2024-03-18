@@ -1,102 +1,55 @@
 #pragma once
 
-#include <atomic>
-#include <cstdint>
+#include <QByteArray>
+#include <gen/error.h>
+#include <interfaces/types/iec104/unnumbered_control.h>
+#include <memory>
 
 namespace Iec104
 {
 
-/// \brief Control function type.
-enum class ControlFunc : std::uint8_t
+/// \brief The frame format type.
+enum class FrameFormat : std::uint16_t
 {
-    StartDataTransfer = 0, ///< STARTDT
-    StopDataTransfer,      ///< STOPDT
-    TestFrame              ///< TESTFR
+    Information = 0,
+    Supervisory = 1,
+    Unnumbered = 3
 };
 
-/// \brief Control function argument type.
-enum class ControlArg : std::uint8_t
-{
-    Activate = 0, ///< ACT
-    Confirm       ///< CON
-};
+constexpr inline std::size_t controlBlockSize = sizeof(std::uint32_t);
+constexpr inline auto controlMax = std::numeric_limits<std::uint16_t>::max() >> 1;
 
 /// \brief The data format control block structure.
-struct ControlBlock
+class ControlBlock
 {
-    std::atomic_uint16_t sent, received;
+private:
+    /// \brief Converting saved data to I-format (information transfer format).
+    std::uint32_t toInfoTransferFormat() const noexcept;
+    /// \brief Converting saved data to S-format (supervisory control format).
+    std::uint32_t toNumberedSupervisoryFunction() const noexcept;
+    /// \brief Converting saved data to U-format (unnumbered control format).
+    tl::expected<std::uint32_t, ApciError> toUnnumberedControlFunction() const noexcept;
 
-    /// \brief I-format
-    inline std::uint32_t toInfoTransferFormat() const noexcept
-    {
-        return (std::uint32_t((received.load() << 1) & 0xFFFE) << 16) | ((sent.load() << 1) & 0xFFFE);
-    }
+public:
+    std::uint16_t m_sent, m_received;
+    FrameFormat m_format;
+    ControlFunc m_func;
+    ControlArg m_arg;
 
-    /// \brief S-format
-    inline std::uint32_t toNumberedSupervisoryFunction() const noexcept
-    {
-        return (std::uint32_t((received.load() << 1) & 0xFFFE) << 16) | std::uint16_t(0x0001);
-    }
+    /// \brief Default c-tor.
+    explicit ControlBlock(const FrameFormat fmt = FrameFormat::Information, //
+        const std::uint16_t sent = 0, const std::uint16_t received = 0) noexcept;
+    /// \brief Copy c-tor.
+    ControlBlock(const ControlBlock &rhs) noexcept;
+    /// \brief Assignment operator.
+    const ControlBlock &operator=(const ControlBlock &rhs) noexcept;
 
-    /*     U-Frame Function         7 6 5 4 3 2 1 0 Hexa Value
-    Start Data Transfer Activation  0 0 0 0 0 1 1 1    0x07
-    Stop Data Transfer Confirmation 0 0 0 0 1 0 1 1    0x0B
-    Stop Data Transfer Activation   0 0 0 1 0 0 1 1    0x13
-    Stop Data Transfer Confirmation 0 0 1 0 0 0 1 1    0x23
-    Test Frame Activation           0 1 0 0 0 0 1 1    0x43
-    Test Frame Confirmation         1 0 0 0 0 0 1 1    0x83 */
-
-    /// \brief U-format
-    template <ControlFunc func, ControlArg arg> //
-    constexpr std::uint32_t toUnnumberedControlFunction() const noexcept
-    {
-        std::uint32_t retVal = 1;
-        switch (func)
-        {
-        case ControlFunc::StartDataTransfer:
-            retVal = retVal << 2;
-            break;
-        case ControlFunc::StopDataTransfer:
-            retVal = retVal << 4;
-            break;
-        case ControlFunc::TestFrame:
-            retVal = retVal << 6;
-            break;
-        }
-        if constexpr (arg == ControlArg::Confirm)
-            retVal = retVal << 1;
-        return (retVal | 3);
-    }
-
-    constexpr std::uint32_t startDataTransferActivate() const noexcept
-    {
-        return (1 << 2) | 3; // 0x07
-    }
-
-    constexpr std::uint32_t startDataTransferConfirm() const noexcept
-    {
-        return (1 << 3) | 3; // 0x0B
-    }
-
-    constexpr std::uint32_t stopDataTransferActivate() const noexcept
-    {
-        return (1 << 4) | 3; // 0x13
-    }
-
-    constexpr std::uint32_t stopDataTransferConfirm() const noexcept
-    {
-        return (1 << 5) | 3; // 0x23
-    }
-
-    constexpr std::uint32_t testFrameActivate() const noexcept
-    {
-        return (1 << 6) | 3; // 0x43
-    }
-
-    constexpr std::uint32_t testFrameConfirm() const noexcept
-    {
-        return (1 << 7) | 3; // 0x83
-    }
+    /// \brief Converting the stored control block data to a protocol representation.
+    tl::expected<std::uint32_t, ApciError> data() const noexcept;
+    /// \brief Converting the received byte array to a control block object.
+    static tl::expected<ControlBlock, ApciError> fromData(const std::uint32_t data) noexcept;
 };
 
 } // namespace Iec104
+
+using SharedControlBlock = std::shared_ptr<Iec104::ControlBlock>;

@@ -1,43 +1,69 @@
-#include <interfaces/types/iec104/apci.h>
+#include "interfaces/types/iec104/apci.h"
 
 namespace Iec104
 {
 
-APCI::APCI(const ControlBlock controlBlock, const std::uint8_t asduSize) noexcept : m_asduSize(asduSize)
+constexpr inline std::uint8_t headerTag = 0x68; ///< Header start for protocol.
+constexpr inline std::uint8_t maxAsduSize
+    = std::numeric_limits<std::uint8_t>::max() - apciSize; ///< Max ASDU size for protocol.
+
+APCI::APCI(const std::uint8_t asduSize) noexcept : m_asduSize(asduSize)
 {
-    m_ctrlBlock.received.store(controlBlock.received.load());
-    m_ctrlBlock.sent.store(controlBlock.sent.load());
 }
 
-QByteArray APCI::toIFormatByteArray() const noexcept
+APCI::APCI(const ControlBlock controlBlock, const std::uint8_t asduSize) noexcept
+    : m_ctrlBlock(controlBlock), m_asduSize(asduSize)
 {
-    QByteArray apci;
-    apci.append(headerTag);
-    apci.append(m_asduSize);
-    auto ctrlData { m_ctrlBlock.toInfoTransferFormat() };
-    apci.append(StdFunc::toByteArray(ctrlData));
-    return apci;
 }
 
-QByteArray APCI::toSFormatByteArray() const noexcept
+const APCI &APCI::operator=(const APCI &rhs) noexcept
 {
-    QByteArray apci;
-    apci.append(headerTag);
-    apci.append(m_asduSize);
-    auto ctrlData { m_ctrlBlock.toNumberedSupervisoryFunction() };
-    apci.append(StdFunc::toByteArray(ctrlData));
-    return apci;
+    m_ctrlBlock = rhs.m_ctrlBlock;
+    m_asduSize = rhs.m_asduSize;
+    return *this;
 }
 
-template <ControlFunc func, ControlArg arg> //
-QByteArray APCI::toUFormatByteArray() const noexcept
+void APCI::updateControlBlock(const ControlBlock controlBlock) noexcept
 {
-    QByteArray apci;
-    apci.append(headerTag);
-    apci.append(m_asduSize);
-    std::uint32_t ctrlData { m_ctrlBlock.toUnnumberedControlFunction<func, arg>() };
-    apci.append(StdFunc::toByteArray(ctrlData));
-    return apci;
+    m_ctrlBlock = controlBlock;
+}
+
+tl::expected<QByteArray, ApciError> APCI::toByteArray() const noexcept
+{
+    if (m_asduSize > maxAsduSize)
+        return tl::unexpected(ApciError::InvalidAsduSize);
+    auto ctrlData = m_ctrlBlock.data();
+    if (ctrlData.has_value())
+    {
+        QByteArray apci;
+        apci.append(headerTag);
+        apci.append(m_asduSize + controlBlockSize);
+        apci.append(StdFunc::toByteArray(*ctrlData));
+        return apci;
+    }
+    else
+        return tl::unexpected(ctrlData.error());
+}
+
+tl::expected<APCI, ApciError> APCI::fromByteArray(const QByteArray &data) noexcept
+{
+    if (data.size() != apciSize)
+        return tl::unexpected(ApciError::InvalidDataLength);
+    else if (data[0] != headerTag)
+        return tl::unexpected(ApciError::InvalidStartByte);
+    else
+    {
+        auto ctrlBytes = data.right(controlBlockSize);
+        auto ctrlData = *reinterpret_cast<std::uint32_t *>(ctrlBytes.data());
+        auto ctrlBlock = ControlBlock::fromData(ctrlData);
+        if (ctrlBlock.has_value())
+        {
+            std::uint8_t asduSize = data[1] - controlBlockSize;
+            return APCI { ctrlBlock.value(), asduSize };
+        }
+        else
+            return tl::unexpected(ctrlBlock.error());
+    }
 }
 
 } // namespace Iec104

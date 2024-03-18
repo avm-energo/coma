@@ -24,10 +24,10 @@ namespace Interface
 
 namespace Regs
 {
-    constexpr quint16 bsiExtStartReg = 40;
-    constexpr quint16 timeReg = 4600;
     constexpr quint16 bsiStartReg = 1;
     constexpr quint16 bsiCountRegs = 15;
+    constexpr quint16 bsiExtStartReg = 40;
+    constexpr quint16 timeReg = 4600;
 }
 
 class Connection : public QObject

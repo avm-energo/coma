@@ -9,13 +9,18 @@ namespace Interface
 
 using namespace Iec104;
 
-Iec104RequestParser::Iec104RequestParser(QObject *parent) : BaseRequestParser(parent)
+Iec104RequestParser::Iec104RequestParser(QObject *parent) : BaseRequestParser(parent), m_baseStationAddress(0)
 {
 }
 
 void Iec104RequestParser::setBaseStationAddress(const quint16 bsAddress) noexcept
 {
     m_baseStationAddress = bsAddress;
+}
+
+void Iec104RequestParser::updateControlBlock(const SharedControlBlock &newControlBlock) noexcept
+{
+    m_ctrlBlock = newControlBlock;
 }
 
 QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
@@ -25,10 +30,8 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
     {
     case Commands::C_ReqBSI:
     case Commands::C_ReqBSIExt:
-    {
-        // Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, BSIGROUP, 0, {} };
+        m_request = createGroupRequest(BSIGROUP);
         break;
-    }
     case Commands::C_ReqStartup:
     {
         // Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, STARTUPGROUP, 0, {} };
@@ -108,29 +111,66 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
     default:
         qCritical() << "Undefined command: " << cmd.command;
     }
+
+    // debug purposes
+    if (m_request.isEmpty())
+    {
+        // qWarning() << Error::Msg::NullDataError;
+        m_isExceptionalSituation = true;
+    }
+
     return m_request;
-}
-
-QByteArray Iec104RequestParser::createGroupRequest([[maybe_unused]] const quint32 groupNum)
-{
-    return QByteArray {};
-}
-
-QByteArray Iec104RequestParser::createASDUPrefix(const Iec104::MessageDataType type, const quint32 address)
-{
-    QByteArray asdu;
-    asdu.append(std_ext::to_underlying(type));
-    asdu.append(QByteArrayLiteral("\x01\x06\x00"));
-    asdu.append(StdFunc::toByteArray(m_baseStationAddress));
-    asdu.append(address);
-    asdu.append(address >> 8);
-    asdu.append(address >> 16);
-    return asdu;
 }
 
 QByteArray Iec104RequestParser::getNextContinueCommand() noexcept
 {
     return QByteArray {};
-};
+}
+
+void Iec104RequestParser::exceptionalAction(const CommandStruct &command) noexcept
+{
+    Q_UNUSED(command);
+    m_isExceptionalSituation = false;
+}
+
+QByteArray Iec104RequestParser::createGroupRequest(const quint32 groupNum)
+{
+    ASDU asdu(m_baseStationAddress);
+    asdu.setRequestData(groupNum);
+    auto request = asdu.toByteArray();
+    APCI apci(*m_ctrlBlock, request.size());
+    apci.m_ctrlBlock.m_format = FrameFormat::Information;
+    request.prepend(apci.toByteArray().value_or(QByteArray {}));
+    emit currentCommand(Iec104::Command::RequestGroup);
+    return request;
+}
+
+QByteArray Iec104RequestParser::createStartMessage() const noexcept
+{
+    APCI apci;
+    apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
+    apci.m_ctrlBlock.m_func = ControlFunc::StartDataTransfer;
+    apci.m_ctrlBlock.m_arg = ControlArg::Activate;
+    auto bytes = apci.toByteArray();
+    return bytes.value_or(QByteArray {});
+}
+
+QByteArray Iec104RequestParser::createStopMessage() const noexcept
+{
+    APCI apci;
+    apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
+    apci.m_ctrlBlock.m_func = ControlFunc::StopDataTransfer;
+    apci.m_ctrlBlock.m_arg = ControlArg::Activate;
+    auto bytes = apci.toByteArray();
+    return bytes.value_or(QByteArray {});
+}
+
+QByteArray Iec104RequestParser::createSupervisoryMessage() const noexcept
+{
+    APCI apci(*m_ctrlBlock);
+    apci.m_ctrlBlock.m_format = FrameFormat::Supervisory;
+    auto bytes = apci.toByteArray();
+    return bytes.value_or(QByteArray {});
+}
 
 } // namespace Interface

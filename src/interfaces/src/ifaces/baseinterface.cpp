@@ -116,7 +116,6 @@ void BaseInterface::reconnect()
         setState(Interface::State::Reconnect);
         while (getState() == Interface::State::Reconnect)
         {
-
             disconnect();                       // Закрываем текущее соединение
             StdFunc::Wait(m_reconnectInterval); // Интервал между закрытием подключения и попыткой переподключиться
             if (connect()) // Пытаемся подключиться к интерфейсу заново

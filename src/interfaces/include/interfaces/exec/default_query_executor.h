@@ -24,11 +24,12 @@ enum class ExecutorState : std::uint32_t
 };
 
 /// \brief Класс исполнителя запросов к устройству.
-class DeviceQueryExecutor : public QObject
+class DefaultQueryExecutor : public QObject
 {
     Q_OBJECT
-private:
+protected:
     friend class QueryExecutorFabric;
+
     std::atomic<ExecutorState> m_state;
     std::atomic<Commands> m_lastRequestedCommand;
     std::reference_wrapper<RequestQueue> m_queue;
@@ -38,10 +39,9 @@ private:
     BaseResponseParser *m_responseParser;
 
     /// \brief Приватный конструктор.
-    /// \details Создание экземпляров класса доступно только через функции
-    /// makeProtocomExecutor, makeModbusExecutor и makeIec104Executor.
-    /// \see makeProtocomExecutor, makeModbusExecutor и makeIec104Executor.
-    explicit DeviceQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent = nullptr);
+    /// \details Создание экземпляров класса доступно только через QueryExecutorFabric.
+    /// \see QueryExecutorFabric.
+    explicit DefaultQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent = nullptr);
 
     /// \brief Инициализация логгера исполнителя запросов.
     /// \details Вызывается при создании исполнителя запросов.
@@ -62,19 +62,23 @@ private:
     void parseFromQueue() noexcept;
 
     /// \brief Функция для отправки запроса активному интерфейсу.
-    void writeToInterface(const QByteArray &request) noexcept;
+    virtual void writeToInterface(const QByteArray &request, bool isCounted = true) noexcept;
 
     /// \brief Функция для записи данных в лог протокола.
     void writeToLog(const QByteArray &ba, const Direction dir = Direction::NoDirection) noexcept;
 
+private slots:
+    /// \brief Приватный слот для записи информации в лог от парсера запросов и ответов.
+    void logFromParser(const QString &message, const LogLevel level);
+
 public:
     /// \brief Удалённый конструктор по умолчанию.
-    DeviceQueryExecutor() = delete;
+    DefaultQueryExecutor() = delete;
     /// \brief Удалённый конструктор копирования.
-    DeviceQueryExecutor(const DeviceQueryExecutor &rhs) = delete;
+    DefaultQueryExecutor(const DefaultQueryExecutor &rhs) = delete;
 
     /// \brief Функция, содержащая главный цикл исполнителя запросов.
-    void exec();
+    virtual void exec();
 
     /// \brief Функция для продолжения работы исполнителя запросов.
     /// \details Переводит состояние исполнителя в ExecutorState::RequestParsing.
@@ -91,7 +95,7 @@ public:
 
 public slots:
     /// \brief Слот для принятия от устройства ответа на посланный ему ранее запрос.
-    void receiveDataFromInterface(const QByteArray &response);
+    virtual void receiveDataFromInterface(const QByteArray &response);
     /// \brief Слот для отмены текущего запроса.
     void cancelQuery();
     /// \brief Слот, вызываемый при переподключении текущего интерфейса.
