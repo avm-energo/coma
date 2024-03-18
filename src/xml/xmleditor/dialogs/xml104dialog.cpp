@@ -1,8 +1,9 @@
 #include "xml104dialog.h"
 
+#include "../widgets/wd_func.h"
+
 #include <QHash>
 #include <cstdint>
-#include <gen/stdfunc.h>
 #include <variant>
 
 namespace StringData
@@ -77,7 +78,7 @@ void Xml104Dialog::setupUI(QVBoxLayout *mainLayout)
     // Виджеты для типа регистра
     auto sigTypeLabel = new QLabel("Тип регистра: ", this);
     auto sigTypeInput = new QLineEdit("", this);
-    sigTypeInput->setValidator(StdFunc::getRegExpValidator("^([1-9][0-9]*|0)", this));
+    sigTypeInput->setValidator(WDFunc::getRegExpValidator("^([1-9][0-9]*|0)", this));
     QObject::connect(
         sigTypeInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&Xml104Dialog::dataChanged));
     sigTypeLayout->addWidget(sigTypeLabel);
