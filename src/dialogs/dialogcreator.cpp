@@ -11,8 +11,8 @@
 #include "checkdialog.h"
 #include "configdialog.h"
 #include "fwuploaddialog.h"
-#include "hiddendialog.h"
 #include "infodialog.h"
+#include "hiddendialog.h"
 #include "plotdialog.h"
 #include "relaydialog.h"
 #include "switchjournaldialog.h"
@@ -115,9 +115,6 @@ void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
 void DialogCreator::createJournalDialog()
 {
     using namespace journals;
-    // TODO: Только для USB
-    // Делаем проверку и создаём диалог для журналов
-    // if (board.interfaceType() != Board::InterfaceType::RS485)
     addDialogToList(new JournalDialog(m_settings, m_parent), "Журналы", "jours");
 }
 
@@ -207,13 +204,12 @@ void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
 {
     if (m_board.interfaceType() != Interface::IfaceType::Ethernet)
         addDialogToList(new FWUploadDialog(m_parent), "Загрузка ВПО", "upload");
-    addDialogToList(new TimeDialog(m_parent), "Время", "time");
-    addDialogToList(new InfoDialog(m_parent), "О приборе", "info");
-
     if (appCfg == AppConfiguration::Debug)
     {
-        auto hiddenDialog = new HiddenDialog(m_parent);
-        hiddenDialog->fill();
+        auto hiddenDialog = new HiddenDialog(m_settings, m_parent);
+        hiddenDialog->setModuleName(m_board.moduleName());
         addDialogToList(hiddenDialog, "Секретные операции", "hidden");
     }
+    addDialogToList(new TimeDialog(m_parent), "Время", "time");
+    addDialogToList(new InfoDialog(m_parent), "О приборе", "info");
 }

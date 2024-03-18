@@ -82,12 +82,15 @@ enum class Commands
     C_ReqOscInfo,
     C_SetMode,
     C_GetMode,
-    C_WriteHardware
+    C_WriteHardware,
+    C_EnableHardwareWriting
 };
+Q_ENUM_NS(Commands)
 
 enum CommandRegisters
 {
     StartWorkingChannel = 803,  ///< Старт рабочего канала
+    EraseSystemJournal = 807,   ///< Стереть системный журнал
     SetStartupValues = 900,     ///< Задать начальные значения по всем фазам
     SetStartupPhaseA = 901,     ///< Задать начальные значения по фазе A
     SetStartupPhaseB = 902,     ///< Задать начальные значения по фазе B

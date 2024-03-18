@@ -76,7 +76,11 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_Test:
     {
         if (isSupportedCommand(cmd.command))
-            m_request = prepareBlock(s_protoCmdMap.at(cmd.command), StdFunc::toByteArray(cmd.arg1.value<quint8>()));
+        {
+            const auto protoCommand = s_protoCmdMap.at(cmd.command);
+            m_request = prepareBlock(protoCommand, StdFunc::toByteArray(cmd.arg1.value<quint8>()));
+            m_continueCommand = createContinueCommand(protoCommand);
+        }
         break;
     }
     // file request: known file types should be download from disk and others must be taken from module by Protocom,
@@ -90,8 +94,6 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         case FilesEnum::JourSys:
         case FilesEnum::JourWork:
         case FilesEnum::JourMeas:
-            /// TODO: Exceptional situation
-            // processFileFromDisk(filetype);
             setExceptionalSituationStatus(true);
             break;
         default:
@@ -188,8 +190,13 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         m_request = prepareBlock(Proto::WriteSingleCommand, tmpba);
         break;
     }
+    case Commands::C_EnableHardwareWriting:
+    {
+        setExceptionalSituationStatus(true);
+        break;
+    }
     default:
-        qCritical() << "Undefined command: " << QVariant::fromValue(cmd.command).toString();
+        qCritical() << "Undefined command: " << cmd.command;
     }
     return m_request;
 }
@@ -203,6 +210,8 @@ void ProtocomRequestParser::exceptionalAction(const CommandStruct &cmd) noexcept
 {
     if (cmd.command == Commands::C_ReqFile)
         processFileFromDisk(cmd.arg1.value<S2::FilesEnum>());
+    else if (cmd.command == Commands::C_EnableHardwareWriting)
+        emit emulateOkAnswer();
 }
 
 bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noexcept
@@ -305,7 +314,10 @@ QByteArray ProtocomRequestParser::writeLongData(const Proto::Commands cmd, const
         return getNextDataSection(); // send first chunk
     }
     else
+    {
+        emit writingLastSection();
         return prepareBlock(cmd, data);
+    }
 }
 
 QByteArray ProtocomRequestParser::createContinueCommand(const Proto::Commands cmd) const noexcept

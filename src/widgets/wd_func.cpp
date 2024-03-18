@@ -773,15 +773,14 @@ bool WDFunc::SetChBData(QWidget *parent, const QString &chbname, bool data)
 //    vlyout->addLayout(hlyout);
 //}
 
-void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lename, bool enabled)
+void WDFunc::AddLabelAndLineeditH(QWidget *parent, QHBoxLayout *hlyout, QString caption, QString lename, bool enabled)
 {
-    auto hlyout = static_cast<QHBoxLayout *>(lyout);
-    auto lbl = new QLabel(caption);
-    hlyout->addWidget(lbl, 0);
-    auto le = new QLineEdit("");
-    le->setObjectName(lename);
-    le->setEnabled(enabled);
-    hlyout->addWidget(le, 10);
+    auto label = new QLabel(caption, parent);
+    hlyout->addWidget(label, 0);
+    auto lineEdit = new QLineEdit("", parent);
+    lineEdit->setObjectName(lename);
+    lineEdit->setEnabled(enabled);
+    hlyout->addWidget(lineEdit, 10);
 }
 
 QWidget *WDFunc::NewLBLAndLBL(QWidget *parent, QString lblname, QString caption, bool enabled)

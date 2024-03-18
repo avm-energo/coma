@@ -14,7 +14,7 @@ namespace journals
 JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent) : UDialog(parent)
 {
     disableSuccessMessage();
-    m_conn->connection(this, &JournalDialog::receivedJournalFile);
+    m_dataUpdater->currentConnection()->connection(this, &JournalDialog::receivedJournalFile);
     createJournals(settings);
     setupUI();
 }

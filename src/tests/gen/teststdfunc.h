@@ -34,11 +34,14 @@ private slots:
     void strToVer();
     void enumToStr();
     void byteArrayTest();
+
     void modbusRegistersTest01();
     void modbusRegistersTest02();
     void modbusRegistersTest03();
     void modbusRegistersTest04();
     void modbusRegistersTest05();
+    void modbusRegistersTest06();
+    void modbusRegistersTest07();
     void modbusSinglePoint();
 };
 

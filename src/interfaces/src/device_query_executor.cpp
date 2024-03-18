@@ -12,7 +12,7 @@ DeviceQueryExecutor::DeviceQueryExecutor(RequestQueue &queue, quint32 timeout, Q
     m_timeoutTimer->setSingleShot(true);
     m_timeoutTimer->setInterval(timeout);
     connect(m_timeoutTimer, &QTimer::timeout, this, [this] {
-        qCritical() << "Timeout, command: " << int(m_lastRequestedCommand.load());
+        qCritical() << "Timeout, command: " << m_lastRequestedCommand.load();
         m_log.error("Timeout");
         cancelQuery();
         emit this->timeout();

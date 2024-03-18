@@ -24,6 +24,7 @@ constexpr auto protocom = "protocom";
 constexpr auto iec = "iec60870";
 constexpr auto config = "config";
 constexpr auto conf_tabs = "config-tabs";
+constexpr auto hidden = "hidden";
 
 // Specified tags
 constexpr auto sig = "signal";
@@ -39,6 +40,10 @@ constexpr auto mtypeb = "mtypeb";
 constexpr auto mtypem = "mtypem";
 constexpr auto version = "version";
 constexpr auto desc = "desc";
+constexpr auto prefix = "prefix";
+constexpr auto background = "background";
+constexpr auto title = "title";
+constexpr auto flag = "flag";
 constexpr auto id = "id";
 constexpr auto addr = "addr";
 constexpr auto start_addr = "start-addr";

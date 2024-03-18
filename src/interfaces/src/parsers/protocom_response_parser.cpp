@@ -94,7 +94,12 @@ void ProtocomResponseParser::parse()
         }
         break;
     case Proto::Commands::ReadBlkTech:
-        processTechBlock(m_responseBuffer, addr);
+        processDataSection(m_responseBuffer);
+        if (m_isLastSectionReceived)
+        {
+            processTechBlock(m_longDataBuffer, addr);
+            m_longDataBuffer.clear();
+        }
         break;
     case Proto::Commands::ReadProgress:
         processU32(m_responseBuffer, addr);

@@ -1,5 +1,8 @@
 #include "interfaces/connection.h"
 
+/// TODO: этого инклуда здесь быть не должно...
+#include "../../module/modules.h"
+
 #include <QCoreApplication>
 #include <QMutexLocker>
 #include <gen/std_ext.h>
@@ -37,6 +40,11 @@ void Connection::reqBitStrings(quint32 sigAdr, quint32 sigCount)
 {
     if (isValidRegs(sigAdr, sigCount))
         setToQueue(CommandStruct { Commands::C_ReqBitStrings, sigAdr, sigCount });
+    /// TODO: Костыли для протокома, убрать...
+    else if (sigAdr == Regs::bsiStartReg)
+        reqBSI();
+    else if (sigAdr == Regs::bsiExtStartReg)
+        reqBSIExt();
 }
 
 bool Connection::supportBSIExt()

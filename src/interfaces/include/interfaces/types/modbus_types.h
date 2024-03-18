@@ -43,8 +43,10 @@ struct Request
     QByteArray data;
 };
 
-constexpr quint16 firmwareModbusAddr = 802;
+constexpr quint16 firmwareAddr = 802;
 constexpr quint16 timeReg = 4600;
+constexpr quint16 enableWriteHwAddr = 40001;
+constexpr quint16 hardwareVerAddr = 40010;
 constexpr quint8 fileSectionLength = 0xF6;
 
 inline QDebug operator<<(QDebug debug, const Modbus::Request &cmd)

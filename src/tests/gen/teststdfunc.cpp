@@ -4,12 +4,13 @@
 #include <gen/datatypes.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <interfaces/utils/modbus_convertations.h>
 
 namespace detail
 {
 
 template <typename T> //
-T unpackReg(QByteArray ba)
+inline T unpackReg(QByteArray ba)
 {
     assert(sizeof(T) == ba.size());
     for (auto i = 0; i < ba.size(); i = i + 2)
@@ -18,30 +19,14 @@ T unpackReg(QByteArray ba)
 }
 
 template <typename T, std::size_t N = sizeof(T)> //
-inline T unpackRegister(const QByteArray &ba)
+inline QByteArray packReg(T value)
 {
-    assert(N == ba.size());
-    T value;
-    auto dstBegin = reinterpret_cast<std::uint8_t *>(&value);
-    std::copy(ba.cbegin(), ba.cend(), dstBegin);
-    for (auto i = 0; i < N; i += 2)
-        std::swap(dstBegin[i], dstBegin[i + 1]);
-    return value;
-}
-
-template <typename T, std::size_t N = sizeof(T)> //
-QByteArray packRegister(T value)
-{
-    static_assert(N % 2 == 0, "The size of type T must be even");
-    static_assert(N >= 2, "The size of type T must be greater than or equal to 2");
     QByteArray ba;
-    auto srcBegin = reinterpret_cast<std::uint8_t *>(&value);
-    auto srcEnd = srcBegin + sizeof(T);
-    for (auto it = srcBegin; it != srcEnd; it = it + 2)
-    {
-        ba.push_back(*(it + 1));
-        ba.push_back(*it);
-    }
+    ba.reserve(N);
+    auto srcBegin = reinterpret_cast<std::uint16_t *>(&value);
+    auto srcEnd = srcBegin + (N / sizeof(std::uint16_t));
+    for (auto iter = srcBegin; iter != srcEnd; ++iter)
+        ba.append(StdFunc::toByteArray(qToBigEndian(*iter)));
     return ba;
 }
 
@@ -151,7 +136,7 @@ void TestStdFunc::modbusRegistersTest01()
 {
     std::uint16_t data = 0xaabb;
     auto first = StdFunc::toByteArray(qToBigEndian(data));
-    auto second = detail::packRegister(data);
+    auto second = Modbus::packRegister(data);
     QVERIFY(first == second);
 }
 
@@ -159,32 +144,56 @@ void TestStdFunc::modbusRegistersTest02()
 {
     std::uint32_t data = 0xaabbccdd;
     auto first = StdFunc::toByteArray(qToBigEndian(data));
-    auto second = detail::packRegister(data);
+    auto second = Modbus::packRegister(data);
+    auto third = detail::packReg(data);
+    qDebug() << first << second << third;
     QVERIFY(first != second);
+    QVERIFY(second == third);
 }
 
 void TestStdFunc::modbusRegistersTest03()
 {
-    std::uint32_t data = 0xaabbccdd;
-    auto packed = detail::packRegister(data);
-    auto unpacked = detail::unpackReg<std::uint32_t>(packed);
-    QVERIFY(data == unpacked);
+    std::uint64_t data = 0xaabbccddaabbccdd;
+    auto first = StdFunc::toByteArray(qToBigEndian(data));
+    auto second = Modbus::packRegister(data);
+    auto third = detail::packReg(data);
+    qDebug() << first << second << third;
+    QVERIFY(first != second);
+    QVERIFY(second == third);
 }
 
 void TestStdFunc::modbusRegistersTest04()
 {
     std::uint32_t data = 0xaabbccdd;
-    auto packed = detail::packRegister(data);
-    auto unpacked = detail::unpackRegister<std::uint32_t>(packed);
-    QVERIFY(data == unpacked);
+    auto first = StdFunc::toByteArray(data);
+    auto second = Modbus::packRegister(data);
+    auto third = Modbus::packRegister(first);
+    qDebug() << first << second << third;
+    QVERIFY(second == third);
 }
 
 void TestStdFunc::modbusRegistersTest05()
 {
     std::uint32_t data = 0xaabbccdd;
-    auto packed = detail::packRegister(data);
+    auto packed = Modbus::packRegister(data);
+    auto unpacked = detail::unpackReg<std::uint32_t>(packed);
+    QVERIFY(data == unpacked);
+}
+
+void TestStdFunc::modbusRegistersTest06()
+{
+    std::uint32_t data = 0xaabbccdd;
+    auto packed = Modbus::packRegister(data);
+    auto unpacked = Modbus::unpackRegister<std::uint32_t>(packed);
+    QVERIFY(data == unpacked);
+}
+
+void TestStdFunc::modbusRegistersTest07()
+{
+    std::uint32_t data = 0xaabbccdd;
+    auto packed = Modbus::packRegister(data);
     auto first = detail::unpackReg<std::uint32_t>(packed);
-    auto second = detail::unpackRegister<std::uint32_t>(packed);
+    auto second = Modbus::unpackRegister<std::uint32_t>(packed);
     QVERIFY(first == second);
 }
 

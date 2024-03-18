@@ -48,6 +48,12 @@ void FWUploadDialog::loadFirmware()
     if (filepath.isEmpty())
         return;
 
+    if (!EMessageBox::question(this,
+            "Вы уверены, что следует записать выбранный файл?\n"
+            "Полный путь до файла ВПО: "
+                + filepath))
+        return;
+
     QByteArray ba;
     auto status = Files::LoadFromFile(filepath, ba);
     if (status != Error::Msg::NoError)
@@ -79,7 +85,8 @@ void FWUploadDialog::loadFirmware()
         EMessageBox::error(this, "Получен файл с некорректным размером.");
         return;
     }
-    Connection::iface()->writeFirmware(firmware);
+    auto conn = Connection::iface();
+    conn->writeFirmware(firmware);
     uploadStatus = FirmwareUploadStatus::Written;
 }
 

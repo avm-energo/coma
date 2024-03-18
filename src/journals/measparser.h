@@ -9,7 +9,7 @@ namespace journals
 {
 
 using MeasSettings = ModuleTypes::MeasJourList;
-using Data = QVector<QVector<QVariant>>;
+using JournalData = QVector<QVector<QVariant>>;
 
 /// \brief Класс для парсинга событий из журналов измерений.
 class MeasParser : public QObject
@@ -100,7 +100,7 @@ public:
     /// \details После парсинга записей жунрала измерений производится сортировка
     /// этих записей, если найден индекса столбца с временем записи измерений.
     /// \see parseRecord, iterateValue, iterateTime, sortByTime
-    const Data parse(const MeasSettings &settings);
+    const JournalData parse(const MeasSettings &settings);
 };
 
 }

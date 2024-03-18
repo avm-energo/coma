@@ -127,7 +127,7 @@ struct OscInfo
 inline QDebug operator<<(QDebug debug, const S2::OscInfo &st)
 {
     debug.nospace() << st.typeHeader.id << ":" << st.typeHeader.numByte << ":" << st.id << ":"
-                    << TimeFunc::UnixTime64ToString(st.unixtime) << ":" << st.idOsc0;
+                    << TimeFunc::UnixTime64ToInvStringFractional(st.unixtime) << ":" << st.idOsc0;
     return debug.maybeSpace();
 }
 
