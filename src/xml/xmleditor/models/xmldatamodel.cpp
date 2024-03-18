@@ -39,6 +39,14 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::name, data(index(row, 1)));
             } };
+    case ModelType::AlarmStateAll:
+        return { tags::state_all, tags::item, //
+            [this](auto &doc, auto &item, auto &row) {
+                makeElement(doc, item, tags::addr, data(index(row, 0)));
+                makeElement(doc, item, tags::string, data(index(row, 1)));
+                makeElement(doc, item, tags::type, data(index(row, 2)));
+            } };
+        break;
     case ModelType::AlarmsCrit:
         return { tags::crit, tags::item, alarmHelper };
     case ModelType::AlarmsWarn:
@@ -127,6 +135,11 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     case ModelType::SectionTabs:                              //
         parseTag(node, tags::id, row, 0, "", true);           // ID вкладки
         parseTag(node, tags::name, row, 1);                   // Имя вкладки
+        break;                                                //
+    case ModelType::AlarmStateAll:                            //
+        parseTag(node, tags::addr, row, 0, "", true);         // Адрес
+        parseTag(node, tags::string, row, 1);                 // Строка с сообщением
+        parseTag(node, tags::type, row, 2);                   // Строка с сообщением
         break;                                                //
     case ModelType::AlarmsCrit:                               //
     case ModelType::AlarmsWarn:                               //
