@@ -132,7 +132,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         break;
     }
     // writing registers
-    case Commands::C_WriteHardware:
+    case Commands::C_WriteHiddenBlock:
     {
         if (cmd.arg1.canConvert<DataTypes::BlockStruct>())
         {
@@ -146,7 +146,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         break;
     }
     // writing registers
-    case Commands::C_EnableHardwareWriting:
+    case Commands::C_EnableHiddenBlockWriting:
     {
         auto value = Modbus::packRegister(cmd.arg1.value<quint16>());
         request = Modbus::Request {
