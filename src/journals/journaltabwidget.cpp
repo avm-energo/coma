@@ -1,6 +1,5 @@
 #include "journaltabwidget.h"
 
-#include "../dialogs/keypressdialog.h"
 #include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
@@ -112,10 +111,7 @@ void JournalTabWidget::gettingJournal()
 
 void JournalTabWidget::eraseJournal()
 {
-    // Manual checking password
-    static constexpr auto hash = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
-    auto kpd = new KeyPressDialog;
-    if (kpd->CheckPassword(hash))
+    if (EMessageBox::password(this))
         ActiveConnection::async()->writeCommand(Interface::Commands::C_EraseJournals, quint8(journal->getType()));
 }
 

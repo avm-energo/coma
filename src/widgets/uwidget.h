@@ -27,7 +27,6 @@ public:
 
 protected:
     bool checkPassword();
-    QString m_hash;
     ModuleDataUpdater *m_dataUpdater;
 };
 

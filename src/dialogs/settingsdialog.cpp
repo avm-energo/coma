@@ -1,9 +1,11 @@
 #include "settingsdialog.h"
 
 #include "../widgets/epopup.h"
+#include "../widgets/passwordlineedit.h"
 #include "../widgets/styleloader.h"
 #include "../widgets/wd_func.h"
 
+#include <QCryptographicHash>
 #include <QGroupBox>
 #include <QGuiApplication>
 #include <QListWidget>
@@ -114,6 +116,19 @@ void SettingsDialog::setupGeneralTab() noexcept
     timezoneLayout->addWidget(new QLabel("Часовой пояс", m_workspace));
     timezoneLayout->addWidget(timezoneCB);
     workspaceLayout->addLayout(timezoneLayout);
+    workspaceLayout->addWidget(WDFunc::newHLine(m_workspace));
+
+    // Изменение пароля
+    auto passwordGB = new QGroupBox("Пароль", m_workspace);
+    auto passwordLayout = new QGridLayout;
+    auto passwordLE = m_settings.nameof<PasswordHash>();
+    passwordLayout->addWidget(WDFunc::NewLBL2(passwordGB, "Обновить пароль:"), 1, 1, 1, 1);
+    passwordLayout->addWidget(WDFunc::NewPswLE2(passwordGB, passwordLE, QLineEdit::Password), 1, 2, 1, 1);
+    auto resetBtn = new QPushButton("Установить пароль по умолчанию", passwordGB);
+    connect(resetBtn, &QAbstractButton::clicked, this, &SettingsDialog::resetPassword);
+    passwordLayout->addWidget(resetBtn, 2, 1, 1, 2);
+    passwordGB->setLayout(passwordLayout);
+    workspaceLayout->addWidget(passwordGB);
 }
 
 void SettingsDialog::setupConnectionTab() noexcept
@@ -266,6 +281,9 @@ void SettingsDialog::acceptSettings()
     QString timezone = WDFunc::CBData(this, m_settings.nameof<Timezone>());
     if (!timezone.isEmpty())
         m_settings.set<Timezone>(timezone);
+    auto newPassword = WDFunc::LEData(this, "pswle");
+    if (!newPassword.isEmpty())
+        updatePassword(newPassword);
 
     auto tuneCount = WDFunc::LEData(this, m_settings.nameof<TuneCount>()).toInt(&tmpb);
     if (tmpb)
@@ -313,6 +331,29 @@ void SettingsDialog::acceptSettings()
     m_settings.set<Iec104K>(WDFunc::LEData(this, m_settings.nameof<Iec104K>()));
     m_settings.set<Iec104W>(WDFunc::LEData(this, m_settings.nameof<Iec104W>()));
     close();
+}
+
+void SettingsDialog::resetPassword()
+{
+    if (EMessageBox::question(this, "Установить пароль по умолчанию? Это действие невозможно отменить"))
+        m_settings.set<PasswordHash>(m_settings.defaultValue(PasswordHash));
+}
+
+void SettingsDialog::updatePassword(const QString &newPassword)
+{
+    // Просим подтверждение пользователя
+    if (!EMessageBox::question(this, "Обновить пароль? Это действие невозможно отменить"))
+        return;
+    // Просим ввести старый пароль перед изменением
+    if (!EMessageBox::password(this, m_settings.get<PasswordHash>()))
+    {
+        EMessageBox::warning(this, "Пароль введён неверно!");
+        return;
+    }
+    // Сохраняем новый хэш
+    QCryptographicHash hasher(QCryptographicHash::Sha3_256);
+    hasher.addData(newPassword.toUtf8());
+    m_settings.set<PasswordHash>(QString::fromUtf8(hasher.result().toHex()));
 }
 
 void SettingsDialog::themeChanged(const QString &newTheme)

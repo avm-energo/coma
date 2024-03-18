@@ -13,15 +13,6 @@ UDialog::UDialog(QWidget *parent) : UWidget(parent)
     setErrorMsg("При записи произошла ошибка");
 }
 
-UDialog::UDialog(const QString &hash, const QString &key, QWidget *parent) : UDialog(parent)
-{
-    QSettings settings;
-    auto value = settings.value(key, "").toString();
-    if (value.isEmpty())
-        settings.setValue(key, hash);
-    m_hash = settings.value(key, "").toString();
-}
-
 void UDialog::updateConnection(AsyncConnection *conn)
 {
     m_dataUpdater->updateConnection(conn);

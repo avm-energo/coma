@@ -1,6 +1,4 @@
 <svg width="7.8588mm" height="6.806mm" version="1.1" viewBox="0 0 7.8588 6.806" xmlns="http://www.w3.org/2000/svg">
  <path d="m5.8567 6.7413-3.8546-2e-7 -1.9274-3.3382 1.9274-3.3382 3.8546 2e-7 1.9274 3.3382z" fill="none" stroke="#b76700" stroke-width=".23548"/>
- <text transform="translate(.39892 -1.8552)" font-family="Saira" font-size="10.583px" font-weight="bold" style="line-height:1.25;shape-inside:url(#rect1564);white-space:pre" xml:space="preserve"/>
- <text x="29.950945" y="12.251613" font-family="Saira" font-size="10.583px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan x="29.950945" y="12.251613" stroke-width=".26458"/></text>
- <text x="2.0166626" y="4.9257579" fill="#b76700" font-family="sans-serif" font-size="4.5299px" font-style="italic" stroke-width=".11325" style="line-height:1.25" xml:space="preserve"><tspan x="2.0166626" y="4.9257579" fill="#b76700" stroke-width=".11325">#</tspan></text>
+ <path d="m4.0007 1.6743-0.23003 0.91792h0.64586l0.23225-0.91792h0.3539l-0.22782 0.91792h0.74319l-0.086263 0.34063h-0.74319l-0.18137 0.73876h0.75203l-0.079627 0.33842h-0.75867l-0.23003 0.91571h-0.3539l0.22782-0.91571h-0.64808l-0.22782 0.91571h-0.35611l0.23003-0.91571h-0.72992l0.081839-0.33842h0.72992l0.1858-0.73876h-0.74319l0.086263-0.34063h0.74319l0.22561-0.91792zm0.33178 1.2586h-0.64365l-0.1858 0.73876h0.64808z" fill="#b76700" stroke-width=".11325"/>
 </svg>

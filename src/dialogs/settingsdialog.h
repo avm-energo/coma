@@ -35,6 +35,8 @@ private:
 
 private slots:
     void acceptSettings();
+    void resetPassword();
+    void updatePassword(const QString &newPassword);
     void themeChanged(const QString &newTheme);
 
 signals:

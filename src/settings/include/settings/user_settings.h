@@ -9,7 +9,7 @@ namespace Settings
 {
 
 /// \brief Класс, предоставляющий возможность обрабатывать и хранить пользовательские настройки.
-class UserSettings : public Singleton<UserSettings>
+class UserSettings final : public Singleton<UserSettings>
 {
 private:
     static const std::map<SettingType, SettingPair> s_params;
@@ -66,7 +66,8 @@ private:
     QSettings &m_settings;
 
 public:
-    ScopedSettingsGroup(UserSettings &settings, const QString &groupName) noexcept : m_settings(settings.native())
+    explicit ScopedSettingsGroup(UserSettings &settings, const QString &groupName) noexcept
+        : m_settings(settings.native())
     {
         m_settings.beginGroup(groupName);
     }

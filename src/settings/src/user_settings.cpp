@@ -6,10 +6,12 @@ namespace Settings
 
 // Системный часовой пояс
 const auto systemTimezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
+constexpr auto defaultHash = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
 
 const std::map<SettingType, SettingPair> UserSettings::s_params {
     { SettingType::Theme, { "Theme", "Light" } },                     //
     { SettingType::Timezone, { "Timezone", systemTimezone } },        //
+    { SettingType::PasswordHash, { "PasswordHash", defaultHash } },   //
     { SettingType::LoggingEnabled, { "LoggingEnabled", true } },      //
     { SettingType::AlarmsInterval, { "AlarmsInterval", 10000 } },     //
     { SettingType::AlarmsEnabled, { "AlarmsEnabled", true } },        //
