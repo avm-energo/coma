@@ -40,6 +40,10 @@ private:
     /// \brief Приватный конструктор.
     /// \details Создание экземпляров класса доступно только через функции
     /// makeProtocomExecutor, makeModbusExecutor и makeIec104Executor.
+    /// \param timeout[in] - допустимые интервал времени в мс между записью запроса в
+    /// устройства, и ожиданием от него ответа. При превышении данного интервала происходит
+    /// таймаут, текущая отправленная команда сбрасывается, о таймауте уведомляется
+    /// ConnectionManager с помощью сигнала timeout, из очереди запросов берётся следующий запрос.
     /// \see makeProtocomExecutor, makeModbusExecutor и makeIec104Executor.
     explicit DeviceQueryExecutor(RequestQueue &queue, quint32 timeout, QObject *parent = nullptr);
 

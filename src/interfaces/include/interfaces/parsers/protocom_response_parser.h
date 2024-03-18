@@ -18,9 +18,9 @@ private:
         quint8 mTypeB = 0;
         quint8 mTypeM = 0;
 
-        bool isEmpty()
+        bool isEmpty() noexcept
         {
-            return ((mTypeB == 0) || (mTypeM == 0));
+            return ((mTypeB == 0) && (mTypeM == 0));
         }
     } boardType;
 

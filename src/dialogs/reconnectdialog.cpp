@@ -1,6 +1,6 @@
 #include "reconnectdialog.h"
 
-#include "../widgets/QProgressIndicator.h"
+#include "../widgets/eprogressindicator.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -41,7 +41,7 @@ void ReconnectDialog::setupUI()
 
     auto hLayout = new QHBoxLayout;
     {
-        m_progressIndicator = new QProgressIndicator(this);
+        m_progressIndicator = new EProgressIndicator(this);
         m_progressIndicator->setMinimumSize(40, 40);
         mainLayout->addStretch();
         hLayout->addStretch();

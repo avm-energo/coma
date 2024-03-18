@@ -38,7 +38,7 @@ void DeviceQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseP
         connect(m_requestParser, &BaseRequestParser::progressBytes,       //
             m_responseParser, &BaseResponseParser::processProgressCount); //
         connect(m_requestParser, &BaseRequestParser::writingLastSection,  //
-            m_responseParser, &BaseResponseParser::lastSectionSended);    //
+            m_responseParser, &BaseResponseParser::lastSectionSent);    //
         connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
             setState(ExecutorState::WritingLongData);
             m_timeoutTimer->setInterval(m_timeoutTimer->interval() * 5);

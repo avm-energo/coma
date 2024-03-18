@@ -49,6 +49,7 @@ void BaseInterface::writeLog(const Error::Msg msg, Interface::Direction dir)
 void BaseInterface::poll()
 {
     Interface::State state;
+    bool status;
     do
     {
         state = getState();
@@ -56,8 +57,8 @@ void BaseInterface::poll()
             break;
         else if (state == Interface::State::Run)
         {
-            bool status = true;
-            auto data = read(&status); // read data
+            status = true;
+            auto data = read(status); // read data
             if (!data.isEmpty() && status)
             {
                 writeLog(data.toHex(), Interface::Direction::FromDevice);

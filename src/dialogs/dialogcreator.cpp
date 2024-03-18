@@ -72,8 +72,9 @@ bool DialogCreator::isBoxModule(const quint16 &type) const
 
 void DialogCreator::createConfigDialogs()
 {
-    for (const auto &[boardType, boardConf] : m_s2manager)
+    for (auto &[boardType, boardConf] : m_s2manager)
     {
+        boardConf.setDefaultConfig();
         auto confDialog = new ConfigDialog(m_s2service, m_s2manager, boardType, m_parent);
         const auto &confDialogCaption = boardConf.m_tabName;
         const auto confDialogName = "conf" + QString::number(static_cast<int>(boardType));
