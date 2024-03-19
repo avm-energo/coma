@@ -15,7 +15,7 @@
 #include <settings/user_settings.h>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
-    : QObject(parent), m_iface(nullptr), m_parent(parent), m_withGUI(withGUI), m_moduleType(moduleType)
+    : QObject(parent), m_iface(nullptr), m_mipData { 0 }, m_parent(parent), m_withGUI(withGUI), m_moduleType(moduleType)
 {
 }
 
@@ -31,18 +31,20 @@ Mip::~Mip() noexcept
 
 void Mip::updateData(const DataTypes::FloatStruct &fl)
 {
-    if (fl.sigAdr < 42)
+    constexpr quint32 size = sizeof(m_mipData) / sizeof(float);
+    if (fl.sigAdr < size)
     {
         float *mipdata = reinterpret_cast<float *>(&m_mipData);
         *(mipdata + fl.sigAdr) = fl.sigVal;
-        if (fl.sigAdr == 41)
+        // Last information object received
+        if (fl.sigAdr == size - 1)
             emit oneMeasurementReceived();
     }
     if (m_withGUI)
         m_widget->updateFloatData(fl);
 }
 
-Mip::MipDataStruct Mip::getData()
+MipDataStruct Mip::getData()
 {
     return m_mipData;
 }
@@ -281,13 +283,19 @@ UWidget *Mip::widget()
     return m_widget;
 }
 
-Mip::MipDataStruct Mip::takeOneMeasurement(float i2nom)
+MipDataStruct Mip::takeOneMeasurement(float i2nom)
 {
     setNominalCurrent(i2nom);
-    start();
-    QEventLoop el;
-    connect(this, &Mip::oneMeasurementReceived, &el, &QEventLoop::quit);
-    el.exec();
-    stop();
+    if (start())
+    {
+        QTimer timeoutTimer;
+        timeoutTimer.setSingleShot(false);
+        timeoutTimer.setInterval(2000); // 2 sec - timeout
+        QEventLoop el;
+        connect(this, &Mip::oneMeasurementReceived, &el, &QEventLoop::quit);
+        connect(&timeoutTimer, &QTimer::timeout, &el, &QEventLoop::quit);
+        el.exec();
+        stop();
+    }
     return m_mipData;
 }

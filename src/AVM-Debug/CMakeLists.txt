@@ -54,6 +54,12 @@ if(NOT EXISTS ${DBG_CHECK_PATH})
     ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/../../settings
     ${APPDATA})
+  # Copying reports lrxml files to appdata directory after building
+  add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD COMMAND
+    ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../reports
+    ${APPDATA}/reports)
 endif()
 
 # Cross-platform deploy target

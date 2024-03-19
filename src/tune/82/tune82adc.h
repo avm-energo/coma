@@ -14,11 +14,11 @@ public:
     Tune82ADC(S2::Configuration &config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent = nullptr);
 
 private:
+    Modules::MezzanineBoard m_typeM;
     Bac82 *m_bac, m_bacNewBlock;
     Bd182 *m_bd1;
     Bda82 *m_bda;
     Bd0 *m_bd0;
-    Modules::MezzanineBoard m_typeM;
     int m_curTuneStep;
     int m_BacWidgetIndex, m_BdaWidgetIndex, m_Bd0WidgetIndex;
     float IUefNat_filt_old[6]; // для сохранения значений по п. 7.3.2
@@ -32,7 +32,7 @@ private:
     };
 
     MidTuneStruct m_midTuneStruct;
-    Mip::MipDataStruct mipdata;
+    MipDataStruct mipdata;
 
     void setTuneFunctions() override;
 
@@ -45,8 +45,6 @@ private:
     Error::Msg calcIcoef5();
     Error::Msg showPreWarning();
     Error::Msg checkTune();
-
-    void setCurrentsTo(float i);
     void getBd1();
 
 private slots:
