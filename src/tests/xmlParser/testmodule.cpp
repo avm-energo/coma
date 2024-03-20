@@ -98,9 +98,9 @@ void TestModule::initTestCase()
     QObject::connect(m_xmlParser, &Xml::ModuleParser::measJourDataSending,  //
         m_storage, &Device::ConfigStorage::measJourDataReceive);            //
     QObject::connect(m_xmlParser, &Xml::ModuleParser::protocolGroupSending, //
-        m_storage, &Device::ConfigStorage::protocolGroupReceived);          //
+        m_storage, &Device::ConfigStorage::protocolGroupReceive);           //
     QObject::connect(m_xmlParser, &Xml::ModuleParser::hiddenTabDataSending, //
-        m_storage, &Device::ConfigStorage::hiddenTabDataReceived);          //
+        m_storage, &Device::ConfigStorage::hiddenTabDataReceive);           //
 
     QObject::connect(m_xmlParser, &Xml::ModuleParser::parseError, //
         this, [this](const QString &err) {

@@ -69,12 +69,18 @@ void ConfigStorage::measJourDataReceive(const u32 index, const QString &header, 
     m_settings.appendMeasJournal(index, header, type, visib);
 }
 
-void ConfigStorage::hiddenTabDataReceived(const XmlDataTypes::HiddenTab &hiddenTab)
+void ConfigStorage::hiddenTabDataReceive(const XmlDataTypes::HiddenTab &hiddenTab)
 {
     m_settings.appendHiddenTab(hiddenTab);
 }
 
-void ConfigStorage::protocolGroupReceived(const Protocol::AbstractGroup &group)
+void ConfigStorage::bsiExtItemDataReceive(const u32 addr, //
+    const XmlDataTypes::BinaryType type, bool visib, const QString &desc)
+{
+    m_settings.appendBsiExtItem(addr, type, visib, desc);
+}
+
+void ConfigStorage::protocolGroupReceive(const Protocol::AbstractGroup &group)
 {
     using namespace Interface;
     auto &sigMap = m_settings.getSignals();

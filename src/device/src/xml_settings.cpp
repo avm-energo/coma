@@ -58,12 +58,17 @@ void Settings::appendWorkJournal(const u32 id, const QString &desc)
 
 void Settings::appendMeasJournal(const u32 index, const QString &header, const BinaryType type, bool visib)
 {
-    m_measJournals.push_back(MeasJournal { index, type, visib, header });
+    m_measJournals.push_back(MeasJournal { index, type, visib, std::move(header) });
 }
 
 void Settings::appendHiddenTab(const HiddenTab &hiddenTab)
 {
     m_hiddenSettings.push_back(hiddenTab);
+}
+
+void Settings::appendBsiExtItem(const u32 addr, const BinaryType type, bool visib, const QString &desc)
+{
+    m_bsiExtSettings.push_back(BsiExtItem { addr, type, visib, std::move(desc) });
 }
 
 const DetailCountMap &Settings::getDetailConfigCount() const
@@ -112,6 +117,11 @@ const MeasJourList &Settings::getMeasJours() const
 const HiddenSettings &Settings::getHiddenSettings() const
 {
     return m_hiddenSettings;
+}
+
+const BsiExtItemList &Settings::getBsiExtSettings() const
+{
+    return m_bsiExtSettings;
 }
 
 } // namespace Device::XmlDataTypes

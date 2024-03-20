@@ -32,19 +32,17 @@ public:
 
 signals:
     void startNewConfig();
-    void signalDataSending(const u32 id, const quint64 addr, //
-        const u16 count, const Xml::SignalType sigType);
+    void signalDataSending(const u32 id, const quint64 addr, const u16 count, const Xml::SignalType sigType);
     void tabDataSending(const u32 id, const QString &name);
     void sectionDataSending(const Xml::SGMap &sgmap, const QString &secHead);
-    void alarmDataSending(const Xml::AlarmType type, const u32 addr, //
-        const QString &desc, const QList<u32> &highlights);
+    void alarmDataSending(const Xml::AlarmType type, const u32 addr, const QString &desc, const QList<u32> &highlights);
     void workJourDataSending(const u32 id, const QString &desc);
-    void measJourDataSending(const u32 idx, const QString &header, //
-        const Xml::BinaryType type, bool visib);
+    void measJourDataSending(const u32 idx, const QString &header, const Xml::BinaryType type, bool visib);
     void protocolGroupSending(const Protocol::AbstractGroup &group);
     void configDataSending(const u16 id, const QString &defVal, const bool visib, const u16 count);
     void configNameSending(const QString &tabName);
     void hiddenTabDataSending(const Xml::HiddenTab &hiddenTab);
+    void bsiExtItemDataSending(const u32 addr, const Xml::BinaryType type, const bool visib, const QString &desc);
 
 private:
     /// \brief Возвращает имя файла по типам базовой и мезонинной плат.
@@ -101,6 +99,8 @@ private:
     void parseConfig(const QDomNode &configNode);
     /// \brief Парсинг узлов <tab> внутри <hidden>.
     void parseHiddenTab(const QDomNode &hiddenTabNode);
+    /// \brief Парсинг узлов <item> внутри <bsi-ext>.
+    void parseBsiExtItem(const QDomNode &bsiExtItemNode);
 };
 
 }

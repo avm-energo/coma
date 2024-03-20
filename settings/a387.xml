@@ -143,6 +143,62 @@
                 </item>
             </warning>
         </alarms>
+        <bsi-ext desc="BSI Ext">
+            <item>
+                <addr>40</addr>
+                <desc>Наименование ПО</desc>
+                <type>string32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>41</addr>
+                <desc>Версия загрузчика</desc>
+                <type>version32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>42</addr>
+                <desc>Время последней поверки модуля</desc>
+                <type>time32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>43</addr>
+                <desc>CRC рег. коэфф. базовой платы</desc>
+                <type>uint32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>44</addr>
+                <desc>CRC рег. коэфф. мезонинной платы</desc>
+                <type>uint32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>45</addr>
+                <desc>CRC рег. коэфф. доп. платы</desc>
+                <type>uint32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>46</addr>
+                <desc>Тип дополнительной платы</desc>
+                <type>uint32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>47</addr>
+                <desc>Версия дополнительной платы</desc>
+                <type>version32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>48</addr>
+                <desc>Серийный номер дополнительной платы</desc>
+                <type>uint32</type>
+                <visibility>true</visibility>
+            </item>
+        </bsi-ext>
         <config desc="Конфигурация">
             <record>
                 <id>3</id>
