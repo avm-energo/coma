@@ -7,6 +7,7 @@ set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 set(files_h
     "${INCLUDE_PATH}/bsi.h"
+    "${INCLUDE_PATH}/bsi_ext.h"
     "${INCLUDE_PATH}/configstorage.h"
     "${INCLUDE_PATH}/current_device.h"
     "${INCLUDE_PATH}/file_provider.h"
@@ -16,6 +17,7 @@ set(files_h
 )
 
 set(files_cpp
+    "${SRC_PATH}/bsi_ext.cpp"
     "${SRC_PATH}/configstorage.cpp"
     "${SRC_PATH}/current_device.cpp"
     "${SRC_PATH}/file_provider.cpp"

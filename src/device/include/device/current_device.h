@@ -1,6 +1,7 @@
 #pragma once
 
 #include <device/bsi.h>
+#include <device/bsi_ext.h>
 #include <device/configstorage.h>
 #include <device/file_provider.h>
 #include <device/health.h>
@@ -24,6 +25,7 @@ private:
     AsyncConnection *m_async;
     SyncConnection m_sync;
     BlockStartupInfo m_bsi, m_previous;
+    BlockStartupInfoExtended m_bsiExt;
     ConfigStorage m_cfgStorage;
     S2DataManager m_s2manager;
     FileProvider m_fileProvider;
@@ -55,6 +57,8 @@ public:
     [[nodiscard]] SyncConnection *sync() noexcept;
     /// \brief Возвращает BSI текущего устройства.
     [[nodiscard]] const BlockStartupInfo &bsi() const noexcept;
+    /// \brief Возвращает BSI Extended текущего устройства.
+    [[nodiscard]] const BlockStartupInfoExtended *bsiExt() const noexcept;
     /// \brief Возвращает блок состояния текущего устройства.
     [[nodiscard]] Health health() const noexcept;
 
