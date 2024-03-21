@@ -102,7 +102,8 @@ void ConnectionManager::setReconnectMode(const ReconnectMode newMode) noexcept
 
 void ConnectionManager::reconnect()
 {
-    qCritical() << "Произошла ошибка соединения";
+    if (!m_isReconnectOccurred)
+        qCritical() << "Произошла ошибка соединения";
     emit reconnectInterface();
     m_context.m_executor->wakeUp();
     if (m_reconnectMode == ReconnectMode::Loud)
