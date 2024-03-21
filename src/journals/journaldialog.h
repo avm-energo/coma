@@ -35,7 +35,7 @@ private slots:
     /// \brief Слот для получения файла журнала от устройства.
     /// \details В зависимости от указанного типа журнала, пересылает
     /// журнал в формате S2B одной из вкладок.
-    void receivedJournalFile(const S2::S2BFile &journalFile);
+    void createJournalAndFillModel(const S2::S2BFile &journalFile);
 };
 
 }

@@ -15,7 +15,7 @@ namespace journals
 JournalDialog::JournalDialog(const ModuleSettings &settings, QWidget *parent) : UDialog(parent), m_settings(settings)
 {
     disableSuccessMessage();
-    m_dataUpdater->currentConnection()->connection(this, &JournalDialog::receivedJournalFile);
+    m_dataUpdater->currentConnection()->connection(this, &JournalDialog::createJournalAndFillModel);
     createJournalTabs();
     setupUI();
 }
@@ -74,7 +74,7 @@ BaseJournal *JournalDialog::createJournal(JournalType type, QObject *parent) noe
     return journal;
 }
 
-void JournalDialog::receivedJournalFile(const S2::S2BFile &journalFile)
+void JournalDialog::createJournalAndFillModel(const S2::S2BFile &journalFile)
 {
     auto journalType = static_cast<JournalType>(journalFile.header.fname);
     auto search = m_journals.find(journalType);
