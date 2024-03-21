@@ -71,8 +71,7 @@ QByteArray UsbHidPort::read(bool &status)
         emit error(InterfaceError::ReadError);
         data.clear();
         status = false;
-        StdFunc::Wait(10);
-        // QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     }
     else if (readBytes > 0)
     {
