@@ -58,7 +58,7 @@ public:
     /// \brief Возвращает BSI текущего устройства.
     [[nodiscard]] const BlockStartupInfo &bsi() const noexcept;
     /// \brief Возвращает BSI Extended текущего устройства.
-    [[nodiscard]] const BlockStartupInfoExtended *bsiExt() const noexcept;
+    [[nodiscard]] BlockStartupInfoExtended *bsiExt() noexcept; /// TODO: MAKE IT CONSTANT
     /// \brief Возвращает блок состояния текущего устройства.
     [[nodiscard]] Health health() const noexcept;
 

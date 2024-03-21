@@ -45,7 +45,7 @@ const BlockStartupInfo &CurrentDevice::bsi() const noexcept
     return m_bsi;
 }
 
-const BlockStartupInfoExtended *CurrentDevice::bsiExt() const noexcept
+BlockStartupInfoExtended *CurrentDevice::bsiExt() noexcept
 {
     return &m_bsiExt;
 }
@@ -147,6 +147,8 @@ void CurrentDevice::updateBSI(const DataTypes::BitStringStruct &value)
             compareAndUpdate();
         }
     }
+    else
+        m_bsiExt.updateData(value);
 }
 
 void CurrentDevice::compareAndUpdate() noexcept
