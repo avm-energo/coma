@@ -38,8 +38,8 @@ void XmlAlarmStateAllDialog::setupUI(QVBoxLayout *mainLayout)
     descLayout->addWidget(descInput);
     dlgItems.append(descInput);
 
-    // Виджеты для описания видимости поля данных
-    auto typeLabel = new QLabel("Видимость поля на вкладке: ", this);
+    // Виджеты для описания типа сигнализации
+    auto typeLabel = new QLabel("Тип сигнализации: ", this);
     auto typeInput = new QComboBox(this);
     typeInput->addItems({ "warning", "critical", "info" });
     typeInput->setCurrentIndex(0);
