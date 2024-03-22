@@ -2,7 +2,7 @@
 
 #include "xmldialog.h"
 
-class XmlModbusDialog : public XmlDialog
+class XmlModbusDialog final : public XmlDialog
 {
     Q_OBJECT
 private:

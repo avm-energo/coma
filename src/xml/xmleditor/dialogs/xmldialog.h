@@ -42,10 +42,10 @@ protected:
     virtual void setupUI(QVBoxLayout *mainLayout) = 0;
 
     /// \brief Виртуальный метод для сбора информации с виджетов при сохранении данных.
-    virtual QStringList collectData();
+    [[nodiscard]] virtual QStringList collectData();
 
     /// \brief Виртуальный метод для проверки на корректность введённых данных.
-    virtual bool checkDataBeforeSaving(const QStringList &savedData);
+    [[nodiscard]] virtual bool checkDataBeforeSaving(const QStringList &savedData);
 
 public:
     explicit XmlDialog() = delete;
