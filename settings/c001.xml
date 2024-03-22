@@ -46,6 +46,12 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1003</id>
+                <defaultValue>20</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1390</id>
                 <defaultValue>0, 0, 0</defaultValue>
                 <count>0</count>
@@ -66,6 +72,30 @@
             <record>
                 <id>1393</id>
                 <defaultValue>10</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1394</id>
+                <defaultValue>90</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1395</id>
+                <defaultValue>300</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1396</id>
+                <defaultValue>20</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1397</id>
+                <defaultValue>0.001</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>

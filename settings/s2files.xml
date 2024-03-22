@@ -4999,7 +4999,7 @@
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>7</group>
+			<group>51</group>
 			<string>Уставка вкл. нагрева</string>
 			<min>-100</min>
 			<max>100</max>
@@ -5013,11 +5013,68 @@
 		<type>FLOAT</type>
 		<widget>
 			<type>QDoubleSpinBox</type>
-			<group>7</group>
+			<group>51</group>
 			<string>Гистерезис откл. нагрева</string>
 			<min>-100</min>
 			<max>100</max>
 			<decimals>2</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1394</id>
+		<name>TimeoutOn</name>
+		<description>Тайм-аут на включение нагревателя</description>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>51</group>
+			<string>Тайм-аут на включение нагревателя</string>
+			<min>1</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1395</id>
+		<name>TimeoutOаа</name>
+		<description>Тайм-аут на установление температуры</description>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>51</group>
+			<string>Тайм-аут на установление температуры</string>
+			<min>1</min>
+			<max>10000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1396</id>
+		<name>NFiltdiff</name>
+		<description>Степень фильтра скользящего среднего</description>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>51</group>
+			<string>Степень фильтра скользящего среднего</string>
+			<toolTip>Степень фильтра скользящего среднего для изменения температуры при остывании</toolTip>
+			<min>1</min>
+			<max>1000</max>
+			<decimals>0</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1397</id>
+		<name>dTavgmax</name>
+		<description>Диапазон скорости изменения средней температуры</description>
+		<type>FLOAT</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>51</group>
+			<string>Диапазон скорости изменения средней температуры</string>
+			<min>0.001</min>
+			<max>10</max>
+			<decimals>3</decimals>
 		</widget>
 	</record>
 	<record>
