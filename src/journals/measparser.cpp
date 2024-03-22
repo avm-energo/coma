@@ -5,7 +5,8 @@ namespace journals
 
 constexpr auto notFound = -1;
 
-MeasParser::MeasParser(QTimeZone timeZone, QObject *parent) : QObject(parent), timezone(timeZone), timeIndex(notFound)
+MeasParser::MeasParser(QTimeZone timeZone, QObject *parent)
+    : QObject(parent), m_timezone(timeZone), m_timeIndex(notFound)
 {
 }
 
@@ -52,14 +53,14 @@ int MeasParser::findTimeIndex(const MeasSettings &settings)
 
 void MeasParser::update(const QByteArray &ba, const MeasSettings &settings)
 {
-    timeIndex = findTimeIndex(settings);
-    recordSize = getRecordSize(settings);
-    record.clear();
-    iter = reinterpret_cast<const quint8 *>(ba.constData());
-    if (recordSize != 0)
+    m_timeIndex = findTimeIndex(settings);
+    m_recordSize = getRecordSize(settings);
+    m_record.clear();
+    m_iter = reinterpret_cast<const quint8 *>(ba.constData());
+    if (m_recordSize != 0)
     {
-        size = ba.size() / recordSize;
-        record.reserve(recordSize);
+        m_totalSize = ba.size() / m_recordSize;
+        m_record.reserve(m_recordSize);
     }
 }
 
@@ -86,31 +87,31 @@ bool MeasParser::parseRecord(const MeasSettings &settings)
             break;
         }
         if (rec.visibility)
-            record.append(storage);
+            m_record.append(storage);
     }
     return status;
 }
 
 bool MeasParser::sortByTime(const QVector<QVariant> &lhs, const QVector<QVariant> &rhs)
 {
-    auto lStrTime = lhs[timeIndex].value<QString>();
-    auto rStrTime = rhs[timeIndex].value<QString>();
+    auto lStrTime = lhs[m_timeIndex].value<QString>();
+    auto rStrTime = rhs[m_timeIndex].value<QString>();
     return lStrTime > rStrTime;
 }
 
 const JournalData MeasParser::parse(const MeasSettings &settings)
 {
     JournalData retVal;
-    retVal.reserve(size);
+    retVal.reserve(m_totalSize);
 
-    for (auto i = 0; i < size; i++)
+    for (auto i = 0; i < m_totalSize; i++)
     {
         if (parseRecord(settings))
-            retVal.push_back(record);
-        record.clear();
+            retVal.push_back(m_record);
+        m_record.clear();
     }
 
-    if (timeIndex != notFound)
+    if (m_timeIndex != notFound)
         std::sort(retVal.begin(), retVal.end(),
             [this](const QVector<QVariant> &lhs, const QVector<QVariant> &rhs) { return sortByTime(lhs, rhs); });
 
