@@ -48,7 +48,6 @@ void OscKivDialog::setupUI()
     m_commandBtn = WDFunc::NewPB(this, "commandBtn", "Запуск осциллограмм", this, &OscKivDialog::writeTypeOsc);
     controlLayout->addWidget(m_commandBtn);
     m_readBtn = WDFunc::NewPB(this, "readBtn", "Прочитать осциллограмму", this, &OscKivDialog::reqOscFile);
-    // m_readBtn->setEnabled(false);
     controlLayout->addWidget(m_readBtn);
     mainLayout->addLayout(controlLayout);
     setLayout(mainLayout);

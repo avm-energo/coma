@@ -62,13 +62,14 @@ public:
     }
 
 protected:
+    /// FIXME: А как такое обрабатывать когда будут вынесены осциллограммы в XML?
     static inline const auto isOsc = [](const DataTypes::S2Record &record) {
         // ##TODO add other oscs
-        return ((record.ID == AVTUK_85::OSC_ID)                                             //
-            || (record.ID == AVTUK_8X::OSC_ID)                                              //
+        return ((record.ID == AVTUK_85::OSC_ID) || (record.ID == AVTUK_8X::OSC_ID)          //
             || ((record.ID >= AVTUK_21::OSC_ID_MIN) && (record.ID <= AVTUK_21::OSC_ID_MAX)) //
-            || (record.ID == AVTUK_KDV::OSC_ID) || (record.ID == AVTUK_KDV::OSCV_ID)
-            || (record.ID == AVTUK_KDV::SPEC_ID) || (record.ID == AVTUK_KDV::SPECV_ID) //
+            || (record.ID == AVTUK_KDV::OSC_ID) || (record.ID == AVTUK_KDV::OSCV_ID)        //
+            || (record.ID == AVTUK_KDV::SPEC_ID) || (record.ID == AVTUK_KDV::SPECV_ID)      //
+            || ((record.ID >= AVTUK_KIV::OSC_ALL_ID) && (record.ID <= AVTUK_KIV::OSC_C_ID)) //
         );
     };
 
