@@ -133,42 +133,56 @@ void DialogCreator::createTuneDialogs()
         return;
     }
 
-    if (m_typeB == BaseBoard::MTB_80)
+    GeneralTuneDialog *tuneDlg = nullptr;
+    switch (m_boxModel)
     {
-        if (m_typeM == Device::MezzanineBoard::MTM_81 || m_typeM == MezzanineBoard::MTM_82
-            || m_typeM == MezzanineBoard::MTM_83)
-            addDialogToList(new Tune82Dialog(m_device, m_parent), "Регулировка", "tune");
-        else if (m_typeM == MezzanineBoard::MTM_84)
-            addDialogToList(new TuneKIVDialog(m_device, m_parent), "Регулировка", "tune");
-        else if (m_boxModel == Model::KIV)
-            addDialogToList(new TuneKIVDialog(m_device, m_parent), "Регулировка", "tune");
-        else
+    case Model::KIV:
+        tuneDlg = new TuneKIVDialog(m_device, m_parent);
+        break;
+    case Model::KTF:
+        /// TODO: Регулировка КТФ
+        break;
+    case Model::KDV:
+        /// TODO: Регулировка КДВ
+        break;
+    default:
+        if (m_typeB == BaseBoard::MTB_80)
         {
-            // TODO: Добавить регулировку для других модулей
+            if (m_typeM == Device::MezzanineBoard::MTM_81 || m_typeM == MezzanineBoard::MTM_82
+                || m_typeM == MezzanineBoard::MTM_83)
+                tuneDlg = new Tune82Dialog(m_device, m_parent);
+            else if (m_typeM == MezzanineBoard::MTM_84)
+                tuneDlg = new TuneKIVDialog(m_device, m_parent);
         }
+        break;
     }
+    if (tuneDlg != nullptr)
+        addDialogToList(tuneDlg, "Регулировка", "tune");
 }
 
 void DialogCreator::createStartupValuesDialog()
 {
     // Добавляем диалог начальных значений
+    AbstractStartupDialog *startupDlg = nullptr;
     switch (m_boxModel)
     {
     case Model::KIV:
-        addDialogToList(new StartupKIVDialog(m_device, m_parent), "Начальные\nзначения", "startup");
+        startupDlg = new StartupKIVDialog(m_device, m_parent);
         break;
     case Model::KTF:
-        addDialogToList(new StartupKTFDialog(m_device, m_parent), "Начальные\nзначения", "startup");
+        startupDlg = new StartupKTFDialog(m_device, m_parent);
         break;
     case Model::KDV:
-        addDialogToList(new StartupKDVDialog(m_device, m_parent), "Начальные\nзначения", "startup");
+        startupDlg = new StartupKTFDialog(m_device, m_parent);
         break;
     default:
         // У АВ-ТУК-84 те же начальные значение, что и у АВМ-КИВ
         if (m_typeB == BaseBoard::MTB_80 && m_typeM == MezzanineBoard::MTM_84)
-            addDialogToList(new StartupKIVDialog(m_device, m_parent), "Начальные\nзначения", "startup");
+            startupDlg = new StartupKIVDialog(m_device, m_parent);
         break;
     }
+    if (startupDlg != nullptr)
+        addDialogToList(startupDlg, "Начальные\nзначения", "startup");
 }
 
 void DialogCreator::createOscAndSwJourDialogs()
