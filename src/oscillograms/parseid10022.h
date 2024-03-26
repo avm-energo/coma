@@ -9,9 +9,7 @@ class ParseID10022 final : public ParseModule
 private:
     struct DataPoint
     {
-        std::array<float, 6> data;
-        // float U[3]; ///< напряжения в кВ
-        // float I[3]; ///< токи в мА
+        std::array<float, 6> data; ///< токи и напряжения по 3 фазам
     };
 
 public:

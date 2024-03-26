@@ -90,11 +90,10 @@ void OscKivDialog::enableButtons(const bool enabling)
 
 QString OscKivDialog::getFilename()
 {
-    QString filename("%1-%2-%3-%4.osc");
+    QString filename("%1-%2-%3-%4");
     QString devType("%1");
     devType = devType.arg(m_device->getDeviceType(), 4, 16, QChar('0'));
-    filename = filename.arg(m_device->getUID(), devType, QString::number(m_oscFilenum));
-    filename = filename.arg(TimeFunc::UnixTime64ToInvStringFractional(m_timestamp));
+    filename = filename.arg(m_device->getUID(), devType, QString::number(m_oscFilenum), QString::number(m_timestamp));
     return filename;
 }
 
@@ -184,7 +183,7 @@ void OscKivDialog::writeTypeOsc()
     TypeOsc command { 0, 0, 0 };
     command.n_point = WDFunc::SPBData<u8>(this, "n_point");
     command.phase = WDFunc::CBIndex(this, "phase");
-    DataTypes::BlockStruct block { 13, StdFunc::toByteArray(command) };
+    DataTypes::BlockStruct block { 13, StdFunc::toByteArray(std::move(command)) };
     m_device->async()->writeCommand(Commands::C_WriteTypeOsc, QVariant::fromValue(block));
     m_state = State::WritingTypeOsc;
 }
