@@ -186,7 +186,7 @@ void ProtocomResponseParser::processFloat(const QByteArray &data, quint32 startA
     }
 }
 
-void ProtocomResponseParser::processInt(const byte num)
+void ProtocomResponseParser::processInt(const quint8 num)
 {
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Ok, num };
     emit responseParsed(resp);

@@ -10,7 +10,7 @@ namespace Interface
 using namespace Iec104;
 
 Iec104QueryExecutor::Iec104QueryExecutor(RequestQueue &queue, const IEC104ConnectionParams params, QObject *parent)
-    : DefaultQueryExecutor(queue, params.t1 * 1000, parent)
+    : DefaultQueryExecutor(queue, 1000, parent)
     , m_ctrlBlock(std::make_shared<ControlBlock>())
     , m_params(params)
     , m_t2Timer(new QTimer(this))
@@ -21,6 +21,8 @@ Iec104QueryExecutor::Iec104QueryExecutor(RequestQueue &queue, const IEC104Connec
     m_t2Timer->setInterval(m_params.t2 * 1000);
     m_t3Timer->setSingleShot(true);
     m_t3Timer->setInterval(m_params.t3 * 1000);
+    connect(m_t2Timer, &QTimer::timeout, this, &Iec104QueryExecutor::sendSupervisoryMessage);
+    connect(m_t3Timer, &QTimer::timeout, this, [this]() { testConnection(ControlArg::Activate); });
 }
 
 Iec104ResponseParser *Iec104QueryExecutor::getResponseParser() noexcept
@@ -48,22 +50,21 @@ void Iec104QueryExecutor::closeConnection() noexcept
 
 void Iec104QueryExecutor::writeToInterface(const QByteArray &request, bool isCounted) noexcept
 {
-    if (!request.isEmpty())
+    emit sendDataToInterface(request);
+    if (isCounted)
     {
-        DefaultQueryExecutor::writeToInterface(request, isCounted);
-        if (isCounted)
-        {
-            ++(m_ctrlBlock->m_sent);
-            checkControlBlock();
-        }
+        m_timeoutTimer->start();
+        ++(m_ctrlBlock->m_sent);
+        checkControlBlock();
     }
+    writeToLog(request, Direction::ToDevice);
 }
 
 void Iec104QueryExecutor::exec()
 {
     initConnection();
     DefaultQueryExecutor::exec();
-    closeConnection();
+    // closeConnection();
 }
 
 void Iec104QueryExecutor::receiveDataFromInterface(const QByteArray &response)
@@ -83,15 +84,24 @@ void Iec104QueryExecutor::receiveDataFromInterface(const QByteArray &response)
     }
 }
 
+void Iec104QueryExecutor::testConnection(ControlArg arg) noexcept
+{
+    auto testMessage { getRequestParser()->createTestMessage(arg) };
+    writeToInterface(testMessage, false);
+}
+
+void Iec104QueryExecutor::sendSupervisoryMessage() noexcept
+{
+    auto supervisoryMessage { getRequestParser()->createSupervisoryMessage() };
+    m_acknowledgeReceived = m_ctrlBlock->m_received;
+    writeToInterface(supervisoryMessage, false);
+}
+
 void Iec104QueryExecutor::checkControlBlock() noexcept
 {
     auto triggerThresholdValue = m_acknowledgeReceived + m_params.w;
     if (m_ctrlBlock->m_received >= triggerThresholdValue || m_ctrlBlock->m_received == controlMax)
-    {
-        auto supervisoryMessage { getRequestParser()->createSupervisoryMessage() };
-        m_acknowledgeReceived = m_ctrlBlock->m_received;
-        writeToInterface(supervisoryMessage, false);
-    }
+        sendSupervisoryMessage();
     if (m_ctrlBlock->m_received == controlMax)
         m_ctrlBlock->m_received = 0;
     if (m_ctrlBlock->m_sent == controlMax)
@@ -105,16 +115,14 @@ void Iec104QueryExecutor::checkUnnumberedFormat(const ControlFunc func, const Co
     case ControlFunc::StartDataTransfer:
         if (arg == ControlArg::Confirm)
             run();
-        else
-        {
-            /// TODO: What about this?
-        }
         break;
     case ControlFunc::StopDataTransfer:
-        /// TODO
+        if (arg == ControlArg::Confirm)
+            emit finished();
         break;
     case ControlFunc::TestFrame:
-        /// TODO
+        if (arg == ControlArg::Activate)
+            testConnection(ControlArg::Confirm);
         break;
     }
 }

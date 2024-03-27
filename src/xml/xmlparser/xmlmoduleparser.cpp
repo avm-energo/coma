@@ -252,7 +252,7 @@ void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode)
     auto regType = parseNumFromNode<quint16>(modbusNode, tags::reg_type);
     if (signalId != 0)
     {
-        AbstractGroup str { Interface::IfaceType::RS485, signalId, regType, quint16() };
+        Protocol::AbstractGroup str { Interface::IfaceType::RS485, signalId, regType, quint16() };
         emit protocolGroupSending(str);
     }
 }
@@ -264,7 +264,7 @@ void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode)
     auto block = parseNumFromNode<quint16>(protocomNode, tags::block);
     if (signalId != 0)
     {
-        AbstractGroup str { Interface::IfaceType::USB, signalId, block, quint16() };
+        Protocol::AbstractGroup str { Interface::IfaceType::USB, signalId, block, quint16() };
         emit protocolGroupSending(str);
     }
 }
@@ -277,7 +277,7 @@ void Xml::ModuleParser::parseIec(const QDomNode &iecNode)
     auto sigGroup = parseNumFromNode<quint16>(iecNode, tags::sig_group);
     if (signalId != 0)
     {
-        AbstractGroup str { Interface::IfaceType::Ethernet, signalId, transType, sigGroup };
+        Protocol::AbstractGroup str { Interface::IfaceType::Ethernet, signalId, transType, sigGroup };
         emit protocolGroupSending(str);
     }
 }

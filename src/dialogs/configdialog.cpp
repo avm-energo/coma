@@ -52,7 +52,7 @@ void ConfigDialog::writeConfig()
         {
             fillBack();
             auto s2file = m_datamanager.getBinaryConfiguration();
-            Connection::iface()->writeConfiguration(s2file);
+            engine()->currentConnection()->writeConfiguration(s2file);
         }
         else
             qCritical("Ошибка чтения конфигурации");

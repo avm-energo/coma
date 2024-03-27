@@ -2,7 +2,7 @@
 
 #include <QTimer>
 #include <gen/logclass.h>
-#include <interfaces/types/common_types.h>
+#include <interfaces/types/protocol_settings.h>
 #include <interfaces/utils/request_queue.h>
 
 namespace Interface
@@ -96,6 +96,8 @@ public:
 public slots:
     /// \brief Слот для принятия от устройства ответа на посланный ему ранее запрос.
     virtual void receiveDataFromInterface(const QByteArray &response);
+    /// \brief Слот для принятия протокола обмена данными с устройством.
+    void receiveProtocolDescription(const ProtocolDescription &desc) noexcept;
     /// \brief Слот для отмены текущего запроса.
     void cancelQuery();
     /// \brief Слот, вызываемый при переподключении текущего интерфейса.

@@ -8,8 +8,10 @@
 #include <QEventLoop>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
+#include <interfaces/conn/active_connection.h>
 
-UWidget::UWidget(QWidget *parent) : QWidget(parent), m_dataUpdater(new ModuleDataUpdater(Connection::iface()))
+UWidget::UWidget(QWidget *parent)
+    : QWidget(parent), m_dataUpdater(new ModuleDataUpdater(ActiveConnection::async(), this))
 {
     // Отключим обновление виджета по умолчанию
     m_dataUpdater->setUpdatesEnabled(false);

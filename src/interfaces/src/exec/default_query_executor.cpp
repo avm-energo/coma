@@ -27,7 +27,6 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, quint32 timeout,
 void DefaultQueryExecutor::initLogger(const QString &protocolName) noexcept
 {
     m_log.init(protocolName + "Executor." + logExt);
-    m_log.info(logStart);
 }
 
 void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept
@@ -48,6 +47,8 @@ void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponse
             this, &DefaultQueryExecutor::logFromParser);                  //
         connect(m_responseParser, &BaseResponseParser::needToLog,         //
             this, &DefaultQueryExecutor::logFromParser);                  //
+
+        m_requestParser->basicProtocolSetup(); // basic protocol setup
 
         connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
             setState(ExecutorState::WritingLongData);
@@ -82,8 +83,10 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
     {
         const auto command(opt.value());
         auto request = m_requestParser->parse(command);
-        if (request.isEmpty() && m_requestParser->isExceptionalSituation())
+        if (m_requestParser->isExceptionalSituation())
             m_requestParser->exceptionalAction(command);
+        else if (request.isEmpty())
+            return;
         else
         {
             if (getState() == ExecutorState::RequestParsing)
@@ -151,6 +154,7 @@ void DefaultQueryExecutor::exec()
         QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         currentState = getState();
     }
+    m_log.info("DeviceQueryExecutor is finished\n");
     emit finished();
 }
 
@@ -239,6 +243,11 @@ void DefaultQueryExecutor::receiveDataFromInterface(const QByteArray &response)
         emit responseSend(resp);
         cancelQuery();
     }
+}
+
+void DefaultQueryExecutor::receiveProtocolDescription(const ProtocolDescription &desc) noexcept
+{
+    m_requestParser->updateProtocolSettings(desc);
 }
 
 void DefaultQueryExecutor::cancelQuery()

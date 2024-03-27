@@ -29,12 +29,12 @@ ConnectionManager::ConnectionManager(QWidget *parent)
     connect(m_silentTimer, &QTimer::timeout, this, [this] { emit reconnectUI(); });
 }
 
-bool ConnectionManager::createConnection(const ConnectStruct &connectionData)
+AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connectionData)
 {
     if (m_currentConnection != nullptr)
         breakConnection();
-    m_currentConnection = new Connection(this);
-    connect(m_currentConnection, &Connection::silentReconnectMode, this, //
+    m_currentConnection = new AsyncConnection(this);
+    connect(m_currentConnection, &AsyncConnection::silentReconnectMode, this, //
         [this] { setReconnectMode(ReconnectMode::Silent); });
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
 
@@ -42,17 +42,18 @@ bool ConnectionManager::createConnection(const ConnectStruct &connectionData)
         overloaded {
             [this](const UsbHidSettings &settings) {
                 auto interface = new UsbHidPort(settings);
-                auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->m_queue);
+                auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->getQueue());
                 m_context.init(interface, executor, Strategy::Sync, Qt::DirectConnection);
             },
             [this](const SerialPortSettings &settings) {
                 auto interface = new SerialPort(settings);
-                auto executor = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->m_queue, settings.address);
+                auto executor
+                    = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->getQueue(), settings.address);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const IEC104Settings &settings) {
                 auto interface = new Ethernet(settings);
-                auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->m_queue, settings);
+                auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->getQueue(), settings);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const EmulatorSettings &settings) {
@@ -74,17 +75,12 @@ bool ConnectionManager::createConnection(const ConnectStruct &connectionData)
         this, &ConnectionManager::interfaceReconnected, Qt::QueuedConnection);
 
     m_currentConnection->reqBSI();
-    if (m_context.run(m_currentConnection))
-    {
-        Connection::setIface(Connection::InterfacePointer { m_currentConnection });
-        return true;
-    }
-    else
+    if (!m_context.run(m_currentConnection))
     {
         m_currentConnection->deleteLater();
         m_currentConnection = nullptr;
-        return false;
     }
+    return m_currentConnection;
 }
 
 void ConnectionManager::setReconnectMode(const ReconnectMode newMode) noexcept
@@ -110,7 +106,6 @@ void ConnectionManager::breakConnection()
 {
     m_context.reset();
     m_currentConnection = nullptr;
-    Connection::s_connection.reset();
     m_isInitialBSIRequest = true;
 }
 
@@ -152,7 +147,7 @@ void ConnectionManager::handleQueryExecutorTimeout()
 void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
 {
     // fast checking
-    if (data.sigAdr == Regs::bsiStartReg)
+    if (data.sigAdr == addr::bsiStartReg)
     {
         if (m_isInitialBSIRequest)
         {

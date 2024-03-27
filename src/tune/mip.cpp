@@ -9,7 +9,7 @@
 #include <QThread>
 #include <gen/settings.h>
 #include <gen/stdfunc.h>
-#include <interfaces/connection.h>
+#include <interfaces/conn/async_connection.h>
 #include <interfaces/ifaces/ethernet.h>
 #include <interfaces/parsers/iec104parser.h>
 #include <interfaces/types/settingstypes.h>
@@ -150,8 +150,7 @@ void Mip::stop()
 bool Mip::initConnection(const IEC104Settings &settings)
 {
     using namespace DataTypes;
-    auto conn = new Connection(this);
-    conn->settings()->addGroup(Iec104Group { 0, 46, 0, 0 });
+    auto conn = new AsyncConnection(this);
     conn->connection(this, //
         [this](const FloatWithTimeStruct &fs) {
             updateData(FloatStruct { fs.sigAdr, fs.sigVal, fs.sigQuality });
@@ -170,7 +169,7 @@ bool Mip::initConnection(const IEC104Settings &settings)
     QObject::connect(m_iface, &BaseInterface::finished, //
         parser, &IEC104Parser::stop, Qt::DirectConnection);
     QObject::connect(parser, &IEC104Parser::responseSend, //
-        conn, &Connection::responseHandle, Qt::DirectConnection);
+        conn, &AsyncConnection::responseHandle, Qt::DirectConnection);
     // Потоки
     QObject::connect(ifaceThread, &QThread::started, m_iface, &BaseInterface::poll);
     QObject::connect(parserThread, &QThread::started, parser, &IEC104Parser::run);

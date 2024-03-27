@@ -9,9 +9,7 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <interfaces/connection.h>
-
-using namespace Interface;
+#include <interfaces/conn/active_connection.h>
 
 TuneKIVADC::TuneKIVADC(S2::Configuration &config, int tuneStep, QWidget *parent)
     : AbstractTuneDialog(config, tuneStep, parent)
@@ -120,7 +118,7 @@ Error::Msg TuneKIVADC::checkTuneCoefs()
 
 Error::Msg TuneKIVADC::setSMode2()
 {
-    Connection::iface()->writeCommand(Commands::C_SetMode, 0x02);
+    m_async->writeCommand(Interface::Commands::C_SetMode, 0x02);
     return Error::Msg::NoError;
 }
 
@@ -258,7 +256,7 @@ Error::Msg TuneKIVADC::setADCCoef(const int coef)
     const auto adcCoef = adcCoefMap.value(coef);
     config.setRecord("C_Pasp_ID", S2::FLOAT_3t { adcCoef, adcCoef, adcCoef });
     const auto s2file = config.toByteArray();
-    return Connection::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+    return m_sync->writeFileSync(S2::FilesEnum::Config, s2file);
 }
 
 Error::Msg TuneKIVADC::showRetomDialog(int coef)

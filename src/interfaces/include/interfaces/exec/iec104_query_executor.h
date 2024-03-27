@@ -27,7 +27,9 @@ private:
     /// \see QueryExecutorFabric.
     explicit Iec104QueryExecutor(RequestQueue &queue, const IEC104ConnectionParams params, QObject *parent = nullptr);
 
+    /// \brief Преобразование хранимого парсера запросов к primary типу.
     inline Iec104ResponseParser *getResponseParser() noexcept;
+    /// \brief Преобразование хранимого парсера ответов к primary типу.
     inline Iec104RequestParser *getRequestParser() noexcept;
 
     /// \brief Отправка команды Start data transfer activation.
@@ -54,6 +56,10 @@ public slots:
     void receiveDataFromInterface(const QByteArray &response) override;
 
 private slots:
+    /// \brief Слот для активации или подтверждения U-посылки для тестирования данных.
+    void testConnection(Iec104::ControlArg arg) noexcept;
+    /// \brief Слот для отправки S-посылки.
+    void sendSupervisoryMessage() noexcept;
     /// \brief Слот для проверки контрольного блока.
     void checkControlBlock() noexcept;
     /// \brief Слот для обработки полученного фрейма U-формата.

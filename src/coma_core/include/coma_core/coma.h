@@ -67,7 +67,7 @@ private:
     AppConfiguration mAppConfig;
     UniquePointer<DialogManager> mDlgManager;
 
-    void initInterfaceConnection();
+    void initInterfaceConnection(AsyncConnection *conn);
     void loadSettings();
     void saveSettings();
     void setProgressBarSize(int prbnum, int size);

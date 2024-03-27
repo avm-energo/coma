@@ -1,11 +1,11 @@
 #include "interfaces/moduledataupdater.h"
 
-ModuleDataUpdater::ModuleDataUpdater(Connection *connection, QObject *parent) : QObject(parent), m_conn(nullptr)
+ModuleDataUpdater::ModuleDataUpdater(AsyncConnection *connection, QObject *parent) : QObject(parent), m_conn(nullptr)
 {
     updateConnection(connection);
 }
 
-void ModuleDataUpdater::updateConnection(Connection *connection) noexcept
+void ModuleDataUpdater::updateConnection(AsyncConnection *connection) noexcept
 {
     m_conn = connection;
     if (m_conn != nullptr)
@@ -16,7 +16,7 @@ void ModuleDataUpdater::updateConnection(Connection *connection) noexcept
     }
 }
 
-Connection *ModuleDataUpdater::currentConnection() noexcept
+AsyncConnection *ModuleDataUpdater::currentConnection() noexcept
 {
     return m_conn;
 }

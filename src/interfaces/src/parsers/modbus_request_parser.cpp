@@ -47,6 +47,18 @@ ModbusRequestParser::ModbusRequestParser(QObject *parent) : BaseRequestParser(pa
 {
 }
 
+void ModbusRequestParser::basicProtocolSetup() noexcept
+{
+    using namespace Protocol;
+    m_protocol.addGroup(ModbusGroup { 1, 15, 4 }); // BSI request
+    /// TODO: добавить загрузку ВПО, секретные операции
+}
+
+Protocol::ModbusGroup ModbusRequestParser::getGroupByAddress(const quint32 addr) const noexcept
+{
+    return getGroupsByAddress<Protocol::ModbusGroup>(addr);
+}
+
 QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
 {
     m_request.clear();
@@ -56,12 +68,16 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     // Reading coils
     case Commands::C_ReqAlarms:
     {
-        request = Modbus::Request {
-            Modbus::FunctionCode::ReadCoils,  //
-            cmd.arg1.value<quint16>(),        // нехорошо, т.к. кладём туда quint32
-            cmd.arg2.value<quint16>(), false, //
-            {}                                //
-        };
+        const auto addr = cmd.arg1.value<quint16>();
+        const auto group = getGroupByAddress(addr);
+        if (group.m_startAddr == addr)
+        {
+            request = Modbus::Request {
+                Modbus::FunctionCode::ReadCoils, //
+                addr, cmd.arg2.value<quint16>(), //
+                false, {}                        // нехорошо, т.к. кладём туда quint32
+            };
+        }
         break;
     }
     // Reading registers
@@ -71,12 +87,16 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_ReqBSI:
     case Commands::C_ReqBSIExt:
     {
+        const auto addr = cmd.arg1.value<quint16>();
         const quint8 count = (cmd.arg2.value<quint16>() * 2); // startup registers are float (2 ints long)
-        request = Modbus::Request {
-            Modbus::FunctionCode::ReadInputRegister, //
-            cmd.arg1.value<quint16>(),               // нехорошо, т.к. кладём туда quint32
-            count, false, {}                         //
-        };
+        const auto group = getGroupByAddress(addr);
+        if (group.m_startAddr == addr)
+        {
+            request = Modbus::Request {
+                Modbus::FunctionCode::ReadInputRegister, //
+                addr, count, false, {}                   // нехорошо, т.к. кладём туда quint32
+            };
+        }
         break;
     }
     // writing registers

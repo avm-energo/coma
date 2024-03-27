@@ -1,20 +1,23 @@
 #include "configstorage.h"
 
-#include <interfaces/connection.h>
-#include <interfaces/types/interfacesettings.h>
-
 ConfigStorage::ConfigStorage(token, QObject *parent) : QObject(parent)
 {
 }
 
-const ModuleSettings &ConfigStorage::getModuleSettings() const
+const ModuleSettings &ConfigStorage::getModuleSettings() const noexcept
 {
     return m_settings;
 }
 
-void ConfigStorage::clearModuleSettings()
+const ProtocolDescription &ConfigStorage::getProtocolDescription() const noexcept
+{
+    return m_protocol;
+}
+
+void ConfigStorage::clear() noexcept
 {
     m_settings.clear();
+    m_protocol.clear();
 }
 
 void ConfigStorage::signalDataReceive(const quint32 id, const quint32 addr, //
@@ -68,23 +71,24 @@ void ConfigStorage::hiddenTabDataReceived(const ModuleTypes::HiddenTab &hiddenTa
     m_settings.appendHiddenTab(hiddenTab);
 }
 
-void ConfigStorage::protocolDescriptionReceived(const AbstractGroup &str)
+void ConfigStorage::protocolGroupReceived(const Protocol::AbstractGroup &group)
 {
+    using namespace Interface;
     auto &sigMap = m_settings.getSignals();
-    if (sigMap.find(str.sigId) != sigMap.cend())
+    auto search = sigMap.find(group.signalId);
+    if (search != sigMap.cend())
     {
-        auto signal = sigMap.at(str.sigId);
-        ProtocolDescription *descr = Interface::Connection::iface()->settings();
-        switch (str.ifaceType)
+        auto signal = search->second;
+        switch (group.ifaceType)
         {
         case Interface::IfaceType::USB:
-            descr->addGroup(ProtocomGroup { signal.startAddr, signal.count, str.arg1 });
+            m_protocol.addGroup(Protocol::ProtocomGroup { signal.startAddr, signal.count, group.arg1 });
             break;
         case Interface::IfaceType::RS485:
-            descr->addGroup(ModbusGroup { signal.startAddr, signal.count, str.arg1 });
+            m_protocol.addGroup(Protocol::ModbusGroup { signal.startAddr, signal.count, group.arg1 });
             break;
         case Interface::IfaceType::Ethernet:
-            descr->addGroup(Iec104Group { signal.startAddr, signal.count, str.arg1, str.arg2 });
+            m_protocol.addGroup(Protocol::Iec104Group { signal.startAddr, signal.count, group.arg1, group.arg2 });
             break;
         default:
             break;

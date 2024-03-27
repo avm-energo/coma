@@ -13,6 +13,18 @@ Iec104RequestParser::Iec104RequestParser(QObject *parent) : BaseRequestParser(pa
 {
 }
 
+void Iec104RequestParser::basicProtocolSetup() noexcept
+{
+    using namespace Protocol;
+    m_protocol.addGroup(Iec104Group { 1, 15, 0, 1 }); // BSI request
+    /// TODO: добавить загрузку ВПО, секретные операции
+}
+
+Protocol::Iec104Group Iec104RequestParser::getGroupByAddress(const quint32 addr) const noexcept
+{
+    return getGroupsByAddress<Protocol::Iec104Group>(addr);
+}
+
 void Iec104RequestParser::setBaseStationAddress(const quint16 bsAddress) noexcept
 {
     m_baseStationAddress = bsAddress;
@@ -30,31 +42,31 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
     {
     case Commands::C_ReqBSI:
     case Commands::C_ReqBSIExt:
-        m_request = createGroupRequest(BSIGROUP);
-        break;
     case Commands::C_ReqStartup:
-    {
-        // Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, STARTUPGROUP, 0, {} };
-        break;
-    }
     case Commands::C_ReqAlarms:
-    {
-        // Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, ALARMGROUP, 0, {} };
-        break;
-    }
     case Commands::C_ReqFloats:
-    {
-        // Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, MAINFLOATGROUP, 0, {} };
-        break;
-    }
     case Commands::C_ReqBitStrings:
-    {
-        // Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, MAINBITSTRINGGROUP, 0, {} };
-        break;
-    }
     case Commands::C_ReqTime:
     {
-        // Commands104::CommandStruct inp { Commands104::CM104_REQGROUP, TIMEGROUP, 0, {} };
+        const auto addr = cmd.arg1.value<quint16>();
+        const auto count = cmd.arg2.value<quint16>();
+        const auto group = getGroupByAddress(addr);
+        if (group.m_startAddr == addr && group.m_count == count)
+        {
+            switch (static_cast<CauseOfTransmission>(group.m_transType))
+            {
+            case CauseOfTransmission::GroupRequest:
+                m_request = createGroupRequest(group.m_group);
+                break;
+            case CauseOfTransmission::Periodic:
+            case CauseOfTransmission::Spontaneous:
+                m_isExceptionalSituation = true;
+                break;
+            default:
+                // ignore other causes
+                break;
+            }
+        }
         break;
     }
     case Commands::C_WriteTime:
@@ -112,13 +124,6 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
         qCritical() << "Undefined command: " << cmd.command;
     }
 
-    // debug purposes
-    if (m_request.isEmpty())
-    {
-        // qWarning() << Error::Msg::NullDataError;
-        m_isExceptionalSituation = true;
-    }
-
     return m_request;
 }
 
@@ -161,6 +166,16 @@ QByteArray Iec104RequestParser::createStopMessage() const noexcept
     apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
     apci.m_ctrlBlock.m_func = ControlFunc::StopDataTransfer;
     apci.m_ctrlBlock.m_arg = ControlArg::Activate;
+    auto bytes = apci.toByteArray();
+    return bytes.value_or(QByteArray {});
+}
+
+QByteArray Iec104RequestParser::createTestMessage(Iec104::ControlArg arg) const noexcept
+{
+    APCI apci;
+    apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
+    apci.m_ctrlBlock.m_func = ControlFunc::TestFrame;
+    apci.m_ctrlBlock.m_arg = arg;
     auto bytes = apci.toByteArray();
     return bytes.value_or(QByteArray {});
 }

@@ -10,10 +10,12 @@ set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/interfaces")
 set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 set(files_h
-    "${INCLUDE_PATH}/connection.h"
     "${INCLUDE_PATH}/connectioncontext.h"
     "${INCLUDE_PATH}/connectionmanager.h"
     "${INCLUDE_PATH}/moduledataupdater.h"
+    "${INCLUDE_PATH}/conn/active_connection.h"
+    "${INCLUDE_PATH}/conn/async_connection.h"
+    "${INCLUDE_PATH}/conn/sync_connection.h"
     "${INCLUDE_PATH}/exec/default_query_executor.h"
     "${INCLUDE_PATH}/exec/iec104_query_executor.h"
     "${INCLUDE_PATH}/exec/query_executor_fabric.h"
@@ -38,7 +40,7 @@ set(files_h
     "${INCLUDE_PATH}/types/iec104/unnumbered_control.h"
     "${INCLUDE_PATH}/types/iec104_settings.h"
     "${INCLUDE_PATH}/types/iec104_types.h"
-    "${INCLUDE_PATH}/types/interfacesettings.h"
+    "${INCLUDE_PATH}/types/protocol_settings.h"
     "${INCLUDE_PATH}/types/modbus_types.h"
     "${INCLUDE_PATH}/types/protocom_types.h"
     "${INCLUDE_PATH}/types/settingstypes.h"
@@ -50,10 +52,12 @@ set(files_h
 )
 
 set(files_cpp
-    "${SRC_PATH}/connection.cpp"
     "${SRC_PATH}/connectioncontext.cpp"
     "${SRC_PATH}/connectionmanager.cpp"
     "${SRC_PATH}/moduledataupdater.cpp"
+    "${SRC_PATH}/conn/active_connection.cpp"
+    "${SRC_PATH}/conn/async_connection.cpp"
+    "${SRC_PATH}/conn/sync_connection.cpp"
     "${SRC_PATH}/exec/default_query_executor.cpp"
     "${SRC_PATH}/exec/iec104_query_executor.cpp"
     "${SRC_PATH}/exec/query_executor_fabric.cpp"
@@ -75,6 +79,7 @@ set(files_cpp
     "${SRC_PATH}/types/iec104/asdu_unpacker.cpp"
     "${SRC_PATH}/types/iec104/control_block.cpp"
     "${SRC_PATH}/types/iec104/unnumbered_control.cpp"
+    "${SRC_PATH}/types/protocol_settings.cpp"
     "${SRC_PATH}/types/usbhidportinfo.cpp"
     "${SRC_PATH}/types/usbhidsettings.cpp"
     "${SRC_PATH}/utils/device_watcher.cpp"

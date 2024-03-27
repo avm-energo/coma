@@ -1,7 +1,7 @@
 #include "interfaces/parsers/protocom_request_parser.h"
 
 #include <gen/files.h>
-#include <interfaces/connection.h>
+#include <gen/stdfunc.h>
 
 namespace Interface
 {
@@ -35,6 +35,13 @@ ProtocomRequestParser::ProtocomRequestParser(QObject *parent) : BaseRequestParse
 {
 }
 
+void ProtocomRequestParser::basicProtocolSetup() noexcept
+{
+    using namespace Protocol;
+    m_protocol.addGroup(ProtocomGroup { 1, 15, 0 }); // BSI request
+    /// TODO: добавить загрузку ВПО, секретные операции
+}
+
 QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
 {
     m_request.clear();
@@ -46,9 +53,14 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
     case Commands::C_ReqFloats:
     case Commands::C_ReqBitStrings:
     {
-        quint8 block = getBlockByReg(cmd.arg1.toUInt());
-        m_request = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::toByteArray(block));
-        m_continueCommand = createContinueCommand(Proto::Commands::ReadBlkData);
+        const auto addr = cmd.arg1.toUInt();
+        const auto group = getGroupByAddress(addr);
+        if (group.m_startAddr == addr)
+        {
+            const auto block = static_cast<quint8>(group.m_block); // сужающий каст
+            m_request = prepareBlock(Proto::Commands::ReadBlkData, StdFunc::toByteArray(block));
+            m_continueCommand = createContinueCommand(Proto::Commands::ReadBlkData);
+        }
         break;
     }
     // commands without any arguments
@@ -151,14 +163,18 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         {
             auto vList = cmd.arg1.value<QVariantList>();
             const quint16 start_addr = vList.first().value<DataTypes::FloatStruct>().sigAdr;
-            const auto blockNum = static_cast<quint8>(getBlockByReg(start_addr)); // сужающий каст
-            QByteArray tmpba = StdFunc::toByteArray(blockNum);
-            for (const auto &item : vList)
+            const auto group = getGroupByAddress(start_addr);
+            if (group.m_startAddr == start_addr)
             {
-                const float value = item.value<DataTypes::FloatStruct>().sigVal;
-                tmpba.append(StdFunc::toByteArray(value));
+                const auto block = static_cast<quint8>(group.m_block); // сужающий каст
+                QByteArray tmpba = StdFunc::toByteArray(block);
+                for (const auto &item : vList)
+                {
+                    const float value = item.value<DataTypes::FloatStruct>().sigVal;
+                    tmpba.append(StdFunc::toByteArray(value));
+                }
+                m_request = writeLongData(s_protoCmdMap.at(cmd.command), tmpba);
             }
-            m_request = writeLongData(s_protoCmdMap.at(cmd.command), tmpba);
         }
         break;
     }
@@ -212,6 +228,7 @@ void ProtocomRequestParser::exceptionalAction(const CommandStruct &cmd) noexcept
         processFileFromDisk(cmd.arg1.value<S2::FilesEnum>());
     else if (cmd.command == Commands::C_EnableWritingHardware)
         emit emulateOkAnswer();
+    setExceptionalSituationStatus(false);
 }
 
 bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noexcept
@@ -220,9 +237,9 @@ bool ProtocomRequestParser::isSupportedCommand(const Commands command) const noe
     return search != s_protoCmdMap.cend();
 }
 
-quint16 ProtocomRequestParser::getBlockByReg(const quint32 regAddr)
+Protocol::ProtocomGroup ProtocomRequestParser::getGroupByAddress(const quint32 addr) const noexcept
 {
-    return Connection::iface()->settings()->dictionary().value(regAddr).block.value<quint16>();
+    return getGroupsByAddress<Protocol::ProtocomGroup>(addr);
 }
 
 QByteArray ProtocomRequestParser::prepareBlock(

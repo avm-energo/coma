@@ -13,9 +13,7 @@ AlarmStateAll::AlarmStateAll(QWidget *parent) : BaseAlarm(parent)
 
 void AlarmStateAll::reqUpdate()
 {
-    auto iface = Connection::iface();
-    if (iface != nullptr)
-        iface->reqBSI();
+    engine()->currentConnection()->reqBSI();
 }
 
 void AlarmStateAll::update(quint32 health)

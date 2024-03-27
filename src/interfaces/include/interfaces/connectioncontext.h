@@ -7,7 +7,7 @@
 namespace Interface
 {
 
-class Connection;
+class AsyncConnection;
 class DefaultQueryExecutor;
 
 enum class Strategy : quint8
@@ -43,7 +43,7 @@ public:
     void init(BaseInterface *iface, DefaultQueryExecutor *executor, //
         const Strategy strategy, const Qt::ConnectionType connPolicy);
     /// \brief Запускает соединение для текущего инициализированного контекста.
-    bool run(Connection *connection);
+    bool run(AsyncConnection *connection);
     /// \brief Сбрасывает текущий контекст и закрывает активное соединение.
     void reset();
 };

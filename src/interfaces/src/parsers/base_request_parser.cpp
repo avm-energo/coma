@@ -22,6 +22,11 @@ BaseRequestParser::BaseRequestParser(QObject *parent)
 {
 }
 
+void BaseRequestParser::updateProtocolSettings(const ProtocolDescription &desc) noexcept
+{
+    m_protocol.merge(desc);
+}
+
 QByteArray BaseRequestParser::getNextDataSection()
 {
     if (m_longDataSections.size() > 0)
@@ -51,6 +56,7 @@ void BaseRequestParser::exceptionalAction(const CommandStruct &command) noexcept
 {
     // Nothing to do here
     Q_UNUSED(command);
+    setExceptionalSituationStatus(false);
 }
 
 } // namespace Interface
