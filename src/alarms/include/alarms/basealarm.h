@@ -2,7 +2,14 @@
 
 #include "../../widgets/uwidget.h"
 
+#include <device/xml_settings.h>
+
 constexpr int circleRadius = 15; ///< Indicator's circle radius.
+
+using AlarmType = Device::XmlDataTypes::AlarmType;
+using AlarmValue = Device::XmlDataTypes::AlarmValue;
+using SignalMap = Device::XmlDataTypes::SignalMap;
+using AlarmStateAllConfig = Device::XmlDataTypes::AlarmStateAllConfig;
 
 /// \brief Abstract base class for alarm's dialogs.
 /// \see AlarmStateAll, ModuleAlarm.
@@ -22,8 +29,8 @@ protected:
     QColor m_normalColor;
     QColor m_alarmColor;
 
-    /// \details Pure virtual function for UI setup.
-    virtual void setupUI(const QStringList &events) = 0;
+    /// \brief Return alarm color depends on alarm type.
+    QColor getColorByType(const AlarmType type) const noexcept;
 
 signals:
     /// \details This signal is emitted when indicator color is changed.

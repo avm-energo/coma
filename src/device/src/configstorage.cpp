@@ -51,6 +51,11 @@ void ConfigStorage::sectionDataReceive(const XmlDataTypes::SGMap &sgmap, const Q
     m_settings.appendSection({ secHead, sgmap });
 }
 
+void ConfigStorage::alarmStateAllDataReceive(const XmlDataTypes::AlarmType type, const u32 index, const QString &desc)
+{
+    m_settings.appendAlarmStateAll(type, index, desc);
+}
+
 void ConfigStorage::alarmDataReceive(const XmlDataTypes::AlarmType type, const u32 addr, //
     const QString &desc, const QList<u32> &highlights)
 {

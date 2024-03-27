@@ -12,6 +12,7 @@ constexpr auto sections = "sections";
 constexpr auto section = "section";
 constexpr auto sgroup = "sgroup";
 constexpr auto alarms = "alarms";
+constexpr auto state_all = "state-all";
 constexpr auto crit = "critical";
 constexpr auto warn = "warning";
 constexpr auto info = "info";

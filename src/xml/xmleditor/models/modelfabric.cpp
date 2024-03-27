@@ -30,6 +30,7 @@ void ModelFabric::CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
             break;
         case ModelType::Signals:
         case ModelType::SectionTabs:
+        case ModelType::AlarmStateAll:
         case ModelType::AlarmsCrit:
         case ModelType::AlarmsWarn:
         case ModelType::AlarmsInfo:

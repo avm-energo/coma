@@ -15,6 +15,7 @@ enum class ModelType : quint16
     Section,
     SGroup,
     Alarms,
+    AlarmStateAll,
     AlarmsCrit,
     AlarmsWarn,
     AlarmsInfo,

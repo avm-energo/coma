@@ -4,6 +4,7 @@
 #include "moduledialog.h"
 #include "xml104dialog.h"
 #include "xmlalarmdialog.h"
+#include "xmlalarmstatealldialog.h"
 #include "xmlconfigdialog.h"
 #include "xmlhiddentabdialog.h"
 #include "xmlhiddenwidgetdialog.h"
@@ -37,6 +38,9 @@ void XmlDialogFabric::CreateOrEditDialog(BaseEditorModel *model, int row, QWidge
         {
         case ModelType::Master:
             dialog = new ModuleDialog(parent);
+            break;
+        case ModelType::AlarmStateAll:
+            dialog = new XmlAlarmStateAllDialog(parent);
             break;
         case ModelType::AlarmsCrit:
         case ModelType::AlarmsWarn:

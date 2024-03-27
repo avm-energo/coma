@@ -28,13 +28,14 @@ void AlarmWidget::configure(Device::CurrentDevice *device)
         { AlarmType::Critical, "Аварийная сигнализация" }         //
     };
 
-    auto alarmStateAll = new AlarmStateAll(device);
-    alarmStateAll->setupUI(AVM::HthToolTip);
-    QObject::connect(device, &Device::CurrentDevice::healthChanged, alarmStateAll, &AlarmStateAll::update);
-    addAlarm(alarmStateAll, "Состояние устройства");
     const auto &moduleSettings = device->getConfigStorage()->getDeviceSettings();
     const auto &alarmMap = moduleSettings.getAlarms();
     const auto &sigMap = moduleSettings.getSignals();
+
+    auto alarmStateAll = new AlarmStateAll(device);
+    alarmStateAll->update(device->bsi().Hth);
+    QObject::connect(device, &Device::CurrentDevice::healthChanged, alarmStateAll, &AlarmStateAll::update);
+    addAlarm(alarmStateAll, "Состояние устройства");
     for (const auto &[type, title] : alarmSettings)
     {
         const auto &alarms = alarmMap.value(type);
