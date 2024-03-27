@@ -85,7 +85,7 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     connect(s2requestService.get(), &S2RequestService::response, //
         s2dataManager.get(), &S2DataManager::parseS2File);
     connect(connectionManager.get(), &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
-    connect(connectionManager.get(), &ConnectionManager::connectSuccesfull, this, &Coma::prepare);
+    connect(connectionManager.get(), &ConnectionManager::connectSuccessfull, this, &Coma::prepare);
     connect(connectionManager.get(), &ConnectionManager::connectFailed, this, //
         [this](const QString &errMsg) { EMessageBox::error(this, errMsg); });
 }
