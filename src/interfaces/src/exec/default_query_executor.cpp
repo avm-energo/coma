@@ -116,10 +116,10 @@ void DefaultQueryExecutor::writeToLog(const QByteArray &ba, const Direction dir)
     switch (dir)
     {
     case Interface::FromDevice:
-        msg += ": <- ";
+        msg += ": -> ";
         break;
     case Interface::ToDevice:
-        msg += ": -> ";
+        msg += ": <- ";
         break;
     default:
         msg += ": ";

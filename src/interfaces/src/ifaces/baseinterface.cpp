@@ -32,10 +32,10 @@ void BaseInterface::writeLog(const QByteArray &ba, Interface::Direction dir)
         switch (dir)
         {
         case Interface::FromDevice:
-            msg += ": <- ";
+            msg += ": -> ";
             break;
         case Interface::ToDevice:
-            msg += ": -> ";
+            msg += ": <- ";
             break;
         default:
             msg += ": ";
