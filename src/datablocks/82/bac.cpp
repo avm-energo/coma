@@ -35,7 +35,6 @@ void Bac82::setDefBlock()
         m_blockData->KmI_5[i] = 1.0;
         m_blockData->KmU[i] = 1.0;
     }
-    writeBlockToModule();
 }
 
 Bac82::BlockData *Bac82::data()

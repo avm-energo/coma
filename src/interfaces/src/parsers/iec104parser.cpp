@@ -87,14 +87,12 @@ Q_DECLARE_METATYPE(old::CommandStruct)
 namespace Interface
 {
 
-QMutex IEC104Parser::s_ParseReadMutex;
-QMutex IEC104Parser::s_ParseWriteMutex;
-
 using namespace old;
 using namespace Iec104;
 
 IEC104Parser::IEC104Parser(RequestQueue &queue, QObject *parent) : QObject(parent), m_queue(queue)
 {
+    m_parseData.reserve(1024);
     m_writingToPortBlocked = true;
     m_isFirstParse = true;
     m_threadMustBeFinished = false;
@@ -132,9 +130,7 @@ void IEC104Parser::run()
     {
         if (!m_parseData.isEmpty())
         {
-            s_ParseReadMutex.lock();
             QByteArray tmpba = m_parseData.takeFirst();
-            s_ParseReadMutex.unlock();
             if (!tmpba.isEmpty())
             {
                 Error::Msg tmpi = isIncomeDataValid(tmpba);
@@ -215,43 +211,36 @@ void IEC104Parser::run()
     emit finished();
 }
 
-void IEC104Parser::processReadBytes(QByteArray ba)
+void IEC104Parser::checkStartBytes(QByteArray ba)
 {
-    if (m_isFirstParse)
-        m_log.info("<-- " + ba.toHex());
-    m_isFirstParse = false;
-    quint32 basize = static_cast<quint32>(ba.size());
-    if (m_cutPckt.size() > 1)
+    if (!m_tempBuffer.isEmpty())
     {
-        quint32 cutpcktlen = static_cast<quint8>(m_cutPckt.at(1));
-        cutpcktlen += 2;
-        quint32 cutpcktsize = static_cast<quint32>(m_cutPckt.size());
-        quint32 missing_num = cutpcktlen - cutpcktsize; // взяли длину остатка от предыдущего пакета
-        if (missing_num > basize)
+        ba = m_tempBuffer.append(ba);
+        m_tempBuffer.clear();
+    }
+    while (!ba.isEmpty())
+    {
+        auto startByte = std::uint8_t(ba[0]);
+        if (startByte == I104_START)
         {
-            m_cutPckt.append(ba);
-            m_isFirstParse = true;
-            return; // если так и не достигли конца пакета, надо брать следующий пакет
-                    // в cutpckt
+            auto size = std::uint8_t(ba[1]) + 2;
+            auto message = ba.left(size);
+            if (message.size() == size)
+            {
+                m_parseData.append(message);
+                m_log.info("<-- " + message.toHex());
+            }
+            else
+                m_tempBuffer = message;
+            ba.remove(0, size);
         }
-        Q_ASSERT(basize >= missing_num);
-        m_cutPckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
-        ba.remove(0, missing_num);
-        s_ParseReadMutex.lock();
-        m_parseData.append(m_cutPckt);
-        s_ParseReadMutex.unlock();
-        m_cutPckt.clear();
-        basize = static_cast<quint32>(ba.size());
+        else
+        {
+            m_log.warning(QString("Wrong start byte received: %1").arg(int(startByte), 2, 16, QChar('0')));
+            m_log.warning(QString("Invalid data: %1").arg(QString(ba.toHex())));
+            break;
+        }
     }
-    if (basize < 2) // ba is empty or there's not enough symbols to parse in it
-    {
-        m_isFirstParse = true;
-        return;
-    }
-    m_cutPckt = ba.left(2);
-    ba = ba.mid(2);
-    processReadBytes(ba);
-    m_isFirstParse = true;
 }
 
 Error::Msg IEC104Parser::isIncomeDataValid(QByteArray &ba)
@@ -401,11 +390,15 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
         {
             if ((i == 0) || (DUI.qualifier.SQ == 0))
             {
-                Q_ASSERT(basize >= (index + 3));
-                objectAdr = ba.at(index++);
-                objectAdr &= 0x00FF;
-                objectAdr |= ba.at(index++) << 8;
-                objectAdr |= ba.at(index++) << 16;
+                if (basize >= (index + 3))
+                {
+                    objectAdr = ba.at(index++);
+                    objectAdr &= 0x00FF;
+                    objectAdr |= ba.at(index++) << 8;
+                    objectAdr |= ba.at(index++) << 16;
+                }
+                else
+                    break;
             }
             else
                 objectAdr++;
@@ -419,19 +412,21 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
             }
             case MessageDataType::M_ME_TF_1:
             {
-                Q_ASSERT(basize >= (index + 12));
-                DataTypes::FloatWithTimeStruct signal;
-                signal.sigAdr = objectAdr;
-                float value;
-                memcpy(&value, &(ba.data()[index]), 4);
-                index += 4;
-                signal.sigVal = value;
-                signal.sigQuality = ba.at(index++);
-                quint64 time;
-                memcpy(&time, &(ba.data()[index]), 7);
-                index += 7;
-                signal.CP56Time = time;
-                emit responseSend(signal);
+                if (basize >= (index + 12))
+                {
+                    DataTypes::FloatWithTimeStruct signal;
+                    signal.sigAdr = objectAdr;
+                    float value;
+                    memcpy(&value, &(ba.data()[index]), 4);
+                    index += 4;
+                    signal.sigVal = value;
+                    signal.sigQuality = ba.at(index++);
+                    quint64 time;
+                    memcpy(&time, &(ba.data()[index]), 7);
+                    index += 7;
+                    signal.CP56Time = time;
+                    emit responseSend(signal);
+                }
                 break;
             }
 
@@ -440,148 +435,167 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
 
             case MessageDataType::M_ME_NC_1:
             {
-                Q_ASSERT(basize >= (index + 5));
-                DataTypes::FloatWithTimeStruct signal;
-                signal.sigAdr = objectAdr;
-                memcpy(&signal.sigVal, &(ba.data()[index]), 4);
-                index += 4;
-                signal.sigQuality = ba.at(index++);
-                emit responseSend(signal);
+                if (basize >= (index + 5))
+                {
+                    DataTypes::FloatWithTimeStruct signal;
+                    signal.sigAdr = objectAdr;
+                    memcpy(&signal.sigVal, &(ba.data()[index]), 4);
+                    index += 4;
+                    signal.sigQuality = ba.at(index++);
+                    emit responseSend(signal);
+                }
                 break;
             }
 
             case MessageDataType::M_SP_NA_1:
             {
-                Q_ASSERT(basize >= index);
-                DataTypes::SinglePointWithTimeStruct signal;
-                signal.sigAdr = objectAdr;
-                signal.sigVal = ba.at(index++);
-                emit responseSend(signal);
+                if (basize >= index)
+                {
+                    DataTypes::SinglePointWithTimeStruct signal;
+                    signal.sigAdr = objectAdr;
+                    signal.sigVal = ba.at(index++);
+                    emit responseSend(signal);
+                }
                 break;
             }
 
             case MessageDataType::M_SP_TB_1:
             {
-                Q_ASSERT(basize >= (index + 8));
-                DataTypes::SinglePointWithTimeStruct signal;
-                signal.sigAdr = objectAdr;
-                signal.sigVal = ba.at(index++);
-                memcpy(&signal.CP56Time, &(ba.data()[index]), 7);
-                index += 7;
-                emit responseSend(signal);
+                if (basize >= (index + 8))
+                {
+                    DataTypes::SinglePointWithTimeStruct signal;
+                    signal.sigAdr = objectAdr;
+                    signal.sigVal = ba.at(index++);
+                    memcpy(&signal.CP56Time, &(ba.data()[index]), 7);
+                    index += 7;
+                    emit responseSend(signal);
+                }
                 break;
             }
 
             case MessageDataType::M_BO_NA_1:
             {
-                Q_ASSERT(basize >= (index + 5));
-                DataTypes::BitStringStruct signal;
-                signal.sigAdr = objectAdr;
-                memcpy(&signal.sigVal, &(ba.data()[index]), 4);
-                index += 4;
-                memcpy(&signal.sigQuality, &(ba.data()[index++]), 1);
-                emit responseSend(signal);
+                if (basize >= (index + 5))
+                {
+                    DataTypes::BitStringStruct signal;
+                    signal.sigAdr = objectAdr;
+                    memcpy(&signal.sigVal, &(ba.data()[index]), 4);
+                    index += 4;
+                    memcpy(&signal.sigQuality, &(ba.data()[index++]), 1);
+                    emit responseSend(signal);
+                }
                 break;
             }
 
             case MessageDataType::F_SR_NA_1:
             {
-                Q_ASSERT(basize >= 11);
-                m_log.info("Section ready");
-                unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
-                getSection(filenum);
+                if (basize >= 11)
+                {
+                    m_log.info("Section ready");
+                    unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
+                    getSection(filenum);
+                }
                 break;
             }
 
             case MessageDataType::F_FR_NA_1:
             {
-                Q_ASSERT(basize >= 14);
-                m_log.info("File ready");
-                unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
-                m_readData.clear();
-                m_readSize = 0;
-                m_readPos = 0;
-                fileSize = (static_cast<quint8>(ba.at(13)) << 16) | (static_cast<quint8>(ba.at(12)) << 8)
-                    | (static_cast<quint8>(ba.at(11)));
-                setGeneralResponse(DataTypes::GeneralResponseTypes::DataSize, fileSize);
-                callFile(filenum);
+                if (basize >= 14)
+                {
+                    m_log.info("File ready");
+                    unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
+                    m_readData.clear();
+                    m_readSize = 0;
+                    m_readPos = 0;
+                    fileSize = (static_cast<quint8>(ba.at(13)) << 16) | (static_cast<quint8>(ba.at(12)) << 8)
+                        | (static_cast<quint8>(ba.at(11)));
+                    setGeneralResponse(DataTypes::GeneralResponseTypes::DataSize, fileSize);
+                    callFile(filenum);
+                }
                 break;
             }
 
             case MessageDataType::F_SG_NA_1:
             {
-                Q_ASSERT(basize >= (m_readSize + 14));
-                m_log.info(
-                    "Segment ready: RDSize=" + QString::number(ba.at(12), 16) + ", num=" + QString::number(ba.at(13)));
-                m_readSize = static_cast<quint8>(ba.at(12));
-                m_readSize &= 0xFF;
-                if (m_readSize) //>= RDLength)
+                if (basize >= (m_readSize + 14))
                 {
-                    m_readData.append(&(ba.data()[13]), m_readSize);
-                    m_readPos += m_readSize;
-                    setGeneralResponse(DataTypes::GeneralResponseTypes::DataCount, m_readPos);
+                    m_log.info("Segment ready: RDSize=" + QString::number(ba.at(12), 16)
+                        + ", num=" + QString::number(ba.at(13)));
+                    m_readSize = static_cast<quint8>(ba.at(12));
+                    m_readSize &= 0xFF;
+                    if (m_readSize) //>= RDLength)
+                    {
+                        m_readData.append(&(ba.data()[13]), m_readSize);
+                        m_readPos += m_readSize;
+                        setGeneralResponse(DataTypes::GeneralResponseTypes::DataCount, m_readPos);
+                    }
                 }
                 break;
             }
 
             case MessageDataType::F_LS_NA_1:
             {
-                Q_ASSERT(basize >= 13);
-                m_log.info("Last section, ba[12] = " + QString::number(ba.at(12)));
-                switch (ba.at(12))
+                if (basize >= 13)
                 {
-                case 1:
-                {
-                    unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
-                    confirmFile(filenum);
-                    m_sendTestTimer->start();
-                    m_isFileSending = false;
-                    m_log.info("FileSending clear");
-                    auto filetype = S2::FilesEnum(ba.at(9));
-                    if (!handleFile(m_readData, filetype, m_fileIsConfigFile))
-                        m_log.error("Error while income file S2 parsing");
-                    m_readPos = 0;
-                    m_readSize = 0;
-                    break;
-                }
-
-                case 3:
-                {
-                    unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
-                    confirmSection(filenum);
-                    break;
-                }
+                    m_log.info("Last section, ba[12] = " + QString::number(ba.at(12)));
+                    switch (ba.at(12))
+                    {
+                    case 1:
+                    {
+                        unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
+                        confirmFile(filenum);
+                        m_sendTestTimer->start();
+                        m_isFileSending = false;
+                        m_log.info("FileSending clear");
+                        auto filetype = S2::FilesEnum(ba.at(9));
+                        if (!handleFile(m_readData, filetype, m_fileIsConfigFile))
+                            m_log.error("Error while income file S2 parsing");
+                        m_readPos = 0;
+                        m_readSize = 0;
+                        break;
+                    }
+                    case 3:
+                    {
+                        unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
+                        confirmSection(filenum);
+                        break;
+                    }
+                    }
                 }
                 break;
             }
 
             case MessageDataType::F_SC_NA_1:
             {
-                Q_ASSERT(basize >= 13);
-                if (ba.at(12) == 0x02) //запрос файла
+                if (basize >= 13)
                 {
-                    m_log.info("File query");
-                    sectionReady();
-                }
-                if (ba.at(12) == 0x06)
-                {
-                    m_log.info("Segment query");
-                    sendSegments();
+                    if (ba.at(12) == 0x02) //запрос файла
+                    {
+                        m_log.info("File query");
+                        sectionReady();
+                    }
+                    if (ba.at(12) == 0x06)
+                    {
+                        m_log.info("Segment query");
+                        sendSegments();
+                    }
                 }
                 break;
             }
 
             case MessageDataType::F_AF_NA_1:
             {
-                Q_ASSERT(basize >= 13);
-                m_log.info("Last section of file " + QString::number(ba[12]) + " confirm");
-                if (ba.at(12) == 0x03) // подтверждение секции
-                    lastSection();
-                if (ba.at(12) == 0x01) // подтверждение файла
+                if (basize >= 13)
                 {
-                    m_log.info("FileSending clear");
-                    m_isFileSending = false;
-                    emit sendMessagefromParse();
+                    m_log.info("Last section of file " + QString::number(ba[12]) + " confirm");
+                    if (ba.at(12) == 0x03) // подтверждение секции
+                        lastSection();
+                    if (ba.at(12) == 0x01) // подтверждение файла
+                    {
+                        m_log.info("FileSending clear");
+                        m_isFileSending = false;
+                        emit sendMessagefromParse();
+                    }
                 }
                 break;
             }
@@ -599,22 +613,24 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
 
             case MessageDataType::C_SE_NC_1:
             {
-                Q_ASSERT(basize >= 14);
-                if (DUI.cause.cause == 10)
-                    m_signalCounter++;
-
-                setGeneralResponse(DataTypes::GeneralResponseTypes::DataCount, m_signalCounter);
-                quint32 adr = ba.at(6) + (ba.at(7) + 1) * 256; //+ (ba[8]<<16);
-
-                if ((adr == 920) && (DUI.cause.cause == 10)) // если адрес последнего параметра коррекции
+                if (basize >= 14)
                 {
-                    if (ba.at(13) == 0)
+                    if (DUI.cause.cause == 10)
+                        m_signalCounter++;
+
+                    setGeneralResponse(DataTypes::GeneralResponseTypes::DataCount, m_signalCounter);
+                    quint32 adr = ba.at(6) + (ba.at(7) + 1) * 256; //+ (ba[8]<<16);
+
+                    if ((adr == 920) && (DUI.cause.cause == 10)) // если адрес последнего параметра коррекции
                     {
-                        setGeneralResponse(DataTypes::GeneralResponseTypes::Ok);
-                        setGeneralResponse(
-                            DataTypes::GeneralResponseTypes::DataCount, 11); // send to progressbar max count of bytes
+                        if (ba.at(13) == 0)
+                        {
+                            setGeneralResponse(DataTypes::GeneralResponseTypes::Ok);
+                            setGeneralResponse(DataTypes::GeneralResponseTypes::DataCount,
+                                11); // send to progressbar max count of bytes
+                        }
+                        m_signalCounter = 0;
                     }
-                    m_signalCounter = 0;
                 }
                 break;
             }
@@ -673,6 +689,7 @@ void IEC104Parser::stop()
     stopDT();
     m_threadMustBeFinished = true;
     m_timer104->stop();
+    m_queue.get().addToQueue({});
 }
 
 QByteArray IEC104Parser::createGI(unsigned char apdulength)

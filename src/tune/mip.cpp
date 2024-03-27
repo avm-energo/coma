@@ -15,8 +15,18 @@
 #include <interfaces/types/settingstypes.h>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
-    : QObject(parent), m_parent(parent), m_withGUI(withGUI), m_moduleType(moduleType)
+    : QObject(parent), m_iface(nullptr), m_parent(parent), m_withGUI(withGUI), m_moduleType(moduleType)
 {
+}
+
+Mip::~Mip() noexcept
+{
+    if (m_iface != nullptr)
+    {
+        m_iface->close();
+        // ждём, пока отработает парсер
+        StdFunc::Wait();
+    }
 }
 
 void Mip::updateData(const DataTypes::FloatStruct &fl)
@@ -143,8 +153,13 @@ void Mip::stop()
         m_updateTimer->deleteLater();
         m_updater->setUpdatesEnabled(false);
     }
-    m_iface->close();
-    emit finished();
+    if (m_iface != nullptr)
+    {
+        m_iface->close();
+        m_iface = nullptr;
+        StdFunc::Wait();
+        emit finished();
+    }
 }
 
 bool Mip::initConnection(const IEC104Settings &settings)
@@ -163,7 +178,7 @@ bool Mip::initConnection(const IEC104Settings &settings)
     parser->setBaseAdr(settings.bsAddress);
     // Обмен данными
     QObject::connect(m_iface, &BaseInterface::dataReceived, //
-        parser, &IEC104Parser::processReadBytes, Qt::QueuedConnection);
+        parser, &IEC104Parser::checkStartBytes, Qt::QueuedConnection);
     QObject::connect(parser, &IEC104Parser::writeData, //
         m_iface, &BaseInterface::writeData, Qt::QueuedConnection);
     QObject::connect(m_iface, &BaseInterface::finished, //
