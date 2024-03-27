@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDialog>
+#include <QSettings>
 #include <QTableView>
 #include <interfaces/types/settingstypes.h>
 
@@ -14,20 +15,19 @@ public:
     virtual bool updateModel() = 0;
 
 protected:
+    QSettings m_settings;
+    QTableView *m_tableView;
+
     virtual void acceptedInterface() {};
     virtual void setInterface(QModelIndex index) = 0;
     virtual void addInterface()
     {
     }
-    virtual void scanInterface()
-    {
-    }
 
-    void rotateSettings(const QString &type, const QString &name);
-    bool isKeyExist(const QString &type, const QString &chstr);
-    void removeDevice(const QString &name);
+    void removeConnection(const QString &connName);
+    bool isConnectionExist(const QString &connName);
+    bool checkSize();
 
-    QTableView *tableView;
 signals:
     void accepted(const ConnectStruct &st);
 };

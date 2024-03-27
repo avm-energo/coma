@@ -1,8 +1,10 @@
 #pragma once
+
 #include "abstractinterfacedialog.h"
 
 #include <QProgressDialog>
-class InterfaceEthernetDialog : public AbstractInterfaceDialog
+
+class InterfaceEthernetDialog final : public AbstractInterfaceDialog
 {
     Q_OBJECT
 public:
@@ -13,7 +15,7 @@ public:
 
 private:
     void addInterface() override;
-    void scanInterface() override;
+    void scanInterface();
     void acceptedInterface() override;
     bool updateModel() override;
 

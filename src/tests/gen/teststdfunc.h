@@ -9,6 +9,7 @@ class TestStdFunc : public QObject
     Q_OBJECT
 public:
     explicit TestStdFunc(QObject *parent = nullptr);
+
 private slots:
     // вызывается перед первой тестовой функцией
     void initTestCase()
@@ -33,7 +34,8 @@ private slots:
     void verToStr();
     void strToVer();
     void enumToStr();
-    void byteArrayTest();
+    void byteArrayTest01();
+    void byteArrayTest02();
 
     void modbusRegistersTest01();
     void modbusRegistersTest02();
@@ -43,6 +45,21 @@ private slots:
     void modbusRegistersTest06();
     void modbusRegistersTest07();
     void modbusSinglePoint();
+
+    void iec104ControlBlockTest01();
+    void iec104ControlBlockTest02();
+    void iec104ControlBlockTest03();
+    void iec104ControlBlockTest04();
+
+    void iec104UnnumberedControlTest01();
+    void iec104UnnumberedControlTest02();
+
+    void iec104ApciTest01();
+    void iec104ApciTest02();
+
+    void iec104AsduTest01();
+
+    void iec104AsduUnpackerTest01();
 };
 
 #endif // TESTPROTOCOM_H

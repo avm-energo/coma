@@ -9,12 +9,13 @@ Bda82::Bda82(QObject *parent) : DataBlock(parent)
 {
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
     setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdaBlock, m_blockData.get(), sizeof(BlockData), false });
+    createWidget();
 }
 
 void Bda82::setupValuesDesc()
 {
     addNewValue("Частота:", "Частота сигналов, Гц", &m_blockData->Frequency, 3);
-    addNewGroup("Значения сигналов в единицах АЦП", "NADC", 6, 0, &m_blockData->IUeff_ADC[0], 0);
+    addNewGroup("Значения сигналов в единицах АЦП", "NADC", 0, 6, &m_blockData->IUeff_ADC[0], 0);
 }
 
 Error::Msg Bda82::checkValues(Modules::MezzanineBoard mtypeM, S2::FLOAT_6t i2Noms)
@@ -22,9 +23,9 @@ Error::Msg Bda82::checkValues(Modules::MezzanineBoard mtypeM, S2::FLOAT_6t i2Nom
     // we suggest that each three of currents are equal inside each other
     assert(i2Noms.size() > 3);
     float iNom = (i2Noms.at(0) == 5) ? 419500.0 : 1678000.0;
-    float iTol = (i2Noms.at(3) == 5) ? 10500.0 : 42000.0;
+    float iTol = (i2Noms.at(3) == 5) ? 21000.0 : 84000.0;
     float uNom = 2088500.0;
-    float uTol = 52500.0;
+    float uTol = 105000.0;
 
     Error::Msg res;
     switch (mtypeM)

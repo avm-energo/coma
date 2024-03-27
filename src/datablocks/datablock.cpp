@@ -32,7 +32,7 @@
 #include <QScrollBar>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-#include <interfaces/connection.h>
+#include <interfaces/conn/active_connection.h>
 
 using namespace Interface;
 
@@ -176,15 +176,17 @@ void DataBlock::updateWidget()
     {
         for (auto &valueDesc : group.values)
         {
-            std::visit(overloaded { [&](float *arg)                                                       //
-                           {                                                                              //
-                               WDFunc::SetLEData(                                                         //
-                                   m_widget, valueDesc.valueId, WDFunc::StringFloatValueWithCheck(*arg)); //
-                           },                                                                             //
-                           [&](quint32 *arg)                                                              //
-                           {                                                                              //
-                               WDFunc::SetLEData(m_widget, valueDesc.valueId, QString::number(*arg));     //
-                           } },                                                                           //
+            std::visit(                                                                            //
+                overloaded {                                                                       //
+                    [&](float *arg)                                                                //
+                    {                                                                              //
+                        WDFunc::SetLEData(                                                         //
+                            m_widget, valueDesc.valueId, WDFunc::StringFloatValueWithCheck(*arg)); //
+                    },                                                                             //
+                    [&](quint32 *arg)                                                              //
+                    {                                                                              //
+                        WDFunc::SetLEData(m_widget, valueDesc.valueId, QString::number(*arg));     //
+                    } },                                                                           //
                 valueDesc.value);
         }
     }
@@ -220,12 +222,13 @@ void DataBlock::updateFromWidget()
 
 Error::Msg DataBlock::writeBlockToModule()
 {
+    auto conn = ActiveConnection::sync();
     switch (m_block.blocktype)
     {
     case DataTypes::DataBlockTypes::BacBlock:
     {
         updateFromWidget();
-        if (Connection::iface()->writeBlockSync(
+        if (conn->writeBlockSync(
                 m_block.blocknum, DataTypes::DataBlockTypes::BacBlock, m_block.block, m_block.blocksize)
             != Error::Msg::NoError)
         {
@@ -252,21 +255,21 @@ Error::Msg DataBlock::writeBlockToModule()
 
 void DataBlock::readBlockFromModule()
 {
+    auto conn = ActiveConnection::sync();
     switch (m_block.blocktype)
     {
     case DataTypes::DataBlockTypes::BacBlock:
     case DataTypes::DataBlockTypes::BdBlock:
     case DataTypes::DataBlockTypes::BdaBlock:
     {
-        const auto err
-            = Connection::iface()->reqBlockSync(m_block.blocknum, m_block.blocktype, m_block.block, m_block.blocksize);
+        const auto err = conn->reqBlockSync(m_block.blocknum, m_block.blocktype, m_block.block, m_block.blocksize);
         if (err != Error::Msg::NoError)
             qCritical("Не удалось прочитать блок");
         break;
     }
     case DataTypes::DataBlockTypes::BciBlock:
     {
-        const auto err = Connection::iface()->readS2FileSync(S2::FilesEnum::Config);
+        const auto err = conn->readS2FileSync(S2::FilesEnum::Config);
         if (err != Error::Msg::NoError)
             qCritical("Не удалось прочитать блок");
     }

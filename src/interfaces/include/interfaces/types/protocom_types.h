@@ -5,7 +5,6 @@
 
 // Обмен с модулями
 // Канал связи с модулем
-typedef unsigned char byte;
 namespace Proto
 {
 Q_NAMESPACE
@@ -15,14 +14,10 @@ Q_NAMESPACE
 constexpr unsigned Timeout = 1000;
 // таймаут посылки запроса нестёртых осциллограмм
 constexpr unsigned TimeoutOscillogram = 1000;
-// 100 ms main loop sleep
-constexpr unsigned MainLoopDelay = 100;
-//'\x00'
-constexpr byte NullByte = 0x00;
 // максимальный размер одного сегмента по USB
 constexpr unsigned MaxSegmenthLength = 60;
 
-enum Starters : byte
+enum Starters : std::uint8_t
 {
     // начало посылки
     Request = 0x3e,
@@ -32,7 +27,7 @@ enum Starters : byte
     Response = 0x3c
 };
 
-enum Commands : byte
+enum Commands : std::uint8_t
 {
     ResultOk = 0x11,    ///< Ответ "всё в порядке"
     Test = 0x49,        ///< Запуск, остановка теста
@@ -83,32 +78,5 @@ enum Commands : byte
     FakeReadBitString
 };
 Q_ENUM_NS(Proto::Commands);
-
-enum WCommands
-{
-    /// Блок дополнительных команд
-    EraseStartupValues = 0x05,
-    InitStartupValues = 0x01
-};
-
-enum HiddenBlockModule : byte
-{
-    Base = 0x01,
-    Mezz = 0x02,
-    BaseMezz = 0x03,
-    Add = 0x04,
-    BaseMezzAdd = 0x07
-};
-
-enum TypeId : int
-{
-    Bool,
-    Uint32,
-    Float,
-    File,
-    ByteArray
-    // Smth else
-};
-Q_ENUM_NS(TypeId)
 
 }

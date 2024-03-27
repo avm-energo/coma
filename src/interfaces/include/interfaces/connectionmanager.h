@@ -2,7 +2,7 @@
 
 #include <QTimer>
 #include <QWidget>
-#include <interfaces/connection.h>
+#include <interfaces/conn/async_connection.h>
 #include <interfaces/connectioncontext.h>
 #include <interfaces/types/settingstypes.h>
 
@@ -28,7 +28,7 @@ class ConnectionManager : public QObject
     Q_OBJECT
 private:
     ConnectionContext m_context;
-    Connection *m_currentConnection;
+    AsyncConnection *m_currentConnection;
     QTimer *m_silentTimer;
     QMetaObject::Connection m_connBSI;
     ReconnectMode m_reconnectMode;
@@ -40,7 +40,7 @@ private:
 
 public:
     explicit ConnectionManager(QWidget *parent = nullptr);
-    bool createConnection(const ConnectStruct &connectionData);
+    AsyncConnection *createConnection(const ConnectStruct &connectionData);
     void setReconnectMode(const ReconnectMode newMode) noexcept;
 
 signals:

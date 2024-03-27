@@ -1,4 +1,7 @@
-project(AVM-Debug VERSION 2.7.0)
+project(AVM-Debug VERSION 2.8.0)
+
+find_package(Qt${QT_VERSION_MAJOR}
+  COMPONENTS Core Widgets REQUIRED)
 
 configure_file(
   ${CMAKE_SOURCE_DIR}/cconfig.h.in

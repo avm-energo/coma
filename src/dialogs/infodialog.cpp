@@ -9,17 +9,17 @@
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <interfaces/conn/active_connection.h>
 
 InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
 {
-
+    auto conn = engine()->currentConnection();
     connect(&Board::GetInstance(), &Board::readyRead, this, &InfoDialog::sync);
     connect(&Board::GetInstance(), &Board::readyReadExt, this, &InfoDialog::syncExt);
-
-    connect(this, &InfoDialog::fetchBsi, Connection::iface(), &Connection::reqBSI);
-    if (Connection::iface()->supportBSIExt())
+    connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSI);
+    if (ActiveConnection::sync()->supportBSIExt())
     {
-        connect(this, &InfoDialog::fetchBsi, Connection::iface(), &Connection::reqBSIExt);
+        connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSIExt);
     }
     else
     {

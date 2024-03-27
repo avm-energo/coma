@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <interfaces/connection.h>
+#include <interfaces/conn/async_connection.h>
 
 using namespace Interface;
 
@@ -123,7 +123,7 @@ void Board::update(const DataTypes::BitStringStruct &bs)
     // Only bsi block
     if (bs.sigAdr < 1 || bs.sigAdr > 15)
         return updateExt(bs);
-    quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - Regs::bsiStartReg));
+    quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlock) + (bs.sigAdr - addr::bsiStartReg));
 
     item = bs.sigVal;
     m_updateCounter++;
@@ -178,11 +178,11 @@ bool Board::noRegPars() const
 void Board::updateExt(const DataTypes::BitStringStruct &bs)
 {
     constexpr auto minCount = sizeof(Modules::StartupInfoBlockExt0) / sizeof(quint32);
-    constexpr auto lastExt0Reg = Regs::bsiExtStartReg + minCount;
+    constexpr auto lastExt0Reg = addr::bsiExtStartReg + minCount;
     // BsiExt0
-    if ((bs.sigAdr >= Regs::bsiExtStartReg) && (bs.sigAdr <= lastExt0Reg))
+    if ((bs.sigAdr >= addr::bsiExtStartReg) && (bs.sigAdr <= lastExt0Reg))
     {
-        quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlockExt) + (bs.sigAdr - Regs::bsiExtStartReg));
+        quint32 &item = *(reinterpret_cast<quint32 *>(&m_startupInfoBlockExt) + (bs.sigAdr - addr::bsiExtStartReg));
         item = bs.sigVal;
         ++m_updateCounterExt;
     }

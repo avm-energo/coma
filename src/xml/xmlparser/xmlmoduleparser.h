@@ -4,8 +4,6 @@
 #include "../../module/modulesettings.h"
 #include "xmlbaseparser.h"
 
-#include <interfaces/types/interfacesettings.h>
-
 namespace Xml
 {
 /// \brief Class for parsing modules configuration files.
@@ -30,7 +28,7 @@ signals:
     void workJourDataSending(const quint32 id, const QString &desc);
     void measJourDataSending(const quint32 idx, const QString &header, //
         const ModuleTypes::BinaryType type, bool visib);
-    void protocolGroupSending(const AbstractGroup &str);
+    void protocolGroupSending(const Protocol::AbstractGroup &group);
     void configDataSending(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
     void configNameSending(const QString &tabName);
     void hiddenTabDataSending(const ModuleTypes::HiddenTab &hiddenTab);

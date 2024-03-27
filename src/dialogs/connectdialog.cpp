@@ -14,7 +14,11 @@
 
 ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
 {
-    QStringList intersl { "USB", "RS485" };
+    QStringList intersl { "USB", "RS485", "Ethernet" };
+    // TODO: использовать AppConfiguration::Service и AppConfiguration::Debug
+    // if (QCoreApplication::applicationName().contains("service", Qt::CaseInsensitive))
+    //        intersl += QStringList { "Ethernet" };
+    // intersl += QStringList { "RS485" };
 #ifdef ENABLE_EMULATOR
     intersl.push_back("Emulator");
 #endif
@@ -39,6 +43,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
     connect(nextButton, &QAbstractButton::clicked, this, &QDialog::close);
     hlyout->addWidget(nextButton);
     layout->addLayout(hlyout);
+    setWindowTitle("Выбор соединения");
     setLayout(layout);
 }
 

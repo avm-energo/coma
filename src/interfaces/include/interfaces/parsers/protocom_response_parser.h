@@ -29,7 +29,7 @@ private:
 #endif
     void processU32(const QByteArray &data, quint16 startAddr);
     void processFloat(const QByteArray &data, quint32 startAddr);
-    void processInt(const byte num);
+    void processInt(const quint8 num);
     void processSinglePoint(const QByteArray &data, const quint16 startAddr);
     void processBlock(const QByteArray &data, quint32 blockNum);
     void processTechBlock(const QByteArray &data, quint32 blockNum);

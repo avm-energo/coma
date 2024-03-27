@@ -30,7 +30,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   Qt${QT_VERSION_MAJOR}::SerialPort
   Qt${QT_VERSION_MAJOR}::Concurrent
   Qt${QT_VERSION_MAJOR}::Svg
-  QXlsx
   qcustomplot)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

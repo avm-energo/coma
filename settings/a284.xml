@@ -448,6 +448,11 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1045</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1050</id>
                 <defaultValue>100.0</defaultValue>
                 <visibility>true</visibility>
@@ -531,6 +536,12 @@
                 <sig-type>30</sig-type>
                 <trans-type>3</trans-type>
                 <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>14</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>15</sig-group>
             </group>
             <group>
                 <signal-id>15</signal-id>

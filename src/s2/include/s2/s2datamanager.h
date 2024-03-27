@@ -50,9 +50,9 @@ public:
     /// \brief Возвращает константную ссылку на хранилище с XML конфигурацией для работы с S2.
     [[nodiscard]] const S2ConfigStorage &getStorage() const noexcept;
     /// \brief Возвращает ссылку на текущую конфигурацию платы.
-    [[nodiscard]] BoardConfiguration &getCurrentConfiguration() noexcept;
+    [[nodiscard]] BoardConfiguration &getCurrentConfiguration();
     /// \brief Возвращает константную ссылку на текущую конфигурацию платы.
-    [[nodiscard]] const BoardConfiguration &getCurrentConfiguration() const noexcept;
+    [[nodiscard]] const BoardConfiguration &getCurrentConfiguration() const;
     /// \brief Возвращает ссылку на конфигурацию платы, тип которой указан.
     [[nodiscard]] BoardConfiguration &getConfiguration(const BoardType boardType) noexcept;
     /// \brief Возвращает константную ссылку на конфигурацию платы, тип которой указан.

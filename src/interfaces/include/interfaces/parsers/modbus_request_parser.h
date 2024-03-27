@@ -14,6 +14,9 @@ private:
     quint16 m_fileNumber;
     quint16 m_fileSection;
 
+    /// \brief Возврат группы протокола по запрошенному адресу.
+    Protocol::ModbusGroup getGroupByAddress(const quint32 addr) const noexcept;
+
     /// \brief Функция для создания PDU (Protocol Data Unit) согласно спецификации Modbus.
     /// \details Может бросать runtime_exception. Использовать с особой осторожностью.
     QByteArray createPDU(const Modbus::Request &request) const noexcept;
@@ -37,6 +40,7 @@ private:
 
 public:
     explicit ModbusRequestParser(QObject *parent = nullptr);
+    void basicProtocolSetup() noexcept override;
 
     /// \brief Функция парсинга запроса в бинарное представление в рамках протокола Modbus.
     QByteArray parse(const CommandStruct &cmd) override;

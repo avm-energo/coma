@@ -1,24 +1,9 @@
 #pragma once
 
 #include <QSerialPort>
+#include <interfaces/types/iec104_settings.h>
 #include <interfaces/types/usbhidsettings.h>
 #include <variant>
-
-struct IEC104Settings
-{
-    quint16 baseadr;
-    QString ip;
-
-    bool isValid() const
-    {
-        auto parts = ip.split(".");
-        bool ok = true;
-        for (const auto &part : parts)
-            if ((part.toUInt(&ok) >= 256) || !ok)
-                return false;
-        return ok;
-    }
-};
 
 struct SerialPortSettings
 {

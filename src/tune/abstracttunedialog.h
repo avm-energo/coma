@@ -26,6 +26,12 @@
 // disable all limits checks
 // #define NO_LIMITS
 
+namespace Interface
+{
+class AsyncConnection;
+class SyncConnection;
+}
+
 class AbstractTuneDialog : public QDialog
 {
     Q_OBJECT
@@ -56,8 +62,6 @@ public:
 
     bool IsNeededDefConf;
     int m_blockCount;
-    //    QStringList m_messages;
-    //    QList<Error::Msg (AbstractTuneDialog::*)()> m_tuneFunctions;
     QList<TuneFuncStruct> m_tuneFunctions;
     quint8 bStep;
     int TuneVariant; // вариант регулировочных параметров
@@ -75,7 +79,7 @@ public:
     Error::Msg CheckPassword();
     virtual void setTuneFunctions() = 0; // заполнить список функций настройки
     int addWidgetToTabWidget(QWidget *w, const QString &caption);
-    void MsgSetVisible(MsgTypes type, int msg, bool Visible = true);
+    void MsgSetVisible(MsgTypes type, int msg, bool visible = true);
     void MsgClear();
     void setBac(DataBlock *block);
     Error::Msg checkCalibrStep();
@@ -88,6 +92,10 @@ public:
     Error::Msg writeTuneCoefs(bool isUserChoosingRequired);
     Error::Msg readTuneCoefs();
     Error::Msg sendChangedConfig(const std::vector<std::pair<QString, S2::valueType>> &changes) const;
+
+protected:
+    Interface::AsyncConnection *m_async;
+    Interface::SyncConnection *m_sync;
 
 private:
     QMap<int, DataBlock *> AbsBac;

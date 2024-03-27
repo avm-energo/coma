@@ -4,7 +4,7 @@
 
 #include <QHash>
 #include <gen/datatypes.h>
-#include <interfaces/types/interfacesettings.h>
+#include <interfaces/types/protocol_settings.h>
 #include <s2/dataitem.h>
 
 namespace ModuleTypes

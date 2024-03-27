@@ -5,7 +5,7 @@
 #include <QVector>
 #include <bitset>
 
-constexpr int MAXGRAPHSPERPLOT = 15;
+constexpr int MAXGRAPHSPERPLOT = 18;
 
 struct TrendData
 {

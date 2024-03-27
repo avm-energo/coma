@@ -85,8 +85,7 @@ void FWUploadDialog::loadFirmware()
         EMessageBox::error(this, "Получен файл с некорректным размером.");
         return;
     }
-    auto conn = Connection::iface();
-    conn->writeFirmware(firmware);
+    engine()->currentConnection()->writeFirmware(firmware);
     uploadStatus = FirmwareUploadStatus::Written;
 }
 
@@ -99,7 +98,7 @@ void FWUploadDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruc
     {
         if (uploadStatus == FirmwareUploadStatus::Written)
         {
-            Connection::iface()->writeCommand(Commands::C_StartFirmwareUpgrade);
+            engine()->currentConnection()->writeCommand(Commands::C_StartFirmwareUpgrade);
             uploadStatus = FirmwareUploadStatus::Upgraded;
         }
         else if (uploadStatus == FirmwareUploadStatus::Upgraded)

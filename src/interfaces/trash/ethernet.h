@@ -38,7 +38,6 @@ public slots:
     // void poll();
     QByteArray read(bool *status = nullptr) override;
     bool write(const QByteArray &ba) override;
-    bool tryToReconnect() override;
 
 private slots:
     void CheckForData();

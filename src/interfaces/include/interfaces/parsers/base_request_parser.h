@@ -1,7 +1,8 @@
 #pragma once
 
 #include <deque>
-#include <interfaces/types/common_types.h>
+#include <gen/logclass.h>
+#include <interfaces/types/protocol_settings.h>
 
 namespace Interface
 {
@@ -13,16 +14,26 @@ class BaseRequestParser : public QObject
 protected:
     static const std::map<Commands, CommandRegisters> s_wsCmdMap;
 
+    ProtocolDescription m_protocol;
     QByteArray m_request;
     std::deque<QByteArray> m_longDataSections;
     bool m_isExceptionalSituation;
     std::uint32_t m_progressCount;
 
+    template <typename GroupType> //
+    GroupType getGroupsByAddress(const quint32 addr) const noexcept;
+
     /// \brief Устанавливает флаг исключительной ситуации.
     void setExceptionalSituationStatus(bool status) noexcept;
 
 public:
+    /// \brief Конструктор по-умолчанию.
     explicit BaseRequestParser(QObject *parent = nullptr);
+
+    /// \brief Начальная инициализация настроек протокола обмена данными.
+    virtual void basicProtocolSetup() noexcept = 0;
+    /// \brief Обновление описания протокола парсера.
+    void updateProtocolSettings(const ProtocolDescription &desc) noexcept;
 
     /// \brief Функция парсинга полученной команды в запрос к устройству.
     virtual QByteArray parse(const CommandStruct &command) = 0;
@@ -58,6 +69,22 @@ signals:
     /// \brief Сигнал, который используется для передачи прогресса
     /// записи файла или большого массива данных (в байтах) в устройство.
     void progressBytes(const quint64 progress);
+
+    /// \brief Сигнал, который используется для отправки сообщения в лог исполнителя запросов.
+    void needToLog(const QString &message, const LogLevel level);
 };
+
+template <typename GroupType> //
+GroupType BaseRequestParser::getGroupsByAddress(const quint32 addr) const noexcept
+{
+    const auto &dictionary { m_protocol.groups() };
+    auto search = dictionary.find(addr);
+    if (search != dictionary.cend())
+    {
+        if (std::holds_alternative<GroupType>(search->second))
+            return std::get<GroupType>(search->second);
+    }
+    return GroupType {};
+}
 
 } // namespace Interface

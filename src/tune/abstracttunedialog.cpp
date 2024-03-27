@@ -21,15 +21,16 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-//#include <interfaces/protocom.h>
+#include <interfaces/conn/active_connection.h>
 
 namespace crypto
 {
 static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
 static constexpr char name[] = "tuneHash";
 }
+
 AbstractTuneDialog::AbstractTuneDialog(S2::Configuration &workConfig, int tuneStep, QWidget *parent)
-    : QDialog(parent), config(workConfig)
+    : QDialog(parent), config(workConfig), m_async(ActiveConnection::async()), m_sync(ActiveConnection::sync())
 {
     TuneVariant = 0;
     IsNeededDefConf = false;
@@ -209,7 +210,7 @@ int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
     //    return widgetindex;
 }
 
-void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int msg, bool Visible)
+void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int msg, bool visible)
 {
     QPixmap *pm;
     switch (type)
@@ -224,10 +225,10 @@ void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int ms
         pm = new QPixmap(":/tunes/hr.png");
         break;
     case NoMsg:
-        WDFunc::SetVisible(this, "tunemsg" + QString::number(msg), Visible);
+        WDFunc::SetVisible(this, "tunemsg" + QString::number(msg), visible);
         return;
     }
-    WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), Visible);
+    WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), visible);
     WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
 }
 
@@ -361,7 +362,7 @@ Error::Msg AbstractTuneDialog::sendChangedConfig(const std::vector<std::pair<QSt
     for (const auto &[name, value] : changes)
         configCopy.setRecord(name, value);
     auto s2file = configCopy.toByteArray();
-    return Connection::iface()->writeFileSync(S2::FilesEnum::Config, s2file);
+    return m_sync->writeFileSync(S2::FilesEnum::Config, s2file);
 }
 
 // void AbstractTuneDialog::loadTuneCoefsSlot()
@@ -473,7 +474,7 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
     QByteArray ba;
-    if (Connection::iface()->readFileSync(S2::FilesEnum::Config, ba) != Error::Msg::NoError)
+    if (m_sync->readFileSync(S2::FilesEnum::Config, ba) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
     return Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba);
 }
@@ -483,7 +484,7 @@ Error::Msg AbstractTuneDialog::loadWorkConfig()
     QByteArray ba;
     if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba)
         != Error::Msg::NoError)
-        return Connection::iface()->writeFileSync(S2::FilesEnum::Config, ba);
+        return m_sync->writeFileSync(S2::FilesEnum::Config, ba);
     return Error::Msg::GeneralError;
 }
 

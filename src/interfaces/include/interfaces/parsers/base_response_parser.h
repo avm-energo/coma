@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gen/error.h>
+#include <gen/logclass.h>
 #include <interfaces/types/common_types.h>
 #include <s2/s2util.h>
 
@@ -77,6 +78,9 @@ signals:
     /// \brief Сигнал, который используется для отправки на вышестоящий уровень
     /// ответов от устройства, статусов, кодов ошибки, прогресса записи/чтения больших данных.
     void responseParsed(const Interface::DeviceResponse &response);
+
+    /// \brief Сигнал, который используется для отправки сообщения в лог исполнителя запросов.
+    void needToLog(const QString &message, const LogLevel level);
 };
 
 } // namespace Interface

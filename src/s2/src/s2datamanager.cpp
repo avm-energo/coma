@@ -17,12 +17,12 @@ const S2ConfigStorage &DataManager::getStorage() const noexcept
     return m_storage;
 }
 
-BoardConfiguration &DataManager::getCurrentConfiguration() noexcept
+BoardConfiguration &DataManager::getCurrentConfiguration()
 {
     return m_data.at(m_currentParseTarget);
 }
 
-const BoardConfiguration &DataManager::getCurrentConfiguration() const noexcept
+const BoardConfiguration &DataManager::getCurrentConfiguration() const
 {
     return m_data.at(m_currentParseTarget);
 }

@@ -14,7 +14,9 @@ private:
     QByteArray m_continueCommand;
 
     bool isSupportedCommand(const Commands command) const noexcept;
-    quint16 getBlockByReg(const quint32 regAddr);
+
+    /// \brief Возврат группы протокола по запрошенному адресу.
+    Protocol::ProtocomGroup getGroupByAddress(const quint32 addr) const noexcept;
 
     QByteArray prepareBlock(const Proto::Commands cmd, const QByteArray &data, //
         Proto::Starters startByte = Proto::Starters::Request);
@@ -25,6 +27,7 @@ private:
 
 public:
     explicit ProtocomRequestParser(QObject *parent = nullptr);
+    void basicProtocolSetup() noexcept override;
 
     QByteArray parse(const CommandStruct &cmd) override;
     QByteArray getNextContinueCommand() noexcept override;

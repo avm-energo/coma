@@ -8,7 +8,6 @@ BaseInterface::BaseInterface(const QString &logFilename, QObject *parent)
 {
     qRegisterMetaType<InterfaceError>();
     m_log.init(logFilename + "." + ::logExt);
-    m_log.writeRaw(::logStart);
 }
 
 void BaseInterface::setState(const Interface::State state) noexcept
@@ -117,7 +116,6 @@ void BaseInterface::reconnect()
         setState(Interface::State::Reconnect);
         while (getState() == Interface::State::Reconnect)
         {
-
             disconnect();                       // Закрываем текущее соединение
             StdFunc::Wait(m_reconnectInterval); // Интервал между закрытием подключения и попыткой переподключиться
             if (connect()) // Пытаемся подключиться к интерфейсу заново

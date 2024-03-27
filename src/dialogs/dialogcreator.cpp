@@ -11,8 +11,8 @@
 #include "checkdialog.h"
 #include "configdialog.h"
 #include "fwuploaddialog.h"
-#include "infodialog.h"
 #include "hiddendialog.h"
+#include "infodialog.h"
 #include "plotdialog.h"
 #include "relaydialog.h"
 #include "switchjournaldialog.h"
@@ -100,15 +100,21 @@ void DialogCreator::createCheckDialogs()
 
 void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
 {
-    auto &workConfig = m_s2manager.getCurrentConfiguration().m_workingConfig;
-    if (boxModel == Modules::Model::KIV)
+    try
     {
-        // AVM-KIV tune status: currently working
-        addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
-    }
-    else
+        auto &workConfig = m_s2manager.getCurrentConfiguration().m_workingConfig;
+        if (boxModel == Modules::Model::KIV)
+        {
+            // AVM-KIV tune status: currently working
+            addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
+        }
+        else
+        {
+            // TODO: Добавить регулировку для других модулей
+        }
+    } catch (...)
     {
-        // TODO: Добавить регулировку для других модулей
+        qCritical() << "Ошибка создания диалога регулировки";
     }
 }
 
@@ -131,20 +137,27 @@ void DialogCreator::createStartupDialog(const Modules::Model boxModel)
 void DialogCreator::createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem)
 {
     using namespace Modules;
-    if (typeb == BaseBoard::MTB_80)
+    try
     {
-        auto &workConfig = m_s2manager.getCurrentConfiguration().m_workingConfig;
-        if ((typem == MezzanineBoard::MTM_81) || (typem == MezzanineBoard::MTM_82) || (typem == MezzanineBoard::MTM_83))
-            addDialogToList(new Tune82Dialog(workConfig, typem, m_parent), "Регулировка", "tune");
-        else if (typem == MezzanineBoard::MTM_84)
+        if (typeb == BaseBoard::MTB_80)
         {
-            addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
-            addDialogToList(new StartupKIVDialog(m_parent), "Начальные\nзначения", "startup");
+            auto &workConfig = m_s2manager.getCurrentConfiguration().m_workingConfig;
+            if ((typem == MezzanineBoard::MTM_81) || (typem == MezzanineBoard::MTM_82)
+                || (typem == MezzanineBoard::MTM_83))
+                addDialogToList(new Tune82Dialog(workConfig, typem, m_parent), "Регулировка", "tune");
+            else if (typem == MezzanineBoard::MTM_84)
+            {
+                addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
+                addDialogToList(new StartupKIVDialog(m_parent), "Начальные\nзначения", "startup");
+            }
         }
-    }
-    else
+        else
+        {
+            // TODO: Добавить регулировку для других модулей
+        }
+    } catch (...)
     {
-        // TODO: Добавить регулировку для других модулей
+        qCritical() << "Ошибка создания диалога регулировки";
     }
 }
 

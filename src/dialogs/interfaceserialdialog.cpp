@@ -13,30 +13,26 @@
 
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
-    settings.beginGroup("RS485");
+    m_settings.beginGroup("RS485");
+    setWindowTitle("RS485 соединения");
 }
 
 InterfaceSerialDialog::~InterfaceSerialDialog() noexcept
 {
-    settings.endGroup();
+    m_settings.endGroup();
 }
 
 void InterfaceSerialDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    tableView = WDFunc::NewQTV(this, "", nullptr);
-    lyout->addWidget(tableView);
-    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_tableView = WDFunc::NewQTV(this, "", nullptr);
+    lyout->addWidget(m_tableView);
+    m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     auto firstRow = new QHBoxLayout;
-    auto addButton = WDFunc::NewPB(this, "newrspb", "Добавить", this, [this] {
-        if (checkSize())
-            EMessageBox::warning(this, "Превышен лимит соединений!");
-        else
-            addInterface();
-    });
+    auto addButton = WDFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceSerialDialog::addInterface);
     auto removeButton = WDFunc::NewPB(this, "", "Удалить", this, [this] {
-        auto name = tableView->currentIndex().siblingAtColumn(0).data().toString();
+        auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
         removeConnection(name);
         updateModel();
     });
@@ -46,7 +42,7 @@ void InterfaceSerialDialog::setupUI()
 
     auto secondRow = new QHBoxLayout;
     auto editButton = WDFunc::NewPB(this, "", "Редактировать", this, [this] {
-        auto index = tableView->currentIndex();
+        auto index = m_tableView->currentIndex();
         editConnection(index);
         updateModel();
     });
@@ -59,7 +55,7 @@ void InterfaceSerialDialog::setupUI()
     lyout->addLayout(secondRow);
 
     setLayout(lyout);
-    connect(tableView, &QTableView::doubleClicked, this, &InterfaceSerialDialog::setInterface);
+    connect(m_tableView, &QTableView::doubleClicked, this, &InterfaceSerialDialog::setInterface);
     AbstractInterfaceDialog::setupUI();
 }
 
@@ -145,20 +141,20 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
     hlyout->addWidget(WDFunc::NewPB(dialog, "acceptpb", "Сохранить", dialog, [=] {
         auto newName = namele->text();
         // Новое имя не совпадает со старым, но уже имеется в настройках
-        if (newName != name && isNameExist(newName))
+        if (newName != name && isConnectionExist(newName))
         {
             EMessageBox::error(this, "Такое имя уже имеется");
             return;
         }
         removeConnection(name);
-        settings.beginGroup(newName);
-        settings.setValue("port", portcb->currentText());
-        settings.setValue("speed", speedcb->currentText());
-        settings.setValue("parity", paritycb->currentText());
-        settings.setValue("stop", stopbitcb->currentText());
+        m_settings.beginGroup(newName);
+        m_settings.setValue("port", portcb->currentText());
+        m_settings.setValue("speed", speedcb->currentText());
+        m_settings.setValue("parity", paritycb->currentText());
+        m_settings.setValue("stop", stopbitcb->currentText());
         int spbdata = static_cast<int>(addressspb->value());
-        settings.setValue("address", QString::number(spbdata));
-        settings.endGroup();
+        m_settings.setValue("address", QString::number(spbdata));
+        m_settings.endGroup();
         if (!updateModel())
             qCritical() << Error::GeneralError;
         dialog->close();
@@ -172,6 +168,12 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
 
 void InterfaceSerialDialog::addInterface()
 {
+    if (checkSize())
+    {
+        EMessageBox::warning(this, "Превышен лимит соединений!");
+        return;
+    }
+
     QStringList ports;
     QList<QSerialPortInfo> portlist = QSerialPortInfo::availablePorts();
     for (const QSerialPortInfo &info : portlist)
@@ -208,30 +210,30 @@ void InterfaceSerialDialog::addInterface()
 bool InterfaceSerialDialog::updateModel()
 {
     QStringList headers { "Имя", "Порт", "Скорость", "Четность", "Стоп бит", "Адрес" };
-    auto tableViewModel = static_cast<QStandardItemModel *>(tableView->model());
+    auto tableViewModel = static_cast<QStandardItemModel *>(m_tableView->model());
     if (tableViewModel == nullptr)
         tableViewModel = new QStandardItemModel(this);
     else
         tableViewModel->clear();
     tableViewModel->setHorizontalHeaderLabels(headers);
 
-    auto rslist = settings.childGroups();
+    auto rslist = m_settings.childGroups();
     for (const auto &item : qAsConst(rslist))
     {
-        settings.beginGroup(item);
+        m_settings.beginGroup(item);
         QList<QStandardItem *> items {
-            new QStandardItem(item),                                         //
-            new QStandardItem(settings.value("port", "COM-1").toString()),   //
-            new QStandardItem(settings.value("speed", "115200").toString()), //
-            new QStandardItem(settings.value("parity", "Нет").toString()),   //
-            new QStandardItem(settings.value("stop", "1").toString()),       //
-            new QStandardItem(settings.value("address", "1").toString())     //
+            new QStandardItem(item),                                           //
+            new QStandardItem(m_settings.value("port", "COM-1").toString()),   //
+            new QStandardItem(m_settings.value("speed", "115200").toString()), //
+            new QStandardItem(m_settings.value("parity", "Нет").toString()),   //
+            new QStandardItem(m_settings.value("stop", "1").toString()),       //
+            new QStandardItem(m_settings.value("address", "1").toString())     //
         };
         tableViewModel->appendRow(items);
-        settings.endGroup();
+        m_settings.endGroup();
     }
-    tableView->setModel(tableViewModel);
-    tableView->resizeColumnsToContents();
+    m_tableView->setModel(tableViewModel);
+    m_tableView->resizeColumnsToContents();
     return true;
 }
 
@@ -242,40 +244,21 @@ void InterfaceSerialDialog::acceptedInterface()
         return;
     QString name = WDFunc::LEData(dialog, "namele");
     // check if there's such name in registry
-    if (isNameExist(name))
+    if (isConnectionExist(name))
     {
         EMessageBox::error(this, "Такое имя уже имеется");
         return;
     }
-    settings.beginGroup(name);
-    settings.setValue("port", WDFunc::CBData(dialog, "portcb"));
-    settings.setValue("speed", WDFunc::CBData(dialog, "speedcb"));
-    settings.setValue("parity", WDFunc::CBData(dialog, "paritycb"));
-    settings.setValue("stop", WDFunc::CBData(dialog, "stopbitcb"));
+    m_settings.beginGroup(name);
+    m_settings.setValue("port", WDFunc::CBData(dialog, "portcb"));
+    m_settings.setValue("speed", WDFunc::CBData(dialog, "speedcb"));
+    m_settings.setValue("parity", WDFunc::CBData(dialog, "paritycb"));
+    m_settings.setValue("stop", WDFunc::CBData(dialog, "stopbitcb"));
     int spbdata;
     WDFunc::SPBData(dialog, "addressspb", spbdata);
-    settings.setValue("address", QString::number(spbdata));
-    settings.endGroup();
+    m_settings.setValue("address", QString::number(spbdata));
+    m_settings.endGroup();
     if (!updateModel())
         qCritical() << Error::GeneralError;
     dialog->close();
-}
-
-void InterfaceSerialDialog::removeConnection(const QString &name)
-{
-    if (isNameExist(name))
-        settings.remove(name);
-}
-
-bool InterfaceSerialDialog::isNameExist(const QString &name)
-{
-    return settings.childGroups().contains(name);
-}
-
-bool InterfaceSerialDialog::checkSize()
-{
-    auto tableViewModel = static_cast<QStandardItemModel *>(tableView->model());
-    if (tableViewModel)
-        return (tableViewModel->rowCount() == MAXREGISTRYINTERFACECOUNT);
-    return false;
 }
