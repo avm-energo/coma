@@ -73,9 +73,11 @@ bool ConfigLoader::loadDeviceData() noexcept
     QObject::connect(moduleParser, &Xml::ModuleParser::measJourDataSending,      //
         cfgStorage, &Device::ConfigStorage::measJourDataReceive);                //
     QObject::connect(moduleParser, &Xml::ModuleParser::protocolGroupSending,     //
-        cfgStorage, &Device::ConfigStorage::protocolGroupReceived);              //
+        cfgStorage, &Device::ConfigStorage::protocolGroupReceive);               //
     QObject::connect(moduleParser, &Xml::ModuleParser::hiddenTabDataSending,     //
-        cfgStorage, &Device::ConfigStorage::hiddenTabDataReceived);              //
+        cfgStorage, &Device::ConfigStorage::hiddenTabDataReceive);               //
+    QObject::connect(moduleParser, &Xml::ModuleParser::bsiExtItemDataSending,    //
+        cfgStorage, &Device::ConfigStorage::bsiExtItemDataReceive);              //
     QObject::connect(moduleParser, &Xml::ModuleParser::parseError,               //
         this, &Xml::ConfigLoader::parseErrorHandle);                             //
     moduleParser->parse(m_device);

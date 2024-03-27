@@ -2,7 +2,7 @@
 
 #include "xmldialog.h"
 
-class XmlSTabDialog : public XmlDialog
+class XmlSTabDialog final : public XmlDialog
 {
     Q_OBJECT
 public:

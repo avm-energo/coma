@@ -2,10 +2,10 @@
 
 #include "xmldialog.h"
 
-class XmlSignalDialog final : public XmlDialog
+class XmlBsiExtDialog final : public XmlDialog
 {
     Q_OBJECT
 public:
-    explicit XmlSignalDialog(QWidget *parent);
+    explicit XmlBsiExtDialog(QWidget *parent = nullptr);
     virtual void setupUI(QVBoxLayout *mainLayout) override;
 };

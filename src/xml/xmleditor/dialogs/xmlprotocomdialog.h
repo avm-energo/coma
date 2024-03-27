@@ -2,7 +2,7 @@
 
 #include "xmldialog.h"
 
-class XmlProtocomDialog : public XmlDialog
+class XmlProtocomDialog final : public XmlDialog
 {
     Q_OBJECT
 public:

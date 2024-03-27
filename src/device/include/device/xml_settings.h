@@ -60,7 +60,9 @@ enum class BinaryType : u8
     uint32 = 0,
     float32,
     time32,
-    time64
+    time64,
+    string32,
+    version32,
 };
 
 /// \brief Структура для хранения информации узла <item> из <journals/meas>.
@@ -91,9 +93,9 @@ struct HiddenTab final
     QString background;                ///< атрибут "background"
     QString prefix;                    ///< атрибут "prefix"
     u16 flag;                          ///< атрибут "flag", возможные значения:
-                                       ///< 0x01 - базовая;
-                                       ///< 0x02 - мезонин;
-                                       ///< 0x04 - дополнительная.
+                                       ///< - 0x01 - базовая;
+                                       ///< - 0x02 - мезонин;
+                                       ///< - 0x04 - дополнительная.
     std::vector<HiddenWidget> widgets; ///< узлы <mwdiget>.
 };
 
@@ -113,6 +115,15 @@ struct AlarmStateAllRecord
     QString desc;   ///< узел <string>
 };
 
+/// \brief Структура для хранения информации об элементе BSI Ext.
+struct BsiExtItem
+{
+    u32 address;     ///< узел <addr>
+    BinaryType type; ///< узел <type>
+    bool visibility; ///< узел <visibility>
+    QString desc;    ///< узел <desc>
+};
+
 using SignalMap = std::map<u32, Signal>;  ///< Хранит узлы <signal> секции <signals>.
 using TabsMap = QHash<u32, QString>;      ///< Хранит узлы <tab> секции <section-tabs>.
 using HighlightMap = QMultiMap<u32, u32>; ///< Для подсветки элементов.
@@ -125,6 +136,7 @@ using MeasJourList = std::vector<MeasJournal>; ///< Хранит узлы <item>
 using HiddenSettings = std::vector<HiddenTab>; ///< Хранит узлы <tab> секции <hidden>.
 using DetailCountMap
     = QHash<u16, u16>; ///< Хранит количество элементов для конфигурационных параметров, имеющих одинаковые id.
+using BsiExtItemList = std::vector<BsiExtItem>; ///< Хранит узлы <item> секции <bsi-ext>
 
 /// \brief Class for storing device's settings.
 class Settings final
@@ -151,6 +163,8 @@ public:
     void appendMeasJournal(const u32 index, const QString &header, const BinaryType type, bool visib);
     /// \brief Добавление информации о вкладках HiddenDialog.
     void appendHiddenTab(const HiddenTab &hiddenTab);
+    /// \brief Добавление элемента BSI Ext.
+    void appendBsiExtItem(const u32 addr, const BinaryType type, bool visib, const QString &desc);
 
     /// \brief Constant getter for detailed count hashmap for current config list.
     [[nodiscard]] const DetailCountMap &getDetailConfigCount() const;
@@ -172,6 +186,8 @@ public:
     [[nodiscard]] const MeasJourList &getMeasJours() const;
     /// \brief Constant getter for hidden dialog settings.
     [[nodiscard]] const HiddenSettings &getHiddenSettings() const;
+    /// \brief Constant getter for BSI Ext settings.
+    [[nodiscard]] const BsiExtItemList &getBsiExtSettings() const;
 
 private:
     DetailCountMap m_countMap;
@@ -184,6 +200,7 @@ private:
     WorkJourMap m_workJournals;
     MeasJourList m_measJournals;
     HiddenSettings m_hiddenSettings;
+    BsiExtItemList m_bsiExtSettings;
 };
 
 } // namespace Device::XmlDataTypes

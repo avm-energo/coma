@@ -23,6 +23,7 @@ const std::map<QString, ModelType> XmlModel::types {
     { tags::config, ModelType::Config },           //
     { tags::hidden, ModelType::Hidden },           //
     { tags::hidden_tab, ModelType::HiddenTab },    //
+    { tags::bsi_ext, ModelType::BsiExt },          //
 };
 
 const std::map<ModelType, QStringList> XmlModel::headers {
@@ -46,6 +47,7 @@ const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::Config, { "ID виджета", "Значение по умолчанию", "Изм. количество", "Видимость" } },    //
     { ModelType::Hidden, { "Название", "Префикс", "Флаг", "Задний фон" } },                              //
     { ModelType::HiddenTab, { "Индекс", "Название", "Виджет", "Тип", "Данные", "Адрес", "Видимость" } }, //
+    { ModelType::BsiExt, { "Адрес", "Описание", "Тип", "Видимость" } },                                  //
 };
 
 /// \brief Base XML model class ctor
