@@ -111,9 +111,9 @@ Error::Msg SyncConnection::writeBlockSync(
     memcpy(&bs.data.data()[0], block, blocksize);
     m_busy = true;
     m_timeout = false;
-    auto conn = m_connection->connection(this, &SyncConnection::responseReceived);
     if (blocktype == DataTypes::DataBlockTypes::BacBlock)
     {
+        auto conn = m_connection->connection(this, &SyncConnection::responseReceived);
         m_connection->writeCommand(Commands::C_WriteTuningCoef, QVariant::fromValue(bs));
         m_timeoutTimer->start();
         while (m_busy)

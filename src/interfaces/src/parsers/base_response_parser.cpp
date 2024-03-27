@@ -6,7 +6,7 @@ namespace Interface
 {
 
 BaseResponseParser::BaseResponseParser(QObject *parent)
-    : QObject(parent), m_isFirstSectionReceived(true), m_isLastSectionReceived(false), m_isLastSectionSended(false)
+    : QObject(parent), m_isFirstSectionReceived(true), m_isLastSectionReceived(false), m_isLastSectionSent(false)
 {
 }
 
@@ -35,9 +35,9 @@ void BaseResponseParser::clearResponseBuffer() noexcept
     m_responseBuffer.clear();
 }
 
-void BaseResponseParser::lastSectionSended() noexcept
+void BaseResponseParser::lastSectionSent() noexcept
 {
-    m_isLastSectionSended = true;
+    m_isLastSectionSent = true;
 }
 
 void BaseResponseParser::processProgressCount(const quint64 count) noexcept

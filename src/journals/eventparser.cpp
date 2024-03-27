@@ -24,17 +24,10 @@ QString EventParser::eventTypeToString(const EventType type)
         eventTypeStr = "Изменение состояния";
         break;
     default:
-        eventTypeStr = "Incorrect";
+        eventTypeStr = "Некорректное событие";
         break;
     }
     return eventTypeStr;
-}
-
-EventRecord EventParser::getNextRecord()
-{
-    auto record { m_eventFile.first() };
-    m_eventFile.remove(m_eventFile.begin(), m_eventFile.begin() + 1);
-    return record;
 }
 
 void EventParser::sortBinaryFile()
@@ -79,10 +72,11 @@ void EventParser::sortBinaryFile()
 
         if (range)
         {
+            auto rangeSize = range.end - range.begin;
             auto result = m_eventFile.move(range.end, m_eventFile.end(), m_eventFile.begin());
             if (!result)
                 return;
-            range = m_eventFile.findRange(unaryPredicate);
+            range = { m_eventFile.end() - rangeSize, m_eventFile.end() };
 
 #ifdef DEBUG_JOURNALS
             indexStart = range.begin - m_eventFile.begin(); //

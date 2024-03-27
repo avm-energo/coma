@@ -51,10 +51,10 @@ void ProtocomResponseParser::parse()
     case Proto::Commands::ResultOk:
         if (m_request.command == Commands::C_WriteFile || m_request.command == Commands::C_WriteHardware)
         {
-            if (m_isLastSectionSended)
+            if (m_isLastSectionSent)
             {
                 processOk();
-                m_isLastSectionSended = false;
+                m_isLastSectionSent = false;
             }
         }
         else
@@ -73,11 +73,11 @@ void ProtocomResponseParser::parse()
         break;
     case Proto::Commands::ReadBlkStartInfo:
     case Proto::Commands::ReadBlkStartInfoExt:
-        if (boardType.isEmpty())
-        {
+        // Update data
+        if (boardType.mTypeB != m_responseBuffer[0])
             boardType.mTypeB = m_responseBuffer[0];
+        if (boardType.mTypeM != m_responseBuffer[4])
             boardType.mTypeM = m_responseBuffer[4];
-        }
         processU32(m_responseBuffer, addr);
         break;
     case Proto::Commands::ReadBlkAC:
@@ -133,7 +133,7 @@ void ProtocomResponseParser::receiveJournalData(const S2::FilesEnum fileNum, con
 {
     if (!boardType.isEmpty())
     {
-        auto s2bFile = m_util.emulateS2B(file, quint16(fileNum), boardType.mTypeB, boardType.mTypeM);
+        auto s2bFile = m_util.emulateS2B(file, std_ext::to_underlying(fileNum), boardType.mTypeB, boardType.mTypeM);
         DataTypes::GeneralResponseStruct genResp {
             DataTypes::GeneralResponseTypes::Ok,      //
             static_cast<quint64>(s2bFile.header.size) //

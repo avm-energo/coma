@@ -49,7 +49,6 @@ private:
 
     /// \brief Возвращает строковое представление  перечисления типа события.
     QString eventTypeToString(const EventType type);
-    EventRecord getNextRecord();
 
     void sortBinaryFile();
     bool isBadRecord(const EventRecord &record);

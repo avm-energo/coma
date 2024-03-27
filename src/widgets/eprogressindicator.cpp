@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-#include "QProgressIndicator.h"
+#include "eprogressindicator.h"
 
 #include <QPainter>
 #include <QTimer>
 
-QProgressIndicator::QProgressIndicator(QWidget *parent)
+EProgressIndicator::EProgressIndicator(QWidget *parent)
     : QWidget(parent)
     , m_angle(0)
     , m_delay(40)
@@ -39,78 +39,78 @@ QProgressIndicator::QProgressIndicator(QWidget *parent)
     setFocusPolicy(Qt::NoFocus);
     m_timer->setSingleShot(false);
     m_timer->setInterval(m_delay);
-    connect(m_timer, &QTimer::timeout, this, &QProgressIndicator::timerEvent);
+    connect(m_timer, &QTimer::timeout, this, &EProgressIndicator::timerEvent);
 }
 
-int QProgressIndicator::animationDelay() const noexcept
+int EProgressIndicator::animationDelay() const noexcept
 {
     return m_delay;
 }
 
-bool QProgressIndicator::isAnimated() const noexcept
+bool EProgressIndicator::isAnimated() const noexcept
 {
     return m_timer->isActive();
 }
 
-void QProgressIndicator::setDisplayedWhenStopped(bool state) noexcept
+void EProgressIndicator::setDisplayedWhenStopped(bool state) noexcept
 {
     m_displayedWhenStopped = state;
     update();
 }
 
-bool QProgressIndicator::isDisplayedWhenStopped() const noexcept
+bool EProgressIndicator::isDisplayedWhenStopped() const noexcept
 {
     return m_displayedWhenStopped;
 }
 
-void QProgressIndicator::startAnimation()
+void EProgressIndicator::startAnimation()
 {
     m_angle = 0;
     if (!isAnimated())
         m_timer->start();
 }
 
-void QProgressIndicator::stopAnimation()
+void EProgressIndicator::stopAnimation()
 {
     if (isAnimated())
         m_timer->stop();
     update();
 }
 
-void QProgressIndicator::setAnimationDelay(int delay) noexcept
+void EProgressIndicator::setAnimationDelay(int delay) noexcept
 {
     m_delay = delay;
     m_timer->setInterval(m_delay);
 }
 
-const QColor &QProgressIndicator::color() const noexcept
+const QColor &EProgressIndicator::color() const noexcept
 {
     return m_color;
 }
 
-void QProgressIndicator::setColor(const QColor &color) noexcept
+void EProgressIndicator::setColor(const QColor &color) noexcept
 {
     m_color = color;
     update();
 }
 
-QSize QProgressIndicator::sizeHint() const noexcept
+QSize EProgressIndicator::sizeHint() const noexcept
 {
     return QSize(20, 20);
 }
 
-int QProgressIndicator::heightForWidth(int w) const noexcept
+int EProgressIndicator::heightForWidth(int w) const noexcept
 {
     return w;
 }
 
-void QProgressIndicator::timerEvent()
+void EProgressIndicator::timerEvent()
 {
     m_angle = (m_angle + 30) % 360;
     update();
 }
 
-void QProgressIndicator::paintEvent(QPaintEvent * /*event*/)
+void EProgressIndicator::paintEvent(QPaintEvent * /*event*/)
 {
     if (!m_displayedWhenStopped && !isAnimated())
         return;

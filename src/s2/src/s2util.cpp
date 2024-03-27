@@ -213,7 +213,7 @@ S2BFile Util::emulateS2B(const QByteArray &data, quint16 fname, quint16 typeB, q
     tail.crc32 = crc;
     tail.end = tailEnd;
     header.size = data.size() + sizeof(tail);
-    return { header, data, tail };
+    return S2BFile { header, data, tail };
 }
 
 Error::Msg Util::parseS2B(const QByteArray &file, S2BFile &result) const

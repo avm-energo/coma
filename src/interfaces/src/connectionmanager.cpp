@@ -152,7 +152,7 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
         if (m_isInitialBSIRequest)
         {
             m_isInitialBSIRequest = false;
-            emit connectSuccesfull();
+            emit connectSuccessfull();
         }
         else if (m_isReconnectOccurred)
         {

@@ -38,9 +38,8 @@ void SerialPort::disconnect()
 }
 
 // blocking read from serial port with timeout implementation
-QByteArray SerialPort::read(bool *status)
+QByteArray SerialPort::read(bool &status)
 {
-    Q_UNUSED(status);
     QByteArray data;
     bool readyRead = true;                        // enabling read flag
     if (!m_port->bytesAvailable())                // if no data
@@ -57,6 +56,7 @@ QByteArray SerialPort::read(bool *status)
     }
     if (data.isEmpty())
         QCoreApplication::processEvents();
+    status = true;
     return data;
 };
 

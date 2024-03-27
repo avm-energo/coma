@@ -4,7 +4,7 @@
 
 class QLabel;
 class QProgressBar;
-class QProgressIndicator;
+class EProgressIndicator;
 class QTimer;
 class QPushButton;
 
@@ -16,7 +16,7 @@ private:
     quint32 m_seconds;
     QLabel *m_messageLabel;
     QProgressBar *m_progressBar;
-    QProgressIndicator *m_progressIndicator;
+    EProgressIndicator *m_progressIndicator;
     QPushButton *m_cancelButton;
     QTimer *m_closeTimer;
 

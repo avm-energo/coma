@@ -1,44 +1,8 @@
 #include "interfaces/parsers/modbus_request_parser.h"
 
 #include <gen/utils/crc16.h>
+#include <interfaces/utils/modbus_convertations.h>
 #include <stdexcept>
-
-namespace helper
-{
-
-template <typename T, std::size_t N = sizeof(T)> //
-inline QByteArray packRegister(T value)
-{
-    static_assert(N % 2 == 0, "The size of type T must be even");
-    static_assert(N >= 2, "The size of type T must be greater than or equal to 2");
-    QByteArray ba;
-    ba.reserve(N);
-    auto srcBegin = reinterpret_cast<std::uint8_t *>(&value);
-    auto srcEnd = srcBegin + N;
-    for (auto it = srcBegin; it != srcEnd; it = it + 2)
-    {
-        ba.push_back(*(it + 1));
-        ba.push_back(*it);
-    }
-    return ba;
-}
-
-inline QByteArray packRegister(const QByteArray &value)
-{
-    const auto N = value.size();
-    Q_ASSERT(N % 2 == 0);
-    Q_ASSERT(N >= 2);
-    QByteArray ba;
-    ba.reserve(value.size());
-    for (auto it = value.cbegin(); it != value.cend(); it = it + 2)
-    {
-        ba.push_back(*(it + 1));
-        ba.push_back(*it);
-    }
-    return ba;
-}
-
-} // namespace helper
 
 namespace Interface
 {
@@ -126,7 +90,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     // writing registers
     case Commands::C_StartFirmwareUpgrade:
     {
-        auto value = helper::packRegister(quint16(1));
+        auto value = Modbus::packRegister(quint16(1));
         request = Modbus::Request {
             Modbus::FunctionCode::WriteMultipleRegisters, //
             Modbus::firmwareAddr, 1, false, value         //
@@ -136,7 +100,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     // writing registers
     case Commands::C_WriteTime:
     {
-        QByteArray timeArray = helper::packRegister(cmd.arg1.value<quint32>());
+        QByteArray timeArray = Modbus::packRegister(cmd.arg1.value<quint32>());
         request = Modbus::Request {
             Modbus::FunctionCode::WriteMultipleRegisters, //
             Modbus::timeReg, 2, false, timeArray          //
@@ -172,7 +136,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
     {
         if (cmd.arg1.canConvert<DataTypes::BlockStruct>())
         {
-            auto value = helper::packRegister(cmd.arg1.value<DataTypes::BlockStruct>().data);
+            auto value = Modbus::packRegister(cmd.arg1.value<DataTypes::BlockStruct>().data);
             const quint16 quantity = value.size() / 2;
             request = Modbus::Request {
                 Modbus::FunctionCode::WriteMultipleRegisters,   //
@@ -182,9 +146,9 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         break;
     }
     // writing registers
-    case Commands::C_EnableWritingHardware:
+    case Commands::C_EnableHardwareWriting:
     {
-        auto value = helper::packRegister(cmd.arg1.value<quint16>());
+        auto value = Modbus::packRegister(cmd.arg1.value<quint16>());
         request = Modbus::Request {
             Modbus::FunctionCode::WriteMultipleRegisters, //
             Modbus::enableWriteHwAddr, 1, false, value    //
@@ -207,7 +171,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         auto search = s_wsCmdMap.find(cmd.command);
         if (search != s_wsCmdMap.cend())
         {
-            auto value = helper::packRegister(cmd.arg1.value<quint16>());
+            auto value = Modbus::packRegister(cmd.arg1.value<quint16>());
             request = Modbus::Request {
                 Modbus::FunctionCode::WriteMultipleRegisters,     //
                 static_cast<quint16>(s_wsCmdMap.at(cmd.command)), //
@@ -282,6 +246,7 @@ QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request) const 
         pdu.append(request.data);
         break;
     default:
+        qCritical() << "Parse: wrong request function code";
         break;
     }
 
@@ -319,7 +284,7 @@ QByteArray ModbusRequestParser::prepareFileForWriting(const quint16 fileNum, con
     m_progressCount = 0;
     m_longDataSections.clear();
 
-    // Разделяем файлы на секции и рпеобразовываем в формат запросов по протоколу Modbus
+    // Разделяем файлы на секции и преобразовываем в формат запросов по протоколу Modbus
     for (auto pos = 0; pos < data.size(); pos += Modbus::fileSectionLength)
     {
         QByteArray sectionData(data.mid(pos, Modbus::fileSectionLength));
@@ -362,7 +327,7 @@ Modbus::Request ModbusRequestParser::convertUserValuesToRequest(const QVariantLi
         if (floatData.sigAdr < min_addr)
             min_addr = floatData.sigAdr;
         // now write floats to the out sigArray
-        sigArray.push_back(helper::packRegister(floatData.sigVal));
+        sigArray.push_back(Modbus::packRegister(floatData.sigVal));
     }
 
     return Modbus::Request {
