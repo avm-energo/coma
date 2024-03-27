@@ -110,7 +110,7 @@ void Iec104ResponseParser::parse()
     splitBuffer();
     for (const auto &response : m_responses)
     {
-        emit needToLog(QString("<- %1").arg(QString(response.toHex())), LogLevel::Info);
+        emit needToLog(QString("<- %1").arg(QString(response.toHex())), LogLevel::Debug);
         auto validationResult = validate(response);
         if (validationResult == Error::Msg::NoError)
         {

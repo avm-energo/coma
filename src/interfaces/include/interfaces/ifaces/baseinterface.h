@@ -45,7 +45,7 @@ protected:
     Interface::State getState() const noexcept;
 
     void writeLog(const QByteArray &ba, Interface::Direction dir = Interface::NoDirection);
-    void writeLog(const Error::Msg msg, Interface::Direction dir = Interface::NoDirection);
+    void writeLog(const Error::Msg msg);
 
     virtual QByteArray read(bool &status) = 0;
     virtual bool write(const QByteArray &ba) = 0;

@@ -131,17 +131,17 @@ void DefaultQueryExecutor::writeToLog(const QByteArray &ba, const Direction dir)
     switch (dir)
     {
     case Interface::FromDevice:
-        msg += ": <- ";
+        msg += ": -> ";
         break;
     case Interface::ToDevice:
-        msg += ": -> ";
+        msg += ": <- ";
         break;
     default:
         msg += ": ";
         break;
     }
     msg += ba.toHex();
-    m_log.info(msg);
+    m_log.debug(msg);
 }
 
 void DefaultQueryExecutor::logFromParser(const QString &message, const LogLevel level)

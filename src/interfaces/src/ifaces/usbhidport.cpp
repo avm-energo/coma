@@ -126,8 +126,11 @@ bool UsbHidPort::writeDataToPort(QByteArray &command)
 
 void UsbHidPort::hidErrorHandle()
 {
-    auto errString = "HID API Error: " + QString::fromStdWString(hid_error(m_hidDevice));
-    writeLog(errString.toLocal8Bit());
+    if (m_isLoggingEnabled)
+    {
+        auto errString = "HID API Error: " + QString::fromStdWString(hid_error(m_hidDevice));
+        m_log.error(errString);
+    }
 }
 
 const UsbHidSettings &UsbHidPort::deviceInfo() const

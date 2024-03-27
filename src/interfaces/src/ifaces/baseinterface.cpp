@@ -28,28 +28,28 @@ void BaseInterface::writeLog(const QByteArray &ba, Interface::Direction dir)
 {
     if (m_isLoggingEnabled)
     {
-        QByteArray tmpba = QByteArray(metaObject()->className());
+        QString msg = metaObject()->className();
         switch (dir)
         {
         case Interface::FromDevice:
-            tmpba.append(": -> ");
+            msg += ": -> ";
             break;
         case Interface::ToDevice:
-            tmpba.append(": <- ");
+            msg += ": <- ";
             break;
         default:
-            tmpba.append(":  ");
+            msg += ": ";
             break;
         }
-        tmpba.append(ba).append("\n");
-        m_log.writeRaw(tmpba);
+        msg += ba.toHex();
+        m_log.debug(msg);
     }
 }
 
-void BaseInterface::writeLog(const Error::Msg msg, Interface::Direction dir)
+void BaseInterface::writeLog(const Error::Msg msg)
 {
     if (m_isLoggingEnabled)
-        writeLog(QVariant::fromValue(msg).toByteArray(), dir);
+        m_log.error(QVariant::fromValue(msg).toString());
 }
 
 void BaseInterface::poll()
