@@ -1841,7 +1841,7 @@
             </signal>
         </signals>
         <hidden desc="Секретные операции">
-            <tab desc="Базовая плата" background=":/images/BMn.svg" prefix="base" flag="1">
+            <hidden-tab desc="Базовая плата" background=":/images/BMn.svg" prefix="base" flag="1">
                 <mwidget view="LineEdit" title="Тип платы">
                     <name>basetype</name>
                     <type>uint32</type>
@@ -1870,8 +1870,8 @@
                     <index>4</index>
                     <visibility>true</visibility>
                 </mwidget>
-            </tab>
-            <tab desc="Мезонинная плата" background=":/images/BnM.svg" prefix="mezz" flag="2">
+            </hidden-tab>
+            <hidden-tab desc="Мезонинная плата" background=":/images/BnM.svg" prefix="mezz" flag="2">
                 <mwidget view="LineEdit" title="Тип платы">
                     <name>mezztype</name>
                     <type>uint32</type>
@@ -1900,8 +1900,8 @@
                     <index>8</index>
                     <visibility>false</visibility>
                 </mwidget>
-            </tab>
-            <tab desc="Дополнительная плата" background=":/images/BM.svg" prefix="addition" flag="4">
+            </hidden-tab>
+            <hidden-tab desc="Дополнительная плата" background=":/images/BM.svg" prefix="addition" flag="4">
                 <mwidget view="LineEdit" title="Тип платы">
                     <name>addtype</name>
                     <type>uint32</type>
@@ -1930,7 +1930,7 @@
                     <index>12</index>
                     <visibility>false</visibility>
                 </mwidget>
-            </tab>
+            </hidden-tab>
         </hidden>
     </resources>
 </module>

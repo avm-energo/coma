@@ -5,6 +5,8 @@
 #include "xml104dialog.h"
 #include "xmlalarmdialog.h"
 #include "xmlconfigdialog.h"
+#include "xmlhiddentabdialog.h"
+#include "xmlhiddenwidgetdialog.h"
 #include "xmlmeasjourdialog.h"
 #include "xmlmodbusdialog.h"
 #include "xmlmwidgetdialog.h"
@@ -73,6 +75,12 @@ void XmlDialogFabric::CreateOrEditDialog(BaseEditorModel *model, int row, QWidge
             break;
         case ModelType::SGroup:
             dialog = new XmlMWidgetDialog(parent);
+            break;
+        case ModelType::Hidden:
+            dialog = new XmlHiddenTabDialog(parent);
+            break;
+        case ModelType::HiddenTab:
+            dialog = new XmlHiddenWidgetDialog(parent);
             break;
         case ModelType::Resources:
             if (row == createId)
