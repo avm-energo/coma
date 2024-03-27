@@ -68,6 +68,7 @@ enum class Commands
 
     C_Test,
     C_EraseTechBlock,
+    C_EnableHiddenBlockWriting,
     C_WriteHiddenBlock,
     C_WriteUserValues,
     C_WriteSingleCommand,
@@ -81,9 +82,7 @@ enum class Commands
     C_Reboot,
     C_ReqOscInfo,
     C_SetMode,
-    C_GetMode,
-    C_WriteHardware,
-    C_EnableHardwareWriting
+    C_GetMode
 };
 Q_ENUM_NS(Commands)
 

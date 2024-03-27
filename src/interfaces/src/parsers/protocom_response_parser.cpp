@@ -49,7 +49,7 @@ void ProtocomResponseParser::parse()
     switch (m_receivedCommand)
     {
     case Proto::Commands::ResultOk:
-        if (m_request.command == Commands::C_WriteFile || m_request.command == Commands::C_WriteHardware)
+        if (m_request.command == Commands::C_WriteFile || m_request.command == Commands::C_WriteHiddenBlock)
         {
             if (m_isLastSectionSent)
             {

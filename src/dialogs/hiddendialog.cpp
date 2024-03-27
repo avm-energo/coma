@@ -330,7 +330,7 @@ void HiddenDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct 
         if (response.type == DataTypes::Ok)
         {
             auto conn = m_dataUpdater->currentConnection();
-            conn->writeCommand(Commands::C_WriteHardware, QVariant::fromValue(m_hardwareInfo));
+            conn->writeCommand(Commands::C_WriteHiddenBlock, QVariant::fromValue(m_hardwareInfo));
             m_isSendedWritingCmd = true;
         }
         else if (response.type == DataTypes::Error)
@@ -395,7 +395,7 @@ void HiddenDialog::write()
 
     // Посылаем команду на разрешение записи Hidden Block
     auto conn = m_dataUpdater->currentConnection();
-    conn->writeCommand(Commands::C_EnableHardwareWriting, quint16(0x5c5c));
+    conn->writeCommand(Commands::C_EnableHiddenBlockWriting, quint16(0x5c5c));
     m_isSendedEnableCmd = true;
     m_dataUpdater->setUpdatesEnabled(true);
 }

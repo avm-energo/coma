@@ -28,7 +28,7 @@ const std::map<Interface::Commands, Proto::Commands> ProtocomRequestParser::s_pr
     { Commands::C_Reboot, Proto::WriteBlkCmd },                    //
     { Commands::C_GetMode, Proto::ReadMode },                      //
     { Commands::C_SetMode, Proto::WriteMode },                     //
-    { Commands::C_WriteHardware, Proto::WriteHardware }            //
+    { Commands::C_WriteHiddenBlock, Proto::WriteHardware }         //
 };
 
 ProtocomRequestParser::ProtocomRequestParser(QObject *parent) : BaseRequestParser(parent)
@@ -142,7 +142,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         break;
     }
     // block write, arg1 is BlockStruct of one quint32 (block ID) and one QByteArray (block contents)
-    case Commands::C_WriteHardware:
+    case Commands::C_WriteHiddenBlock:
     case Commands::C_WriteBlkDataTech:
     case Commands::C_SetNewConfiguration:
     case Commands::C_WriteTuningCoef:
@@ -206,7 +206,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         m_request = prepareBlock(Proto::WriteSingleCommand, tmpba);
         break;
     }
-    case Commands::C_EnableHardwareWriting:
+    case Commands::C_EnableHiddenBlockWriting:
     {
         setExceptionalSituationStatus(true);
         break;
@@ -226,7 +226,7 @@ void ProtocomRequestParser::exceptionalAction(const CommandStruct &cmd) noexcept
 {
     if (cmd.command == Commands::C_ReqFile)
         processFileFromDisk(cmd.arg1.value<S2::FilesEnum>());
-    else if (cmd.command == Commands::C_EnableHardwareWriting)
+    else if (cmd.command == Commands::C_EnableHiddenBlockWriting)
         emit emulateOkAnswer();
     setExceptionalSituationStatus(false);
 }
