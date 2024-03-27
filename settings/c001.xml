@@ -98,6 +98,12 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1003</id>
+                <defaultValue>20</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1390</id>
                 <defaultValue>0, 0, 0</defaultValue>
                 <count>0</count>
@@ -106,6 +112,42 @@
             <record>
                 <id>1391</id>
                 <defaultValue>0, 0, 0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1392</id>
+                <defaultValue>-15.0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1393</id>
+                <defaultValue>10</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1394</id>
+                <defaultValue>90</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1395</id>
+                <defaultValue>300</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1396</id>
+                <defaultValue>20</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1397</id>
+                <defaultValue>0.001</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
@@ -187,11 +229,33 @@
                         <start-addr>141</start-addr>
                         <toolTip>Давление от датчика MS5803, МПа</toolTip>
                     </mwidget>
+                    <mwidget view="float" desc="Давление от датчика без блокировки MS5803, МПа">
+                        <start-addr>142</start-addr>
+                        <toolTip>Давление от датчика без блокировки MS5803, МПа</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Датчик LM75B" tab="1">
+                    <mwidget view="float" desc="Температура от датчика LM75B, °С">
+                        <start-addr>160</start-addr>
+                        <toolTip>Температура от датчика LM75B, °С</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="Давление от датчика LM75B фильтрованная, °С">
+                        <start-addr>161</start-addr>
+                        <toolTip>Давление от датчика LM75B фильтрованная, °С</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="Скорость изменения средней температуры">
+                        <start-addr>162</start-addr>
+                        <toolTip>Скорость изменения средней температуры</toolTip>
+                    </mwidget>
                 </sgroup>
                 <sgroup header="Общие" tab="1">
                     <mwidget view="float" desc="Плотность газа">
                         <start-addr>100</start-addr>
                         <toolTip>Плотность газа</toolTip>
+                    </mwidget>
+                    <mwidget view="float" desc="Температура для расчёта плотности газа">
+                        <start-addr>101</start-addr>
+                        <toolTip>Температура для расчёта плотности газа</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
@@ -211,7 +275,7 @@
             </signal>
             <signal>
                 <start-addr>100</start-addr>
-                <count>1</count>
+                <count>2</count>
                 <id>2</id>
                 <type>Float</type>
             </signal>
@@ -223,8 +287,14 @@
             </signal>
             <signal>
                 <start-addr>140</start-addr>
-                <count>2</count>
+                <count>3</count>
                 <id>4</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>160</start-addr>
+                <count>3</count>
+                <id>8</id>
                 <type>Float</type>
             </signal>
             <signal>
