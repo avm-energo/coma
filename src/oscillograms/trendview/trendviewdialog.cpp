@@ -320,12 +320,12 @@ void TrendViewDialog::graphClicked(QCPAbstractPlottable *plot, int dataIndex)
     auto x = plot->interface1D()->dataMainKey(dataIndex);
     auto y = plot->interface1D()->dataMainValue(dataIndex);
     auto name = plot->name();
-    auto message = QString("Clicked on graph '%1' at data point #%2 with poisition X:%3, Y:%4.")
-                       .arg(name)
-                       .arg(dataIndex)
-                       .arg(x)
-                       .arg(y);
-    qWarning() << message;
+    //    auto message = QString("Clicked on graph '%1' at data point #%2 with poisition X:%3, Y:%4.")
+    //                       .arg(name)
+    //                       .arg(dataIndex)
+    //                       .arg(x)
+    //                       .arg(y);
+    //    qWarning() << message;
 
     if (name == "digitalSelector" || name == "analogSelector")
         return;

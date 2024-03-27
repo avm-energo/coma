@@ -12,6 +12,7 @@
 
 constexpr std::string_view oscFilenumLblFmt { "Текущий номер осциллограммы: %1" };
 constexpr u32 oscStateAddr = 13100;
+constexpr u32 oscBlockReqNum = 13;
 
 constexpr u32 noOsc = std::numeric_limits<u16>::min();
 constexpr u32 recordingOsc = std::numeric_limits<u16>::max();
@@ -173,6 +174,7 @@ void OscKivDialog::receiveOscFile(const S2::FileStruct &file)
             else
                 EMessageBox::error(this, "Не удалось записать файл");
         }
+        m_fileBuffer.clear();
         resetState();
     }
 }
@@ -183,7 +185,7 @@ void OscKivDialog::writeTypeOsc()
     TypeOsc command { 0, 0, 0 };
     command.n_point = WDFunc::SPBData<u8>(this, "n_point");
     command.phase = WDFunc::CBIndex(this, "phase");
-    DataTypes::BlockStruct block { 13, StdFunc::toByteArray(std::move(command)) };
+    DataTypes::BlockStruct block { oscBlockReqNum, StdFunc::toByteArray(std::move(command)) };
     m_device->async()->writeCommand(Commands::C_WriteTypeOsc, QVariant::fromValue(block));
     m_state = State::WritingTypeOsc;
 }

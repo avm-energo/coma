@@ -985,6 +985,12 @@
                 <type>bool</type>
                 <desc>alarmInfo</desc>
             </group>
+            <group>
+                <signal-id>18</signal-id>
+                <reg-type>4</reg-type>
+                <type>uint32</type>
+                <desc>alarmInfo</desc>
+            </group>
         </modbus>
         <protocom desc="Протокол Protocom">
             <group>
