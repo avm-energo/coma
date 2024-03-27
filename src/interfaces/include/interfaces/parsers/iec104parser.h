@@ -30,7 +30,7 @@ public slots:
     void stopDT();
     void stop();
     void run();
-    void processReadBytes(QByteArray ba);
+    void checkStartBytes(QByteArray ba);
 
 signals:
     void finished();
