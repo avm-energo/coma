@@ -203,7 +203,7 @@ void Tune82Verification::init()
     if (!s_reportData.empty())
         s_reportData.clear();
 
-    writeReportData("Organization", "ООО АСУ-ВЭИ");
+    writeReportData("Organization", "ООО АВМ-Энерго");
     writeReportData("Day", QDateTime::currentDateTime().toString("dd"));
     writeReportData("Month", QDateTime::currentDateTime().toString("MM"));
     writeReportData("Yr", QDateTime::currentDateTime().toString("yy"));
