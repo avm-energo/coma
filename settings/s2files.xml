@@ -255,7 +255,7 @@
 			<group>220</group>
 			<string>Порты протоколов</string>
 			<string-array>
-				<item>IEC-61850-5-104</item>
+				<item>IEC-60870-5-104</item>
 				<item>Modbus TCP</item>
 			</string-array>
 			<count>2</count>
