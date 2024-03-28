@@ -18,7 +18,7 @@ enum Model
     KDV = 0xA387,
     MPE = 0xC001
 };
-Q_ENUM_NS(Model);
+Q_ENUM_NS(Model)
 
 enum BaseBoard : quint16
 {
@@ -77,7 +77,7 @@ const QMap<quint16, QString> BaseBoards {
 };
 
 const QMap<quint16, QString> MezzanineBoards {
-    { MTM_00, "" },           // нет мезонина
+    { MTM_00, "00" },         // нет мезонина
     { MTM_21, "21" },         // аналоговый ввод, комбинируется с 2x,3x
     { MTM_22, "22" },         // аналоговый ввод, комбинируется с 2x,3x
     { MTM_31, "31" },         // дискретный ввод, комбинируется с 2x,3x

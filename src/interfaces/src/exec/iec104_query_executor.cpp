@@ -9,10 +9,10 @@ namespace Interface
 
 using namespace Iec104;
 
-Iec104QueryExecutor::Iec104QueryExecutor(RequestQueue &queue, const IEC104ConnectionParams params, QObject *parent)
-    : DefaultQueryExecutor(queue, 1000, parent)
+Iec104QueryExecutor::Iec104QueryExecutor(RequestQueue &queue, const IEC104Settings &settings, QObject *parent)
+    : DefaultQueryExecutor(queue, settings, parent)
     , m_ctrlBlock(std::make_shared<ControlBlock>())
-    , m_params(params)
+    , m_params(settings.params)
     , m_t2Timer(new QTimer(this))
     , m_t3Timer(new QTimer(this))
     , m_acknowledgeReceived(0)

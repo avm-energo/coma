@@ -59,8 +59,8 @@ void ASDUUnpacker::parseBitString(const QByteArray &data) noexcept
     {
         DataTypes::BitStringStruct signal;
         signal.sigAdr = m_objAddress;
-        signal.sigVal = *reinterpret_cast<const std::uint32_t *>(&data.data()[m_index]);
-        m_index += sizeof(std::uint32_t);
+        StdFunc::safeMemoryCopy(signal.sigVal, data, m_index);
+        m_index += sizeof(signal.sigVal);
         signal.sigQuality = std::uint8_t(data[m_index++]);
         emit unpacked(signal);
     }
@@ -75,7 +75,7 @@ void ASDUUnpacker::parseFloat(const QByteArray &data) noexcept
     {
         DataTypes::FloatStruct signal;
         signal.sigAdr = m_objAddress;
-        signal.sigVal = *reinterpret_cast<const float *>(&data.data()[m_index]);
+        StdFunc::safeMemoryCopy(signal.sigVal, data, m_index);
         m_index += sizeof(float);
         signal.sigQuality = std::uint8_t(data[m_index++]);
         emit unpacked(signal);

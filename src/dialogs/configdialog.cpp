@@ -16,15 +16,9 @@
 #include <gen/timefunc.h>
 #include <set>
 
-namespace crypto
-{
-static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
-static constexpr char name[] = "confHash";
-}
-
 ConfigDialog::ConfigDialog(S2RequestService &s2service, //
     S2DataManager &s2manager, const S2BoardType boardType, QWidget *parent)
-    : UDialog(crypto::hash, crypto::name, parent)
+    : UDialog(parent)
     , m_requestService(s2service)
     , m_datamanager(s2manager)
     , m_boardConfig(m_datamanager.getConfiguration(boardType))

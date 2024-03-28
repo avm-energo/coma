@@ -6,8 +6,9 @@
 
 #include <QDialogButtonBox>
 #include <QTimer>
+#include <settings/user_settings.h>
 
-AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
+AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent), m_timer(new QTimer(this))
 {
     auto buttons = new QDialogButtonBox(this);
     auto vlyout = new QVBoxLayout(this);
@@ -16,14 +17,12 @@ AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent)
     hlyout->addWidget(buttons);
     vlyout->addLayout(hlyout);
     setLayout(vlyout);
-    m_timer = new QTimer(this);
-    m_timer->setInterval(10000);
 }
 
 /// \brief Filling alarms in this alarm widget.
 void AlarmWidget::configure()
 {
-    static const QList<QPair<ModuleTypes::AlarmKey, QString>> alarmSettings {
+    const static std::vector<std::pair<Modules::AlarmType, std::string_view>> alarmSettings {
         { Modules::AlarmType::Info, "Информационная сигнализация" },       //
         { Modules::AlarmType::Warning, "Предупредительная сигнализация" }, //
         { Modules::AlarmType::Critical, "Аварийная сигнализация" }         //
@@ -34,20 +33,20 @@ void AlarmWidget::configure()
     addAlarm(alarmStateAll, "Состояние устройства");
     const auto &alarmMap = ConfigStorage::GetInstance().getModuleSettings().getAlarms();
 
-    for (auto &pair : alarmSettings)
+    for (const auto &[type, title] : alarmSettings)
     {
-        const auto &title = pair.second;
-        const auto &alarms = alarmMap.value(pair.first);
+        const auto &alarms = alarmMap.value(type);
         if (!alarms.isEmpty())
         {
-            auto moduleAlarm = new ModuleAlarm(pair.first, alarms);
-            addAlarm(moduleAlarm, title);
+            auto moduleAlarm = new ModuleAlarm(type, alarms);
+            addAlarm(moduleAlarm, title.data());
         }
     }
 
-    // Start the timer after all module alarms was initialized
-    if (!m_timer->isActive())
-        m_timer->start();
+    auto &settings = Settings::UserSettings::GetInstance();
+    Settings::ScopedSettingsGroup _ { settings, "settings" };
+    updateAlarmInterval(settings.get<Settings::AlarmsInterval>());
+    updateAlarmOperation(settings.get<Settings::AlarmsEnabled>());
 }
 
 /// \brief Adding a received alarm in list and creating a button for a received alarm.
@@ -78,11 +77,26 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
     }
 }
 
-/// \brief Disable all requests for alarms in list.
-void AlarmWidget::disableAlarms()
+/// \brief Slot for updating alarm operation mode.
+void AlarmWidget::updateAlarmOperation(const bool mode) noexcept
 {
-    for (const auto &alarm : qAsConst(m_alarms))
-        disconnect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
+    if (mode)
+    {
+        if (!m_timer->isActive())
+            m_timer->start();
+    }
+    else
+    {
+        /// TODO: здесь можно очищать виджеты сигнализации
+        if (m_timer->isActive())
+            m_timer->stop();
+    }
+}
+
+/// \brief Slot for updating alarms request interval.
+void AlarmWidget::updateAlarmInterval(const int interval) noexcept
+{
+    m_timer->setInterval(interval);
 }
 
 /// \brief Delete all alarms from the list.

@@ -213,8 +213,8 @@ void ModbusResponseParser::processIntegerSignals(const QByteArray &response, con
     for (int pos = 0, i = 0; pos < response.size(); pos += step, ++i)
     {
         DataTypes::BitStringStruct signal;
-        signal.sigVal = Modbus::unpackRegister<quint32>(response.mid(i, step));
-        signal.sigAdr = address + i / step;
+        signal.sigVal = Modbus::unpackRegister<quint32>(response.mid(pos, step));
+        signal.sigAdr = address + i;
         signal.sigQuality = DataTypes::Quality::Good;
         emit responseParsed(signal);
     }

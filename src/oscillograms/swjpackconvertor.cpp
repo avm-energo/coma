@@ -148,7 +148,6 @@ void SwjPackConvertor::writeData(QXlsx::Worksheet *sheet)
                 }
             }
         }
-
         row++;
     }
 }

@@ -4,7 +4,7 @@
 #include <QNetworkProxy>
 
 Ethernet::Ethernet(const IEC104Settings &settings, QObject *parent)
-    : BaseInterface("Ethernet", parent), m_settings(settings), m_socket(new QTcpSocket(this))
+    : BaseInterface("Ethernet", settings, parent), m_settings(settings), m_socket(new QTcpSocket(this))
 {
     m_socket->setProxy(QNetworkProxy::NoProxy);
     QObject::connect(m_socket, &QAbstractSocket::stateChanged, //
@@ -48,6 +48,7 @@ QByteArray Ethernet::read(bool &status)
     QByteArray data;
     if (!m_socket->isOpen() || !m_socket->isReadable())
     {
+        status = false;
         m_log.error("Ethernet reading data from the closed socket");
         return data;
     }
@@ -61,7 +62,7 @@ QByteArray Ethernet::read(bool &status)
     else
         QCoreApplication::processEvents();
     return data;
-};
+}
 
 bool Ethernet::write(const QByteArray &data)
 {

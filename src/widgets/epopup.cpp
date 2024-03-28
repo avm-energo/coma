@@ -5,34 +5,21 @@
 
 #include <QApplication>
 #include <QCryptographicHash>
-//#include <QDesktopWidget>
 #include <QEventLoop>
 #include <QGuiApplication>
 #include <QPropertyAnimation>
 #include <QScreen>
 #include <QTimer>
-
-QPoint PointContainer::s_point = { 0, 0 };
-
-PointContainer::PointContainer(QObject *parent) : QObject(parent)
-{
-}
-
-void PointContainer::receivePoint(const QPoint &point)
-{
-    s_point = point;
-}
+#include <settings/user_settings.h>
 
 ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent) : EPopup(parent)
 {
     Create(type, WDFunc::NewLBL2(parent, msg), parent);
-    adjustPosition();
 }
 
 ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent) : EPopup(parent)
 {
     Create(type, w, parent);
-    adjustPosition();
 }
 
 void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
@@ -58,7 +45,9 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
         setWindowTitle(c_captions.at(type));
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL2(parent, "", "", new QPixmap(map[type].pxFile)));
+    auto icon = WDFunc::NewLBL2(parent, "", "", new QPixmap(map[type].pxFile));
+    icon->setStyleSheet("QWidget {background-color: #" + map[type].bgrdColor + ";}");
+    hlyout->addWidget(icon);
     hlyout->addWidget(w);
     lyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
@@ -94,6 +83,13 @@ void ESimplePopup::cancelSlot()
 }
 
 bool EMessageBox::m_result = false;
+
+bool EMessageBox::password(QWidget *parent)
+{
+    auto &settings = Settings::UserSettings::GetInstance();
+    Settings::ScopedSettingsGroup _ { settings, "settings" };
+    return EMessageBox::password(parent, settings.get<Settings::PasswordHash>());
+}
 
 bool EMessageBox::password(QWidget *parent, const QString &hash)
 {
@@ -183,26 +179,6 @@ void EPopup::aboutToClose()
     close();
 }
 
-void EPopup::adjustPosition()
-{
-    QRect globalGeometry = QGuiApplication::primaryScreen()->geometry();
-    int globalWidth = globalGeometry.width();
-    int globalHeight = globalGeometry.height();
-    int width2 = width() * 0.5;
-    int height2 = height() * 0.5;
-    QPoint centerPoint = PointContainer::s_point;
-    // centerPoint = Coma::ComaCenter();
-    int right = centerPoint.x() + width2;
-    int down = centerPoint.y() + height2;
-    if ((right > globalWidth) || (down > globalHeight))
-        move(0, 0);
-    // Если главное окно отсутствует или прекратило своё существование
-    else if ((centerPoint.x() == 0) || (centerPoint.y() == 0))
-        move(globalGeometry.center() - QPoint { width2, height2 });
-    else
-        move(centerPoint.x() - width2, centerPoint.y() - height2);
-}
-
 void EPopup::showEvent(QShowEvent *e)
 {
     QDialog::showEvent(e);
@@ -260,7 +236,6 @@ void EEditablePopup::execPopup()
     lyout->addLayout(hlyout);
     setLayout(lyout);
     this->adjustSize();
-    adjustPosition();
     exec();
 }
 
@@ -299,24 +274,29 @@ void EEditablePopup::keyPressEvent(QKeyEvent *e)
 
 EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(parent)
 {
+    constexpr auto dialogStyle = "QDialog { background-color: #ffe3f9; }";
+    constexpr auto widgetStyle = "QWidget { background-color: #ffe3f9; }";
     isAboutToClose = false;
     m_hash = hash;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL2(parent, "", "", new QPixmap(":/icons/psw-hex.svg")));
-    hlyout->addWidget(
-        WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
+    auto icon = WDFunc::NewLBL2(parent, "", "", new QPixmap(":/icons/psw-hex.svg"));
+    icon->setStyleSheet(widgetStyle);
+    hlyout->addWidget(icon);
+    auto text = WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl");
+    text->setStyleSheet(widgetStyle);
+    hlyout->addWidget(text);
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addLayout(hlyout);
     vlyout->addWidget(WDFunc::NewPswLE2(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
-    this->adjustSize();
-    adjustPosition();
+    adjustSize();
+    setStyleSheet(dialogStyle);
 }
 
-bool EPasswordPopup::checkPassword(const QString &psw)
+bool EPasswordPopup::checkPassword(const QString &password)
 {
     QCryptographicHash hasher(QCryptographicHash::Sha3_256);
-    hasher.addData(psw.toUtf8());
+    hasher.addData(password.toUtf8());
     auto buffer = QString::fromUtf8(hasher.result().toHex());
     return (m_hash == buffer);
 }
@@ -337,7 +317,10 @@ void EPasswordPopup::keyPressEvent(QKeyEvent *e)
             aboutToClose();
         }
         else
+        {
+            qCritical("Пароль введён неверно");
             EMessageBox::warning(this, "Пароль неверен");
+        }
     }
     if ((e->key() == Qt::Key_Escape) && !isAboutToClose)
     {

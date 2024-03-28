@@ -9,34 +9,38 @@
 
 class BaseInterface;
 
+struct MipDataStruct
+{
+    float reserved1;
+    float freqUPhase[3];   // 1-3
+    float uPhase[3];       // 4-6
+    float iPhase[3];       // 7-9
+    float iZero;           // 10
+    float phiLoadPhase[3]; // 11-13
+    float uAnglePhase[3];  // 14-16
+    float temp;            // 17
+    float reserved2;       // 18
+    float uLinearPhase[3]; // 19-21
+    float pPhase[3];       // 22-24
+    float p;               // 25
+    float qPhase[3];       // 26-28
+    float q;               // 29
+    float sPhase[3];       // 30-32
+    float s;               // 33
+    float phiLoad;         // 34
+    float reserved3;       // 35
+    float uZeroSeq[3];     // 36-38
+    float iZeroSeq[3];     // 39-41
+    float freq;            // 42
+    float phiUab;          // 43
+    float phiUbc;          // 44
+    float phiUca;          // 45
+};
+
 class Mip : public QObject
 {
     Q_OBJECT
 public:
-    struct MipDataStruct
-    {
-        float reserved1;
-        float freq[3];           // 1-3
-        float uPhase[3];         // 4-6
-        float iPhase[3];         // 7-9
-        float iZero;             // 10
-        float loadAnglePhase[3]; // 11-13
-        float uAnglePhase[3];    // 14-16
-        float temp;              // 17
-        float reserved2;         // 18
-        float uLinearPhase[3];   // 19-21
-        float pPhase[3];         // 22-24
-        float p;                 // 25
-        float qPhase[3];         // 26-28
-        float q;                 // 29
-        float sPhhase[3];        // 30-32
-        float s;                 // 33
-        float phase3LoadAngle;   // 34
-        float reserved3;         // 35
-        float uSequence[3];      // 36-38
-        float iSequence[3];      // 39-41
-    };
-
     using MType = Modules::MezzanineBoard;
 
     Mip(bool withGUI = true, MType ModuleType = MType::MTM_82, QWidget *parent = nullptr);

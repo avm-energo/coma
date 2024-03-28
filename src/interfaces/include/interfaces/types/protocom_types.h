@@ -77,6 +77,6 @@ enum Commands : std::uint8_t
     FakeReadAlarms,
     FakeReadBitString
 };
-Q_ENUM_NS(Proto::Commands);
+Q_ENUM_NS(Proto::Commands)
 
 }

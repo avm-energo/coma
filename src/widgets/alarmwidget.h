@@ -20,6 +20,9 @@ private:
 public:
     explicit AlarmWidget(QWidget *parent = nullptr);
     void configure();
-    void disableAlarms();
     void clear();
+
+public slots:
+    void updateAlarmOperation(const bool mode) noexcept;
+    void updateAlarmInterval(const int interval) noexcept;
 };

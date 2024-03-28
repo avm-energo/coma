@@ -28,7 +28,7 @@ void Iec104ResponseParser::apciParseErrorHandle(const Iec104::ApciError err) noe
 
 bool Iec104ResponseParser::isCompleteResponse()
 {
-    if (m_responseBuffer.size() >= apciSize)
+    if (std::size_t(m_responseBuffer.size()) >= apciSize)
         if (m_responseBuffer.size() >= (std::uint8_t(m_responseBuffer[1]) + 2))
             return true;
     return false;
@@ -49,7 +49,7 @@ Error::Msg Iec104ResponseParser::validate(const QByteArray &response) noexcept
         // Size check
         if (m_currentAPCI.m_ctrlBlock.m_format == FrameFormat::Information)
         {
-            if (response.size() != m_currentAPCI.m_asduSize + apciSize)
+            if (std::size_t(response.size()) != m_currentAPCI.m_asduSize + apciSize)
                 return Error::SizeError;
         }
         return validate(); // returns no error

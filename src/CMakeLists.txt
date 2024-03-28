@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(coma VERSION 2.8.0)
+project(coma VERSION 2.9.0)
 
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
@@ -90,10 +90,11 @@ endif()
 # Downloading conan CMake script and using for autodetecting
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake"
-                "${CMAKE_BINARY_DIR}/conan.cmake"
-                EXPECTED_HASH SHA256=5cdb3042632da3efff558924eecefd580a0e786863a857ca097c3d1d43df5dcd
-                TLS_VERIFY ON)
+  file(
+    DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake"
+    EXPECTED_HASH SHA256=5cdb3042632da3efff558924eecefd580a0e786863a857ca097c3d1d43df5dcd
+    TLS_VERIFY ON
+  )
 endif()
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
@@ -134,6 +135,7 @@ include(qxlsx)
 add_subdirectory(comaversion)
 add_subdirectory(comaresources)
 add_subdirectory(s2)
+add_subdirectory(settings)
 add_subdirectory(interfaces)
 add_subdirectory(datablocks)
 add_subdirectory(module)

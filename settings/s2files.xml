@@ -4246,15 +4246,18 @@
 	<record>
 		<id>1203</id>
 		<name>UVmax</name>
-		<description>Максимальная амплитуда сигналов вибраций, В (1,25, 2,5, 5,0)</description>
+		<description>Максимальная амплитуда сигналов вибраций, В</description>
 		<type>FLOAT</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>QComboBox</type>
 			<group>100</group>
-			<string>Максимальная амплитуда сигналов вибраций (1,25, 2,5, 5,0В)</string>
-			<min>0</min>
-			<max>10000</max>
-			<decimals>2</decimals>
+			<field>data</field>
+			<string>Максимальная амплитуда сигналов вибраций, В</string>
+			<string-array>
+				<item>1,25</item>
+				<item>2,50</item>
+				<item>5,00</item>
+			</string-array>
 		</widget>
 	</record>
 	<record>
@@ -4317,14 +4320,20 @@
 		<id>1208</id>
 		<name>Sensors</name>
 		<description>Подключенные датчики</description>
-		<type>DWORD </type>
+		<type>DWORD</type>
 		<widget>
-			<type>QDoubleSpinBox</type>
+			<type>CheckBoxGroup</type>
 			<group>9</group>
 			<string>Подключенные датчики вибрации</string>
-			<min>0</min>
-			<max>10000</max>
-			<decimals>0</decimals>
+            <string-array>
+				<item>Датчик 1</item>
+				<item>Датчик 2</item>
+				<item>Датчик 3</item>
+				<item>Датчик 4</item>
+				<item>Датчик 5</item>
+				<item>Датчик 6</item>
+			</string-array>
+			<count>6</count>
 		</widget>
 	</record>
 	<record>

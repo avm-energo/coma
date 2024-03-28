@@ -20,7 +20,7 @@ SyncConnection *ActiveConnection::getSync() noexcept
 void ActiveConnection::updateConnection(AsyncConnectionPtr &&conn) noexcept
 {
     m_asyncConnection = std::move(conn);
-    m_syncConnection = std::move(SyncConneectionPtr { new SyncConnection(m_asyncConnection.get()) });
+    m_syncConnection.reset(new SyncConnection(m_asyncConnection.get()));
 }
 
 void ActiveConnection::resetConnection() noexcept

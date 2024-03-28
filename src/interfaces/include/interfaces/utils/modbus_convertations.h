@@ -44,7 +44,7 @@ inline T unpackRegister(const QByteArray &ba)
     T value;
     auto dstBegin = reinterpret_cast<std::uint8_t *>(&value);
     std::copy(ba.cbegin(), ba.cend(), dstBegin);
-    for (auto i = 0; i < N; i += 2)
+    for (std::size_t i = 0; i < N; i += 2)
         std::swap(dstBegin[i], dstBegin[i + 1]);
     return value;
 }

@@ -23,11 +23,7 @@
 #include <gen/timefunc.h>
 #include <interfaces/conn/active_connection.h>
 
-namespace crypto
-{
-static constexpr char hash[] = "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc";
-static constexpr char name[] = "tuneHash";
-}
+ReportData AbstractTuneDialog::s_reportData {};
 
 AbstractTuneDialog::AbstractTuneDialog(S2::Configuration &workConfig, int tuneStep, QWidget *parent)
     : QDialog(parent), config(workConfig), m_async(ActiveConnection::async()), m_sync(ActiveConnection::sync())
@@ -43,16 +39,11 @@ AbstractTuneDialog::AbstractTuneDialog(S2::Configuration &workConfig, int tuneSt
         connect(this, &AbstractTuneDialog::Finished, dlg, &GeneralTuneDialog::setCalibrButtons);
 }
 
-AbstractTuneDialog::~AbstractTuneDialog()
-{
-}
-
 void AbstractTuneDialog::setupUI()
 {
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     hlyout->addWidget(tuneUI());
-    //    if (!m_mainWidgetList.isEmpty())
     hlyout->addWidget(mainUI());
     vlyout->addLayout(hlyout);
     vlyout->addWidget(bottomUI());
@@ -194,9 +185,7 @@ void AbstractTuneDialog::stopWait()
 
 Error::Msg AbstractTuneDialog::CheckPassword()
 {
-    return (EMessageBox::password(this, crypto::hash) ? Error::Msg::NoError : Error::Msg::GeneralError);
-    //    auto dlg = new KeyPressDialog(this);
-    //    return (dlg->CheckPassword(crypto::hash)) ? Error::Msg::NoError : Error::Msg::GeneralError;
+    return (EMessageBox::password(this) ? Error::Msg::NoError : Error::Msg::GeneralError);
 }
 
 int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
@@ -365,15 +354,22 @@ Error::Msg AbstractTuneDialog::sendChangedConfig(const std::vector<std::pair<QSt
     return m_sync->writeFileSync(S2::FilesEnum::Config, s2file);
 }
 
-// void AbstractTuneDialog::loadTuneCoefsSlot()
-//{
-//    readTuneCoefs();
-//}
+ReportData &AbstractTuneDialog::getReportData()
+{
+    return s_reportData;
+}
 
-// void AbstractTuneDialog::saveTuneCoefsSlot()
-//{
-//    saveAllTuneCoefs();
-//}
+Error::Msg AbstractTuneDialog::setCurrentsTo(const float value)
+{
+    S2::FLOAT_6t i2NomConfig { value, value, value, value, value, value };
+    config.setRecord("I2nom", i2NomConfig);
+    return m_sync->writeConfigurationSync(config.toByteArray());
+}
+
+void AbstractTuneDialog::writeReportData(const QString &name, const QString &value)
+{
+    s_reportData.insert({ name, value });
+}
 
 // на будущее, если вдруг будем регулировать модуль по частям
 void AbstractTuneDialog::readTuneCoefsByBac(int bacnum)

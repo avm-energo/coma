@@ -151,6 +151,11 @@ Error::Msg SyncConnection::writeFileSync(S2::FilesEnum filenum, const QByteArray
     return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
 }
 
+Error::Msg SyncConnection::writeConfigurationSync(const QByteArray &ba)
+{
+    return writeFileSync(S2::FilesEnum::Config, ba);
+}
+
 Error::Msg SyncConnection::readS2FileSync(S2::FilesEnum filenum)
 {
     m_busy = true;

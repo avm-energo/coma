@@ -74,7 +74,6 @@ namespace Core
 Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     : QMainWindow(parent)
     , connectionManager(new ConnectionManager(this))
-    //, deviceWatcher(new DeviceWatcher(this))
     , s2dataManager(new S2DataManager(this))
     , s2requestService(new S2RequestService(this))
     , editor(nullptr)
@@ -89,10 +88,6 @@ Coma::Coma(const AppConfiguration &appCfg, QWidget *parent)
     connect(connectionManager.get(), &ConnectionManager::connectSuccessfull, this, &Coma::prepare);
     connect(connectionManager.get(), &ConnectionManager::connectFailed, this, //
         [this](const QString &errMsg) { EMessageBox::error(this, errMsg); });
-
-    // registering center of coma main window for epopup message boxes
-    auto pointContainer = new PointContainer(this);
-    connect(this, &Coma::positionChanged, pointContainer, &PointContainer::receivePoint);
 }
 
 Coma::~Coma()
@@ -128,7 +123,8 @@ QToolBar *Coma::createToolBar()
     toolbar->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки", [this]() {
         auto dialog = new SettingsDialog(this);
         dialog->setMinimumSize(this->size() / 4);
-        connect(dialog, &SettingsDialog::disableAlarmUpdate, AlarmW, &AlarmWidget::disableAlarms);
+        connect(dialog, &SettingsDialog::alarmOperationUpdate, AlarmW, &AlarmWidget::updateAlarmOperation);
+        connect(dialog, &SettingsDialog::alarmIntervalUpdate, AlarmW, &AlarmWidget::updateAlarmInterval);
         dialog->exec();
         saveSettings();
     });
@@ -473,6 +469,12 @@ void Coma::setProgressBarCount(int prbnum, int count)
     {
         prb->setValue(count);
         WDFunc::SetLBLText(this, lblname, QString::number(count) + " из " + QString::number(prb->maximum()));
+        // Сброс прогресс-бара после окончания операции чтения/записи
+        if (prb->value() >= prb->maximum())
+        {
+            prb->setValue(0);
+            WDFunc::SetLBLText(this, lblname, " ");
+        }
     }
 }
 
@@ -550,24 +552,6 @@ void Coma::disconnectAndClear()
         ActiveConnection::reset();
         connectionManager->breakConnection();
     }
-}
-
-void Coma::resizeEvent(QResizeEvent *event)
-{
-    emit positionChanged(geometry().center());
-    QMainWindow::resizeEvent(event);
-}
-
-void Coma::moveEvent(QMoveEvent *event)
-{
-    emit positionChanged(geometry().center());
-    QMainWindow::moveEvent(event);
-}
-
-void Coma::showEvent(QShowEvent *event)
-{
-    emit positionChanged(geometry().center());
-    QMainWindow::showEvent(event);
 }
 
 void Coma::keyPressEvent(QKeyEvent *event)

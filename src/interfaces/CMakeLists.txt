@@ -32,6 +32,7 @@ set(files_h
     "${INCLUDE_PATH}/parsers/modbus_response_parser.h"
     "${INCLUDE_PATH}/parsers/protocom_request_parser.h"
     "${INCLUDE_PATH}/parsers/protocom_response_parser.h"
+    "${INCLUDE_PATH}/types/base_settings.h"
     "${INCLUDE_PATH}/types/common_types.h"
     "${INCLUDE_PATH}/types/iec104/apci.h"
     "${INCLUDE_PATH}/types/iec104/asdu.h"
@@ -46,7 +47,6 @@ set(files_h
     "${INCLUDE_PATH}/types/settingstypes.h"
     "${INCLUDE_PATH}/types/usbhidportinfo.h"
     "${INCLUDE_PATH}/types/usbhidsettings.h"
-    "${INCLUDE_PATH}/utils/device_watcher.h"
     "${INCLUDE_PATH}/utils/modbus_convertations.h"
     "${INCLUDE_PATH}/utils/request_queue.h"
     "${INCLUDE_PATH}/utils/slot_trait.h"
@@ -83,7 +83,6 @@ set(files_cpp
     "${SRC_PATH}/types/protocol_settings.cpp"
     "${SRC_PATH}/types/usbhidportinfo.cpp"
     "${SRC_PATH}/types/usbhidsettings.cpp"
-    "${SRC_PATH}/utils/device_watcher.cpp"
     "${SRC_PATH}/utils/request_queue.cpp"
 )
 
@@ -94,15 +93,19 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
+if (MSVC)
+  target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+else()
+  target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::SerialPort
   Qt${QT_VERSION_MAJOR}::Widgets
-  s2
+  s2 settings tl::expected
 )
-
-target_link_libraries(${PROJECT_NAME} PUBLIC tl::expected)
 
 if(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)

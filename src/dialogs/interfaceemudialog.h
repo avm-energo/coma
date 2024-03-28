@@ -7,7 +7,8 @@ class InterfaceEmuDialog : public AbstractInterfaceDialog
 {
     Q_OBJECT
 public:
-    InterfaceEmuDialog(QWidget *parent = nullptr);
+    explicit InterfaceEmuDialog(QWidget *parent = nullptr);
+    ~InterfaceEmuDialog() noexcept;
 
     void setupUI() override;
     bool updateModel() override;

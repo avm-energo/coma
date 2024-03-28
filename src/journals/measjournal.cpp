@@ -4,24 +4,22 @@ namespace journals
 {
 
 MeasJournal::MeasJournal(const MeasSettings &settings, QObject *parent)
-    : BaseJournal(parent), settings(settings), parser(new MeasParser(timezone, this))
+    : BaseJournal(parent), m_settings(settings), m_parser(new MeasParser(m_timezone, this))
 {
-    std::sort(this->settings.begin(), this->settings.end(),
+    std::sort(this->m_settings.begin(), this->m_settings.end(),
         [](const ModuleTypes::MeasJournal &lhs, const ModuleTypes::MeasJournal &rhs) { //
             return lhs.index < rhs.index;
         });
-    jourName = "Журнал измерений";
-    viewName = "meas";
-    headers = getHeaders();
-    type = JournalType::Meas;
-    setUserTimezone(headers);
+    m_viewName = "meas";
+    m_modelHeaders = getHeaders();
+    setUserTimezone(m_modelHeaders);
 }
 
 QStringList MeasJournal::getHeaders()
 {
     QStringList retVal;
-    retVal.reserve(settings.size());
-    for (const auto &record : qAsConst(settings))
+    retVal.reserve(m_settings.size());
+    for (const auto &record : qAsConst(m_settings))
     {
         if (record.visibility)
             retVal.append(record.header);
@@ -31,9 +29,9 @@ QStringList MeasJournal::getHeaders()
 
 void MeasJournal::fillModel(const QByteArray &ba)
 {
-    parser->update(ba, settings);
-    const auto data = parser->parse(settings);
-    dataModel->fillModel(data);
+    m_parser->update(ba, m_settings);
+    const auto data = m_parser->parse(m_settings);
+    m_dataModel->fillModel(data);
 }
 
 }

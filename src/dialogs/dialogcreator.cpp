@@ -32,10 +32,21 @@ DialogCreator::DialogCreator(const ModuleSettings &settings, const Board &board,
 void DialogCreator::createDialogs(const AppConfiguration appCfg)
 {
     deleteDialogs();
+    updateTypes();
     createConfigDialogs();
     createCheckDialogs();
     createJournalDialog();
-    createSpecificDialogs(appCfg);
+
+    // Регулировка доступна только в АВМ-Наладке при связи по USB
+    if (appCfg == AppConfiguration::Debug && m_board.interfaceType() == Interface::IfaceType::USB)
+        createTuneDialogs();
+    // TODO: Временно выключено для модбаса
+    if (m_board.interfaceType() == Interface::IfaceType::USB)
+        createStartupValuesDialog();
+
+    createOscAndSwJourDialogs();
+    createPlotDialog();
+    createRelayDialog();
     createCommonDialogs(appCfg);
 }
 
@@ -51,6 +62,13 @@ void DialogCreator::addDialogToList(UDialog *dlg, const QString &caption, const 
     m_dialogs.append(dlg);
 }
 
+void DialogCreator::updateTypes()
+{
+    m_boxModel = Modules::Model(m_board.type());
+    m_typeB = Modules::BaseBoard(m_board.typeB());
+    m_typeM = Modules::MezzanineBoard(m_board.typeM());
+}
+
 void DialogCreator::deleteDialogs()
 {
     while (!m_dialogs.isEmpty())
@@ -63,11 +81,6 @@ void DialogCreator::deleteDialogs()
 QList<UDialog *> &DialogCreator::getDialogs()
 {
     return m_dialogs;
-}
-
-bool DialogCreator::isBoxModule(const quint16 &type) const
-{
-    return (type == Modules::Model::KDV || type == Modules::Model::KTF || type == Modules::Model::KIV);
 }
 
 void DialogCreator::createConfigDialogs()
@@ -98,119 +111,105 @@ void DialogCreator::createCheckDialogs()
     }
 }
 
-void DialogCreator::createBoxTuneDialogs(const Modules::Model boxModel)
-{
-    try
-    {
-        auto &workConfig = m_s2manager.getCurrentConfiguration().m_workingConfig;
-        if (boxModel == Modules::Model::KIV)
-        {
-            // AVM-KIV tune status: currently working
-            addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
-        }
-        else
-        {
-            // TODO: Добавить регулировку для других модулей
-        }
-    } catch (...)
-    {
-        qCritical() << "Ошибка создания диалога регулировки";
-    }
-}
-
 void DialogCreator::createJournalDialog()
 {
     using namespace journals;
     addDialogToList(new JournalDialog(m_settings, m_parent), "Журналы", "jours");
 }
 
-void DialogCreator::createStartupDialog(const Modules::Model boxModel)
+bool DialogCreator::isS2Available() noexcept
 {
-    if (boxModel == Modules::Model::KIV)
-        addDialogToList(new StartupKIVDialog(m_parent), "Начальные\nзначения", "startup");
-    else if (boxModel == Modules::Model::KTF)
-        addDialogToList(new StartupKTFDialog(m_parent), "Начальные\nзначения", "startup");
-    else if (boxModel == Modules::Model::KDV)
-        addDialogToList(new StartupKDVDialog(m_parent), "Начальные\nзначения", "startup");
-}
-
-void DialogCreator::createTwoPartTuneDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem)
-{
-    using namespace Modules;
     try
     {
-        if (typeb == BaseBoard::MTB_80)
-        {
-            auto &workConfig = m_s2manager.getCurrentConfiguration().m_workingConfig;
-            if ((typem == MezzanineBoard::MTM_81) || (typem == MezzanineBoard::MTM_82)
-                || (typem == MezzanineBoard::MTM_83))
-                addDialogToList(new Tune82Dialog(workConfig, typem, m_parent), "Регулировка", "tune");
-            else if (typem == MezzanineBoard::MTM_84)
-            {
-                addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
-                addDialogToList(new StartupKIVDialog(m_parent), "Начальные\nзначения", "startup");
-            }
-        }
+        [[maybe_unused]] volatile auto &workConfig = m_s2manager.getCurrentConfiguration().m_workingConfig;
+        return true;
+    } catch (...)
+    {
+        return false;
+    }
+}
+
+void DialogCreator::createTuneDialogs()
+{
+    using namespace Modules;
+    if (!isS2Available())
+    {
+        qCritical() << "Ошибка создания диалога регулировки";
+        return;
+    }
+
+    auto &workConfig = m_s2manager.getCurrentConfiguration().m_workingConfig;
+    if (m_typeB == BaseBoard::MTB_80)
+    {
+        if (m_typeM == MezzanineBoard::MTM_81 || m_typeM == MezzanineBoard::MTM_82 || m_typeM == MezzanineBoard::MTM_83)
+            addDialogToList(new Tune82Dialog(workConfig, m_typeM, m_parent), "Регулировка", "tune");
+        else if (m_typeM == MezzanineBoard::MTM_84)
+            addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
+        else if (m_boxModel == Model::KIV)
+            addDialogToList(new TuneKIVDialog(workConfig, m_parent), "Регулировка", "tune");
         else
         {
             // TODO: Добавить регулировку для других модулей
         }
-    } catch (...)
-    {
-        qCritical() << "Ошибка создания диалога регулировки";
     }
 }
 
-void DialogCreator::createOscAndSwJourDialogs(const Modules::BaseBoard &typeb, const Modules::MezzanineBoard &typem)
+void DialogCreator::createStartupValuesDialog()
 {
+    // Добавляем диалог начальных значений
     using namespace Modules;
-    if (typeb == BaseBoard::MTB_80)
+    switch (m_boxModel)
     {
-        if ((typem == MezzanineBoard::MTM_81) || (typem == MezzanineBoard::MTM_82) || (typem == MezzanineBoard::MTM_83))
+    case Model::KIV:
+        addDialogToList(new StartupKIVDialog(m_parent), "Начальные\nзначения", "startup");
+        break;
+    case Model::KTF:
+        addDialogToList(new StartupKTFDialog(m_parent), "Начальные\nзначения", "startup");
+        break;
+    case Model::KDV:
+        addDialogToList(new StartupKDVDialog(m_parent), "Начальные\nзначения", "startup");
+        break;
+    default:
+        // У АВ-ТУК-84 те же начальные значение, что и у АВМ-КИВ
+        if (m_typeB == BaseBoard::MTB_80 && m_typeM == MezzanineBoard::MTM_84)
+            addDialogToList(new StartupKIVDialog(m_parent), "Начальные\nзначения", "startup");
+        break;
+    }
+}
+
+void DialogCreator::createOscAndSwJourDialogs()
+{
+    // Добавляем диалоги осциллограмм и журналов переключений
+    using namespace Modules;
+    if (m_typeB == BaseBoard::MTB_80)
+    {
+        if (m_typeM == MezzanineBoard::MTM_81 || m_typeM == MezzanineBoard::MTM_82 || m_typeM == MezzanineBoard::MTM_83)
+            addDialogToList(new OscDialog(m_parent), "Осциллограммы", "osc");
+    }
+    if ((m_typeB == BaseBoard::MTB_80 || m_typeB == BaseBoard::MTB_85))
+    {
+        if (m_typeM == MezzanineBoard::MTM_85)
         {
+            addDialogToList(new SwitchJournalDialog(m_parent), "Журнал переключений", "swjour");
             addDialogToList(new OscDialog(m_parent), "Осциллограммы", "osc");
         }
     }
-    if ((typeb == BaseBoard::MTB_80 || typeb == BaseBoard::MTB_85) && typem == MezzanineBoard::MTM_85)
-    {
-        addDialogToList(new SwitchJournalDialog(m_parent), "Журнал переключений", "swjour");
-        addDialogToList(new OscDialog(m_parent), "Осциллограммы", "osc");
-    }
 }
 
-void DialogCreator::createSpecificDialogs(const AppConfiguration appCfg)
+void DialogCreator::createPlotDialog()
 {
+    // Только для АВ-ТУК-82 и АВМ-КТФ добавляем диалог с векторными диаграммами
     using namespace Modules;
+    if ((m_typeB == BaseBoard::MTB_80 && m_typeM == MezzanineBoard::MTM_82) || (m_boxModel == Model::KTF))
+        addDialogToList(new PlotDialog(m_parent), "Диаграммы", "plot");
+}
 
-    // Коробочный модуль
-    if (isBoxModule(m_board.baseSerialInfo().type()))
-    {
-        auto moduleModel = Model(m_board.type());
-        // Добавляем регулировку, если АВМ Настройка
-        if (appCfg == AppConfiguration::Debug)
-            createBoxTuneDialogs(moduleModel);
-        // TODO: Временно выключено для модбаса
-        if (m_board.interfaceType() == Interface::IfaceType::USB)
-            createStartupDialog(moduleModel); // Добавляем диалог начальных значений
-
-        // TODO: Fix it
-        //        addDialogToList(new PlotDialog(mParent), "Диаграммы", "plot"); // векторные диаграммы нужны для
-        //        АВ-ТУК-82 и АВМ-КТФ, а не для всех коробочных модулей
-    }
-    // Модуль состоит из двух плат
-    else
-    {
-        auto typeB = BaseBoard(m_board.typeB());
-        auto typeM = MezzanineBoard(m_board.typeM());
-        // Добавляем регулировку, если АВМ Настройка
-        if (appCfg == AppConfiguration::Debug)
-            createTwoPartTuneDialogs(typeB, typeM);
-        // Добавляем диалоги осциллограмм и журналов переключений
-        createOscAndSwJourDialogs(typeB, typeM);
-        // Добавляем диалог переключений
-        if (typeB == BaseBoard::MTB_35)
-            addDialogToList(new RelayDialog(4, m_parent), "Реле", "relay1");
-    }
+void DialogCreator::createRelayDialog()
+{
+    // Для АВ-ТУК-35 добавляем диалог переключений
+    using namespace Modules;
+    if (m_typeB == BaseBoard::MTB_35)
+        addDialogToList(new RelayDialog(4, m_parent), "Реле", "relay1");
 }
 
 void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)

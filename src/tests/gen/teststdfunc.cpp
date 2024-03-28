@@ -79,7 +79,7 @@ bool compare(const SinglePoints &lhs, const SinglePoints &rhs) noexcept
     if (lhs.size() == rhs.size())
     {
         bool flag = true;
-        for (auto i = 0; i < lhs.size(); ++i)
+        for (std::size_t i = 0; i < lhs.size(); ++i)
         {
             const auto &lhsItem = lhs[i], &rhsItem = rhs[i];
             if ((lhsItem.sigAdr != rhsItem.sigAdr)             //
@@ -149,9 +149,10 @@ void TestStdFunc::byteArrayTest02()
 void TestStdFunc::modbusRegistersTest01()
 {
     std::uint16_t data = 0xaabb;
-    auto first = StdFunc::toByteArray(qToBigEndian(data));
+    auto reversed = qToBigEndian(data);
+    auto first = StdFunc::toByteArray(reversed);
     auto second = Modbus::packRegister(data);
-    QVERIFY(first == second);
+    QCOMPARE(first, second);
 }
 
 void TestStdFunc::modbusRegistersTest02()
@@ -199,7 +200,7 @@ void TestStdFunc::modbusRegistersTest06()
     std::uint32_t data = 0xaabbccdd;
     auto packed = Modbus::packRegister(data);
     auto unpacked = Modbus::unpackRegister<std::uint32_t>(packed);
-    QVERIFY(data == unpacked);
+    QCOMPARE(data, unpacked);
 }
 
 void TestStdFunc::modbusRegistersTest07()
@@ -208,7 +209,7 @@ void TestStdFunc::modbusRegistersTest07()
     auto packed = Modbus::packRegister(data);
     auto first = detail::unpackReg<std::uint32_t>(packed);
     auto second = Modbus::unpackRegister<std::uint32_t>(packed);
-    QVERIFY(first == second);
+    QCOMPARE(first, second);
 }
 
 void TestStdFunc::modbusSinglePoint()

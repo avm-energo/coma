@@ -517,7 +517,7 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
 
             case MessageDataType::F_SG_NA_1:
             {
-                if (basize >= (m_readSize + 14))
+                if (basize >= quint32(m_readSize + 14))
                 {
                     m_log.info("Segment ready: RDSize=" + QString::number(ba.at(12), 16)
                         + ", num=" + QString::number(ba.at(13)));
@@ -773,7 +773,7 @@ void IEC104Parser::sendTestCon()
     QByteArray GI;
     GI.append(I104_START);
     GI.append(0x04);
-    GI.append(I104_TESTFR_CON);
+    GI.append(quint8(I104_TESTFR_CON));
     GI.append(QByteArrayLiteral("\x00\x00\x00"));
     m_command = I104_TESTFR_CON;
     send(0, GI); // ASDU = QByteArray()

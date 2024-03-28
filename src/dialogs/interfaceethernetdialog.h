@@ -9,6 +9,7 @@ class InterfaceEthernetDialog final : public AbstractInterfaceDialog
     Q_OBJECT
 public:
     explicit InterfaceEthernetDialog(QWidget *parent = nullptr);
+    ~InterfaceEthernetDialog() noexcept;
 
     void setupUI() override;
     void setInterface(QModelIndex index) override;

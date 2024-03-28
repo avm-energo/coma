@@ -9,7 +9,6 @@
 #include <QStackedWidget>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/types/settingstypes.h>
-#include <interfaces/utils/device_watcher.h>
 #include <s2/s2datamanager.h>
 
 class AlarmWidget;
@@ -77,13 +76,7 @@ private:
     void prepare();
     QToolBar *createToolBar();
     void keyPressEvent(QKeyEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
-    void moveEvent(QMoveEvent *event) override;
-    void showEvent(QShowEvent *event) override;
     void prepareDialogs();
-
-signals:
-    void positionChanged(const QPoint &center);
 };
 
 class ComaHelper

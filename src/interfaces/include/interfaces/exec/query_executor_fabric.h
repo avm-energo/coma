@@ -1,8 +1,7 @@
 #pragma once
 
 #include <interfaces/exec/default_query_executor.h>
-
-struct IEC104Settings;
+#include <interfaces/types/settingstypes.h>
 
 namespace Interface
 {
@@ -19,9 +18,9 @@ public:
     ~QueryExecutorFabric() = delete;
 
     /// \brief Создание исполнителя запросов к устройству по протоколу Protocom.
-    static DefaultQueryExecutor *makeProtocomExecutor(RequestQueue &queue, quint32 timeout = 1000);
+    static DefaultQueryExecutor *makeProtocomExecutor(RequestQueue &queue, const UsbHidSettings &settings);
     /// \brief Создание исполнителя запросов к устройству по протоколу Modbus.
-    static DefaultQueryExecutor *makeModbusExecutor(RequestQueue &queue, quint8 deviceAddress, quint32 timeout = 3000);
+    static DefaultQueryExecutor *makeModbusExecutor(RequestQueue &queue, const SerialPortSettings &settings);
     /// \brief Создание исполнителя запросов к устройству по протоколу МЭК 60870-5-104.
     static DefaultQueryExecutor *makeIec104Executor(RequestQueue &queue, const IEC104Settings &settings);
 };

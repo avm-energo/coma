@@ -6,12 +6,24 @@
 #include <QKeyEvent>
 #include <QMetaEnum>
 #include <QSettings>
+#include <settings/user_settings.h>
+
+const QMetaEnum StyleLoader::s_themeEnum = QMetaEnum::fromType<Style::Name>();
+
 StyleLoader::StyleLoader(Singleton::token)
 {
 }
 
 StyleLoader::StyleLoader(Singleton::token, QObject *parent) : QObject(parent)
 {
+}
+
+QStringList StyleLoader::availableStyles()
+{
+    QStringList values;
+    for (int i = 0; i < s_themeEnum.keyCount(); i++)
+        values.push_back(s_themeEnum.key(i));
+    return values;
 }
 
 void StyleLoader::attach(const QString &filename, QKeySequence key)
@@ -38,12 +50,10 @@ bool StyleLoader::eventFilter(QObject *obj, QEvent *event)
 
 void StyleLoader::setAppStyleSheet()
 {
-    if (!styleFile().isEmpty())
-        m_filename = styleFile();
     QFile file(m_filename);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qDebug() << "Cannot open stylesheet file " << m_filename;
+        qWarning() << "Cannot open stylesheet file " << m_filename;
         return;
     }
     QString stylesheet = QString::fromUtf8(file.readAll());
@@ -52,44 +62,34 @@ void StyleLoader::setAppStyleSheet()
 
 QString StyleLoader::load()
 {
-    using namespace Style;
-    auto sets = std::unique_ptr<QSettings>(new QSettings);
-    auto themeEnum = QMetaEnum::fromType<Name>;
-    const QString styleName = sets->value("Style").toString();
+    const QString styleName = Settings::UserSettings::GetInstance().get<Settings::Theme>();
     if (styleName.isEmpty())
         return defaultStyleFile;
-    const int key = themeEnum().keyToValue(styleName.toStdString().c_str());
-    return themes.value(Name(key));
+    const int key = s_themeEnum.keyToValue(styleName.toStdString().c_str());
+    return Style::themes.value(Style::Name(key));
 }
 
 void StyleLoader::save()
 {
-    using namespace Style;
-    auto sets = std::unique_ptr<QSettings>(new QSettings);
-
-    sets->setValue("Style", styleName());
-    setAppStyleSheet();
+    Settings::UserSettings::GetInstance().set<Settings::Theme>(styleName());
 }
 
-QString StyleLoader::styleFile()
+void StyleLoader::setStyle(const QString &styleName)
 {
-    return m_filename;
+    auto key = Style::Name(s_themeEnum.keyToValue(styleName.toStdString().c_str()));
+    m_filename = Style::themes.value(key);
 }
 
 Style::Name StyleLoader::styleNumber()
 {
-    using namespace Style;
-    auto themeEnum = QMetaEnum::fromType<Name>;
-    const int key = themeEnum().keyToValue(styleName().toStdString().c_str());
-    return Name(key);
+    const int key = s_themeEnum.keyToValue(styleName().toStdString().c_str());
+    return Style::Name(key);
 }
 
 QString StyleLoader::styleName()
 {
-    using namespace Style;
-    auto themeEnum = QMetaEnum::fromType<Name>;
-    const int key = themes.key(styleFile());
-    const QString styleName = themeEnum().valueToKey(key);
+    const int key = Style::themes.key(m_filename);
+    const QString styleName = s_themeEnum.valueToKey(key);
     return styleName;
 }
 

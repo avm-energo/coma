@@ -4,20 +4,18 @@ namespace journals
 {
 
 WorkJournal::WorkJournal(const QMap<quint32, QString> &desc, QObject *parent)
-    : BaseJournal(parent), desriptions(desc), parser(new EventParser(this))
+    : BaseJournal(parent), m_desriptions(desc), m_parser(new EventParser(this))
 {
-    jourName = "Рабочий журнал";
-    viewName = "work";
-    headers = BaseJournal::eventJourHeaders;
-    type = JournalType::Work;
-    setUserTimezone(headers);
+    m_viewName = "work";
+    m_modelHeaders = BaseJournal::s_eventJourHeaders;
+    setUserTimezone(m_modelHeaders);
 }
 
 void WorkJournal::fillModel(const QByteArray &ba)
 {
-    parser->update(ba);
-    const auto data = parser->parse(desriptions, timezone);
-    dataModel->fillModel(data);
+    m_parser->update(ba);
+    const auto data = m_parser->parse(m_desriptions, m_timezone);
+    m_dataModel->fillModel(data);
 }
 
 }
