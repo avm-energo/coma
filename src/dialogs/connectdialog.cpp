@@ -1,6 +1,5 @@
 #include "connectdialog.h"
 
-#include "../module/board.h"
 #include "../widgets/wd_func.h"
 #include "interfaceemudialog.h"
 #include "interfaceethernetdialog.h"
@@ -12,13 +11,9 @@
 #include <QVBoxLayout>
 #include <gen/error.h>
 
-ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
+ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent), m_idialog(nullptr)
 {
     QStringList intersl { "USB", "RS485", "Ethernet" };
-    // TODO: использовать AppConfiguration::Service и AppConfiguration::Debug
-    // if (QCoreApplication::applicationName().contains("service", Qt::CaseInsensitive))
-    //        intersl += QStringList { "Ethernet" };
-    // intersl += QStringList { "RS485" };
 #ifdef ENABLE_EMULATOR
     intersl.push_back("Emulator");
 #endif
@@ -49,35 +44,28 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent)
 
 void ConnectDialog::setInterface()
 {
-    auto &board = Board::GetInstance();
     auto comboBox = this->findChild<QComboBox *>();
-    if (comboBox != nullptr)
+    if (comboBox)
     {
         auto connectionType = comboBox->currentText();
-        // TODO: это не должно тут происходить...
-        board.setProperty("interface", connectionType);
         settings.setValue("LastConnectionType", connectionType);
+        if (connectionType == "USB")
+            m_idialog = new InterfaceUSBDialog(this);
+        else if (connectionType == "RS485")
+            m_idialog = new InterfaceSerialDialog(this);
+        else if (connectionType == "Ethernet")
+            m_idialog = new InterfaceEthernetDialog(this);
+#ifdef ENABLE_EMULATOR
+        else if (connectionType == "Emulator")
+            m_idialog = new InterfaceEmuDialog(this);
+#endif
+        else
+            m_idialog = nullptr;
     }
 
-    switch (board.interfaceType())
-    {
-    case Interface::IfaceType::USB:
-        m_idialog = new InterfaceUSBDialog(this);
-        break;
-    case Interface::IfaceType::Ethernet:
-        m_idialog = new InterfaceEthernetDialog(this);
-        break;
-    case Interface::IfaceType::RS485:
-        m_idialog = new InterfaceSerialDialog(this);
-        break;
-#ifdef ENABLE_EMULATOR
-    case Board::InterfaceType::Emulator:
-        m_idialog = new InterfaceEmuDialog(this);
-        break;
-#endif
-    default:
+    if (!m_idialog)
         return;
-    }
+
     connect(m_idialog, &AbstractInterfaceDialog::accepted, this, &ConnectDialog::accepted);
     // closing dialogs after selecting device
     connect(m_idialog, &AbstractInterfaceDialog::accepted, this, //

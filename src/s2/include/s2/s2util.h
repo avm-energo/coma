@@ -11,6 +11,19 @@ class ConfigStorage;
 class Configuration;
 class DataFactory;
 
+/// \brief Структура с данными для эмуляции формата S2B.
+struct EmulateData
+{
+    quint32 m_typeB = 0;
+    quint32 m_typeM = 0;
+    quint32 m_serialnum = 0;
+
+    bool isEmpty() const noexcept
+    {
+        return ((m_typeB == 0) && (m_typeM == 0) && (m_serialnum == 0));
+    }
+};
+
 /// \brief Класс, предоставляющий интерфейс для работы с массивами
 /// данных в формате S2, конвертированию их из одного формата в другие.
 class Util
@@ -29,7 +42,7 @@ public:
     /// \brief Возвращает размер файла, полученного в формате S2.
     [[nodiscard]] std::size_t getFileSize(const QByteArray &s2file) const;
     /// \brief Возвращает массив байт в формате S2B.
-    [[nodiscard]] S2BFile emulateS2B(const QByteArray &data, quint16 fname, quint16 typeB, quint16 typeM) const;
+    [[nodiscard]] S2BFile emulateS2B(const QByteArray &data, quint16 fname, const EmulateData &emulData) const;
     /// \brief Функция для парсинга массива байт в файл формата S2B.
     [[nodiscard]] Error::Msg parseS2B(const QByteArray &file, S2BFile &result) const;
 
@@ -37,7 +50,7 @@ public:
     static void StoreDataMem(QByteArray &mem, const std::vector<FileStruct> &dr, int fname);
     static void StoreDataMem(QByteArray &mem, const std::vector<DataRec> &dr, int fname);
     static bool RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist);
-    [[deprecated]] static quint16 GetIdByName(const QString &name);
+    //[[deprecated]] static quint16 GetIdByName(const QString &name);
 
 private:
     static quint32 getTime32() noexcept;
@@ -46,3 +59,4 @@ private:
 } // namespace S2
 
 using S2Util = S2::Util;
+using S2BEmulateData = S2::EmulateData;

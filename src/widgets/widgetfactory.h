@@ -1,28 +1,30 @@
 #pragma once
-#include "../module/configstorage.h"
+
 #include "../widgets/ipctrl.h"
 #include "../widgets/wd_func.h"
 #include "gasdensitywidget.h"
 
 #include <QStandardItemModel>
 #include <bitset>
+#include <device/current_device.h>
 #include <gen/std_ext.h>
 #include <s2/delegate_common.h>
-#include <s2/s2configuration.h>
 
 class WidgetFactory
 {
 private:
-    S2Configuration &config;
+    S2::Configuration &m_config;
+    Device::ConfigStorage &m_storage;
+    S2::ConfigStorage &m_s2storage;
 
 public:
-    WidgetFactory(S2Configuration &workingConfig);
+    WidgetFactory(S2::Configuration &workingConfig, Device::CurrentDevice *device);
     QWidget *createWidget(quint16 key, QWidget *parent = nullptr);
     template <typename T> bool fillWidget(const QWidget *parent, quint32 key, const T &value);
     bool fillBack(quint16 key, const QWidget *parent) const;
     static QString hashedName(ctti::unnamed_type_id_t type, quint16 key);
     static const QString widgetName(int group, int item);
-    static quint16 getRealCount(const quint16 key);
+    quint16 getRealCount(const quint16 key);
 
 private:
     // Default template like a dummy function for sfinae
@@ -126,7 +128,8 @@ bool WidgetFactory::fillTableView(
 template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quint32 key, const T &value)
 {
     bool status = false;
-    auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
+    // auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
+    auto &widgetMap = m_s2storage.getWidgetMap();
     auto search = widgetMap.find(key);
     if (search == widgetMap.cend())
     {

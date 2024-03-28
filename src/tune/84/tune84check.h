@@ -10,7 +10,7 @@ class Tune84Check : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84Check(S2::Configuration &config, int tuneStep, QWidget *parent = nullptr);
+    Tune84Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
     void setTuneFunctions() override;

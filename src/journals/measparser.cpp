@@ -3,6 +3,7 @@
 namespace journals
 {
 
+using namespace Device::XmlDataTypes;
 constexpr auto notFound = -1;
 
 MeasParser::MeasParser(QTimeZone timeZone, QObject *parent)
@@ -12,7 +13,6 @@ MeasParser::MeasParser(QTimeZone timeZone, QObject *parent)
 
 std::size_t MeasParser::getRecordSize(const MeasSettings &settings)
 {
-    using namespace ModuleTypes;
     std::size_t recSize = 0;
     for (auto &rec : settings)
     {
@@ -37,7 +37,6 @@ std::size_t MeasParser::getRecordSize(const MeasSettings &settings)
 
 int MeasParser::findTimeIndex(const MeasSettings &settings)
 {
-    using namespace ModuleTypes;
     int index = notFound;
     for (auto i = 0; i < settings.size(); i++)
     {
@@ -66,7 +65,6 @@ void MeasParser::update(const QByteArray &ba, const MeasSettings &settings)
 
 bool MeasParser::parseRecord(const MeasSettings &settings)
 {
-    using namespace ModuleTypes;
     auto status = true;
     QVariant storage;
     for (auto &rec : settings)

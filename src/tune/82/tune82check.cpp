@@ -13,10 +13,9 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-Tune82Check::Tune82Check(S2::Configuration &config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+Tune82Check::Tune82Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
 {
-    m_typeM = type;
     setupUI();
 }
 
@@ -34,17 +33,17 @@ Error::Msg Tune82Check::showScheme()
     QString pmpfile;
     switch (m_typeM) // выводим окно с предупреждением о включении РЕТОМ-а по схеме в зависимости от исполнения
     {
-    case Modules::MezzanineBoard::MTM_81: // 2t0n
+    case Device::MezzanineBoard::MTM_81: // 2t0n
     {
         pmpfile = ":/tunes/tune81.png";
         break;
     }
-    case Modules::MezzanineBoard::MTM_82:
+    case Device::MezzanineBoard::MTM_82:
     {
         pmpfile = ":/tunes/tune82.png";
         break;
     }
-    case Modules::MezzanineBoard::MTM_83:
+    case Device::MezzanineBoard::MTM_83:
     {
         pmpfile = ":/tunes/tune83.png";
         break;
@@ -57,15 +56,14 @@ Error::Msg Tune82Check::showScheme()
     }
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    auto label = WDFunc::NewLBL2(this, "", "", new QPixmap(pmpfile));
-    lyout->addWidget(label);
+    lyout->addWidget(WDFunc::NewIcon(this, pmpfile));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Отключите выходы РЕТОМ;"));
     lyout->addWidget(WDFunc::NewLBL2(w, "2. Соберите схему подключения по вышеприведённой картинке;"));
     lyout->addWidget(WDFunc::NewLBL2(w,
         "3. Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "
         "сдвига по всем фазам 0 град.;"));
     lyout->addWidget(WDFunc::NewLBL2(w, "4. Задайте на РЕТОМ значения напряжений по фазам 60 В;"));
-    if (m_typeM != Modules::MezzanineBoard::MTM_83)
+    if (m_typeM != Device::MezzanineBoard::MTM_83)
         lyout->addWidget(WDFunc::NewLBL2(w, "    значения токов по фазам 1 А;"));
     lyout->addWidget(WDFunc::NewLBL2(w, "    частоту 50 Гц."));
     lyout->addWidget(WDFunc::NewLBL2(w, "5. Включите выходы РЕТОМ"));
@@ -77,7 +75,8 @@ Error::Msg Tune82Check::showScheme()
 
 Error::Msg Tune82Check::check()
 {
-    Bda82 *bda = new Bda82;
+    Bda82 *bda = new Bda82(this);
+    bda->setup(m_device->getUID(), m_sync);
     bda->readAndUpdate();
 #ifndef NO_LIMITS
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
@@ -89,7 +88,7 @@ Error::Msg Tune82Check::check()
 
 Error::Msg Tune82Check::checkMip()
 {
-    Mip *mip = new Mip(true, Modules::MezzanineBoard::MTM_82, this);
+    Mip *mip = new Mip(true, Device::MezzanineBoard::MTM_82, this);
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
     static_assert(inom.size() > 3);
     mip->setNominalCurrent(inom.at(3)); // 2nd currents, phase A

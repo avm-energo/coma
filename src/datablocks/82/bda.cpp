@@ -18,7 +18,7 @@ void Bda82::setupValuesDesc()
     addNewGroup("Значения сигналов в единицах АЦП", "NADC", 0, 6, &m_blockData->IUeff_ADC[0], 0);
 }
 
-Error::Msg Bda82::checkValues(Modules::MezzanineBoard mtypeM, S2::FLOAT_6t i2Noms)
+Error::Msg Bda82::checkValues(Device::MezzanineBoard mtypeM, S2::FLOAT_6t i2Noms)
 {
     // we suggest that each three of currents are equal inside each other
     assert(i2Noms.size() > 3);
@@ -30,15 +30,15 @@ Error::Msg Bda82::checkValues(Modules::MezzanineBoard mtypeM, S2::FLOAT_6t i2Nom
     Error::Msg res;
     switch (mtypeM)
     {
-    case Modules::MezzanineBoard::MTM_81: // 2t0n
+    case Device::MezzanineBoard::MTM_81: // 2t0n
         res = checkAnalogValues(
             { iNom, iNom, iNom, iNom, iNom, iNom, 50.0 }, { iTol, iTol, iTol, iTol, iTol, iTol, 0.05 });
         break;
-    case Modules::MezzanineBoard::MTM_82:
+    case Device::MezzanineBoard::MTM_82:
         res = checkAnalogValues(
             { uNom, uNom, uNom, iNom, iNom, iNom, 50.0 }, { uTol, uTol, uTol, iTol, iTol, iTol, 0.05 });
         break;
-    case Modules::MezzanineBoard::MTM_83: // 0t2n
+    case Device::MezzanineBoard::MTM_83: // 0t2n
         res = checkAnalogValues(
             { uNom, uNom, uNom, uNom, uNom, uNom, 50.0 }, { uTol, uTol, uTol, uTol, uTol, uTol, 0.05 });
         break;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../models/edynamictablemodel.h"
-#include "../module/modulesettings.h"
 
 #include <QObject>
 #include <QSortFilterProxyModel>
@@ -59,7 +58,14 @@ public:
     /// \param journalFile[in] - файл в формате S2B, содержащий прочитанный бинарный файл журнала.
     void fill(const S2::S2BFile &journalFile);
 
+    /// \brief Возвращает константную ссылку на файл в формате S2B.
     const S2::S2BFile &getFile() const noexcept;
+
+    /// \brief Возвращает тип хранимого журнала.
+    JournalType getType() const noexcept;
+
+    /// \brief Возвращает рекомендуемое имя файла.
+    QString getSuggestedFilename() const noexcept;
 
     /// \brief Сохраняет модель в Excel-файл с указанным именем.
     void saveToExcel(const QString &filename);

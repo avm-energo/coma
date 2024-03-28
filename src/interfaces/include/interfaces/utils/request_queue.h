@@ -2,11 +2,36 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <gen/error.h>
+#include <gen/std_ext.h>
 #include <interfaces/types/common_types.h>
+#include <interfaces/utils/unique_queue.h>
 #include <mutex>
 #include <optional>
 #include <queue>
+
+namespace std
+{
+
+template <> struct hash<std::reference_wrapper<Interface::CommandStruct>>
+{
+    std::uint64_t operator()(const std::reference_wrapper<Interface::CommandStruct> &value) const
+    {
+        // computes the Fowler-Noll-Vo hash function
+        constexpr std::uint64_t prime { 0x100000001B3 };
+        std::uint64_t result { 0xcbf29ce484222325 }, i = 0, ie = 0;
+        const Interface::CommandStruct &ref = value.get();
+        const auto first = ref.arg1.toByteArray();
+        const auto second = ref.arg2.toByteArray();
+        for (i = 0, ie = first.size(); i != ie; ++i)
+            result = (result * prime) ^ first.at(i);
+        for (i = 0, ie = second.size(); i != ie; ++i)
+            result = (result * prime) ^ second.at(i);
+        result = result ^ (std_ext::to_underlying(ref.command) << 1);
+        return result;
+    }
+};
+
+} // namespace std
 
 namespace Interface
 {
@@ -15,7 +40,7 @@ namespace Interface
 class RequestQueue
 {
 private:
-    std::queue<CommandStruct> m_requests;
+    Utils::UniqueQueue<CommandStruct> m_requests;
     std::mutex m_queueAccess;
     std::condition_variable m_cvQueueEmpty;
     std::atomic_bool m_isActive = true;
@@ -30,6 +55,7 @@ public:
     std::optional<CommandStruct> getFromQueue() noexcept;
     /// \brief Функция для очистки очереди запросов.
     void clear() noexcept;
+    std::size_t size() noexcept;
 
     /// \brief Функция для ожидания момента, когда в пустую очередь попадёт запрос.
     void waitFillingQueue() noexcept;

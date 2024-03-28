@@ -8,6 +8,8 @@
 #include <QByteArray>
 #include <QCloseEvent>
 #include <QDialog>
+#include <device/current_device.h>
+#include <device/device_list.h>
 #include <s2/s2configuration.h>
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
@@ -25,12 +27,6 @@
 
 // disable all limits checks
 // #define NO_LIMITS
-
-namespace Interface
-{
-class AsyncConnection;
-class SyncConnection;
-}
 
 using ReportData = std::map<QString, QString>;
 
@@ -54,7 +50,7 @@ public:
         TuneFunc func;
     };
 
-    explicit AbstractTuneDialog(S2::Configuration &workConfig, int tuneStep, QWidget *parent = nullptr);
+    explicit AbstractTuneDialog(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
     template <typename T> //
     void addTuneFunc(const QString &msg, Error::Msg (T::*func)())
@@ -97,9 +93,12 @@ public:
     static ReportData &getReportData();
 
 protected:
+    Device::CurrentDevice *m_device;
     S2::Configuration &config;
     Interface::AsyncConnection *m_async;
     Interface::SyncConnection *m_sync;
+    Device::BaseBoard m_typeB;
+    Device::MezzanineBoard m_typeM;
     static ReportData s_reportData;
 
     Error::Msg setCurrentsTo(const float value);

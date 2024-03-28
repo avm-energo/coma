@@ -8,7 +8,7 @@ class TimeDialog : public UDialog
     Q_OBJECT
 
 public:
-    explicit TimeDialog(QWidget *parent = nullptr);
+    explicit TimeDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
     ~TimeDialog();
 
 private:

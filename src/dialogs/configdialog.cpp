@@ -1,8 +1,6 @@
 #include "configdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../module/board.h"
-#include "../module/configstorage.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
@@ -10,29 +8,29 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QScrollArea>
+#include <device/current_device.h>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 #include <set>
 
-ConfigDialog::ConfigDialog(S2RequestService &s2service, //
-    S2DataManager &s2manager, const S2BoardType boardType, QWidget *parent)
-    : UDialog(parent)
-    , m_requestService(s2service)
-    , m_datamanager(s2manager)
+ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent)
+    : UDialog(device, parent)
+    , m_datamanager(*m_device->getS2Datamanager())
     , m_boardConfig(m_datamanager.getConfiguration(boardType))
-    , m_factory(m_boardConfig.m_workingConfig)
-    , m_errConfState(new ErrConfState)
+    , m_factory(m_boardConfig.m_workingConfig, device)
+    , m_errConfState(new ErrConfState(device))
 {
     connect(&m_datamanager, &S2DataManager::parseStatus, this, &ConfigDialog::parseStatusHandle);
-    connect(&m_requestService, &S2RequestService::noConfigurationError, this, &ConfigDialog::noConfigurationHandle);
+    connect(m_device->getFileProvider(), &Device::FileProvider::noConfigurationError, //
+        this, &ConfigDialog::noConfigurationHandle);
 }
 
 void ConfigDialog::readConfig()
 {
     setSuccessMsg(tr("Конфигурация прочитана успешно"));
-    m_requestService.request(S2::FilesEnum::Config);
+    m_device->getFileProvider()->request(S2::FilesEnum::Config);
 }
 
 void ConfigDialog::writeConfig()
@@ -60,7 +58,7 @@ void ConfigDialog::checkForDiff()
 
 bool ConfigDialog::isVisible(const quint16 id) const
 {
-    const auto &detailMap = S2::ConfigStorage::GetInstance().getWidgetDetailMap();
+    const auto &detailMap = m_datamanager.getStorage().getWidgetDetailMap();
     auto search = detailMap.find(id);
     if (search != detailMap.cend())
         return search->second.first;
@@ -127,12 +125,10 @@ QWidget *ConfigDialog::ConfButtons()
 {
     auto wdgt = new QWidget;
     auto wdgtlyout = new QGridLayout;
-    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    auto button = new QPushButton("Прочитать из " + tmps);
+    auto button = new QPushButton("Прочитать из модуля");
     connect(button, &QPushButton::clicked, this, &ConfigDialog::readConfig);
     wdgtlyout->addWidget(button, 0, 0, 1, 1);
-    tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
-    button = new QPushButton("Записать в " + tmps);
+    button = new QPushButton("Записать в модуль");
     button->setObjectName("WriteConfPB");
     connect(button, &QPushButton::clicked, this, &ConfigDialog::writeConfig);
     wdgtlyout->addWidget(button, 0, 1, 1, 1);
@@ -157,7 +153,7 @@ QWidget *ConfigDialog::ConfButtons()
 
 quint32 ConfigDialog::tabForId(quint16 id)
 {
-    auto &widgetMap = S2::ConfigStorage::GetInstance().getWidgetMap();
+    auto &widgetMap = m_datamanager.getStorage().getWidgetMap();
     auto search = widgetMap.find(id);
     if (search == widgetMap.end())
     {
@@ -173,7 +169,7 @@ quint32 ConfigDialog::tabForId(quint16 id)
 void ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
     std::set<delegate::WidgetGroup> uniqueTabs;
-    auto &tabs = S2::ConfigStorage::GetInstance().getConfigTabs();
+    auto &tabs = m_datamanager.getStorage().getConfigTabs();
     for (const auto &record : m_boardConfig.m_defaultConfig)
     {
         auto tab = tabForId(record.first);

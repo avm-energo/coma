@@ -4,20 +4,19 @@
 
 #include <QShowEvent>
 #include <QWidget>
+#include <device/device_list.h>
 
 class Tune82Check : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune82Check(S2::Configuration &config, int tuneStep, Modules::MezzanineBoard type, QWidget *parent = nullptr);
+    Tune82Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
     void setTuneFunctions() override;
     Error::Msg showScheme();
     Error::Msg check();
     Error::Msg checkMip();
-
-    Modules::MezzanineBoard m_typeM;
 
 private slots:
 

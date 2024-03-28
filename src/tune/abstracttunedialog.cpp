@@ -1,8 +1,6 @@
 #include "abstracttunedialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../module/board.h"
-#include "../module/modules.h"
 #include "../widgets/epopup.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
@@ -21,13 +19,19 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <interfaces/conn/active_connection.h>
 
 ReportData AbstractTuneDialog::s_reportData {};
 
-AbstractTuneDialog::AbstractTuneDialog(S2::Configuration &workConfig, int tuneStep, QWidget *parent)
-    : QDialog(parent), config(workConfig), m_async(ActiveConnection::async()), m_sync(ActiveConnection::sync())
+AbstractTuneDialog::AbstractTuneDialog(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : QDialog(parent)
+    , m_device(device)
+    , config(m_device->getS2Datamanager()->getCurrentConfiguration().m_workingConfig)
+    , m_async(m_device->async())
+    , m_sync(m_device->sync())
+    , m_typeB(static_cast<Device::BaseBoard>(m_device->getBaseType()))
+    , m_typeM(static_cast<Device::MezzanineBoard>(m_device->getMezzType()))
 {
+    Q_ASSERT(device != nullptr);
     TuneVariant = 0;
     IsNeededDefConf = false;
     m_blockCount = 0;
@@ -201,24 +205,24 @@ int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
 
 void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int msg, bool visible)
 {
-    QPixmap *pm;
+    QPixmap pm;
     switch (type)
     {
     case OkMsg:
-        pm = new QPixmap(":/tunes/ok.png");
+        pm = QPixmap(":/tunes/ok.png");
         break;
     case ErMsg:
-        pm = new QPixmap(":/tunes/cross.png");
+        pm = QPixmap(":/tunes/cross.png");
         break;
     case SkMsg:
-        pm = new QPixmap(":/tunes/hr.png");
+        pm = QPixmap(":/tunes/hr.png");
         break;
     case NoMsg:
         WDFunc::SetVisible(this, "tunemsg" + QString::number(msg), visible);
         return;
     }
     WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), visible);
-    WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
+    WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), &pm);
 }
 
 void AbstractTuneDialog::MsgClear()
@@ -472,14 +476,13 @@ Error::Msg AbstractTuneDialog::saveWorkConfig()
     QByteArray ba;
     if (m_sync->readFileSync(S2::FilesEnum::Config, ba) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
-    return Files::SaveToFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba);
+    return Files::SaveToFile(StdFunc::GetSystemHomeDir() + m_device->getUID() + ".cf", ba);
 }
 
 Error::Msg AbstractTuneDialog::loadWorkConfig()
 {
     QByteArray ba;
-    if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + Board::GetInstance().UID() + ".cf", ba)
-        != Error::Msg::NoError)
+    if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + m_device->getUID() + ".cf", ba) != Error::Msg::NoError)
         return m_sync->writeFileSync(S2::FilesEnum::Config, ba);
     return Error::Msg::GeneralError;
 }

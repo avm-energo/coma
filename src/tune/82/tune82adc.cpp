@@ -9,15 +9,19 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <interfaces/conn/sync_connection.h>
 
-Tune82ADC::Tune82ADC(S2::Configuration &config, Modules::MezzanineBoard type, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent), m_typeM(type)
+Tune82ADC::Tune82ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
+    , m_bac(new Bac82(this))
+    , m_bd1(new Bd182(m_typeM, this))
+    , m_bda(new Bda82(this))
+    , m_bd0(new Bd0(this))
 {
-    m_bac = new Bac82(this);
-    m_bd1 = new Bd182(m_typeM, this);
-    m_bda = new Bda82(this);
-    m_bd0 = new Bd0(this);
+    m_bac->setup(m_device->getUID(), m_sync);
+    m_bd1->setup(m_device->getUID(), m_sync);
+    m_bda->setup(m_device->getUID(), m_sync);
+    m_bd0->setup(m_device->getUID(), m_sync);
+
     setBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
@@ -37,7 +41,7 @@ void Tune82ADC::setTuneFunctions()
     addTuneFunc("Расчёт коррекции смещений сигналов по фазе...", &Tune82ADC::calcPhaseCorrection);
     addTuneFunc("Расчёт взаимного влияния каналов...", &Tune82ADC::calcInterChannelCorrelation);
     addTuneFunc("Расчёт коррекции смещения по токам и напряжениям...", &Tune82ADC::calcIUcoef1);
-    if (m_typeM != Modules::MezzanineBoard::MTM_83) // not 6U0I
+    if (m_typeM != Device::MezzanineBoard::MTM_83) // not 6U0I
         addTuneFunc("Расчёт коррекции смещения по токам 5 А...", &Tune82ADC::calcIcoef5);
     addTuneFunc(
         "Запись настроечных коэффициентов и восстановление конфигурации...", &AbstractTuneDialog::writeTuneCoefs);
@@ -74,7 +78,7 @@ Error::Msg Tune82ADC::calcPhaseCorrection()
     {
         m_bacNewBlock.data()->DPsi[i] = m_bac->data()->DPsi[i] - m_bd1->data()->phi_next_f[i];
     }
-    if (m_typeM == Modules::MezzanineBoard::MTM_82)
+    if (m_typeM == Device::MezzanineBoard::MTM_82)
     {
         for (int i = 3; i < 6; ++i)
             m_bacNewBlock.data()->DPsi[i] = m_bac->data()->DPsi[i] + mipdata.phiLoadPhase[i - 3];
@@ -112,17 +116,17 @@ Error::Msg Tune82ADC::calcIUcoef1()
     {
         switch (m_typeM)
         {
-        case Modules::MezzanineBoard::MTM_83: // 0I6U
+        case Device::MezzanineBoard::MTM_83: // 0I6U
             m_bacNewBlock.data()->KmU[i] = m_bac->data()->KmU[i] * mipdata.uPhase[i] / m_bd1->data()->IUefNat_filt[i];
             m_bacNewBlock.data()->KmU[i + 3]
                 = m_bac->data()->KmU[i + 3] * mipdata.uPhase[i] / m_bd1->data()->IUefNat_filt[i + 3];
             break;
-        case Modules::MezzanineBoard::MTM_82: // 3I3U
+        case Device::MezzanineBoard::MTM_82: // 3I3U
             m_bacNewBlock.data()->KmU[i] = m_bac->data()->KmU[i] * mipdata.uPhase[i] / m_bd1->data()->IUefNat_filt[i];
             m_bacNewBlock.data()->KmI_1[i + 3]
                 = m_bac->data()->KmI_1[i + 3] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i + 3];
             break;
-        case Modules::MezzanineBoard::MTM_81: // 6I0U
+        case Device::MezzanineBoard::MTM_81: // 6I0U
             m_bacNewBlock.data()->KmI_1[i]
                 = m_bac->data()->KmI_1[0] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i];
             m_bacNewBlock.data()->KmI_1[i + 3]
@@ -149,11 +153,11 @@ Error::Msg Tune82ADC::calcIcoef5()
     {
         switch (m_typeM)
         {
-        case Modules::MezzanineBoard::MTM_82: // 3I3U
+        case Device::MezzanineBoard::MTM_82: // 3I3U
             m_bacNewBlock.data()->KmI_5[i + 3]
                 = m_bac->data()->KmI_5[i + 3] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i + 3];
             break;
-        case Modules::MezzanineBoard::MTM_81: // 6I0U
+        case Device::MezzanineBoard::MTM_81: // 6I0U
             m_bacNewBlock.data()->KmI_5[i]
                 = m_bac->data()->KmI_5[0] * mipdata.iPhase[i] / m_bd1->data()->IUefNat_filt[i];
             m_bacNewBlock.data()->KmI_5[i + 3]
@@ -171,7 +175,7 @@ Error::Msg Tune82ADC::showPreWarning()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tune82.png")));
+    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tune82.png"));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Задайте на РЕТОМ трехфазный режим токов и напряжений с углами сдвига"

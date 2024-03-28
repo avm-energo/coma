@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../module/modulesettings.h"
-
 #include <QTimeZone>
+#include <device/xml_settings.h>
 #include <gen/binary_file.h>
 
 namespace journals
@@ -35,7 +34,7 @@ struct EventView
     QString hexField;  ///< Дополнительное поле
 };
 
-using Descriptions = ModuleTypes::WorkJourMap;
+using Descriptions = Device::XmlDataTypes::WorkJourMap;
 using JournalData = QVector<QVector<QVariant>>;
 using EventBinaryFile = Files::BinaryFile<EventRecord>;
 

@@ -18,7 +18,7 @@ enum class ParseStatus : bool
 using WidgetDetail = std::pair<bool, quint32>;
 
 /// \brief Класс для хранения XML конфигурации, необходимой для работы с данными в формате S2.
-class ConfigStorage : public QObject, public Singleton<ConfigStorage>
+class ConfigStorage : public QObject
 {
     Q_OBJECT
 private:
@@ -30,7 +30,7 @@ private:
     ParseStatus m_status;
 
 public:
-    explicit ConfigStorage(token token, QObject *parent = nullptr);
+    explicit ConfigStorage(QObject *parent = nullptr);
 
     /// \brief Возвращает статус парсинга s2files.xml.
     ParseStatus getParseStatus() const;
@@ -55,6 +55,10 @@ public:
     /// \brief Возвращает std::map, где key - ID записи S2,
     /// value - уточнённые данные для отображения виджета с указанным S2 ID.
     const std::map<quint32, WidgetDetail> &getWidgetDetailMap() const;
+
+    /// \brief Возвращает ID записи S2 по её имени.
+    /// \details В случае, если данной записи не существует, функция вернёт ID равный 0.
+    quint32 getIdFor(const QString &name) const noexcept;
 
 public slots:
     /// \brief Слот для сохранения S2 ID по его имени.

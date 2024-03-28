@@ -18,7 +18,7 @@ public:
 
     TuneSequenceFile();
 
-    static void init();
+    static void init(const QString &UID);
     static void saveTuneSequenceFile(int step);
     static QVariant value(const QString &key, const QVariant &defaultvalue = QVariant());
     static bool contains(const QString &key);

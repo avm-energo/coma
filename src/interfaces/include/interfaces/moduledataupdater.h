@@ -18,7 +18,7 @@ public:
 
     explicit ModuleDataUpdater(AsyncConnection *connection, QObject *parent = nullptr);
 
-    void updateConnection(AsyncConnection *connection) noexcept;
+    // void updateConnection(AsyncConnection *connection) noexcept;
     AsyncConnection *currentConnection() noexcept;
 
     void requestUpdates();

@@ -13,7 +13,7 @@ class StartupKIVDialog : public AbstractStartupDialog
     Q_OBJECT
 
 public:
-    explicit StartupKIVDialog(QWidget *parent = nullptr);
+    explicit StartupKIVDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
     virtual ~StartupKIVDialog();
     // void SetupCor() override;
 

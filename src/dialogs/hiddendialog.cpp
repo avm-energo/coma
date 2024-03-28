@@ -9,10 +9,13 @@
 #include <QPainter>
 #include <QTabWidget>
 #include <QtSvg/QSvgRenderer>
+#include <device/current_device.h>
 
-HiddenDialog::HiddenDialog(const ModuleSettings &settings, QWidget *parent)
-    : UDialog(parent)
-    , m_settings(settings.getHiddenSettings())
+using namespace Device::XmlDataTypes;
+
+HiddenDialog::HiddenDialog(Device::CurrentDevice *device, QWidget *parent)
+    : UDialog(device, parent)
+    , m_settings(m_device->getConfigStorage()->getDeviceSettings().getHiddenSettings())
     , m_isGodMode(false)
     , m_isAlreadyFilled(false)
     , m_isSendedEnableCmd(false)
@@ -21,13 +24,12 @@ HiddenDialog::HiddenDialog(const ModuleSettings &settings, QWidget *parent)
     m_dataUpdater->disableUpdates();
     if (m_settings.empty())
         generateDefaultSettings();
-    prepareInternalData(settings.getSignals());
+    prepareInternalData(m_device->getConfigStorage()->getDeviceSettings().getSignals());
     setupUI();
 }
 
 void HiddenDialog::generateDefaultSettings()
 {
-    using namespace ModuleTypes;
     m_settings = {
         HiddenTab { "Базовая плата", ":/images/BMn.svg", "base", 1, //
             {
@@ -54,7 +56,7 @@ void HiddenDialog::generateDefaultSettings()
     };
 }
 
-void HiddenDialog::prepareInternalData(const ModuleTypes::SignalMap &sigMap)
+void HiddenDialog::prepareInternalData(const SignalMap &sigMap)
 {
     std::set<quint32> uniqueSignalIds;
     // Ищем сигналы, соотвествующие адресам, указанным в настройках
@@ -63,7 +65,7 @@ void HiddenDialog::prepareInternalData(const ModuleTypes::SignalMap &sigMap)
         for (auto &&widgetSettings : tabSettings.widgets)
         {
             auto search = std::find_if(sigMap.cbegin(), sigMap.cend(), //
-                [start = widgetSettings.address](const SigMapValue &element) -> bool {
+                [start = widgetSettings.address](const Device::SigMapValue &element) -> bool {
                     auto &signal = element.second;
                     auto acceptStart = signal.startAddr;
                     auto acceptEnd = acceptStart + signal.count;
@@ -137,7 +139,7 @@ void HiddenDialog::setupUI()
     setLayout(mainLayout);
 }
 
-QGroupBox *HiddenDialog::setupGroupBox(const ModuleTypes::HiddenTab &hiddenTab)
+QGroupBox *HiddenDialog::setupGroupBox(const HiddenTab &hiddenTab)
 {
     auto tabGroupBox = new QGroupBox(hiddenTab.title, this);
     tabGroupBox->setStyleSheet("background-color: white;"); // tabGroupBox непрозрачный
@@ -155,7 +157,7 @@ QGroupBox *HiddenDialog::setupGroupBox(const ModuleTypes::HiddenTab &hiddenTab)
         if (widget.visibility)
         {
             auto title = widget.title + ':';
-            if (widget.view == ModuleTypes::ViewType::Version)
+            if (widget.view == ViewType::Version)
             {
                 auto hLayout = new QHBoxLayout;
                 WDFunc::AddLabelAndLineeditH(this, hLayout, title, widget.name + 'm', false);
@@ -200,7 +202,7 @@ void HiddenDialog::updateUI()
     }
 }
 
-bool HiddenDialog::isTabEnabled(const ModuleTypes::HiddenTab &tabSettings) const noexcept
+bool HiddenDialog::isTabEnabled(const HiddenTab &tabSettings) const noexcept
 {
     bool enabled = false;
     if (tabSettings.flag != 1)
@@ -210,9 +212,9 @@ bool HiddenDialog::isTabEnabled(const ModuleTypes::HiddenTab &tabSettings) const
     return enabled;
 }
 
-void HiddenDialog::updateWidget(const bool enabled, const ModuleTypes::HiddenWidget &widget)
+void HiddenDialog::updateWidget(const bool enabled, const HiddenWidget &widget)
 {
-    if (widget.view == ModuleTypes::ViewType::Version)
+    if (widget.view == ViewType::Version)
     {
         WDFunc::SetEnabled(this, widget.name + 'm', enabled);
         WDFunc::SetEnabled(this, widget.name + 'l', enabled);
@@ -222,7 +224,7 @@ void HiddenDialog::updateWidget(const bool enabled, const ModuleTypes::HiddenWid
         WDFunc::SetEnabled(this, widget.name, enabled);
 }
 
-const ModuleTypes::HiddenWidget *HiddenDialog::findWidgetByAddress(const quint32 addr) const noexcept
+const HiddenWidget *HiddenDialog::findWidgetByAddress(const quint32 addr) const noexcept
 {
     for (auto &&tabSettings : m_settings)
     {
@@ -276,9 +278,9 @@ void HiddenDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
     }
 }
 
-void HiddenDialog::fillWidget(const quint32 value, const ModuleTypes::HiddenWidget &widgetData)
+void HiddenDialog::fillWidget(const quint32 value, const HiddenWidget &widgetData)
 {
-    if (widgetData.view == ModuleTypes::ViewType::Version)
+    if (widgetData.view == ViewType::Version)
     {
         QString tmps = QString::number(static_cast<quint8>((value & 0xFF000000) >> 24), 16);
         WDFunc::SetLEData(this, widgetData.name + 'm', tmps, "^[a-fA-F0-9]$");
@@ -291,14 +293,14 @@ void HiddenDialog::fillWidget(const quint32 value, const ModuleTypes::HiddenWidg
         WDFunc::SetLEData(this, widgetData.name, QString::number(value, 16), "^[a-fA-F0-9]{1,8}$");
 }
 
-quint32 HiddenDialog::getDataFrom(const ModuleTypes::HiddenWidget &widgetData)
+quint32 HiddenDialog::getDataFrom(const HiddenWidget &widgetData)
 {
     /// TODO: Обрабатывать widgetData.type или убрать совсем
     if (widgetData.visibility)
     {
         QString tmps;
         // Version fill back
-        if (widgetData.view == ModuleTypes::ViewType::Version)
+        if (widgetData.view == ViewType::Version)
         {
             WDFunc::LEData(this, widgetData.name + 'm', tmps);
             quint32 number = static_cast<quint32>(tmps.toInt()) << 24;
@@ -359,7 +361,6 @@ void HiddenDialog::fill()
 
 void HiddenDialog::write()
 {
-    using namespace ModuleTypes;
     constexpr std::size_t maxWidgetsCount = 16;
     std::vector<HiddenWidget> temp;
     temp.reserve(maxWidgetsCount);

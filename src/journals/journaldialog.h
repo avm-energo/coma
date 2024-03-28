@@ -14,11 +14,10 @@ class JournalDialog : public UDialog
 {
     Q_OBJECT
 public:
-    explicit JournalDialog(const ModuleSettings &settings, QWidget *parent = nullptr);
+    explicit JournalDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
     std::map<JournalType, JournalTabWidget *> m_journals;
-    std::reference_wrapper<const ModuleSettings> m_settings;
 
     /// \brief Метод для создания объектов журналов по полученным настройкам.
     /// \param settings[in] - настройки, полученные от DialogCreator.

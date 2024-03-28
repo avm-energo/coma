@@ -21,6 +21,7 @@ class PasswordLineEdit;
 class QMainWindow;
 class QStatusBar;
 class QWidget;
+class UDialog;
 
 class WDFunc
 {
@@ -161,14 +162,10 @@ public:
     }
 
     static bool SetLEColor(QWidget *parent, const QString &lename, const QColor &color);
-    [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBL(QWidget *parent,
-        const QString &text, const QString &lblcolor = "", const QString &lblname = "", const QPixmap *pm = Q_NULLPTR,
-        const QString &lbltip = "");
+
     static QLabel *NewLBL2(QWidget *parent, const QString &text, const QString &lblname = "",
-        const QPixmap *pm = Q_NULLPTR, const QString &lbltip = "");
-    [[deprecated("Use instead second version with global style sheet")]] static QLabel *NewLBLT(QWidget *parent,
-        const QString &text, const QString &lblname = "", const QString &lblstyle = "", const QString &lbltip = "",
-        bool Fixed = false);
+        const QPixmap *pm = nullptr, const QString &lbltip = "");
+    static QLabel *NewIcon(QWidget *parent, const QString &iconpath = "");
     static QLabel *NewLBLT2(QWidget *parent, const QString &text, const QString &lblname = "",
         const QString &lbltip = "", bool fixed = false);
 
@@ -332,8 +329,8 @@ public:
     static QString ChooseFileForOpen(QWidget *parent, QString mask);
     /// Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)";
     /// QString ext - расширение по умолчанию Output: QString filename
-    static QString ChooseFileForSave(
-        QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr = "");
+    static QString ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filename);
+    static QString ChooseFileForSave(UDialog *parent, const QString &mask, const QString &ext);
     static QString ChooseDirectoryForOpen(QWidget *parent);
 
     static QValidator *getRegExpValidator(const QString &pattern, QObject *parent = nullptr);

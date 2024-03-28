@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <gen/std_ext.h>
+#include <interfaces/conn/sync_connection.h>
 #include <interfaces/exec/query_executor_fabric.h>
 #include <interfaces/ifaces/ethernet.h>
 #include <interfaces/ifaces/serialport.h>
@@ -10,13 +11,13 @@
 namespace Interface
 {
 
-ConnectionManager::ConnectionManager(QWidget *parent)
+ConnectionManager::ConnectionManager(QObject *parent)
     : QObject(parent)
     , m_currentConnection(nullptr)
     , m_silentTimer(new QTimer(this))
     , m_reconnectMode(ReconnectMode::Loud)
     , m_isReconnectOccurred(false)
-    , m_isInitialBSIRequest(true)
+    , m_isInitial(true)
     , m_timeoutCounter(0)
     , m_timeoutMax(5)
     , m_errorCounter(0)
@@ -41,16 +42,19 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
             [this](const UsbHidSettings &settings) {
                 auto interface = new UsbHidPort(settings);
                 auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->getQueue(), settings);
+                m_currentConnection->setInterfaceType(IfaceType::USB);
                 m_context.init(interface, executor, Strategy::Sync, Qt::DirectConnection);
             },
             [this](const SerialPortSettings &settings) {
                 auto interface = new SerialPort(settings);
                 auto executor = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->getQueue(), settings);
+                m_currentConnection->setInterfaceType(IfaceType::RS485);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const IEC104Settings &settings) {
                 auto interface = new Ethernet(settings);
                 auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->getQueue(), settings);
+                m_currentConnection->setInterfaceType(IfaceType::Ethernet);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [](const EmulatorSettings &settings) {
@@ -76,12 +80,15 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
     {
         m_currentConnection->deleteLater();
         m_currentConnection = nullptr;
+        m_isInitial = true;
     }
+
     return m_currentConnection;
 }
 
 void ConnectionManager::setup(const BaseSettings &settings) noexcept
 {
+    m_currentConnection->setTimeout(settings.m_timeout);
     m_silentTimer->setInterval(settings.m_silentInterval);
     m_errorMax = settings.m_maxErrors;
     m_timeoutMax = settings.m_maxTimeouts;
@@ -110,7 +117,7 @@ void ConnectionManager::breakConnection()
 {
     m_context.reset();
     m_currentConnection = nullptr;
-    m_isInitialBSIRequest = true;
+    m_isInitial = true;
 }
 
 void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
@@ -124,7 +131,7 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
             reconnect();
         break;
     case InterfaceError::OpenError:
-        if (m_isInitialBSIRequest)
+        if (m_isInitial)
         {
             QString errMsg("Произошла ошибка открытия интерфейса. Disconnect...");
             qCritical() << errMsg;
@@ -136,14 +143,15 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
 
 void ConnectionManager::handleQueryExecutorTimeout()
 {
-    ++m_timeoutCounter;
-    if (m_isInitialBSIRequest)
+    if (m_isInitial)
     {
         QString errMsg("Превышено время ожидания блока BSI. Disconnect...");
         qCritical() << errMsg;
         emit connectFailed(errMsg);
         breakConnection();
     }
+
+    ++m_timeoutCounter;
     if (m_timeoutCounter > m_timeoutMax && !m_isReconnectOccurred)
         reconnect();
 }
@@ -153,12 +161,10 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
     // fast checking
     if (data.sigAdr == addr::bsiStartReg)
     {
-        if (m_isInitialBSIRequest)
-        {
-            m_isInitialBSIRequest = false;
-            emit connectSuccessfull();
-        }
-        else if (m_isReconnectOccurred)
+        if (m_isInitial)
+            m_isInitial = false;
+
+        if (m_isReconnectOccurred)
         {
             /// TODO: проверять BSI
             // при реконнекте отключить устройство и подключить другое -> что будет? (modbus same)

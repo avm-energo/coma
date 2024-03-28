@@ -1,5 +1,5 @@
 #pragma once
-#include "../module/modules.h"
+
 #include "filemanager.h"
 #include "trendview/trendviewdialog.h"
 

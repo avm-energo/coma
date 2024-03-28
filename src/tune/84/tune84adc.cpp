@@ -9,18 +9,23 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <interfaces/conn/active_connection.h>
 
 using namespace Interface;
 
-Tune84ADC::Tune84ADC(S2::Configuration &config, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+Tune84ADC::Tune84ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
+    , m_bac(new BacA284(this))
+    , m_bac2(new Bac2A284(this))
+    , m_bda(new BdaA284(this))
+    , m_bdain(new BdaIn(this))
+    , m_bd0(new Bd0(this))
 {
-    m_bac = new BacA284(this);
-    m_bac2 = new Bac2A284(this);
-    m_bda = new BdaA284(this);
-    m_bdain = new BdaIn(this);
-    m_bd0 = new Bd0(this);
+    m_bac->setup(m_device->getUID(), m_sync);
+    m_bac2->setup(m_device->getUID(), m_sync);
+    m_bda->setup(m_device->getUID(), m_sync);
+    m_bdain->setup(m_device->getUID(), m_sync);
+    m_bd0->setup(m_device->getUID(), m_sync);
+
     setBac(m_bac);
     setBac(m_bac2);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
@@ -65,7 +70,7 @@ Error::Msg Tune84ADC::showPreWarning()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
+    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"

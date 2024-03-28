@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QTimer>
-#include <QWidget>
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/connectioncontext.h>
 #include <interfaces/types/settingstypes.h>
@@ -32,7 +31,7 @@ private:
     QTimer *m_silentTimer;
     QMetaObject::Connection m_connBSI;
     ReconnectMode m_reconnectMode;
-    bool m_isReconnectOccurred, m_isInitialBSIRequest;
+    bool m_isReconnectOccurred, m_isInitial;
     quint16 m_timeoutCounter, m_timeoutMax;
     quint16 m_errorCounter, m_errorMax;
 
@@ -40,13 +39,11 @@ private:
     void setup(const BaseSettings &settings) noexcept;
 
 public:
-    explicit ConnectionManager(QWidget *parent = nullptr);
+    explicit ConnectionManager(QObject *parent = nullptr);
     AsyncConnection *createConnection(const ConnectStruct &connectionData);
     void setReconnectMode(const ReconnectMode newMode) noexcept;
 
 signals:
-    /// \brief Сигнал, который вызывается, если соединение к устройству произошло успешно.
-    void connectSuccessfull();
     /// \brief Сигнал, который вызывается, если соединение к устройству провалилось.
     void connectFailed(const QString &message);
     /// \brief Сигнал, который вызывается при переподключении к устройству.

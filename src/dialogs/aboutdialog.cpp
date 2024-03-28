@@ -12,7 +12,7 @@ void AboutDialog::setupUI()
     setWindowTitle("О программе");
     auto hlyout = new QHBoxLayout;
     auto lyout = new QVBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":icons/avm-energo.svg")), 0);
+    hlyout->addWidget(WDFunc::NewIcon(this, ":icons/avm-energo.svg"), 0);
     for (const auto &str : qAsConst(m_lines))
     {
         auto label = WDFunc::NewLBL2(this, str);

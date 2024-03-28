@@ -1,13 +1,12 @@
 #include "wd_func.h"
 
 #include "../models/etablemodel.h"
-#include "../module/filehelper.h"
-#include "../module/modules.h"
 #include "edoublespinbox.h"
 #include "epopup.h"
 #include "etableview.h"
 #include "ipctrl.h"
 #include "passwordlineedit.h"
+#include "udialog.h"
 
 #include <QApplication>
 #include <QFileDialog>
@@ -90,24 +89,6 @@ bool WDFunc::SetLEColor(QWidget *parent, const QString &lename, const QColor &co
     return true;
 }
 
-QLabel *WDFunc::NewLBL(QWidget *parent, const QString &text, const QString &lblcolor, const QString &lblname,
-    const QPixmap *pm, const QString &lbltip)
-{
-    auto lbl = new QLabel(parent);
-    lbl->setText(text);
-    if (!lblname.isEmpty())
-        lbl->setObjectName(lblname);
-    if (!lblcolor.isEmpty())
-    {
-        auto tmps = "QLabel {background-color: " + lblcolor + ";}";
-        lbl->setStyleSheet(tmps);
-    }
-    if (pm != nullptr)
-        lbl->setPixmap(*pm);
-    lbl->setToolTip(lbltip);
-    return lbl;
-}
-
 QLabel *WDFunc::NewLBL2(
     QWidget *parent, const QString &text, const QString &lblname, const QPixmap *pm, const QString &lbltip)
 {
@@ -123,25 +104,13 @@ QLabel *WDFunc::NewLBL2(
     return lbl;
 }
 
-/*! \brief Копирует содержимое из исходной области памяти в целевую область память
- *  \param w Родитель будущего виджета
- *  \param text Текст для QLabel
- *  \param lblname Имя для QLabel
- *  \param lblstyle StyleSheet для QLabel
- *  \param lbltip ToolTip для QLabel
- *  \param Fixed Фиксированного размера?
- */
-QLabel *WDFunc::NewLBLT(QWidget *parent, const QString &text, const QString &lblname, const QString &lblstyle,
-    const QString &lbltip, bool Fixed)
+QLabel *WDFunc::NewIcon(QWidget *parent, const QString &iconpath)
 {
-    auto lbl = new QLabel(parent);
-    lbl->setText(text);
-    lbl->setObjectName(lblname);
-    lbl->setStyleSheet(lblstyle);
-    lbl->setToolTip(lbltip);
-    if (Fixed == true)
-        lbl->setFixedSize(120, 15);
-    return lbl;
+    auto label = new QLabel(parent);
+    label->setStyleSheet("QLabel {border: none;}");
+    if (!iconpath.isEmpty())
+        label->setPixmap(QPixmap(iconpath));
+    return label;
 }
 
 QLabel *WDFunc::NewLBLT2(
@@ -483,6 +452,10 @@ QStatusBar *WDFunc::NewSB(QWidget *parent)
     layout->setSpacing(parent->width() / 20);
     layout->setContentsMargins(1, 1, 1, 1);
 
+    auto queueSize = new QLabel(bar);
+    queueSize->setObjectName("QueueSize");
+    layout->addWidget(queueSize);
+
     auto msgModel = new QLabel(bar);
     msgModel->setObjectName("Model");
     layout->addWidget(msgModel);
@@ -685,21 +658,26 @@ QString WDFunc::ChooseFileForOpen(QWidget *parent, QString mask)
     return filename;
 }
 
-QString WDFunc::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr)
+QString WDFunc::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filename)
 {
     auto workPath = StdFunc::GetHomeDir();
-    auto tmps = Files::ChooseFileForSave(FileHelper::ChooseFileForSave(ext), filenamestr);
     auto dlg = new QFileDialog(parent);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    auto filename = dlg->getSaveFileName(parent, "Сохранить файл", workPath + "/" + tmps, mask, Q_NULLPTR);
-    if (!filename.isEmpty())
+    auto fullpath = workPath + "/" + filename + "." + ext;
+    auto filepath = dlg->getSaveFileName(parent, "Сохранить файл", fullpath, mask, Q_NULLPTR);
+    if (!filepath.isEmpty())
     {
-        QFileInfo info(filename);
+        QFileInfo info(filepath);
         StdFunc::SetHomeDir(info.absolutePath());
     }
     dlg->close();
-    return filename;
+    return filepath;
+}
+
+QString WDFunc::ChooseFileForSave(UDialog *parent, const QString &mask, const QString &ext)
+{
+    return WDFunc::ChooseFileForSave(parent, mask, ext, parent->getFilenameForDevice());
 }
 
 QString WDFunc::ChooseDirectoryForOpen(QWidget *parent)

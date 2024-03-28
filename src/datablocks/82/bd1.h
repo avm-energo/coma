@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../datablock.h"
-#include "../module/modules.h"
+
+#include <device/device_list.h>
 
 class Bd182 : public DataBlock
 {
@@ -25,7 +26,7 @@ public:
 
     float PHI[3]; // угол между током и напряжением
 
-    Bd182(Modules::MezzanineBoard typem, QObject *parent = nullptr);
+    Bd182(Device::MezzanineBoard typem, QObject *parent = nullptr);
 
     void setupValuesDesc() override;
     void specificUpdateWidget() override;
@@ -37,7 +38,7 @@ public:
 
 private:
     std::unique_ptr<BlockData> m_blockData;
-    Modules::MezzanineBoard m_typeM;
+    Device::MezzanineBoard m_typeM;
 
     Error::Msg checkAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi,
         double utol, double itol, double pht, double pt, double ct);

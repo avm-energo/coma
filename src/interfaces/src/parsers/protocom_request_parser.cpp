@@ -274,6 +274,10 @@ void ProtocomRequestParser::processFileFromDisk(const S2::FilesEnum fileNum)
         return;
     }
 
+#if defined(Q_OS_LINUX)
+    QStringList drives { "/media" };
+    QStringList files = Files::SearchForFile(drives, fileToFind, true);
+#elif defined(Q_OS_WINDOWS)
     QStringList drives = Files::Drives();
     if (drives.isEmpty())
     {
@@ -281,6 +285,7 @@ void ProtocomRequestParser::processFileFromDisk(const S2::FilesEnum fileNum)
         return;
     }
     QStringList files = Files::SearchForFile(drives, fileToFind);
+#endif
     if (files.isEmpty())
     {
         qCritical() << Error::FileNameError;

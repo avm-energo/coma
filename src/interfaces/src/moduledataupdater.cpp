@@ -1,20 +1,19 @@
 #include "interfaces/moduledataupdater.h"
 
-ModuleDataUpdater::ModuleDataUpdater(AsyncConnection *connection, QObject *parent) : QObject(parent), m_conn(nullptr)
+ModuleDataUpdater::ModuleDataUpdater(AsyncConnection *connection, QObject *parent)
+    : QObject(parent), m_conn(connection), m_updatesEnabled(true)
 {
-    updateConnection(connection);
+    Q_ASSERT(connection != nullptr);
+    enableFloatDataUpdates();
+    enableSinglePointDataUpdates();
+    enableBitStringDataUpdates();
 }
 
-void ModuleDataUpdater::updateConnection(AsyncConnection *connection) noexcept
-{
-    m_conn = connection;
-    if (m_conn != nullptr)
-    {
-        enableFloatDataUpdates();
-        enableSinglePointDataUpdates();
-        enableBitStringDataUpdates();
-    }
-}
+// void ModuleDataUpdater::updateConnection(AsyncConnection *connection) noexcept
+//{
+//    m_conn = connection;
+//    if (m_conn != nullptr) { }
+//}
 
 AsyncConnection *ModuleDataUpdater::currentConnection() noexcept
 {

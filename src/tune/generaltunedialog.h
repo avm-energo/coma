@@ -23,13 +23,13 @@ public:
     int m_calibrSteps;
     QList<TuneDialogStruct> m_dialogList;
 
-    GeneralTuneDialog(S2::Configuration &workConfig, QWidget *parent = nullptr);
+    explicit GeneralTuneDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
     void SetupUI();
     virtual void prepareReport();
     int addWidgetToTabWidget(QWidget *w, const QString &caption);
 
 protected:
-    S2::Configuration &config;
+    // S2::Configuration &config;
     TuneReporter *m_reporter;
 
 private:

@@ -5,12 +5,12 @@
 
 #include <QGridLayout>
 #include <QGroupBox>
-//#include <QMessageBox>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <tuple>
 
-StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(parent)
+StartupKIVDialog::StartupKIVDialog(Device::CurrentDevice *device, QWidget *parent)
+    : AbstractStartupDialog(device, parent)
 {
     // Default initialization
     // Do not need set null value

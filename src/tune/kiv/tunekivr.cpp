@@ -9,12 +9,12 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 
-TuneKIVR::TuneKIVR(S2::Configuration &config, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+TuneKIVR::TuneKIVR(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent), m_bac(new Bac2A284(this)), m_bda(new BdaA284(this))
 {
+    m_bac->setup(m_device->getUID(), m_sync);
+    m_bda->setup(m_device->getUID(), m_sync);
 
-    m_bac = new Bac2A284(this);
-    m_bda = new BdaA284(this);
     setBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
@@ -38,7 +38,7 @@ Error::Msg TuneKIVR::showPreWarning()
     auto widget = new QWidget(this);
     auto layout = new QVBoxLayout;
 
-    layout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")), 0);
+    layout->addWidget(WDFunc::NewIcon(this, ":/tunes/tunekiv1.png"), 0);
     layout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     layout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока "

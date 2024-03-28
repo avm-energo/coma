@@ -5,9 +5,8 @@
 namespace S2
 {
 
-ConfigStorage::ConfigStorage(token token, QObject *parent) : QObject(parent), m_status(ParseStatus::NotYetParsed)
+ConfigStorage::ConfigStorage(QObject *parent) : QObject(parent), m_status(ParseStatus::NotYetParsed)
 {
-    Q_UNUSED(token);
 }
 
 ParseStatus ConfigStorage::getParseStatus() const
@@ -43,6 +42,15 @@ const std::map<quint32, QString> &ConfigStorage::getConfigTabs() const
 const std::map<quint32, WidgetDetail> &ConfigStorage::getWidgetDetailMap() const
 {
     return m_widgetDetailMap;
+}
+
+quint32 ConfigStorage::getIdFor(const QString &name) const noexcept
+{
+    auto search = m_idByName.find(name);
+    if (search == m_idByName.cend())
+        return 0;
+    else
+        return search->second;
 }
 
 void ConfigStorage::nameDataReceive(const quint32 id, const QString &name)

@@ -11,8 +11,8 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-Tune84Check::Tune84Check(S2::Configuration &config, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+Tune84Check::Tune84Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
 {
     setupUI();
 }
@@ -29,8 +29,7 @@ Error::Msg Tune84Check::showScheme()
 {
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
+    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
@@ -69,7 +68,8 @@ Error::Msg Tune84Check::showScheme()
 
 Error::Msg Tune84Check::check()
 {
-    BdaA284 *bda = new BdaA284;
+    BdaA284 *bda = new BdaA284(this);
+    bda->setup(m_device->getUID(), m_sync);
     bda->readAndUpdate();
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)

@@ -5,7 +5,7 @@ project(widgets LANGUAGES CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network Widgets Xml
+  COMPONENTS Widgets Svg Xml
   REQUIRED)
 
 find_package(Boost
@@ -20,15 +20,10 @@ add_library(
   ${files_cpp} ${files_h})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Xml
-  Boost::headers
-  s2
-  settings
-  interfaces
-  dialogs
+  Qt${QT_VERSION_MAJOR}::Svg
+  Boost::headers device settings models
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)

@@ -5,7 +5,7 @@
 #include <QtMath>
 #include <gen/stdfunc.h>
 
-Bd182::Bd182(Modules::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
+Bd182::Bd182(Device::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
 {
     m_typeM = typem;
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
@@ -14,7 +14,7 @@ Bd182::Bd182(Modules::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
 
 void Bd182::setupValuesDesc()
 {
-    int precision = (m_typeM != Modules::MezzanineBoard::MTM_81) ? 3 : 4;
+    int precision = (m_typeM != Device::MezzanineBoard::MTM_81) ? 3 : 4;
     addNewValue("Частота:", "Частота сигналов, Гц", &m_blockData->Frequency, 3);
     addNewGroup("Истинные действующие значения сигналов", "IUNF", 0, 6, &m_blockData->IUefNat_filt[0], precision);
     addNewGroup("Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы", "IUF", 6, 6,
@@ -64,13 +64,13 @@ Error::Msg Bd182::checkValues(float voltage, float current, float degree, float 
     Error::Msg res;
     switch (m_typeM)
     {
-    case Modules::MezzanineBoard::MTM_81: // 2t0n
+    case Device::MezzanineBoard::MTM_81: // 2t0n
         res = checkAnalogValues(current, current, 0.0, 0.0, 0.0, 0.0, 0.0, utol, itol, ptol, dtol, ctol);
         break;
-    case Modules::MezzanineBoard::MTM_82:
+    case Device::MezzanineBoard::MTM_82:
         res = checkAnalogValues(voltage, current, p, q, s, phi, qCos(phi), utol, itol, ptol, dtol, ctol);
         break;
-    case Modules::MezzanineBoard::MTM_83: // 0t2n
+    case Device::MezzanineBoard::MTM_83: // 0t2n
         res = checkAnalogValues(voltage, voltage, 0.0, 0.0, 0.0, 0.0, 0.0, utol, itol, ptol, dtol, ctol);
         break;
     default:
@@ -82,8 +82,8 @@ Error::Msg Bd182::checkValues(float voltage, float current, float degree, float 
 Error::Msg Bd182::checkAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi,
     double utol, double itol, double pht, double pt, double ct)
 {
-    double it = (m_typeM == Modules::MezzanineBoard::MTM_83) ? utol : itol; // 0t2n
-    double ut = (m_typeM == Modules::MezzanineBoard::MTM_81) ? itol : utol; // 2t0n
+    double it = (m_typeM == Device::MezzanineBoard::MTM_83) ? utol : itol; // 0t2n
+    double ut = (m_typeM == Device::MezzanineBoard::MTM_81) ? itol : utol; // 2t0n
     const QStringList valueNames = { "частоты", "напряжения ф. А", "напряжения ф. В", "напряжения ф. С", "тока ф. А",
         "тока ф. В", "тока ф. С", "напряжения ф. А", "напряжения ф. В", "напряжения ф. С", "тока ф. А", "тока ф. В",
         "тока ф. С", "угла uA, uA", "угла uA, uB", "угла uA, uC", "угла uA, iA", "угла uA, iB", "угла uA, iC",

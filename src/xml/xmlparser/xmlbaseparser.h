@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../ctti/type_id.hpp"
 #include "../xmltags.h"
 
 #include <QObject>
 #include <QtXml>
+#include <ctti/type_id.hpp>
 
 namespace Xml
 {

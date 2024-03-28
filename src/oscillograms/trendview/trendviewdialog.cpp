@@ -27,10 +27,10 @@
 
 #include "trendviewdialog.h"
 
-#include "../../module/modules.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/signalchoosewidget.h"
 #include "../../widgets/wd_func.h"
+#include "../osc_ids.h"
 
 #include <QAction>
 #include <QPen>

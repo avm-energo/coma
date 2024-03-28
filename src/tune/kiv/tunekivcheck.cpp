@@ -14,10 +14,9 @@
 #include <QVBoxLayout>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-#include <interfaces/conn/active_connection.h>
 
-TuneKIVCheck::TuneKIVCheck(S2::Configuration &config, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+TuneKIVCheck::TuneKIVCheck(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
 {
     setupUI();
 }
@@ -41,7 +40,7 @@ Error::Msg TuneKIVCheck::showScheme()
 {
     auto widget = new QWidget(this);
     auto layout = new QVBoxLayout;
-    layout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
+    layout->addWidget(WDFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
     layout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     layout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока "
@@ -101,7 +100,8 @@ Error::Msg TuneKIVCheck::check()
     while (tmr->elapsed() < TIMEFORBDATOSETINMS)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     ww->Stop();
-    BdaA284 *bda = new BdaA284;
+    BdaA284 *bda = new BdaA284(this);
+    bda->setup(m_device->getUID(), m_sync);
     bda->readAndUpdate();
     auto s2file = config.toByteArray();
 

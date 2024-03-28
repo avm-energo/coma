@@ -1,36 +1,38 @@
 #include "testmodule.h"
 
-#include "../../module/board.h"
+//#include "../../module/board.h"
 #include "testdata.h"
 
 #include <QtXml>
+#include <device/bsi.h>
 #include <gen/stdfunc.h>
-//#include <interfaces/conn/iec104.h>
-//#include <interfaces/conn/modbus.h>
-//#include <interfaces/conn/protocom.h>
 #include <interfaces/types/modbus_types.h>
 #include <interfaces/types/protocom_types.h>
 #include <s2/s2datamanager.h>
 
 TestModule::TestModule(QObject *parent)
-    : QObject(parent), storage(ConfigStorage::GetInstance()), s2Manager(new S2::DataManager(this))
+    : QObject(parent)
+    , m_storage(new Device::ConfigStorage(this))
+    , m_s2manager(new S2::DataManager(this))
+    , m_xmlParser(new Xml::ModuleParser(this))
+    , m_parseStatus(true)
 {
 }
 
-int TestModule::getGroupsCount(const ModuleTypes::SectionList &list)
+int TestModule::getGroupsCount(const SectionList &list)
 {
     auto groupCount = std::accumulate(list.cbegin(), list.cend(), 0, //
-        [](int value, const ModuleTypes::Section &section)           //
+        [](int value, const Section &section)                        //
         {                                                            //
             return value + section.sgMap.count();                    //
         });                                                          //
     return groupCount;                                               //
 }
 
-std::size_t TestModule::getWidgetsCount(const ModuleTypes::SectionList &list)
+std::size_t TestModule::getWidgetsCount(const SectionList &list)
 {
     auto widgetCount = std::accumulate(list.cbegin(), list.cend(), 0ll,      //
-        [](std::size_t value, const ModuleTypes::Section &section)           //
+        [](std::size_t value, const Section &section)                        //
         {                                                                    //
             const auto &map = section.sgMap;                                 //
             auto innerCount = std::accumulate(map.cbegin(), map.cend(), 0ll, //
@@ -42,7 +44,7 @@ std::size_t TestModule::getWidgetsCount(const ModuleTypes::SectionList &list)
     return widgetCount;                                                      //
 }
 
-int TestModule::getAlarmsCount(const ModuleTypes::AlarmMap &map)
+int TestModule::getAlarmsCount(const AlarmMap &map)
 {
     auto alarmCount = std::accumulate(map.cbegin(), map.cend(), 0, //
         [](int count, auto &&alarm)                                //
@@ -77,6 +79,34 @@ void TestModule::createInterfaceContext(const Interface::IfaceType &ifaceType)
 
 void TestModule::initTestCase()
 {
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::startNewConfig,       //
+        m_s2manager, &S2::DataManager::startNewConfig);                     //
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::configDataSending,    //
+        m_s2manager, &S2::DataManager::configDataReceive);                  //
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::configNameSending,    //
+        m_s2manager, &S2::DataManager::configNameReceive);                  //
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::signalDataSending,    //
+        m_storage, &Device::ConfigStorage::signalDataReceive);              //
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::tabDataSending,       //
+        m_storage, &Device::ConfigStorage::tabDataReceive);                 //
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::sectionDataSending,   //
+        m_storage, &Device::ConfigStorage::sectionDataReceive);             //
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::alarmDataSending,     //
+        m_storage, &Device::ConfigStorage::alarmDataReceive);               //
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::workJourDataSending,  //
+        m_storage, &Device::ConfigStorage::workJourDataReceive);            //
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::measJourDataSending,  //
+        m_storage, &Device::ConfigStorage::measJourDataReceive);            //
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::protocolGroupSending, //
+        m_storage, &Device::ConfigStorage::protocolGroupReceived);          //
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::hiddenTabDataSending, //
+        m_storage, &Device::ConfigStorage::hiddenTabDataReceived);          //
+
+    QObject::connect(m_xmlParser, &Xml::ModuleParser::parseError, //
+        this, [this](const QString &err) {
+            qCritical() << err;
+            m_parseStatus = false;
+        });
 }
 
 void TestModule::cleanupTestCase()
@@ -91,10 +121,9 @@ void TestModule::cleanupTestCase()
 
 void TestModule::checkA284()
 {
-    Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
-    auto module = new Module(false, bsi, this);
-    QVERIFY(module->loadSettings(storage, *s2Manager));
-    auto &settings = storage.getModuleSettings();
+    Device::BlockStartupInfo bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
+    m_xmlParser->parse(bsi.MTypeB, bsi.MTypeM);
+    auto &settings = m_storage->getDeviceSettings();
     // Journals comparing
     auto workJourSize = settings.getWorkJours().size();
     QCOMPARE(workJourSize, a284::workJours);
@@ -104,8 +133,8 @@ void TestModule::checkA284()
     auto alarmsCount = getAlarmsCount(settings.getAlarms());
     QCOMPARE(alarmsCount, a284::alarms);
     // Highlights
-    QCOMPARE(settings.getHighlights(Modules::AlarmType::Critical).size(), a284::critHighlights);
-    QCOMPARE(settings.getHighlights(Modules::AlarmType::Warning).size(), a284::warnHighlights);
+    QCOMPARE(settings.getHighlights(AlarmType::Critical).size(), a284::critHighlights);
+    QCOMPARE(settings.getHighlights(AlarmType::Warning).size(), a284::warnHighlights);
     // Sections comparing
     const auto &sections = settings.getSections();
     QCOMPARE(sections.size(), a284::sections);
@@ -117,29 +146,23 @@ void TestModule::checkA284()
 
 void TestModule::checkA284USB()
 {
-    // Interface settings
-    createInterfaceContext(Interface::IfaceType::USB);
-    Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
-    auto module = new Module(false, bsi, this);
-    QVERIFY(module->loadSettings(storage, *s2Manager));
+    Device::BlockStartupInfo bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
+    m_xmlParser->parse(bsi.MTypeB, bsi.MTypeM);
+    QVERIFY(m_parseStatus);
 }
 
 void TestModule::checkA284Eth()
 {
-    createInterfaceContext(Interface::IfaceType::Ethernet);
-    Board::GetInstance().setInterfaceType(Interface::IfaceType::Ethernet);
-    Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
-    auto module = new Module(false, bsi, this);
-    QVERIFY(module->loadSettings(storage, *s2Manager));
+    Device::BlockStartupInfo bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
+    m_xmlParser->parse(bsi.MTypeB, bsi.MTypeM);
+    QVERIFY(m_parseStatus);
 }
 
 void TestModule::checkA284Modbus()
 {
-    createInterfaceContext(Interface::IfaceType::RS485);
-    Board::GetInstance().setInterfaceType(Interface::IfaceType::RS485);
-    Modules::StartupInfoBlock bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
-    auto module = new Module(false, bsi, this);
-    QVERIFY(module->loadSettings(storage, *s2Manager));
+    Device::BlockStartupInfo bsi = { 0xA2, 0x84, 0, StdFunc::StrToVer(a284::version) };
+    m_xmlParser->parse(bsi.MTypeB, bsi.MTypeM);
+    QVERIFY(m_parseStatus);
 }
 
 /*

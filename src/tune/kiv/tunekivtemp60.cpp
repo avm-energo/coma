@@ -1,6 +1,5 @@
 #include "tunekivtemp60.h"
 
-#include "../../module/board.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
@@ -16,9 +15,16 @@
 
 using namespace Interface;
 
-TuneKIVTemp60::TuneKIVTemp60(S2::Configuration &config, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+TuneKIVTemp60::TuneKIVTemp60(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
+    , m_bac(new BacA284(this))
+    , m_bdain(new BdaIn(this))
+    , m_bd0(new Bd0(this))
 {
+    m_bac->setup(m_device->getUID(), m_sync);
+    m_bdain->setup(m_device->getUID(), m_sync);
+    m_bd0->setup(m_device->getUID(), m_sync);
+
     TuneSequenceFile::clearTuneDescrVector();
     for (int i = 0; i < 6; ++i)
         TuneSequenceFile::addItemToTuneDescrVector("u_p" + QString::number(i), m_midTuneStruct.u[i]);
@@ -30,9 +36,6 @@ TuneKIVTemp60::TuneKIVTemp60(S2::Configuration &config, int tuneStep, QWidget *p
     TuneSequenceFile::addItemToTuneDescrVector("yet_p", m_midTuneStruct.yet);
 
     // CKIV = ckiv;
-    m_bac = new BacA284(this);
-    m_bdain = new BdaIn(this);
-    m_bd0 = new Bd0(this);
     setBac(m_bac);
     addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     addWidgetToTabWidget(m_bdain->widget(), "Текущие данные");
@@ -124,17 +127,16 @@ Error::Msg TuneKIVTemp60::waitForTempToRise()
 
 Error::Msg TuneKIVTemp60::showSignalsDialog()
 {
-    //    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-
     QWidget *w = new QWidget(this);
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
+    QVBoxLayout *lyout = new QVBoxLayout;
+    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
         "по напряжению 60 В, по току - 2,5 А;"));
     lyout->addWidget(WDFunc::newHLine(w));
+
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(WDFunc::NewLBL2(w, "РЕТОМ-51"));
@@ -155,22 +157,6 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
 
     if (!EMessageBox::next(this, w))
         CancelTune();
-
-    //    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
-    //    lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых
-    //    картинок;")); lyout->addWidget(WDFunc::NewLBL2(this,
-    //        "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
-    //        "и напряжения в однофазной сети переменного тока, установите предел измерения"
-    //        "по напряжению 60 В, по току - 2,5 А;"));
-    //    lyout->addWidget(WDFunc::NewLBL2(this,
-    //        "3. Задайте на РЕТОМ-51 или имитаторе АВМ-КИВ трёхфазный режим токов и напряжений (Uabc, Iabc)"
-    //        "Угол между токами и напряжениями: 89.9 град. (tg 2 % в имитаторе),\n"
-    //        "Значения напряжений: 57.75 В, токов: 140 мА"));
-    //    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [&dlg] { dlg->close(); }));
-    //    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [&dlg] { dlg->close(); }));
-    //    dlg->setLayout(lyout);
-    //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
-    //    dlg->exec();
     return Error::Msg::NoError;
 }
 

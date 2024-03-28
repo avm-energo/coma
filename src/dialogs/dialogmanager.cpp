@@ -1,12 +1,12 @@
 #include "dialogmanager.h"
 
-DialogManager::DialogManager(const ModuleSettings &settings, //
-    S2DataManager &s2DataManager, S2RequestService &s2ReqService, QWidget *parent)
-    : UDialog(parent)
+DialogManager::DialogManager(QWidget *parent)
+    : QWidget(parent)
     , m_currentDialogIndex(0)
-    , m_dlgCreator(new DialogCreator(settings, Board::GetInstance(), s2DataManager, s2ReqService, this))
+    , m_dlgCreator { nullptr }
     , m_workspace(new QStackedWidget(this))
     , m_sidebar(new QListWidget(this))
+    , m_reqTimer(new QTimer(this))
 {
     // Init settings for sidebar and main workspace.
     auto sizePoliсy = m_workspace->sizePolicy();
@@ -16,6 +16,9 @@ DialogManager::DialogManager(const ModuleSettings &settings, //
     sizePoliсy.setRetainSizeWhenHidden(true);
     m_sidebar->setSizePolicy(sizePoliсy);
     connect(m_sidebar.get(), &QListWidget::currentRowChanged, m_workspace.get(), &QStackedWidget::setCurrentIndex);
+    /// TODO: Вынести интервал запроса в настройки
+    m_reqTimer->setInterval(1000);
+    connect(m_reqTimer.get(), &QTimer::timeout, this, &DialogManager::reqUpdate);
     hideUI();
 }
 
@@ -38,7 +41,9 @@ QPair<QListWidget *, QStackedWidget *> DialogManager::getUI()
 
 void DialogManager::dialogChanged(int newIndex)
 {
+    Q_ASSERT(m_dlgCreator.get() != nullptr);
     auto &dialogs = m_dlgCreator->getDialogs();
+    // Индекс -1 норма, когда удаляются диалоги
     if (newIndex >= 0 && newIndex < dialogs.size())
     {
         auto oldDialog = dialogs[m_currentDialogIndex];
@@ -48,26 +53,25 @@ void DialogManager::dialogChanged(int newIndex)
         newDialog->setEnabled(true);
         m_currentDialogIndex = newIndex;
     }
-    // Индекс -1 норма, когда удаляются диалоги
-    // else
-    //    qWarning() << "Неправильный индекс диалога: " << newIndex;
 }
 
 void DialogManager::reqUpdate()
 {
+    Q_ASSERT(m_dlgCreator.get() != nullptr);
     auto currentDialog = m_dlgCreator->getDialogs()[m_currentDialogIndex];
     currentDialog->reqUpdate();
 }
 
-void DialogManager::setupUI(const AppConfiguration appCfg, const QSize size)
+void DialogManager::setupUI(Device::CurrentDevice *device, const AppConfiguration appCfg, const QSize size)
 {
     Q_ASSERT(m_workspace->count() == 0);
+    m_dlgCreator.reset(new DialogCreator(device, this));
     m_dlgCreator->createDialogs(appCfg);
     for (auto &dialog : m_dlgCreator->getDialogs())
     {
         dialog->engine()->setUpdatesEnabled(false);
         dialog->uponInterfaceSetting();
-        dialog->updateConnection(m_dataUpdater->currentConnection());
+        // dialog->updateConnection(m_dataUpdater->currentConnection());
         auto item = new QListWidgetItem(dialog->getCaption(), m_sidebar.get());
         item->setSizeHint(QSize(0, size.height() / 20));
         item->setTextAlignment(Qt::AlignCenter);
@@ -79,11 +83,14 @@ void DialogManager::setupUI(const AppConfiguration appCfg, const QSize size)
     connect(m_workspace.get(), &QStackedWidget::currentChanged, this, &DialogManager::dialogChanged);
     m_sidebar->setMinimumWidth(size.width() / 6);
     m_sidebar->setMaximumWidth(size.width() / 5);
+
     showUI();
+    m_reqTimer->start();
 }
 
 void DialogManager::clearDialogs()
 {
+    m_reqTimer->stop();
     hideUI();
     while (m_workspace->count())
     {

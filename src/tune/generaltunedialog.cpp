@@ -1,6 +1,5 @@
 #include "generaltunedialog.h"
 
-#include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 #include "tunereporter.h"
@@ -15,11 +14,11 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-GeneralTuneDialog::GeneralTuneDialog(S2::Configuration &workConfig, QWidget *parent)
-    : UDialog(parent), config(workConfig), m_reporter(new TuneReporter(this))
+GeneralTuneDialog::GeneralTuneDialog(Device::CurrentDevice *device, QWidget *parent)
+    : UDialog(device, parent), m_reporter(new TuneReporter(this))
 {
     m_tuneTabWidget = new TuneTabWidget;
-    TuneSequenceFile::init();
+    TuneSequenceFile::init(m_device->getUID());
     m_calibrSteps = 0;
 }
 

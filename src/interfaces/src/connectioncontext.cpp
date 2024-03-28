@@ -81,7 +81,7 @@ bool ConnectionContext::run(AsyncConnection *connection)
     QObject::connect(m_executor, &DefaultQueryExecutor::responseSend, //
         connection, &AsyncConnection::responseHandle, Qt::DirectConnection);
     QObject::connect(m_iface, &BaseInterface::stateChanged, connection, //
-        &AsyncConnection::stateChanged, Qt::QueuedConnection);
+        &AsyncConnection::setState, Qt::QueuedConnection);
     // Обновление описания протокола
     QObject::connect(connection, &AsyncConnection::protocolSettingsUpdated, //
         m_executor, &DefaultQueryExecutor::receiveProtocolDescription, Qt::QueuedConnection);
@@ -110,10 +110,13 @@ void ConnectionContext::reset()
 {
     if (isValid())
     {
-        m_iface->close();
+        QEventLoop waiter;
+        QObject::connect(m_iface, &BaseInterface::finished, &waiter, &QEventLoop::quit);
+        QObject::connect(m_executor, &DefaultQueryExecutor::finished, &waiter, &QEventLoop::quit);
         m_executor->stop();
-        if (m_strategy == Strategy::Sync)
-            StdFunc::Wait(20);
+        waiter.exec();
+        m_iface->close();
+        waiter.exec();
         m_iface = nullptr;
         m_executor = nullptr;
     }

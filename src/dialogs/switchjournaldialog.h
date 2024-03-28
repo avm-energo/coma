@@ -24,7 +24,7 @@ class SwitchJournalDialog : public UDialog
     };
 
 public:
-    explicit SwitchJournalDialog(QWidget *parent = nullptr);
+    explicit SwitchJournalDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 public:
     void fillJour(const S2::FileStruct &msg);

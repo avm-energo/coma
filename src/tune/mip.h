@@ -1,9 +1,10 @@
 #ifndef MIP_H
 #define MIP_H
 
-#include "../module/modules.h"
 #include "../widgets/udialog.h"
 
+#include <device/device_list.h>
+#include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/settingstypes.h>
 
@@ -41,7 +42,7 @@ class Mip : public QObject
 {
     Q_OBJECT
 public:
-    using MType = Modules::MezzanineBoard;
+    using MType = Device::MezzanineBoard;
 
     Mip(bool withGUI = true, MType ModuleType = MType::MTM_82, QWidget *parent = nullptr);
     ~Mip() noexcept;

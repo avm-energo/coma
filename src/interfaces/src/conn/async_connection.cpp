@@ -6,7 +6,7 @@
 namespace Interface
 {
 
-AsyncConnection::AsyncConnection(QObject *parent) : QObject(parent)
+AsyncConnection::AsyncConnection(QObject *parent) : QObject(parent), m_connectionState(State::Connect)
 {
     qRegisterMetaType<State>();
     qRegisterMetaType<DeviceResponse>();
@@ -21,6 +21,26 @@ RequestQueue &AsyncConnection::getQueue() noexcept
 void AsyncConnection::updateProtocol(const ProtocolDescription &desc) noexcept
 {
     emit protocolSettingsUpdated(desc);
+}
+
+IfaceType AsyncConnection::getInterfaceType() const noexcept
+{
+    return m_ifaceType;
+}
+
+State AsyncConnection::getConnectionState() const noexcept
+{
+    return m_connectionState;
+}
+
+quint32 AsyncConnection::getTimeout() const noexcept
+{
+    return m_timeout;
+}
+
+void AsyncConnection::setTimeout(const quint32 timeout) noexcept
+{
+    m_timeout = timeout;
 }
 
 void AsyncConnection::reqAlarms(quint32 addr, quint32 count)
@@ -118,11 +138,24 @@ void AsyncConnection::writeCommand(Commands cmd, const QVariantList &list)
 void AsyncConnection::responseHandle(const Interface::DeviceResponse &resp)
 {
     std::visit([this](auto &&var) { emit response(var); }, resp);
+    emit queueSizeChanged(m_queue.size());
+}
+
+void AsyncConnection::setState(const Interface::State state) noexcept
+{
+    m_connectionState = state;
+    emit stateChanged(m_connectionState);
+}
+
+void AsyncConnection::setInterfaceType(const Interface::IfaceType ifaceType) noexcept
+{
+    m_ifaceType = ifaceType;
 }
 
 void AsyncConnection::setToQueue(CommandStruct &&cmd)
 {
     m_queue.addToQueue(std::move(cmd));
+    emit queueSizeChanged(m_queue.size());
 }
 
 } // namespace Interface

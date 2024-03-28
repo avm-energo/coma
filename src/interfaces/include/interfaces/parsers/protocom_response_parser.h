@@ -11,18 +11,7 @@ class ProtocomResponseParser final : public BaseResponseParser
     Q_OBJECT
 private:
     Proto::Commands m_receivedCommand;
-
-    /// \brief Anonymous structure for representing type of the connected board.
-    struct
-    {
-        quint8 mTypeB = 0;
-        quint8 mTypeM = 0;
-
-        bool isEmpty() noexcept
-        {
-            return ((mTypeB == 0) && (mTypeM == 0));
-        }
-    } boardType;
+    S2BEmulateData m_deviceData;
 
 #ifdef Q_OS_LINUX
     void processUnixTime(const QByteArray &data);

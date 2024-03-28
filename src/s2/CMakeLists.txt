@@ -41,5 +41,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  Qt${QT_VERSION_MAJOR}::Core gen
+  Qt${QT_VERSION_MAJOR}::Core gen ctti::ctti
 )

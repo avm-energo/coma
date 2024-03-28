@@ -51,7 +51,8 @@ MipDataStruct Mip::getData()
 
 void Mip::setupWidget()
 {
-    m_widget = new UWidget;
+    /// TODO: Требуется нормальная реализация!
+    m_widget = new UWidget(nullptr, nullptr);
     auto mipWidgetLayout = new QVBoxLayout;
 
     auto measGroup = new QGroupBox("Измеряемые параметры", m_widget);

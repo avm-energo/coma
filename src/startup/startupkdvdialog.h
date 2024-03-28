@@ -7,7 +7,7 @@ class StartupKDVDialog : public AbstractStartupDialog
 {
     Q_OBJECT
 public:
-    StartupKDVDialog(QWidget *parent = nullptr);
+    StartupKDVDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
     virtual ~StartupKDVDialog();
 
 private:

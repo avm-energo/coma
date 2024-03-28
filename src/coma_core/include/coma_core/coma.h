@@ -9,12 +9,15 @@
 #include <QStackedWidget>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/types/settingstypes.h>
-#include <s2/s2datamanager.h>
 
 class AlarmWidget;
 class Module;
-class S2RequestService;
 class XmlEditor;
+
+namespace Device
+{
+class CurrentDevice;
+} // namespace Device
 
 namespace Core
 {
@@ -24,11 +27,11 @@ class Coma : public QMainWindow
     Q_OBJECT
 
 public:
-    Coma(const AppConfiguration &appCfg, QWidget *parent = nullptr);
+    explicit Coma(const AppConfiguration appCfg, QWidget *parent = nullptr);
     virtual ~Coma();
 
     void go();
-    void connectSB();
+    void connectStatusBar();
     void setupMenubar();
     QWidget *least();
     static QPoint ComaCenter();
@@ -42,6 +45,7 @@ public slots:
 private slots:
     void connectDialog();
     void initConnection(const ConnectStruct &st);
+    void initDevice(Interface::AsyncConnection *connection);
     void loadOsc();
     void loadSwj();
     void loadSwjPackConvertor();
@@ -53,27 +57,23 @@ private slots:
     void showReconnectDialog();
 
 private:
-    UniquePointer<Interface::ConnectionManager> connectionManager;
-    UniquePointer<Module> module;
-    UniquePointer<S2DataManager> s2dataManager;
-    UniquePointer<S2RequestService> s2requestService;
+    AppConfiguration m_appConfig;
+    Interface::ConnectionManager *m_connectionManager;
+    Device::CurrentDevice *m_currentDevice;
+    UniquePointer<DialogManager> m_dlgManager;
 
-    QTimer *BdaTimer;
     AlarmWidget *AlarmW;
     OscManager oscManager;
     XmlEditor *editor;
     File::Vector fileVector;
-    AppConfiguration mAppConfig;
-    UniquePointer<DialogManager> mDlgManager;
 
-    void initInterfaceConnection(AsyncConnection *conn);
+    void initInterfaceConnection();
     void loadSettings();
     void saveSettings();
     void setProgressBarSize(int prbnum, int size);
     void setProgressBarCount(int prbnum, int count);
-    void newTimers();
     void setupUI();
-    void prepare();
+    // void prepare();
     QToolBar *createToolBar();
     void keyPressEvent(QKeyEvent *event) override;
     void prepareDialogs();

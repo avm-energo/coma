@@ -1,7 +1,7 @@
 #ifndef DATABLOCK_H
 #define DATABLOCK_H
 
-#include "../module/board.h"
+//#include "../module/board.h"
 
 #include <QHBoxLayout>
 #include <QScrollArea>
@@ -9,6 +9,11 @@
 #include <gen/datatypes.h>
 #include <gen/error.h>
 #include <variant>
+
+namespace Interface
+{
+class SyncConnection;
+} // namespace Interface
 
 class DataBlock : public QObject
 {
@@ -34,12 +39,7 @@ public:
         QString mask;
     };
 
-    QMap<DataTypes::DataBlockTypes, FilePropertiesStruct> ExtMap = {
-        { DataTypes::DataBlockTypes::BacBlock, { ".tn", "Tune files (*.tn?)" } },          //
-        { DataTypes::DataBlockTypes::BciBlock, { ".cf", "Configuration files (*.cf?)" } }, //
-        { DataTypes::DataBlockTypes::BdBlock, { ".bd", "Data files (*.bd?)" } },           //
-        { DataTypes::DataBlockTypes::BdaBlock, { ".bda", "Simple data files (*.bda)" } }   //
-    };
+    static const QMap<DataTypes::DataBlockTypes, FilePropertiesStruct> ExtMap;
 
     using ValueType = std::variant<float *, quint32 *>;
 
@@ -61,8 +61,8 @@ public:
 
     inline const QString cpuIDFilenameStr()
     {
-        QString filenamestr
-            = Board::GetInstance().UID() + ExtMap[m_block.blocktype].extension + QString::number(m_block.blocknum);
+        Q_ASSERT(!m_deviceUID.isEmpty());
+        QString filenamestr = m_deviceUID + ExtMap[m_block.blocktype].extension + QString::number(m_block.blocknum);
         return filenamestr;
     }
 
@@ -72,6 +72,9 @@ public:
     /// \brief Copy prepared block to inner variable m_block
     /// \param bds[in] - prepared block
     void setBlock(const BlockStruct &bds);
+
+    /// \brief Setup connection and device UID for datablock.
+    void setup(const QString &UID, Interface::SyncConnection *syncConnection);
 
     /// \brief Returns block visualisation for insert into GUI
     /// \param showButtons[in] (bool) - show or not bottom buttons widget (load/save to/from file,
@@ -146,13 +149,15 @@ public slots:
     void saveToFileUserChoose();
 
 private:
-    bool m_widgetIsSet;
-    QWidget *m_widget;
     int valueNumberCounter;
-    BlockStruct m_block, m_defBlock;
+    bool m_widgetIsSet;
     bool m_isBottomButtonsWidgetCreated;
+    QWidget *m_widget;
+    BlockStruct m_block, m_defBlock;
     QWidget *m_bottomButtonsWidget;
     QList<ValueGroupStr> m_valuesDesc;
+    QString m_deviceUID;
+    Interface::SyncConnection *m_conn;
 };
 
 #endif // DATABLOCK_H

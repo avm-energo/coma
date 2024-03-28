@@ -9,8 +9,7 @@ class UDialog : public UWidget
 {
     Q_OBJECT
 public:
-    explicit UDialog(QWidget *parent = nullptr);
-    void updateConnection(AsyncConnection *conn);
+    explicit UDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
     virtual void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response);
 
     void disableSuccessMessage();
@@ -18,12 +17,13 @@ public:
     bool disableMessages();
     bool enableMessages();
 
+    QString getFilenameForDevice() const;
+
 protected:
     QString successMsg() const;
-    void setSuccessMsg(const QString successMsg);
-
+    void setSuccessMsg(const QString &successMsg);
     QString errorMsg() const;
-    void setErrorMsg(const QString errorMsg);
+    void setErrorMsg(const QString &errorMsg);
 
 private:
     QString m_successMsg;

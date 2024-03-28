@@ -7,7 +7,7 @@ constexpr uint16_t startRelayReg = 5201;
 class RelayDialog : public UDialog
 {
 public:
-    RelayDialog(int relayCount, QWidget *parent = nullptr);
+    RelayDialog(int relayCount, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 protected:
     QWidget *RelayWidget(int relayCount, QWidget *parent);

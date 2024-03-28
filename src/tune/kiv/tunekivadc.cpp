@@ -9,16 +9,21 @@
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <interfaces/conn/active_connection.h>
 
-TuneKIVADC::TuneKIVADC(S2::Configuration &config, int tuneStep, QWidget *parent)
-    : AbstractTuneDialog(config, tuneStep, parent)
+TuneKIVADC::TuneKIVADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(tuneStep, device, parent)
+    , m_bac(new BacA284(this))
+    , m_bac2(new Bac2A284(this))
+    , m_bda(new BdaA284(this))
+    , m_bdain(new BdaIn(this))
+    , m_bd0(new Bd0(this))
 {
-    m_bac = new BacA284(this);
-    m_bac2 = new Bac2A284(this);
-    m_bda = new BdaA284(this);
-    m_bdain = new BdaIn(this);
-    m_bd0 = new Bd0(this);
+    m_bac->setup(m_device->getUID(), m_sync);
+    m_bac2->setup(m_device->getUID(), m_sync);
+    m_bda->setup(m_device->getUID(), m_sync);
+    m_bdain->setup(m_device->getUID(), m_sync);
+    m_bd0->setup(m_device->getUID(), m_sync);
+
     setBac(m_bac);
     setBac(m_bac2);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
@@ -65,12 +70,10 @@ void TuneKIVADC::setTuneFunctions()
 
 Error::Msg TuneKIVADC::showPreWarning()
 {
-    //    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-
     QWidget *w = new QWidget(this);
     w->setFixedSize(800, 600);
-    lyout->addWidget(WDFunc::NewLBL2(this, "", "", new QPixmap(":/tunes/tunekiv1.png")));
+    QVBoxLayout *lyout = new QVBoxLayout;
+    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
     lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(WDFunc::NewLBL2(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
@@ -82,15 +85,10 @@ Error::Msg TuneKIVADC::showPreWarning()
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
         "от минус 20 до +60°С. Установите нормальное значение температуры "
         "в камере 20±5°С"));
-    //    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [dlg] { dlg->close(); }));
-    //    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
     w->setLayout(lyout);
 
     if (!EMessageBox::next(this, w))
         CancelTune();
-    //    dlg->setLayout(lyout);
-    //    WDFunc::PBConnect(dlg, "cancelpb", static_cast<AbstractTuneDialog *>(this), &AbstractTuneDialog::CancelTune);
-    //    dlg->exec();
     return Error::Msg::NoError;
 }
 
@@ -126,8 +124,6 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
 {
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
-    //  CKIV->Bci_block.Unom1 = 220;
-    // configV->setRecordValue({ S2Util::GetIdByName("Unom1"), float(220) });
     config.setRecord("Unom1", float(220));
 
     Error::Msg res = setADCCoef(coef);

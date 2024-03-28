@@ -2,11 +2,7 @@
 #define TUNE84DIALOG_H
 
 #include "../../models/report.h"
-#include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
-#include "../kiv/tunekivtemp60.h"
-#include "tune84adc.h"
-#include "tune84check.h"
 
 #include <QHBoxLayout>
 #include <QLineEdit>
@@ -17,7 +13,7 @@ class Tune84Dialog : public GeneralTuneDialog
 {
     Q_OBJECT
 public:
-    explicit Tune84Dialog(S2::Configuration &config, QWidget *parent = nullptr);
+    explicit Tune84Dialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 public slots:
 

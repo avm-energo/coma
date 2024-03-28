@@ -17,7 +17,7 @@ constexpr auto Uc = 120;
 constexpr auto Ic = -150;
 }
 
-PlotDialog::PlotDialog(QWidget *parent) : UDialog(parent)
+PlotDialog::PlotDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
     setupUI();
     engine()->addFloat({ 2400, 7 });
@@ -41,7 +41,6 @@ static bool processPhase(GraphData &data, const DataTypes::FloatStruct &fl)
     return false;
 }
 
-// void PlotDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 void PlotDialog::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     if (!processPhase(graphPhaseA, fl))

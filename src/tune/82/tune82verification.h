@@ -13,7 +13,6 @@ class Tune82Verification final : public AbstractTuneDialog
 private:
     Bd182 *m_bd1;
     Mip *m_mip;
-    Modules::MezzanineBoard m_typeM;
 
     void showRetomDialog(const RetomSettings &retomData);
     void writeMipDataToReport(const MipDataStruct &mipData, const std::size_t iter);
@@ -24,8 +23,7 @@ private:
     Error::Msg verification();
 
 public:
-    Tune82Verification(S2::Configuration &config, Modules::MezzanineBoard type, //
-        int tuneStep, QWidget *parent = nullptr);
+    Tune82Verification(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
     void setTuneFunctions() override;
 };

@@ -3,7 +3,7 @@
 namespace S2
 {
 
-DataManager::DataManager(QObject *parent) : QObject(parent), m_storage(S2ConfigStorage::GetInstance())
+DataManager::DataManager(QObject *parent) : QObject(parent), m_storage(this)
 {
 }
 

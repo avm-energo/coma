@@ -195,6 +195,8 @@ struct S2BFileHeader
 struct S2BFileTail
 {
     quint32 crc32;
+    quint32 serialnum;
+    quint32 reserved;
     quint32 end;
 };
 

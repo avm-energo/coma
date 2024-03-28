@@ -1,31 +1,24 @@
 #include "journaltabwidget.h"
 
-#include "../module/board.h"
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
 
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <gen/files.h>
-#include <interfaces/conn/active_connection.h>
 #include <map>
 
 namespace journals
 {
 
-const std::map<JournalType, QString> JournalTabWidget::s_prefixByType {
-    { JournalType::System, "SysJ" }, //
-    { JournalType::Work, "WorkJ" },  //
-    { JournalType::Meas, "MeasJ" }   //
-};
-
-JournalTabWidget::JournalTabWidget(const JournalType type, QWidget *parent)
+JournalTabWidget::JournalTabWidget(const JournalType type, Interface::AsyncConnection *async, QWidget *parent)
     : QWidget(parent)
     , m_mainLayout(new QVBoxLayout)
     , m_modelView(nullptr)
     , m_progressIndicator(nullptr)
     , m_progressDialog(nullptr)
     , m_saveProgressDialog(new QProgressDialog(this))
+    , m_async(async)
     , m_type(type)
 {
     setupProgressDialogs();
@@ -82,41 +75,24 @@ void JournalTabWidget::setupUI()
     setLayout(m_mainLayout);
 }
 
-QString JournalTabWidget::getSuggestedFilename()
-{
-    QString suggestedFilename = "";
-    auto search = s_prefixByType.find(m_type);
-    if (search != s_prefixByType.cend())
-    {
-        const auto &journalFile = m_currentJournal->getFile();
-        const auto &board = Board::GetInstance();
-        suggestedFilename = search->second + " ";
-        suggestedFilename += QString::number(journalFile.header.typeB, 16);
-        suggestedFilename += QString::number(journalFile.header.typeM, 16) + " #";
-        suggestedFilename += QString("%1").arg(board.serialNumber(Board::BaseAdd), 8, 10, QChar('0'));
-        suggestedFilename += " " + QDate::currentDate().toString("dd-MM-yyyy");
-    }
-    return suggestedFilename;
-}
-
 void JournalTabWidget::gettingJournal()
 {
     if (m_modelView != nullptr)
         m_modelView->deleteLater();
     m_progressDialog->show();
     m_progressIndicator->startAnimation();
-    ActiveConnection::async()->reqFile(static_cast<quint16>(m_type));
+    m_async->reqFile(static_cast<quint16>(m_type));
 }
 
 void JournalTabWidget::eraseJournal()
 {
     if (EMessageBox::password(this))
-        ActiveConnection::async()->writeCommand(Interface::Commands::C_EraseJournals, static_cast<quint16>(m_type));
+        m_async->writeCommand(Interface::Commands::C_EraseJournals, static_cast<quint16>(m_type));
 }
 
 void JournalTabWidget::saveExcelJournal()
 {
-    auto suggestedFilename = getSuggestedFilename();
+    auto suggestedFilename = m_currentJournal->getSuggestedFilename();
     if (!suggestedFilename.isEmpty())
     {
         suggestedFilename += ".xlsx";
@@ -131,7 +107,7 @@ void JournalTabWidget::saveExcelJournal()
 
 void JournalTabWidget::saveBinaryJournal()
 {
-    auto suggestedFilename = getSuggestedFilename();
+    auto suggestedFilename = m_currentJournal->getSuggestedFilename();
     if (!suggestedFilename.isEmpty())
     {
         suggestedFilename += ".jn";

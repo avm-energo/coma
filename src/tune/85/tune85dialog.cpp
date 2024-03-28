@@ -2,24 +2,29 @@
 
 #include "../../widgets/wd_func.h"
 #include "../tunesteps.h"
+#include "tune85adc.h"
+#include "tune85check.h"
+#include "tune85temp60.h"
 
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-Tune85Dialog::Tune85Dialog(S2::Configuration &config, QWidget *parent) : GeneralTuneDialog(config, parent)
+Tune85Dialog::Tune85Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    m_dialogList
-        = { { "Проверка правильности измерения входных сигналов", new Tune85Check(config, TS84_CHECKING, this) },
-              { "Регулировка каналов напряжения", new Tune85ADC(config, TS84_ADCU, this) },
-              { "Регулировка каналов тока", new Tune85ADC(config, TS84_ADCI, this) },
-              { "Настройка температурной коррекции +60 °С", new Tune85Temp60(config, TS84_60TUNING, this) },
-              { "Настройка температурной коррекции -20 °С", new Tune85Temp60(config, TS84_20TUNING, this) } };
+    m_dialogList = {
+        { "Проверка правильности измерения входных сигналов", new Tune85Check(TS84_CHECKING, device, this) }, //
+        { "Регулировка каналов напряжения", new Tune85ADC(TS84_ADCU, device, this) },                         //
+        { "Регулировка каналов тока", new Tune85ADC(TS84_ADCI, device, this) },                               //
+        { "Настройка температурной коррекции +60 °С", new Tune85Temp60(TS84_60TUNING, device, this) },        //
+        { "Настройка температурной коррекции -20 °С", new Tune85Temp60(TS84_20TUNING, device, this) },        //
+    };
     //    m_calibrSteps = m_dialogList.size() + 1;
-    BacA284 *bac = new BacA284;
+    BacA284 *bac = new BacA284(this);
+    bac->setup(m_device->getUID(), m_device->sync());
     addWidgetToTabWidget(bac->widget(), "Регулировка");
     SetupUI();
 }

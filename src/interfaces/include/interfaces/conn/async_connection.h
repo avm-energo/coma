@@ -22,11 +22,19 @@ class AsyncConnection final : public QObject
 private:
     using FileFormat = DataTypes::FileFormat;
     RequestQueue m_queue;
+    IfaceType m_ifaceType;
+    State m_connectionState;
+    quint32 m_timeout;
 
 public:
     explicit AsyncConnection(QObject *parent = nullptr);
     RequestQueue &getQueue() noexcept;
     void updateProtocol(const ProtocolDescription &desc) noexcept;
+
+    IfaceType getInterfaceType() const noexcept;
+    State getConnectionState() const noexcept;
+    quint32 getTimeout() const noexcept;
+    void setTimeout(const quint32 timeout) noexcept;
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
@@ -50,11 +58,14 @@ public:
 
 public slots:
     void responseHandle(const Interface::DeviceResponse &response);
+    void setState(const Interface::State state) noexcept;
+    void setInterfaceType(const Interface::IfaceType ifaceType) noexcept;
 
 signals:
-    void stateChanged(Interface::State m_state);
+    void stateChanged(const Interface::State state);
     void silentReconnectMode();
     void protocolSettingsUpdated(const ProtocolDescription &desc);
+    void queueSizeChanged(const quint64 size);
 
     // Response signals
     // clazy:excludeall=overloaded-signal

@@ -8,19 +8,20 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 
-TuneKIVDialog::TuneKIVDialog(S2::Configuration &config, QWidget *parent) : GeneralTuneDialog(config, parent)
+TuneKIVDialog::TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {
-
     setAttribute(Qt::WA_DeleteOnClose);
-    TKIVADCUDialog = new TuneKIVADC(config, KIVTS_ADCU, this);
-    TKIVADCIDialog = new TuneKIVADC(config, KIVTS_ADCI, this);
-    TKIVCheckDialog = new TuneKIVCheck(config, KIVTS_CHECKING, this);
-    TKIVRDialog = new TuneKIVR(config, KIVTS_PT100, this);
+    TKIVADCUDialog = new TuneKIVADC(KIVTS_ADCU, device, this);
+    TKIVADCIDialog = new TuneKIVADC(KIVTS_ADCI, device, this);
+    TKIVCheckDialog = new TuneKIVCheck(KIVTS_CHECKING, device, this);
+    TKIVRDialog = new TuneKIVR(KIVTS_PT100, device, this);
     m_dialogList = { { "Проверка правильности измерения входных сигналов", TKIVCheckDialog },
         { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
         { "Регулировка каналов тока", TKIVADCIDialog } };
     BacA284 *bac = new BacA284(this);
     Bac2A284 *bac2 = new Bac2A284(this);
+    bac->setup(m_device->getUID(), m_device->sync());
+    bac2->setup(m_device->getUID(), m_device->sync());
     addWidgetToTabWidget(bac->widget(), "Первая часть");
     addWidgetToTabWidget(bac2->widget(), "Вторая часть");
     SetupUI();

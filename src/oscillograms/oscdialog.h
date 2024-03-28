@@ -22,7 +22,7 @@ class OscDialog : public UDialog
     };
 
 public:
-    explicit OscDialog(QWidget *parent = nullptr);
+    explicit OscDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 public slots:
     void fillOscInfo(const S2::OscInfo &info);

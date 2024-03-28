@@ -6,6 +6,7 @@
 #include <QDialog>
 #include <QProgressDialog>
 #include <QWidget>
+#include <interfaces/conn/async_connection.h>
 #include <s2/s2datatypes.h>
 
 class QVBoxLayout;
@@ -18,14 +19,13 @@ class JournalTabWidget : public QWidget
 {
     Q_OBJECT
 private:
-    static const std::map<JournalType, QString> s_prefixByType;
-
     UniquePointer<BaseJournal> m_currentJournal;
     QVBoxLayout *m_mainLayout;
     ETableView *m_modelView;
     QDialog *m_progressDialog;
     EProgressIndicator *m_progressIndicator;
     QProgressDialog *m_saveProgressDialog;
+    Interface::AsyncConnection *m_async;
     JournalType m_type;
 
     /// \brief Метод для создания виджетов, сигнализирующих
@@ -34,10 +34,6 @@ private:
 
     /// \brief Создание UI виджета: кнопки, слои, TableViewModel.
     void setupUI();
-
-    /// \brief Функция, возвращающая рекомендуемое имя файла.
-    /// \see saveExcelJournal, saveBinaryJournal
-    QString getSuggestedFilename();
 
 private slots:
     /// \brief Слот для получения журнала от устройства по нажатию на кнопку.
@@ -56,7 +52,7 @@ private slots:
     void error(const QString &message);
 
 public:
-    explicit JournalTabWidget(const JournalType type, QWidget *parent = nullptr);
+    explicit JournalTabWidget(const JournalType type, Interface::AsyncConnection *async, QWidget *parent = nullptr);
 
     /// \brief Обновление содержимого виджета по полученному объекту журнала.
     /// \param newJournal[in] - журнала, полученный от родительского класса JournalDialog.

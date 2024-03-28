@@ -20,7 +20,7 @@ public:
         IMITATOR = 1
     };
 
-    TuneKIVADC(S2::Configuration &config, int tuneStep, QWidget *parent = nullptr);
+    TuneKIVADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
     BacA284 *m_bac;

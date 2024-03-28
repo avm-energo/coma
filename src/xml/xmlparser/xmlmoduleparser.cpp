@@ -1,152 +1,131 @@
 #include "xmlmoduleparser.h"
 
+#include <device/current_device.h>
+#include <gen/files.h>
 #include <gen/stdfunc.h>
 
-Xml::ModuleParser::ModuleParser(const quint16 typeB, const quint16 typeM, const bool check, QObject *parent)
-    : BaseParser(parent)
+Xml::ModuleParser::ModuleParser(QObject *parent) : BaseParser(parent), m_ifaceType(Interface::IfaceType::Unknown)
 {
-    auto xmlFilename = getFileName(typeB, typeM);
-    auto document = getFileContent(xmlFilename);
-    auto moduleNode = document.firstChildElement(tags::module);
-    if (!moduleNode.isNull())
-    {
-        auto checkResult = true;
-        if (check)
-            checkResult = isCorrectModule(moduleNode, typeB, typeM);
-        if (checkResult)
-            resources = moduleNode.firstChildElement(tags::res);
-    }
 }
 
-/// \brief Получаем имя файла по типам базовой и мезонинной плат.
 QString Xml::ModuleParser::getFileName(const quint16 typeB, const quint16 typeM)
 {
-    auto typeBStr = QString::number(typeB, 16);
-    typeBStr = (typeBStr.length() < 2) ? "0" + typeBStr : typeBStr;
-    auto typeMStr = QString::number(typeM, 16);
-    typeMStr = (typeMStr.length() < 2) ? "0" + typeMStr : typeMStr;
-    return typeBStr + typeMStr + ".xml";
+    return QString("%1%2.xml").arg(typeB, 2, 16, QChar('0')).arg(typeM, 2, 16, QChar('0'));
 }
 
-/// \brief Проверка на то, совпадает ли тип модуля с указанным в файле конфигурации.
-bool Xml::ModuleParser::isCorrectModuleType(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM)
+bool Xml::ModuleParser::isCorrectDeviceType(const QDomElement &moduleNode, const Device::CurrentDevice *device)
 {
     if (moduleNode.hasAttribute(tags::mtypeb) && moduleNode.hasAttribute(tags::mtypem))
     {
         auto mTypeB = moduleNode.attribute(tags::mtypeb, "");
         auto mTypeM = moduleNode.attribute(tags::mtypem, "");
         bool status1 = false, status2 = false;
-        quint16 mtypeB = mTypeB.toUShort(&status1, 16);
-        quint16 mtypeM = mTypeM.toUShort(&status2, 16);
-        return (status1 && status2 && mtypeB == typeB && mtypeM == typeM);
+        const u16 mtypeB = mTypeB.toUShort(&status1, 16);
+        const u16 mtypeM = mTypeM.toUShort(&status2, 16);
+        if (status1 && status2)
+        {
+            if (mtypeB == 0)
+                return (mtypeM == device->getMezzType());
+            else if (mtypeM == 0)
+                return (mtypeB == device->getBaseType());
+            else
+                return ((mtypeB == device->getBaseType()) && (mtypeM == device->getMezzType()));
+        }
     }
     return false;
 }
 
-/// \brief Проверка корректности версии ВПО модуля.
-bool Xml::ModuleParser::isCorrectModuleVersion(const QDomElement &moduleNode)
+bool Xml::ModuleParser::isCorrectFirmwareVersion(const QDomElement &moduleNode, const Device::CurrentDevice *device)
 {
     auto versionNode = moduleNode.firstChildElement(tags::version);
     if (!versionNode.isNull())
     {
         auto version = versionNode.text();
         if (!version.isEmpty())
-        {
-            auto &sInfoBlock = Board::GetInstance().baseSerialInfo();
-            return !(sInfoBlock.isOutdated(StdFunc::StrToVer(version)));
-        }
+            return !(device->isOutdatedFirmware(StdFunc::StrToVer(version)));
     }
     return false;
 }
 
-/// \brief Коплексная проверка на корректность подключённого модуля.
-/// \see isCorrectModuleVersion, isCorrectModuleType.
-bool Xml::ModuleParser::isCorrectModule(const QDomElement &moduleNode, const quint16 &typeB, const quint16 &typeM)
+bool Xml::ModuleParser::isCorrectDevice(const QDomElement &moduleNode, const Device::CurrentDevice *device)
 {
-    if (isCorrectModuleType(moduleNode, typeB, typeM))
+    if (isCorrectDeviceType(moduleNode, device))
     {
         // Проверяем корректность версии только для базы
-        auto isBase = (typeB == 0) ? false : true;
-        if (isBase)
+        if (moduleNode.attribute(tags::mtypeb, "").toUShort(nullptr, 16) != 0)
         {
-            if (isCorrectModuleVersion(moduleNode))
+            if (isCorrectFirmwareVersion(moduleNode, device))
                 return true;
             else
-                qCritical() << "Устаревшая версия ВПО, обновите ВПО";
+                emit parseError("Устаревшая версия ВПО, обновите ВПО");
         }
         else
             return true;
     }
     else
-        qCritical() << "Invalid module type specified in XML configuration";
+        emit parseError("Типы плат устройства не соответствуют указанным в XML конфигурации");
     return false;
 }
 
-/// \brief Функция для определения типа группы сигналов.
-ModuleTypes::SignalType Xml::ModuleParser::parseSigType(const QDomNode &sigNode)
+Xml::SignalType Xml::ModuleParser::parseSignalType(const QDomNode &signalNode)
 {
-    auto typeNode = sigNode.firstChildElement(tags::type);
+    auto typeNode = signalNode.firstChildElement(tags::type);
     if (!typeNode.isNull())
     {
         auto typeStr = typeNode.text();
         if (typeStr.contains("Float", Qt::CaseInsensitive))
-            return ModuleTypes::SignalType::Float;
+            return Xml::SignalType::Float;
         else if (typeStr.contains("BitString", Qt::CaseInsensitive))
-            return ModuleTypes::SignalType::BitString;
+            return Xml::SignalType::BitString;
         else if (typeStr.contains("SinglePoint", Qt::CaseInsensitive))
-            return ModuleTypes::SignalType::SinglePointWithTime;
+            return Xml::SignalType::SinglePointWithTime;
     }
-    return ModuleTypes::SignalType::Float;
+    return Xml::SignalType::Float;
 }
 
-/// \brief Функция для определения типа отображения мультивиджета.
-ModuleTypes::ViewType Xml::ModuleParser::parseViewType(const QString &viewString)
+Xml::ViewType Xml::ModuleParser::parseViewType(const QString &viewString)
 {
     if (viewString.contains("bitset", Qt::CaseInsensitive))
-        return ModuleTypes::ViewType::Bitset;
+        return Xml::ViewType::Bitset;
     else if (viewString.contains("LineEdit", Qt::CaseInsensitive))
-        return ModuleTypes::ViewType::LineEdit;
+        return Xml::ViewType::LineEdit;
     else if (viewString.contains("Version", Qt::CaseInsensitive))
-        return ModuleTypes::ViewType::Version;
+        return Xml::ViewType::Version;
     else
-        return ModuleTypes::ViewType::Float;
+        return Xml::ViewType::Float;
 }
 
-/// \brief Функция для определения типа отображаемых/отправляемых данных.
-ModuleTypes::BinaryType Xml::ModuleParser::parseBinaryType(const QString &typeStr)
+Xml::BinaryType Xml::ModuleParser::parseBinaryType(const QString &typeStr)
 {
     if (typeStr == "uint32")
-        return ModuleTypes::BinaryType::uint32;
+        return Xml::BinaryType::uint32;
     else if (typeStr == "time32")
-        return ModuleTypes::BinaryType::time32;
+        return Xml::BinaryType::time32;
     else if (typeStr == "time64")
-        return ModuleTypes::BinaryType::time64;
+        return Xml::BinaryType::time64;
     else
-        return ModuleTypes::BinaryType::float32;
+        return Xml::BinaryType::float32;
 }
 
-/// \brief Функция для парсинга узла <signals>.
 void Xml::ModuleParser::parseSignal(const QDomNode &sigNode)
 {
-    auto id = parseNumFromNode<quint32>(sigNode, tags::id);
-    auto addr = parseNumFromNode<quint32>(sigNode, tags::start_addr);
-    auto count = parseNumFromNode<quint16>(sigNode, tags::count);
-    auto sigType = parseSigType(sigNode);
+    auto id = parseNumFromNode<u32>(sigNode, tags::id);
+    auto addr = parseNumFromNode<u32>(sigNode, tags::start_addr);
+    auto count = parseNumFromNode<u16>(sigNode, tags::count);
+    auto sigType = parseSignalType(sigNode);
     emit signalDataSending(id, addr, count, sigType);
 }
 
-/// \brief Функция для парсинга узла <section-tabs>.
 void Xml::ModuleParser::parseSTab(const QDomNode &sTabNode)
 {
-    auto id = parseNumFromNode<quint32>(sTabNode, tags::id);
+    auto id = parseNumFromNode<u32>(sTabNode, tags::id);
     auto name = parseString(sTabNode, tags::name);
     emit tabDataSending(id, name);
 }
 
-/// \brief Функция для парсинга узла <sections>.
 void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
 {
-    using namespace ModuleTypes;
+    using namespace Xml;
     auto secHeader = sectionNode.toElement().attribute(tags::header, "");
     SGMap sgmap;
     callForEachChild(sectionNode, [&](const QDomNode &sgroupNode) {
@@ -158,8 +137,8 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
             auto mwidgetElem = mwidgetNode.toElement();
             auto mwidgetDesc = mwidgetElem.attribute(tags::desc, "");
             auto viewString = mwidgetElem.attribute(tags::view, "float");
-            auto addr = parseNumFromNode<quint32>(mwidgetNode, tags::start_addr);
-            auto count = parseNumFromNode<quint32>(mwidgetNode, tags::count);
+            auto addr = parseNumFromNode<u32>(mwidgetNode, tags::start_addr);
+            auto count = parseNumFromNode<u32>(mwidgetNode, tags::count);
             count = (count == 0) ? 1 : count;
             auto tooltip = parseString(mwidgetNode, tags::tooltip);
             auto view = parseViewType(viewString);
@@ -172,62 +151,56 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
     emit sectionDataSending(sgmap, secHeader);
 }
 
-/// \brief Функция для парсинга узла <alarms>.
 void Xml::ModuleParser::parseAlarms(const QDomNode &alarmsNode)
 {
     parseNode(alarmsNode, tags::crit, [this](const QDomNode &alarmNode) { //
-        parseAlarm(alarmNode, Modules::AlarmType::Critical);
+        parseAlarm(alarmNode, Xml::AlarmType::Critical);
     });
     parseNode(alarmsNode, tags::warn, [this](const QDomNode &alarmNode) { //
-        parseAlarm(alarmNode, Modules::AlarmType::Warning);
+        parseAlarm(alarmNode, Xml::AlarmType::Warning);
     });
     parseNode(alarmsNode, tags::info, [this](const QDomNode &alarmNode) { //
-        parseAlarm(alarmNode, Modules::AlarmType::Info);
+        parseAlarm(alarmNode, Xml::AlarmType::Info);
     });
 }
 
-/// \brief Функция для парсинга узлов <critical>, <warning> и <info> внутри <alarms>.
-void Xml::ModuleParser::parseAlarm(const QDomNode &alarmNode, const Modules::AlarmType &aType)
+void Xml::ModuleParser::parseAlarm(const QDomNode &alarmNode, const AlarmType &type)
 {
-    auto addr = parseNumFromNode<quint32>(alarmNode, tags::addr);
+    auto addr = parseNumFromNode<u32>(alarmNode, tags::addr);
     auto desc = parseString(alarmNode, tags::string);
-    auto hlValues = parseNumArray<quint32>(alarmNode, tags::highlights);
-    emit alarmDataSending(aType, addr, desc, hlValues);
+    auto hlValues = parseNumArray<u32>(alarmNode, tags::highlights);
+    emit alarmDataSending(type, addr, desc, hlValues);
 }
 
-/// \brief Функция для парсинга узла <journals>.
 void Xml::ModuleParser::parseJournals(const QDomNode &joursNode)
 {
     parseNode(joursNode, tags::work, [this](const QDomNode &jourNode) { parseWorkJournal(jourNode); });
     parseNode(joursNode, tags::meas, [this](const QDomNode &jourNode) { parseMeasJournal(jourNode); });
 }
 
-/// \brief Функция для парсинга узла <work> внутри <journals>.
 void Xml::ModuleParser::parseWorkJournal(const QDomNode &jourNode)
 {
-    auto id = parseNumFromNode<quint32>(jourNode, tags::addr);
+    auto id = parseNumFromNode<u32>(jourNode, tags::addr);
     auto desc = parseString(jourNode, tags::desc);
     emit workJourDataSending(id, desc);
 }
 
-/// \brief Функция для парсинга узла <meas> внутри <journals>.
 void Xml::ModuleParser::parseMeasJournal(const QDomNode &jourNode)
 {
-    auto index = parseNumFromNode<quint32>(jourNode, tags::index);
+    auto index = parseNumFromNode<u32>(jourNode, tags::index);
     auto header = parseString(jourNode, tags::header);
     auto strType = parseString(jourNode, tags::type);
-    ModuleTypes::BinaryType type = parseBinaryType(strType);
+    Xml::BinaryType type = parseBinaryType(strType);
     auto visibility = true;
     if (parseString(jourNode, tags::visibility) == "false")
         visibility = false;
     emit measJourDataSending(index, header, type, visibility);
 }
 
-/// \brief Функция для парсинга конфигурации интерфейса, по которому подключен модуль.
 void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 {
-    auto ifaceType = Board::GetInstance().interfaceType();
-    switch (ifaceType)
+    // auto ifaceType = Interface::ActiveConnection::async()->getInterfaceType();
+    switch (m_ifaceType)
     {
     case Interface::IfaceType::USB:
     case Interface::IfaceType::Emulator:
@@ -240,16 +213,16 @@ void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
         parseNode(resNode, tags::iec, [&](const QDomNode &protocolNode) { parseIec(protocolNode); });
         break;
     default:
+        Q_ASSERT(false);
         qCritical() << "Undefined interface type";
         return;
     }
 }
 
-/// \brief Функция для парсинга узла <modbus>.
 void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode)
 {
-    auto signalId = parseNumFromNode<quint32>(modbusNode, tags::sig_id);
-    auto regType = parseNumFromNode<quint16>(modbusNode, tags::reg_type);
+    auto signalId = parseNumFromNode<u32>(modbusNode, tags::sig_id);
+    auto regType = parseNumFromNode<u16>(modbusNode, tags::reg_type);
     if (signalId != 0)
     {
         Protocol::AbstractGroup str { Interface::IfaceType::RS485, signalId, regType, quint16() };
@@ -257,11 +230,10 @@ void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode)
     }
 }
 
-/// \brief Функция для парсинга узла <protocom>.
 void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode)
 {
-    auto signalId = parseNumFromNode<quint32>(protocomNode, tags::sig_id);
-    auto block = parseNumFromNode<quint16>(protocomNode, tags::block);
+    auto signalId = parseNumFromNode<u32>(protocomNode, tags::sig_id);
+    auto block = parseNumFromNode<u16>(protocomNode, tags::block);
     if (signalId != 0)
     {
         Protocol::AbstractGroup str { Interface::IfaceType::USB, signalId, block, quint16() };
@@ -269,12 +241,11 @@ void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode)
     }
 }
 
-/// \brief Функция для парсинга узла <iec60870>.
 void Xml::ModuleParser::parseIec(const QDomNode &iecNode)
 {
-    auto signalId = parseNumFromNode<quint32>(iecNode, tags::sig_id);
-    auto transType = parseNumFromNode<quint16>(iecNode, tags::trans_type);
-    auto sigGroup = parseNumFromNode<quint16>(iecNode, tags::sig_group);
+    auto signalId = parseNumFromNode<u32>(iecNode, tags::sig_id);
+    auto transType = parseNumFromNode<u16>(iecNode, tags::trans_type);
+    auto sigGroup = parseNumFromNode<u16>(iecNode, tags::sig_group);
     if (signalId != 0)
     {
         Protocol::AbstractGroup str { Interface::IfaceType::Ethernet, signalId, transType, sigGroup };
@@ -282,19 +253,17 @@ void Xml::ModuleParser::parseIec(const QDomNode &iecNode)
     }
 }
 
-/// \brief Функция для парсинга узла <config>.
 void Xml::ModuleParser::parseConfig(const QDomNode &configNode)
 {
-    auto id = parseNumFromNode<quint16>(configNode, tags::id);
+    auto id = parseNumFromNode<u16>(configNode, tags::id);
     auto defVal = parseString(configNode, tags::def_val);
     auto visibility = true;
     if (parseString(configNode, tags::visibility) == "false")
         visibility = false;
-    auto count = parseNumFromNode<quint16>(configNode, tags::count);
+    auto count = parseNumFromNode<u16>(configNode, tags::count);
     emit configDataSending(id, defVal, visibility, count);
 }
 
-/// \brief Функция для парсинга узлов <tab> внутри <hidden>.
 void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
 {
     auto hiddenTabElem = hiddenTabNode.toElement();
@@ -302,7 +271,7 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
     auto tabBackground = hiddenTabElem.attribute(tags::background);
     auto tabPrefix = hiddenTabElem.attribute(tags::prefix);
     auto tabFlag = (hiddenTabElem.attribute(tags::flag)).toUShort();
-    std::vector<ModuleTypes::HiddenWidget> widgets;
+    std::vector<Xml::HiddenWidget> widgets;
     callForEachChild(hiddenTabNode, [this, &widgets](const QDomNode &hiddenWidgetNode) {
         auto hiddenWidgetElem = hiddenWidgetNode.toElement();
         auto viewStr = hiddenWidgetElem.attribute(tags::view, "LineEdit");
@@ -311,17 +280,16 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
         auto name = parseString(hiddenWidgetNode, tags::name);
         auto typeStr = parseString(hiddenWidgetNode, tags::type);
         auto type = parseBinaryType(typeStr);
-        auto address = parseNumFromNode<quint32>(hiddenWidgetNode, tags::addr);
-        auto index = parseNumFromNode<quint16>(hiddenWidgetNode, tags::index);
+        auto address = parseNumFromNode<u32>(hiddenWidgetNode, tags::addr);
+        auto index = parseNumFromNode<u16>(hiddenWidgetNode, tags::index);
         auto visibility = true;
         if (parseString(hiddenWidgetNode, tags::visibility) == "false")
             visibility = false;
-        widgets.push_back(ModuleTypes::HiddenWidget { name, title, address, index, type, view, visibility });
+        widgets.push_back(Xml::HiddenWidget { name, title, address, index, type, view, visibility });
     });
-    emit hiddenTabDataSending(ModuleTypes::HiddenTab { tabTitle, tabBackground, tabPrefix, tabFlag, widgets });
+    emit hiddenTabDataSending(Xml::HiddenTab { tabTitle, tabBackground, tabPrefix, tabFlag, widgets });
 }
 
-/// \brief Функция для парсинга узла <resources>.
 void Xml::ModuleParser::parseDetector(const QDomNode &node)
 {
     const auto tag = node.toElement().tagName();
@@ -350,24 +318,104 @@ void Xml::ModuleParser::parseDetector(const QDomNode &node)
     }
 }
 
-/// \brief Функция для парсинга файла конфигурации модуля.
-void Xml::ModuleParser::parse(const QStringList &nodes)
+void Xml::ModuleParser::parseResources(const QDomElement &resourcesNode, const QStringList &nodes)
 {
-    if (!resources.isNull())
+    if (!resourcesNode.isNull())
     {
         auto parseAction = [this](const QDomNode &node) { parseDetector(node); };
         // Парсим весь файл, если узлы не указаны требуемые узлы
         if (nodes.empty())
         {
             emit startNewConfig();
-            callForEachChild(resources, parseAction);
+            callForEachChild(resourcesNode, parseAction);
             // Настройки интерфейсов всегда парсим отдельно после парсинга сигналов
-            parseInterface(resources);
+            parseInterface(resourcesNode);
         }
         else
         {
             for (auto &node : nodes)
-                callIfNodeExist(resources, node, parseAction);
+                callIfNodeExist(resourcesNode, node, parseAction);
         }
     }
+    else
+        emit parseError("В файле не найден узел <resources>");
+}
+
+void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList &nodes)
+{
+    if (Files::isFileExist(filename))
+    {
+        auto document = getFileContent(filename);
+        auto moduleNode = document.firstChildElement(tags::module);
+        if (!moduleNode.isNull())
+        {
+            auto resources = moduleNode.firstChildElement(tags::res);
+            parseResources(resources, nodes);
+        }
+        else
+            emit parseError(QString("В файле %1 не найден узел <module>").arg(filename));
+    }
+    else
+        emit parseError(QString("Файл %1 не найден").arg(filename));
+}
+
+void Xml::ModuleParser::parseDocument(const QStringList &filenames, const Device::CurrentDevice *device)
+{
+    for (const auto &filename : qAsConst(filenames))
+    {
+        if (Files::isFileExist(filename))
+        {
+            auto document = getFileContent(filename);
+            auto moduleNode = document.firstChildElement(tags::module);
+            if (!moduleNode.isNull())
+            {
+                if (isCorrectDevice(moduleNode, device))
+                {
+                    auto resources = moduleNode.firstChildElement(tags::res);
+                    parseResources(resources);
+                }
+                else
+                    break;
+            }
+            else
+                emit parseError(QString("В файле %1 не найден узел <module>").arg(filename));
+        }
+        else
+            emit parseError(QString("Файл %1 не найден").arg(filename));
+    }
+}
+
+void Xml::ModuleParser::parse(const u16 typeB, const u16 typeM, const QStringList &nodes)
+{
+    auto xmlFilename = getFileName(typeB, typeM);
+    if (Files::isFileExist(xmlFilename))
+        parseDocument(xmlFilename, nodes);
+    else
+    {
+        auto baseXmlFilename = getFileName(typeB, 0);
+        auto mezzXmlFilename = getFileName(0, typeM);
+        parseDocument(baseXmlFilename, nodes);
+        parseDocument(mezzXmlFilename, nodes);
+    }
+}
+
+void Xml::ModuleParser::parse(Device::CurrentDevice *device)
+{
+    if (device)
+    {
+        m_ifaceType = device->async()->getInterfaceType();
+        const auto typeB = device->getBaseType();
+        const auto typeM = device->getMezzType();
+        auto xmlFilename = getFileName(typeB, typeM);
+        if (Files::isFileExist(xmlFilename))
+            parseDocument({ xmlFilename }, device);
+        else
+        {
+            auto baseXmlFilename = getFileName(typeB, 0);
+            auto mezzXmlFilename = getFileName(0, typeM);
+            parseDocument({ baseXmlFilename, mezzXmlFilename }, device);
+        }
+    }
+    else
+        emit parseError("Получен нулевой указатель на устройство");
 }

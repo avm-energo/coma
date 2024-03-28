@@ -32,15 +32,25 @@
 #include <QScrollBar>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-#include <interfaces/conn/active_connection.h>
+//#include <interfaces/conn/active_connection.h>
+#include <interfaces/conn/sync_connection.h>
 
 using namespace Interface;
 
-DataBlock::DataBlock(QObject *parent) : QObject(parent)
+const QMap<DataTypes::DataBlockTypes, DataBlock::FilePropertiesStruct> DataBlock::ExtMap {
+    { DataTypes::DataBlockTypes::BacBlock, { ".tn", "Tune files (*.tn?)" } },          //
+    { DataTypes::DataBlockTypes::BciBlock, { ".cf", "Configuration files (*.cf?)" } }, //
+    { DataTypes::DataBlockTypes::BdBlock, { ".bd", "Data files (*.bd?)" } },           //
+    { DataTypes::DataBlockTypes::BdaBlock, { ".bda", "Simple data files (*.bda)" } }   //
+};
+
+DataBlock::DataBlock(QObject *parent)
+    : QObject(parent)
+    , valueNumberCounter(0) //
+    , m_widgetIsSet(false)
+    , m_isBottomButtonsWidgetCreated(false)
+    , m_conn(nullptr)
 {
-    m_widgetIsSet = false;
-    m_isBottomButtonsWidgetCreated = false;
-    valueNumberCounter = 0;
 }
 
 DataBlock::~DataBlock()
@@ -51,6 +61,13 @@ void DataBlock::setBlock(const DataBlock::BlockStruct &bds)
 {
     m_block = bds;
     setupValuesDesc();
+}
+
+void DataBlock::setup(const QString &UID, Interface::SyncConnection *syncConnection)
+{
+    Q_ASSERT(syncConnection != nullptr);
+    m_deviceUID = UID;
+    m_conn = syncConnection;
 }
 
 QWidget *DataBlock::widget(bool showButtons)
@@ -156,12 +173,8 @@ QWidget *DataBlock::blockButtonsUI()
 void DataBlock::setEnabled(bool isEnabled)
 {
     for (auto &group : m_valuesDesc)
-    {
         for (auto &valueDesc : group.values)
-        {
             WDFunc::SetEnabled(m_widget, valueDesc.valueId, isEnabled);
-        }
-    }
 }
 
 DataBlock::BlockStruct DataBlock::block()
@@ -222,13 +235,14 @@ void DataBlock::updateFromWidget()
 
 Error::Msg DataBlock::writeBlockToModule()
 {
-    auto conn = ActiveConnection::sync();
+    Q_ASSERT(m_conn != nullptr);
+    // auto conn = ActiveConnection::sync();
     switch (m_block.blocktype)
     {
     case DataTypes::DataBlockTypes::BacBlock:
     {
         updateFromWidget();
-        if (conn->writeBlockSync(
+        if (m_conn->writeBlockSync(
                 m_block.blocknum, DataTypes::DataBlockTypes::BacBlock, m_block.block, m_block.blocksize)
             != Error::Msg::NoError)
         {
@@ -255,21 +269,22 @@ Error::Msg DataBlock::writeBlockToModule()
 
 void DataBlock::readBlockFromModule()
 {
-    auto conn = ActiveConnection::sync();
+    Q_ASSERT(m_conn != nullptr);
+    // auto conn = ActiveConnection::sync();
     switch (m_block.blocktype)
     {
     case DataTypes::DataBlockTypes::BacBlock:
     case DataTypes::DataBlockTypes::BdBlock:
     case DataTypes::DataBlockTypes::BdaBlock:
     {
-        const auto err = conn->reqBlockSync(m_block.blocknum, m_block.blocktype, m_block.block, m_block.blocksize);
+        const auto err = m_conn->reqBlockSync(m_block.blocknum, m_block.blocktype, m_block.block, m_block.blocksize);
         if (err != Error::Msg::NoError)
             qCritical("Не удалось прочитать блок");
         break;
     }
     case DataTypes::DataBlockTypes::BciBlock:
     {
-        const auto err = conn->readS2FileSync(S2::FilesEnum::Config);
+        const auto err = m_conn->readS2FileSync(S2::FilesEnum::Config);
         if (err != Error::Msg::NoError)
             qCritical("Не удалось прочитать блок");
     }

@@ -1,23 +1,30 @@
 #pragma once
-#include "../../module/module.h"
+
+#include "../../xml/xmlparser/xmlmoduleparser.h"
 
 #include <QObject>
 #include <QtTest>
+#include <device/configstorage.h>
+#include <s2/s2datamanager.h>
+
+using namespace Device::XmlDataTypes;
 
 class TestModule : public QObject
 {
     Q_OBJECT
     // Helpers
 private:
-    ConfigStorage &storage;
-    S2::DataManager *s2Manager;
+    Device::ConfigStorage *m_storage;
+    S2::DataManager *m_s2manager;
+    Xml::ModuleParser *m_xmlParser;
+    bool m_parseStatus;
 
     /// \brief Returns groups number from all sections.
-    int getGroupsCount(const ModuleTypes::SectionList &list);
+    int getGroupsCount(const SectionList &list);
     /// \brief Returns widgets number from all sections.
-    std::size_t getWidgetsCount(const ModuleTypes::SectionList &list);
+    std::size_t getWidgetsCount(const SectionList &list);
     /// \brief Returns alarms number from alarm map (list with all alarm types).
-    int getAlarmsCount(const ModuleTypes::AlarmMap &map);
+    int getAlarmsCount(const AlarmMap &map);
 
     void createInterfaceContext(const Interface::IfaceType &ifaceType);
 
@@ -36,6 +43,9 @@ private slots:
     /// \brief Вызывается после каждой тестовой функции
     void cleanup()
     {
+        m_storage->clear();
+        m_s2manager->clear();
+        m_parseStatus = true;
     }
 
     /// \brief Вызывается после последней тестовой функции

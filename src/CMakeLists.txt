@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(coma VERSION 2.9.0)
+project(coma VERSION 2.10.0)
 
 add_compile_definitions(DEVICETYPE=1)
 set(SOFTDEVELOPER "AVM-Energo")
@@ -18,7 +18,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 ##### OPTIONS #####
 option(ENABLE_EMULATOR "Enable emulator interface" OFF)
 option(ENABLE_PVS "Enable PVS-Studio" OFF)
-option(BUILD_TESTS "Build tests" ON)
+option(COMA_BUILD_TESTS "Build tests" ON)
 
 # Including cmake scripts for some functions usage
 include(DetermineTargetArchitecture)
@@ -125,6 +125,11 @@ if(NOT DEFINED CPACK_PACKAGING_INSTALL_PREFIX)
 endif()
 message(STATUS "Packaging install prefix: ${CPACK_PACKAGING_INSTALL_PREFIX}")
 
+# Including ctest
+if(COMA_BUILD_TESTS)
+  include(CTest)
+endif()
+
 # Building libraries and targets
 # Step 1: Build dependencies
 include(gen)
@@ -134,22 +139,24 @@ include(limereport)
 include(qxlsx)
 add_subdirectory(comaversion)
 add_subdirectory(comaresources)
+add_subdirectory(ctti)
 add_subdirectory(s2)
-add_subdirectory(settings)
 add_subdirectory(interfaces)
-add_subdirectory(datablocks)
-add_subdirectory(module)
+add_subdirectory(device)
+add_subdirectory(xml)
+add_subdirectory(settings)
+add_subdirectory(models)
+add_subdirectory(widgets)
+add_subdirectory(alarms)
+add_subdirectory(journals)
 add_subdirectory(oscillograms)
 add_subdirectory(startup)
-add_subdirectory(widgets)
-add_subdirectory(dialogs)
+add_subdirectory(datablocks)
 add_subdirectory(tune)
-add_subdirectory(models)
-add_subdirectory(xml)
-add_subdirectory(journals)
+add_subdirectory(dialogs)
 add_subdirectory(coma_core)
 # Step 2: Build tests
-if(BUILD_TESTS)
+if(COMA_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 # Step 3: Build executable targets
