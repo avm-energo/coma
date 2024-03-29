@@ -14,14 +14,12 @@ DataController::DataController(QObject *parent) : QObject(parent), isModuleChang
 {
 }
 
-/// \brief Возвращает путь до файла в домашней директории пользователя.
 QString DataController::getFilePath(const QString &filename)
 {
     auto dir = QDir(StdFunc::GetSystemHomeDir());
     return dir.filePath(filename);
 }
 
-/// \brief Меняет у parent узел с именем tag, на новый узел с именем tag, который содержит строку data.
 void DataController::replaceChild(QDomDocument &doc, QDomElement &parent, const QString &tag, const QVariant &data)
 {
     if (data.isValid() && data.canConvert<QString>())
@@ -39,7 +37,6 @@ void DataController::replaceChild(QDomDocument &doc, QDomElement &parent, const 
         qWarning() << "Invalid QVariant data received!";
 }
 
-/// \brief Меняет у атрибутов attrs узла node значения на vals.
 void DataController::replaceAttrs(
     QDomDocument &doc, QDomElement &node, const QStringList attrs, const QList<QVariant> &vals)
 {
@@ -63,8 +60,6 @@ void DataController::replaceAttrs(
         qWarning() << "Invalid data received!";
 }
 
-/// \brief Записываем DOM документ в файл.
-/// \details Если oldName и newName не совпадают, то файл переименовывается.
 void DataController::writeToFile(const QDomDocument &doc, const QString &oldName, const QString &newName)
 {
     // Запись в файл
@@ -79,7 +74,6 @@ void DataController::writeToFile(const QDomDocument &doc, const QString &oldName
         out.setEncoding(QStringConverter::Utf8);
 #endif
         doc.save(out, 4);
-        // out << doc->toString(4);
         file->close();
     }
     file->deleteLater();
@@ -88,20 +82,16 @@ void DataController::writeToFile(const QDomDocument &doc, const QString &oldName
         renameFile(oldName, newName);
 }
 
-/// \brief Установка флага, что файл не изменён.
 void DataController::resetOrSaved()
 {
     isModuleChanged = false;
 }
 
-/// \brief Возвращает флаг, изменён файл или нет.
 bool DataController::getModuleState() const
 {
     return isModuleChanged;
 }
 
-/// \brief Изменяет состояние флага, изменён ли файл, и отправляет
-/// сообщение редактору, чтобы выделить изменённый элемент.
 void DataController::configChanged()
 {
     if (!isModuleChanged)
@@ -111,19 +101,16 @@ void DataController::configChanged()
     }
 }
 
-/// \brief Сохраняет номер строки изменённого конфига в мастер модели.
 int DataController::getRow() const
 {
     return changedRow;
 }
 
-/// \brief Возвращает сохранённую строку изменённого конфига.
 void DataController::setRow(const int &row)
 {
     changedRow = row;
 }
 
-/// \brief Создать файл (создание конфига модуля).
 void DataController::createFile(const QStringList &creationData)
 {
     constexpr char templateName[] = "module-template.xml";
@@ -160,7 +147,6 @@ void DataController::createFile(const QStringList &creationData)
     }
 }
 
-/// \brief Переименовать файл (если было изменено имя устройства).
 void DataController::renameFile(const QString &oldName, const QString &newName)
 {
     auto oldFilepath = getFilePath(oldName);
@@ -175,7 +161,6 @@ void DataController::renameFile(const QString &oldName, const QString &newName)
         EMessageBox::error(nullptr, "Не получилось переименовать файл!");
 }
 
-/// \brief Удалить файл (модуль был удалён).
 void DataController::removeFile(const QString &filename)
 {
     // Если файл существует
@@ -193,7 +178,6 @@ void DataController::removeFile(const QString &filename)
     }
 }
 
-/// \brief Сохранить файл (модуль открыт в правой view).
 void DataController::saveFile(MasterModel *masterModel, XmlModel *slaveModel)
 {
     // Создание документа
@@ -205,14 +189,12 @@ void DataController::saveFile(MasterModel *masterModel, XmlModel *slaveModel)
     auto resNode = slaveModel->toNode(doc);
     moduleNode.appendChild(resNode);
     doc.appendChild(moduleNode);
-
     // Запись в файл
     auto oldFileName = masterModel->data(masterModel->index(changedRow, 0), FilenameDataRole).value<QString>();
     auto newFileName = masterModel->data(masterModel->index(changedRow, 4)).value<QString>();
     writeToFile(doc, oldFileName, newFileName);
 }
 
-/// \brief Сохранить файл (модуль не открыт).
 void DataController::saveFile(MasterModel *masterModel)
 {
     QDomDocument doc;

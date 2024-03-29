@@ -1,11 +1,10 @@
 #include "xml/xmleditor/models/baseeditormodel.h"
 
 BaseEditorModel::BaseEditorModel(int rows, int cols, ModelType type, QObject *parent)
-    : QStandardItemModel(rows, cols, parent), mType(type)
+    : QStandardItemModel(rows, cols, parent), m_type(type)
 {
 }
 
-/// \brief Sets horizontal header labels of model from an input string list.
 void BaseEditorModel::setHorizontalHeaderLabels(const QStringList &labels)
 {
     int column = 0;
@@ -16,17 +15,11 @@ void BaseEditorModel::setHorizontalHeaderLabels(const QStringList &labels)
     }
 }
 
-/// \brief Returns a model type.
 ModelType BaseEditorModel::getModelType() const
 {
-    return mType;
+    return m_type;
 }
 
-/// \brief Creates an attribute at base of input data.
-/// \param doc - XML document in that creates data.
-/// \param elem - XML DOM node, child of doc. New attribute creates for this node.
-/// \param attrName - a name of creating attribute.
-/// \param attrVar - QVariant with string value of creating attribute.
 void BaseEditorModel::setAttribute(
     QDomDocument &doc, QDomElement &elem, const QString &attrName, const QVariant &attrVar)
 {
@@ -36,17 +29,11 @@ void BaseEditorModel::setAttribute(
     elem.setAttributeNode(attr);
 }
 
-/// \brief Creates QDomNode at base of input QDomDocument.
 QDomElement BaseEditorModel::makeElement(QDomDocument &doc, const QString &elemName)
 {
     return doc.createElement(elemName);
 }
 
-/// \brief Creates a QDomNode at base of input data.
-/// \param doc - XML document in that creates data.
-/// \param parent - XML DOM node, parent of creating node.
-/// \param elemName - name of creating node.
-/// \param data - string data for the new node.
 void BaseEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QString &data)
 {
     auto elem = makeElement(doc, elemName);
@@ -55,18 +42,12 @@ void BaseEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const 
     parent.appendChild(elem);
 }
 
-/// \brief Creates a QDomNode at base of input data.
-/// \param doc - XML document in that creates data.
-/// \param parent - XML DOM node, parent of creating node.
-/// \param elemName - name of creating node.
-/// \param data - QVariant with string data for the new node.
 void BaseEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QVariant &data)
 {
     auto str = (data.isValid() && data.canConvert<QString>()) ? data.value<QString>() : "";
     makeElement(doc, parent, elemName, str);
 }
 
-/// \brief Slot for receiving a request from dialog and emits signal with response.
 void BaseEditorModel::getDialogRequest(const int row)
 {
     if (row >= 0 && row < rowCount())
@@ -92,7 +73,6 @@ void BaseEditorModel::getDialogRequest(const int row)
     }
 }
 
-/// \brief Slot for inserting a new item in the model.
 void BaseEditorModel::create(const QStringList &saved, int *row)
 {
     *row = rowCount();
@@ -102,7 +82,6 @@ void BaseEditorModel::create(const QStringList &saved, int *row)
     insertRow(rowCount(), items);
 }
 
-/// \brief Slot for updating an item's data in the model.
 void BaseEditorModel::update(const QStringList &saved, const int row)
 {
     if (row >= 0 && row < rowCount())
@@ -117,7 +96,6 @@ void BaseEditorModel::update(const QStringList &saved, const int row)
     }
 }
 
-/// \brief Slot for deleting an exisiting item in the model.
 void BaseEditorModel::remove(const int row)
 {
     removeRow(row);

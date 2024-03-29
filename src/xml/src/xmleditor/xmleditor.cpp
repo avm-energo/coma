@@ -20,20 +20,19 @@ XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), dc(nullptr)
     if (parent != nullptr)
     {
         dc = new DataController(this);
-        QObject::connect(dc, &DataController::highlightModified, //
+        QObject::connect(dc, &DataController::highlightModified, this, //
             [this]() {
                 auto row = masterView->selectionModel()->selectedRows().at(0).row();
                 dc->setRow(row);
                 setFontBolding(row, true);
             });
         manager = new ModelManager(this);
-        QObject::connect(manager, &ModelManager::SaveModule, this, &XmlEditor::saveModule);
+        QObject::connect(manager, &ModelManager::saveModule, this, &XmlEditor::saveModule);
         setupUI(parent->size());
         exec();
     }
 }
 
-/// \brief Настройка интерфейса диалогового окна редактора.
 void XmlEditor::setupUI(QSize pSize)
 {
     // Размер окна
@@ -47,14 +46,12 @@ void XmlEditor::setupUI(QSize pSize)
     setLayout(mainLayout);
 }
 
-/// \brief Действия, выполняемые при закрытии окна редактора.
 void XmlEditor::reject()
 {
     saveModule();
     hide();
 }
 
-/// \brief Возвращает рабочее пространство master (левая часть окна).
 QVBoxLayout *XmlEditor::getMasterWorkspace()
 {
     auto workspace = new QVBoxLayout;
@@ -87,9 +84,9 @@ QVBoxLayout *XmlEditor::getMasterWorkspace()
     workspace->addWidget(masterView);
 
     // Создание и настройка мастер модели
-    masterModel = ModelFabric::CreateMasterModel(this);
+    masterModel = ModelFabric::createMasterModel(this);
     QObject::connect(masterView, &QTableView::doubleClicked, masterModel, &MasterModel::masterItemSelected);
-    QObject::connect(masterModel, &MasterModel::itemSelected, manager, &ModelManager::SetDocument);
+    QObject::connect(masterModel, &MasterModel::itemSelected, manager, &ModelManager::setDocument);
     // Подключение контроллера данных
     QObject::connect(masterModel, &MasterModel::createFile, dc, &DataController::createFile);
     QObject::connect(masterModel, &MasterModel::removeFile, dc, &DataController::removeFile);
@@ -98,7 +95,6 @@ QVBoxLayout *XmlEditor::getMasterWorkspace()
     return workspace;
 }
 
-/// \brief Возвращает рабочее пространство slave (правая часть окна).
 QVBoxLayout *XmlEditor::getSlaveWorkspace()
 {
     auto workspace = new QVBoxLayout;
@@ -121,7 +117,7 @@ QVBoxLayout *XmlEditor::getSlaveWorkspace()
 
     // Label для отображения текущего положения в дереве моделей
     auto curPath = new QLabel("", this);
-    QObject::connect(manager, &ModelManager::PathChanged, curPath, &QLabel::setText);
+    QObject::connect(manager, &ModelManager::pathChanged, curPath, &QLabel::setText);
     workspace->addWidget(curPath);
 
     // Настройка QTableView для slave
@@ -132,20 +128,19 @@ QVBoxLayout *XmlEditor::getSlaveWorkspace()
     auto header = tableSlaveView->horizontalHeader();
     header->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-    QObject::connect(tableSlaveView, &QTableView::doubleClicked, manager, &ModelManager::ViewModelItemClicked);
-    QObject::connect(manager, &ModelManager::ModelChanged, this, //
+    QObject::connect(tableSlaveView, &QTableView::doubleClicked, manager, &ModelManager::viewModelItemClicked);
+    QObject::connect(manager, &ModelManager::modelChanged, this, //
         [this](XmlModel *model) {
             tableSlaveView->setModel(model);
             tableSlaveView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
             QObject::connect(model, &XmlModel::modelChanged, dc, &DataController::configChanged);
         });
-    QObject::connect(manager, &ModelManager::EditQuery, this,          //
+    QObject::connect(manager, &ModelManager::editQuery, this,          //
         [this]() { actionDialog(DialogType::Edit, tableSlaveView); }); //
     workspace->addWidget(tableSlaveView);
     return workspace;
 }
 
-/// \brief Слот для создания диалогового окна создания, редактирования или удаления выбранного элемента.
 void XmlEditor::actionDialog(DialogType dlgType, QTableView *srcView)
 {
     auto model = qobject_cast<BaseEditorModel *>(srcView->model());
@@ -174,7 +169,6 @@ void XmlEditor::actionDialog(DialogType dlgType, QTableView *srcView)
     }
 }
 
-/// \brief Слот для смены bolding текста элемента, который был изменён (для master workspace).
 void XmlEditor::setFontBolding(int row, bool state)
 {
     auto cols = masterModel->columnCount();
@@ -187,10 +181,9 @@ void XmlEditor::setFontBolding(int row, bool state)
     }
 }
 
-/// \brief Слот для создания диалогового окна о сохранении изменений в выбранном модуле.
 void XmlEditor::savingAsk()
 {
-    auto slaveModel = manager->GetRootModel();
+    auto slaveModel = manager->getRootModel();
     if (EMessageBox::question(this, "Сохранить изменения?"))
     {
         if (slaveModel != nullptr)
@@ -207,7 +200,6 @@ void XmlEditor::savingAsk()
     }
 }
 
-/// \brief Слот для сохранения или сброса изменений настроек модуля.
 void XmlEditor::saveModule()
 {
     if (dc->getModuleState())

@@ -2,100 +2,81 @@
 
 #include <xml/xmleditor/models/modelfabric.h>
 
-/// \brief Main ctor for model manager.
-ModelManager::ModelManager(QObject *parent) : QObject(parent), root(nullptr), curModel(nullptr), curPath("")
+ModelManager::ModelManager(QObject *parent)
+    : QObject(parent), m_root(nullptr), m_currentModel(nullptr), m_currentPath("")
 {
 }
 
-/*! \brief Clears stack with models and label with current path.
- *  \see SetDocument
- */
-void ModelManager::ClearStorage()
+void ModelManager::clearStorage()
 {
-    while (!storage.empty())
+    while (!m_storage.empty())
     {
-        curModel = storage.top();
-        storage.pop();
+        m_currentModel = m_storage.top();
+        m_storage.pop();
     }
-    curModel->deleteLater();
-    curModel = nullptr;
-    curPath = "";
-    emit PathChanged(curPath);
+    m_currentModel->deleteLater();
+    m_currentModel = nullptr;
+    m_currentPath = "";
+    emit pathChanged(m_currentPath);
 }
 
-/// \brief Replaces the current XML model by given model.
-void ModelManager::ChangeModel(XmlModel *model)
+void ModelManager::updateModel(XmlModel *model)
 {
-    curModel = model;
-    emit ModelChanged(curModel);
+    m_currentModel = model;
+    emit modelChanged(m_currentModel);
 }
 
-/*! \brief Slot that is called when user selects a file in the master model.
- *  \details Creates root XML model at base of given XML document
- *  and sets it as current model in table view.
- *  \see ClearStorage, ChangeModel
- */
-void ModelManager::SetDocument(QDomNode &doc)
+void ModelManager::setDocument(QDomNode &doc)
 {
     // Если уже есть модель
-    if (curModel != nullptr)
+    if (m_currentModel != nullptr)
     {
-        ClearStorage();
-        emit SaveModule();
+        clearStorage();
+        emit saveModule();
     }
-    root = ModelFabric::CreateRootModel(doc, this);
-    ChangeModel(root);
+    m_root = ModelFabric::createRootModel(doc, this);
+    updateModel(m_root);
 }
 
-/// \brief Returns current XML root model.
-XmlModel *ModelManager::GetRootModel() const
+XmlModel *ModelManager::getRootModel() const
 {
-    return root;
+    return m_root;
 }
 
-/*! \brief Slot that is called when user selects item in current XML model.
- *  \details This function has 3 behaviours:
- *  - selected item in the current model contains child XML model:
- *  calling ChangeModel with child model as  a function argument;
- *  - selected item in the current model is a string ".." for go back:
- *  returns previous model from stack and call ChangeModel with this model as a function argument;
- *  - selected item in the current model is usual item: emits EditQuery signal.
- * \see ChangeModel, PathChanged, EditQuery
- */
-void ModelManager::ViewModelItemClicked(const QModelIndex &index)
+void ModelManager::viewModelItemClicked(const QModelIndex &index)
 {
-    auto pureIndex = curModel->index(index.row(), 0);
-    auto data = curModel->data(pureIndex, ModelNodeRole);
+    auto pureIndex = m_currentModel->index(index.row(), 0);
+    auto data = m_currentModel->data(pureIndex, ModelNodeRole);
     // Если кликнули по item-у, который содержит подмодель
     if (data.isValid() && data.canConvert<ChildModelNode>())
     {
         auto modelNode = data.value<ChildModelNode>();
-        if (modelNode.modelPtr != nullptr && modelNode.modelType != ModelType::None)
+        if (modelNode.m_model != nullptr && modelNode.m_type != ModelType::None)
         {
-            auto name = curModel->data(pureIndex).value<QString>();
-            curPath += "\\" + name;
-            storage.push(curModel);
-            ChangeModel(modelNode.modelPtr);
-            emit PathChanged(curPath);
+            auto name = m_currentModel->data(pureIndex).value<QString>();
+            m_currentPath += "\\" + name;
+            m_storage.push(m_currentModel);
+            updateModel(modelNode.m_model);
+            emit pathChanged(m_currentPath);
         }
     }
     else
     {
-        data = curModel->data(pureIndex);
+        data = m_currentModel->data(pureIndex);
         if (data.isValid() && data.canConvert<QString>())
         {
             auto str = data.value<QString>();
             // Если пользователь хочет вернуться назад
             if (str == "..")
             {
-                curPath = curPath.left(curPath.lastIndexOf('\\'));
-                curModel = storage.top();
-                storage.pop();
-                emit ModelChanged(curModel);
-                emit PathChanged(curPath);
+                m_currentPath = m_currentPath.left(m_currentPath.lastIndexOf('\\'));
+                m_currentModel = m_storage.top();
+                m_storage.pop();
+                emit modelChanged(m_currentModel);
+                emit pathChanged(m_currentPath);
             }
             else
-                emit EditQuery();
+                emit editQuery();
         }
     }
 }

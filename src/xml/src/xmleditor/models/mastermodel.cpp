@@ -8,7 +8,6 @@ MasterModel::MasterModel(QObject *parent) : BaseEditorModel(1, 1, ModelType::Mas
     readModulesToModel();
 }
 
-/// \brief Creates XML DOM node at base of content selected item.
 QDomElement MasterModel::toNode(QDomDocument &doc, const int &row)
 {
     // Создаём основной узел
@@ -23,7 +22,6 @@ QDomElement MasterModel::toNode(QDomDocument &doc, const int &row)
     return moduleNode;
 }
 
-/// \brief Undo changes of opened XML model.
 void MasterModel::undoChanges(const int &row, const bool &openState)
 {
     auto fileName = data(index(row, 0), FilenameDataRole).value<QString>();
@@ -46,7 +44,6 @@ void MasterModel::undoChanges(const int &row, const bool &openState)
         masterItemSelected(index(row, 0));
 }
 
-/// \brief Initial function for reading existing configuration files in model.
 void MasterModel::readModulesToModel()
 {
     // Создание и настройка модели для Master View
@@ -86,7 +83,6 @@ void MasterModel::readModulesToModel()
     }
 }
 
-/// \brief Parsing each file's content in model.
 void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, const int &row)
 {
     // Устанавливаем имя файла
@@ -110,7 +106,6 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, co
     }
 }
 
-/// \brief Updates a data from a dialog.
 QStringList MasterModel::getNewList(const QStringList &saved)
 {
     auto filename = saved[1].toLower() + saved[2].toLower() + ".xml";
@@ -119,7 +114,6 @@ QStringList MasterModel::getNewList(const QStringList &saved)
     return newSaved;
 }
 
-/// \brief Creates XML model in slave workspace where user select item in master model.
 void MasterModel::masterItemSelected(const QModelIndex &itemIndex)
 {
     const auto row = itemIndex.row();
@@ -148,7 +142,6 @@ void MasterModel::masterItemSelected(const QModelIndex &itemIndex)
     }
 }
 
-/// \brief Slot for inserting a new item in the model.
 void MasterModel::create(const QStringList &saved, int *row)
 {
     auto newSaved = getNewList(saved);
@@ -157,7 +150,6 @@ void MasterModel::create(const QStringList &saved, int *row)
     emit createFile(newSaved);
 }
 
-/// \brief Slot for updating an item's data in the model.
 void MasterModel::update(const QStringList &saved, const int row)
 {
     auto newSaved = getNewList(saved);
@@ -165,7 +157,6 @@ void MasterModel::update(const QStringList &saved, const int row)
     emit modelChanged();
 }
 
-/// \brief Slot for deleting an exisiting item in the model.
 void MasterModel::remove(const int row)
 {
     auto filename = data(index(row, 0), FilenameDataRole).value<QString>();

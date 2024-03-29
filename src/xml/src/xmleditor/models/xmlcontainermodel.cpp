@@ -9,7 +9,6 @@ XmlContainerModel::XmlContainerModel(int rows, int cols, ModelType type, QObject
 {
 }
 
-/// \brief Returns name of XML DOM node in dependency of model type.
 QString XmlContainerModel::getModelTagName() const
 {
     static const std::map<ModelType, QString> tagByModelType = {
@@ -20,25 +19,24 @@ QString XmlContainerModel::getModelTagName() const
         { ModelType::Section, tags::section },   //
         { ModelType::Hidden, tags::hidden },     //
     };
-    auto search = tagByModelType.find(mType);
+    auto search = tagByModelType.find(m_type);
     if (search != tagByModelType.cend())
         return search->second;
     else
         return "undefined";
 }
 
-/// \brief Parsing input XML nodes of file in model items.
 void XmlContainerModel::parseNode(QDomNode &node, int &row)
 {
     // Для узлов <sections> и <section>
-    if (mType == ModelType::Sections || mType == ModelType::Section)
+    if (m_type == ModelType::Sections || m_type == ModelType::Section)
     {
         parseAttribute(node, tags::header, row, 0);  // Заголовок
-        if (mType == ModelType::Section)             //
+        if (m_type == ModelType::Section)            //
             parseAttribute(node, tags::tab, row, 1); // ID вкладки
     }
     // Для узлов <hidden>
-    else if (mType == ModelType::Hidden)
+    else if (m_type == ModelType::Hidden)
     {
         parseAttribute(node, tags::desc, row, 0);
         parseAttribute(node, tags::prefix, row, 1);
@@ -55,47 +53,45 @@ void XmlContainerModel::parseNode(QDomNode &node, int &row)
     }
 }
 
-/// \brief Slot for inserting a new item in the model.
 void XmlContainerModel::create(const QStringList &saved, int *row)
 {
     // Создание дочерних элементов доступно для узлов <sections> и <section>
-    if (mType == ModelType::Sections || mType == ModelType::Section || mType == ModelType::Hidden)
+    if (m_type == ModelType::Sections || m_type == ModelType::Section || m_type == ModelType::Hidden)
     {
         BaseEditorModel::create(saved, row);
         if (*row >= 0)
         {
             ChildModelNode node { nullptr, ModelType::None };
             QStringList labels;
-            if (mType == ModelType::Sections)
+            if (m_type == ModelType::Sections)
             {
-                node.modelType = ModelType::Section;
-                labels = XmlModel::headers.find(node.modelType)->second;
+                node.m_type = ModelType::Section;
+                labels = XmlModel::s_headers.find(node.m_type)->second;
                 // Так как узел <sections> содержит узлы <section>
-                node.modelPtr = new XmlContainerModel(1, labels.count(), node.modelType, this);
+                node.m_model = new XmlContainerModel(1, labels.count(), node.m_type, this);
             }
-            else if (mType == ModelType::Hidden)
+            else if (m_type == ModelType::Hidden)
             {
-                node.modelType = ModelType::HiddenTab;
-                labels = XmlModel::headers.find(node.modelType)->second;
-                node.modelPtr = new XmlDataModel(1, labels.count(), node.modelType, this);
+                node.m_type = ModelType::HiddenTab;
+                labels = XmlModel::s_headers.find(node.m_type)->second;
+                node.m_model = new XmlDataModel(1, labels.count(), node.m_type, this);
             }
             else
             {
-                node.modelType = ModelType::SGroup;
-                labels = XmlModel::headers.find(node.modelType)->second;
+                node.m_type = ModelType::SGroup;
+                labels = XmlModel::s_headers.find(node.m_type)->second;
                 // Узел <section> содержит узлы <sgroup>
-                node.modelPtr = new XmlHideDataModel(1, labels.count(), node.modelType, this);
+                node.m_model = new XmlHideDataModel(1, labels.count(), node.m_type, this);
             }
-            node.modelPtr->setHorizontalHeaderLabels(labels);
-            auto itemIndex = node.modelPtr->index(0, 0);
-            node.modelPtr->setData(itemIndex, QString(".."));
+            node.m_model->setHorizontalHeaderLabels(labels);
+            auto itemIndex = node.m_model->index(0, 0);
+            node.m_model->setData(itemIndex, QString(".."));
             setData(index(*row, 0), QVariant::fromValue(node), ModelNodeRole);
         }
         emit modelChanged();
     }
 }
 
-/// \brief Creates XML DOM node representation of current model.
 QDomElement XmlContainerModel::toNode(QDomDocument &doc)
 {
     // Выбор имени тега исходя из типа модели
@@ -108,21 +104,21 @@ QDomElement XmlContainerModel::toNode(QDomDocument &doc)
         if (childVar.isValid() && childVar.canConvert<ChildModelNode>())
         {
             auto child = childVar.value<ChildModelNode>();
-            if (child.modelPtr != nullptr)
+            if (child.m_model != nullptr)
             {
                 // Дочернюю модель в ноду
-                auto childNode = child.modelPtr->toNode(doc);
+                auto childNode = child.m_model->toNode(doc);
                 // Для узлов <sections> и <section>
-                if (mType == ModelType::Sections || mType == ModelType::Section)
+                if (m_type == ModelType::Sections || m_type == ModelType::Section)
                 {
                     // Добавляем описание (атрибут header)
                     setAttribute(doc, childNode, tags::header, data(index(row, 0)));
                     // Добавляем номер вкладки (атрибут tab)
-                    if (mType == ModelType::Section)
+                    if (m_type == ModelType::Section)
                         setAttribute(doc, childNode, tags::tab, data(index(row, 1)));
                 }
                 // Для узлов <hidden>
-                else if (mType == ModelType::Hidden)
+                else if (m_type == ModelType::Hidden)
                 {
                     setAttribute(doc, childNode, tags::desc, data(index(row, 0)));
                     setAttribute(doc, childNode, tags::prefix, data(index(row, 1)));
@@ -142,13 +138,11 @@ QDomElement XmlContainerModel::toNode(QDomDocument &doc)
     return node;
 }
 
-/// \brief Slot for receiving a request from dialog and emits signal with response.
-/// \details Override needed for XmlResourceModel.
 void XmlContainerModel::getDialogRequest(const int row)
 {
     if (row >= 0 && row < rowCount())
     {
-        if (mType == ModelType::Resources)
+        if (m_type == ModelType::Resources)
         {
             QStringList response;
             auto desc = data(index(row, 1));
@@ -161,13 +155,11 @@ void XmlContainerModel::getDialogRequest(const int row)
     }
 }
 
-/// \brief Slot for updating an item's data in the model.
-/// \details Override needed for XmlResourceModel.
 void XmlContainerModel::update(const QStringList &saved, const int row)
 {
     if (row >= 0 && row < rowCount())
     {
-        if (mType == ModelType::Resources)
+        if (m_type == ModelType::Resources)
         {
             setData(index(row, 1), saved[0]);
             emit modelChanged();

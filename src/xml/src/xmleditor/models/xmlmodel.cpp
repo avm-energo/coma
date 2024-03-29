@@ -3,7 +3,7 @@
 #include <xml/xmleditor/models/modelfabric.h>
 #include <xml/xmltags.h>
 
-const std::map<QString, ModelType> XmlModel::types {
+const std::map<QString, ModelType> XmlModel::s_types {
     { tags::res, ModelType::Resources },           //
     { tags::sigs, ModelType::Signals },            //
     { tags::tabs, ModelType::SectionTabs },        //
@@ -27,7 +27,7 @@ const std::map<QString, ModelType> XmlModel::types {
     { tags::bsi_ext, ModelType::BsiExt },          //
 };
 
-const std::map<ModelType, QStringList> XmlModel::headers {
+const std::map<ModelType, QStringList> XmlModel::s_headers {
     { ModelType::Resources, { "XML", "Описание" } },                                                     //
     { ModelType::Signals, { "Стартовый адрес", "Количество", "ID сигнала", "Тип" } },                    //
     { ModelType::SectionTabs, { "ID вкладки", "Название" } },                                            //
@@ -51,16 +51,10 @@ const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::BsiExt, { "Адрес", "Описание", "Тип", "Видимость" } },                                  //
 };
 
-/// \brief Base XML model class ctor
 XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : BaseEditorModel(rows, cols, type, parent)
 {
 }
 
-/*! \brief Returns the data stored under the given role for the item referred to by the index.
- *  \details This function reimplement and override the same
- *  function from base class QAbstractItemModel.
- *  \see setData, setHeaderData
- */
 QVariant XmlModel::data(const QModelIndex &index, int nRole) const
 {
     if (index.isValid())
@@ -69,12 +63,6 @@ QVariant XmlModel::data(const QModelIndex &index, int nRole) const
         return QVariant();
 }
 
-/*! \brief Sets the role data for the item at index to value.
- *  \details This function reimplement and override the same
- *  function from base class QAbstractItemModel.
- *  \returns Returns true if successful; otherwise returns false.
- *  \see data, headerData
- */
 bool XmlModel::setData(const QModelIndex &index, const QVariant &val, int nRole)
 {
     if (index.isValid() && val.isValid())
@@ -87,31 +75,24 @@ bool XmlModel::setData(const QModelIndex &index, const QVariant &val, int nRole)
     return false;
 }
 
-/// \brief Slot for inserting a new item in the model.
 void XmlModel::create(const QStringList &saved, int *row)
 {
     BaseEditorModel::create(saved, row);
     emit modelChanged();
 }
 
-/// \brief Slot for updating an item's data in the model.
 void XmlModel::update(const QStringList &saved, const int row)
 {
     BaseEditorModel::update(saved, row);
     emit modelChanged();
 }
 
-/// \brief Slot for deleting an exisiting item in the model.
 void XmlModel::remove(const int row)
 {
     BaseEditorModel::remove(row);
     emit modelChanged();
 }
 
-/*! \brief Parses given XML DOM node in current XML model.
- *  \details For each child node of given XML DOM node applying function parseDataNode.
- *  \see parseDataNode, parseNode
- */
 void XmlModel::setDataNode(bool isChildModel, QDomNode &root)
 {
     int row = 0;
@@ -130,20 +111,14 @@ void XmlModel::setDataNode(bool isChildModel, QDomNode &root)
     }
 }
 
-/*! \brief Parses given child node in current XML model.
- *  \details For given child node applying virtual function parseNode. If name
- *  of given node is in static types map, then for this item will be creating new
- *  XML model with help static members of ModelFabric class.
- *  \see parseNode, setDataNode
- */
 void XmlModel::parseDataNode(QDomNode &child, int &row)
 {
     auto childNodeName = child.nodeName();
-    auto type = types.find(childNodeName);
-    if (type != types.cend())
+    auto type = s_types.find(childNodeName);
+    if (type != s_types.cend())
     {
         auto modelNode = ChildModelNode { nullptr, type->second };
-        ModelFabric::CreateChildModel(modelNode, child, this);
+        ModelFabric::createChildModel(modelNode, child, this);
         auto itemIndex = index(row, 0);
         setData(itemIndex, QVariant::fromValue(modelNode), ModelNodeRole);
     }
@@ -151,10 +126,6 @@ void XmlModel::parseDataNode(QDomNode &child, int &row)
     row++;
 }
 
-/*! \brief Parses given tag from given XML DOM node in XML model at given index.
- *  \details Frequently called by implementations of parseNode virtual function.
- *  \see parseAttribute, parseNode
- */
 void XmlModel::parseTag(QDomNode &node, const QString &tagName, int row, int col, const QString &defValue, bool isInt)
 {
     auto namedNode = node.firstChildElement(tagName);
@@ -193,10 +164,6 @@ void XmlModel::parseTag(QDomNode &node, const QString &tagName, int row, int col
     }
 }
 
-/*! \brief Parses given attribute from given XML DOM node in XML model at given index.
- *  \details Frequently called by implementations of parseNode virtual function.
- *  \see parseTag, parseNode
- */
 void XmlModel::parseAttribute(QDomNode &node, const QString &attrName, int row, int col, const QString &defValue)
 {
     auto attr = node.toElement().attribute(attrName, defValue);

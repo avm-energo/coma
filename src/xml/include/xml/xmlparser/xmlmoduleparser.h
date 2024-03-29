@@ -15,7 +15,7 @@ namespace Xml
 using namespace ::Device::XmlDataTypes;
 
 /// \brief Класс для парсинга XML файлов конфигурации устройств.
-class ModuleParser : public BaseParser
+class ModuleParser final : public BaseParser
 {
     Q_OBJECT
 private:

@@ -4,31 +4,24 @@
 #include <xml/xmleditor/models/xmldatamodel.h>
 #include <xml/xmleditor/models/xmlhidedatamodel.h>
 
-/*! \brief Creates child XML model.
- *  \details Creates child XML model for given parent XML model at base of given XML DOM node.
- *  After creating new model stores in given ChildModelNode structure.
- *  \param mNode [out] - structure that stores pointer to created child XML model.
- *  \param root [in] - XML DOM node for calling XmlModel::setDataNode function.
- *  \param parent [in] - pointer to parent XML model.
- */
-void ModelFabric::CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObject *parent)
+void ModelFabric::createChildModel(ChildModelNode &mNode, QDomNode &root, QObject *parent)
 {
-    auto iter = XmlModel::headers.find(mNode.modelType);
-    if (iter != XmlModel::headers.cend())
+    auto iter = XmlModel::s_headers.find(mNode.m_type);
+    if (iter != XmlModel::s_headers.cend())
     {
         auto labels = iter->second;
-        int cols = labels.count(), rows = ElementsCount(root) + 1;
-        switch (mNode.modelType)
+        int cols = labels.count(), rows = elementsCount(root) + 1;
+        switch (mNode.m_type)
         {
         case ModelType::SGroup:
-            mNode.modelPtr = new XmlHideDataModel(rows, cols, mNode.modelType, parent);
+            mNode.m_model = new XmlHideDataModel(rows, cols, mNode.m_type, parent);
             break;
         case ModelType::Alarms:
         case ModelType::Sections:
         case ModelType::Section:
         case ModelType::Journals:
         case ModelType::Hidden:
-            mNode.modelPtr = new XmlContainerModel(rows, cols, mNode.modelType, parent);
+            mNode.m_model = new XmlContainerModel(rows, cols, mNode.m_type, parent);
             break;
         case ModelType::Signals:
         case ModelType::SectionTabs:
@@ -44,21 +37,20 @@ void ModelFabric::CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         case ModelType::Config:
         case ModelType::HiddenTab:
         case ModelType::BsiExt:
-            mNode.modelPtr = new XmlDataModel(rows, cols, mNode.modelType, parent);
+            mNode.m_model = new XmlDataModel(rows, cols, mNode.m_type, parent);
             break;
         default:
             break;
         }
-        if (mNode.modelPtr != nullptr)
+        if (mNode.m_model != nullptr)
         {
-            mNode.modelPtr->setHorizontalHeaderLabels(labels);
-            mNode.modelPtr->setDataNode(true, root);
+            mNode.m_model->setHorizontalHeaderLabels(labels);
+            mNode.m_model->setDataNode(true, root);
         }
     }
 }
 
-/// \brief Creates the root XML model at base of given XML DOM node.
-XmlModel *ModelFabric::CreateRootModel(QDomNode &root, QObject *parent)
+XmlModel *ModelFabric::createRootModel(QDomNode &root, QObject *parent)
 {
     if (!root.isNull())
     {
@@ -69,11 +61,11 @@ XmlModel *ModelFabric::CreateRootModel(QDomNode &root, QObject *parent)
             if (!res.isNull())
             {
                 auto type = ModelType::Resources;
-                auto iter = XmlModel::headers.find(type);
-                if (iter != XmlModel::headers.cend())
+                auto iter = XmlModel::s_headers.find(type);
+                if (iter != XmlModel::s_headers.cend())
                 {
                     auto labels = iter->second;
-                    int cols = labels.count(), rows = ElementsCount(res);
+                    int cols = labels.count(), rows = elementsCount(res);
                     auto model = new XmlContainerModel(rows, cols, type, parent);
                     model->setHorizontalHeaderLabels(labels);
                     model->setDataNode(false, res);
@@ -89,17 +81,14 @@ XmlModel *ModelFabric::CreateRootModel(QDomNode &root, QObject *parent)
     return nullptr;
 }
 
-/// \brief Creates the master XML model.
-MasterModel *ModelFabric::CreateMasterModel(QObject *parent)
+MasterModel *ModelFabric::createMasterModel(QObject *parent)
 {
     auto masterModel = new MasterModel(parent);
     masterModel->setHorizontalHeaderLabels({ "Устройство", "Type B", "Type M", "Версия", "Файл" });
     return masterModel;
 }
 
-/// \brief Returns count of child nodes for given XML DOM node,
-/// that are not comments and are DOM elements.
-int ModelFabric::ElementsCount(QDomNode &node)
+int ModelFabric::elementsCount(QDomNode &node)
 {
     auto childs = node.childNodes();
     int count = 0;

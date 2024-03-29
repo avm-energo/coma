@@ -6,7 +6,6 @@ XmlDataModel::XmlDataModel(int rows, int cols, ModelType type, QObject *parent) 
 {
 }
 
-/// \brief Returns saving settings for XML model in dependency of model type.
 std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, int &)>> XmlDataModel::getModelSettings()
 {
     auto alarmHelper = [this](auto &doc, auto &item, auto &row) {
@@ -25,7 +24,7 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
         }
     };
 
-    switch (mType)
+    switch (m_type)
     {
     case ModelType::Signals:
         return { tags::sigs, tags::sig, //
@@ -131,10 +130,9 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
     }
 }
 
-/// \brief Parsing input XML nodes of file in model items.
 void XmlDataModel::parseNode(QDomNode &node, int &row)
 {
-    switch (mType)
+    switch (m_type)
     {
     case ModelType::Signals:
         parseTag(node, tags::start_addr, row, 0, "", true);   // Стартовый адрес
@@ -212,7 +210,6 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     }
 }
 
-/// \brief Parsing <highlights> node from alarm DOM nodes (<crit> and <warn> only).
 void XmlDataModel::parseAlarmHighlights(QDomNode &node, int row, int col)
 {
     QStringList highlightsValues = {};
@@ -234,7 +231,6 @@ void XmlDataModel::parseAlarmHighlights(QDomNode &node, int row, int col)
         setData(index(row, col), highlightsValues.join(','));
 }
 
-/// \brief Creates XML DOM node representation of current model.
 QDomElement XmlDataModel::toNode(QDomDocument &doc)
 {
     const auto prefs = getModelSettings();

@@ -9,7 +9,7 @@ namespace Xml
 template <typename T> constexpr bool is_comboBox = std::is_base_of_v<delegate::QComboBox, T>;
 
 /// \brief Class for parsing "s2files.xml" file.
-class S2Parser : public BaseParser
+class S2Parser final : public BaseParser
 {
     Q_OBJECT
 private:
