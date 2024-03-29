@@ -11,12 +11,12 @@ TrendViewModelKIV::TrendViewModelKIV(int pointsum) : TrendViewModel(pointsum)
 QStringList TrendViewModelKIV::analogColors() const
 {
     return {
+        Colors::YLWCOLOR, //
         Colors::GRNCOLOR, //
         Colors::REDCOLOR, //
-        Colors::YLWCOLOR, //
+        Colors::YLLCOLOR, //
         Colors::GRLCOLOR, //
         Colors::RDLCOLOR, //
-        Colors::YLLCOLOR, //
     };
 }
 
@@ -45,7 +45,17 @@ TrendViewModelKIVOne::TrendViewModelKIVOne(const u32 id, int pointsum) : TrendVi
 
 QStringList TrendViewModelKIVOne::analogColors() const
 {
-    return { Colors::GRNCOLOR, Colors::REDCOLOR };
+    switch (m_id)
+    {
+    case AVTUK_KIV::OSC_A_ID:
+        return { Colors::YLWCOLOR, Colors::YLLCOLOR };
+    case AVTUK_KIV::OSC_B_ID:
+        return { Colors::GRNCOLOR, Colors::GRLCOLOR };
+    case AVTUK_KIV::OSC_C_ID:
+        return { Colors::REDCOLOR, Colors::RDLCOLOR };
+    default:
+        return {};
+    }
 }
 
 QStringList TrendViewModelKIVOne::analogDescriptions() const

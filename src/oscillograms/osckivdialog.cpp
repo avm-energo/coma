@@ -38,7 +38,7 @@ OscKivDialog::OscKivDialog(Device::CurrentDevice *device, QWidget *parent)
 void OscKivDialog::setupUI()
 {
     auto mainLayout = new QVBoxLayout;
-    m_oscFilenumLbl = WDFunc::NewLBL2(this, oscFilenumLblFmt.data(), "oscFilenumLabel");
+    m_oscFilenumLbl = WDFunc::NewLBL2(this, QString(oscFilenumLblFmt.data()).arg(' '), "oscFilenumLabel");
     mainLayout->addWidget(m_oscFilenumLbl);
     auto pointsSpinbox = WDFunc::NewSPB2(this, "n_point", 1, 8, 0);
     mainLayout->addWidget(pointsSpinbox);
