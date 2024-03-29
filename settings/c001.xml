@@ -189,6 +189,12 @@
                 <desc></desc>
             </group>
             <group>
+                <signal-id>8</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc></desc>
+            </group>
+            <group>
                 <signal-id>5</signal-id>
                 <reg-type>4</reg-type>
                 <type>uint32</type>
