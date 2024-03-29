@@ -38,4 +38,4 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG_JOURNALS)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE widgets QXlsx)
+target_link_libraries(${PROJECT_NAME} PRIVATE xml QXlsx)

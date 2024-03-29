@@ -2,7 +2,6 @@
 
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
-#include "../xml/xmlparser/xmlmoduleparser.h"
 #include "measjournal.h"
 #include "sysjournal.h"
 #include "workjournal.h"
@@ -12,6 +11,7 @@
 #include <QVBoxLayout>
 #include <gen/files.h>
 #include <s2/s2util.h>
+#include <xml/xmlparser/xmlmoduleparser.h>
 
 namespace journals
 {

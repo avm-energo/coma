@@ -1,0 +1,17 @@
+#pragma once
+
+#include <xml/xmleditor/models/mastermodel.h>
+#include <xml/xmleditor/models/xmlmodel.h>
+
+/// \brief Class with static members for creating XML models.
+class ModelFabric
+{
+protected:
+    static int ElementsCount(QDomNode &node);
+
+public:
+    explicit ModelFabric() = delete;
+    static void CreateChildModel(ChildModelNode &mNode, QDomNode &root, QObject *parent = nullptr);
+    static XmlModel *CreateRootModel(QDomNode &root, QObject *parent = nullptr);
+    static MasterModel *CreateMasterModel(QObject *parent = nullptr);
+};

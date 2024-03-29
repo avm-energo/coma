@@ -38,8 +38,6 @@
 #include "../../widgets/styleloader.h"
 #include "../../widgets/waitwidget.h"
 #include "../../widgets/wd_func.h"
-#include "../../xml/xmlconfigloader.h"
-#include "../../xml/xmleditor/xmleditor.h"
 
 #include <QApplication>
 #include <QDir>
@@ -65,6 +63,8 @@
 #include <s2/s2configstorage.h>
 #include <s2/s2datafactory.h>
 #include <s2/s2util.h>
+#include <xml/xmlconfigloader.h>
+#include <xml/xmleditor/xmleditor.h>
 
 namespace Core
 {
