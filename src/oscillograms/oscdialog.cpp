@@ -82,13 +82,10 @@ void OscDialog::eraseOsc()
 
 QString OscDialog::filename(quint64 time, quint32 oscNum) const
 {
-    // const auto &board = Board::GetInstance();
     QString filename = StdFunc::GetSystemHomeDir();
     filename.push_back(m_device->getUID());
-    // filename.push_back(board.UID());
     filename.push_back("-");
     filename.push_back(QString::number(m_device->getDeviceType(), 16));
-    // filename.push_back(QString::number(board.type(), 16));
     filename.push_back("-");
     filename.push_back(QString::number(oscNum));
     filename.push_back("-");
@@ -127,9 +124,7 @@ bool OscDialog::loadIfExist(quint32 size)
             return true;
         }
         else
-        {
             qWarning() << "Failed to load swj from file: " << file;
-        }
     }
     return false;
 }
@@ -185,12 +180,8 @@ void OscDialog::fillOsc(const S2::FileStruct &file)
         auto time = oscMap.value(reqOscNum).unixtime;
         QString sfile = filename(time, reqOscNum);
         if (Files::SaveToFile(sfile, ba) == Error::Msg::NoError)
-        {
             qInfo() << "Swj saved: " << sfile;
-        }
         else
-        {
             qWarning() << "Fail to save swj: " << sfile;
-        }
     }
 }

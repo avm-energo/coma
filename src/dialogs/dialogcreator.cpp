@@ -2,6 +2,7 @@
 
 #include "../journals/journaldialog.h"
 #include "../oscillograms/oscdialog.h"
+#include "../oscillograms/osckivdialog.h"
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
@@ -37,7 +38,6 @@ void DialogCreator::createDialogs(const AppConfiguration appCfg)
 {
     auto ifaceType = m_device->async()->getInterfaceType();
     deleteDialogs();
-    // updateTypes();
     createConfigDialogs();
     createCheckDialogs();
     createJournalDialog();
@@ -193,13 +193,14 @@ void DialogCreator::createOscAndSwJourDialogs()
         if (m_typeM == MezzanineBoard::MTM_81 || m_typeM == MezzanineBoard::MTM_82 || m_typeM == MezzanineBoard::MTM_83)
             addDialogToList(new OscDialog(m_device, m_parent), "Осциллограммы", "osc");
     }
-    if ((m_typeB == BaseBoard::MTB_80 || m_typeB == BaseBoard::MTB_85))
+    else if ((m_typeB == BaseBoard::MTB_80 || m_typeB == BaseBoard::MTB_85) && (m_typeM == MezzanineBoard::MTM_85))
     {
-        if (m_typeM == MezzanineBoard::MTM_85)
-        {
-            addDialogToList(new SwitchJournalDialog(m_device, m_parent), "Журнал переключений", "swjour");
-            addDialogToList(new OscDialog(m_device, m_parent), "Осциллограммы", "osc");
-        }
+        addDialogToList(new SwitchJournalDialog(m_device, m_parent), "Журнал переключений", "swjour");
+        addDialogToList(new OscDialog(m_device, m_parent), "Осциллограммы", "osc");
+    }
+    else if (m_boxModel == Model::KIV)
+    {
+        addDialogToList(new OscKivDialog(m_device, m_parent), "Осциллограммы", "osc");
     }
 }
 

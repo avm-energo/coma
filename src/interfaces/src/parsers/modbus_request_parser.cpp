@@ -155,6 +155,17 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         };
         break;
     }
+    // writing registers
+    case Commands::C_WriteTypeOsc:
+    {
+        auto value = Modbus::packRegister(cmd.arg1.value<DataTypes::BlockStruct>().data);
+        const quint16 quantity = value.size() / 2;
+        request = Modbus::Request {
+            Modbus::FunctionCode::WriteMultipleRegisters, //
+            Modbus::typeOscAddr, quantity, false, value   //
+        };
+        break;
+    }
     // "WS" commands
     case Commands::C_ClearStartupError:
     case Commands::C_EraseJournals:

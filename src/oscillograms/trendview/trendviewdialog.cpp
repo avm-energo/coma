@@ -320,12 +320,12 @@ void TrendViewDialog::graphClicked(QCPAbstractPlottable *plot, int dataIndex)
     auto x = plot->interface1D()->dataMainKey(dataIndex);
     auto y = plot->interface1D()->dataMainValue(dataIndex);
     auto name = plot->name();
-    auto message = QString("Clicked on graph '%1' at data point #%2 with poisition X:%3, Y:%4.")
-                       .arg(name)
-                       .arg(dataIndex)
-                       .arg(x)
-                       .arg(y);
-    qWarning() << message;
+    //    auto message = QString("Clicked on graph '%1' at data point #%2 with poisition X:%3, Y:%4.")
+    //                       .arg(name)
+    //                       .arg(dataIndex)
+    //                       .arg(x)
+    //                       .arg(y);
+    //    qWarning() << message;
 
     if (name == "digitalSelector" || name == "analogSelector")
         return;
@@ -659,17 +659,17 @@ void TrendViewDialog::analogAxisDefault(int graphNum, QCPAxisRect *axisRect)
         SignalOscProperties.leftAxisIndex = axisIndex;
         if (flag && count < MAXGRAPHSPERPLOT)
         {
-            auto leftAxis = axisRect->axis(QCPAxis::atLeft, axisIndex);
-            auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
-            if (!leftAxis || !bottomAxis)
+            auto valueAxis = axisRect->axis(QCPAxis::atLeft, axisIndex);
+            auto keyAxis = axisRect->axis(QCPAxis::atBottom);
+            if (!valueAxis || !keyAxis)
             {
                 qCritical() << "Nullptr axis";
-                Q_CHECK_PTR(leftAxis);
-                Q_CHECK_PTR(bottomAxis);
+                Q_CHECK_PTR(valueAxis);
+                Q_CHECK_PTR(keyAxis);
                 return;
             }
             // Creating new graph for plot
-            auto graph = mainPlot->addGraph(bottomAxis, leftAxis);
+            auto graph = mainPlot->addGraph(keyAxis, valueAxis);
             // Graph settings
             if (!analog.description.colors[name].isEmpty())
                 pen.setColor(QColor(analog.description.colors[name]));
