@@ -32,19 +32,18 @@ public:
 
 signals:
     void startNewConfig();
-    void signalDataSending(const u32 id, const quint64 addr, //
-        const u16 count, const Xml::SignalType sigType);
+    void signalDataSending(const u32 id, const quint64 addr, const u16 count, const Xml::SignalType sigType);
     void tabDataSending(const u32 id, const QString &name);
     void sectionDataSending(const Xml::SGMap &sgmap, const QString &secHead);
-    void alarmDataSending(const Xml::AlarmType type, const u32 addr, //
-        const QString &desc, const QList<u32> &highlights);
+    void alarmStateAllDataSending(const Xml::AlarmType type, const u32 index, const QString &desc);
+    void alarmDataSending(const Xml::AlarmType type, const u32 addr, const QString &desc, const QList<u32> &highlights);
     void workJourDataSending(const u32 id, const QString &desc);
-    void measJourDataSending(const u32 idx, const QString &header, //
-        const Xml::BinaryType type, bool visib);
+    void measJourDataSending(const u32 idx, const QString &header, const Xml::BinaryType type, bool visib);
     void protocolGroupSending(const Protocol::AbstractGroup &group);
     void configDataSending(const u16 id, const QString &defVal, const bool visib, const u16 count);
     void configNameSending(const QString &tabName);
     void hiddenTabDataSending(const Xml::HiddenTab &hiddenTab);
+    void bsiExtItemDataSending(const u32 addr, const Xml::BinaryType type, const bool visib, const QString &desc);
 
 private:
     /// \brief Возвращает имя файла по типам базовой и мезонинной плат.
@@ -64,6 +63,8 @@ private:
     ViewType parseViewType(const QString &viewString);
     /// \brief Парсинг типа отображаемых/отправляемых данных.
     BinaryType parseBinaryType(const QString &typeStr);
+    /// \brief Парсинг типа сигнализации в узле <state-all>.
+    AlarmType parseAlarmType(const QString &typeStr);
 
     /// \brief Парсинг указанного XML файла для выбранных узлов.
     void parseDocument(const QString &filename, const QStringList &nodes = {});
@@ -81,6 +82,8 @@ private:
     void parseSection(const QDomNode &sectionNode);
     /// \brief Парсинг узла <alarms>.
     void parseAlarms(const QDomNode &alarmsNode);
+    /// \brief Парсинг узла <state-all> внутри <alarms>.
+    void parseAlarmStateAll(const QDomNode &alarmStateAllNode);
     /// \brief Парсинг узлов <critical>, <warning> и <info> внутри <alarms>.
     void parseAlarm(const QDomNode &alarmNode, const AlarmType &type);
     /// \brief Парсинг узла <journals>.
@@ -101,6 +104,8 @@ private:
     void parseConfig(const QDomNode &configNode);
     /// \brief Парсинг узлов <tab> внутри <hidden>.
     void parseHiddenTab(const QDomNode &hiddenTabNode);
+    /// \brief Парсинг узлов <item> внутри <bsi-ext>.
+    void parseBsiExtItem(const QDomNode &bsiExtItemNode);
 };
 
 }

@@ -13,6 +13,7 @@
 class AlarmWidget;
 class Module;
 class XmlEditor;
+class ReconnectDialog;
 
 namespace Device
 {
@@ -61,6 +62,7 @@ private:
     Interface::ConnectionManager *m_connectionManager;
     Device::CurrentDevice *m_currentDevice;
     UniquePointer<DialogManager> m_dlgManager;
+    ReconnectDialog *m_reconnectDialog;
 
     AlarmWidget *AlarmW;
     OscManager oscManager;

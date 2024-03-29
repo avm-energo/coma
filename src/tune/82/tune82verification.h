@@ -19,6 +19,7 @@ private:
     void writeDeviceDataToReport(const Bd182::BlockData &deviceData, const std::size_t iter);
     void writeOffsetDataToReport(const VerificationOffset &offset, const std::size_t iter);
 
+    Error::Msg setupNFiltrValue();
     void init();
     Error::Msg verification();
 

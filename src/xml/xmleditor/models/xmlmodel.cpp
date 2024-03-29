@@ -3,25 +3,27 @@
 #include "modelfabric.h"
 
 const std::map<QString, ModelType> XmlModel::types {
-    { tags::res, ModelType::Resources },     //
-    { tags::sigs, ModelType::Signals },      //
-    { tags::tabs, ModelType::SectionTabs },  //
-    { tags::sections, ModelType::Sections }, //
-    { tags::section, ModelType::Section },   //
-    { tags::sgroup, ModelType::SGroup },     //
-    { tags::alarms, ModelType::Alarms },     //
-    { tags::crit, ModelType::AlarmsCrit },   //
-    { tags::warn, ModelType::AlarmsWarn },   //
-    { tags::info, ModelType::AlarmsInfo },   //
-    { tags::journals, ModelType::Journals }, //
-    { tags::work, ModelType::WorkJours },    //
-    { tags::meas, ModelType::MeasJours },    //
-    { tags::modbus, ModelType::Modbus },     //
-    { tags::protocom, ModelType::Protocom }, //
-    { tags::iec, ModelType::IEC60870 },      //
-    { tags::config, ModelType::Config },     //
-    { tags::hidden, ModelType::Hidden },     //
-    { tags::hidden_tab, ModelType::HiddenTab },
+    { tags::res, ModelType::Resources },           //
+    { tags::sigs, ModelType::Signals },            //
+    { tags::tabs, ModelType::SectionTabs },        //
+    { tags::sections, ModelType::Sections },       //
+    { tags::section, ModelType::Section },         //
+    { tags::sgroup, ModelType::SGroup },           //
+    { tags::alarms, ModelType::Alarms },           //
+    { tags::state_all, ModelType::AlarmStateAll }, //
+    { tags::crit, ModelType::AlarmsCrit },         //
+    { tags::warn, ModelType::AlarmsWarn },         //
+    { tags::info, ModelType::AlarmsInfo },         //
+    { tags::journals, ModelType::Journals },       //
+    { tags::work, ModelType::WorkJours },          //
+    { tags::meas, ModelType::MeasJours },          //
+    { tags::modbus, ModelType::Modbus },           //
+    { tags::protocom, ModelType::Protocom },       //
+    { tags::iec, ModelType::IEC60870 },            //
+    { tags::config, ModelType::Config },           //
+    { tags::hidden, ModelType::Hidden },           //
+    { tags::hidden_tab, ModelType::HiddenTab },    //
+    { tags::bsi_ext, ModelType::BsiExt },          //
 };
 
 const std::map<ModelType, QStringList> XmlModel::headers {
@@ -32,6 +34,7 @@ const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::Section, { "Название", "ID вкладки" } },                                                //
     { ModelType::SGroup, { "Адрес", "Имя" } },                                                           //
     { ModelType::Alarms, { "XML", "Описание" } },                                                        //
+    { ModelType::AlarmStateAll, { "Адрес", "Описание", "Тип" } },                                        //
     { ModelType::AlarmsCrit, { "Адрес", "Описание", "Подсветка" } },                                     //
     { ModelType::AlarmsWarn, { "Адрес", "Описание", "Подсветка" } },                                     //
     { ModelType::AlarmsInfo, { "Адрес", "Описание" } },                                                  //
@@ -44,6 +47,7 @@ const std::map<ModelType, QStringList> XmlModel::headers {
     { ModelType::Config, { "ID виджета", "Значение по умолчанию", "Изм. количество", "Видимость" } },    //
     { ModelType::Hidden, { "Название", "Префикс", "Флаг", "Задний фон" } },                              //
     { ModelType::HiddenTab, { "Индекс", "Название", "Виджет", "Тип", "Данные", "Адрес", "Видимость" } }, //
+    { ModelType::BsiExt, { "Адрес", "Описание", "Тип", "Видимость" } },                                  //
 };
 
 /// \brief Base XML model class ctor

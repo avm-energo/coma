@@ -53,7 +53,7 @@ void Iec104QueryExecutor::writeToInterface(const QByteArray &request, bool isCou
     emit sendDataToInterface(request);
     if (isCounted)
     {
-        m_timeoutTimer->start();
+        m_timeoutTimer.start();
         ++(m_ctrlBlock->m_sent);
         checkControlBlock();
     }
@@ -129,7 +129,7 @@ void Iec104QueryExecutor::checkUnnumberedFormat(const ControlFunc func, const Co
 
 void Iec104QueryExecutor::requestedDataReceived() noexcept
 {
-    m_timeoutTimer->stop();
+    m_timeoutTimer.stop();
     run(); // execute next query from queue
 }
 

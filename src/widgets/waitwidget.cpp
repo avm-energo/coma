@@ -51,7 +51,7 @@ void WaitWidget::Start()
 {
     show();
     QTimer *tmr = new QTimer(this);
-    tmr->setInterval(10);
+    tmr->setInterval(50);
     connect(tmr, &QTimer::timeout, this, &WaitWidget::Rotate);
     tmr->start();
     QTimer *tmrs = new QTimer(this);
@@ -78,7 +78,7 @@ void WaitWidget::SetSeconds(quint32 seconds)
 
 void WaitWidget::Rotate()
 {
-    gamma += 0.5;
+    gamma += 2.0;
     update();
 }
 

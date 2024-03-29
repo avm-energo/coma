@@ -81,6 +81,10 @@ signals:
 
     /// \brief Сигнал, который используется для отправки сообщения в лог исполнителя запросов.
     void needToLog(const QString &message, const LogLevel level);
+    /// \brief Сигнал для отмены текущей команды.
+    /// \details Может использоваться для прекращения отработки текущей команды в
+    /// случае возникновения ошибок связи с устройствомю
+    void cancelRequest();
 };
 
 } // namespace Interface

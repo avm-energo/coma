@@ -66,6 +66,7 @@ signals:
     void silentReconnectMode();
     void protocolSettingsUpdated(const ProtocolDescription &desc);
     void queueSizeChanged(const quint64 size);
+    void executorWakeUp();
 
     // Response signals
     // clazy:excludeall=overloaded-signal

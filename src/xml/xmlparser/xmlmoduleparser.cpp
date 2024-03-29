@@ -103,8 +103,22 @@ Xml::BinaryType Xml::ModuleParser::parseBinaryType(const QString &typeStr)
         return Xml::BinaryType::time32;
     else if (typeStr == "time64")
         return Xml::BinaryType::time64;
+    else if (typeStr == "string32")
+        return Xml::BinaryType::string32;
+    else if (typeStr == "version32")
+        return Xml::BinaryType::version32;
     else
         return Xml::BinaryType::float32;
+}
+
+Xml::AlarmType Xml::ModuleParser::parseAlarmType(const QString &typeStr)
+{
+    if (typeStr.contains(tags::crit, Qt::CaseInsensitive))
+        return Xml::AlarmType::Critical;
+    else if (typeStr.contains(tags::warn, Qt::CaseInsensitive))
+        return Xml::AlarmType::Warning;
+    else
+        return Xml::AlarmType::Info;
 }
 
 void Xml::ModuleParser::parseSignal(const QDomNode &sigNode)
@@ -153,6 +167,9 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
 
 void Xml::ModuleParser::parseAlarms(const QDomNode &alarmsNode)
 {
+    parseNode(alarmsNode, tags::state_all, [this](const QDomNode &alarmNode) { //
+        parseAlarmStateAll(alarmNode);
+    });
     parseNode(alarmsNode, tags::crit, [this](const QDomNode &alarmNode) { //
         parseAlarm(alarmNode, Xml::AlarmType::Critical);
     });
@@ -162,6 +179,14 @@ void Xml::ModuleParser::parseAlarms(const QDomNode &alarmsNode)
     parseNode(alarmsNode, tags::info, [this](const QDomNode &alarmNode) { //
         parseAlarm(alarmNode, Xml::AlarmType::Info);
     });
+}
+
+void Xml::ModuleParser::parseAlarmStateAll(const QDomNode &alarmStateAllNode)
+{
+    auto index = parseNumFromNode<u32>(alarmStateAllNode, tags::addr);
+    auto desc = parseString(alarmStateAllNode, tags::string);
+    auto type = parseAlarmType(parseString(alarmStateAllNode, tags::type));
+    emit alarmStateAllDataSending(type, index, desc);
 }
 
 void Xml::ModuleParser::parseAlarm(const QDomNode &alarmNode, const AlarmType &type)
@@ -290,6 +315,18 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
     emit hiddenTabDataSending(Xml::HiddenTab { tabTitle, tabBackground, tabPrefix, tabFlag, widgets });
 }
 
+void Xml::ModuleParser::parseBsiExtItem(const QDomNode &bsiExtItemNode)
+{
+    auto address = parseNumFromNode<u32>(bsiExtItemNode, tags::addr);
+    auto typeStr = parseString(bsiExtItemNode, tags::type);
+    auto desc = parseString(bsiExtItemNode, tags::desc);
+    auto type = parseBinaryType(typeStr);
+    auto visibility = true;
+    if (parseString(bsiExtItemNode, tags::visibility) == "false")
+        visibility = false;
+    emit bsiExtItemDataSending(address, type, visibility, desc);
+}
+
 void Xml::ModuleParser::parseDetector(const QDomNode &node)
 {
     const auto tag = node.toElement().tagName();
@@ -301,6 +338,8 @@ void Xml::ModuleParser::parseDetector(const QDomNode &node)
         callForEachChild(node, [this](const QDomNode &sectionNode) { parseSection(sectionNode); });
     else if (tag == tags::hidden)
         callForEachChild(node, [this](const QDomNode &hiddenTabNode) { parseHiddenTab(hiddenTabNode); });
+    else if (tag == tags::bsi_ext)
+        callForEachChild(node, [this](const QDomNode &bsiExtItemNode) { parseBsiExtItem(bsiExtItemNode); });
     else if (tag == tags::alarms)
         parseAlarms(node);
     else if (tag == tags::journals)

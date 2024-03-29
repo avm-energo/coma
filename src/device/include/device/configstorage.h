@@ -31,6 +31,8 @@ public slots:
     void tabDataReceive(const u32 id, const QString &name);
     /// \brief Slot for saving check's section records.
     void sectionDataReceive(const XmlDataTypes::SGMap &sgmap, const QString &secHead);
+    /// \brief Slot for saving device's state alarm records.
+    void alarmStateAllDataReceive(const XmlDataTypes::AlarmType type, const u32 index, const QString &desc);
     /// \brief Slot for saving device's alarm records.
     void alarmDataReceive(const XmlDataTypes::AlarmType type, const u32 addr, //
         const QString &desc, const QList<u32> &highlights);
@@ -40,9 +42,11 @@ public slots:
     void measJourDataReceive(const u32 index, const QString &header, //
         const XmlDataTypes::BinaryType type, bool visib);
     /// \brief Slot for saving hidden dialog's tab settings.
-    void hiddenTabDataReceived(const XmlDataTypes::HiddenTab &hiddenTab);
-    /// \brief Slot for saving module's protocol groups
-    void protocolGroupReceived(const Protocol::AbstractGroup &group);
+    void hiddenTabDataReceive(const XmlDataTypes::HiddenTab &hiddenTab);
+    /// \brief Slot for saving module's BSI Ext elements.
+    void bsiExtItemDataReceive(const u32 addr, const XmlDataTypes::BinaryType type, bool visib, const QString &desc);
+    /// \brief Slot for saving module's protocol groups.
+    void protocolGroupReceive(const Protocol::AbstractGroup &group);
 };
 
 } // namespace Device

@@ -68,6 +68,7 @@ enum class Commands
 
     C_Test,
     C_EraseTechBlock,
+    C_EnableHiddenBlockWriting,
     C_WriteHiddenBlock,
     C_WriteUserValues,
     C_WriteSingleCommand,
@@ -82,8 +83,7 @@ enum class Commands
     C_ReqOscInfo,
     C_SetMode,
     C_GetMode,
-    C_WriteHardware,
-    C_EnableHardwareWriting
+    C_WriteTypeOsc
 };
 Q_ENUM_NS(Commands)
 
@@ -91,6 +91,7 @@ enum CommandRegisters
 {
     StartWorkingChannel = 803,  ///< Старт рабочего канала
     EraseSystemJournal = 807,   ///< Стереть системный журнал
+    WriteTypeOsc = 813,         ///< Команда запуска осциллограммы
     SetStartupValues = 900,     ///< Задать начальные значения по всем фазам
     SetStartupPhaseA = 901,     ///< Задать начальные значения по фазе A
     SetStartupPhaseB = 902,     ///< Задать начальные значения по фазе B

@@ -22,7 +22,6 @@ Tune82Check::Tune82Check(int tuneStep, Device::CurrentDevice *device, QWidget *p
 void Tune82Check::setTuneFunctions()
 {
     addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
-    addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Отображение схемы подключения...", &Tune82Check::showScheme);
     addTuneFunc("Проверка связи с МИП...", &Tune82Check::checkMip);
     addTuneFunc("Проверка правильности измерения входных сигналов...", &Tune82Check::check);
@@ -34,25 +33,17 @@ Error::Msg Tune82Check::showScheme()
     switch (m_typeM) // выводим окно с предупреждением о включении РЕТОМ-а по схеме в зависимости от исполнения
     {
     case Device::MezzanineBoard::MTM_81: // 2t0n
-    {
         pmpfile = ":/tunes/tune81.png";
         break;
-    }
     case Device::MezzanineBoard::MTM_82:
-    {
         pmpfile = ":/tunes/tune82.png";
         break;
-    }
     case Device::MezzanineBoard::MTM_83:
-    {
         pmpfile = ":/tunes/tune83.png";
         break;
-    }
     default:
-    {
         EMessageBox::error(this, "Mezzanine board is not one of 81, 82 or 83");
         return Error::Msg::GeneralError;
-    }
     }
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;

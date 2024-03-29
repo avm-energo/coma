@@ -39,6 +39,14 @@ namespace AVTUK_8X
 constexpr u32 OSC_ID = 10020; ///< ID осциллограммы по модулю 808x
 } // namespace AVTUK_8X
 
+namespace AVTUK_KIV
+{
+constexpr u32 OSC_ALL_ID = 10022;
+constexpr u32 OSC_A_ID = 10023;
+constexpr u32 OSC_B_ID = 10024;
+constexpr u32 OSC_C_ID = 10025;
+} // namespace AVTUK_KIV
+
 namespace AVTUK_KDV
 {
 constexpr u32 OSC_ID = 10040;   ///< ID осциллограммы модуля КДВ

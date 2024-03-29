@@ -11,67 +11,79 @@
 
 InfoDialog::InfoDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
-    auto conn = engine()->currentConnection();
-    // connect(&Board::GetInstance(), &Board::readyRead, this, &InfoDialog::sync);
-    // connect(&Board::GetInstance(), &Board::readyReadExt, this, &InfoDialog::syncExt);
+    auto conn = m_device->async();
+    auto bsiExt = m_device->bsiExt();
+    setupData();
+    connect(bsiExt, &Device::BlockStartupInfoExtended::wasUpdated, this, &InfoDialog::syncExt);
+    connect(m_device, &Device::CurrentDevice::bsiReceived, this, &InfoDialog::sync);
     connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSI);
-    if (device->sync()->supportBSIExt())
-    {
+    if (m_device->sync()->supportBSIExt())
         connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSIExt);
-    }
     else
-    {
         QMessageBox::warning(this, "BsiExt", "BsiExt не поддерживается");
-    }
 }
 
-void InfoDialog::SetupUI()
+/// TODO: загрузка настроек по умолчанию должна осуществляться внутри CurrentDevice
+/// Настройки должны браться из default.xml
+void InfoDialog::setupData()
 {
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *slyout = new QGridLayout;
+    if (m_device->getConfigStorage()->getDeviceSettings().getBsiExtSettings().empty())
+    {
+        using namespace Device::XmlDataTypes;
+        static const BsiExtItemList defaultBsiExt {
+            { 40, BinaryType::string32, true, "Наименование ПО" },                //
+            { 41, BinaryType::version32, true, "Версия загрузчика" },             //
+            { 42, BinaryType::time32, true, "Время последней поверки модуля" },   //
+            { 43, BinaryType::uint32, true, "CRC рег. коэфф. базовой платы" },    //
+            { 44, BinaryType::uint32, true, "CRC рег. коэфф. мезонинной платы" }, //
+        };
+        m_device->bsiExt()->updateStructure(defaultBsiExt);
+    }
+    else
+        m_device->bsiExt()->updateStructure(m_device->getConfigStorage()->getDeviceSettings().getBsiExtSettings());
+}
 
+void InfoDialog::setupUI()
+{
     const QList<QPair<QString, QString>> dialogPage {
-        { m_device->getDeviceName(), "Тип устройства:" },  //
-        { "namepo", "Наименование программы:" },           //
-        { "snle", "Серийный номер устройства:" },          //
-        { "fwverle", "Версия ПО:" },                       //
-        { "verloader", "Верcия Loader:" },                 //
-        { "cfcrcle", "КС конфигурации:" },                 //
-        { "rstle", "Последний сброс:" },                   //
-        { "rstcountle", "Количество сбросов:" },           //
-        { "cpuidle", "ИД процессора:" },                   //
-        { "typeble", "Тип базовой платы:" },               //
-        { "snble", "Серийный номер базовой платы:" },      //
-        { "hwble", "Аппаратная версия базовой платы:" },   //
-        { "typemle", "Тип мезонинной платы:" },            //
-        { "snmle", "Серийный номер мезонинной платы:" },   //
-        { "hwmle", "Аппаратная версия мезонинной платы:" } //
-
+        { m_device->getDeviceName(), "Тип устройства:" },   //
+        { "namepo", "Наименование\nпрограммы:" },           //
+        { "snle", "Серийный номер\nустройства:" },          //
+        { "fwverle", "Версия ПО:" },                        //
+        { "verloader", "Верcия Loader:" },                  //
+        { "cfcrcle", "КС конфигурации:" },                  //
+        { "rstle", "Последний сброс:" },                    //
+        { "rstcountle", "Количество сбросов:" },            //
+        { "cpuidle", "ИД процессора:" },                    //
+        { "typeble", "Тип\nбазовой платы:" },               //
+        { "snble", "Серийный номер\nбазовой платы:" },      //
+        { "hwble", "Аппаратная версия\nбазовой платы:" },   //
+        { "typemle", "Тип\nмезонинной платы:" },            //
+        { "snmle", "Серийный номер\nмезонинной платы:" },   //
+        { "hwmle", "Аппаратная версия\nмезонинной платы:" } //
     };
+
+    auto mainLayout = new QHBoxLayout;
+    auto slyout = new QGridLayout;
     for (int i = 0; i < dialogPage.size(); ++i)
     {
         slyout->addWidget(WDFunc::NewLBL2(this, dialogPage.at(i).second), i, 0, 1, 1, Qt::AlignRight);
         slyout->addWidget(WDFunc::NewLBL2(this, "", dialogPage.at(i).first), i, 1, 1, 1);
     }
-
-    slyout->setColumnStretch(1, 1);
-    lyout->addLayout(slyout);
-    lyout->addStretch(1);
-    setLayout(lyout);
+    mainLayout->addLayout(slyout, 3);
+    mainLayout->addStretch(4);
+    setLayout(mainLayout);
 }
 
-void InfoDialog::FillBsi()
+void InfoDialog::fillBsi()
 {
-    // const auto bsi = Board::GetInstance().baseSerialInfo();
-    // WDFunc::SetLBLText(this, Board::GetInstance().moduleName(), Board::GetInstance().moduleName());
-
     const auto &bsi = m_device->bsi();
     WDFunc::SetLBLText(this, m_device->getDeviceName(), m_device->getDeviceName());
     WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
     WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
     WDFunc::SetLBLText(this, "cfcrcle", "0x" + QString::number(static_cast<uint>(bsi.Cfcrc), 16));
     WDFunc::SetLBLText(this, "rstle", "0x" + QString::number(bsi.Rst, 16));
-    WDFunc::SetLBLText(this, "rstcountle", QString::number(bsi.RstCount, 16));
+    WDFunc::SetLBLText(this, "rstcountle", QString::number(bsi.RstCount));
     WDFunc::SetLBLText(this, "cpuidle",
         QString::number(bsi.UIDHigh, 16) + QString::number(bsi.UIDMid, 16) + QString::number(bsi.UIDLow, 16));
     WDFunc::SetLBLText(this, "typeble", QString::number(bsi.MTypeB, 16));
@@ -82,42 +94,38 @@ void InfoDialog::FillBsi()
     WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
 }
 
-void InfoDialog::FillBsiExt()
+void InfoDialog::fillBsiExt()
 {
-    /// TODO: после вынесения BSI EXT в XML обновить этот метод
-    // const auto bsi = Board::GetInstance().baseSerialInfoExt();
-    // WDFunc::SetLBLText(this, "verloader", StdFunc::VerToStr(bsi.VerLoader));
-    // const char *str = reinterpret_cast<const char *>(&bsi.NamePO);
-    // std::string string(str, sizeof(quint32));
-    // WDFunc::SetLBLText(this, "namepo", QString::fromStdString(string));
+    /// TODO: Необходимо вынести все значения из BSI Ext в отдельную вкладку,
+    /// в качестве имени использовать адрес значения, выводить всю BSI Ext информацию
+    const auto &bsiExt = *m_device->bsiExt();
+    WDFunc::SetLBLText(this, "verloader", StdFunc::VerToStr(bsiExt[41]));
+    auto namepo = bsiExt[40];
+    const char *str = reinterpret_cast<const char *>(&namepo);
+    std::string string(str, sizeof(namepo));
+    WDFunc::SetLBLText(this, "namepo", QString::fromStdString(string));
 }
 
 void InfoDialog::uponInterfaceSetting()
 {
-    SetupUI();
-    FillBsi();
+    setupUI();
+    fillBsi();
 }
 
 void InfoDialog::sync()
 {
     if (updatesEnabled())
-    {
-        FillBsi();
-    }
+        fillBsi();
 }
 
 void InfoDialog::syncExt()
 {
     if (updatesEnabled())
-    {
-        FillBsiExt();
-    }
+        fillBsiExt();
 }
 
 void InfoDialog::reqUpdate()
 {
     if (updatesEnabled())
-    {
         emit fetchBsi();
-    }
 }

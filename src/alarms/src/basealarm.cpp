@@ -14,3 +14,18 @@ void BaseAlarm::setNormalColor(const QColor &newNormalColor) noexcept
 {
     m_normalColor = newNormalColor;
 }
+
+QColor BaseAlarm::getColorByType(const AlarmType type) const noexcept
+{
+    switch (type)
+    {
+    case AlarmType::Critical:
+        return Qt::red;
+    case AlarmType::Warning:
+        return Qt::yellow;
+    case AlarmType::Info:
+        return Qt::green;
+    default:
+        return Qt::transparent;
+    }
+}

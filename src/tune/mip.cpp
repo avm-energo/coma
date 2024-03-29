@@ -41,7 +41,10 @@ void Mip::updateData(const DataTypes::FloatStruct &fl)
             emit oneMeasurementReceived();
     }
     if (m_withGUI)
-        m_widget->updateFloatData(fl);
+    {
+        WDFunc::SetLBLText(m_widget, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));
+        // m_widget->updateFloatData(fl);
+    }
 }
 
 MipDataStruct Mip::getData()
@@ -52,7 +55,7 @@ MipDataStruct Mip::getData()
 void Mip::setupWidget()
 {
     /// TODO: Требуется нормальная реализация!
-    m_widget = new UWidget(nullptr, nullptr);
+    m_widget = new QWidget(nullptr);
     auto mipWidgetLayout = new QVBoxLayout;
 
     auto measGroup = new QGroupBox("Измеряемые параметры", m_widget);
@@ -103,6 +106,8 @@ void Mip::setupWidget()
     computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "39", "Ток нулевой последовательности", true), 6, 0);
     computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "40", "Ток прямой последовательности", true), 6, 1);
     computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "41", "Ток обратной последовательности", true), 6, 2);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "43", "phiUab", true), 7, 0);
+    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "44", "phiUbc", true), 7, 1);
     computedGroup->setLayout(computedLayout);
     mipWidgetLayout->addWidget(computedGroup);
 
@@ -123,39 +128,29 @@ bool Mip::start()
     conn_settings.bsAddress = settings.get<MipBsAddress>();
     if (!initConnection(conn_settings))
         return false;
+
+    m_updater->setUpdatesEnabled(false);
+    m_updater->addFloat({ 0, 42 });
+    connect(m_updater, &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
+    m_updater->setUpdatesEnabled(true);
+    m_updateTimer = new QTimer;
+    m_updateTimer->setInterval(1000);
+    connect(m_updateTimer, &QTimer::timeout, m_updater, &ModuleDataUpdater::requestUpdates);
+    m_updateTimer->start();
+
     if (m_withGUI)
     {
         setupWidget();
-        m_widget->engine()->addFloat({ 0, 42 });
-        connect(m_widget->engine(), &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
-        m_widget->engine()->setUpdatesEnabled(true);
         m_widget->show();
-    }
-    else
-    {
-        // Отключим обновление виджета по умолчанию
-        m_updater->setUpdatesEnabled(false);
-        m_updater->addFloat({ 0, 42 });
-        connect(m_updater, &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &Mip::updateData);
-        m_updater->setUpdatesEnabled(true);
-        m_updateTimer = new QTimer;
-        m_updateTimer->setInterval(1000);
-        connect(m_updateTimer, &QTimer::timeout, m_updater, &ModuleDataUpdater::requestUpdates);
-        m_updateTimer->start();
     }
     return true;
 }
 
 void Mip::stop()
 {
-    if (m_withGUI)
-        m_widget->engine()->setUpdatesEnabled(false);
-    else
-    {
-        m_updateTimer->stop();
-        m_updateTimer->deleteLater();
-        m_updater->setUpdatesEnabled(false);
-    }
+    m_updateTimer->stop();
+    m_updateTimer->deleteLater();
+    m_updater->setUpdatesEnabled(false);
     if (m_iface != nullptr)
     {
         m_iface->close();
@@ -185,7 +180,7 @@ bool Mip::initConnection(const IEC104Settings &settings)
     QObject::connect(parser, &IEC104Parser::writeData, //
         m_iface, &BaseInterface::writeData, Qt::QueuedConnection);
     QObject::connect(m_iface, &BaseInterface::finished, //
-        parser, &IEC104Parser::stop, Qt::DirectConnection);
+        parser, &IEC104Parser::stop, Qt::QueuedConnection);
     QObject::connect(parser, &IEC104Parser::responseSend, //
         conn, &AsyncConnection::responseHandle, Qt::DirectConnection);
     // Потоки
@@ -279,7 +274,7 @@ void Mip::setNominalCurrent(float inom)
     iNom = inom;
 }
 
-UWidget *Mip::widget()
+QWidget *Mip::widget()
 {
     return m_widget;
 }

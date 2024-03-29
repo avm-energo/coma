@@ -44,6 +44,7 @@ struct Request
 };
 
 constexpr quint16 firmwareAddr = 802;
+constexpr quint16 typeOscAddr = 813;
 constexpr quint16 timeReg = 4600;
 constexpr quint16 enableWriteHwAddr = 40001;
 constexpr quint16 hardwareVerAddr = 40010;

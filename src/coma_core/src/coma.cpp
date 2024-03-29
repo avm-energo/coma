@@ -75,6 +75,7 @@ Coma::Coma(const AppConfiguration appCfg, QWidget *parent)
     , m_connectionManager(new ConnectionManager(this))
     , m_currentDevice(nullptr)
     , m_dlgManager(new DialogManager(this))
+    , m_reconnectDialog(nullptr)
     , editor(nullptr)
 {
     connect(m_connectionManager, &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
@@ -456,6 +457,7 @@ void Coma::connectStatusBar()
         connect(m_currentDevice, &Device::CurrentDevice::serialChanged, this,
             [=](u32 serialNumber) { msgSerialNumber->setText(QString::number(serialNumber, 16)); });
 
+        msgConnectionState->setText(Interface::stateToString(m_currentDevice->async()->getConnectionState()));
         connect(
             currentConnection, &Interface::AsyncConnection::stateChanged, this,
             [=](const Interface::State state) {
@@ -475,7 +477,7 @@ void Coma::connectStatusBar()
         if (m_appConfig == AppConfiguration::Debug && msgQueueSize)
         {
             connect(currentConnection, &Interface::AsyncConnection::queueSizeChanged, this, //
-                [=](const std::size_t size) { msgQueueSize->setText(QString("Queue size: %1").arg(size)); });
+                [=](const quint64 size) { msgQueueSize->setText(QString("Queue size: %1").arg(size)); });
         }
     }
 }
@@ -535,11 +537,16 @@ void Coma::update(const DataTypes::GeneralResponseStruct &rsp)
 
 void Coma::showReconnectDialog()
 {
-    auto reconnectDialog = new ReconnectDialog(this);
-    connect(m_connectionManager, &ConnectionManager::reconnectSuccess, //
-        reconnectDialog, &ReconnectDialog::reconnectSuccess);
-    connect(reconnectDialog, &ReconnectDialog::breakConnection, this, &Coma::disconnectAndClear);
-    reconnectDialog->open();
+    if (m_reconnectDialog == nullptr)
+    {
+        m_reconnectDialog = new ReconnectDialog(this);
+        connect(m_connectionManager, &ConnectionManager::reconnectSuccess, //
+            m_reconnectDialog, &ReconnectDialog::reconnectSuccess);
+        connect(m_connectionManager, &ConnectionManager::reconnectSuccess, this, //
+            [this] { m_reconnectDialog = nullptr; });
+        connect(m_reconnectDialog, &ReconnectDialog::breakConnection, this, &Coma::disconnectAndClear);
+        m_reconnectDialog->open();
+    }
 }
 
 void Coma::closeEvent(QCloseEvent *event)

@@ -12,6 +12,7 @@ constexpr auto sections = "sections";
 constexpr auto section = "section";
 constexpr auto sgroup = "sgroup";
 constexpr auto alarms = "alarms";
+constexpr auto state_all = "state-all";
 constexpr auto crit = "critical";
 constexpr auto warn = "warning";
 constexpr auto info = "info";
@@ -26,6 +27,7 @@ constexpr auto config = "config";
 constexpr auto conf_tabs = "config-tabs";
 constexpr auto hidden = "hidden";
 constexpr auto hidden_tab = "hidden-tab";
+constexpr auto bsi_ext = "bsi-ext";
 
 // Specified tags
 constexpr auto sig = "signal";

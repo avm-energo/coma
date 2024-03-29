@@ -11,6 +11,7 @@ CurrentDevice::CurrentDevice(AsyncConnection *conn)
     , m_sync(m_async)
     , m_bsi {}
     , m_previous {}
+    , m_bsiExt(this)
     , m_cfgStorage(this)
     , m_s2manager(this)
     , m_fileProvider(this)
@@ -42,6 +43,11 @@ SyncConnection *CurrentDevice::sync() noexcept
 const BlockStartupInfo &CurrentDevice::bsi() const noexcept
 {
     return m_bsi;
+}
+
+BlockStartupInfoExtended *CurrentDevice::bsiExt() noexcept
+{
+    return &m_bsiExt;
 }
 
 Health CurrentDevice::health() const noexcept
@@ -141,6 +147,8 @@ void CurrentDevice::updateBSI(const DataTypes::BitStringStruct &value)
             compareAndUpdate();
         }
     }
+    else
+        m_bsiExt.updateData(value);
 }
 
 void CurrentDevice::compareAndUpdate() noexcept

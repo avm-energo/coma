@@ -35,7 +35,9 @@ protected:
     std::atomic<Commands> m_lastRequestedCommand;
     std::reference_wrapper<RequestQueue> m_queue;
     LogClass m_log;
-    QTimer *m_timeoutTimer;
+    QTimer m_timeoutTimer;
+    std::mutex m_waitMutex;
+    std::condition_variable m_waiter;
     BaseRequestParser *m_requestParser;
     BaseResponseParser *m_responseParser;
 
@@ -61,6 +63,9 @@ protected:
     ExecutorState getState() const noexcept;
     /// \brief Изменяет текущее состояние исполнителя запросов указанным.
     void setState(const ExecutorState newState) noexcept;
+
+    /// \brief Функция, в которой блокируется поток исполнителя для ожидания внешних событий.
+    void waitEvent();
 
     /// \brief Функция, которая использует BaseRequestParser для парсинга
     /// запроса из очереди запросов в бинарное представление конкретного протокола.
@@ -107,6 +112,8 @@ public slots:
     void cancelQuery();
     /// \brief Слот, вызываемый при переподключении текущего интерфейса.
     void reconnectEvent();
+    /// \brief Слот, вызываемый внешним потоком для пробуждения потока исполнителя.
+    void wakeUp();
 
 signals:
     /// \brief Сигнал для уведомления об изменении состояния исполнителя запросов.

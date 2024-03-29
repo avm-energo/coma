@@ -4,6 +4,108 @@
     <version>0.10-0002</version>
     <resources>
         <alarms desc="Сигнализация">
+            <state-all desc="Состояние устройства">
+                <item>
+                    <addr>0</addr>
+                    <string>Проблемы со встроенным АЦП</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>1</addr>
+                    <string>Не работает внешняя flash-память</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>2</addr>
+                    <string>Перегрев устройства</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>3</addr>
+                    <string>Проблемы с АЦП (нет связи) (базовая)</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>4</addr>
+                    <string>Нет сигнала 1PPS с антенны</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>5</addr>
+                    <string>Проблемы с АЦП (нет связи) (мезонин)</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>6</addr>
+                    <string>Ошибка регулировочных коэффициентов (базовая)</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>7</addr>
+                    <string>Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>8</addr>
+                    <string>Некорректная Hardware информация (базовая)</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>9</addr>
+                    <string>Некорректная Hardware информация (мезонин)</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>10</addr>
+                    <string>Ошибка регулировочных коэффициентов (мезонин)</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>11</addr>
+                    <string>Напряжение батареи низко (меньше 2,5 В)</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>12</addr>
+                    <string>Нет связи с NTP-сервером</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>13</addr>
+                    <string>Не работает внешняя flash-память (мезонин)</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>14</addr>
+                    <string>Не работает внешняя fram</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>15</addr>
+                    <string>Проблемы с RTC</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>24</addr>
+                    <string>Проблемы с АЦП (нет связи) (дополнительная)</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>25</addr>
+                    <string>Не работает внешняя flash-память (дополнительная)</string>
+                    <type>critical</type>
+                </item>
+                <item>
+                    <addr>26</addr>
+                    <string>Ошибка регулировочных коэффициентов (дополнительная)</string>
+                    <type>warning</type>
+                </item>
+                <item>
+                    <addr>27</addr>
+                    <string>Некорректная Hardware информация (дополнительная)</string>
+                    <type>warning</type>
+                </item>
+            </state-all>
             <critical desc="Критичные">
                 <item>
                     <addr>5022</addr>
@@ -143,6 +245,62 @@
                 </item>
             </warning>
         </alarms>
+        <bsi-ext desc="BSI Ext">
+            <item>
+                <addr>40</addr>
+                <desc>Наименование ПО</desc>
+                <type>string32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>41</addr>
+                <desc>Версия загрузчика</desc>
+                <type>version32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>42</addr>
+                <desc>Время последней поверки модуля</desc>
+                <type>time32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>43</addr>
+                <desc>CRC рег. коэфф. базовой платы</desc>
+                <type>uint32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>44</addr>
+                <desc>CRC рег. коэфф. мезонинной платы</desc>
+                <type>uint32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>45</addr>
+                <desc>CRC рег. коэфф. доп. платы</desc>
+                <type>uint32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>46</addr>
+                <desc>Тип дополнительной платы</desc>
+                <type>uint32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>47</addr>
+                <desc>Версия дополнительной платы</desc>
+                <type>version32</type>
+                <visibility>true</visibility>
+            </item>
+            <item>
+                <addr>48</addr>
+                <desc>Серийный номер дополнительной платы</desc>
+                <type>uint32</type>
+                <visibility>true</visibility>
+            </item>
+        </bsi-ext>
         <config desc="Конфигурация">
             <record>
                 <id>3</id>

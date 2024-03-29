@@ -132,7 +132,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         break;
     }
     // writing registers
-    case Commands::C_WriteHardware:
+    case Commands::C_WriteHiddenBlock:
     {
         if (cmd.arg1.canConvert<DataTypes::BlockStruct>())
         {
@@ -146,12 +146,23 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         break;
     }
     // writing registers
-    case Commands::C_EnableHardwareWriting:
+    case Commands::C_EnableHiddenBlockWriting:
     {
         auto value = Modbus::packRegister(cmd.arg1.value<quint16>());
         request = Modbus::Request {
             Modbus::FunctionCode::WriteMultipleRegisters, //
             Modbus::enableWriteHwAddr, 1, false, value    //
+        };
+        break;
+    }
+    // writing registers
+    case Commands::C_WriteTypeOsc:
+    {
+        auto value = Modbus::packRegister(cmd.arg1.value<DataTypes::BlockStruct>().data);
+        const quint16 quantity = value.size() / 2;
+        request = Modbus::Request {
+            Modbus::FunctionCode::WriteMultipleRegisters, //
+            Modbus::typeOscAddr, quantity, false, value   //
         };
         break;
     }

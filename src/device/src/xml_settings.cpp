@@ -10,6 +10,7 @@ void Settings::clear() noexcept
     m_tabs.clear();
     m_sections.clear();
     m_alarms.clear();
+    m_stateAllCfg.clear();
     m_workJournals.clear();
     m_measJournals.clear();
     m_critHighlight.clear();
@@ -30,6 +31,11 @@ void Settings::appendTab(const u32 id, const QString &tabName)
 void Settings::appendSection(const Section &section)
 {
     m_sections.push_back(section);
+}
+
+void Settings::appendAlarmStateAll(const AlarmType type, const u32 index, const QString &desc)
+{
+    m_stateAllCfg.push_back(AlarmStateAllRecord { index, type, desc });
 }
 
 void Settings::appendAlarm(const AlarmType type, const u32 addr, const QString &desc)
@@ -58,12 +64,17 @@ void Settings::appendWorkJournal(const u32 id, const QString &desc)
 
 void Settings::appendMeasJournal(const u32 index, const QString &header, const BinaryType type, bool visib)
 {
-    m_measJournals.push_back(MeasJournal { index, type, visib, header });
+    m_measJournals.push_back(MeasJournal { index, type, visib, std::move(header) });
 }
 
 void Settings::appendHiddenTab(const HiddenTab &hiddenTab)
 {
     m_hiddenSettings.push_back(hiddenTab);
+}
+
+void Settings::appendBsiExtItem(const u32 addr, const BinaryType type, bool visib, const QString &desc)
+{
+    m_bsiExtSettings.push_back(BsiExtItem { addr, type, visib, std::move(desc) });
 }
 
 const DetailCountMap &Settings::getDetailConfigCount() const
@@ -84,6 +95,11 @@ const TabsMap &Settings::getTabs() const
 const SectionList &Settings::getSections() const
 {
     return m_sections;
+}
+
+const AlarmStateAllConfig &Settings::getStateAllConfig() const
+{
+    return m_stateAllCfg;
 }
 
 const AlarmMap &Settings::getAlarms() const
@@ -112,6 +128,11 @@ const MeasJourList &Settings::getMeasJours() const
 const HiddenSettings &Settings::getHiddenSettings() const
 {
     return m_hiddenSettings;
+}
+
+const BsiExtItemList &Settings::getBsiExtSettings() const
+{
+    return m_bsiExtSettings;
 }
 
 } // namespace Device::XmlDataTypes

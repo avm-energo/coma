@@ -61,6 +61,7 @@ void BaseResponseParser::processOk() noexcept
 void BaseResponseParser::processError(int errorCode) noexcept
 {
     qCritical() << "Device error code: " << QString::number(errorCode, 16);
+    emit cancelRequest();
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, static_cast<quint64>(errorCode) };
     emit responseParsed(resp);
 }
@@ -119,17 +120,19 @@ void BaseResponseParser::fileReceived(const QByteArray &file, //
                 static_cast<quint64>(file.size())       //
             };
             emit responseParsed(resp);
-            return;
         }
-        DataTypes::GeneralResponseStruct genResp {
-            DataTypes::GeneralResponseTypes::Ok, //
-            static_cast<quint64>(file.size())    //
-        };
-        emit responseParsed(genResp);
-        for (auto &&record : outlist)
+        else
         {
-            S2::FileStruct resp { S2::FilesEnum(record.ID), record.data };
-            emit responseParsed(resp);
+            DataTypes::GeneralResponseStruct genResp {
+                DataTypes::GeneralResponseTypes::Ok, //
+                static_cast<quint64>(file.size())    //
+            };
+            emit responseParsed(genResp);
+            for (auto &&record : outlist)
+            {
+                S2::FileStruct resp { S2::FilesEnum(record.ID), record.data };
+                emit responseParsed(resp);
+            }
         }
         break;
     }

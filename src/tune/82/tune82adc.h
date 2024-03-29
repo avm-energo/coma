@@ -16,7 +16,8 @@ public:
     Tune82ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
-    Bac82 *m_bac, m_bacNewBlock;
+    Bac82 *m_bac;
+    Bac82::BlockData m_bacNewBlock;
     Bd182 *m_bd1;
     Bda82 *m_bda;
     Bd0 *m_bd0;
@@ -45,6 +46,7 @@ private:
     Error::Msg calcIUcoef1();
     Error::Msg calcIcoef5();
     Error::Msg showPreWarning();
+    Error::Msg saveNewBac();
     Error::Msg checkTune();
     void getBd1();
 
