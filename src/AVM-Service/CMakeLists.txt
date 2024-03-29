@@ -1,4 +1,4 @@
-project(AVM-Service VERSION 2.11.0)
+project(AVM-Service VERSION 2.11.1)
 
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core Widgets REQUIRED)
