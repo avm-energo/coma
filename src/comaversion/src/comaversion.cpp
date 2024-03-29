@@ -1,11 +1,10 @@
-#include "comaversion.h"
+#include "comaversion/comaversion.h"
 
 #include <gversion.h>
 
 QString GitVersion::getGitHash() const
 {
-    const QString buffer(gitHash);
-    return buffer;
+    return QString { gitHash };
 }
 
 unsigned long long GitVersion::getGitCounter() const
@@ -21,7 +20,6 @@ QString GitVersion::getConfigVersion() const
     {
         str.prepend('.');
         str.prepend(QString::number(counter % 10));
-
         counter /= 10;
     }
     if (str.back() == '.')

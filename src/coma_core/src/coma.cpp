@@ -22,7 +22,6 @@
 
 #include "coma_core/coma.h"
 
-#include "../../comaversion/comaversion.h"
 #include "../../dialogs/aboutdialog.h"
 #include "../../dialogs/connectdialog.h"
 #include "../../dialogs/errordialog.h"
@@ -52,6 +51,7 @@
 #include <QtGlobal>
 #include <alarms/alarmwidget.h>
 #include <comaresources/manage.h>
+#include <comaversion/comaversion.h>
 #include <device/current_device.h>
 #include <functional>
 #include <gen/errorqueue.h>
