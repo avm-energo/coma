@@ -176,7 +176,7 @@ bool Mip::initConnection(const IEC104Settings &settings)
     parser->setBaseAdr(settings.bsAddress);
     // Обмен данными
     QObject::connect(m_iface, &BaseInterface::dataReceived, //
-        parser, &IEC104Parser::processReadBytes, Qt::QueuedConnection);
+        parser, &IEC104Parser::checkStartBytes, Qt::QueuedConnection);
     QObject::connect(parser, &IEC104Parser::writeData, //
         m_iface, &BaseInterface::writeData, Qt::QueuedConnection);
     QObject::connect(m_iface, &BaseInterface::finished, //

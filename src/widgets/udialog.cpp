@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <device/current_device.h>
+#include <gen/error.h>
 
 UDialog::UDialog(Device::CurrentDevice *device, QWidget *parent) : UWidget(device, parent)
 {

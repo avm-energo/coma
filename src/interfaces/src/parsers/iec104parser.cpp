@@ -211,7 +211,7 @@ void IEC104Parser::run()
     emit finished();
 }
 
-void IEC104Parser::processReadBytes(QByteArray ba)
+void IEC104Parser::checkStartBytes(QByteArray ba)
 {
     if (!m_tempBuffer.isEmpty())
     {

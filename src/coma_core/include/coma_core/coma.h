@@ -32,7 +32,7 @@ public:
     virtual ~Coma();
 
     void go();
-    void connectSetupBar();
+    void connectStatusBar();
     void setupMenubar();
     QWidget *least();
     static QPoint ComaCenter();

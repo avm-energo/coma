@@ -43,8 +43,6 @@ void ConfigDialog::writeConfig()
             fillBack();
             auto s2file = m_datamanager.getBinaryConfiguration();
             engine()->currentConnection()->writeConfiguration(s2file);
-            // TODO: for test
-            // engine()->currentConnection()->writeConfiguration(s2file);
         }
         else
             qCritical("Ошибка чтения конфигурации");

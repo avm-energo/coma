@@ -425,11 +425,11 @@ void Coma::initDevice(Interface::AsyncConnection *connection)
 void Coma::initInterfaceConnection()
 {
     m_currentDevice->async()->connection(this, &Coma::update);
-    connectSetupBar();
+    connectStatusBar();
     prepareDialogs();
 }
 
-void Coma::connectSetupBar()
+void Coma::connectStatusBar()
 {
     static const QMap<Interface::IfaceType, QString> images {
         { IfaceType::USB, ":/icons/usb.svg" },           //
