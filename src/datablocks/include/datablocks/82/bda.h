@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../datablock.h"
-
+#include <datablocks/datablock.h>
 #include <device/device_list.h>
 #include <s2/s2datatypes.h>
 

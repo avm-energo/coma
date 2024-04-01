@@ -1,12 +1,10 @@
-#ifndef TUNE84TEMP60_H
-#define TUNE84TEMP60_H
+#pragma once
 
-#include "../../datablocks/bd0.h"
-#include "../../datablocks/kiv/bac.h"
-#include "../../datablocks/kiv/bdain.h"
 #include "../abstracttunedialog.h"
 
-#include <QWidget>
+#include <datablocks/bd0.h>
+#include <datablocks/kiv/bac.h>
+#include <datablocks/kiv/bdain.h>
 
 class Tune84Temp60 : public AbstractTuneDialog
 {
@@ -76,5 +74,3 @@ private slots:
     //    int ReadAnalogMeasurements();
     //    void setDefCoefs();
 };
-
-#endif // TUNE84TEMP60_H

@@ -1,19 +1,10 @@
-#include "bac2.h"
-
-#include "../../widgets/wd_func.h"
-
-#include <QGroupBox>
-#include <QVBoxLayout>
-#include <gen/colors.h>
-#include <gen/stdfunc.h>
+#include "datablocks/kiv/bac2.h"
 
 Bac2A284::Bac2A284(QObject *parent) : DataBlock(parent)
 {
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
-    setBlock({ 1, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData), true });
-    //    createWidget();
-    //readBlockFromModule();
-    //    updateWidget();
+    setBlock({ 1, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData),
+        true });
 }
 
 void Bac2A284::setupValuesDesc()

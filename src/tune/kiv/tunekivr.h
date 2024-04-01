@@ -1,12 +1,10 @@
-#ifndef TUNEKIVMAIN_H
-#define TUNEKIVMAIN_H
+#pragma once
 
-#include "../../datablocks/kiv/bac2.h"
-#include "../../datablocks/kiv/bda.h"
-#include "../../datablocks/kiv/bdain.h"
 #include "../abstracttunedialog.h"
 
-#include <QWidget>
+#include <datablocks/kiv/bac2.h>
+#include <datablocks/kiv/bda.h>
+#include <datablocks/kiv/bdain.h>
 
 class TuneKIVR : public AbstractTuneDialog
 {
@@ -35,5 +33,3 @@ private:
 
 private slots:
 };
-
-#endif // TUNEKIVMAIN_H

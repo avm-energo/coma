@@ -1,5 +1,4 @@
-#ifndef TUNESEQUENCEFILE_H
-#define TUNESEQUENCEFILE_H
+#pragma once
 
 #define TS_FILENAME "calibr.ini"
 
@@ -35,5 +34,3 @@ private:
     static QString s_cpuSerialNum;
     static bool s_tsfInitialized;
 };
-
-#endif // TUNESEQUENCEFILE_H

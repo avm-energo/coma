@@ -1,5 +1,4 @@
-#ifndef GENERALTUNEDIALOG_H
-#define GENERALTUNEDIALOG_H
+#pragma once
 
 #include "../widgets/tunetabwidget.h"
 #include "../widgets/udialog.h"
@@ -48,5 +47,3 @@ public slots:
     void setCalibrButtons();
     void generateReport();
 };
-
-#endif // GENERALTUNEDIALOG_H

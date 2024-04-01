@@ -1,14 +1,12 @@
-#ifndef TUNEKIVADC_H
-#define TUNEKIVADC_H
+#pragma once
 
-#include "../../datablocks/bd0.h"
-#include "../../datablocks/kiv/bac.h"
-#include "../../datablocks/kiv/bac2.h"
-#include "../../datablocks/kiv/bda.h"
-#include "../../datablocks/kiv/bdain.h"
 #include "../abstracttunedialog.h"
 
-#include <QWidget>
+#include <datablocks/bd0.h>
+#include <datablocks/kiv/bac.h>
+#include <datablocks/kiv/bac2.h>
+#include <datablocks/kiv/bda.h>
+#include <datablocks/kiv/bdain.h>
 
 class TuneKIVADC : public AbstractTuneDialog
 {
@@ -69,5 +67,3 @@ private:
 private slots:
     void CalcTuneCoefs();
 };
-
-#endif // TUNEKIVADC_H

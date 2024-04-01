@@ -2,10 +2,6 @@
 
 #include "../abstracttunedialog.h"
 
-#include <QShowEvent>
-#include <QWidget>
-#include <device/device_list.h>
-
 class Tune82Check : public AbstractTuneDialog
 {
     Q_OBJECT
@@ -17,8 +13,6 @@ private:
     Error::Msg showScheme();
     Error::Msg check();
     Error::Msg checkMip();
-
-private slots:
 
 protected:
     void showEvent(QShowEvent *e) override;

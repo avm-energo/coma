@@ -1,7 +1,6 @@
-#ifndef BD0_H
-#define BD0_H
+#pragma once
 
-#include "datablock.h"
+#include <datablocks/datablock.h>
 
 class Bd0 : public DataBlock
 {
@@ -21,5 +20,3 @@ public:
 private:
     std::unique_ptr<BlockData> m_blockData;
 };
-
-#endif // BD0_H

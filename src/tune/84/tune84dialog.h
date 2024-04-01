@@ -1,13 +1,6 @@
-#ifndef TUNE84DIALOG_H
-#define TUNE84DIALOG_H
+#pragma once
 
-#include "../../models/report.h"
 #include "../generaltunedialog.h"
-
-#include <QHBoxLayout>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QStandardItemModel>
 
 class Tune84Dialog : public GeneralTuneDialog
 {
@@ -30,5 +23,3 @@ private:
 private slots:
     //    void GenerateReport();
 };
-
-#endif // TUNE84DIALOG_H

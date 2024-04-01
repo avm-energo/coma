@@ -1,7 +1,6 @@
-#ifndef KIV_BDAIN_H
-#define KIV_BDAIN_H
+#pragma once
 
-#include "../datablock.h"
+#include <datablocks/datablock.h>
 
 class BdaIn : public DataBlock
 {
@@ -26,7 +25,4 @@ public:
 
 private:
     std::unique_ptr<BlockData> m_blockData;
-    //    QWidget *m_widget;
 };
-
-#endif // KIV_BDAIN_H

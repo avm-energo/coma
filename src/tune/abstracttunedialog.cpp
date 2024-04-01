@@ -1,6 +1,5 @@
 #include "abstracttunedialog.h"
 
-#include "../dialogs/keypressdialog.h"
 #include "../widgets/epopup.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"

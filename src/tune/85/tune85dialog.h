@@ -1,13 +1,6 @@
 #pragma once
 
-#include "../../models/report.h"
-#include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
-
-#include <QHBoxLayout>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QStandardItemModel>
 
 class Tune85Dialog : public GeneralTuneDialog
 {

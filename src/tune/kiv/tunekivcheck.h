@@ -1,10 +1,6 @@
-#ifndef TUNEKIVCHECK_H
-#define TUNEKIVCHECK_H
+#pragma once
 
 #include "../abstracttunedialog.h"
-
-#include <QShowEvent>
-#include <QWidget>
 
 class TuneKIVCheck : public AbstractTuneDialog
 {
@@ -21,5 +17,3 @@ private:
 protected:
     void showEvent(QShowEvent *e) override;
 };
-
-#endif // TUNEKIVCHECK_H

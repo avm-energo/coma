@@ -1,12 +1,10 @@
-#ifndef TUNEKIVTEMP60_H
-#define TUNEKIVTEMP60_H
+#pragma once
 
-#include "../../datablocks/bd0.h"
-#include "../../datablocks/kiv/bac.h"
-#include "../../datablocks/kiv/bdain.h"
 #include "../abstracttunedialog.h"
 
-#include <QWidget>
+#include <datablocks/bd0.h>
+#include <datablocks/kiv/bac.h>
+#include <datablocks/kiv/bdain.h>
 
 class TuneKIVTemp60 : public AbstractTuneDialog
 {
@@ -69,5 +67,3 @@ private slots:
     //    int ReadAnalogMeasurements();
     //    void setDefCoefs();
 };
-
-#endif // TUNEKIVTEMP60_H

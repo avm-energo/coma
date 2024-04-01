@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../../datablocks/82/bd1.h"
 #include "../abstracttunedialog.h"
+
+#include <datablocks/82/bd1.h>
 
 class Mip;
 struct MipDataStruct;

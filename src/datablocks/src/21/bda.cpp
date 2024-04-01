@@ -1,4 +1,4 @@
-#include "bda.h"
+#include "datablocks/21/bda.h"
 
 Bda21::Bda21(QObject *parent) : DataBlock(parent)
 {

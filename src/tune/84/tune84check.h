@@ -1,10 +1,6 @@
-#ifndef TUNE84CHECK_H
-#define TUNE84CHECK_H
+#pragma once
 
 #include "../abstracttunedialog.h"
-
-#include <QShowEvent>
-#include <QWidget>
 
 class Tune84Check : public AbstractTuneDialog
 {
@@ -21,5 +17,3 @@ private slots:
 protected:
     void showEvent(QShowEvent *e) override;
 };
-
-#endif // TUNE84CHECK_H

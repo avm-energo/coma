@@ -1,8 +1,5 @@
-#ifndef TUNEKIVDIALOG_H
-#define TUNEKIVDIALOG_H
+#pragma once
 
-#include "../../models/report.h"
-#include "../../widgets/udialog.h"
 #include "../generaltunedialog.h"
 #include "tunekivadc.h"
 #include "tunekivcheck.h"
@@ -79,5 +76,3 @@ private slots:
 
     //    void GenerateReport();
 };
-
-#endif // TUNEKIVDIALOG_H

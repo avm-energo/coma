@@ -1,14 +1,6 @@
-#ifndef TUNE82DIALOG_H
-#define TUNE82DIALOG_H
+#pragma once
 
-#include "../../models/report.h"
 #include "../generaltunedialog.h"
-
-#include <QHBoxLayout>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QStandardItemModel>
-#include <device/device_list.h>
 
 class Tune82Dialog : public GeneralTuneDialog
 {
@@ -18,8 +10,4 @@ public:
 
 private:
     void prepareReport() override;
-
-private slots:
 };
-
-#endif // TUNE82DIALOG_H

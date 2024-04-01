@@ -23,17 +23,16 @@
  *
  * */
 
-#include "datablock.h"
+#include "datablocks/datablock.h"
 
-#include "../widgets/epopup.h"
-#include "../widgets/wd_func.h"
+#include "../../widgets/epopup.h"
+#include "../../widgets/wd_func.h"
 
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QScrollBar>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-//#include <interfaces/conn/active_connection.h>
 #include <interfaces/conn/sync_connection.h>
 
 using namespace Interface;

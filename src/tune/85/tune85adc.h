@@ -1,13 +1,11 @@
-#ifndef TUNE85ADC_H
-#define TUNE85ADC_H
+#pragma once
 
-#include "../../datablocks/bd0.h"
-#include "../../datablocks/kiv/bac.h"
-#include "../../datablocks/kiv/bda.h"
-#include "../../datablocks/kiv/bdain.h"
 #include "../abstracttunedialog.h"
 
-#include <QWidget>
+#include <datablocks/bd0.h>
+#include <datablocks/kiv/bac.h>
+#include <datablocks/kiv/bda.h>
+#include <datablocks/kiv/bdain.h>
 
 class Tune85ADC : public AbstractTuneDialog
 {
@@ -60,5 +58,3 @@ private:
 private slots:
     void CalcTuneCoefs();
 };
-
-#endif // TUNE85ADC_H

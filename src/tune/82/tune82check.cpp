@@ -1,6 +1,5 @@
 #include "tune82check.h"
 
-#include "../../datablocks/82/bda.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/wd_func.h"
 #include "../mip.h"
@@ -10,6 +9,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <datablocks/82/bda.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 

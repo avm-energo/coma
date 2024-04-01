@@ -1,7 +1,4 @@
-#ifndef DATABLOCK_H
-#define DATABLOCK_H
-
-//#include "../module/board.h"
+#pragma once
 
 #include <QHBoxLayout>
 #include <QScrollArea>
@@ -78,7 +75,7 @@ public:
 
     /// \brief Returns block visualisation for insert into GUI
     /// \param showButtons[in] (bool) - show or not bottom buttons widget (load/save to/from file,
-    ///         load/save to/from module, set defaults - for configuration and tune parameters
+    ///        load/save to/from module, set defaults - for configuration and tune parameters
     /// \returns QWidget - widget to insert into GUI
     QWidget *widget(bool showButtons = true);
 
@@ -159,5 +156,3 @@ private:
     QString m_deviceUID;
     Interface::SyncConnection *m_conn;
 };
-
-#endif // DATABLOCK_H

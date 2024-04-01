@@ -1,7 +1,4 @@
-#include "bda.h"
-
-#include <QGroupBox>
-#include <QVBoxLayout>
+#include "datablocks/kiv/bda.h"
 
 BdaA284::BdaA284(QObject *parent) : DataBlock(parent)
 {

@@ -1,11 +1,4 @@
-#include "bdain.h"
-
-#include "../../widgets/wd_func.h"
-
-#include <QGroupBox>
-#include <QVBoxLayout>
-#include <gen/colors.h>
-#include <gen/stdfunc.h>
+#include "datablocks/kiv/bdain.h"
 
 BdaIn::BdaIn(QObject *parent) : DataBlock(parent)
 {

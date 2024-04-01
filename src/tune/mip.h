@@ -1,5 +1,4 @@
-#ifndef MIP_H
-#define MIP_H
+#pragma once
 
 #include "../widgets/udialog.h"
 
@@ -77,5 +76,3 @@ signals:
 public slots:
     void stop();
 };
-
-#endif // MIP_H

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../datablock.h"
+#include <datablocks/datablock.h>
 
 class Bac82 : public DataBlock
 {

@@ -1,4 +1,4 @@
-#include "bd0.h"
+#include "datablocks/bd0.h"
 
 Bd0::Bd0(QObject *parent) : DataBlock(parent)
 {

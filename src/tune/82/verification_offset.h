@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../datablocks/82/bd1.h"
+#include <datablocks/82/bd1.h>
 
 constexpr std::size_t phasesCount = 3;
 

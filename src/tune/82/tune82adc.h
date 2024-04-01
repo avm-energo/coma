@@ -1,13 +1,12 @@
 #pragma once
 
-#include "../../datablocks/82/bac.h"
-#include "../../datablocks/82/bd1.h"
-#include "../../datablocks/82/bda.h"
-#include "../../datablocks/bd0.h"
 #include "../abstracttunedialog.h"
 #include "../mip.h"
 
-#include <device/device_list.h>
+#include <datablocks/82/bac.h>
+#include <datablocks/82/bd1.h>
+#include <datablocks/82/bda.h>
+#include <datablocks/bd0.h>
 
 class Tune82ADC : public AbstractTuneDialog
 {
@@ -49,6 +48,4 @@ private:
     Error::Msg saveNewBac();
     Error::Msg checkTune();
     void getBd1();
-
-private slots:
 };

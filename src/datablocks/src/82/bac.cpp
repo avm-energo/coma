@@ -1,17 +1,9 @@
-#include "bac.h"
-
-#include "../../widgets/wd_func.h"
-
-#include <QGroupBox>
-#include <QVBoxLayout>
-#include <gen/colors.h>
-#include <gen/stdfunc.h>
+#include "datablocks/82/bac.h"
 
 Bac82::Bac82(QObject *parent) : DataBlock(parent), m_blockData(std::make_unique<BlockData>())
 {
     setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData),
         true });
-    // readBlockFromModule();
 }
 
 void Bac82::setupValuesDesc()

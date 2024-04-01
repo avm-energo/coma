@@ -1,13 +1,11 @@
-#ifndef ABSTRACTTUNEDIALOG_H
-#define ABSTRACTTUNEDIALOG_H
+#pragma once
 
-#include "../datablocks/datablock.h"
-#include "../models/report.h"
 #include "../widgets/tunetabwidget.h"
 
 #include <QByteArray>
 #include <QCloseEvent>
 #include <QDialog>
+#include <datablocks/datablock.h>
 #include <device/current_device.h>
 #include <device/device_list.h>
 #include <s2/s2configuration.h>
@@ -135,5 +133,3 @@ protected:
 };
 
 using TuneFunc = Error::Msg (AbstractTuneDialog::*)();
-
-#endif // ABSTRACTTUNEDIALOG_H
