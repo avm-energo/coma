@@ -5074,7 +5074,21 @@
 			<string>Диапазон скорости изменения средней температуры</string>
 			<min>0.001</min>
 			<max>10</max>
-			<decimals>3</decimals>
+			<decimals>6</decimals>
+		</widget>
+	</record>
+	<record>
+		<id>1398</id>
+		<name>DelayTavg</name>
+		<description>Пропуск измерения скорости изменения средней температуры</description>
+		<type>DWORD</type>
+		<widget>
+			<type>QDoubleSpinBox</type>
+			<group>51</group>
+			<string>Пропуск измерения скорости изменения средней температуры</string>
+			<min>0</min>
+			<max>10000</max>
+			<decimals>0</decimals>
 		</widget>
 	</record>
 	<record>
