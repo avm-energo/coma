@@ -1,7 +1,5 @@
 #include "dialogcreator.h"
 
-#include "../oscillograms/oscdialog.h"
-#include "../oscillograms/osckivdialog.h"
 #include "../startup/startupkdvdialog.h"
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
@@ -20,6 +18,8 @@
 
 #include <device/current_device.h>
 #include <journals/journaldialog.h>
+#include <oscillograms/oscdialog.h>
+#include <oscillograms/osckivdialog.h>
 
 using namespace Device;
 

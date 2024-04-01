@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../../dialogs/dialogmanager.h"
-#include "../../oscillograms/oscmanager.h"
 
 #include <QApplication>
 #include <QListWidget>
@@ -9,6 +8,7 @@
 #include <QStackedWidget>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/types/settingstypes.h>
+#include <oscillograms/oscmanager.h>
 
 class AlarmWidget;
 class Module;
@@ -75,7 +75,6 @@ private:
     void setProgressBarSize(int prbnum, int size);
     void setProgressBarCount(int prbnum, int count);
     void setupUI();
-    // void prepare();
     QToolBar *createToolBar();
     void keyPressEvent(QKeyEvent *event) override;
     void prepareDialogs();

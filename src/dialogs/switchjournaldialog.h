@@ -1,11 +1,11 @@
 #ifndef SWITCHJOURNALDIALOG_H
 #define SWITCHJOURNALDIALOG_H
 
-#include "../oscillograms/oscmanager.h"
 #include "../widgets/udialog.h"
 
 #include <QModelIndex>
 #include <models/etablemodel.h>
+#include <oscillograms/oscmanager.h>
 
 class ETableView;
 

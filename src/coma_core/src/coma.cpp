@@ -29,8 +29,6 @@
 #include "../../dialogs/reconnectdialog.h"
 #include "../../dialogs/settingsdialog.h"
 #include "../../dialogs/switchjournaldialog.h"
-#include "../../oscillograms/swjmanager.h"
-#include "../../oscillograms/swjpackconvertor.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/gasdensitywidget.h"
 #include "../../widgets/splashscreen.h"
@@ -60,6 +58,8 @@
 #include <iostream>
 #include <journals/journalviewer.h>
 #include <memory>
+#include <oscillograms/swjmanager.h>
+#include <oscillograms/swjpackconvertor.h>
 #include <s2/s2configstorage.h>
 #include <s2/s2datafactory.h>
 #include <s2/s2util.h>

@@ -1,6 +1,5 @@
 #include "switchjournaldialog.h"
 
-#include "../oscillograms/swjmanager.h"
 #include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
 
@@ -10,6 +9,7 @@
 #include <gen/files.h>
 #include <gen/timefunc.h>
 #include <models/etablemodel.h>
+#include <oscillograms/swjmanager.h>
 #include <s2/s2util.h>
 
 // constexpr int MAXSWJNUM = 262144;
