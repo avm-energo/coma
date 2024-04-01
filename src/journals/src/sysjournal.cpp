@@ -1,4 +1,4 @@
-#include "sysjournal.h"
+#include "journals/sysjournal.h"
 
 namespace journals
 {

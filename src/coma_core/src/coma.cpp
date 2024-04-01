@@ -29,7 +29,6 @@
 #include "../../dialogs/reconnectdialog.h"
 #include "../../dialogs/settingsdialog.h"
 #include "../../dialogs/switchjournaldialog.h"
-#include "../../journals/journalviewer.h"
 #include "../../oscillograms/swjmanager.h"
 #include "../../oscillograms/swjpackconvertor.h"
 #include "../../widgets/epopup.h"
@@ -59,6 +58,7 @@
 #include <gen/timefunc.h>
 #include <interfaces/types/settingstypes.h>
 #include <iostream>
+#include <journals/journalviewer.h>
 #include <memory>
 #include <s2/s2configstorage.h>
 #include <s2/s2datafactory.h>

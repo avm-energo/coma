@@ -1,9 +1,8 @@
 #pragma once
 
-#include "basejournal.h"
-
 #include <QDialog>
 #include <device/xml_settings.h>
+#include <journals/basejournal.h>
 #include <s2/s2datatypes.h>
 
 namespace journals

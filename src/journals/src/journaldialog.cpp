@@ -1,13 +1,12 @@
-#include "journaldialog.h"
-
-#include "journaltabwidget.h"
-#include "measjournal.h"
-#include "sysjournal.h"
-#include "workjournal.h"
+#include "journals/journaldialog.h"
 
 #include <QTabWidget>
 #include <QVBoxLayout>
 #include <device/current_device.h>
+#include <journals/journaltabwidget.h>
+#include <journals/measjournal.h>
+#include <journals/sysjournal.h>
+#include <journals/workjournal.h>
 #include <s2/s2datatypes.h>
 
 namespace journals

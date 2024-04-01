@@ -1,7 +1,7 @@
 #pragma once
 
-#include "basejournal.h"
-#include "measparser.h"
+#include <journals/basejournal.h>
+#include <journals/measparser.h>
 
 namespace journals
 {

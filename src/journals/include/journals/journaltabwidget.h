@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../widgets/eprogressindicator.h"
-#include "basejournal.h"
 
 #include <QDialog>
 #include <QProgressDialog>
 #include <QWidget>
 #include <interfaces/conn/async_connection.h>
+#include <journals/basejournal.h>
 #include <s2/s2datatypes.h>
 
 class QVBoxLayout;

@@ -1,4 +1,4 @@
-#include "measparser.h"
+#include "journals/measparser.h"
 
 namespace journals
 {
@@ -29,6 +29,8 @@ std::size_t MeasParser::getRecordSize(const MeasSettings &settings)
             break;
         case BinaryType::time64:
             recSize += sizeof(quint64);
+            break;
+        default:
             break;
         }
     }
@@ -82,6 +84,8 @@ bool MeasParser::parseRecord(const MeasSettings &settings)
             break;
         case BinaryType::time64:
             storage = iterateTime<quint64>(status);
+            break;
+        default:
             break;
         }
         if (rec.visibility)

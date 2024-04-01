@@ -1,15 +1,15 @@
-#include "journalviewer.h"
+#include "journals/journalviewer.h"
 
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"
-#include "measjournal.h"
-#include "sysjournal.h"
-#include "workjournal.h"
 
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <gen/files.h>
+#include <journals/measjournal.h>
+#include <journals/sysjournal.h>
+#include <journals/workjournal.h>
 #include <s2/s2util.h>
 #include <xml/xmlparser/xmlmoduleparser.h>
 

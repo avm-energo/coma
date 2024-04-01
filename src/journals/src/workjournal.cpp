@@ -1,4 +1,4 @@
-#include "workjournal.h"
+#include "journals/workjournal.h"
 
 namespace journals
 {

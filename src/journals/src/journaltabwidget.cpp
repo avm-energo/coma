@@ -1,4 +1,4 @@
-#include "journaltabwidget.h"
+#include "journals/journaltabwidget.h"
 
 #include "../widgets/epopup.h"
 #include "../widgets/wd_func.h"

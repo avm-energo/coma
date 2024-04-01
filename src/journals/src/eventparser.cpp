@@ -1,4 +1,4 @@
-#include "eventparser.h"
+#include "journals/eventparser.h"
 
 #include <gen/timefunc.h>
 

@@ -1,4 +1,4 @@
-#include "basejournal.h"
+#include "journals/basejournal.h"
 
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"

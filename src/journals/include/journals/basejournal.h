@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../models/edynamictablemodel.h"
+#include "../../models/edynamictablemodel.h"
 
 #include <QObject>
 #include <QSortFilterProxyModel>

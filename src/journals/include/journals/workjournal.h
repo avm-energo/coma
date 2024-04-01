@@ -1,7 +1,7 @@
 #pragma once
 
-#include "basejournal.h"
-#include "eventparser.h"
+#include <journals/basejournal.h>
+#include <journals/eventparser.h>
 
 namespace journals
 {

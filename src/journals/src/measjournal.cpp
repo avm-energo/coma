@@ -1,4 +1,4 @@
-#include "measjournal.h"
+#include "journals/measjournal.h"
 
 namespace journals
 {
