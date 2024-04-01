@@ -1,10 +1,10 @@
-#include "startupktfdialog.h"
+#include "startup/startupktfdialog.h"
 
-#include "../widgets/etableview.h"
-#include "../widgets/wd_func.h"
+#include "../../widgets/epopup.h"
+#include "../../widgets/etableview.h"
+#include "../../widgets/wd_func.h"
 
 #include <QGridLayout>
-#include <QMessageBox>
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/error.h>
@@ -195,16 +195,16 @@ void StartupKTFDialog::SaveToFile()
     switch (res)
     {
     case Error::Msg::NoError:
-        QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
+        EMessageBox::information(this, "Файл коэффициентов коррекции записан успешно!");
         break;
     case Error::Msg::FileWriteError:
-        QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
-        break;
-    case Error::Msg::FileNameError:
-        QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
+        EMessageBox::error(this, "Ошибка при записи файла!");
         break;
     case Error::Msg::FileOpenError:
-        QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
+        EMessageBox::error(this, "Ошибка открытия файла!");
+        break;
+    case Error::Msg::FileNameError:
+        EMessageBox::warning(this, "Задано пустое имя файла!");
         break;
     default:
         break;
@@ -222,7 +222,7 @@ void StartupKTFDialog::ReadFromFile()
     Error::Msg res = Files::LoadFromFile(filepath, ba);
     if (res != Error::Msg::NoError)
     {
-        QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
+        EMessageBox::error(this, "Ошибка при загрузке файла");
         ERMSG("Ошибка при загрузке файла");
         return;
     }

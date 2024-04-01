@@ -1,9 +1,7 @@
-#ifndef CORDIALOG_H
-#define CORDIALOG_H
-
-#include "abstractstartupdialog.h"
+#pragma once
 
 #include <QDoubleSpinBox>
+#include <startup/abstractstartupdialog.h>
 
 constexpr auto KIVSTARTUPINITREGR = 4000;
 constexpr auto KIVSTARTUPINITREGW = 910;
@@ -41,5 +39,3 @@ public slots:
     bool checkStartupValues() override;
     // void ErrorRead();
 };
-
-#endif // CORDIALOG_H

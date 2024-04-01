@@ -1,8 +1,7 @@
-#include "abstractstartupdialog.h"
+#include "startup/abstractstartupdialog.h"
 
-#include "../dialogs/keypressdialog.h"
-#include "../widgets/epopup.h"
-#include "../widgets/wd_func.h"
+#include "../../widgets/epopup.h"
+#include "../../widgets/wd_func.h"
 
 #include <QDialogButtonBox>
 #include <QMessageBox>

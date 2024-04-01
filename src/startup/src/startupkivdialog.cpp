@@ -1,7 +1,7 @@
-#include "startupkivdialog.h"
+#include "startup/startupkivdialog.h"
 
-#include "../widgets/epopup.h"
-#include "../widgets/wd_func.h"
+#include "../../widgets/epopup.h"
+#include "../../widgets/wd_func.h"
 
 #include <QGridLayout>
 #include <QGroupBox>

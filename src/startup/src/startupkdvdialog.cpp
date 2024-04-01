@@ -1,8 +1,8 @@
-#include "startupkdvdialog.h"
+#include "startup/startupkdvdialog.h"
 
-#include "../widgets/epopup.h"
-#include "../widgets/etableview.h"
-#include "../widgets/wd_func.h"
+#include "../../widgets/epopup.h"
+#include "../../widgets/etableview.h"
+#include "../../widgets/wd_func.h"
 
 #include <gen/colors.h>
 #include <gen/error.h>
@@ -221,19 +221,15 @@ void StartupKDVDialog::SaveToFile()
     {
     case Error::Msg::NoError:
         EMessageBox::information(this, "Файл коэффициентов коррекции записан успешно!");
-        // QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
         break;
     case Error::Msg::FileWriteError:
         EMessageBox::error(this, "Ошибка при записи файла!");
-        // QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
     case Error::Msg::FileOpenError:
         EMessageBox::error(this, "Ошибка открытия файла!");
-        // QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
         break;
     case Error::Msg::FileNameError:
         EMessageBox::warning(this, "Задано пустое имя файла!");
-        // QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
     default:
         break;
@@ -252,7 +248,6 @@ void StartupKDVDialog::ReadFromFile()
     if (res != Error::Msg::NoError)
     {
         EMessageBox::error(this, "Ошибка при загрузке файла!");
-        // QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла!");
         qCritical("Ошибка при загрузке файла");
         return;
     }
@@ -262,7 +257,6 @@ void StartupKDVDialog::ReadFromFile()
     memcpy(&Bd9Block->MotHover, &(ba.data()[sizeof(*WBd7Block) + sizeof(float)]), sizeof(float));
     FillCor();
     EMessageBox::information(this, "Загрузка прошла успешно!");
-    // QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
 bool StartupKDVDialog::checkStartupValues()

@@ -1,7 +1,6 @@
-#ifndef ABSTRACTCORDIALOG_H
-#define ABSTRACTCORDIALOG_H
+#pragma once
 
-#include "../widgets/udialog.h"
+#include "../../widgets/udialog.h"
 
 class AbstractStartupDialog : public UDialog
 {
@@ -71,5 +70,3 @@ private:
 public slots:
     void reqUpdate() override;
 };
-
-#endif // ABSTRACTCORDIALOG_H
