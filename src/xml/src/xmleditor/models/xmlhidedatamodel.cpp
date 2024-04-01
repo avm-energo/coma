@@ -7,11 +7,11 @@ XmlHideDataModel::XmlHideDataModel(int rows, int cols, ModelType type, QObject *
 {
 }
 
-void XmlHideDataModel::getDialogRequest(const int row)
+QStringList XmlHideDataModel::getRowData(const int row)
 {
+    QStringList retList;
     if (row >= 0 && row < rowCount())
     {
-        QStringList retList;
         auto cols = columnCount();
         retList.reserve(cols);
         // Собираем открытые данные
@@ -37,9 +37,8 @@ void XmlHideDataModel::getDialogRequest(const int row)
             retList.append(hidingVal.array.join(','));
             retList.append(hidingVal.view);
         }
-        // Отправляем сигнал с ответом
-        emit sendDialogResponse(retList);
     }
+    return retList;
 }
 
 void XmlHideDataModel::create(const QStringList &saved, int *row)

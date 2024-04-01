@@ -11,7 +11,7 @@ void XmlSGroupDialog::setupUI(QVBoxLayout *mainLayout)
     // Создание слоёв окна
     auto nameLayout = new QHBoxLayout;
     auto idLayout = new QHBoxLayout;
-    mTitle += "группы";
+    m_title += "группы";
 
     // Виджеты для имени группы
     auto nameLabel = new QLabel("Имя группы: ", this);
@@ -20,7 +20,7 @@ void XmlSGroupDialog::setupUI(QVBoxLayout *mainLayout)
         nameInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSGroupDialog::dataChanged));
     nameLayout->addWidget(nameLabel);
     nameLayout->addWidget(nameInput);
-    dlgItems.append(nameInput);
+    m_dlgItems.append(nameInput);
 
     // Виджеты для ID группы
     auto idLabel = new QLabel("ID вкладки: ", this);
@@ -35,7 +35,7 @@ void XmlSGroupDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlSGroupDialog::dataChanged));
     idLayout->addWidget(idLabel);
     idLayout->addWidget(idInput);
-    dlgItems.append(idInput);
+    m_dlgItems.append(idInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(nameLayout);

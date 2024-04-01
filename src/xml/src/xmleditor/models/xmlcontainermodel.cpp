@@ -138,21 +138,21 @@ QDomElement XmlContainerModel::toNode(QDomDocument &doc)
     return node;
 }
 
-void XmlContainerModel::getDialogRequest(const int row)
+QStringList XmlContainerModel::getRowData(const int row)
 {
+    QStringList response;
     if (row >= 0 && row < rowCount())
     {
         if (m_type == ModelType::Resources)
         {
-            QStringList response;
             auto desc = data(index(row, 1));
             if (desc.isValid() && desc.canConvert<QString>())
                 response.append(desc.value<QString>());
-            emit sendDialogResponse(response);
         }
         else
-            XmlModel::getDialogRequest(row);
+            response = XmlModel::getRowData(row);
     }
+    return response;
 }
 
 void XmlContainerModel::update(const QStringList &saved, const int row)

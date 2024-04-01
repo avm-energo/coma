@@ -48,11 +48,11 @@ void BaseEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const 
     makeElement(doc, parent, elemName, str);
 }
 
-void BaseEditorModel::getDialogRequest(const int row)
+QStringList BaseEditorModel::getRowData(const int row)
 {
+    QStringList retList;
     if (row >= 0 && row < rowCount())
     {
-        QStringList retList;
         auto cols = columnCount();
         retList.reserve(cols);
         // Собираем данные
@@ -68,9 +68,8 @@ void BaseEditorModel::getDialogRequest(const int row)
             else
                 retList.append("");
         }
-        // Send response
-        emit sendDialogResponse(retList);
     }
+    return retList;
 }
 
 void BaseEditorModel::create(const QStringList &saved, int *row)

@@ -2,10 +2,14 @@
 
 #include "xmldialog.h"
 
+/// \brief Класс диалога для создания и редактирования
+/// элементов из XmlDataModel (ModelType::Signals).
 class XmlSignalDialog final : public XmlDialog
 {
     Q_OBJECT
 public:
-    explicit XmlSignalDialog(QWidget *parent);
-    virtual void setupUI(QVBoxLayout *mainLayout) override;
+    explicit XmlSignalDialog(QWidget *parent = nullptr);
+
+    /// \brief Создаёт и настраивает UI диалога.
+    void setupUI(QVBoxLayout *mainLayout) override;
 };

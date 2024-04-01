@@ -13,7 +13,7 @@ void XmlMeasJourDialog::setupUI(QVBoxLayout *mainLayout)
     auto headLayout = new QHBoxLayout;
     auto typeLayout = new QHBoxLayout;
     auto visibLayout = new QHBoxLayout;
-    mTitle += "элемента журнала измерений";
+    m_title += "элемента журнала измерений";
 
     // Виджеты для индекса измерения
     auto indexLabel = new QLabel("Индекс измерения: ", this);
@@ -28,7 +28,7 @@ void XmlMeasJourDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlMeasJourDialog::dataChanged));
     indexLayout->addWidget(indexLabel);
     indexLayout->addWidget(idndexInput);
-    dlgItems.append(idndexInput);
+    m_dlgItems.append(idndexInput);
 
     // Виджеты для описания заголовка измерения в журнале измерений
     auto headLabel = new QLabel("Заголовок измерения: ", this);
@@ -37,7 +37,7 @@ void XmlMeasJourDialog::setupUI(QVBoxLayout *mainLayout)
         qOverload<const QString &>(&XmlMeasJourDialog::dataChanged));
     headLayout->addWidget(headLabel);
     headLayout->addWidget(headInput);
-    dlgItems.append(headInput);
+    m_dlgItems.append(headInput);
 
     // Виджеты для выбора типа элемента журнала измерений
     auto typeLabel = new QLabel("Тип данных: ", this);
@@ -48,7 +48,7 @@ void XmlMeasJourDialog::setupUI(QVBoxLayout *mainLayout)
     typeLayout->addWidget(typeInput);
     QObject::connect(typeInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlMeasJourDialog::dataChanged));                  //
-    dlgItems.append(typeInput);
+    m_dlgItems.append(typeInput);
 
     // Виджеты для выбора видимости конфигурационного элемента журнала измерений
     auto visibLabel = new QLabel("Видимость: ", this);
@@ -60,7 +60,7 @@ void XmlMeasJourDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(                                                //
         visibInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlMeasJourDialog::dataChanged));      //
-    dlgItems.append(visibInput);
+    m_dlgItems.append(visibInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(indexLayout);

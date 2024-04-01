@@ -10,7 +10,7 @@ void XmlResDialog::setupUI(QVBoxLayout *mainLayout)
     setupSizePos(500, 120);
     // Создание слоёв окна
     auto descLayout = new QHBoxLayout;
-    mTitle += "корневого элемента";
+    m_title += "корневого элемента";
 
     // Виджеты для описания элемента
     auto descLabel = new QLabel("Описание: ", this);
@@ -18,7 +18,7 @@ void XmlResDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(descInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlResDialog::dataChanged));
     descLayout->addWidget(descLabel);
     descLayout->addWidget(descInput);
-    dlgItems.append(descInput);
+    m_dlgItems.append(descInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(descLayout);

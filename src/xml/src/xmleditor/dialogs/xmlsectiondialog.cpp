@@ -10,7 +10,7 @@ void XmlSectionDialog::setupUI(QVBoxLayout *mainLayout)
     setupSizePos(650, 80);
     // Создание слоёв окна
     auto nameLayout = new QHBoxLayout;
-    mTitle += "раздела";
+    m_title += "раздела";
 
     // Виджеты для имени раздела
     auto nameLabel = new QLabel("Имя раздела: ", this);
@@ -19,7 +19,7 @@ void XmlSectionDialog::setupUI(QVBoxLayout *mainLayout)
         nameInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlSectionDialog::dataChanged));
     nameLayout->addWidget(nameLabel);
     nameLayout->addWidget(nameInput);
-    dlgItems.append(nameInput);
+    m_dlgItems.append(nameInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(nameLayout);

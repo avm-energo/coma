@@ -6,28 +6,28 @@
 #include <QScreen>
 #include <gen/std_ext.h>
 
-XmlDialog::XmlDialog(QWidget *parent) : QDialog(parent, Qt::Window), isChanged(false)
+XmlDialog::XmlDialog(QWidget *parent) : QDialog(parent, Qt::Window), m_isChanged(false)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void XmlDialog::startup(int row)
+void XmlDialog::startup(int row, BaseEditorModel *model)
 {
-    mRow = row; ///< row = -1, если диалог создаётся для создания item-а
-    if (mRow == createId)
+    m_row = row; ///< row = -1, если диалог создаётся для создания item-а
+    if (m_row == createId)
     {
-        mTitle = "Создание ";
-        isChanged = true;
+        m_title = "Создание ";
+        m_isChanged = true;
     }
     else
-        mTitle = "Редактирование ";
+        m_title = "Редактирование ";
 
     auto mainLayout = new QVBoxLayout(this);
     setupUI(mainLayout);
-    setWindowTitle(mTitle);
+    setWindowTitle(m_title);
     addSaveBtnAndApply(mainLayout);
     setLayout(mainLayout);
-    emit modelDataRequest(row);
+    loadModelData(model->getRowData(row));
 }
 
 void XmlDialog::setupSizePos(int width, int height)
@@ -48,7 +48,7 @@ void XmlDialog::addSaveBtnAndApply(QVBoxLayout *main)
 QStringList XmlDialog::collectData()
 {
     QStringList collected;
-    for (auto &item : dlgItems)
+    for (auto &item : m_dlgItems)
     {
         std::visit( //
             overloaded {
@@ -71,7 +71,7 @@ QStringList XmlDialog::collectData()
 void XmlDialog::reject()
 {
     // Если есть изменения, то показываем пользователю MessageBox
-    if (isChanged)
+    if (m_isChanged)
     {
         if (EMessageBox::question(this, "Сохранить изменения?"))
             saveData();
@@ -86,14 +86,13 @@ bool XmlDialog::checkDataBeforeSaving(const QStringList &savedData)
     return true;
 }
 
-void XmlDialog::modelDataResponse(const QStringList &response)
+void XmlDialog::loadModelData(const QStringList &response)
 {
-    auto responseCount = response.count(), widgetsCount = dlgItems.count();
     // Находим минимальное количество, при несовпадении игнорируем
-    auto size = (responseCount > widgetsCount ? widgetsCount : responseCount);
+    auto size = std::min(response.count(), m_dlgItems.count());
     for (auto i = 0; i < size; i++)
     {
-        auto &item = dlgItems[i];
+        auto &item = m_dlgItems[i];
         std::visit( //
             overloaded {
                 [&](QLineEdit *widget) { //
@@ -118,7 +117,7 @@ void XmlDialog::modelDataResponse(const QStringList &response)
 void XmlDialog::saveData()
 {
     // Если есть изменения
-    if (isChanged)
+    if (m_isChanged)
     {
         // Собираем изменения из полей
         auto collectedData = collectData();
@@ -126,14 +125,14 @@ void XmlDialog::saveData()
         if (checkDataBeforeSaving(collectedData))
         {
             // Отсылаем изменения в модель
-            if (mRow == createId)
-                emit createData(collectedData, &mRow);
+            if (m_row == createId)
+                emit createData(collectedData, &m_row);
             else
-                emit updateData(collectedData, mRow);
+                emit updateData(collectedData, m_row);
             // После сохранения изменений в модель меняем заголовок окна
-            setWindowTitle(mTitle);
+            setWindowTitle(m_title);
             // Изменяем состояние (данные сохранены, следовательно не изменены)
-            isChanged = false;
+            m_isChanged = false;
             this->reject();
         }
         // Если данные окна не прошли проверку
@@ -145,11 +144,11 @@ void XmlDialog::saveData()
 void XmlDialog::dataChanged()
 {
     // Если появились изменения, меняем заголовок окна
-    if (!isChanged)
+    if (!m_isChanged)
     {
-        setWindowTitle(mTitle + " [ИЗМЕНЕНО]");
+        setWindowTitle(m_title + " [ИЗМЕНЕНО]");
         // Изменяем состояние (данные изменены)
-        isChanged = true;
+        m_isChanged = true;
     }
 }
 
@@ -168,9 +167,9 @@ void XmlDialog::dataChanged(int index)
 void XmlDialog::resetChangeState()
 {
     // Сброс изменённого состояния окна
-    if (isChanged)
+    if (m_isChanged)
     {
-        setWindowTitle(mTitle);
-        isChanged = false;
+        setWindowTitle(m_title);
+        m_isChanged = false;
     }
 }

@@ -16,7 +16,7 @@ void XmlHiddenWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     auto datatypeLayout = new QHBoxLayout;
     auto addrLayout = new QHBoxLayout;
     auto visibilityLayout = new QHBoxLayout;
-    mTitle += "виджета раздела \"Секретные операции\"";
+    m_title += "виджета раздела \"Секретные операции\"";
 
     // Виджеты для индекса данных
     auto indexLabel = new QLabel("Индекс поля внутри отправляемой структуры: ", this);
@@ -31,7 +31,7 @@ void XmlHiddenWidgetDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlHiddenWidgetDialog::dataChanged));
     indexLayout->addWidget(indexLabel);
     indexLayout->addWidget(indexInput);
-    dlgItems.append(indexInput);
+    m_dlgItems.append(indexInput);
 
     // Отображаемое имя поля данных
     auto titleLabel = new QLabel("Отображаемое имя поля данных: ", this);
@@ -40,7 +40,7 @@ void XmlHiddenWidgetDialog::setupUI(QVBoxLayout *mainLayout)
         qOverload<const QString &>(&XmlHiddenWidgetDialog::dataChanged));
     titleLayout->addWidget(titleLabel);
     titleLayout->addWidget(titleInput);
-    dlgItems.append(titleInput);
+    m_dlgItems.append(titleInput);
 
     // Префикс имён виджетов в системе Qt
     auto nameLabel = new QLabel("Префикс имён виджетов в системе Qt: ", this);
@@ -49,7 +49,7 @@ void XmlHiddenWidgetDialog::setupUI(QVBoxLayout *mainLayout)
         qOverload<const QString &>(&XmlHiddenWidgetDialog::dataChanged));
     nameLayout->addWidget(nameLabel);
     nameLayout->addWidget(nameInput);
-    dlgItems.append(nameInput);
+    m_dlgItems.append(nameInput);
 
     // Виджеты для типа отображения
     auto viewLabel = new QLabel("Тип виджета для отображения: ", this);
@@ -61,7 +61,7 @@ void XmlHiddenWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(                                               //
         viewInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlHiddenWidgetDialog::dataChanged)); //
-    dlgItems.append(viewInput);
+    m_dlgItems.append(viewInput);
 
     // Виджеты для типа данных
     auto datatypeLabel = new QLabel("Тип данных поля в отправляемой структуре: ", this);
@@ -73,7 +73,7 @@ void XmlHiddenWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(                                                   //
         datatypeInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlHiddenWidgetDialog::dataChanged));     //
-    dlgItems.append(datatypeInput);
+    m_dlgItems.append(datatypeInput);
 
     // Виджеты для адреса поля
     auto addrLabel = new QLabel("Адрес поля в устройстве: ", this);
@@ -88,7 +88,7 @@ void XmlHiddenWidgetDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlHiddenWidgetDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
     addrLayout->addWidget(addrInput);
-    dlgItems.append(addrInput);
+    m_dlgItems.append(addrInput);
 
     // Виджеты для описания видимости поля данных
     auto visibilityLabel = new QLabel("Видимость поля на вкладке: ", this);
@@ -100,7 +100,7 @@ void XmlHiddenWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(                                                     //
         visibilityInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlHiddenWidgetDialog::dataChanged));       //
-    dlgItems.append(visibilityInput);
+    m_dlgItems.append(visibilityInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(indexLayout);

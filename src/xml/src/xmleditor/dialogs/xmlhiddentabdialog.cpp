@@ -14,7 +14,7 @@ void XmlHiddenTabDialog::setupUI(QVBoxLayout *mainLayout)
     auto flagLayout = new QHBoxLayout;
     auto backgroundLayout = new QHBoxLayout;
 
-    mTitle += "вкладки раздела \"Секретные операции\"";
+    m_title += "вкладки раздела \"Секретные операции\"";
 
     // Виджеты для имени вкладки
     auto tabNameLabel = new QLabel("Имя вкладки: ", this);
@@ -23,7 +23,7 @@ void XmlHiddenTabDialog::setupUI(QVBoxLayout *mainLayout)
         qOverload<const QString &>(&XmlHiddenTabDialog::dataChanged));
     tabNameLayout->addWidget(tabNameLabel);
     tabNameLayout->addWidget(tabNameInput);
-    dlgItems.append(tabNameInput);
+    m_dlgItems.append(tabNameInput);
 
     // Виджеты для префикса
     auto prefixNameLabel = new QLabel("Префикс для имён виджетов на вкладке: ", this);
@@ -32,7 +32,7 @@ void XmlHiddenTabDialog::setupUI(QVBoxLayout *mainLayout)
         qOverload<const QString &>(&XmlHiddenTabDialog::dataChanged));
     prefixNameLayout->addWidget(prefixNameLabel);
     prefixNameLayout->addWidget(prefixNameInput);
-    dlgItems.append(prefixNameInput);
+    m_dlgItems.append(prefixNameInput);
 
     // Виджеты для флага данных
     auto flagLabel = new QLabel("Флаг данных: ", this);
@@ -47,7 +47,7 @@ void XmlHiddenTabDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlHiddenTabDialog::dataChanged));
     flagLayout->addWidget(flagLabel);
     flagLayout->addWidget(flagInput);
-    dlgItems.append(flagInput);
+    m_dlgItems.append(flagInput);
 
     // Виджеты для заднего фона
     auto backgroundLabel = new QLabel("Задний фон вкладки: ", this);
@@ -56,7 +56,7 @@ void XmlHiddenTabDialog::setupUI(QVBoxLayout *mainLayout)
         qOverload<const QString &>(&XmlHiddenTabDialog::dataChanged));
     backgroundLayout->addWidget(backgroundLabel);
     backgroundLayout->addWidget(backgroundInput);
-    dlgItems.append(backgroundInput);
+    m_dlgItems.append(backgroundInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(tabNameLayout);

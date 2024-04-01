@@ -69,16 +69,14 @@ public:
     virtual void setHorizontalHeaderLabels(const QStringList &labels);
     /// \brief Returns a model type.
     ModelType getModelType() const;
+    /// \brief Returns data from the model for given row.
+    virtual QStringList getRowData(const int row);
 
 signals:
-    /// \details This signal is emitted when dialog sends a request for the model's item data.
-    void sendDialogResponse(const QStringList &response);
     /// \details This signal is emitted when model's data changes.
     void modelChanged();
 
 public slots:
-    /// \brief Slot for receiving a request from dialog and emits signal with response.
-    virtual void getDialogRequest(const int row);
     /// \brief Slot for inserting a new item in the model.
     virtual void create(const QStringList &saved, int *row);
     /// \brief Slot for updating an item's data in the model.

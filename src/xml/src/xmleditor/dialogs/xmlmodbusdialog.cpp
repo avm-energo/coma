@@ -61,7 +61,7 @@ void XmlModbusDialog::setupUI(QVBoxLayout *mainLayout)
     auto regTypeLayout = new QHBoxLayout;
     auto typeLayout = new QHBoxLayout;
     auto descLayout = new QHBoxLayout;
-    mTitle += "элемента Modbus";
+    m_title += "элемента Modbus";
 
     // Виджеты для ID сигнала
     auto sigIdLabel = new QLabel("ID сигнала: ", this);
@@ -76,7 +76,7 @@ void XmlModbusDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlModbusDialog::dataChanged));
     sigIdLayout->addWidget(sigIdLabel);
     sigIdLayout->addWidget(sigIdInput);
-    dlgItems.append(sigIdInput);
+    m_dlgItems.append(sigIdInput);
 
     // Виджеты для типа регистра
     auto regTypeLabel = new QLabel("Тип регистра: ", this);
@@ -88,7 +88,7 @@ void XmlModbusDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlModbusDialog::dataChanged));          //
     regTypeLayout->addWidget(regTypeLabel);
     regTypeLayout->addWidget(regTypeInput);
-    dlgItems.append(regTypeInput);
+    m_dlgItems.append(regTypeInput);
 
     // Виджеты для типа возвращаемого значения
     auto typeLabel = new QLabel("Тип передаваемого значения: ", this);
@@ -100,7 +100,7 @@ void XmlModbusDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(                                               //
         typeInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlModbusDialog::dataChanged));       //
-    dlgItems.append(typeInput);
+    m_dlgItems.append(typeInput);
 
     // Виджеты для описания
     auto descLabel = new QLabel("Описание: ", this);
@@ -109,7 +109,7 @@ void XmlModbusDialog::setupUI(QVBoxLayout *mainLayout)
         descInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlModbusDialog::dataChanged));
     descLayout->addWidget(descLabel);
     descLayout->addWidget(descInput);
-    dlgItems.append(descInput);
+    m_dlgItems.append(descInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(sigIdLayout);
@@ -125,10 +125,10 @@ QStringList XmlModbusDialog::collectData()
     return retVal;
 }
 
-void XmlModbusDialog::modelDataResponse(const QStringList &response)
+void XmlModbusDialog::loadModelData(const QStringList &response)
 {
-    XmlDialog::modelDataResponse(response);
-    auto regTypeInput = std::get<QComboBox *>(dlgItems[regTypeIndex]);
+    XmlDialog::loadModelData(response);
+    auto regTypeInput = std::get<QComboBox *>(m_dlgItems[regTypeIndex]);
     regTypeInput->setCurrentIndex(convertTypeToIndex(response[regTypeIndex]));
     resetChangeState();
 }

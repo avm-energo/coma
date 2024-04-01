@@ -24,12 +24,11 @@
 
 namespace Helper
 {
-constexpr auto edit = 0;   ///< Константа для указания редактирования
-constexpr auto remove = 1; ///< Константа для указания удаления
+constexpr auto edit = 0;   ///< Константа для указания редактирования.
+constexpr auto remove = 1; ///< Константа для указания удаления.
 }
 
-/// \brief Диалог создания или изменения элемента.
-void XmlDialogFabric::CreateOrEditDialog(BaseEditorModel *model, int row, QWidget *parent)
+void XmlDialogFabric::createOrEditDialog(BaseEditorModel *model, int row, QWidget *parent)
 {
     if (model != nullptr)
     {
@@ -52,7 +51,7 @@ void XmlDialogFabric::CreateOrEditDialog(BaseEditorModel *model, int row, QWidge
             dialog = new XmlSignalDialog(parent);
             break;
         case ModelType::SectionTabs:
-            dialog = new XmlSTabDialog(parent);
+            dialog = new XmlSectionTabDialog(parent);
             break;
         case ModelType::WorkJours:
             dialog = new XmlWorkJourDialog(parent);
@@ -105,11 +104,9 @@ void XmlDialogFabric::CreateOrEditDialog(BaseEditorModel *model, int row, QWidge
         }
         if (dialog != nullptr)
         {
-            QObject::connect(dialog, &XmlDialog::modelDataRequest, model, &BaseEditorModel::getDialogRequest);
-            QObject::connect(model, &BaseEditorModel::sendDialogResponse, dialog, &XmlDialog::modelDataResponse);
             QObject::connect(dialog, &XmlDialog::createData, model, &BaseEditorModel::create);
             QObject::connect(dialog, &XmlDialog::updateData, model, &BaseEditorModel::update);
-            dialog->startup(row);
+            dialog->startup(row, model);
             dialog->exec();
         }
     }
@@ -117,8 +114,7 @@ void XmlDialogFabric::CreateOrEditDialog(BaseEditorModel *model, int row, QWidge
         EMessageBox::warning(parent, "Не выбрана модель");
 }
 
-/// \brief Диалог удаления или изменения элемента.
-void XmlDialogFabric::RemoveOrEditDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent, int type)
+void XmlDialogFabric::removeOrEditDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent, int type)
 {
     if (!selected.isEmpty())
     {
@@ -127,7 +123,7 @@ void XmlDialogFabric::RemoveOrEditDialog(BaseEditorModel *model, QModelIndexList
         if (str != "..")
         {
             if (type == Helper::edit)
-                CreateOrEditDialog(model, row, parent);
+                createOrEditDialog(model, row, parent);
             else
             {
                 auto modelType = model->getModelType();
@@ -137,12 +133,6 @@ void XmlDialogFabric::RemoveOrEditDialog(BaseEditorModel *model, QModelIndexList
                 {
                     if (EMessageBox::question(parent, "Удалить выбранный элемент?"))
                         model->remove(row);
-                    /*
-                    auto resBtn = QMessageBox::question(parent, "Удаление", "Удалить выбранный элемент?",
-                        QMessageBox::No | QMessageBox::Yes, QMessageBox::No);
-                    if (resBtn == QMessageBox::Yes)
-                        model->remove(row);
-                    */
                 }
             }
         }
@@ -153,20 +143,17 @@ void XmlDialogFabric::RemoveOrEditDialog(BaseEditorModel *model, QModelIndexList
         EMessageBox::warning(parent, "Не выбран элемент");
 }
 
-/// \brief Создать и отобразить диалог создания нового элемента.
-void XmlDialogFabric::CreateDialog(BaseEditorModel *model, QWidget *parent)
+void XmlDialogFabric::createDialog(BaseEditorModel *model, QWidget *parent)
 {
-    CreateOrEditDialog(model, createId, parent);
+    createOrEditDialog(model, createId, parent);
 }
 
-/// \brief Создать и отобразить диалог редактирования выбранного элемента.
-void XmlDialogFabric::EditDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent)
+void XmlDialogFabric::editDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent)
 {
-    RemoveOrEditDialog(model, selected, parent, Helper::edit);
+    removeOrEditDialog(model, selected, parent, Helper::edit);
 }
 
-/// \brief Создать и отобразить диалог удаления выбранного элемента.
-void XmlDialogFabric::RemoveDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent)
+void XmlDialogFabric::removeDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent)
 {
-    RemoveOrEditDialog(model, selected, parent, Helper::remove);
+    removeOrEditDialog(model, selected, parent, Helper::remove);
 }

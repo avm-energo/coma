@@ -12,7 +12,7 @@ void XmlAlarmStateAllDialog::setupUI(QVBoxLayout *mainLayout)
     auto descLayout = new QHBoxLayout;
     auto addrLayout = new QHBoxLayout;
     auto typeLayout = new QHBoxLayout;
-    mTitle += "сигнализации";
+    m_title += "сигнализации";
 
     // Виджеты для адреса сигнализации
     auto addrLabel = new QLabel("Адрес сигнализации: ", this);
@@ -27,7 +27,7 @@ void XmlAlarmStateAllDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlAlarmStateAllDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
     addrLayout->addWidget(addrInput);
-    dlgItems.append(addrInput);
+    m_dlgItems.append(addrInput);
 
     // Виджеты для описания сигнализации
     auto descLabel = new QLabel("Описание сигнализации: ", this);
@@ -36,7 +36,7 @@ void XmlAlarmStateAllDialog::setupUI(QVBoxLayout *mainLayout)
         qOverload<const QString &>(&XmlAlarmStateAllDialog::dataChanged));
     descLayout->addWidget(descLabel);
     descLayout->addWidget(descInput);
-    dlgItems.append(descInput);
+    m_dlgItems.append(descInput);
 
     // Виджеты для описания типа сигнализации
     auto typeLabel = new QLabel("Тип сигнализации: ", this);
@@ -48,7 +48,7 @@ void XmlAlarmStateAllDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(                                                //
         typeInput, qOverload<int>(&QComboBox::currentIndexChanged),  //
         this, qOverload<int>(&XmlAlarmStateAllDialog::dataChanged)); //
-    dlgItems.append(typeInput);
+    m_dlgItems.append(typeInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);

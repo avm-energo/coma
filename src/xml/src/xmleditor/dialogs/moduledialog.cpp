@@ -17,14 +17,14 @@ void ModuleDialog::setupUI(QVBoxLayout *mainLayout)
 {
     // Настройки окна (размер, положение)
     setupSizePos(380, 220);
-    dlgSettings = {
+    m_dlgSettings = {
         { "Название", "nameInput" },   //
         { "База: ", "bTypeInput" },    //
         { "Мезонин: ", "mTypeInput" }, //
         { "Версия", "verInput" }       //
     };
-    mTitle += "модуля";
-    for (const auto &itemSettings : qAsConst(dlgSettings))
+    m_title += "модуля";
+    for (const auto &itemSettings : qAsConst(m_dlgSettings))
     {
         auto labelText = itemSettings.first;
         auto itemName = itemSettings.second;
@@ -37,7 +37,7 @@ void ModuleDialog::setupUI(QVBoxLayout *mainLayout)
         itemLayout->addWidget(labelItem);
         itemLayout->addWidget(inputItem);
         mainLayout->addLayout(itemLayout);
-        dlgItems.append(inputItem);
+        m_dlgItems.append(inputItem);
     }
 }
 
@@ -50,13 +50,13 @@ QStringList ModuleDialog::collectData()
     return retVal;
 }
 
-void ModuleDialog::modelDataResponse(const QStringList &response)
+void ModuleDialog::loadModelData(const QStringList &response)
 {
-    XmlDialog::modelDataResponse(response);
+    XmlDialog::loadModelData(response);
     // Деактивируем поле версии для мезонинных плат
     if (response[bTypeIndex] == "00")
     {
-        auto versionInput = std::get<QLineEdit *>(dlgItems[versionIndex]);
+        auto versionInput = std::get<QLineEdit *>(m_dlgItems[versionIndex]);
         versionInput->setEnabled(false);
     }
 }

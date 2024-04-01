@@ -59,7 +59,7 @@ void Xml104Dialog::setupUI(QVBoxLayout *mainLayout)
     auto sigTypeLayout = new QHBoxLayout;
     auto transTypeLayout = new QHBoxLayout;
     auto sigGrpLayout = new QHBoxLayout;
-    mTitle += "элемента IEC60870";
+    m_title += "элемента IEC60870";
 
     // Виджеты для ID сигнала
     auto sigIdLabel = new QLabel("ID сигнала: ", this);
@@ -73,7 +73,7 @@ void Xml104Dialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&Xml104Dialog::dataChanged));
     sigIdLayout->addWidget(sigIdLabel);
     sigIdLayout->addWidget(sigIdInput);
-    dlgItems.append(sigIdInput);
+    m_dlgItems.append(sigIdInput);
 
     // Виджеты для типа регистра
     auto sigTypeLabel = new QLabel("Тип регистра: ", this);
@@ -83,7 +83,7 @@ void Xml104Dialog::setupUI(QVBoxLayout *mainLayout)
         sigTypeInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&Xml104Dialog::dataChanged));
     sigTypeLayout->addWidget(sigTypeLabel);
     sigTypeLayout->addWidget(sigTypeInput);
-    dlgItems.append(sigTypeInput);
+    m_dlgItems.append(sigTypeInput);
 
     // Виджеты для типа передачи
     auto transTypeLabel = new QLabel("Тип передачи: ", this);
@@ -95,7 +95,7 @@ void Xml104Dialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&Xml104Dialog::dataChanged));               //
     transTypeLayout->addWidget(transTypeLabel);
     transTypeLayout->addWidget(transTypeInput);
-    dlgItems.append(transTypeInput);
+    m_dlgItems.append(transTypeInput);
 
     // Виджеты для описания
     auto sigGroupLabel = new QLabel("Группа сигналов: ", this);
@@ -104,7 +104,7 @@ void Xml104Dialog::setupUI(QVBoxLayout *mainLayout)
         sigGroupInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&Xml104Dialog::dataChanged));
     sigGrpLayout->addWidget(sigGroupLabel);
     sigGrpLayout->addWidget(sigGroupInput);
-    dlgItems.append(sigGroupInput);
+    m_dlgItems.append(sigGroupInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(sigIdLayout);
@@ -120,10 +120,10 @@ QStringList Xml104Dialog::collectData()
     return retVal;
 }
 
-void Xml104Dialog::modelDataResponse(const QStringList &response)
+void Xml104Dialog::loadModelData(const QStringList &response)
 {
-    XmlDialog::modelDataResponse(response);
-    auto transTypeInput = std::get<QComboBox *>(dlgItems[transTypeIndex]);
+    XmlDialog::loadModelData(response);
+    auto transTypeInput = std::get<QComboBox *>(m_dlgItems[transTypeIndex]);
     transTypeInput->setCurrentIndex(convertTypeToIndex(response[transTypeIndex]));
     resetChangeState();
 }

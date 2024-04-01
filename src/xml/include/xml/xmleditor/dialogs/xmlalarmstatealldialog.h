@@ -2,10 +2,14 @@
 
 #include <xml/xmleditor/dialogs/xmldialog.h>
 
-class XmlAlarmStateAllDialog : public XmlDialog
+/// \brief Класс диалога для создания и редактирования
+/// элементов из XmlDataModel (ModelType::AlarmStateAll).
+class XmlAlarmStateAllDialog final : public XmlDialog
 {
     Q_OBJECT
 public:
     explicit XmlAlarmStateAllDialog(QWidget *parent);
-    virtual void setupUI(QVBoxLayout *mainLayout) override;
+
+    /// \brief Создаёт и настраивает UI диалога.
+    void setupUI(QVBoxLayout *mainLayout) override;
 };

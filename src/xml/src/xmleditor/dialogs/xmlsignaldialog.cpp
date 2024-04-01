@@ -13,7 +13,7 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     auto addrLayout = new QHBoxLayout;
     auto countLayout = new QHBoxLayout;
     auto typeLayout = new QHBoxLayout;
-    mTitle += "группы сигналов";
+    m_title += "группы сигналов";
 
     // Виджеты для адресов группы сигналов
     auto addrLabel = new QLabel("Начальный адрес: ", this);
@@ -28,7 +28,7 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlSignalDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
     addrLayout->addWidget(addrInput);
-    dlgItems.append(addrInput);
+    m_dlgItems.append(addrInput);
 
     // Виджеты для количества сигналов в группе
     auto countLabel = new QLabel("Количество: ", this);
@@ -43,7 +43,7 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlSignalDialog::dataChanged));
     countLayout->addWidget(countLabel);
     countLayout->addWidget(countInput);
-    dlgItems.append(countInput);
+    m_dlgItems.append(countInput);
 
     // Виджеты для ID группы сигналов
     auto idLabel = new QLabel("ID группы сигналов: ", this);
@@ -58,7 +58,7 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlSignalDialog::dataChanged));
     idLayout->addWidget(idLabel);
     idLayout->addWidget(idInput);
-    dlgItems.append(idInput);
+    m_dlgItems.append(idInput);
 
     // Виджеты для типа возвращаемого значения
     auto typeLabel = new QLabel("Тип возвращаемого значения: ", this);
@@ -70,7 +70,7 @@ void XmlSignalDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(                                               //
         typeInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlSignalDialog::dataChanged));       //
-    dlgItems.append(typeInput);
+    m_dlgItems.append(typeInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);

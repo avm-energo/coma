@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <variant>
+#include <xml/xmleditor/models/baseeditormodel.h>
 
 constexpr auto createId = -1;
 constexpr auto idMin = 1;
@@ -27,10 +28,10 @@ private:
     using Widget = std::variant<QLineEdit *, QComboBox *, QSpinBox *>;
 
 protected:
-    QString mTitle;
-    bool isChanged;
-    int mRow;
-    QList<Widget> dlgItems;
+    QString m_title;
+    bool m_isChanged;
+    int m_row;
+    QList<Widget> m_dlgItems;
 
     /// \brief Функция устанавливает фиксированный размер окна и отображает его в центре экрана.
     void setupSizePos(int width, int height);
@@ -47,32 +48,28 @@ protected:
     /// \brief Виртуальный метод для проверки на корректность введённых данных.
     [[nodiscard]] virtual bool checkDataBeforeSaving(const QStringList &savedData);
 
+    /// \brief Виртуальный метод для получения данных от модели.
+    /// \details Здесь описывается вся логика раскидывания данных от модели по виджетам.
+    virtual void loadModelData(const QStringList &response);
+
 public:
-    explicit XmlDialog() = delete;
     explicit XmlDialog(QWidget *parent = nullptr);
 
     /// \brief Функция для вызова виртуального метода setupUI.
     /// \details Вызывает setupUI, в качестве параметров передаётся строка с данными из модели.
-    void startup(int row = createId);
+    void startup(int row, BaseEditorModel *model);
 
     /// \brief Функция, вызываемая при закрытии диалогового окна.
     virtual void reject() override;
 
 signals:
-    /// \brief Сигнал-запрос к модели за данными, содержащимися по указанной строке.
-    void modelDataRequest(const int &row);
-
     /// \brief Сигнал для отправки данных модели для создания нового элемента.
     void createData(const QStringList &saved, int *rowPtr);
 
     /// \brief Сигнал для отправки данных модели для редактирования указанного элемента.
-    void updateData(const QStringList &saved, const int &row);
+    void updateData(const QStringList &saved, const int row);
 
 public slots:
-    /// \brief Виртуальный слот, вызывается когда диалог получает данные от модели.
-    /// \details Здесь описывается вся логика раскидывания данных от модели по виджетам.
-    virtual void modelDataResponse(const QStringList &response);
-
     /// \brief Виртуальная функция, вызываемая при сохранении данных.
     virtual void saveData();
 

@@ -13,7 +13,7 @@ void XmlBsiExtDialog::setupUI(QVBoxLayout *mainLayout)
     auto descLayout = new QHBoxLayout;
     auto typeLayout = new QHBoxLayout;
     auto visibilityLayout = new QHBoxLayout;
-    mTitle += "элемента BSI Ext";
+    m_title += "элемента BSI Ext";
 
     // Виджеты для адреса сигнализации
     auto addrLabel = new QLabel("Адрес элемента: ", this);
@@ -28,7 +28,7 @@ void XmlBsiExtDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlBsiExtDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
     addrLayout->addWidget(addrInput);
-    dlgItems.append(addrInput);
+    m_dlgItems.append(addrInput);
 
     // Виджеты для описания элемента
     auto descLabel = new QLabel("Описание элемента: ", this);
@@ -37,7 +37,7 @@ void XmlBsiExtDialog::setupUI(QVBoxLayout *mainLayout)
         qOverload<const QString &>(&XmlBsiExtDialog::dataChanged));
     descLayout->addWidget(descLabel);
     descLayout->addWidget(descInput);
-    dlgItems.append(descInput);
+    m_dlgItems.append(descInput);
 
     // Виджеты для описания типа хранимых данных
     auto typeLabel = new QLabel("Тип данных элемента: ", this);
@@ -49,7 +49,7 @@ void XmlBsiExtDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(                                               //
         typeInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlBsiExtDialog::dataChanged));       //
-    dlgItems.append(typeInput);
+    m_dlgItems.append(typeInput);
 
     // Виджеты для описания видимости элемента
     auto visibilityLabel = new QLabel("Видимость элемента: ", this);
@@ -61,7 +61,7 @@ void XmlBsiExtDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(                                                     //
         visibilityInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlBsiExtDialog::dataChanged));             //
-    dlgItems.append(visibilityInput);
+    m_dlgItems.append(visibilityInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);

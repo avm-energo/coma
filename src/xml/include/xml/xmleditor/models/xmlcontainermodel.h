@@ -14,17 +14,17 @@ public:
     explicit XmlContainerModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
 
     /// \brief Parsing input XML nodes of file in model items.
-    virtual void parseNode(QDomNode &node, int &row) override;
+    void parseNode(QDomNode &node, int &row) override;
     /// \brief Slot for inserting a new item in the model.
-    virtual void create(const QStringList &saved, int *row) override;
+    void create(const QStringList &saved, int *row) override;
     /// \brief Creates XML DOM node representation of current model.
-    virtual QDomElement toNode(QDomDocument &doc) override;
+    QDomElement toNode(QDomDocument &doc) override;
+    /// \brief Returns data from the model for given row.
+    /// \details Override needed for XmlResourceModel.
+    QStringList getRowData(const int row) override;
 
 public slots:
-    /// \brief Slot for receiving a request from dialog and emits signal with response.
-    /// \details Override needed for XmlResourceModel.
-    virtual void getDialogRequest(const int row) override;
     /// \brief Slot for updating an item's data in the model.
     /// \details Override needed for XmlResourceModel.
-    virtual void update(const QStringList &saved, const int row) override;
+    void update(const QStringList &saved, const int row) override;
 };

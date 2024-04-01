@@ -6,12 +6,18 @@
 class XmlDialogFabric
 {
 private:
-    static void CreateOrEditDialog(BaseEditorModel *model, int row, QWidget *parent);
-    static void RemoveOrEditDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent, int type);
+    /// \brief Диалог создания или изменения элемента.
+    static void createOrEditDialog(BaseEditorModel *model, int row, QWidget *parent);
+    /// \brief Диалог удаления или изменения элемента.
+    static void removeOrEditDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent, int type);
 
 public:
-    explicit XmlDialogFabric() = delete;
-    static void CreateDialog(BaseEditorModel *model, QWidget *parent = nullptr);
-    static void EditDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent = nullptr);
-    static void RemoveDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent = nullptr);
+    XmlDialogFabric() = delete;
+
+    /// \brief Создать и отобразить диалог создания нового элемента.
+    static void createDialog(BaseEditorModel *model, QWidget *parent = nullptr);
+    /// \brief Создать и отобразить диалог редактирования выбранного элемента.
+    static void editDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent = nullptr);
+    /// \brief Создать и отобразить диалог удаления выбранного элемента.
+    static void removeDialog(BaseEditorModel *model, QModelIndexList &selected, QWidget *parent = nullptr);
 };

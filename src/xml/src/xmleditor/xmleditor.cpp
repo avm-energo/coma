@@ -149,7 +149,7 @@ void XmlEditor::actionDialog(DialogType dlgType, QTableView *srcView)
     // Диалог создания элемента
     case DialogType::Create:
         if (model != nullptr)
-            XmlDialogFabric::CreateDialog(model, this);
+            XmlDialogFabric::createDialog(model, this);
         break;
     // Диалоги редактирования или удаления элементов
     case DialogType::Edit:
@@ -160,10 +160,10 @@ void XmlEditor::actionDialog(DialogType dlgType, QTableView *srcView)
             auto selected = selectModel->selectedRows();
             // Диалог редактирования элемента
             if (dlgType == DialogType::Edit)
-                XmlDialogFabric::EditDialog(model, selected, this);
+                XmlDialogFabric::editDialog(model, selected, this);
             // Диалог удаления элемента
             else
-                XmlDialogFabric::RemoveDialog(model, selected, this);
+                XmlDialogFabric::removeDialog(model, selected, this);
         }
         break;
     }

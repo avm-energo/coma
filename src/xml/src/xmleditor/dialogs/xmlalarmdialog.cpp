@@ -12,7 +12,7 @@ void XmlAlarmDialog::setupUI(QVBoxLayout *mainLayout)
     auto descLayout = new QHBoxLayout;
     auto addrLayout = new QHBoxLayout;
     auto hlLayout = new QHBoxLayout;
-    mTitle += "сигнализации";
+    m_title += "сигнализации";
 
     // Виджеты для адреса сигнализации
     auto addrLabel = new QLabel("Адрес сигнализации: ", this);
@@ -26,7 +26,7 @@ void XmlAlarmDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlAlarmDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
     addrLayout->addWidget(addrInput);
-    dlgItems.append(addrInput);
+    m_dlgItems.append(addrInput);
 
     // Виджеты для описания сигнализации
     auto descLabel = new QLabel("Описание сигнализации: ", this);
@@ -34,7 +34,7 @@ void XmlAlarmDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(descInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlAlarmDialog::dataChanged));
     descLayout->addWidget(descLabel);
     descLayout->addWidget(descInput);
-    dlgItems.append(descInput);
+    m_dlgItems.append(descInput);
 
     // Виджеты для подсветки сигналов (hl - highlights, not half-life!)
     auto hlLabel = new QLabel("Подсветка: ", this);
@@ -42,7 +42,7 @@ void XmlAlarmDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(hlInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlAlarmDialog::dataChanged));
     hlLayout->addWidget(hlLabel);
     hlLayout->addWidget(hlInput);
-    dlgItems.append(hlInput);
+    m_dlgItems.append(hlInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);

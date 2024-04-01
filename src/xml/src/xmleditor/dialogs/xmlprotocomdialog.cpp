@@ -11,7 +11,7 @@ void XmlProtocomDialog::setupUI(QVBoxLayout *mainLayout)
     // Создание слоёв окна
     auto blockLayout = new QHBoxLayout;
     auto sigIdLayout = new QHBoxLayout;
-    mTitle += "элемента Protocom";
+    m_title += "элемента Protocom";
 
     // Виджеты для описания
     auto blockLabel = new QLabel("Номер блока: ", this);
@@ -26,7 +26,7 @@ void XmlProtocomDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlProtocomDialog::dataChanged));
     blockLayout->addWidget(blockLabel);
     blockLayout->addWidget(blockInput);
-    dlgItems.append(blockInput);
+    m_dlgItems.append(blockInput);
 
     // Виджеты для ID сигнала
     auto sigIdLabel = new QLabel("ID сигнала: ", this);
@@ -41,7 +41,7 @@ void XmlProtocomDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlProtocomDialog::dataChanged));
     sigIdLayout->addWidget(sigIdLabel);
     sigIdLayout->addWidget(sigIdInput);
-    dlgItems.append(sigIdInput);
+    m_dlgItems.append(sigIdInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(blockLayout);

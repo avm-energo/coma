@@ -11,7 +11,7 @@ void XmlWorkJourDialog::setupUI(QVBoxLayout *mainLayout)
     // Создание слоёв окна
     auto addrLayout = new QHBoxLayout;
     auto descLayout = new QHBoxLayout;
-    mTitle += "события рабочего журнала";
+    m_title += "события рабочего журнала";
 
     // Виджеты для адреса события
     auto addrLabel = new QLabel("Адрес сигнализации: ", this);
@@ -26,7 +26,7 @@ void XmlWorkJourDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlWorkJourDialog::dataChanged));
     addrLayout->addWidget(addrLabel);
     addrLayout->addWidget(addrInput);
-    dlgItems.append(addrInput);
+    m_dlgItems.append(addrInput);
 
     // Виджеты для описания события
     auto descLabel = new QLabel("Описание: ", this);
@@ -35,7 +35,7 @@ void XmlWorkJourDialog::setupUI(QVBoxLayout *mainLayout)
         descInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlWorkJourDialog::dataChanged));
     descLayout->addWidget(descLabel);
     descLayout->addWidget(descInput);
-    dlgItems.append(descInput);
+    m_dlgItems.append(descInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);

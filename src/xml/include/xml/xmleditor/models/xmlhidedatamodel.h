@@ -27,15 +27,15 @@ public:
     explicit XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
 
     /// \brief Parsing input XML nodes of file in model items.
-    virtual void parseNode(QDomNode &node, int &row) override;
+    void parseNode(QDomNode &node, int &row) override;
     /// \brief Creates XML DOM node representation of this model.
-    virtual QDomElement toNode(QDomDocument &doc) override;
+    QDomElement toNode(QDomDocument &doc) override;
+    /// \brief Returns data from the model for given row.
+    QStringList getRowData(const int row) override;
 
 public slots:
-    /// \brief Slot for receiveing data request from dialog window and sending response.
-    virtual void getDialogRequest(const int row) override;
     /// \brief Slot for creating data in model.
-    virtual void create(const QStringList &saved, int *row) override;
+    void create(const QStringList &saved, int *row) override;
     /// \brief Slot for updating an item's data in the model (including hiding data).
     void update(const QStringList &saved, const int row) override;
 };

@@ -13,7 +13,7 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
     auto defLayout = new QHBoxLayout;
     auto countLayout = new QHBoxLayout;
     auto visibLayout = new QHBoxLayout;
-    mTitle += "конфига";
+    m_title += "конфига";
 
     // Виджеты для ID конфига
     auto idLabel = new QLabel("S2 ID: ", this);
@@ -27,7 +27,7 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlConfigDialog::dataChanged));
     idLayout->addWidget(idLabel);
     idLayout->addWidget(idInput);
-    dlgItems.append(idInput);
+    m_dlgItems.append(idInput);
 
     // Виджеты для значения по умолчанию конфига
     auto defLabel = new QLabel("Значение по умолчанию: ", this);
@@ -36,7 +36,7 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
         defaultInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
     defLayout->addWidget(defLabel);
     defLayout->addWidget(defaultInput);
-    dlgItems.append(defaultInput);
+    m_dlgItems.append(defaultInput);
 
     // Виджеты для уточнённого значения количества элементов конфига
     auto countLabel = new QLabel("Уточнённое кол-во: ", this);
@@ -51,7 +51,7 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlConfigDialog::dataChanged));
     countLayout->addWidget(countLabel);
     countLayout->addWidget(countInput);
-    dlgItems.append(countInput);
+    m_dlgItems.append(countInput);
 
     // Виджеты для видимости конфигурационного параметра
     auto visibLabel = new QLabel("Видимость: ", this);
@@ -63,7 +63,7 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(                                                //
         visibInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlConfigDialog::dataChanged));        //
-    dlgItems.append(visibInput);
+    m_dlgItems.append(visibInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(idLayout);
