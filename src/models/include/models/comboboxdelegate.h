@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QItemDelegate>
 #include <QStyledItemDelegate>
 

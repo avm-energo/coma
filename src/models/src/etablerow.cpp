@@ -1,4 +1,4 @@
-#include "etablerow.h"
+#include "models/etablerow.h"
 
 #include <QDebug>
 

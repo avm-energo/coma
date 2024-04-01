@@ -1,10 +1,9 @@
 #pragma once
 
-#include "abstracttablerow.h"
-#include "etablerow.h"
-
 #include <QDebug>
 #include <QObject>
+#include <models/abstracttablerow.h>
+#include <models/etablerow.h>
 
 class ErrorProtocolItem : public AbstractTableRow<std::vector<ETableItemData>>
 {

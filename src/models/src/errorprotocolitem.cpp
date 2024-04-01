@@ -1,4 +1,4 @@
-#include "errorprotocolitem.h"
+#include "models/errorprotocolitem.h"
 
 ErrorProtocolItem::ErrorProtocolItem(QObject *parent) : AbstractTableRow<std::vector<ETableItemData>>(parent)
 {

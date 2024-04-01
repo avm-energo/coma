@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../../models/edynamictablemodel.h"
-
 #include <QObject>
 #include <QSortFilterProxyModel>
 #include <QTimeZone>
 #include <gen/stdfunc.h>
+#include <models/edynamictablemodel.h>
 #include <s2/s2datatypes.h>
 
 class ETableView;

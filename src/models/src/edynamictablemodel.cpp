@@ -1,6 +1,7 @@
-#include "edynamictablemodel.h"
+#include "models/edynamictablemodel.h"
 
 #include <QDebug>
+
 EDynamicTableModel::EDynamicTableModel(QObject *parent) : QAbstractTableModel(parent), dataCount(0)
 {
 }

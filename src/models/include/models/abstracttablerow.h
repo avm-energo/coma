@@ -1,11 +1,13 @@
 #pragma once
+
 #include <QColor>
 #include <QFont>
 #include <QIcon>
 #include <QObject>
 #include <QVariant>
 
-template <typename C, typename T = typename C::value_type> class AbstractTableRow : public QObject
+template <typename C, typename T = typename C::value_type> //
+class AbstractTableRow : public QObject
 {
 public:
     explicit AbstractTableRow(QObject *parent = 0) : QObject(parent)
@@ -25,10 +27,12 @@ public:
     {
         return &values;
     }
+
     void setColor(int column, const QColor &value)
     {
         setData(column, value, Qt::DecorationRole);
     }
+
     QColor color(int column) const
     {
         return qvariant_cast<QColor>(data(column, Qt::DecorationRole));
@@ -38,6 +42,7 @@ public:
     {
         setData(column, font, Qt::FontRole);
     }
+
     QFont font(int column) const
     {
         return qvariant_cast<QFont>(data(column, Qt::FontRole));
@@ -47,6 +52,7 @@ public:
     {
         setData(column, icon, Qt::DecorationRole);
     }
+
     QIcon icon(int column) const
     {
         return qvariant_cast<QIcon>(data(column, Qt::DecorationRole));
@@ -56,6 +62,7 @@ public:
     {
         setData(column, alignment, Qt::TextAlignmentRole);
     }
+
     int textAlignment(int column) const
     {
         return qvariant_cast<int>(data(column, Qt::TextAlignmentRole));

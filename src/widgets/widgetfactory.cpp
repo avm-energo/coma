@@ -1,6 +1,5 @@
 #include "widgetfactory.h"
 
-#include "../models/comboboxdelegate.h"
 #include "../widgets/checkboxgroup.h"
 #include "../widgets/flowlayout.h"
 #include "../widgets/ipctrl.h"
@@ -9,6 +8,7 @@
 #include <QHeaderView>
 #include <QStandardItem>
 #include <ctti/type_id.hpp>
+#include <models/comboboxdelegate.h>
 
 // forward declarations
 // helpers for create widget

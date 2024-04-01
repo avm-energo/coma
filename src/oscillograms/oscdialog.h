@@ -1,10 +1,10 @@
 #ifndef OSCDIALOG_H
 #define OSCDIALOG_H
 
-#include "../models/etablemodel.h"
 #include "../widgets/udialog.h"
 #include "oscmanager.h"
 
+#include <models/etablemodel.h>
 #include <optional>
 
 class OscDialog : public UDialog

@@ -1,7 +1,5 @@
 #include "oscdialog.h"
 
-#include "../models/etablemodel.h"
-//#include "../module/board.h"
 #include "../widgets/etableview.h"
 #include "../widgets/pushbuttondelegate.h"
 #include "../widgets/wd_func.h"
@@ -10,6 +8,7 @@
 #include <gen/datatypes.h>
 #include <gen/files.h>
 #include <gen/timefunc.h>
+#include <models/etablemodel.h>
 #include <s2/s2util.h>
 
 OscDialog::OscDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)

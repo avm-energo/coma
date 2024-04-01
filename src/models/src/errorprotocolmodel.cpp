@@ -1,4 +1,4 @@
-#include "errorprotocolmodel.h"
+#include "models/errorprotocolmodel.h"
 
 #include <QBrush>
 #include <QColor>

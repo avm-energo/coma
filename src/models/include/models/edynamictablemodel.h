@@ -1,18 +1,17 @@
-#ifndef ETABLEMODEL_H
-#define ETABLEMODEL_H
-
-#include "etablerow.h"
+#pragma once
 
 #include <QAbstractTableModel>
+#include <models/etablerow.h>
 
 using Matrix = std::vector<ETableRow *>;
-
-class ETableModel : public QAbstractTableModel
+class EDynamicTableModel : public QAbstractTableModel
 {
+    // 11 is the number more than 10 i.e. no format for column
+    static constexpr int noColFormat = 11;
+    static constexpr int fetchStep = 1000;
     Q_OBJECT
 public:
-    explicit ETableModel(QObject *parent = 0);
-    ~ETableModel();
+    explicit EDynamicTableModel(QObject *parent = nullptr);
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role) override;
@@ -26,38 +25,25 @@ public:
     bool removeColumns(int position, int columns, const QModelIndex &index = QModelIndex()) override;
     bool insertRows(int row, int count, const QModelIndex &index = QModelIndex()) override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
-    // получение индекса элемента в заголовке, который содержит текст hdrtext
-    int headerPosition(QString hdrtext, Qt::Orientation orientation = Qt::Horizontal, int role = Qt::DisplayRole) const;
-    // добавление новой колонки с текстом в заголовке hdrtext для варианта двух столбцов
-    void addColumn(const QString hdrtext);
-    // добавление строки
-    void addRow();
-    void setRowAttr(int fcset = 0, int icon = -1);
-    void clearModel();
-    void fillModel(QVector<QVector<QVariant>> &);
-    // выдать значения по столбцу column в выходной QStringList
-    QStringList takeColumn(int column) const;
-    // выдать значения по строке row в выходной QStringList
-    QStringList takeRow(int row) const;
-    void setRowTextAlignment(int row, int alignment);
+
     bool isEmpty() const;
-    // format is precision of the double, set num above 10 to set no format
     void setColumnFormat(int column, int format);
     void setHorizontalHeaderLabels(const QStringList hdrl);
     void setHeaders(const QStringList hdrl);
-    void addRowWithData(const QVector<QVariant> &vl);
+    void clearModel();
+    void fillModel(const QVector<QVector<QVariant>> &);
+    int itemCount() const
+    {
+        return int(maindata.size());
+    }
 
-signals:
-    void clear();
-    void pushProgress(int);
-    void pushMaxProgress(int);
-
-protected slots:
+protected:
+    bool canFetchMore(const QModelIndex &parent) const override;
+    void fetchMore(const QModelIndex &parent) override;
 
 private:
     Matrix maindata;
+    Matrix::size_type dataCount;
     QStringList hdr;
     QList<int> ColFormat;
 };
-
-#endif // ETABLEMODEL_H

@@ -1,4 +1,4 @@
-#include "comboboxdelegate.h"
+#include "models/comboboxdelegate.h"
 
 #include <QApplication>
 #include <QComboBox>
@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <QSpinBox>
 #include <QStringListModel>
+
 ComboBoxDelegate::ComboBoxDelegate(const QStringList &list, QObject *parent) : QStyledItemDelegate(parent), m_list(list)
 {
 }

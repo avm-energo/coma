@@ -1,5 +1,4 @@
-#ifndef REPORT_H
-#define REPORT_H
+#pragma once
 
 #include <QStandardItemModel>
 #include <gen/error.h>
@@ -12,7 +11,6 @@ class ReportEngine;
 class ReportModel : public QStandardItemModel
 {
     Q_OBJECT
-
 public:
     ReportModel(QObject *parent = nullptr);
     void UpdateItem(int row, int column, const QString &value);
@@ -37,5 +35,3 @@ public:
 private:
     LimeReport::ReportEngine *Rep;
 };
-
-#endif // REPORT_H

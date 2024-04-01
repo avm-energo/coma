@@ -1,10 +1,10 @@
-#include "etablemodel.h"
+#include "models/etablemodel.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEventLoop>
 #include <QMutex>
-//#include <QProgressDialog>
+
 // ######################################## Переопределение методов QAbstractTableModel
 // ####################################
 // 11 is the number more than 10 i.e. no format for column

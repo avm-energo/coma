@@ -1,7 +1,5 @@
 #pragma once
 
-#include "abstracttablerow.h"
-
 #include <QColor>
 #include <QDebug>
 #include <QFont>
@@ -9,6 +7,7 @@
 #include <QStringList>
 #include <QVarLengthArray>
 #include <QVariant>
+#include <models/abstracttablerow.h>
 
 class ETableItemData
 {

@@ -1,13 +1,12 @@
 #include "errorprotocolwidget.h"
 
-#include "../models/errorprotocolmodel.h"
-
 #include <QHeaderView>
 #include <QLabel>
 #include <QTableView>
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/error.h>
+#include <models/errorprotocolmodel.h>
 
 #ifdef MODELDEBUG
 #include <QAbstractItemModelTester>

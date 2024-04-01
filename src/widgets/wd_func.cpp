@@ -1,6 +1,5 @@
 #include "wd_func.h"
 
-#include "../models/etablemodel.h"
 #include "edoublespinbox.h"
 #include "epopup.h"
 #include "etableview.h"
@@ -26,6 +25,7 @@
 #include <gen/error.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
+#include <models/etablemodel.h>
 
 #ifdef __GNUC__
 #include <cfloat>

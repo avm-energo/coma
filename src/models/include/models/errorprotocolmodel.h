@@ -1,7 +1,7 @@
 #pragma once
-#include "errorprotocolitem.h"
 
 #include <QAbstractItemModel>
+#include <models/errorprotocolitem.h>
 
 struct ErrorMsg;
 class ErrorProtocolModel : public QAbstractTableModel

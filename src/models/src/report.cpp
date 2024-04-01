@@ -1,4 +1,4 @@
-#include "report.h"
+#include "models/report.h"
 
 #include <LimeReport>
 #include <QStandardItem>
