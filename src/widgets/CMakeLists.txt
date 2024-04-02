@@ -2,28 +2,27 @@ cmake_minimum_required(VERSION 3.14)
 
 project(widgets LANGUAGES CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Svg Xml REQUIRED)
+find_package(Boost COMPONENTS headers REQUIRED)
 
-find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS Widgets Svg Xml
-  REQUIRED)
+# Collecting sources
+set(WIDGETS_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/widgets")
+set(WIDGETS_SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
+file(GLOB_RECURSE files_h   ${WIDGETS_INCLUDE_PATH}/*.h)
+file(GLOB_RECURSE files_cpp ${WIDGETS_SRC_PATH}/*.cpp)
 
-find_package(Boost
-  COMPONENTS headers
-  REQUIRED)
+# Creating library target
+add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 
-file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
-file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+# Including directories for library
+target_include_directories(${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-add_library(
-  ${PROJECT_NAME} STATIC
-  ${files_cpp} ${files_h})
-
+# Linking library dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Xml
   Qt${QT_VERSION_MAJOR}::Svg
   Boost::headers device settings models
 )
-
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
