@@ -1,14 +1,13 @@
 #include "dialogs/keypressdialog.h"
 
-#include "../../widgets/passwordlineedit.h"
-#include "../../widgets/wd_func.h"
-
 #include <QCryptographicHash>
 #include <QDebug>
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <gen/error.h>
+#include <widgets/passwordlineedit.h>
+#include <widgets/wd_func.h>
 
 KeyPressDialog::KeyPressDialog(QWidget *parent) : QDialog(parent)
 {

@@ -1,13 +1,12 @@
 #include "tune/82/tune82verification.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <cmath>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 #include <tune/82/verification_offset.h>
 #include <tune/mip.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 constexpr std::size_t iterCount = 21;
 constexpr inline std::array<RetomSettings, iterCount> settings = {

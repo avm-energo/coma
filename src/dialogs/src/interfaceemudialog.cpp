@@ -1,13 +1,12 @@
 #include "dialogs/interfaceemudialog.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <QCoreApplication>
 #include <QMessageBox>
 #include <QSettings>
 #include <QStandardItemModel>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <widgets/wd_func.h>
 
 InterfaceEmuDialog::InterfaceEmuDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {

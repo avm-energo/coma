@@ -1,10 +1,9 @@
 #include "alarms/alarmstateall.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <QBoxLayout>
 #include <bitset>
 #include <device/current_device.h>
+#include <widgets/wd_func.h>
 
 AlarmStateAll::AlarmStateAll(Device::CurrentDevice *device, QWidget *parent)
     : BaseAlarm(device, parent)

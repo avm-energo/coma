@@ -1,11 +1,10 @@
 #include "journals/basejournal.h"
 
-#include "../widgets/etableview.h"
-#include "../widgets/wd_func.h"
-
 #include <QApplication>
 #include <QFile>
 #include <gen/timefunc.h>
+#include <widgets/etableview.h>
+#include <widgets/wd_func.h>
 #include <xlsxdocument.h>
 
 namespace journals

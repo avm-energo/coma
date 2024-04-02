@@ -1,7 +1,5 @@
 #include "tune/85/tune85dialog.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/files.h>
@@ -10,6 +8,7 @@
 #include <tune/85/tune85check.h>
 #include <tune/85/tune85temp60.h>
 #include <tune/tunesteps.h>
+#include <widgets/wd_func.h>
 
 Tune85Dialog::Tune85Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {

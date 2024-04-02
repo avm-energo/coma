@@ -1,7 +1,5 @@
 #include "tune/kiv/tunekivdialog.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/files.h>
@@ -11,6 +9,7 @@
 #include <tune/kiv/tunekivr.h>
 #include <tune/kiv/tunekivtemp60.h>
 #include <tune/tunesteps.h>
+#include <widgets/wd_func.h>
 
 TuneKIVDialog::TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {

@@ -1,14 +1,13 @@
 #include "dialogs/reconnectdialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/eprogressindicator.h"
-#include "../../widgets/wd_func.h"
-
 #include <QLabel>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <widgets/epopup.h>
+#include <widgets/eprogressindicator.h>
+#include <widgets/wd_func.h>
 
 constexpr auto successMsg { //
     "Переподключение прошло успешно!\n"

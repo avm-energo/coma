@@ -1,13 +1,12 @@
 #include "dialogs/infodialog.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <device/current_device.h>
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <widgets/wd_func.h>
 
 InfoDialog::InfoDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {

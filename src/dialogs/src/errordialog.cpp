@@ -1,13 +1,12 @@
 #include "dialogs/errordialog.h"
 
-#include "../../widgets/errorprotocolwidget.h"
-
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <gen/colors.h>
 #include <gen/error.h>
+#include <widgets/errorprotocolwidget.h>
 
 ErrorDialog::ErrorDialog(QWidget *parent) : QDialog(parent)
 {

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../../widgets/udialog.h"
-
 #include <set>
+#include <widgets/udialog.h>
 
 //#define ANIMATED_PLOT
 

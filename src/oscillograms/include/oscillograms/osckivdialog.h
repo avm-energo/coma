@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../../widgets/udialog.h"
-
 #include <oscillograms/oscmanager.h>
+#include <widgets/udialog.h>
 
 class QLabel;
 class QPushButton;

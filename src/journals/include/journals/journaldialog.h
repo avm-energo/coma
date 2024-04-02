@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../../widgets/udialog.h"
-
 #include <journals/journaltabwidget.h>
 #include <map>
+#include <widgets/udialog.h>
 
 namespace journals
 {

@@ -1,8 +1,5 @@
 #include "tune/mip.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QEventLoop>
 #include <QGroupBox>
 #include <QSettings>
@@ -13,6 +10,8 @@
 #include <interfaces/parsers/iec104parser.h>
 #include <interfaces/types/settingstypes.h>
 #include <settings/user_settings.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
     : QObject(parent), m_iface(nullptr), m_mipData { 0 }, m_parent(parent), m_withGUI(withGUI), m_moduleType(moduleType)

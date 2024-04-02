@@ -1,8 +1,5 @@
 #include "tune/84/tune84check.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QDialog>
 #include <QMessageBox>
 #include <QPushButton>
@@ -10,6 +7,8 @@
 #include <datablocks/kiv/bda.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 Tune84Check::Tune84Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(tuneStep, device, parent)

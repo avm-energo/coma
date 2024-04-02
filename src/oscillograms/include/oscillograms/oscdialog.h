@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../../widgets/udialog.h"
-
 #include <models/etablemodel.h>
 #include <optional>
 #include <oscillograms/oscmanager.h>
+#include <widgets/udialog.h>
 
 class OscDialog : public UDialog
 {

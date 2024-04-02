@@ -1,13 +1,12 @@
 #include "dialogs/interfaceusbdialog.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <QMessageBox>
 #include <QStandardItem>
 #include <QVBoxLayout>
 #include <gen/error.h>
 #include <interfaces/types/settingstypes.h>
 #include <interfaces/types/usbhidportinfo.h>
+#include <widgets/wd_func.h>
 
 InterfaceUSBDialog::InterfaceUSBDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {

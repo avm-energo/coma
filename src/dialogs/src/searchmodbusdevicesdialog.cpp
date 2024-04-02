@@ -1,13 +1,12 @@
 #include "dialogs/searchmodbusdevicesdialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QSerialPortInfo>
 #include <QVBoxLayout>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 SearchModbusDevicesDialog::SearchModbusDevicesDialog(QWidget *parent) : QDialog(parent)
 {

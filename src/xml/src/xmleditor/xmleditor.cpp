@@ -1,11 +1,10 @@
 #include "xml/xmleditor/xmleditor.h"
 
-#include "../../widgets/epopup.h"
-
 #include <QFont>
 #include <QHeaderView>
 #include <QLabel>
 #include <QToolBar>
+#include <widgets/epopup.h>
 #include <xml/xmleditor/datacontroller.h>
 #include <xml/xmleditor/dialogs/dialogfabric.h>
 #include <xml/xmleditor/models/mastermodel.h>

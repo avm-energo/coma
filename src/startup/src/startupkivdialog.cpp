@@ -1,13 +1,12 @@
 #include "startup/startupkivdialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QGridLayout>
 #include <QGroupBox>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <tuple>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 StartupKIVDialog::StartupKIVDialog(Device::CurrentDevice *device, QWidget *parent)
     : AbstractStartupDialog(device, parent)

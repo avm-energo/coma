@@ -1,14 +1,13 @@
 #include "oscillograms/osckivdialog.h"
 
-#include "../widgets/epopup.h"
-#include "../widgets/wd_func.h"
-
 #include <device/current_device.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 #include <limits>
 #include <oscillograms/osc_ids.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 constexpr std::string_view oscFilenumLblFmt { "Текущий номер осциллограммы: %1" };
 constexpr u32 oscStateAddr = 13100;

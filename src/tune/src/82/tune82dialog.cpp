@@ -1,7 +1,5 @@
 #include "tune/82/tune82dialog.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/files.h>
@@ -12,6 +10,7 @@
 #include <tune/82/tune82verification.h>
 #include <tune/tunereporter.h>
 #include <tune/tunesteps.h>
+#include <widgets/wd_func.h>
 
 Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {

@@ -1,8 +1,5 @@
 #include "tune/82/tune82check.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QDialog>
 #include <QEventLoop>
 #include <QMessageBox>
@@ -12,6 +9,8 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <tune/mip.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 Tune82Check::Tune82Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(tuneStep, device, parent)

@@ -1,10 +1,9 @@
 #include "xml/xmleditor/dialogs/xml104dialog.h"
 
-#include "../widgets/wd_func.h"
-
 #include <QHash>
 #include <cstdint>
 #include <variant>
+#include <widgets/wd_func.h>
 
 namespace StringData
 {

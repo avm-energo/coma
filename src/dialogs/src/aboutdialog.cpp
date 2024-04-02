@@ -1,6 +1,6 @@
 #include "dialogs/aboutdialog.h"
 
-#include "../../widgets/wd_func.h"
+#include <widgets/wd_func.h>
 
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent, Qt::Window | Qt::Dialog)
 {

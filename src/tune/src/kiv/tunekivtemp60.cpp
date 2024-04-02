@@ -1,9 +1,5 @@
 #include "tune/kiv/tunekivtemp60.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/waitwidget.h"
-#include "../../widgets/wd_func.h"
-
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -12,6 +8,9 @@
 #include <interfaces/conn/sync_connection.h>
 #include <tune/tunesequencefile.h>
 #include <tune/tunesteps.h>
+#include <widgets/epopup.h>
+#include <widgets/waitwidget.h>
+#include <widgets/wd_func.h>
 
 using namespace Interface;
 

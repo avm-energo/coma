@@ -1,8 +1,5 @@
 #include "dialogs/interfaceserialdialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QSerialPortInfo>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
@@ -10,6 +7,8 @@
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/settingstypes.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {

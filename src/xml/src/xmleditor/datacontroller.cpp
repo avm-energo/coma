@@ -1,11 +1,10 @@
 #include "xml/xmleditor/datacontroller.h"
 
-#include "../../widgets/epopup.h"
-
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
 #include <gen/stdfunc.h>
+#include <widgets/epopup.h>
 #include <xml/xmleditor/models/mastermodel.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 #include <xml/xmltags.h>

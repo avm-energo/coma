@@ -1,14 +1,13 @@
 #include "tune/84/tune84adc.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/waitwidget.h"
-#include "../../widgets/wd_func.h"
-
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <tune/tunesteps.h>
+#include <widgets/epopup.h>
+#include <widgets/waitwidget.h>
+#include <widgets/wd_func.h>
 
 using namespace Interface;
 

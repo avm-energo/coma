@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../../widgets/udialog.h"
-#include "../../widgets/widgetfactory.h"
-
 #include <dialogs/errconfstate.h>
 #include <s2/s2datamanager.h>
+#include <widgets/udialog.h>
+#include <widgets/widgetfactory.h>
 
 class QTabWidget;
 

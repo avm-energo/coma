@@ -1,10 +1,9 @@
 #include "xml/xmleditor/dialogs/xmldialog.h"
 
-#include "../../../../widgets/epopup.h"
-
 #include <QGuiApplication>
 #include <QScreen>
 #include <gen/std_ext.h>
+#include <widgets/epopup.h>
 
 XmlDialog::XmlDialog(QWidget *parent) : QDialog(parent, Qt::Window), m_isChanged(false)
 {

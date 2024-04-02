@@ -1,12 +1,11 @@
 #include "journals/journaltabwidget.h"
 
-#include "../widgets/epopup.h"
-#include "../widgets/wd_func.h"
-
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <gen/files.h>
 #include <map>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 namespace journals
 {

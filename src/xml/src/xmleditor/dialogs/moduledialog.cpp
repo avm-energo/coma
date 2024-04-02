@@ -1,10 +1,9 @@
 #include "xml/xmleditor/dialogs/moduledialog.h"
 
-#include "../../../../widgets/wd_func.h"
-
 #include <QGuiApplication>
 #include <QScreen>
 #include <variant>
+#include <widgets/wd_func.h>
 
 constexpr auto bTypeIndex = 1;
 constexpr auto versionIndex = 3;

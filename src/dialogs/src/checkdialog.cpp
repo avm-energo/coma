@@ -1,7 +1,5 @@
 #include "dialogs/checkdialog.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <QGroupBox>
 #include <QTabWidget>
 #include <bitset>
@@ -10,6 +8,7 @@
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <set>
+#include <widgets/wd_func.h>
 
 using namespace Device::XmlDataTypes;
 

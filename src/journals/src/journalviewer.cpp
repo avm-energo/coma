@@ -1,8 +1,5 @@
 #include "journals/journalviewer.h"
 
-#include "../widgets/epopup.h"
-#include "../widgets/wd_func.h"
-
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -11,6 +8,8 @@
 #include <journals/sysjournal.h>
 #include <journals/workjournal.h>
 #include <s2/s2util.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 #include <xml/xmlparser/xmlmoduleparser.h>
 
 namespace journals

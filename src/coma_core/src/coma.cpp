@@ -22,13 +22,6 @@
 
 #include "coma_core/coma.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/gasdensitywidget.h"
-#include "../../widgets/splashscreen.h"
-#include "../../widgets/styleloader.h"
-#include "../../widgets/waitwidget.h"
-#include "../../widgets/wd_func.h"
-
 #include <QApplication>
 #include <QDir>
 #include <QHBoxLayout>
@@ -63,6 +56,12 @@
 #include <s2/s2configstorage.h>
 #include <s2/s2datafactory.h>
 #include <s2/s2util.h>
+#include <widgets/epopup.h>
+#include <widgets/gasdensitywidget.h>
+#include <widgets/splashscreen.h>
+#include <widgets/styleloader.h>
+#include <widgets/waitwidget.h>
+#include <widgets/wd_func.h>
 #include <xml/xmlconfigloader.h>
 #include <xml/xmleditor/xmleditor.h>
 

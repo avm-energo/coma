@@ -25,15 +25,14 @@
 
 #include "datablocks/datablock.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QScrollBar>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 using namespace Interface;
 

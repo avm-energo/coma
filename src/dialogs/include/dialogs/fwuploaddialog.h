@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../../widgets/udialog.h"
-
 #include <gen/error.h>
 #include <s2/hexparser.h>
+#include <widgets/udialog.h>
 
 enum class FirmwareUploadStatus : quint8
 {

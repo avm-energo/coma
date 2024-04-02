@@ -1,9 +1,5 @@
 #include "tune/84/tune84temp60.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/waitwidget.h"
-#include "../../widgets/wd_func.h"
-
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -11,6 +7,9 @@
 #include <gen/stdfunc.h>
 #include <tune/tunesequencefile.h>
 #include <tune/tunesteps.h>
+#include <widgets/epopup.h>
+#include <widgets/waitwidget.h>
+#include <widgets/wd_func.h>
 
 using namespace Interface;
 

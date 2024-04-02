@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../../widgets/tunetabwidget.h"
-#include "../../widgets/udialog.h"
-
 #include <QDomDocument>
 #include <tune/abstracttunedialog.h>
+#include <widgets/tunetabwidget.h>
+#include <widgets/udialog.h>
 
 class TuneReporter;
 

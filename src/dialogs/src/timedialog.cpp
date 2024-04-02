@@ -1,7 +1,5 @@
 #include "dialogs/timedialog.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <QDateTime>
 #include <QGridLayout>
 #include <QGroupBox>
@@ -12,6 +10,7 @@
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/timefunc.h>
+#include <widgets/wd_func.h>
 
 constexpr char directOrder[] = "dd-MM-yyyy HH:mm:ss";
 constexpr char reverseOrder[] = "yyyy-MM-ddTHH:mm:ss";

@@ -1,10 +1,9 @@
 #include "tune/82/tune82iowidget.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <QGroupBox>
 #include <QScrollArea>
 #include <tune/mip.h>
+#include <widgets/wd_func.h>
 
 Tune82IoWidget::Tune82IoWidget(Device::CurrentDevice *device, QWidget *parent)
     : QWidget(parent)

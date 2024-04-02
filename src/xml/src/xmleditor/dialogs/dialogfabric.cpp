@@ -1,8 +1,7 @@
 #include "xml/xmleditor/dialogs/dialogfabric.h"
 
-#include "../../../../widgets/epopup.h"
-
 #include <QMessageBox>
+#include <widgets/epopup.h>
 #include <xml/xmleditor/dialogs/moduledialog.h>
 #include <xml/xmleditor/dialogs/xml104dialog.h>
 #include <xml/xmleditor/dialogs/xmlalarmdialog.h>

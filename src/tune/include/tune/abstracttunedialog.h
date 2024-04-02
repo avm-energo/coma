@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../../widgets/tunetabwidget.h"
-
 #include <QByteArray>
 #include <QCloseEvent>
 #include <QDialog>
@@ -9,6 +7,7 @@
 #include <device/current_device.h>
 #include <device/device_list.h>
 #include <s2/s2configuration.h>
+#include <widgets/tunetabwidget.h>
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 

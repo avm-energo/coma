@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../../widgets/udialog.h"
-
 #include <QObject>
 #include <device/device_list.h>
+#include <widgets/udialog.h>
 
 /// \brief Enumeration for application configuration.
 enum class AppConfiguration : bool

@@ -1,15 +1,14 @@
 #include "oscillograms/oscdialog.h"
 
-#include "../widgets/etableview.h"
-#include "../widgets/pushbuttondelegate.h"
-#include "../widgets/wd_func.h"
-
 #include <device/current_device.h>
 #include <gen/datatypes.h>
 #include <gen/files.h>
 #include <gen/timefunc.h>
 #include <models/etablemodel.h>
 #include <s2/s2util.h>
+#include <widgets/etableview.h>
+#include <widgets/pushbuttondelegate.h>
+#include <widgets/wd_func.h>
 
 OscDialog::OscDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {

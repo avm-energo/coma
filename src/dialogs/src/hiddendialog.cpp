@@ -1,8 +1,5 @@
 #include "dialogs/hiddendialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QBoxLayout>
 #include <QGroupBox>
 #include <QPaintEvent>
@@ -10,6 +7,8 @@
 #include <QTabWidget>
 #include <QtSvg/QSvgRenderer>
 #include <device/current_device.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 using namespace Device::XmlDataTypes;
 

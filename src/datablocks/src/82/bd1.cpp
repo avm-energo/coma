@@ -1,9 +1,8 @@
 #include "datablocks/82/bd1.h"
 
-/// TODO: [Card #28627204]
-#include "../../widgets/wd_func.h"
-
 #include <QtMath>
+/// TODO: [Card #28627204]
+#include <widgets/wd_func.h>
 
 Bd182::Bd182(Device::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
 {

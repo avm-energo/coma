@@ -1,9 +1,5 @@
 #include "tune/kiv/tunekivcheck.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/waitwidget.h"
-#include "../../widgets/wd_func.h"
-
 #include <QCoreApplication>
 #include <QDialog>
 #include <QElapsedTimer>
@@ -14,6 +10,9 @@
 #include <datablocks/kiv/bda.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
+#include <widgets/epopup.h>
+#include <widgets/waitwidget.h>
+#include <widgets/wd_func.h>
 
 TuneKIVCheck::TuneKIVCheck(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(tuneStep, device, parent)

@@ -1,8 +1,5 @@
 #include "dialogs/switchjournaldialog.h"
 
-#include "../../widgets/pushbuttondelegate.h"
-#include "../../widgets/wd_func.h"
-
 #include <QHeaderView>
 #include <QMessageBox>
 #include <device/current_device.h>
@@ -11,6 +8,8 @@
 #include <models/etablemodel.h>
 #include <oscillograms/swjmanager.h>
 #include <s2/s2util.h>
+#include <widgets/pushbuttondelegate.h>
+#include <widgets/wd_func.h>
 
 // constexpr int MAXSWJNUM = 262144;
 constexpr unsigned char TECH_SWJ = 0x04;

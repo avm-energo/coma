@@ -1,13 +1,12 @@
 #include "tune/kiv/tunekivr.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/waitwidget.h"
-#include "../../widgets/wd_func.h"
-
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
+#include <widgets/epopup.h>
+#include <widgets/waitwidget.h>
+#include <widgets/wd_func.h>
 
 TuneKIVR::TuneKIVR(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(tuneStep, device, parent), m_bac(new Bac2A284(this)), m_bda(new BdaA284(this))

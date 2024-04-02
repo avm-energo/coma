@@ -1,11 +1,10 @@
 #include "oscillograms/swjpackconvertor.h"
 
-#include "../widgets/epopup.h"
-#include "../widgets/wd_func.h"
-
 #include <QDir>
 #include <gen/timefunc.h>
 #include <oscillograms/swjmanager.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 #include <xlsxdocument.h>
 
 SwjPackConvertor::SwjPackConvertor(QWidget *parent) : QObject(parent), m_parent(parent)

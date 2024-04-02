@@ -1,8 +1,5 @@
 #include "tune/generaltunedialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QPainter>
@@ -13,6 +10,8 @@
 #include <gen/stdfunc.h>
 #include <tune/tunereporter.h>
 #include <tune/tunesequencefile.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 GeneralTuneDialog::GeneralTuneDialog(Device::CurrentDevice *device, QWidget *parent)
     : UDialog(device, parent), m_reporter(new TuneReporter(this))

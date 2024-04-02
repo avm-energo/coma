@@ -1,8 +1,5 @@
 #include "dialogs/searchproccessdialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QCoreApplication>
 #include <QHeaderView>
 #include <QProgressBar>
@@ -12,6 +9,8 @@
 #include <QTimer>
 #include <gen/stdfunc.h>
 #include <gen/utils/crc16.h>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *parent)
     : QDialog(parent)

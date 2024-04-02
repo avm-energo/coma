@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../../widgets/uwidget.h"
-
 #include <QTimer>
 #include <gen/stdfunc.h>
+#include <widgets/uwidget.h>
 
 constexpr quint32 errConfAddr = 13000; ///< Default start address for ErrConfState struct access in devices.
 constexpr quint32 errConfSize = 8;     ///< Default ErrConfState struct's size.

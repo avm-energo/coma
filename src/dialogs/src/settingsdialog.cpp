@@ -1,10 +1,5 @@
 #include "dialogs/settingsdialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/passwordlineedit.h"
-#include "../../widgets/styleloader.h"
-#include "../../widgets/wd_func.h"
-
 #include <QCryptographicHash>
 #include <QGroupBox>
 #include <QGuiApplication>
@@ -16,6 +11,10 @@
 #include <QTimeZone>
 #include <QVBoxLayout>
 #include <QtDebug>
+#include <widgets/epopup.h>
+#include <widgets/passwordlineedit.h>
+#include <widgets/styleloader.h>
+#include <widgets/wd_func.h>
 
 using namespace Settings;
 

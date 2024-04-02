@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../../widgets/udialog.h"
-
 #include <QModelIndex>
 #include <models/etablemodel.h>
 #include <oscillograms/oscmanager.h>
+#include <widgets/udialog.h>
 
 class ETableView;
 

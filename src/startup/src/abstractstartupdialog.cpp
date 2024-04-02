@@ -1,13 +1,12 @@
 #include "startup/abstractstartupdialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QPushButton>
 #include <gen/stdfunc.h>
 #include <tuple>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 AbstractStartupDialog::AbstractStartupDialog(Device::CurrentDevice *device, QWidget *parent)
     : UDialog(device, parent), m_updateState(ThereWasNoUpdatesRecently)

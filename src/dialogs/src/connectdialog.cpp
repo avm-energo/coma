@@ -1,7 +1,5 @@
 #include "dialogs/connectdialog.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <QCoreApplication>
 #include <QDebug>
 #include <QVBoxLayout>
@@ -10,6 +8,7 @@
 #include <dialogs/interfaceserialdialog.h>
 #include <dialogs/interfaceusbdialog.h>
 #include <gen/error.h>
+#include <widgets/wd_func.h>
 
 ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent), m_idialog(nullptr)
 {

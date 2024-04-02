@@ -1,9 +1,5 @@
 #include "startup/startupktfdialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/etableview.h"
-#include "../../widgets/wd_func.h"
-
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <gen/colors.h>
@@ -11,6 +7,9 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
+#include <widgets/epopup.h>
+#include <widgets/etableview.h>
+#include <widgets/wd_func.h>
 
 StartupKTFDialog::StartupKTFDialog(Device::CurrentDevice *device, QWidget *parent)
     : AbstractStartupDialog(device, parent)

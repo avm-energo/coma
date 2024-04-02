@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../../widgets/udialog.h"
-
 #include <device/device_list.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/settingstypes.h>
+#include <widgets/udialog.h>
 
 class BaseInterface;
 

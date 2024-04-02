@@ -1,7 +1,5 @@
 #include "tune/tunereporter.h"
 
-#include "../../widgets/epopup.h"
-
 #include <LimeReport>
 
 TuneReporter::TuneReporter(QObject *parent) noexcept : QObject(parent), m_engine(new LimeReport::ReportEngine(this))

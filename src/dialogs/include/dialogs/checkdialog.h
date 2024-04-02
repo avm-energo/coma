@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../../widgets/udialog.h"
-
 #include <QHBoxLayout>
 #include <QLabel>
 #include <device/xml_settings.h>
+#include <widgets/udialog.h>
 
 /// \brief Абстрактный класс проверки работы модулей АВ-ТУК
 class CheckDialog final : public UDialog

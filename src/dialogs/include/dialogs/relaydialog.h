@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../widgets/udialog.h"
+#include <widgets/udialog.h>
 
 constexpr uint16_t startRelayReg = 5201;
 

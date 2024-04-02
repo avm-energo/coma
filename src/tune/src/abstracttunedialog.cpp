@@ -1,9 +1,5 @@
 #include "tune/abstracttunedialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/waitwidget.h"
-#include "../../widgets/wd_func.h"
-
 #include <LimeReport>
 #include <QDebug>
 #include <QMessageBox>
@@ -18,6 +14,9 @@
 #include <gen/timefunc.h>
 #include <tune/generaltunedialog.h>
 #include <tune/tunesequencefile.h>
+#include <widgets/epopup.h>
+#include <widgets/waitwidget.h>
+#include <widgets/wd_func.h>
 
 ReportData AbstractTuneDialog::s_reportData {};
 

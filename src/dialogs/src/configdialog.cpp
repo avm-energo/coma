@@ -1,8 +1,5 @@
 #include "dialogs/configdialog.h"
 
-#include "../../widgets/epopup.h"
-#include "../../widgets/wd_func.h"
-
 #include <QDebug>
 #include <QGridLayout>
 #include <QGroupBox>
@@ -14,6 +11,8 @@
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 #include <set>
+#include <widgets/epopup.h>
+#include <widgets/wd_func.h>
 
 ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent)
     : UDialog(device, parent)
