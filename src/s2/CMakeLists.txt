@@ -2,10 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 project(s2 LANGUAGES CXX)
 
-find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network Xml Widgets
-  REQUIRED)
-
+# Collecting sources
 set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/s2")
 set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
@@ -33,6 +30,7 @@ set(sources
   "${SRC_PATH}/s2util.cpp"
 )
 
+# Creating library target
 add_library(${PROJECT_NAME} STATIC ${sources} ${headers})
 
 # Including directories for library
@@ -40,6 +38,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-target_link_libraries(${PROJECT_NAME} PUBLIC
-  Qt${QT_VERSION_MAJOR}::Core gen ctti::ctti
-)
+# Linking library dependencies
+target_link_libraries(${PROJECT_NAME} PUBLIC gen ctti::ctti)

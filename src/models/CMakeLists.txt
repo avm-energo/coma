@@ -4,9 +4,7 @@ project(models LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Xml Widgets PrintSupport
-  REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets PrintSupport REQUIRED)
 
 # Collecting sources
 set(MODELS_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/models")
@@ -23,10 +21,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 # Linking library dependencies
-target_link_libraries(${PROJECT_NAME} PRIVATE
-  Qt${QT_VERSION_MAJOR}::Core
+target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Widgets
-  Qt${QT_VERSION_MAJOR}::Xml
   Qt${QT_VERSION_MAJOR}::PrintSupport
-  PUBLIC gen limereport)
+  gen limereport)
 

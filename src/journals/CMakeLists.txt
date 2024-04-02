@@ -2,12 +2,6 @@ cmake_minimum_required(VERSION 3.14)
 
 project(journals LANGUAGES CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Widgets
-  REQUIRED)
-
 # Collecting sources
 set(JOUR_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/journals")
 set(JOUR_SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -49,4 +43,4 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG_JOURNALS)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE xml QXlsx)
+target_link_libraries(${PROJECT_NAME} PUBLIC xml QXlsx)

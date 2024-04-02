@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.14)
 
 project(widgets LANGUAGES CXX)
 
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Svg Xml REQUIRED)
 find_package(Boost COMPONENTS headers REQUIRED)
 
 # Collecting sources
@@ -21,8 +20,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 # Linking library dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  Qt${QT_VERSION_MAJOR}::Widgets
-  Qt${QT_VERSION_MAJOR}::Xml
-  Qt${QT_VERSION_MAJOR}::Svg
   Boost::headers device settings models
 )

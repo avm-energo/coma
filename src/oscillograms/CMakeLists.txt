@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.14)
 
 project(oscillograms LANGUAGES CXX)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 # Collecting sources
 set(OSC_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/oscillograms")
 set(OSC_SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")

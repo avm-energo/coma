@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.14)
 
 project(tune LANGUAGES CXX)
 
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Svg REQUIRED)
+
 # Collecting sources
 set(TUNE_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/tune")
 set(TUNE_SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -17,4 +19,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 # Linking library dependencies
-target_link_libraries(${PROJECT_NAME} PUBLIC datablocks limereport)
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  Qt${QT_VERSION_MAJOR}::Svg
+  datablocks limereport)

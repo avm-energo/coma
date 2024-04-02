@@ -25,7 +25,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   oscillograms
   startup
   tune
-  Qt${QT_VERSION_MAJOR}::Concurrent
+  Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
 )
 
 # Building library with emulator support if this option enabled
