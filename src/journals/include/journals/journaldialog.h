@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../widgets/udialog.h"
+#include "../../widgets/udialog.h"
 
 #include <journals/journaltabwidget.h>
 #include <map>

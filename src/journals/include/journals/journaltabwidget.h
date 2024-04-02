@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../widgets/eprogressindicator.h"
+#include "../../widgets/eprogressindicator.h"
 
 #include <QDialog>
 #include <QProgressDialog>

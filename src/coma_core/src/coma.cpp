@@ -22,13 +22,6 @@
 
 #include "coma_core/coma.h"
 
-#include "../../dialogs/aboutdialog.h"
-#include "../../dialogs/connectdialog.h"
-#include "../../dialogs/errordialog.h"
-#include "../../dialogs/keypressdialog.h"
-#include "../../dialogs/reconnectdialog.h"
-#include "../../dialogs/settingsdialog.h"
-#include "../../dialogs/switchjournaldialog.h"
 #include "../../widgets/epopup.h"
 #include "../../widgets/gasdensitywidget.h"
 #include "../../widgets/splashscreen.h"
@@ -48,6 +41,13 @@
 #include <comaresources/manage.h>
 #include <comaversion/comaversion.h>
 #include <device/current_device.h>
+#include <dialogs/aboutdialog.h>
+#include <dialogs/connectdialog.h>
+#include <dialogs/errordialog.h>
+#include <dialogs/keypressdialog.h>
+#include <dialogs/reconnectdialog.h>
+#include <dialogs/settingsdialog.h>
+#include <dialogs/switchjournaldialog.h>
 #include <functional>
 #include <gen/errorqueue.h>
 #include <gen/files.h>

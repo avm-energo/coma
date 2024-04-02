@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../../dialogs/dialogmanager.h"
-
 #include <QApplication>
 #include <QListWidget>
 #include <QMainWindow>
 #include <QStackedWidget>
+#include <dialogs/dialogmanager.h>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/types/settingstypes.h>
 #include <oscillograms/oscmanager.h>
