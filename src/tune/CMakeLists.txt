@@ -2,13 +2,19 @@ cmake_minimum_required(VERSION 3.14)
 
 project(tune LANGUAGES CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Collecting sources
+set(TUNE_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/tune")
+set(TUNE_SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
+file(GLOB_RECURSE files_h   ${TUNE_INCLUDE_PATH}/*.h)
+file(GLOB_RECURSE files_cpp ${TUNE_SRC_PATH}/*.cpp)
 
-file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
-file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
-
+# Creating library target
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC datablocks limereport)
+# Including directories for library
+target_include_directories(${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
+# Linking library dependencies
+target_link_libraries(${PROJECT_NAME} PUBLIC datablocks limereport)
