@@ -73,6 +73,12 @@ DataItem DataFactory::create(const DataRec &record) const
         return DataItem { helper<WORD_4t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<DWORD_4t>().hash():
         return DataItem { helper<DWORD_4t>(record.header.numByte, rawdata) };
+    case ctti::unnamed_type_id<BYTE_6t>().hash():
+        return DataItem { helper<BYTE_6t>(record.header.numByte, rawdata) };
+    case ctti::unnamed_type_id<WORD_6t>().hash():
+        return DataItem { helper<WORD_6t>(record.header.numByte, rawdata) };
+    case ctti::unnamed_type_id<DWORD_6t>().hash():
+        return DataItem { helper<DWORD_6t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<BYTE_8t>().hash():
         return DataItem { helper<BYTE_8t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<WORD_8t>().hash():

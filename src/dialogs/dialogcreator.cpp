@@ -198,7 +198,7 @@ void DialogCreator::createOscAndSwJourDialogs()
         addDialogToList(new SwitchJournalDialog(m_device, m_parent), "Журнал переключений", "swjour");
         addDialogToList(new OscDialog(m_device, m_parent), "Осциллограммы", "osc");
     }
-    else if (m_boxModel == Model::KIV)
+    else if (m_boxModel == Model::KIV || (m_typeB == BaseBoard::MTB_86 && m_typeM == MezzanineBoard::MTM_84))
     {
         addDialogToList(new OscKivDialog(m_device, m_parent), "Осциллограммы", "osc");
     }
