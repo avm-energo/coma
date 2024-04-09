@@ -347,6 +347,10 @@
                 <block>0</block>
                 <signal-id>1</signal-id>
             </group>
+            <group>
+                <block>13</block>
+                <signal-id>2</signal-id>
+            </group>
         </protocom>
         <section-tabs desc="Вкладки">
             <tab>
@@ -374,6 +378,12 @@
                 <count>2</count>
                 <id>1</id>
                 <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>13100</start-addr>
+                <count>1</count>
+                <id>2</id>
+                <type>BitString</type>
             </signal>
         </signals>
     </resources>
