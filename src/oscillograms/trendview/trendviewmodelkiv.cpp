@@ -53,6 +53,8 @@ QStringList TrendViewModelKIVOne::analogColors() const
         return { Colors::GRNCOLOR, Colors::GRLCOLOR };
     case AVTUK_KIV::OSC_C_ID:
         return { Colors::REDCOLOR, Colors::RDLCOLOR };
+    case AVTUK_KIV::OSC_VIBR_ID:
+        return { Colors::GRNCOLOR, Colors::REDCOLOR };
     default:
         return {};
     }
@@ -68,6 +70,8 @@ QStringList TrendViewModelKIVOne::analogDescriptions() const
         return { "Напряжение ф.B, кВ", "Ток ф.B, мА" };
     case AVTUK_KIV::OSC_C_ID:
         return { "Напряжение ф.C, кВ", "Ток ф.C, мА" };
+    case AVTUK_KIV::OSC_VIBR_ID:
+        return { "Датчик 1, у.е.", "Датчик 2, у.е." };
     default:
         return {};
     }
@@ -83,6 +87,8 @@ QStringList TrendViewModelKIVOne::analogValues() const
         return { "UB", "IB" };
     case AVTUK_KIV::OSC_C_ID:
         return { "UC", "IC" };
+    case AVTUK_KIV::OSC_VIBR_ID:
+        return { "Ue1", "Ue2" };
     default:
         return {};
     }
