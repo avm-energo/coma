@@ -104,6 +104,18 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1388</id>
+                <defaultValue>60</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1389</id>
+                <defaultValue>10</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1390</id>
                 <defaultValue>0, 0, 0</defaultValue>
                 <count>0</count>
