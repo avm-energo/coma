@@ -145,14 +145,6 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
 
 void ConnectionManager::handleQueryExecutorTimeout()
 {
-    if (m_isInitial)
-    {
-        QString errMsg("Превышено время ожидания блока BSI. Disconnect...");
-        qCritical() << errMsg;
-        emit connectFailed(errMsg);
-        breakConnection();
-    }
-
     ++m_timeoutCounter;
     if (m_timeoutCounter > m_timeoutMax)
         reconnect();

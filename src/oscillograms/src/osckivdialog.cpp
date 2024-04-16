@@ -127,11 +127,14 @@ void OscKivDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct 
     }
     else if (response.type == DataTypes::GeneralResponseTypes::Error)
     {
-        auto errorMsg = //
-            QString("Произошла ошибка: %1")
-                .arg(Error::MsgStr.value(static_cast<Error::Msg>(response.data), "Неизвестная ошибка"));
-        EMessageBox::error(this, errorMsg);
-        resetState();
+        if (m_state != State::Init)
+        {
+            auto errorMsg = //
+                QString("Произошла ошибка: %1")
+                    .arg(Error::MsgStr.value(static_cast<Error::Msg>(response.data), "Неизвестная ошибка"));
+            EMessageBox::error(this, errorMsg);
+            resetState();
+        }
     }
 }
 

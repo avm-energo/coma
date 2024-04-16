@@ -411,7 +411,10 @@ void Coma::initDevice(Interface::AsyncConnection *connection)
             if (err == Error::Msg::NoError)
                 initInterfaceConnection();
             else if (err == Error::Msg::Timeout)
+            {
                 EMessageBox::error(this, "Превышено время ожидания блока BSI. Disconnect...");
+                disconnectAndClear();
+            }
             else
             {
                 /// TODO: Handle other error types?
