@@ -19,16 +19,16 @@
 
 ```xml
 <resources>
-	<alarms desc="Сигнализация">...</alarms>
-	<config desc="Конфигурация">...</config>
-	<iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">...</iec60870>
-	<journals desc="Журналы">...</journal>
-	<modbus desc="Протокол Modbus">...</modbus>
-	<protocom desc="Протокол Protocom">...</protocom>
-	<section-tabs desc="Вкладки">...</section-tabs>
-	<sections desc="Разделы">...</sections>
-	<signals desc="Сигналы">...</signals>
-	<special desc="Дополнительно">...</special>
+    <alarms desc="Сигнализация">...</alarms>
+    <config desc="Конфигурация">...</config>
+    <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">...</iec60870>
+    <journals desc="Журналы">...</journal>
+    <modbus desc="Протокол Modbus">...</modbus>
+    <protocom desc="Протокол Protocom">...</protocom>
+    <section-tabs desc="Вкладки">...</section-tabs>
+    <sections desc="Разделы">...</sections>
+    <signals desc="Сигналы">...</signals>
+    <special desc="Дополнительно">...</special>
 </resources>
 ```
 
@@ -51,12 +51,12 @@
 
 ```xml
 <config>
-	<record>
-		<id>...</id>
-		<defaultValue>...</defaultValue>
-		<visibility>...</visibility>
-		<count>...</count>
-	</record>	
+    <record>
+        <id>...</id>
+        <defaultValue>...</defaultValue>
+        <visibility>...</visibility>
+        <count>...</count>
+    </record>
 </config>
 ```
 
@@ -73,12 +73,12 @@
 
 ```xml
 <signals desc="Сигналы">
-	<signal>
-		<start-addr>...</start-addr>
-		<count>...</count>
-		<id>...</id>
-		<type>...</type>
-	</signal>
+    <signal>
+        <start-addr>...</start-addr>
+        <count>...</count>
+        <id>...</id>
+        <type>...</type>
+    </signal>
 </signals>
 ```
 
@@ -94,10 +94,10 @@
 
 ```xml
 <protocom desc="Протокол Protocom">
-	<group>
-		<block>...</block>
-		<signal-id>...</signal-id>
-	</group>
+    <group>
+        <block>...</block>
+        <signal-id>...</signal-id>
+    </group>
 </protocom>
 ```
 
@@ -110,11 +110,11 @@
 
 ```xml
 <modbus desc="Протокол Modbus">
-	<group>
-		<signal-id>...</signal-id>
-		<reg-type>...</reg-type>
-		<type>...</type>
-	</group>
+    <group>
+        <signal-id>...</signal-id>
+        <reg-type>...</reg-type>
+        <type>...</type>
+    </group>
 </modbus>
 ```
 
@@ -128,12 +128,12 @@
 
 ```xml
 <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
-	<group>
-		<signal-id>...</signal-id>
-		<sig-type>...</sig-type>
-		<trans-type>...</trans-type>
-		<sig-group>...</sig-group>
-	</group>
+    <group>
+        <signal-id>...</signal-id>
+        <sig-type>...</sig-type>
+        <trans-type>...</trans-type>
+        <sig-group>...</sig-group>
+    </group>
 </iec60870>
 ```
 
@@ -146,18 +146,18 @@
 
 ```xml
 <alarms desc="Сигнализация">
-	<critical desc="Критичные">
+    <critical desc="Критичные">
         <item>
-			<addr>...</addr>
-			<string>...</string>
-			<highlights>
-				<item>...</item>
-				<item>...</item>
-			</highlights>
-		</item>
+            <addr>...</addr>
+            <string>...</string>
+            <highlights>
+                <item>...</item>
+                <item>...</item>
+            </highlights>
+        </item>
     </critical>
-	<warning desc="Предупреждения">...</warning>
-	<info desc="Информационные">...</info>
+    <warning desc="Предупреждения">...</warning>
+    <info desc="Информационные">...</info>
 </alarm>
 ```
 
@@ -173,13 +173,13 @@
 
 ```xml
 <journals desc="Журналы">
-	<meas desc="Журнал измерений">
-		<header>...</header>
-	</meas>
-	<work desc="Рабочий журнал">
-		<addr>...</addr>
-		<desc>...</desc>
-	</work>
+    <meas desc="Журнал измерений">
+        <header>...</header>
+    </meas>
+    <work desc="Рабочий журнал">
+        <addr>...</addr>
+        <desc>...</desc>
+    </work>
 </journals>
 ```
 
@@ -197,10 +197,10 @@
 
 ```xml
 <section-tabs desc="Вкладки">
-	<tab>
-		<id>...</id>
-		<name>...</name>
-	</tab>
+    <tab>
+        <id>...</id>
+        <name>...</name>
+    </tab>
 </section-tabs>
 ```
 
@@ -213,19 +213,19 @@
 
 ```xml
 <sections desc="Разделы">
-	<section header="...">
-		<sgroup header="..." tab="...">
-			<mwidget desc="..." view="...">
-				<start-addr>...</start-addr>
-				<count>...</count>
-				<toolTip>...</toolTip>
-				<string-array>
-					<item>...</item>
-					<item>...</item>
-				</string-array>
-			</mwidget>
-		</sgroup>
-	</section>
+    <section header="...">
+        <sgroup header="..." tab="...">
+            <mwidget desc="..." view="...">
+                <start-addr>...</start-addr>
+                <count>...</count>
+                <toolTip>...</toolTip>
+                <string-array>
+                    <item>...</item>
+                    <item>...</item>
+                </string-array>
+            </mwidget>
+        </sgroup>
+    </section>
 </sections>
 ```
 
@@ -240,34 +240,34 @@
 * Элемент ***string-array*** содержит в себе список строк, подставляемых в описание ***desc*** у ***mwidget*** вместо символа "%1";
 * Элементы ***item*** представляют собой строки для *string-array*.
 
-#### Specials [INCOMPLETE IMPLEMENTATION]
+#### Specials [INCOMPLETE SPECIFICATION]
 
 Раздел для описания специфических для модуля диалоговых окон и дополнительных параметров, которые не могут быть описаны универсальным способом, представленным выше в соответствующих разделах. Представляет собой перечисление нод с возможными параметрами, наличие которых разрешает отображение соответствующих диалоговых окон и вкладок в основном окне.
 
 ```xml
 <specials desc="Дополнительно">
-	<osc name="..." desc="..."></osc>
-	<relay desc="...">
-		<count>...</count>
-		<control>
-			<start-addr>...</start-addr>
-		</control>
-	</relay>
-	<startup desc="...">
-		<sgroup header="...">
-			<mwidget desc="..." view="...">
-				<start-addr>...</start-addr>
-				<count>...</count>
-				<toolTip>...</toolTip>
-				<string-array>
-					<item>...</item>
-					<item>...</item>
-				</string-array>
-			</mwidget>
-		</sgroup>
-	</startup>
-	<time desc="..."></time>
-	<tune name="..."></tune>
+    <osc name="..." desc="..."></osc>
+    <relay desc="...">
+        <count>...</count>
+        <control>
+            <start-addr>...</start-addr>
+        </control>
+    </relay>
+    <startup desc="...">
+        <sgroup header="...">
+            <mwidget desc="..." view="...">
+                <start-addr>...</start-addr>
+                <count>...</count>
+                <toolTip>...</toolTip>
+                <string-array>
+                    <item>...</item>
+                    <item>...</item>
+                </string-array>
+            </mwidget>
+        </sgroup>
+    </startup>
+    <time desc="...">...</time>
+    <tune name="...">...</tune>
 </specials>
 ```
 
