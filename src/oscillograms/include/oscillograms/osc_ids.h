@@ -45,6 +45,7 @@ constexpr u32 OSC_ALL_ID = 10022;
 constexpr u32 OSC_A_ID = 10023;
 constexpr u32 OSC_B_ID = 10024;
 constexpr u32 OSC_C_ID = 10025;
+constexpr u32 OSC_VIBR_ID = 10026;
 } // namespace AVTUK_KIV
 
 namespace AVTUK_KDV
