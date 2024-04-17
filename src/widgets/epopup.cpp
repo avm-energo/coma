@@ -214,6 +214,8 @@ void EPopup::cancelSlot()
 EEditablePopup::EEditablePopup(const QString &caption, QWidget *parent) : EPopup(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
+    // Setting default color for editable popup
+    setStyleSheet("QDialog {background-color: #c8fcff;}");
     this->caption = caption;
 }
 
@@ -224,18 +226,23 @@ void EEditablePopup::addFloatParameter(const QString &name, float *parameter)
 
 void EEditablePopup::execPopup()
 {
-    auto lyout = new QVBoxLayout;
-    lyout->addWidget(WDFunc::NewLBL2(this, caption));
+    auto widget = new QWidget(this);
+    // widget->setStyleSheet("QWidget {background-color: #c8fcff;}");
+    auto layout = new QVBoxLayout;
+    layout->addWidget(WDFunc::NewLBL2(this, caption));
     for (std::map<QString, float *>::iterator it = m_floatParList.begin(); it != m_floatParList.end(); ++it)
-        lyout->addWidget(WDFunc::NewLBLAndLE(this, it->first, it->first, true));
+        layout->addWidget(WDFunc::NewLBLAndLE(this, it->first, it->first, true));
     auto hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
     hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", this, &EEditablePopup::acceptSlot));
     hlyout->addStretch(5);
     hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", this, &EEditablePopup::cancelSlot));
     hlyout->addStretch(100);
-    lyout->addLayout(hlyout);
-    setLayout(lyout);
+    layout->addLayout(hlyout);
+    widget->setLayout(layout);
+    auto popupLayout = new QVBoxLayout;
+    popupLayout->addWidget(widget);
+    setLayout(popupLayout);
     this->adjustSize();
     exec();
 }
