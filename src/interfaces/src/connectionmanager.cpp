@@ -120,6 +120,8 @@ void ConnectionManager::breakConnection()
     m_isInitial = true;
     m_isReconnectOccurred = false;
     m_reconnectMode = ReconnectMode::Loud;
+    m_errorCounter = 0;
+    m_timeoutCounter = 0;
 }
 
 void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
