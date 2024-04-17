@@ -151,7 +151,7 @@ void DialogCreator::createTuneDialogs()
                 || m_typeM == MezzanineBoard::MTM_83)
                 tuneDlg = new Tune82Dialog(m_device, m_parent);
             else if (m_typeM == MezzanineBoard::MTM_84)
-                tuneDlg = new TuneKIVDialog(m_device, m_parent);
+                tuneDlg = new Tune84Dialog(m_device, m_parent);
         }
         break;
     }
