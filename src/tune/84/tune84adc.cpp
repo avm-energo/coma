@@ -259,12 +259,18 @@ Error::Msg Tune84ADC::showRetomDialog(int coef)
     {
         double i;
         double range;
-        QString ret10c;
+        QString ret10_imit;
+        QString ret10_retom;
     };
 
-    QMap<int, retomStruct> retomCoefMap
-        = { { 1, { 290, 2.5, "30:3" } }, { 2, { 250, 2.5, "30:3" } }, { 4, { 140, 1, "30:6" } },
-              { 8, { 80, 0.5, "30:6" } }, { 16, { 40, 0.1, "1:1" } }, { 32, { 23, 0.05, "1:1" } } };
+    QMap<int, retomStruct> retomCoefMap = {
+        { 1, { 290, 500, "30:3", "30:3" } }, //
+        { 2, { 250, 250, "30:3", "30:3" } }, //
+        { 4, { 140, 250, "30:6", "30:3" } }, //
+        { 8, { 80, 100, "30:6", "300:3" } }, //
+        { 16, { 40, 50, "1:1", "300:3" } },  //
+        { 32, { 23, 50, "1:1", "300:3" } }   //
+    };
 
     QWidget *w = new QWidget(this);
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -275,15 +281,15 @@ Error::Msg Tune84ADC::showRetomDialog(int coef)
     tmps = "Задайте на РЕТОМ-51 трёхфазный режим токов и напряжений (Uabc, Iabc)\n"
            "Угол между токами и напряжениями: 89.9 град.\n"
            "Значения напряжений: 57.75 В";
-    if (m_tuneStep == KIVTS_ADCI)
+    if (m_tuneStep == TS84_ADCI)
         tmps += ", токов: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
     vlyout->addWidget(WDFunc::NewLBL2(this, tmps));
     vlyout->addWidget(
         WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
-    if (m_tuneStep == KIVTS_ADCI)
+    if (m_tuneStep == TS84_ADCI)
         vlyout->addWidget(WDFunc::NewLBL2(this,
             "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
-                + " А.\nКоэффициент передачи РЕТ-10 30:3"));
+                + " мА.\nКоэффициент передачи РЕТ-10: " + retomCoefMap[coef].ret10_retom));
     hlyout->addLayout(vlyout);
     hlyout->addWidget(WDFunc::newVLine(this));
     vlyout = new QVBoxLayout;
@@ -291,19 +297,21 @@ Error::Msg Tune84ADC::showRetomDialog(int coef)
     vlyout->addWidget(WDFunc::newHLine(this));
     tmps = "Установите на имитаторе АВМ-КИВ tg = 2 %,\n"
            "Значения напряжений: 57.75 В";
-    if (m_tuneStep == KIVTS_ADCI)
+    if (m_tuneStep == TS84_ADCI)
         tmps += ", токов: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
     vlyout->addWidget(WDFunc::NewLBL2(this, tmps));
     vlyout->addWidget(
         WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
-    if (m_tuneStep == KIVTS_ADCI)
+    if (m_tuneStep == TS84_ADCI)
         vlyout->addWidget(WDFunc::NewLBL2(this,
             "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
-                + " А.\nКоэффициент передачи РЕТ-10 " + retomCoefMap[coef].ret10c));
+                + " мА.\nКоэффициент передачи РЕТ-10: " + retomCoefMap[coef].ret10_imit));
     hlyout->addLayout(vlyout);
     w->setLayout(hlyout);
     if (!EMessageBox::next(this, w))
         CancelTune();
+    if (m_tuneStep == TS84_ADCU)
+        StdFunc::Wait(1000);
     return Error::Msg::NoError;
 }
 
