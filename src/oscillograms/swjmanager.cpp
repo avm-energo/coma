@@ -139,12 +139,13 @@ SwjModel SwjManager::load(const FileStruct &fs) const
         new QStandardItem(floatToString(record.idleTime[1])), //
         new QStandardItem(floatToString(record.idleTime[2]))  //
     });
-    detailModel->appendRow({
-        new QStandardItem(detailDesc.at(8)),                                 //
-        new QStandardItem(helper::timeToDoubleString(record.inaccuracy[0])), //
-        new QStandardItem(helper::timeToDoubleString(record.inaccuracy[1])), //
-        new QStandardItem(helper::timeToDoubleString(record.inaccuracy[2]))  //
-    });
+    // Не отображаем погрешность синхронной коммутации
+    // detailModel->appendRow({
+    //     new QStandardItem(detailDesc.at(8)),                                 //
+    //     new QStandardItem(helper::timeToDoubleString(record.inaccuracy[0])), //
+    //     new QStandardItem(helper::timeToDoubleString(record.inaccuracy[1])), //
+    //     new QStandardItem(helper::timeToDoubleString(record.inaccuracy[2]))  //
+    // });
     detailModel->appendRow({
         new QStandardItem(detailDesc.at(9)),                 //
         new QStandardItem(floatToString(record.tInside[0])), //
