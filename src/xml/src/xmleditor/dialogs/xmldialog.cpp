@@ -26,7 +26,8 @@ void XmlDialog::startup(int row, BaseEditorModel *model)
     setWindowTitle(m_title);
     addSaveBtnAndApply(mainLayout);
     setLayout(mainLayout);
-    loadModelData(model->getRowData(row));
+    if (m_row != createId)
+        loadModelData(model->getRowData(row));
 }
 
 void XmlDialog::setupSizePos(int width, int height)
