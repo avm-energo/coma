@@ -54,28 +54,30 @@ XmlModel *ModelFabric::createRootModel(QDomNode &root, QObject *parent)
 {
     if (!root.isNull())
     {
+        ModelType type = ModelType::None;
         auto rootName = root.nodeName();
         if (rootName == "module")
         {
             auto res = root.firstChildElement("resources");
             if (!res.isNull())
             {
-                auto type = ModelType::Resources;
-                auto iter = XmlModel::s_headers.find(type);
-                if (iter != XmlModel::s_headers.cend())
-                {
-                    auto labels = iter->second;
-                    int cols = labels.count(), rows = elementsCount(res);
-                    auto model = new XmlContainerModel(rows, cols, type, parent);
-                    model->setHorizontalHeaderLabels(labels);
-                    model->setDataNode(false, res);
-                    return model;
-                }
+                type = ModelType::Resources;
+                root = res;
             }
         }
         else if (rootName == "s2files")
         {
-            // TODO: сделать особый обработчик для s2files ноды
+            type = ModelType::S2Files;
+        }
+        auto iter = XmlModel::s_headers.find(type);
+        if (iter != XmlModel::s_headers.cend())
+        {
+            auto labels = iter->second;
+            int cols = labels.count(), rows = elementsCount(root);
+            auto model = new XmlContainerModel(rows, cols, type, parent);
+            model->setHorizontalHeaderLabels(labels);
+            model->setDataNode(false, root);
+            return model;
         }
     }
     return nullptr;

@@ -39,4 +39,5 @@ signals:
     void itemSelected(QDomNode &node);
     void createFile(const QStringList &creationData);
     void removeFile(const QString &filename);
+    void error(const QString &errorMsg);
 };

@@ -29,6 +29,9 @@ enum class ModelType : quint16
     Hidden,
     HiddenTab,
     BsiExt,
+    S2Files,
+    S2Tabs,
+    S2Records,
 };
 
 /// \brief Base class for models that used in XML editor.

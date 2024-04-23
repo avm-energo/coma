@@ -49,6 +49,7 @@ const std::map<ModelType, QStringList> XmlModel::s_headers {
     { ModelType::Hidden, { "Название", "Префикс", "Флаг", "Задний фон" } },                              //
     { ModelType::HiddenTab, { "Индекс", "Название", "Виджет", "Тип", "Данные", "Адрес", "Видимость" } }, //
     { ModelType::BsiExt, { "Адрес", "Описание", "Тип", "Видимость" } },                                  //
+    { ModelType::S2Files, { "XML", "Описание" } },
 };
 
 XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : BaseEditorModel(rows, cols, type, parent)
