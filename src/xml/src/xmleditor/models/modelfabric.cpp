@@ -37,6 +37,7 @@ void ModelFabric::createChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         case ModelType::Config:
         case ModelType::HiddenTab:
         case ModelType::BsiExt:
+        case ModelType::S2Tabs:
             mNode.m_model = new XmlDataModel(rows, cols, mNode.m_type, parent);
             break;
         default:

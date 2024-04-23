@@ -94,22 +94,32 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, co
 {
     // Устанавливаем имя файла
     setData(index(row, 4), filename);
-    auto domElModule = node.toElement();
-    if (!domElModule.isNull())
+    if (filename.contains("s2files"))
     {
-        // Получаем аттрибуты TypeB и TypeM
-        setData(index(row, 1), domElModule.attribute(tags::mtypeb, "00"));
-        setData(index(row, 2), domElModule.attribute(tags::mtypem, "00"));
-        // Получаем имя модуля
-        auto domElName = domElModule.firstChildElement(tags::name);
-        if (!domElName.isNull())
-            setData(index(row, 0), domElName.text());
-        // И его версию
-        auto domElVersion = domElModule.firstChildElement(tags::version);
-        if (domElVersion.isNull())
-            setData(index(row, 3), "No version");
-        else
-            setData(index(row, 3), domElVersion.text());
+        setData(index(row, 0), "S2 Files");
+        setData(index(row, 1), "00");
+        setData(index(row, 2), "00");
+        setData(index(row, 3), "No version");
+    }
+    else
+    {
+        auto domElModule = node.toElement();
+        if (!domElModule.isNull())
+        {
+            // Получаем аттрибуты TypeB и TypeM
+            setData(index(row, 1), domElModule.attribute(tags::mtypeb, "00"));
+            setData(index(row, 2), domElModule.attribute(tags::mtypem, "00"));
+            // Получаем имя модуля
+            auto domElName = domElModule.firstChildElement(tags::name);
+            if (!domElName.isNull())
+                setData(index(row, 0), domElName.text());
+            // И его версию
+            auto domElVersion = domElModule.firstChildElement(tags::version);
+            if (domElVersion.isNull())
+                setData(index(row, 3), "No version");
+            else
+                setData(index(row, 3), domElVersion.text());
+        }
     }
 }
 
