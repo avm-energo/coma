@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <s2files>
-	<config-tabs>
+	<config-tabs desc="Вкладки конфигурации">
 		<tab>
 			<id>0</id>
 			<name>Пустая группа</name>
@@ -70,7 +70,8 @@
 			<name>Параметры двигателя</name>
 		</tab>
 </config-tabs>
-	<record>
+	<records desc="S2 записи">
+    <record>
 		<id>1</id>
 		<name>MTypeB_ID</name>
 		<description>Тип базовой платы</description>
@@ -5416,4 +5417,5 @@
 		<description>Cпектрограмма 87 модуля, 7-й канал</description>
 		<type>DataPoint_Spect87</type>
 	</record>
+    </records>
 </s2files>

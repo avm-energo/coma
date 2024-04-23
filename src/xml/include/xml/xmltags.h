@@ -25,6 +25,7 @@ constexpr auto protocom = "protocom";
 constexpr auto iec = "iec60870";
 constexpr auto config = "config";
 constexpr auto conf_tabs = "config-tabs";
+constexpr auto records = "records";
 constexpr auto hidden = "hidden";
 constexpr auto hidden_tab = "hidden-tab";
 constexpr auto bsi_ext = "bsi-ext";
