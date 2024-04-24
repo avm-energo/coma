@@ -18,9 +18,9 @@ Q_DECLARE_METATYPE(SGroupHideData);
 /// \details Contains data of 'widget' node.
 struct S2RecordHideData
 {
-    int min = 0, max = 0, decimals = 0, group = 0, count = 0;
+    int min = 0, max = 0, decimals = 0, group = 0, count = 1, parent = 0;
     bool isEnabled = false;
-    QString type = "", string = "", tooltip = "", field = "";
+    QString classname = "", type = "", string = "", tooltip = "", field = "";
     QStringList array = {};
 };
 Q_DECLARE_METATYPE(S2RecordHideData);
@@ -116,16 +116,9 @@ QDomElement XmlHideDataModel::toNode(QDomDocument &doc)
     switch (m_type)
     {
     case ModelType::SGroup:
-    {
-        auto sgroupNode = makeElement(doc, tags::sgroup);
-        fillSGroupNode(doc, sgroupNode);
-        return sgroupNode;
-    }
+        return makeSGroupNode(doc);
     case ModelType::S2Records:
-    {
-        auto s2recNode = makeElement(doc, tags::records);
-        return s2recNode;
-    }
+        return makeS2RecordsNode(doc);
     default:
         return makeElement(doc, "undefined");
     }
@@ -203,8 +196,9 @@ QStringList XmlHideDataModel::convertFromSGroupData(const SGroupHideData &input)
     return retList;
 }
 
-void XmlHideDataModel::fillSGroupNode(QDomDocument &doc, QDomElement &sgroupNode)
+QDomElement XmlHideDataModel::makeSGroupNode(QDomDocument &doc)
 {
+    auto sgroupNode = makeElement(doc, tags::sgroup);
     for (auto row = 0; row < rowCount(); row++)
     {
         // Обходим элемент для возвращения назад стороной
@@ -222,13 +216,10 @@ void XmlHideDataModel::fillSGroupNode(QDomDocument &doc, QDomElement &sgroupNode
             auto hideData = hideDataVar.value<SGroupHideData>();
             if (hideData.count != 1)
                 makeElement(doc, mwidget, tags::count, QString::number(hideData.count));
-
             if (!hideData.tooltip.isEmpty())
                 makeElement(doc, mwidget, tags::tooltip, hideData.tooltip);
-
             if (!hideData.view.isEmpty())
                 setAttribute(doc, mwidget, tags::view, hideData.view);
-
             if (!(hideData.array.isEmpty() || (hideData.array.size() == 1 && hideData.array.first().isEmpty())))
             {
                 auto strArray = makeElement(doc, tags::str_array);
@@ -239,6 +230,7 @@ void XmlHideDataModel::fillSGroupNode(QDomDocument &doc, QDomElement &sgroupNode
         }
         sgroupNode.appendChild(mwidget);
     }
+    return sgroupNode;
 }
 
 S2RecordHideData XmlHideDataModel::parseS2RecordData(QDomNode &node)
@@ -248,15 +240,77 @@ S2RecordHideData XmlHideDataModel::parseS2RecordData(QDomNode &node)
     if (!widgetNode.isNull())
     {
         retVal.isEnabled = true;
-        parseInteger(widgetNode, tags::group, retVal.group);  // Парсим тег group
-        parseInteger(widgetNode, tags::count, retVal.count);  // Парсим тег count
-        parseInteger(widgetNode, tags::min, retVal.min);      // Парсим тег min
-        parseInteger(widgetNode, tags::max, retVal.max);      // Парсим тег max
-        parseText(widgetNode, tags::type, retVal.type);       // Парсим тег type
-        parseText(widgetNode, tags::string, retVal.string);   // Парсим тег string
-        parseText(widgetNode, tags::tooltip, retVal.tooltip); // Парсим тег tooltip
-        parseText(widgetNode, tags::field, retVal.field);     // Парсим тег field
-        parseStringArray(widgetNode, retVal.array);           // Парсим тег string-array
+        retVal.classname                                          // Парсим аттрибут class
+            = widgetNode.toElement().attribute(tags::class_, ""); //
+        parseInteger(widgetNode, tags::group, retVal.group);      // Парсим тег group
+        parseInteger(widgetNode, tags::count, retVal.count);      // Парсим тег count
+        parseInteger(widgetNode, tags::min, retVal.min);          // Парсим тег min
+        parseInteger(widgetNode, tags::max, retVal.max);          // Парсим тег max
+        parseInteger(widgetNode, tags::parent, retVal.parent);    // Парсим тег parent
+        parseText(widgetNode, tags::type, retVal.type);           // Парсим тег type
+        parseText(widgetNode, tags::string, retVal.string);       // Парсим тег string
+        parseText(widgetNode, tags::tooltip, retVal.tooltip);     // Парсим тег tooltip
+        parseText(widgetNode, tags::field, retVal.field);         // Парсим тег field
+        parseStringArray(widgetNode, retVal.array);               // Парсим тег string-array
     }
     return retVal;
+}
+
+QDomElement XmlHideDataModel::makeS2RecordsNode(QDomDocument &doc)
+{
+    auto s2recordsNode = makeElement(doc, tags::records);
+    for (auto row = 0; row < rowCount(); row++)
+    {
+        // Обходим элемент для возвращения назад стороной
+        if (data(index(row, 0)).value<QString>() == "..")
+            continue;
+
+        // Видимые данные
+        auto record = makeElement(doc, tags::record);
+        makeElement(doc, record, tags::id, data(index(row, 0)));
+        makeElement(doc, record, tags::name, data(index(row, 1)));
+        makeElement(doc, record, tags::type, data(index(row, 2)));
+        makeElement(doc, record, tags::description, data(index(row, 3)));
+        // Скрытые данные
+        auto hideData = data(index(row, 0), S2RecordDataRole);
+        if (hideData.isValid() && hideData.canConvert<S2RecordHideData>())
+        {
+            auto s2recordData = hideData.value<S2RecordHideData>();
+            if (s2recordData.isEnabled && !s2recordData.type.isEmpty())
+            {
+                auto widget = makeElement(doc, tags::widget);
+                if (!s2recordData.classname.isEmpty())
+                    setAttribute(doc, widget, tags::class_, s2recordData.classname);
+                makeElement(doc, widget, tags::type, s2recordData.type);
+                makeElement(doc, widget, tags::group, QString::number(s2recordData.group));
+                if (!s2recordData.string.isEmpty())
+                    makeElement(doc, widget, tags::string, s2recordData.string);
+                if (!s2recordData.tooltip.isEmpty())
+                    makeElement(doc, widget, tags::tooltip, s2recordData.tooltip);
+                if (s2recordData.classname.contains("ModbusItem", Qt::CaseInsensitive) && s2recordData.parent > 0)
+                    makeElement(doc, widget, tags::parent, QString::number(s2recordData.parent));
+                if (s2recordData.count != 1)
+                    makeElement(doc, widget, tags::count, QString::number(s2recordData.count));
+                if (s2recordData.type.contains("DoubleSpinBoxGroup", Qt::CaseInsensitive) || //
+                    s2recordData.type.contains("QDoubleSpinBox", Qt::CaseInsensitive))
+                {
+                    makeElement(doc, widget, tags::min, QString::number(s2recordData.min));
+                    makeElement(doc, widget, tags::max, QString::number(s2recordData.max));
+                    makeElement(doc, widget, tags::decimals, QString::number(s2recordData.decimals));
+                }
+                if (s2recordData.type.contains("Group", Qt::CaseInsensitive)
+                    && !(s2recordData.array.isEmpty()
+                        || (s2recordData.array.size() == 1 && s2recordData.array.first().isEmpty())))
+                {
+                    auto strArray = makeElement(doc, tags::str_array);
+                    for (const auto &str : qAsConst(s2recordData.array))
+                        makeElement(doc, strArray, tags::item, str);
+                    widget.appendChild(strArray);
+                }
+                record.appendChild(widget);
+            }
+        }
+        s2recordsNode.appendChild(record);
+    }
+    return s2recordsNode;
 }

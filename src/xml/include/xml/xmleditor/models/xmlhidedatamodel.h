@@ -28,12 +28,16 @@ private:
     /// \brief Converting input SGroupHideData structure to the string list.
     /// \ingroup SGroup
     QStringList convertFromSGroupData(const SGroupHideData &input);
-    /// \brief Filling <sgroup> node by the model data.
+    /// \brief Creates <sgroup> node by the model data.
     /// \ingroup SGroup
-    void fillSGroupNode(QDomDocument &doc, QDomElement &sgroupNode);
+    QDomElement makeSGroupNode(QDomDocument &doc);
 
     /// \brief Parsing XML DOM node to S2RecordHideData structure.
+    /// \ingroup S2Records
     S2RecordHideData parseS2RecordData(QDomNode &node);
+    /// \brief Creates <record> node for 's2files.xml' by the model data.
+    /// \ingroup S2Records
+    QDomElement makeS2RecordsNode(QDomDocument &doc);
 
 public:
     explicit XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
