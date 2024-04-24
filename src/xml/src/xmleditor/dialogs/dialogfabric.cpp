@@ -88,6 +88,9 @@ void XmlDialogFabric::createOrEditDialog(BaseEditorModel *model, int row, QWidge
         case ModelType::BsiExt:
             dialog = new XmlBsiExtDialog(parent);
             break;
+        case ModelType::S2Tabs:
+            dialog = new XmlSectionTabDialog(parent);
+            break;
         case ModelType::Resources:
             if (row == createId)
                 EMessageBox::warning(parent, "В данном разделе запрещено создание новых элементов");

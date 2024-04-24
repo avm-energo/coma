@@ -13,9 +13,7 @@ QDomElement MasterModel::toNode(QDomDocument &doc, const int &row)
     // Создаём основной узел
     auto name = data(index(row, 0), FilenameDataRole).toString();
     if (name.contains("s2files"))
-    {
-        return makeElement(doc, tags::s2files);
-    }
+        return QDomElement {};
     else
     {
         auto moduleNode = makeElement(doc, tags::module);

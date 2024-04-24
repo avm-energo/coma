@@ -18,6 +18,7 @@ QString XmlContainerModel::getModelTagName() const
         { ModelType::Sections, tags::sections }, //
         { ModelType::Section, tags::section },   //
         { ModelType::Hidden, tags::hidden },     //
+        { ModelType::S2Files, tags::s2files },   //
     };
     auto search = tagByModelType.find(m_type);
     if (search != tagByModelType.cend())

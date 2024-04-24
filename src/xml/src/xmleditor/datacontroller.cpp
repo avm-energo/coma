@@ -186,8 +186,13 @@ void DataController::saveFile(MasterModel *masterModel, XmlModel *slaveModel)
     // Создаём из моделей ноды xml-документа
     auto moduleNode = masterModel->toNode(doc, changedRow);
     auto resNode = slaveModel->toNode(doc);
-    moduleNode.appendChild(resNode);
-    doc.appendChild(moduleNode);
+    if (!moduleNode.isNull()) // module node not null for modules xml files
+    {
+        moduleNode.appendChild(resNode);
+        doc.appendChild(moduleNode);
+    }
+    else // module node is null for s2file.xml
+        doc.appendChild(resNode);
     // Запись в файл
     auto oldFileName = masterModel->data(masterModel->index(changedRow, 0), FilenameDataRole).value<QString>();
     auto newFileName = masterModel->data(masterModel->index(changedRow, 4)).value<QString>();

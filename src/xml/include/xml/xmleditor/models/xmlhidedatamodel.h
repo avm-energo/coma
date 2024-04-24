@@ -2,28 +2,38 @@
 
 #include <xml/xmleditor/models/xmlmodel.h>
 
-constexpr int SGroupDataRole = 0x0106; ///< Role for hiding data SGroupHideData.
-
-/// \brief Structure, that stores a hiding data.
-struct SGroupHideData
-{
-    int count = 1;
-    QString tooltip = "";
-    QString view = "float";
-    QStringList array = {};
-};
-Q_DECLARE_METATYPE(SGroupHideData);
+struct SGroupHideData;
+struct S2RecordHideData;
 
 /// \brief Class for storing hiding data.
 class XmlHideDataModel final : public XmlModel
 {
 private:
+    /// \brief Parsing node with specified name to the integer variable.
+    /// \ingroup Internal parsing
+    void parseInteger(const QDomNode &source, const QString &nodeName, int &dest);
+    /// \brief Parsing node with specified name to the string variable.
+    /// \ingroup Internal parsing
+    void parseText(const QDomNode &source, const QString &nodeName, QString &dest);
+    /// \brief Parsing 'string-array' node to the string list.
+    /// \ingroup Internal parsing
+    void parseStringArray(const QDomNode &source, QStringList &dest);
+
     /// \brief Parsing XML DOM node to SGroupHideData structure.
+    /// \ingroup SGroup
     SGroupHideData parseSGroupData(QDomNode &node);
-    /// \brief Converting input string list to SGroupHideData structure.
+    /// \brief Converting input string list to the SGroupHideData structure.
+    /// \ingroup SGroup
     SGroupHideData convertToSGroupData(const QStringList &input);
+    /// \brief Converting input SGroupHideData structure to the string list.
+    /// \ingroup SGroup
+    QStringList convertFromSGroupData(const SGroupHideData &input);
     /// \brief Filling <sgroup> node by the model data.
+    /// \ingroup SGroup
     void fillSGroupNode(QDomDocument &doc, QDomElement &sgroupNode);
+
+    /// \brief Parsing XML DOM node to S2RecordHideData structure.
+    S2RecordHideData parseS2RecordData(QDomNode &node);
 
 public:
     explicit XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);

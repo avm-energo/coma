@@ -44,6 +44,7 @@ constexpr auto mtypeb = "mtypeb";
 constexpr auto mtypem = "mtypem";
 constexpr auto version = "version";
 constexpr auto desc = "desc";
+constexpr auto description = "description";
 constexpr auto prefix = "prefix";
 constexpr auto background = "background";
 constexpr auto title = "title";
