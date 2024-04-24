@@ -247,14 +247,14 @@ QDomElement XmlDataModel::toNode(QDomDocument &doc)
     auto node = makeElement(doc, std::get<0>(prefs));
     for (auto row = 0; row < rowCount(); row++)
     {
-        // TODO: костыль
-        if (data(index(row, 0)).value<QString>() != "..")
-        {
-            auto item = makeElement(doc, std::get<1>(prefs));
-            auto fillNode = std::get<2>(prefs);
-            fillNode(doc, item, row);
-            node.appendChild(item);
-        }
+        // Обходим элемент для возвращения назад стороной
+        if (data(index(row, 0)).value<QString>() == "..")
+            continue;
+
+        auto item = makeElement(doc, std::get<1>(prefs));
+        auto fillNode = std::get<2>(prefs);
+        fillNode(doc, item, row);
+        node.appendChild(item);
     }
     return node;
 }

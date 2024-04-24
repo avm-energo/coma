@@ -19,9 +19,11 @@ class XmlHideDataModel final : public XmlModel
 {
 private:
     /// \brief Parsing XML DOM node to SGroupHideData structure.
-    SGroupHideData parseHideData(QDomNode &node);
+    SGroupHideData parseSGroupData(QDomNode &node);
     /// \brief Converting input string list to SGroupHideData structure.
-    SGroupHideData convertHideData(const QStringList &input);
+    SGroupHideData convertToSGroupData(const QStringList &input);
+    /// \brief Filling <sgroup> node by the model data.
+    void fillSGroupNode(QDomDocument &doc, QDomElement &sgroupNode);
 
 public:
     explicit XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
