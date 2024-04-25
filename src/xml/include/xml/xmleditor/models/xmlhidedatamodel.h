@@ -38,6 +38,12 @@ private:
     /// \brief Creates <record> node for 's2files.xml' by the model data.
     /// \ingroup S2Records
     QDomElement makeS2RecordsNode(QDomDocument &doc);
+    /// \brief Converting input S2RecordHideData structure to the string list.
+    /// \ingroup S2Records
+    QStringList convertFromS2RecordData(const S2RecordHideData &input);
+    /// \brief Converting input string list to the S2RecordHideData structure.
+    /// \ingroup S2Records
+    S2RecordHideData convertToS2RecordData(const QStringList &input);
 
 public:
     explicit XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);

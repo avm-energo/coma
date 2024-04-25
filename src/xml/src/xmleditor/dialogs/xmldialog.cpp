@@ -59,8 +59,10 @@ QStringList XmlDialog::collectData()
                     collected.append(widget->currentText());
                 },
                 [&](const QSpinBox *widget) { //
-                    auto value = QString::number(widget->value());
-                    collected.append(value);
+                    collected.append(QString::number(widget->value()));
+                },
+                [&](const QCheckBox *widget) { //
+                    collected.append(QString::number(widget->isChecked()));
                 },
             },
             item);
@@ -107,6 +109,10 @@ void XmlDialog::loadModelData(const QStringList &response)
                 },
                 [&](QSpinBox *widget) { //
                     widget->setValue(response[i].toInt());
+                },
+                [&](QCheckBox *widget) { //
+                    auto state = (response[i] == "1") ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
+                    widget->setCheckState(state);
                 },
             },
             item);

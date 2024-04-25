@@ -46,6 +46,13 @@ QStringList XmlHideDataModel::getRowData(const int row)
                 retList.append(convertFromSGroupData(hiding.value<SGroupHideData>()));
             break;
         }
+        case ModelType::S2Records:
+        {
+            auto hiding = data(index(row, 0), S2RecordDataRole);
+            if (hiding.isValid() && hiding.canConvert<S2RecordHideData>())
+                retList.append(convertFromS2RecordData(hiding.value<S2RecordHideData>()));
+            break;
+        }
         default:
             break;
         }
@@ -59,11 +66,21 @@ void XmlHideDataModel::create(const QStringList &saved, int *row)
     {
     case ModelType::SGroup:
         Q_ASSERT(saved.count() == 6);
-        BaseEditorModel::create({ saved[0], saved[1] }, row);
+        BaseEditorModel::create(saved.mid(0, 2), row);
         if (*row >= 0 && *row < rowCount())
         {
-            auto newHide = convertToSGroupData({ saved[2], saved[3], saved[5], saved[4] });
-            setData(index(*row, 0), QVariant::fromValue(newHide), SGroupDataRole);
+            auto value = convertToSGroupData(saved.mid(2, 4));
+            setData(index(*row, 0), QVariant::fromValue(value), SGroupDataRole);
+        }
+        emit modelChanged();
+        break;
+    case ModelType::S2Records:
+        Q_ASSERT(saved.count() == 17);
+        BaseEditorModel::create(saved.mid(0, 4), row);
+        if (*row >= 0 && *row < rowCount())
+        {
+            auto value = convertToS2RecordData(saved.mid(4));
+            setData(index(*row, 0), QVariant::fromValue(value), S2RecordDataRole);
         }
         emit modelChanged();
         break;
@@ -77,11 +94,22 @@ void XmlHideDataModel::update(const QStringList &saved, const int row)
     switch (m_type)
     {
     case ModelType::SGroup:
-        BaseEditorModel::update({ saved[0], saved[1] }, row);
+        Q_ASSERT(saved.count() == 6);
+        BaseEditorModel::update(saved.mid(0, 2), row);
         if (row >= 0 && row < rowCount())
         {
-            auto newHide = convertToSGroupData({ saved[2], saved[3], saved[5], saved[4] });
+            auto newHide = convertToSGroupData(saved.mid(2, 4));
             setData(index(row, 0), QVariant::fromValue(newHide), SGroupDataRole);
+        }
+        emit modelChanged();
+        break;
+    case ModelType::S2Records:
+        Q_ASSERT(saved.count() == 17);
+        BaseEditorModel::update(saved.mid(0, 4), row);
+        if (row >= 0 && row < rowCount())
+        {
+            auto value = convertToS2RecordData(saved.mid(4));
+            setData(index(row, 0), QVariant::fromValue(value), S2RecordDataRole);
         }
         emit modelChanged();
         break;
@@ -174,15 +202,16 @@ SGroupHideData XmlHideDataModel::parseSGroupData(QDomNode &node)
 
 SGroupHideData XmlHideDataModel::convertToSGroupData(const QStringList &input)
 {
+    Q_ASSERT(input.count() == 4);
     SGroupHideData hiding;
     auto state = false;
     auto count = input[0].toInt(&state);
     if (state)
         hiding.count = count;
     hiding.tooltip = input[1];
-    hiding.view = input[2];
-    if (!input[3].isEmpty())
-        hiding.array = input[3].split(',');
+    if (!input[2].isEmpty())
+        hiding.array = input[2].split(',');
+    hiding.view = input[3];
     return hiding;
 }
 
@@ -298,6 +327,8 @@ QDomElement XmlHideDataModel::makeS2RecordsNode(QDomDocument &doc)
                     makeElement(doc, widget, tags::max, QString::number(s2recordData.max));
                     makeElement(doc, widget, tags::decimals, QString::number(s2recordData.decimals));
                 }
+                if (s2recordData.type.contains("QComboBox", Qt::CaseInsensitive) && !s2recordData.field.isEmpty())
+                    makeElement(doc, widget, tags::field, s2recordData.field);
                 if (s2recordData.type.contains("Group", Qt::CaseInsensitive)
                     && !(s2recordData.array.isEmpty()
                         || (s2recordData.array.size() == 1 && s2recordData.array.first().isEmpty())))
@@ -313,4 +344,57 @@ QDomElement XmlHideDataModel::makeS2RecordsNode(QDomDocument &doc)
         s2recordsNode.appendChild(record);
     }
     return s2recordsNode;
+}
+
+QStringList XmlHideDataModel::convertFromS2RecordData(const S2RecordHideData &input)
+{
+    QStringList retList;
+    retList.append(input.isEnabled ? "1" : "0");
+    retList.append(input.classname);
+    retList.append(input.type);
+    retList.append(QString::number(input.group));
+    retList.append(input.string);
+    retList.append(input.tooltip);
+    retList.append(QString::number(input.parent));
+    retList.append(QString::number(input.count));
+    retList.append(QString::number(input.min));
+    retList.append(QString::number(input.max));
+    retList.append(QString::number(input.decimals));
+    retList.append(input.field);
+    retList.append(input.array.join(','));
+    return retList;
+}
+
+S2RecordHideData XmlHideDataModel::convertToS2RecordData(const QStringList &input)
+{
+    Q_ASSERT(input.count() == 13);
+    S2RecordHideData retVal;
+    retVal.isEnabled = (input[0] == "1");
+    retVal.classname = input[1];
+    retVal.type = input[2];
+    bool state = false;
+    auto integer = input[3].toInt(&state);
+    if (state)
+        retVal.group = integer;
+    retVal.string = input[4];
+    retVal.tooltip = input[5];
+    integer = input[6].toInt(&state);
+    if (state)
+        retVal.parent = integer;
+    integer = input[7].toInt(&state);
+    if (state)
+        retVal.count = integer;
+    integer = input[8].toInt(&state);
+    if (state)
+        retVal.min = integer;
+    integer = input[9].toInt(&state);
+    if (state)
+        retVal.max = integer;
+    integer = input[10].toInt(&state);
+    if (state)
+        retVal.decimals = integer;
+    retVal.field = input[11];
+    if (!input[12].isEmpty())
+        retVal.array = input[12].split(',');
+    return retVal;
 }
