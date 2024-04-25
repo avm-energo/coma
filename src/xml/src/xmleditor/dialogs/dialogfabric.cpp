@@ -15,6 +15,7 @@
 #include <xml/xmleditor/dialogs/xmlmwidgetdialog.h>
 #include <xml/xmleditor/dialogs/xmlprotocomdialog.h>
 #include <xml/xmleditor/dialogs/xmlresdialog.h>
+#include <xml/xmleditor/dialogs/xmls2recorddialog.h>
 #include <xml/xmleditor/dialogs/xmlsectiondialog.h>
 #include <xml/xmleditor/dialogs/xmlsgroupdialog.h>
 #include <xml/xmleditor/dialogs/xmlsignaldialog.h>
@@ -50,6 +51,7 @@ void XmlDialogFabric::createOrEditDialog(BaseEditorModel *model, int row, QWidge
             dialog = new XmlSignalDialog(parent);
             break;
         case ModelType::SectionTabs:
+        case ModelType::S2Tabs:
             dialog = new XmlSectionTabDialog(parent);
             break;
         case ModelType::WorkJours:
@@ -88,8 +90,8 @@ void XmlDialogFabric::createOrEditDialog(BaseEditorModel *model, int row, QWidge
         case ModelType::BsiExt:
             dialog = new XmlBsiExtDialog(parent);
             break;
-        case ModelType::S2Tabs:
-            dialog = new XmlSectionTabDialog(parent);
+        case ModelType::S2Records:
+            dialog = new XmlS2RecordDialog(parent);
             break;
         case ModelType::Resources:
             if (row == createId)
