@@ -329,8 +329,7 @@ QDomElement XmlHideDataModel::makeS2RecordsNode(QDomDocument &doc)
                 }
                 if (s2recordData.type.contains("QComboBox", Qt::CaseInsensitive) && !s2recordData.field.isEmpty())
                     makeElement(doc, widget, tags::field, s2recordData.field);
-                if (s2recordData.type.contains("Group", Qt::CaseInsensitive)
-                    && !(s2recordData.array.isEmpty()
+                if (!(s2recordData.array.isEmpty()
                         || (s2recordData.array.size() == 1 && s2recordData.array.first().isEmpty())))
                 {
                     auto strArray = makeElement(doc, tags::str_array);

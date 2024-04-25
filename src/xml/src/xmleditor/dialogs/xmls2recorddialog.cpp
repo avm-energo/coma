@@ -141,6 +141,9 @@ void XmlS2RecordDialog::createWidgetEditBox()
     auto widgetTypeInput = new QComboBox(this);
     widgetTypeInput->addItems(s_widgetTypes);
     widgetTypeInput->setCurrentIndex(0);
+    QObject::connect(                                                     //
+        widgetTypeInput, qOverload<int>(&QComboBox::currentIndexChanged), //
+        this, qOverload<int>(&XmlS2RecordDialog::dataChanged));           //
     widgetTypeLayout->addWidget(widgetTypeLabel);
     widgetTypeLayout->addWidget(widgetTypeInput);
     widgetLayout->addLayout(widgetTypeLayout);
