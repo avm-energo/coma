@@ -95,8 +95,8 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, co
     if (filename.contains("s2files"))
     {
         setData(index(row, 0), "S2 Files");
-        setData(index(row, 1), "00");
-        setData(index(row, 2), "00");
+        setData(index(row, 1), "-");
+        setData(index(row, 2), "-");
         setData(index(row, 3), "No version");
     }
     else

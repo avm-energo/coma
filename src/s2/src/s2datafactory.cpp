@@ -28,10 +28,22 @@ S2::valueType helper(const QString &str)
     return arr;
 }
 
-template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true> //
+template <typename T, std::enable_if_t<!std_ext::is_container<T>::value && std::is_arithmetic_v<T>, bool> = true> //
 S2::valueType helper(const QString &str)
 {
     return QVariant(str).value<T>();
+}
+
+template <typename T, std::enable_if_t<std::is_same_v<T, S2::CONFMAST>, bool> = true> //
+S2::valueType helper(const QString &str)
+{
+    using namespace ModbusItem;
+    Q_UNUSED(str);
+    return S2::CONFMAST {
+        SensorType::SEN_None,                       //
+        { 0, Parity::NoParity, StopBits::OneStop }, //
+        0, 0, TypeId::None, 0, 0, 0                 //
+    };
 }
 
 } // namespace detail
@@ -111,6 +123,8 @@ DataItem DataFactory::create(const DataRec &record) const
         return DataItem { helper<FLOAT_8t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<CONF_DENS_3t>().hash():
         return DataItem { helper<CONF_DENS_3t>(record.header.numByte, rawdata) };
+    case ctti::unnamed_type_id<CONFMAST>().hash():
+        return DataItem { helper<CONFMAST>(record.header.numByte, rawdata) };
     default:
         assert(false && "Unknown type id");
         return DataItem {};
@@ -180,6 +194,8 @@ DataItem DataFactory::create(const quint32 id, const QString &str) const
         return DataItem { helper<FLOAT_8t>(str) };
     case ctti::unnamed_type_id<CONF_DENS_3t>().hash():
         return DataItem { helper<CONF_DENS_3t>(str) };
+    case ctti::unnamed_type_id<CONFMAST>().hash():
+        return DataItem { helper<CONFMAST>(str) };
     default:
         assert(false && "Unknown type id");
         return DataItem {};

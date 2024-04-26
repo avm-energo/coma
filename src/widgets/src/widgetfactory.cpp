@@ -3,11 +3,12 @@
 #include <QHeaderView>
 #include <QStandardItem>
 #include <ctti/type_id.hpp>
+#include <interfaces/types/modbus_types.h>
 #include <models/comboboxdelegate.h>
+#include <s2/modbusitem.h>
 #include <widgets/checkboxgroup.h>
 #include <widgets/flowlayout.h>
 #include <widgets/ipctrl.h>
-#include <widgets/modbusitem.h>
 
 // forward declarations
 // helpers for create widget
@@ -90,16 +91,10 @@ template <> QWidget *helper(const config::Item &arg, QWidget *parent, [[maybe_un
 
 template <typename T> bool WidgetFactory::fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey) const
 {
-    const auto mbMasterId = m_s2storage.getIdFor("MBMaster");
-    if (parentKey == mbMasterId)
-    {
+    if constexpr (std::is_same_v<T, S2::CONFMAST>)
         return fillBackModbus(key, parent, ctti::unnamed_type_id<QTableView>(), parentKey);
-    }
     else
-    {
-        Q_ASSERT(false && "Unsupported type");
-    }
-    return false;
+        return false;
 };
 
 WidgetFactory::WidgetFactory(S2::Configuration &workingConfig, Device::CurrentDevice *device)
@@ -253,6 +248,46 @@ bool WidgetFactory::fillBack(quint16 key, const QWidget *parent) const
     return status;
 }
 
+QList<QStandardItem *> WidgetFactory::createItem(quint16 key, const S2::CONFMAST &value)
+{
+    QList<QStandardItem *> items {};
+    auto &widgetMap = m_s2storage.getWidgetMap();
+    auto search = widgetMap.find(key);
+    if (search == widgetMap.end())
+    {
+        qWarning() << "Not found" << key;
+        return items;
+    }
+
+    const auto var = search->second;
+    std::visit( //
+        overloaded {
+            [](const auto &_) { Q_UNUSED(_); },
+            [&](const config::Item &arg) {
+                switch (arg.itemType)
+                {
+                case delegate::ItemType::ModbusItem:
+                {
+                    items = {
+                        (new QStandardItem(QString::number(value.typedat))),        //
+                        (new QStandardItem(QString::number(value.parport.baud))),   //
+                        (new QStandardItem(QString::number(value.parport.parity))), //
+                        (new QStandardItem(QString::number(value.parport.stop))),   //
+                        (new QStandardItem(QString::number(value.per))),            //
+                        (new QStandardItem(QString::number(value.adr))),            //
+                        (new QStandardItem(QString::number(value.typedata))),       //
+                        (new QStandardItem(QString::number(value.func))),           //
+                        (new QStandardItem(QString::number(value.reg))),            //
+                        (new QStandardItem(QString::number(value.cnt))),            //
+                    };
+                }
+                }
+            },
+        },
+        var);
+    return items;
+};
+
 bool WidgetFactory::fillCheckBox(const QWidget *parent, quint16 key, bool value)
 {
     auto widget = parent->findChild<QCheckBox *>(QString::number(key));
@@ -269,45 +304,6 @@ bool WidgetFactory::fillGasWidget(const QWidget *parent, quint16 key, const S2::
         return false;
     widget->fill(value);
     return true;
-}
-
-template <>
-QList<QStandardItem *> WidgetFactory::createItem(
-    quint16 key, const S2::BYTE_8t &value, [[maybe_unused]] const QWidget *parent)
-{
-    QList<QStandardItem *> items {};
-    auto &widgetMap = m_s2storage.getWidgetMap();
-    auto search = widgetMap.find(key);
-    if (search == widgetMap.end())
-    {
-        qWarning() << "Not found" << key;
-        return items;
-    }
-
-    const auto var = search->second;
-    std::visit(overloaded {
-                   [](const auto &_) { Q_UNUSED(_); },
-                   [&](const config::Item &arg) {
-                       switch (arg.itemType)
-                       {
-                       case delegate::ItemType::ModbusItem:
-                       {
-                           const auto *master = reinterpret_cast<const Item *>(&value);
-                           items = {
-                               (new QStandardItem(QString::number(master->typedat))),        //
-                               (new QStandardItem(QString::number(master->parport.baud))),   //
-                               (new QStandardItem(QString::number(master->parport.parity))), //
-                               (new QStandardItem(QString::number(master->parport.stop))),   //
-                               (new QStandardItem(QString::number(master->per))),            //
-                               (new QStandardItem(QString::number(master->adr))),            //
-                               (new QStandardItem(QString::number(master->reg)))             //
-                           };
-                       }
-                       }
-                   },
-               },
-        var);
-    return items;
 }
 
 static QWidget *createModbusView(QWidget *parent)
@@ -340,22 +336,25 @@ static QWidget *createModbusView(QWidget *parent)
     spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Item::adr)>::max(), tableView);
     tableView->setItemDelegateForColumn(5, spinBoxDelegate);
 
+    const QStringList types { "Uint16", "Int16", "Bool", "Uint32", "Float" };
+    comboBoxdelegate = new ComboBoxDelegate(types, tableView);
+    tableView->setItemDelegateForColumn(6, comboBoxdelegate);
+
     const QStringList funcs { "Coils", "Status", "Holding", "Input" };
     comboBoxdelegate = new ComboBoxDelegate(funcs, tableView);
     // Modbus функции начинаются с 1
     comboBoxdelegate->setOffset(1);
-    tableView->setItemDelegateForColumn(6, comboBoxdelegate);
-
-    const QStringList types { "Uint16", "Int16", "Bool", "Uint32", "Float" };
-    comboBoxdelegate = new ComboBoxDelegate(types, tableView);
     tableView->setItemDelegateForColumn(7, comboBoxdelegate);
 
     spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Item::reg)>::max(), tableView);
     tableView->setItemDelegateForColumn(8, spinBoxDelegate);
 
+    spinBoxDelegate = new SpinBoxDelegate(0, std::numeric_limits<decltype(Item::cnt)>::max(), tableView);
+    tableView->setItemDelegateForColumn(9, spinBoxDelegate);
+
     QStandardItemModel *model = new QStandardItemModel(tableView);
-    const QStringList header { "датчик", "скорость", "чётность", "стопБиты", "период опроса", "абонент", "функция",
-        "данные", "регистр" };
+    const QStringList header { "датчик", "скорость", "чётность", "стопБиты", "период опроса", "адрес", "данные",
+        "функция", "регистр", "количество" };
     model->setHorizontalHeaderLabels(header);
     tableView->setModel(model);
 
@@ -422,70 +421,50 @@ bool WidgetFactory::fillBackModbus(
     // -1 hardcoded as diff between parent element and first child element
     int row = id - parentKey - 1;
 
-    Item master;
-
+    ModbusItem::Item master;
     for (int c = 0; c < model->columnCount(); ++c)
     {
-
         QModelIndex index = model->index(row, c);
         QVariant value = model->data(index);
-
         bool status = false;
         auto data = value.toUInt(&status);
         switch (c)
         {
         case config::Item::ModbusColumns::SensorType:
-        {
             master.typedat = SensorType(status ? data : 0);
             break;
-        }
         case config::Item::ModbusColumns::BaudRate:
-        {
             master.parport.baud = status ? data : 0;
             break;
-        }
         case config::Item::ModbusColumns::Parity:
-        {
             master.parport.parity = Parity(status ? data : 0);
             break;
-        }
         case config::Item::ModbusColumns::StopBits:
-        {
             master.parport.stop = StopBits(status ? data : 0);
             break;
-        }
-        case config::Item::ModbusColumns::Timeout:
-        {
+        case config::Item::ModbusColumns::Period:
             master.per = status ? data : 0;
             break;
-        }
         case config::Item::ModbusColumns::Address:
-        {
             master.adr = status ? data : 0;
             break;
-        }
         case config::Item::ModbusColumns::FuncCode:
-        {
             master.func = Modbus::FunctionCode(status ? data : 0);
             break;
-        }
         case config::Item::ModbusColumns::DataType:
-        {
             master.typedata = TypeId(status ? data : 0);
             break;
-        }
         case config::Item::ModbusColumns::Register:
-        {
             master.reg = (status ? data : 0);
             break;
-        }
+        case config::Item::ModbusColumns::Count:
+            master.reg = (status ? data : 0);
+            break;
         default:
             break;
         }
-
-        S2::BYTE_8t masterBuffer = *reinterpret_cast<S2::BYTE_8t *>(&master);
-        m_config.setRecord(id, masterBuffer);
     }
+    m_config.setRecord(id, master);
     return true;
 }
 
@@ -531,7 +510,7 @@ bool WidgetFactory::fillBackLineEdit(quint32 id, const QWidget *parent) const
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            if constexpr (!std_ext::is_container<internalType>())
+            if constexpr (!std_ext::is_container<internalType>() && !std::is_same_v<internalType, S2::CONFMAST>)
             {
                 const auto value = QVariant(text).value<internalType>();
                 record.setData(value);
@@ -582,7 +561,7 @@ bool WidgetFactory::fillBackSPB(quint32 id, const QWidget *parent) const
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            if constexpr (!std_ext::is_container<internalType>())
+            if constexpr (!std_ext::is_container<internalType>() && !std::is_same_v<internalType, S2::CONFMAST>)
             {
                 auto buffer = WDFunc::SPBData<internalType>(parent, QString::number(id));
                 record.setData(buffer);

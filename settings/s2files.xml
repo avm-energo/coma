@@ -66,6 +66,10 @@
 			<name>Modbus RTU</name>
 		</tab>
 		<tab>
+			<id>231</id>
+			<name>Modbus RTU 2</name>
+		</tab>
+		<tab>
 			<id>9</id>
 			<name>Параметры двигателя</name>
 		</tab>
@@ -2490,65 +2494,6 @@
 		</widget>
 	</record>
 	<record>
-		<id>1060</id>
-		<name>MBMaster</name>
-		<description>Используется Modbus в режиме мастер</description>
-		<type>BYTE</type>
-		<widget>
-			<type>QComboBox</type>
-			<group>230</group>
-			<string>Режим Modbus</string>
-			<string-array>
-				<item>slave</item>
-				<item>master</item>
-			</string-array>
-		</widget>
-	</record>
-	<record>
-		<id>1061</id>
-		<name>MBMab1</name>
-		<description>Modbus мастер абонент1</description>
-		<type>BYTE[8]</type>
-		<widget class="ModbusItem">
-			<type>QTableView</type>
-			<group>230</group>
-			<parent>1060</parent>
-		</widget>
-	</record>
-	<record>
-		<id>1062</id>
-		<name>MBMab2</name>
-		<description>Modbus мастер абонент2</description>
-		<type>BYTE[8]</type>
-		<widget class="ModbusItem">
-			<type>QTableView</type>
-			<group>230</group>
-			<parent>1060</parent>
-		</widget>
-	</record>
-	<record>
-		<id>1063</id>
-		<name>MBMab3</name>
-		<description>Modbus мастер абонент3</description>
-		<type>BYTE[8]</type>
-		<widget class="ModbusItem">
-			<type>QTableView</type>
-			<group>230</group>
-			<parent>1060</parent>
-		</widget>
-	</record>
-	<record>
-		<id>1064</id>
-		<name>MBMab4</name>
-		<description>Modbus мастер абонент4</description>
-		<type>BYTE[8]</type>
-		<widget class="ModbusItem">
-			<type>QTableView</type>
-			<group>230</group>
-			<parent>1060</parent>
-		</widget>
-	</record>
-	<record>
 		<id>1070</id>
 		<name>Cool_type</name>
 		<description>вид охлаждения: 0 – естественное,  1 – принудительное</description>
@@ -4962,6 +4907,124 @@
 			<decimals>1</decimals>
 		</widget>
 	</record>
+    <record>
+        <id>1300</id>
+        <name>MB1Master</name>
+        <type>BYTE</type>
+        <description>Используется Modbus в режиме мастер</description>
+        <widget>
+            <type>QComboBox</type>
+            <group>230</group>
+            <string>Режим Modbus</string>
+            <string-array>
+                <item>slave</item>
+                <item>master</item>
+            </string-array>
+        </widget>
+    </record>
+    <record>
+        <id>1301</id>
+        <name>ConfMas1_1</name>
+        <type>CONFMAST</type>
+        <description>Параметры датчика 1 RS-485_1</description>
+        <widget class="ModbusItem">
+            <type>QTableView</type>
+            <group>230</group>
+            <parent>1300</parent>
+        </widget>
+    </record>
+    <record>
+        <id>1302</id>
+        <name>ConfMas1_2</name>
+        <type>CONFMAST</type>
+        <description>Параметры датчика 2 RS-485_1</description>
+        <widget class="ModbusItem">
+            <type>QTableView</type>
+            <group>230</group>
+            <parent>1300</parent>
+        </widget>
+    </record>
+    <record>
+        <id>1303</id>
+        <name>ConfMas1_3</name>
+        <type>CONFMAST</type>
+        <description>Параметры датчика 3 RS-485_1</description>
+        <widget class="ModbusItem">
+            <type>QTableView</type>
+            <group>230</group>
+            <parent>1300</parent>
+        </widget>
+    </record>
+    <record>
+        <id>1304</id>
+        <name>ConfMas1_4</name>
+        <type>CONFMAST</type>
+        <description>Параметры датчика 4 RS-485_1</description>
+        <widget class="ModbusItem">
+            <type>QTableView</type>
+            <group>230</group>
+            <parent>1300</parent>
+        </widget>
+    </record>
+    <record>
+        <id>1320</id>
+        <name>MB1Master</name>
+        <type>BYTE</type>
+        <description>Используется Modbus в режиме мастер</description>
+        <widget>
+            <type>QComboBox</type>
+            <group>231</group>
+            <string>Режим Modbus</string>
+            <string-array>
+                <item>slave</item>
+                <item>master</item>
+            </string-array>
+        </widget>
+    </record>
+    <record>
+        <id>1321</id>
+        <name>ConfMas2_1</name>
+        <type>CONFMAST</type>
+        <description>Параметры датчика 1 RS-485_2</description>
+        <widget class="ModbusItem">
+            <type>QTableView</type>
+            <group>231</group>
+            <parent>1320</parent>
+        </widget>
+    </record>
+    <record>
+        <id>1322</id>
+        <name>ConfMas2_2</name>
+        <type>CONFMAST</type>
+        <description>Параметры датчика 2 RS-485_2</description>
+        <widget class="ModbusItem">
+            <type>QTableView</type>
+            <group>231</group>
+            <parent>1320</parent>
+        </widget>
+    </record>
+    <record>
+        <id>1323</id>
+        <name>ConfMas2_3</name>
+        <type>CONFMAST</type>
+        <description>Параметры датчика 3 RS-485_2</description>
+        <widget class="ModbusItem">
+            <type>QTableView</type>
+            <group>231</group>
+            <parent>1320</parent>
+        </widget>
+    </record>
+    <record>
+        <id>1324</id>
+        <name>ConfMas2_4</name>
+        <type>CONFMAST</type>
+        <description>Параметры датчика 4 RS-485_2</description>
+        <widget class="ModbusItem">
+            <type>QTableView</type>
+            <group>231</group>
+            <parent>1320</parent>
+        </widget>
+    </record>
 	<record>
 		<id>1388</id>
 		<name>DelayHeat</name>

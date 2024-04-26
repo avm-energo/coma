@@ -116,11 +116,12 @@ struct Item : delegate::Widget
         BaudRate,
         Parity,
         StopBits,
-        Timeout,
+        Period,
         Address,
-        FuncCode,
         DataType,
-        Register
+        FuncCode,
+        Register,
+        Count
     };
 
     Item(const ctti::unnamed_type_id_t type_) : Widget(type_)

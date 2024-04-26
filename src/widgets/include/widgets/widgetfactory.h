@@ -26,24 +26,16 @@ public:
     quint16 getRealCount(const quint16 key);
 
 private:
-    // Default template like a dummy function for sfinae
-    // We will be here if specialisation doesn't exist for this T
-    template <typename T>
-    QList<QStandardItem *> createItem(
-        [[maybe_unused]] quint16 key, [[maybe_unused]] const T &value, [[maybe_unused]] const QWidget *parent = nullptr)
-    {
-        return {};
-    };
-
     template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::ip_container>::value, bool> = true>
     bool fillIpCtrl(const QWidget *parent, quint16 key, const T &value);
-    template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool> = true>
+    template <typename T, std::enable_if_t<!std_ext::is_container<T>::value && std::is_arithmetic_v<T>, bool> = true>
     bool fillLineEdit(const QWidget *parent, quint16 key, const T &value);
-    template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool> = true>
+    template <typename T, std::enable_if_t<std_ext::is_container<T>::value && std::is_arithmetic_v<T>, bool> = true>
     bool fillLineEdit(const QWidget *parent, quint16 key, const T &value);
     template <typename T>
     bool fillTableView(const QWidget *parent, quint16 key, quint16 parentKey, //
         ctti::unnamed_type_id_t type, const T &value);
+    QList<QStandardItem *> createItem(quint16 key, const S2::CONFMAST &value);
     bool fillCheckBox(const QWidget *parent, quint16 key, bool value);
     bool fillGasWidget(const QWidget *parent, quint16 key, const S2::CONF_DENS_3t &value);
 
@@ -62,11 +54,6 @@ private:
     bool fillBackGasWidget(quint32 id, const QWidget *parent) const;
 };
 
-// Template specialisation
-
-template <>
-QList<QStandardItem *> WidgetFactory::createItem(quint16 key, const S2::BYTE_8t &value, const QWidget *parent);
-
 // Template definition
 
 template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::ip_container>::value, bool>>
@@ -79,7 +66,7 @@ bool WidgetFactory::fillIpCtrl(const QWidget *parent, quint16 key, const T &valu
     return true;
 }
 
-template <typename T, std::enable_if_t<!std_ext::is_container<T>::value, bool>>
+template <typename T, std::enable_if_t<!std_ext::is_container<T>::value && std::is_arithmetic_v<T>, bool>>
 bool WidgetFactory::fillLineEdit(const QWidget *parent, quint16 key, const T &value)
 {
     auto widget = parent->findChild<QLineEdit *>(QString::number(key));
@@ -89,7 +76,7 @@ bool WidgetFactory::fillLineEdit(const QWidget *parent, quint16 key, const T &va
     return true;
 }
 
-template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool>>
+template <typename T, std::enable_if_t<std_ext::is_container<T>::value && std::is_arithmetic_v<T>, bool>>
 bool WidgetFactory::fillLineEdit(const QWidget *parent, quint16 key, const T &value)
 {
     if constexpr (std::is_integral<typename T::value_type>::value)
@@ -119,7 +106,8 @@ bool WidgetFactory::fillTableView(
     auto row = model->takeRow(targetRow);
     if (!row.isEmpty())
         qDeleteAll(row);
-    row = createItem(key, value, parent);
+    if constexpr (std::is_same_v<T, S2::CONFMAST>)
+        row = createItem(key, value);
     model->insertRow(targetRow, row);
     return true;
 }
@@ -153,7 +141,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                                return;
                            }
                        }
-                       if constexpr (!std_ext::is_container<T>())
+                       if constexpr (!std_ext::is_container<T>() && std::is_arithmetic_v<T>)
                        {
                            if (arg.type == ctti::unnamed_type_id<QCheckBox>())
                            {
@@ -169,10 +157,13 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                                return;
                            }
                        }
-                       if (arg.type == ctti::unnamed_type_id<QLineEdit>())
+                       if constexpr (std::is_arithmetic_v<T>)
                        {
-                           status = fillLineEdit(parent, key, value);
-                           return;
+                           if (arg.type == ctti::unnamed_type_id<QLineEdit>())
+                           {
+                               status = fillLineEdit(parent, key, value);
+                               return;
+                           }
                        }
                    },
 
@@ -180,9 +171,8 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                        if constexpr (std_ext::is_container<T>())
                        {
                            using container_type = typename T::value_type;
-                           if constexpr (sizeof(container_type) != 1 &&    //
-                               !std_ext::is_container<container_type>() && //
-                               !std::is_same_v<container_type, S2::CONF_DENS>)
+                           if constexpr (std::is_integral_v<container_type> || //
+                               std::is_floating_point_v<container_type>)
                            {
                                status = WDFunc::SetSPBGData(parent, QString::number(key), value);
                            }
@@ -190,7 +180,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                    },
 
                    [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) {
-                       if constexpr (!std_ext::is_container<T>())
+                       if constexpr (std::is_integral_v<T> || std::is_floating_point_v<T>)
                        {
                            status = WDFunc::SetSPBData(parent, QString::number(key), value);
                        }
@@ -222,8 +212,10 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                                    strValue = QString::number(value, 'f', 2);
                                    strValue.replace('.', ',');
                                }
-                               else
+                               else if constexpr (std::is_integral_v<T>)
+                               {
                                    strValue = QString::number(value);
+                               }
                                auto index = arg.model.indexOf(strValue);
                                if (index != -1)
                                    status = WDFunc::SetCBIndex(parent, QString::number(key), index);
@@ -239,7 +231,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                        }
                    },
                    [&](const delegate::QComboBoxGroup &arg) {
-                       if constexpr (!std_ext::is_container<T>())
+                       if constexpr (!std_ext::is_container<T>() && std::is_arithmetic_v<T>)
                        {
                            std::bitset<sizeof(T) *CHAR_BIT> bitset = value;
                            auto count = getRealCount(key);
@@ -281,7 +273,9 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                            }
                        }
                    },
-                   [&](const config::Item &arg) { status = fillTableView(parent, key, arg.parent, arg.type, value); },
+                   [&](const config::Item &arg) {
+                       status = fillTableView(parent, key, arg.parent, arg.type, value); //
+                   },
                },
         var);
     return status;

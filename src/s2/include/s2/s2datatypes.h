@@ -5,6 +5,7 @@
 #include <gen/std_ext.h>
 #include <gen/timefunc.h>
 #include <s2/filestruct.h>
+#include <s2/modbusitem.h>
 #include <variant>
 #include <vector>
 
@@ -58,6 +59,7 @@ using FLOAT_6t = std::array<FLOAT, 6>;
 using FLOAT_8t = std::array<FLOAT, 8>;
 using CONF_DENS = GasDensity;
 using CONF_DENS_3t = std::array<CONF_DENS, 3>;
+using CONFMAST = ModbusItem::Item;
 
 static_assert(sizeof(BYTE) != sizeof(WORD), "Broken datatypes");
 static_assert(sizeof(BYTE) != sizeof(DWORD), "Broken datatypes");
@@ -66,6 +68,7 @@ static_assert(sizeof(FLOAT) == sizeof(DWORD), "Broken datatypes");
 static_assert(sizeof(WORD_4t) == sizeof(BYTE_8t), "Broken datatypes");
 static_assert(sizeof(DWORD_4t) == sizeof(BYTE_16t), "Broken datatypes");
 static_assert(sizeof(FLOAT_2t) == sizeof(BYTE_8t), "Broken datatypes");
+static_assert(sizeof(CONFMAST) == 13, "Broken datatypes");
 
 using valueType = std::variant<BYTE, WORD, DWORD, INT32,     //
     BYTE_4t, WORD_4t, DWORD_4t,                              //
@@ -74,7 +77,7 @@ using valueType = std::variant<BYTE, WORD, DWORD, INT32,     //
     BYTE_16t, WORD_16t, DWORD_16t,                           //
     BYTE_32t, WORD_32t, DWORD_32t,                           //
     FLOAT, FLOAT_2t, FLOAT_3t, FLOAT_4t, FLOAT_6t, FLOAT_8t, //
-    CONF_DENS_3t>;
+    CONF_DENS_3t, CONFMAST>;
 
 template <typename T> struct isValueType
 {

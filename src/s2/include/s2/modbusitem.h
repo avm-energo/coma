@@ -1,6 +1,6 @@
 #pragma once
 
-#include <interfaces/types/modbus_types.h>
+#include <QtCore/QtGlobal>
 
 namespace ModbusItem
 {
@@ -82,7 +82,7 @@ struct Item
     TypeId typedata;    ///< Тип данных
     quint8 func;        ///< код функции modbus
     quint16 reg;        ///< Начальный адрес регистра
-    quint8 cnt;         ///< Количество регистров
+    quint16 cnt;        ///< Количество регистров
 
     friend bool operator==(const Item &lhs, const Item &rhs);
     friend bool operator!=(const Item &lhs, const Item &rhs);
