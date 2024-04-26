@@ -16,6 +16,17 @@ static QWidget *createModbusView(QWidget *parent);
 
 using namespace ModbusItem;
 
+static const QStringList s_baudList {
+    "1200",
+    "2400",
+    "4800",
+    "9600",
+    "19200",
+    "38400",
+    "57600",
+    "115200",
+};
+
 template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key)
 {
     QWidget *widget = new QWidget(parent);
@@ -268,9 +279,20 @@ QList<QStandardItem *> WidgetFactory::createItem(quint16 key, const S2::CONFMAST
                 {
                 case delegate::ItemType::ModbusItem:
                 {
+                    auto baudStr = QString::number(value.parport.baud);
+                    int foundIndex = 0;
+                    for (auto index = 0; index < s_baudList.size(); ++index)
+                    {
+                        if (s_baudList[index] == baudStr)
+                        {
+                            foundIndex = index;
+                            break;
+                        }
+                    }
+
                     items = {
                         (new QStandardItem(QString::number(value.typedat))),        //
-                        (new QStandardItem(QString::number(value.parport.baud))),   //
+                        (new QStandardItem(QString::number(foundIndex))),           //
                         (new QStandardItem(QString::number(value.parport.parity))), //
                         (new QStandardItem(QString::number(value.parport.stop))),   //
                         (new QStandardItem(QString::number(value.per))),            //
@@ -318,9 +340,8 @@ static QWidget *createModbusView(QWidget *parent)
 
     ComboBoxDelegate *comboBoxdelegate = new ComboBoxDelegate({ "нет", "тип 1", "тип 2", "тип 3" }, tableView);
     tableView->setItemDelegateForColumn(0, comboBoxdelegate);
-    const QStringList baudList { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
 
-    comboBoxdelegate = new ComboBoxDelegate(baudList, tableView);
+    comboBoxdelegate = new ComboBoxDelegate(s_baudList, tableView);
     tableView->setItemDelegateForColumn(1, comboBoxdelegate);
 
     comboBoxdelegate = new ComboBoxDelegate({ "нет", "even", "odd" }, tableView);
@@ -434,7 +455,7 @@ bool WidgetFactory::fillBackModbus(
             master.typedat = SensorType(status ? data : 0);
             break;
         case config::Item::ModbusColumns::BaudRate:
-            master.parport.baud = status ? data : 0;
+            master.parport.baud = s_baudList[status ? data : 0].toInt();
             break;
         case config::Item::ModbusColumns::Parity:
             master.parport.parity = Parity(status ? data : 0);
@@ -458,7 +479,7 @@ bool WidgetFactory::fillBackModbus(
             master.reg = (status ? data : 0);
             break;
         case config::Item::ModbusColumns::Count:
-            master.reg = (status ? data : 0);
+            master.cnt = (status ? data : 0);
             break;
         default:
             break;
