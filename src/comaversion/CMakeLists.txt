@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.14)
 
 project(comaversion LANGUAGES CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_SCRIPT_MODE_FILE ON)
 
 find_package(
@@ -33,7 +32,6 @@ if(CMAKE_SCRIPT_MODE_FILE)
   else()
     set(READ_IN_SHORT_HASH "")
   endif()
-
   if(NOT ("${READ_IN_SHORT_HASH}" STREQUAL "${SHORT_HASH}"))
     message(STATUS "Short hash is out of date")
     # This will update short_hash.txt, causing cmake to reconfigure
@@ -52,10 +50,22 @@ endif()
 
 set(gitCommitCounter ${COMMIT_COUNT})
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/gversion.h @ONLY)
-add_library(${PROJECT_NAME} STATIC comaversion.h comaversion.cpp)
 
+set(COMAVERSION_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}")
+set(COMAVERSION_SRC     "${CMAKE_CURRENT_SOURCE_DIR}/src/")
+
+set(COMAVERSION_SOURCES
+  "${COMAVERSION_INCLUDE}/comaversion.h"
+  "${COMAVERSION_SRC}/comaversion.cpp")
+
+add_library(${PROJECT_NAME} STATIC ${COMAVERSION_SOURCES})
+
+# Including private directories for library
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core)
+# Including public directories for library
+target_include_directories(${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 set(CMAKE_SCRIPT_MODE_FILE OFF)

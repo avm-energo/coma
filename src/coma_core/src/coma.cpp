@@ -22,26 +22,6 @@
 
 #include "coma_core/coma.h"
 
-#include "../../comaversion/comaversion.h"
-#include "../../dialogs/aboutdialog.h"
-#include "../../dialogs/connectdialog.h"
-#include "../../dialogs/errordialog.h"
-#include "../../dialogs/keypressdialog.h"
-#include "../../dialogs/reconnectdialog.h"
-#include "../../dialogs/settingsdialog.h"
-#include "../../dialogs/switchjournaldialog.h"
-#include "../../journals/journalviewer.h"
-#include "../../oscillograms/swjmanager.h"
-#include "../../oscillograms/swjpackconvertor.h"
-#include "../../widgets/epopup.h"
-#include "../../widgets/gasdensitywidget.h"
-#include "../../widgets/splashscreen.h"
-#include "../../widgets/styleloader.h"
-#include "../../widgets/waitwidget.h"
-#include "../../widgets/wd_func.h"
-#include "../../xml/xmlconfigloader.h"
-#include "../../xml/xmleditor/xmleditor.h"
-
 #include <QApplication>
 #include <QDir>
 #include <QHBoxLayout>
@@ -52,7 +32,15 @@
 #include <QtGlobal>
 #include <alarms/alarmwidget.h>
 #include <comaresources/manage.h>
+#include <comaversion/comaversion.h>
 #include <device/current_device.h>
+#include <dialogs/aboutdialog.h>
+#include <dialogs/connectdialog.h>
+#include <dialogs/errordialog.h>
+#include <dialogs/keypressdialog.h>
+#include <dialogs/reconnectdialog.h>
+#include <dialogs/settingsdialog.h>
+#include <dialogs/switchjournaldialog.h>
 #include <functional>
 #include <gen/errorqueue.h>
 #include <gen/files.h>
@@ -61,10 +49,21 @@
 #include <gen/timefunc.h>
 #include <interfaces/types/settingstypes.h>
 #include <iostream>
+#include <journals/journalviewer.h>
 #include <memory>
+#include <oscillograms/swjmanager.h>
+#include <oscillograms/swjpackconvertor.h>
 #include <s2/s2configstorage.h>
 #include <s2/s2datafactory.h>
 #include <s2/s2util.h>
+#include <widgets/epopup.h>
+#include <widgets/gasdensitywidget.h>
+#include <widgets/splashscreen.h>
+#include <widgets/styleloader.h>
+#include <widgets/waitwidget.h>
+#include <widgets/wd_func.h>
+#include <xml/xmlconfigloader.h>
+#include <xml/xmleditor/xmleditor.h>
 
 namespace Core
 {

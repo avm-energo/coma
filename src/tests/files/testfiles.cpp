@@ -1,8 +1,7 @@
 #include "testfiles.h"
 
-#include "../../oscillograms/oscmanager.h"
-#include "../../oscillograms/swjmanager.h"
-#include "../../widgets/wd_func.h"
+#include <oscillograms/oscmanager.h>
+#include <oscillograms/swjmanager.h>
 
 TestFiles::TestFiles(QObject *parent) : QObject(parent)
 {

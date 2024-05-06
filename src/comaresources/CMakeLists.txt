@@ -21,16 +21,16 @@ set(files_qrc
 # Collecting sources
 set(COMARES_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}")
 set(COMARES_SRC     "${CMAKE_CURRENT_SOURCE_DIR}/src/")
-set(sources
+set(COMARES_SOURCES
   "${COMARES_INCLUDE}/export.h"
   "${COMARES_INCLUDE}/manage.h"
   "${COMARES_SRC}/manage.cpp")
 
 # Create library target
 if(COMARES_STATIC)
-  add_library(${PROJECT_NAME} STATIC ${sources} ${files_qrc})
+  add_library(${PROJECT_NAME} STATIC ${COMARES_SOURCES} ${files_qrc})
 else()
-  add_library(${PROJECT_NAME} SHARED ${sources} ${files_qrc})
+  add_library(${PROJECT_NAME} SHARED ${COMARES_SOURCES} ${files_qrc})
   target_compile_definitions(${PROJECT_NAME}
     PRIVATE "-DCOMARES_SHARED_EXPORT"
     INTERFACE "-DCOMARES_SHARED_IMPORT")

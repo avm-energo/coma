@@ -4,25 +4,21 @@ project(xml LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS Core Network Xml Widgets
-  REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Xml REQUIRED)
 
-file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
-file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+# Collecting sources
+set(XML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}")
+set(XML_SRC     "${CMAKE_CURRENT_SOURCE_DIR}/src/")
+file(GLOB_RECURSE files_h   ${XML_INCLUDE}/*.h)
+file(GLOB_RECURSE files_cpp ${XML_SRC}/*.cpp)
 
-add_library(
-  ${PROJECT_NAME} STATIC
-  ${files_cpp}
-  ${files_h})
+# Create library target
+add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 
-target_link_libraries(
-  ${PROJECT_NAME} PUBLIC
-  widgets
-  Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Network
-  Qt${QT_VERSION_MAJOR}::Widgets
-  Qt${QT_VERSION_MAJOR}::Xml
-  PUBLIC gen)
+# Including directories for library
+target_include_directories(${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_LIBRARY)
+# Linking library dependencies
+target_link_libraries(${PROJECT_NAME} PUBLIC widgets Qt${QT_VERSION_MAJOR}::Xml)

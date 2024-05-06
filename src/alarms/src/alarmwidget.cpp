@@ -1,12 +1,11 @@
 #include "alarms/alarmwidget.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <QDialogButtonBox>
 #include <QTimer>
 #include <alarms/alarmbutton.h>
 #include <device/current_device.h>
 #include <settings/user_settings.h>
+#include <widgets/wd_func.h>
 
 AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent), m_timer(new QTimer(this))
 {

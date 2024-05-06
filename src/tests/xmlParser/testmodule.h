@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../../xml/xmlparser/xmlmoduleparser.h"
-
 #include <QObject>
 #include <QtTest>
 #include <device/configstorage.h>
 #include <s2/s2datamanager.h>
+#include <xml/xmlparser/xmlmoduleparser.h>
 
 using namespace Device::XmlDataTypes;
 

@@ -1,9 +1,8 @@
 #include "alarms/modulealarm.h"
 
-#include "../../widgets/wd_func.h"
-
 #include <QScrollArea>
 #include <QVBoxLayout>
+#include <widgets/wd_func.h>
 
 ModuleAlarm::ModuleAlarm(const AlarmType type, const AlarmValue &alarms, //
     Device::CurrentDevice *device, QWidget *parent)
