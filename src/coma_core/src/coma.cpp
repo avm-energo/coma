@@ -412,7 +412,10 @@ void Coma::initDevice(Interface::AsyncConnection *connection)
             if (err == Error::Msg::NoError)
                 initInterfaceConnection();
             else if (err == Error::Msg::Timeout)
+            {
                 EMessageBox::error(this, "Превышено время ожидания блока BSI. Disconnect...");
+                disconnectAndClear();
+            }
             else
             {
                 /// TODO: Handle other error types?
@@ -544,7 +547,10 @@ void Coma::showReconnectDialog()
             m_reconnectDialog, &ReconnectDialog::reconnectSuccess);
         connect(m_connectionManager, &ConnectionManager::reconnectSuccess, this, //
             [this] { m_reconnectDialog = nullptr; });
-        connect(m_reconnectDialog, &ReconnectDialog::breakConnection, this, &Coma::disconnectAndClear);
+        connect(m_reconnectDialog, &ReconnectDialog::breakConnection, this, [this] {
+            disconnectAndClear();
+            m_reconnectDialog = nullptr;
+        });
         m_reconnectDialog->open();
     }
 }

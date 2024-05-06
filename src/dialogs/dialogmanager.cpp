@@ -100,5 +100,6 @@ void DialogManager::clearDialogs()
     }
     m_currentDialogIndex = 0;
     m_sidebar->clear();
-    m_dlgCreator->deleteDialogs();
+    if (m_dlgCreator != nullptr)
+        m_dlgCreator->deleteDialogs();
 }
