@@ -6,6 +6,12 @@
 
 ```xml
 <s2files>
+    <config-tabs>
+        <tab>
+            <id>...</id>
+            <name>...</name>
+        </tab>
+    </config-tabs>
     <record>...</record>
 </s2files>
 ```
@@ -75,9 +81,9 @@ class WidgetFactory
 ..
 public:
     WidgetFactory();
-    QWidget *createWidget(BciNumber key, QWidget *parent = nullptr);
-    template <typename T> bool fillWidget(const QWidget *parent, BciNumber key, const T &value);
-    bool fillBack(BciNumber key, const QWidget *parent);
+    QWidget *createWidget(quint16 key, QWidget *parent = nullptr);
+    template <typename T> bool fillWidget(const QWidget *parent, quint16 key, const T &value);
+    bool fillBack(quint16 key, const QWidget *parent);
 
 ...
 
@@ -98,7 +104,7 @@ private:
 class ConfigDialog : public UDialog
 {
 public:
-    explicit ConfigDialog(const QList<DataTypes::RecordPair> &defaultConfig, QWidget *parent = nullptr);
+    explicit ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent = nullptr);
 
 ...
     void FillBack() const;

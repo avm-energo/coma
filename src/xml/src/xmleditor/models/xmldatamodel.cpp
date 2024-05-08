@@ -119,6 +119,12 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
                 makeElement(doc, item, tags::type, data(index(row, 2)));
                 makeElement(doc, item, tags::visibility, data(index(row, 3)));
             } };
+    case ModelType::S2Tabs:
+        return { tags::conf_tabs, tags::tab, //
+            [this](auto &doc, auto &item, auto &row) {
+                makeElement(doc, item, tags::id, data(index(row, 0)));
+                makeElement(doc, item, tags::name, data(index(row, 1)));
+            } };
     default:
         qWarning() << "Model settings not found!";
         return { "undefined", "undefined", //
@@ -204,6 +210,10 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
         parseTag(node, tags::type, row, 2, "uint32");         // Тип данных сигнала
         parseTag(node, tags::visibility, row, 3, "true");     // Видимость
         break;                                                //
+    case ModelType::S2Tabs:                                   //
+        parseTag(node, tags::id, row, 0, "", true);           // ID
+        parseTag(node, tags::name, row, 1);                   // Значение по умолчанию
+        break;                                                //
     default:
         qWarning() << "Can't parse undefined tag of XML model!";
         break;
@@ -237,14 +247,14 @@ QDomElement XmlDataModel::toNode(QDomDocument &doc)
     auto node = makeElement(doc, std::get<0>(prefs));
     for (auto row = 0; row < rowCount(); row++)
     {
-        // TODO: костыль
-        if (data(index(row, 0)).value<QString>() != "..")
-        {
-            auto item = makeElement(doc, std::get<1>(prefs));
-            auto fillNode = std::get<2>(prefs);
-            fillNode(doc, item, row);
-            node.appendChild(item);
-        }
+        // Обходим элемент для возвращения назад стороной
+        if (data(index(row, 0)).value<QString>() == "..")
+            continue;
+
+        auto item = makeElement(doc, std::get<1>(prefs));
+        auto fillNode = std::get<2>(prefs);
+        fillNode(doc, item, row);
+        node.appendChild(item);
     }
     return node;
 }

@@ -14,18 +14,19 @@ void TestFiles::testOsc()
     QCOMPARE(fileVector.size(), 1);
     for (auto &item : fileVector)
     {
-        std::visit(overloaded {
-                       [](S2::OscHeader &record) {
-                           QCOMPARE(record.len, 498);
-                           QCOMPARE(record.step, 20.0);
-                           QCOMPARE(record.time, 5832358505620324140);
-                       },                                //
-                       [](auto &&arg) { Q_UNUSED(arg) }, //
-                       [](std::unique_ptr<TrendViewModel> &model) {
-                           QCOMPARE(model->mainPoints().size(), 498);
-                           QCOMPARE(model->length(), 498);
-                       } //
-                   },
+        std::visit( //
+            overloaded {
+                [](S2::OscHeader &record) {
+                    QCOMPARE(record.len, 498);
+                    QCOMPARE(record.step, 20.0);
+                    QCOMPARE(record.time, 5832358505620324140);
+                },                                //
+                [](auto &&arg) { Q_UNUSED(arg) }, //
+                [](std::unique_ptr<TrendViewModel> &model) {
+                    QCOMPARE(model->mainPoints().size(), 498);
+                    QCOMPARE(model->length(), 498);
+                } //
+            },
             item);
     }
 }
@@ -37,18 +38,19 @@ void TestFiles::testOsc85()
     QCOMPARE(fileVector.size(), 2);
     for (auto &item : fileVector)
     {
-        std::visit(overloaded {
-                       [](S2::OscHeader &record) {
-                           QCOMPARE(record.len, 1947);
-                           QCOMPARE(record.step, 0.0792380943894);
-                           QCOMPARE(record.time, 6730917119207093248);
-                       },                                //
-                       [](auto &&arg) { Q_UNUSED(arg) }, //
-                       [](std::unique_ptr<TrendViewModel> &model) {
-                           QCOMPARE(model->mainPoints().size(), 1947);
-                           QCOMPARE(model->length(), 1947);
-                       } //
-                   },
+        std::visit( //
+            overloaded {
+                [](S2::OscHeader &record) {
+                    QCOMPARE(record.len, 1947);
+                    QCOMPARE(record.step, 0.0792380943894);
+                    QCOMPARE(record.time, 6730917119207093248);
+                },                                //
+                [](auto &&arg) { Q_UNUSED(arg) }, //
+                [](std::unique_ptr<TrendViewModel> &model) {
+                    QCOMPARE(model->mainPoints().size(), 1947);
+                    QCOMPARE(model->length(), 1947);
+                } //
+            },
             item);
     }
 }

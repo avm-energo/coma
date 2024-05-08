@@ -11,6 +11,7 @@ set(headers
   "${INCLUDE_PATH}/delegate_common.h"
   "${INCLUDE_PATH}/filestruct.h"
   "${INCLUDE_PATH}/hexparser.h"
+  "${INCLUDE_PATH}/modbusitem.h"
   "${INCLUDE_PATH}/s2configstorage.h"
   "${INCLUDE_PATH}/s2configuration.h"
   "${INCLUDE_PATH}/s2datafactory.h"

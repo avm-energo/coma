@@ -2,26 +2,48 @@
 
 #include <xml/xmleditor/models/xmlmodel.h>
 
-constexpr int SGroupDataRole = 0x0106; ///< Role for hiding data SGroupHideData.
-
-/// \brief Structure, that stores a hiding data.
-struct SGroupHideData
-{
-    int count = 1;
-    QString tooltip = "";
-    QString view = "float";
-    QStringList array = {};
-};
-Q_DECLARE_METATYPE(SGroupHideData);
+struct SGroupHideData;
+struct S2RecordHideData;
 
 /// \brief Class for storing hiding data.
 class XmlHideDataModel final : public XmlModel
 {
 private:
+    /// \brief Parsing node with specified name to the integer variable.
+    /// \ingroup Internal parsing
+    void parseInteger(const QDomNode &source, const QString &nodeName, int &dest);
+    /// \brief Parsing node with specified name to the string variable.
+    /// \ingroup Internal parsing
+    void parseText(const QDomNode &source, const QString &nodeName, QString &dest);
+    /// \brief Parsing 'string-array' node to the string list.
+    /// \ingroup Internal parsing
+    void parseStringArray(const QDomNode &source, QStringList &dest);
+
     /// \brief Parsing XML DOM node to SGroupHideData structure.
-    SGroupHideData parseHideData(QDomNode &node);
-    /// \brief Converting input string list to SGroupHideData structure.
-    SGroupHideData convertHideData(const QStringList &input);
+    /// \ingroup SGroup
+    SGroupHideData parseSGroupData(QDomNode &node);
+    /// \brief Converting input string list to the SGroupHideData structure.
+    /// \ingroup SGroup
+    SGroupHideData convertToSGroupData(const QStringList &input);
+    /// \brief Converting input SGroupHideData structure to the string list.
+    /// \ingroup SGroup
+    QStringList convertFromSGroupData(const SGroupHideData &input);
+    /// \brief Creates <sgroup> node by the model data.
+    /// \ingroup SGroup
+    QDomElement makeSGroupNode(QDomDocument &doc);
+
+    /// \brief Parsing XML DOM node to S2RecordHideData structure.
+    /// \ingroup S2Records
+    S2RecordHideData parseS2RecordData(QDomNode &node);
+    /// \brief Creates <record> node for 's2files.xml' by the model data.
+    /// \ingroup S2Records
+    QDomElement makeS2RecordsNode(QDomDocument &doc);
+    /// \brief Converting input S2RecordHideData structure to the string list.
+    /// \ingroup S2Records
+    QStringList convertFromS2RecordData(const S2RecordHideData &input);
+    /// \brief Converting input string list to the S2RecordHideData structure.
+    /// \ingroup S2Records
+    S2RecordHideData convertToS2RecordData(const QStringList &input);
 
 public:
     explicit XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);

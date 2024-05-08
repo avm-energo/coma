@@ -14,8 +14,9 @@ function(win_deploy_qt PROJECT_NAME QT_VERSION_MAJOR QT_BIN_DIR)
             --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-angle --no-opengl-sw
             ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/gen.dll
             ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/qcustomplot.dll
-            ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/${PROJECT_NAME}.exe
             ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/limereport-qt${QT_VERSION_MAJOR}.dll
+            ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/QXlsxQt${QT_VERSION_MAJOR}.dll
+            ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/${PROJECT_NAME}.exe
           WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}
           OUTPUT_VARIABLE OUTPUT)
         message(STATUS "Copy status: ${OUTPUT}")

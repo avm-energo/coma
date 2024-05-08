@@ -1,6 +1,6 @@
 #pragma once
 
-#include <interfaces/types/modbus_types.h>
+#include <QtCore/QtGlobal>
 
 namespace ModbusItem
 {
@@ -25,10 +25,11 @@ enum StopBits : quint8
     TwoStop = 1
 };
 
+#pragma pack(push, 1)
 struct INICOM
 {
     // Скорость порта
-    quint16 baud;
+    quint32 baud;
     // Четность
     Parity parity;
     // Стоп биты
@@ -36,6 +37,7 @@ struct INICOM
     friend bool operator==(const INICOM &lhs, const INICOM &rhs);
     friend bool operator!=(const INICOM &lhs, const INICOM &rhs);
 };
+#pragma pack(pop)
 
 bool inline operator==(const INICOM &lhs, const INICOM &rhs)
 {
@@ -82,7 +84,7 @@ struct Item
     TypeId typedata;    ///< Тип данных
     quint8 func;        ///< код функции modbus
     quint16 reg;        ///< Начальный адрес регистра
-    quint8 cnt;         ///< Количество регистров
+    quint16 cnt;        ///< Количество регистров
 
     friend bool operator==(const Item &lhs, const Item &rhs);
     friend bool operator!=(const Item &lhs, const Item &rhs);

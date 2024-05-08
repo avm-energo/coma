@@ -1,7 +1,9 @@
 #pragma once
 
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDialog>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -25,7 +27,7 @@ class XmlDialog : public QDialog
 {
     Q_OBJECT
 private:
-    using Widget = std::variant<QLineEdit *, QComboBox *, QSpinBox *>;
+    using Widget = std::variant<QLineEdit *, QComboBox *, QSpinBox *, QCheckBox *>;
 
 protected:
     QString m_title;
@@ -75,12 +77,10 @@ public slots:
 
     /// \brief Слот, вызываемый при изменении данных в диалоговом окне.
     void dataChanged();
-
     /// \overload dataChanged.
     /// \brief Перегрузка слота, вызываемого при изменении данных в диалоговом окне.
     /// \see dataChanged.
     void dataChanged(const QString &strData);
-
     /// \overload dataChanged.
     /// \brief Перегрузка слота, вызываемого при изменении данных в диалоговом окне.
     /// \see dataChanged.

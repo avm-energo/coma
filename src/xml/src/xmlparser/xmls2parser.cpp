@@ -55,7 +55,8 @@ const QHash<QString, std::uint64_t> Xml::S2Parser::nameTypeMap = {
     { "FLOAT[6]", ctti::unnamed_type_id<S2::FLOAT_6t>().hash() },                     //
     { "FLOAT[8]", ctti::unnamed_type_id<S2::FLOAT_8t>().hash() },                     //
     { "INT32", ctti::unnamed_type_id<S2::INT32>().hash() },                           //
-    { "CONF_DENS[3]", ctti::unnamed_type_id<S2::CONF_DENS_3t>().hash() }              //
+    { "CONF_DENS[3]", ctti::unnamed_type_id<S2::CONF_DENS_3t>().hash() },             //
+    { "CONFMAST", ctti::unnamed_type_id<S2::CONFMAST>().hash() },                     //
 }; ///< Хэш-мапа для идентификации типа в рантайме
 
 Xml::S2Parser::S2Parser(QObject *parent) : BaseParser(parent)
@@ -83,9 +84,21 @@ void Xml::S2Parser::parseConfigTab(const QDomNode &tabNode)
     emit configTabDataSending(id, name);
 }
 
-void Xml::S2Parser::parseConfigTabs(const QDomElement &s2node)
+void Xml::S2Parser::parseRecord(const QDomNode &recordNode)
 {
-    parseNode(s2node, tags::conf_tabs, [this](const QDomNode &tabNode) { parseConfigTab(tabNode); });
+    auto id = quint32(0);
+    auto idNode = recordNode.firstChildElement(tags::id);
+    if (!idNode.isNull())
+    {
+        id = parseNum<quint32>(idNode);
+        emit nameDataSending(id, parseString(recordNode, tags::name));
+    }
+    auto typeNode = recordNode.firstChildElement(tags::type);
+    if (!typeNode.isNull())
+        emit typeDataSending(id, parseType(typeNode));
+    auto widgetNode = recordNode.firstChildElement(tags::widget);
+    if (!widgetNode.isNull())
+        emit widgetDataSending(id, parseWidget(widgetNode));
 }
 
 void Xml::S2Parser::dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode)
@@ -208,27 +221,7 @@ void Xml::S2Parser::parse()
 {
     if (!content.isNull())
     {
-        parseConfigTabs(content);
-        auto recordNode = content.firstChildElement(tags::record);
-        while (!recordNode.isNull() && (recordNode.tagName() == tags::record))
-        {
-            auto id = quint32(0);
-            auto idNode = recordNode.firstChildElement(tags::id);
-            if (!idNode.isNull())
-            {
-                id = parseNum<quint32>(idNode);
-                emit nameDataSending(id, parseString(recordNode, tags::name));
-            }
-
-            auto typeNode = recordNode.firstChildElement(tags::type);
-            if (!typeNode.isNull())
-                emit typeDataSending(id, parseType(typeNode));
-
-            auto widgetNode = recordNode.firstChildElement(tags::widget);
-            if (!widgetNode.isNull())
-                emit widgetDataSending(id, parseWidget(widgetNode));
-
-            recordNode = recordNode.nextSibling().toElement();
-        }
+        parseNode(content, tags::conf_tabs, [this](const QDomNode &tabNode) { parseConfigTab(tabNode); });
+        parseNode(content, tags::records, [this](const QDomNode &recordNode) { parseRecord(recordNode); });
     }
 }

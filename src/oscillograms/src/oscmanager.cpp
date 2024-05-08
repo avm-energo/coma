@@ -33,6 +33,7 @@ void OscManager::loadOsc(TrendViewModel *model)
     case AVTUK_KIV::OSC_A_ID:
     case AVTUK_KIV::OSC_B_ID:
     case AVTUK_KIV::OSC_C_ID:
+    case AVTUK_KIV::OSC_VIBR_ID:
     {
         trendDialog->setRange(model->xmin(), model->xmax(), -200, 200);
         break;
@@ -141,6 +142,7 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
     case AVTUK_KIV::OSC_A_ID:
     case AVTUK_KIV::OSC_B_ID:
     case AVTUK_KIV::OSC_C_ID:
+    case AVTUK_KIV::OSC_VIBR_ID:
     {
         parseModule = std::make_unique<ParseID10023>(fs.data);
         trendViewModel = std::make_unique<TrendViewModelKIVOne>(curFileNum, record.len);

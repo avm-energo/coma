@@ -33,7 +33,7 @@ private:
     /// \brief Парсинг всех дочерних узлов <tab> узла <config-tabs>.
     void parseConfigTab(const QDomNode &tabNode);
     /// \brief Парсинг узла <config-tabs>.
-    void parseConfigTabs(const QDomElement &s2node);
+    void parseRecord(const QDomNode &recordNode);
     /// \brief Парсинг тегов для структуры delegate::DoubleSpinBoxWidget и её потомков.
     void dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode);
     /// \brief Парсинг тегов для потомков структуры delegate::Group.

@@ -90,6 +90,8 @@ QVBoxLayout *XmlEditor::getMasterWorkspace()
     QObject::connect(masterModel, &MasterModel::createFile, dc, &DataController::createFile);
     QObject::connect(masterModel, &MasterModel::removeFile, dc, &DataController::removeFile);
     QObject::connect(masterModel, &MasterModel::modelChanged, dc, &DataController::configChanged);
+    QObject::connect(masterModel, &MasterModel::error, this,
+        [this](const QString &errorMsg) { EMessageBox::error(this, errorMsg); });
     masterView->setModel(masterModel);
     return workspace;
 }

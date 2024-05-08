@@ -16,7 +16,7 @@ void XmlSectionTabDialog::setupUI(QVBoxLayout *mainLayout)
     // Виджеты для ID вкладки
     auto idLabel = new QLabel("ID вкладки: ", this);
     auto idTabInput = new QSpinBox(this);
-    idTabInput->setMinimum(idMin);
+    idTabInput->setMinimum(0);
     idTabInput->setMaximum(idMax);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(idTabInput, &QSpinBox::textChanged, this, //
