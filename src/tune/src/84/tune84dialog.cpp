@@ -6,7 +6,7 @@
 #include <gen/stdfunc.h>
 #include <tune/84/tune84adc.h>
 #include <tune/84/tune84check.h>
-//#include <tune/84/tune84temp60.h>
+#include <tune/84/tune84temp60.h>
 #include <tune/tunesteps.h>
 #include <widgets/wd_func.h>
 
