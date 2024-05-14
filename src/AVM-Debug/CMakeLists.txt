@@ -40,6 +40,7 @@ else()
     set(APPDATA $ENV{HOME}/.local/share/${PROJECT_NAME})
 endif()
 message(STATUS "Local appdata path: ${APPDATA}")
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Copy settings one time at first build
 set(DBG_CHECK_PATH "${CMAKE_CURRENT_BINARY_DIR}/check.txt")
@@ -50,13 +51,13 @@ if(NOT EXISTS ${DBG_CHECK_PATH})
     TARGET ${PROJECT_NAME} POST_BUILD COMMAND
     ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/../../settings
-    ${APPDATA})
+    ${APPDATA} COMMENT "Copying XML configs...")
   # Copying reports lrxml files to appdata directory after building
   add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD COMMAND
     ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/../../reports
-    ${APPDATA}/reports)
+    ${APPDATA}/reports  COMMENT "Copying reports...")
 endif()
 
 # Cross-platform deploy target

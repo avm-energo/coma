@@ -117,8 +117,8 @@ void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
     // Игнорируем 4011 т.к. он нам не важен и все чужие регистры тоже игнорируем
     if (fl.sigAdr >= m_regMapR.firstKey() && fl.sigAdr <= m_regMapR.lastKey())
     {
-        if (fl.sigQuality != 192)
-            FillBd(QString::number(fl.sigAdr), "***");
+        if (fl.sigQuality != DataTypes::Quality::Good)
+            FillBd(QString::number(fl.sigAdr), MAXFLOAT);
         else
             FillBd(QString::number(fl.sigAdr), fl.sigVal);
         float valueToCheck = (m_corNeedsToCheck == CheckForRegMap) ? *(m_regMapR.value(fl.sigAdr)) : 0;
