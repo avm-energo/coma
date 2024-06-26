@@ -110,7 +110,7 @@ void InterfacesTestObject::iec104AsduUnpackerTest01()
     QSignalSpy spy(&unpacker, &ASDUUnpacker::unpacked);
     unpacker.unpack(asdu);
     std::uint32_t expectedAddress = 1;
-    for (const auto &item : qAsConst(spy))
+    for (const auto &item : std::as_const(spy))
     {
         QVERIFY(item.at(0).canConvert<Interface::DeviceResponse>());
         auto value { item.at(0).value<Interface::DeviceResponse>() };

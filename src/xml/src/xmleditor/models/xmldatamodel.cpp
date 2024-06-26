@@ -17,7 +17,7 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             if (!(highlights.isEmpty() || (highlights.size() == 1 && highlights.first().isEmpty())))
             {
                 auto highlightsNode = makeElement(doc, tags::highlights);
-                for (const auto &value : qAsConst(highlights))
+                for (const auto &value : std::as_const(highlights))
                     makeElement(doc, highlightsNode, tags::item, value);
                 item.appendChild(highlightsNode);
             }

@@ -222,7 +222,7 @@ bool InterfaceSerialDialog::updateModel()
     tableViewModel->setHorizontalHeaderLabels(headers);
 
     auto rslist = m_settings.native().childGroups();
-    for (const auto &item : qAsConst(rslist))
+    for (const auto &item : std::as_const(rslist))
     {
         Settings::ScopedSettingsGroup _ { m_settings, item };
         // m_settings.beginGroup(item);

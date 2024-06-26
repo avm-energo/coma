@@ -252,7 +252,7 @@ QDomElement XmlHideDataModel::makeSGroupNode(QDomDocument &doc)
             if (!(hideData.array.isEmpty() || (hideData.array.size() == 1 && hideData.array.first().isEmpty())))
             {
                 auto strArray = makeElement(doc, tags::str_array);
-                for (const auto &str : qAsConst(hideData.array))
+                for (const auto &str : std::as_const(hideData.array))
                     makeElement(doc, strArray, tags::item, str);
                 mwidget.appendChild(strArray);
             }
@@ -333,7 +333,7 @@ QDomElement XmlHideDataModel::makeS2RecordsNode(QDomDocument &doc)
                         || (s2recordData.array.size() == 1 && s2recordData.array.first().isEmpty())))
                 {
                     auto strArray = makeElement(doc, tags::str_array);
-                    for (const auto &str : qAsConst(s2recordData.array))
+                    for (const auto &str : std::as_const(s2recordData.array))
                         makeElement(doc, strArray, tags::item, str);
                     widget.appendChild(strArray);
                 }

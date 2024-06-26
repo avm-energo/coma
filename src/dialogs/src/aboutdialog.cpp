@@ -13,7 +13,7 @@ void AboutDialog::setupUI()
     auto hlyout = new QHBoxLayout;
     auto lyout = new QVBoxLayout;
     hlyout->addWidget(WDFunc::NewIcon(this, ":icons/avm-energo.svg"), 0);
-    for (const auto &str : qAsConst(m_lines))
+    for (const auto &str : std::as_const(m_lines))
     {
         auto label = WDFunc::NewLBL2(this, str);
         label->setTextInteractionFlags(Qt::TextSelectableByMouse);

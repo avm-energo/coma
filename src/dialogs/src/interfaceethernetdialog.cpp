@@ -218,13 +218,13 @@ void InterfaceEthernetDialog::handlePingFinish()
 void InterfaceEthernetDialog::handlePortFinish()
 {
     m_hosts.removeAll(0);
-    for (const auto &host : qAsConst(m_hosts))
+    for (const auto &host : std::as_const(m_hosts))
     {
         qDebug() << QHostAddress(host);
     }
     QStandardItemModel *mdl = qobject_cast<QStandardItemModel *>(m_tableView->model());
     mdl->removeRows(0, mdl->rowCount());
-    for (const auto &host : qAsConst(m_hosts))
+    for (const auto &host : std::as_const(m_hosts))
     {
         QList<QStandardItem *> row { new QStandardItem("AVM"), new QStandardItem(QHostAddress(host).toString()),
             new QStandardItem("205") };
@@ -277,7 +277,7 @@ bool InterfaceEthernetDialog::updateModel()
     model->setHorizontalHeaderLabels(headers);
 
     QStringList ethList = m_settings.native().childGroups();
-    for (const auto &item : qAsConst(ethList))
+    for (const auto &item : std::as_const(ethList))
     {
         Settings::ScopedSettingsGroup _ { m_settings, item };
         QList<QStandardItem *> items {

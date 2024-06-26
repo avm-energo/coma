@@ -399,7 +399,7 @@ void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList
 
 void Xml::ModuleParser::parseDocument(const QStringList &filenames, const Device::CurrentDevice *device)
 {
-    for (const auto &filename : qAsConst(filenames))
+    for (const auto &filename : std::as_const(filenames))
     {
         if (Files::isFileExist(filename))
         {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QByteArray>
+#include <QVariant>
 #include <gen/stdfunc.h>
 #include <interfaces/types/iec104/control_block.h>
 

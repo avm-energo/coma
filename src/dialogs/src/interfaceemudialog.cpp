@@ -55,7 +55,7 @@ bool InterfaceEmuDialog::updateModel()
     else
         mdl->clear();
     mdl->setHorizontalHeaderLabels(sl);
-    for (const auto &item : qAsConst(rslist))
+    for (const auto &item : std::as_const(rslist))
     {
         QString key = QCoreApplication::applicationName();
         key += "\\" + item;

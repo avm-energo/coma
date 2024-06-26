@@ -23,7 +23,7 @@ void ModuleDialog::setupUI(QVBoxLayout *mainLayout)
         { "Версия", "verInput" }       //
     };
     m_title += "модуля";
-    for (const auto &itemSettings : qAsConst(m_dlgSettings))
+    for (const auto &itemSettings : std::as_const(m_dlgSettings))
     {
         auto labelText = itemSettings.first;
         auto itemName = itemSettings.second;

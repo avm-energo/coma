@@ -25,11 +25,11 @@ void ModuleDataUpdater::requestUpdates()
     // NOTE: POS (Piece Of Shit)
     if (!m_updatesEnabled)
         return;
-    for (const auto &query : qAsConst(m_floatQueryList))
+    for (const auto &query : std::as_const(m_floatQueryList))
         m_conn->reqFloats(query.sigAdr, query.sigQuantity);
-    for (const auto &query : qAsConst(m_spQueryList))
+    for (const auto &query : std::as_const(m_spQueryList))
         m_conn->reqAlarms(query.sigAdr, query.sigQuantity);
-    for (const auto &query : qAsConst(m_bsQueryList))
+    for (const auto &query : std::as_const(m_bsQueryList))
         m_conn->reqBitStrings(query.sigAdr, query.sigQuantity);
 }
 

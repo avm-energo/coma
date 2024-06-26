@@ -175,7 +175,7 @@ void SwjPackConvertor::selectDirectory()
         entryFiles = entryFiles.filter(".swj");
         if (!entryFiles.isEmpty())
         {
-            for (const auto &file : qAsConst(entryFiles))
+            for (const auto &file : std::as_const(entryFiles))
                 readFile(dirPath + "/" + file);
             sortData();
             auto excelFilepath = WDFunc::ChooseFileForSave(m_parent, "Excel files (*.xlsx)", "xlsx", "test");

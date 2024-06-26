@@ -20,7 +20,7 @@ QStringList MeasJournal::getHeaders()
 {
     QStringList retVal;
     retVal.reserve(m_settings.size());
-    for (const auto &record : qAsConst(m_settings))
+    for (const auto &record : std::as_const(m_settings))
     {
         if (record.visibility)
             retVal.append(record.header);

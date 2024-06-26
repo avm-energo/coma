@@ -276,7 +276,7 @@ void PlotDialog::paintEvent(QPaintEvent *event)
     using namespace originValues;
     auto textLabels = exampleAngularAxis->parentPlot()->findChildren<QCPItemText *>();
     bool needToReplot = false;
-    for (auto &&label : qAsConst(textLabels))
+    for (auto &&label : std::as_const(textLabels))
     {
         if (label->objectName() == "Ua")
         {

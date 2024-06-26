@@ -56,7 +56,7 @@ void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
     {
         const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
         const auto errorStyle = QString(errStyle).arg("red");
-        for (const auto reg : qAsConst(regs))
+        for (const auto reg : std::as_const(regs))
         {
             auto label = findChild<QLabel *>(QString::number(reg));
             if (label)
@@ -67,7 +67,7 @@ void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
     {
         const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
         const auto errorStyle = QString(errStyle).arg("yellow");
-        for (const auto reg : qAsConst(regs))
+        for (const auto reg : std::as_const(regs))
         {
             auto label = findChild<QLabel *>(QString::number(reg));
             if (!label)
