@@ -568,7 +568,7 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     initResources();
     StdFunc::Init();
     Logger::writeStart(StdFunc::GetSystemHomeDir() + "coma.log");
-    qInstallMessageHandler(Logger::messageHandler);
+    qInstallMessageHandler(Logger::messageHandlerWithErrorQueue);
 }
 
 void ComaHelper::parserHelper(Coma *coma)
