@@ -8,7 +8,7 @@
 #include <QPainter>
 #include <QPalette>
 #include <QPen>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QStatusBar>
 #include <QStringListModel>
 #include <QTextEdit>
@@ -139,19 +139,6 @@ bool WDFunc::SetLBLTColor(QWidget *parent, const QString &lblname, const QString
 
     lblt->setStyleSheet(style);
 
-    // QPalette pal = lblt->palette();
-    // pal.setColor(QPalette::Background, QColor(color));
-    // lblt->setBackgroundRole(QPalette::Background);
-    // lblt->setPalette(pal);
-    // lblt->setBackgroundRole(QColor(color));
-    // http://forum.sources.ru/index.php?showtopic=313950
-    // QPalette pal = cb->palette();
-    // pal.setColor(QPalette::Text, QColor(color));
-    // cb->setPalette(pal);
-
-    /*QPalette t_palette = lblt->palette();
-    t_palette.setColor(QPalette::Background, QColor(Colors::TABCOLORA1));
-    lblt->setPalette(t_palette);*/
     return true;
 }
 
@@ -744,19 +731,6 @@ bool WDFunc::SetChBData(QWidget *parent, const QString &chbname, bool data)
     return true;
 }
 
-// void WDFunc::AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled)
-//{
-//    QHBoxLayout *hlyout = new QHBoxLayout;
-//    QLabel *lbl = new QLabel(caption);
-//    hlyout->addWidget(lbl);
-//    QLineEdit *le = new QLineEdit;
-//    le->setObjectName(lename);
-//    le->setEnabled(enabled);
-//    hlyout->addWidget(le);
-//    QVBoxLayout *vlyout = static_cast<QVBoxLayout *>(lyout);
-//    vlyout->addLayout(hlyout);
-//}
-
 void WDFunc::AddLabelAndLineeditH(QWidget *parent, QHBoxLayout *hlyout, QString caption, QString lename, bool enabled)
 {
     auto label = new QLabel(caption, parent);
@@ -855,32 +829,6 @@ QVariant WDFunc::FloatValueWithCheck(float value)
     return tmps;
 }
 
-/// TODO: Функция не используется нигде, чем должны быть first и second - непонятно
-QImage *WDFunc::TwoImages(const QString &first, const QString &second)
-{
-    auto image = new QImage;
-    auto FirstImage = ":/images/" + first + ".png";
-    auto SecondImage = ":/images/" + second + ".png";
-    QImage FirstI(FirstImage);
-    QImage SecondI(SecondImage);
-    if ((first.isEmpty()) && (!SecondI.isNull()))
-        *image = SecondI;
-    else if ((second.isEmpty()) && (!FirstI.isNull()))
-        *image = FirstI;
-    else if ((FirstI.isNull()) || (SecondI.isNull()))
-        image = new QImage(":/tunes/cross.png");
-    else
-    {
-        *image = QImage((FirstI.width() + SecondI.width()), qMax(FirstI.height(), SecondI.height()), FirstI.format());
-        image->fill(0);
-        QPainter p(image);
-        p.drawImage(0, 0, FirstI);
-        p.drawImage(FirstI.width(), 0, SecondI);
-        p.end();
-    }
-    return image;
-}
-
 ETableView *WDFunc::NewTV(QWidget *parent, const QString &tvname, QAbstractItemModel *model)
 {
     auto tv = new ETableView(parent);
@@ -900,12 +848,6 @@ QTableView *WDFunc::NewQTV(QWidget *parent, const QString &tvname, QAbstractItem
     if (model != nullptr)
         tv->setModel(model);
     tv->setObjectName(tvname);
-    // tv->horizontalHeader()->setVisible(true);
-    // tv->verticalHeader()->setVisible(false);
-    //  tv->setAttribute(Qt::WA_TranslucentBackground, true);
-    //  tv->setAttribute(Qt::WA_NoSystemBackground, true);
-    // tv->setFrameStyle(QFrame::NoFrame);
-    //  tv->setShowGrid(false);
     tv->setSelectionBehavior(QAbstractItemView::SelectRows);
     tv->setSelectionMode(QAbstractItemView::SingleSelection);
     return tv;

@@ -220,7 +220,6 @@ public:
     static bool SetIPCtrlData(const QObject *parent, const QString &name, const std::array<quint8, 4> &value);
     static std::array<quint8, 4> IPCtrlData(const QObject *parent, const QString &name);
 
-    //    static void AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled = false);
     static void AddLabelAndLineeditH(
         QWidget *parent, QHBoxLayout *hlyout, QString caption, QString lename, bool enabled = false);
     [[nodiscard]] static QWidget *NewLBLAndLBL(QWidget *parent, QString lblname, QString caption, bool enabled = false);
@@ -230,7 +229,6 @@ public:
     static void setMinimumSize(QWidget *w, const QString &wname, int width, int height);
     [[nodiscard]] static QString StringFloatValueWithCheck(float value, int precision = 5, bool exp = false);
     [[nodiscard]] static QVariant FloatValueWithCheck(float value);
-    [[nodiscard]] static QImage *TwoImages(const QString &first, const QString &second);
 
     template <typename Functor>
     inline static QPushButton *NewHexagonPB(QWidget *parent, const QString &pbname, Functor &&functor,
