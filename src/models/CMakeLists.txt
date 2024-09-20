@@ -19,10 +19,13 @@ add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+target_include_directories(${PROJECT_NAME} PRIVATE ${limereport_SOURCE_DIR} ${avm-gen_SOURCE_DIR}/include)
 
 # Linking library dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::PrintSupport
-  gen limereport)
+  avm-gen
+  limereport
+)
 

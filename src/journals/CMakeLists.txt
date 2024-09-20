@@ -37,10 +37,16 @@ add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+target_include_directories(${PROJECT_NAME} PRIVATE ${qxlsx_SOURCE_DIR}/QXlsx/header)
 
 # Adding debug define for library
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG_JOURNALS)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC xml QXlsx)
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    xml
+    ${qxlsx_BINARY_DIR}/QXlsxQt${QT_VERSION_MAJOR}.lib
+)
+
+

@@ -12,12 +12,12 @@ function(win_deploy_qt PROJECT_NAME QT_VERSION_MAJOR QT_BIN_DIR)
       CODE [[
         execute_process(COMMAND ${QT_BIN_DIR}/windeployqt.exe --no-quick-import --no-system-d3d-compiler
             --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-angle --no-opengl-sw
-            ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/gen.dll
-            ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/qcustomplot.dll
-            ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/limereport-qt${QT_VERSION_MAJOR}.dll
-            ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/QXlsxQt${QT_VERSION_MAJOR}.dll
-            ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}/${PROJECT_NAME}.exe
-          WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${INSTALL_PROJECT_PATH}
+            ${CMAKE_INSTALL_PREFIX}/bin/avm-gen.dll
+            ${CMAKE_INSTALL_PREFIX}/bin/qcustomplot.dll
+            ${CMAKE_INSTALL_PREFIX}/bin/limereport.dll
+            ${CMAKE_INSTALL_PREFIX}/bin/QXlsxQt${QT_VERSION_MAJOR}.dll
+            ${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.exe
+          WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}
           OUTPUT_VARIABLE OUTPUT)
         message(STATUS "Copy status: ${OUTPUT}")
       ]])

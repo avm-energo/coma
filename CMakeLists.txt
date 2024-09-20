@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.18)
-project(coma VERSION 2.12.0)
+cmake_minimum_required(VERSION 3.21)
+
+project(coma VERSION 3.0.0)
 
 set(SOFTDEVELOPER "AVM-Energo")
 
@@ -9,15 +10,18 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(BUILD_SHARED_LIBS ON)
+set(BUILD_TESTING OFF)
+set(HIDAPI_INSTALL_TARGETS ON)
+set(HIDAPI_WITH_TESTS OFF)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../scripts")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/scripts")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 ##### OPTIONS #####
 option(ENABLE_EMULATOR "Enable emulator interface" OFF)
 option(ENABLE_PVS "Enable PVS-Studio" OFF)
-option(COMA_BUILD_TESTS "Build tests" ON)
 
 # Getting CMake system name
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" SYSTEM_NAME)
@@ -47,8 +51,12 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
 #  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS QmlIntegration REQUIRED)
 #endif()
 
-string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address,undefined -fstack-protector")
-string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined -fstack-protector")
+if(SYSTEM_NAME STREQUAL "windows")
+    message(STATUS "MSVC version: ${MSVC_VERSION}, toolset version: ${MSVC_TOOLSET_VERSION}")
+else()
+    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address,undefined -fstack-protector")
+    string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined -fstack-protector")
+endif()
 
 # Enabling PVS Studio static analyzer
 if(ENABLE_PVS)
@@ -61,62 +69,46 @@ if(ENABLE_PVS)
   include("${pvs_cmakemodule_SOURCE_DIR}/PVS-Studio.cmake")
 endif()
 
-# Collecting Boost headers and hidapi library on windows
-if(SYSTEM_NAME STREQUAL "windows")
-#  conan_cmake_configure(
-#    REQUIRES hidapi/0.10.1 boost/1.75.0 xz_utils/5.2.5
-#    GENERATORS cmake_find_package
-#    OPTIONS hidapi:shared=True boost:header_only=True xz_utils:shared=False)
-else()
-    find_library(HIDAPI_LIBRARY NAMES libhidapi-libusb.so)
-    if(NOT HIDAPI_LIBRARY)
-      message(FATAL_ERROR "Hidapi library not found. Install libhidapi-dev please")
-    endif()
-    find_library(LIBLZMA_LIBRARY NAMES liblzma.so)
-    if(NOT LIBLZMA_LIBRARY)
-      message(FATAL_ERROR "Lzma library not found. Install liblzma-dev please")
-    endif()
-endif()
-
 # Including ctest
-if(COMA_BUILD_TESTS)
+if(BUILD_TESTING)
   include(CTest)
 endif()
 
 # Building libraries and targets
 # Step 1: Build dependencies
+
 include(gen)
 include(expected)
 include(qcustomplot)
 include(limereport)
 include(qxlsx)
-add_subdirectory(comaversion)
-add_subdirectory(comaresources)
-add_subdirectory(ctti)
-add_subdirectory(s2)
-add_subdirectory(interfaces)
-add_subdirectory(device)
-add_subdirectory(xml)
-add_subdirectory(settings)
-add_subdirectory(models)
-add_subdirectory(widgets)
-add_subdirectory(alarms)
-add_subdirectory(journals)
-add_subdirectory(oscillograms)
-add_subdirectory(startup)
-add_subdirectory(datablocks)
-add_subdirectory(tune)
-add_subdirectory(dialogs)
-add_subdirectory(coma_core)
+add_subdirectory(src/comaversion)
+add_subdirectory(src/comaresources)
+add_subdirectory(src/ctti)
+add_subdirectory(src/s2)
+add_subdirectory(src/interfaces)
+add_subdirectory(src/device)
+add_subdirectory(src/xml)
+add_subdirectory(src/settings)
+add_subdirectory(src/models)
+add_subdirectory(src/widgets)
+add_subdirectory(src/alarms)
+add_subdirectory(src/journals)
+add_subdirectory(src/oscillograms)
+add_subdirectory(src/startup)
+add_subdirectory(src/datablocks)
+add_subdirectory(src/tune)
+add_subdirectory(src/dialogs)
+add_subdirectory(src/coma_core)
 
 # Step 2: Build tests
-if(COMA_BUILD_TESTS)
-  add_subdirectory(tests)
+if(BUILD_TESTING)
+  add_subdirectory(src/tests)
 endif()
 
 # Step 3: Build executable targets
-add_subdirectory(AVM-Debug)
-add_subdirectory(AVM-Service)
+add_subdirectory(src/AVM-Debug)
+add_subdirectory(src/AVM-Service)
 
 # Running PVS Studio static analyzer
 if(ENABLE_PVS)

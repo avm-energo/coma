@@ -1,6 +1,6 @@
 #include "models/report.h"
 
-#include <LimeReport>
+#include <limereport/lrreportengine.h>
 #include <QStandardItem>
 #include <gen/error.h>
 #include <gen/stdfunc.h>

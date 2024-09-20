@@ -1,4 +1,4 @@
-project(AVM-Service VERSION 2.12.0)
+project(AVM-Service VERSION ${CMAKE_PROJECT_VERSION})
 
 configure_file(
   ${CMAKE_SOURCE_DIR}/cconfig.h.in
@@ -27,7 +27,7 @@ endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC coma_core)
 
 # Getting appdata directory path
-if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
+if(SYSTEM_NAME STREQUAL "windows")
     # On windows
     set(APPDATA_STR "$ENV{LOCALAPPDATA}/${PROJECT_NAME}")
     string(REPLACE "\\" "/" APPDATA ${APPDATA_STR})
@@ -35,7 +35,6 @@ else()
     # On linux
     set(APPDATA $ENV{HOME}/.local/share/${PROJECT_NAME})
 endif()
-message(STATUS "Local appdata path: ${APPDATA}")
 
 # Copy settings one time at first build
 set(SVC_CHECK_PATH "${CMAKE_CURRENT_BINARY_DIR}/check.txt")
@@ -45,22 +44,27 @@ if(NOT EXISTS ${SVC_CHECK_PATH})
   add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD COMMAND
     ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../settings
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../settings"
     ${APPDATA})
   # Copying reports lrxml files to appdata directory after building
   add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD COMMAND
     ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../reports
-    ${APPDATA}/reports)
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../reports"
+    "${APPDATA}/reports")
 endif()
 
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
 # Cross-platform deploy target
-if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
-  message(STATUS "Deploy ${PROJECT_NAME} for Windows")
-  include(WinDeployService)
-elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
-  message(STATUS "Deploy ${PROJECT_NAME} for Linux")
+if(SYSTEM_NAME STREQUAL "windows")
+  include(WinDeploy)
+elseif(SYSTEM_NAME STREQUAL "linux")
   set(COMPONENT_NAME "AVMSERVICE")
-  include(ComponentDeploy)
+  include(LinuxDeploy)
 endif()

@@ -19,7 +19,7 @@ add_executable(${PROJECT_NAME}
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}
-  gen
+  ${gen_IMPORTED_LOCATION_${CMAKE_BUILD_TYPE}}
   oscillograms
   widgets
   dialogs

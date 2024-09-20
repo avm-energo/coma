@@ -15,6 +15,11 @@ add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+target_include_directories(${PROJECT_NAME} PRIVATE ${qcustomplot_SOURCE_DIR} ${qxlsx_SOURCE_DIR}/QXlsx/header)
 
 # Linking library dependencies
-target_link_libraries(${PROJECT_NAME} PUBLIC widgets qcustomplot QXlsx)
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    widgets
+    qcustomplot
+    ${qxlsx_BINARY_DIR}/QXlsxQt${QT_VERSION_MAJOR}.lib
+)

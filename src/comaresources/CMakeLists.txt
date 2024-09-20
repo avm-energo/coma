@@ -46,11 +46,18 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 # Linking libraries for current target
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 
-# Cross-platform installing commands
-if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
-  set(COMARES_BINDIR "${CMAKE_CURRENT_BINARY_DIR}")
-  message(STATUS "Coma resources binary dir: ${COMARES_BINDIR}")
-  install(CODE "set(COMARES_BINDIR \"${COMARES_BINDIR}\")")
-elseif(CMAKE_SYSTEM_NAME_LOWER STREQUAL "linux")
-  install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION "/usr/local/lib" COMPONENT "AVMRESOURCES")
-endif()
+# # Cross-platform installing commands
+# if(SYSTEM_NAME STREQUAL "windows")
+#   # set(COMARES_BINDIR "${CMAKE_CURRENT_BINARY_DIR}")
+#   # message(STATUS "Coma resources binary dir: ${COMARES_BINDIR}")
+#   # install(CODE "set(COMARES_BINDIR \"${COMARES_BINDIR}\")")
+# elseif(SYSTEM_NAME STREQUAL "linux")
+#   install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION "/usr/local/lib" COMPONENT "AVMRESOURCES")
+# endif()
+
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)

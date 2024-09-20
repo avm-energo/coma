@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.15)
 
 project(s2 LANGUAGES CXX)
 
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
+  Core
+  REQUIRED)
+
 # Collecting sources
 set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/s2")
 set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -31,8 +35,11 @@ set(sources
   "${SRC_PATH}/s2util.cpp"
 )
 
+# find_package(avm-gen)
 # Creating library target
 add_library(${PROJECT_NAME} STATIC ${sources} ${headers})
+# add_dependencies(${PROJECT_NAME} gen)
+target_include_directories(${PROJECT_NAME} PRIVATE ${avm-gen_SOURCE_DIR}/include)
 
 # Including directories for library
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -40,4 +47,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 # Linking library dependencies
-target_link_libraries(${PROJECT_NAME} PUBLIC gen ctti::ctti)
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    Qt${QT_VERSION_MAJOR}::Core
+    ctti::ctti
+    avm-gen
+)

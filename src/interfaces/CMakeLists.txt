@@ -104,19 +104,32 @@ endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Network
   Qt${QT_VERSION_MAJOR}::SerialPort
-  s2 tl::expected
+  s2
+  expected
 )
 
 # Linking hidapi library
 if(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
 elseif(WIN32)
-  find_package(hidapi REQUIRED)
-  target_link_libraries(${PROJECT_NAME} PRIVATE hidapi::hidapi)
+    find_package(hidapi QUIET)
+    if (${hidapi_FOUND})
+        message(STATUS "Using installed hidapi")
+        target_link_libraries(${PROJECT_NAME} PUBLIC
+            hidapi::hidapi)
+    else()
+        message(STATUS "Using external hidapi")
+        include(hidapi)
+        message(STATUS "HidAPI source dir: ${hidapi_SOURCE_DIR}")
+        message(STATUS "HidAPI lib dir: ${hidapi_BINARY_DIR}")
+        target_include_directories(${PROJECT_NAME} PRIVATE ${hidapi_SOURCE_DIR})
+        target_link_libraries(${PROJECT_NAME} PUBLIC
+            hidapi)
+    endif()
 endif()
 
 # Adding test target
-if(COMA_BUILD_TESTS)
+if(BUILD_TESTING)
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
   set(INTERFACES_TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
   set(INTERFACES_TESTS_SOURCES
@@ -131,19 +144,19 @@ if(COMA_BUILD_TESTS)
   target_include_directories(${PROJECT_NAME}_tests PUBLIC
     "$<BUILD_INTERFACE:${INTERFACES_TESTS_DIR}>")
   target_link_libraries(${PROJECT_NAME}_tests PUBLIC
-    gen interfaces
+    interfaces
     Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Test)
+    Qt${QT_VERSION_MAJOR}::Test
+    avm-gen
+    hidapi
+)
 
   # Adding target as test
   add_test(NAME ${PROJECT_NAME}_tests COMMAND ${PROJECT_NAME}_tests)
   # Black magic for ctest using under windows
-  if(CMAKE_SYSTEM_NAME_LOWER STREQUAL "windows")
-    get_filename_component(hidapi_BIN_DIR ${hidapi_LIB_DIRS}/../bin ABSOLUTE)
+  if(SYSTEM_NAME STREQUAL "windows")
+    get_filename_component(hidapi_BIN_DIR ${hidapi_BINARY_DIR} ABSOLUTE)
     set_tests_properties(${PROJECT_NAME}_tests PROPERTIES ENVIRONMENT
-      "PATH=${hidapi_BIN_DIR}\;$<TARGET_FILE_DIR:Qt${QT_VERSION_MAJOR}::Core>\;$<TARGET_FILE_DIR:gen>\;")
+      "PATH=${hidapi_BIN_DIR}\;$<TARGET_FILE_DIR:Qt${QT_VERSION_MAJOR}::Core>\;$<TARGET_FILE_DIR:avm-gen>\;")
   endif()
 endif()
-
-message(STATUS "Interfaces import dirs: ${hidapi_LIB_DIRS}/../bin")
-install(CODE "set(hidapi_BIN_DIRS \"${hidapi_LIB_DIRS}/../bin\")")

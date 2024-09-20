@@ -1,8 +1,11 @@
 #pragma once
 
-#include <boost/dynamic_bitset.hpp>
+// #include <boost/dynamic_bitset.hpp>
+#include <bitset>
 #include <gen/stdfunc.h>
 #include <widgets/checkboxgroup.h>
+
+#define BITSET_MAX_COUNT 32
 
 class CheckBoxGroupPrivate
 {
@@ -11,13 +14,13 @@ class CheckBoxGroupPrivate
 public:
     CheckBoxGroupPrivate(int count)
     {
-        m_bitset = boost::dynamic_bitset<>(std::size_t(std_ext::clp2(count)));
+        m_bitset = std::bitset<BITSET_MAX_COUNT>(std::size_t(std_ext::clp2(count)));
     }
 
     template <typename T> void setBits(const T value)
     {
         Q_Q(CheckBoxGroup);
-        m_bitset = boost::dynamic_bitset(sizeof(T) * 8, value);
+        m_bitset =  std::bitset<BITSET_MAX_COUNT>(value);
         const T test = T(m_bitset.to_ulong());
         auto checkBoxes = q->findChildren<QCheckBox *>();
         for (QCheckBox *checkBox : checkBoxes)
@@ -69,6 +72,6 @@ public:
 private:
     CheckBoxGroup *q_ptr;
     QList<int> m_hiddenPositions;
-    boost::dynamic_bitset<> m_bitset;
+    std::bitset<BITSET_MAX_COUNT> m_bitset; // checkbox group maximum items size is 32
     QStringList m_description;
 };
