@@ -19,7 +19,7 @@ InfoDialog::InfoDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog
     if (m_device->sync()->supportBSIExt())
         connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSIExt);
     else
-        QMessageBox::warning(this, "BsiExt", "BsiExt не поддерживается");
+        qWarning() << "BsiExt не поддерживается";
 }
 
 /// TODO: загрузка настроек по умолчанию должна осуществляться внутри CurrentDevice
