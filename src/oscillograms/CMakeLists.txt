@@ -21,5 +21,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${qcustomplot_SOURCE_DIR} ${q
 target_link_libraries(${PROJECT_NAME} PUBLIC
     widgets
     qcustomplot
-    ${qxlsx_BINARY_DIR}/QXlsxQt${QT_VERSION_MAJOR}.lib
+    QXlsx
 )
