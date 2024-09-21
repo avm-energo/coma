@@ -9,10 +9,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #define ARCH "win64"
 #define BUILD_TYPE "Release"
-#define QT_DIR "C:\Qt\5.15.2\msvc2019_64\bin"
-#define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\v142"
+#define QT_DIR "C:\Qt\6.7.0\msvc2019_64\bin"
+#define Redist_DIR "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143"
 #define OUTPUT_DIR  "..\output"
-#define ApplicationVersion GetFileVersion('..\output\win64\Release\AVM-Service\AVM-Service.exe')
+#define ApplicationVersion GetFileVersion('..\output\Release\AVM-Service\AVM-Service.exe')
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -25,13 +25,13 @@ AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
 DefaultDirName={commonpf64}\{#EngName}
-DefaultGroupName="{#EngName} (x64)"
+DefaultGroupName="{#EngName}"
 UsedUserAreasWarning=no
 SetupIconFile=..\coma.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-OutputBaseFilename={#EngName}-{#ApplicationVersion}-x64
+OutputBaseFilename={#EngName}-{#ApplicationVersion}
 OutputDir=..\output
 VersionInfoVersion={#ApplicationVersion}
 LicenseFile="..\license.txt"

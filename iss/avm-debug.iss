@@ -7,32 +7,32 @@
 #define URL "http://www.avmenergo.ru"
 #define ExeName "AVM-Debug.exe"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#define ARCH "win32"
+#define ARCH "win64"
 #define BUILD_TYPE "Release"
-#define QT_DIR "C:\Qt\5.15.2\msvc2019\bin"
-#define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\v142"
+#define QT_DIR "C:\Qt\6.7.0\msvc2019_64\bin"
+#define Redist_DIR "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143"
 #define OUTPUT_DIR  "..\output"
-#define ApplicationVersion GetFileVersion('..\output\win32\Release\AVM-Debug\AVM-Debug.exe')
+#define ApplicationVersion GetFileVersion('..\output\Release\AVM-Debug\AVM-Debug.exe')
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{500C46FE-9656-4A4C-A910-A3D4575CDB0B}
+AppId={{4C4A32F2-8733-4C05-AF66-3996C08A228A}
 AppName={#GroupName}
 AppVerName={#EngName} {#ApplicationVersion}
 AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-DefaultDirName={commonpf32}\{#EngName}
-DefaultGroupName="{#EngName} (x86)"
+DefaultDirName={commonpf64}\{#EngName}
+DefaultGroupName="{#EngName}"
 UsedUserAreasWarning=no
 SetupIconFile=..\coma.ico
 Compression=lzma
 ChangesAssociations=yes
 SolidCompression=yes
 WizardStyle=modern
-OutputBaseFilename={#EngName}-{#ApplicationVersion}-x86
+OutputBaseFilename={#EngName}-{#ApplicationVersion}
 OutputDir=..\output
 VersionInfoVersion={#ApplicationVersion}
 LicenseFile="..\license.txt"
@@ -64,7 +64,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: "{#OUTPUT_DIR}\{#ARCH}\{#BUILD_TYPE}\{#EngName}\*"; DestDir: "{app}"; Excludes: "*.xml"; Flags: ignoreversion recursesubdirs 
-Source: "{#Redist_DIR}\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Source: "{#OUTPUT_DIR}\{#ARCH}\{#BUILD_TYPE}\{#EngName}\settings\*.xml"; DestDir: "{localappdata}\{#EngName}"
 Source: "{#OUTPUT_DIR}\{#ARCH}\{#BUILD_TYPE}\{#EngName}\reports\*.lrxml"; DestDir: "{localappdata}\{#EngName}\reports"
 
@@ -74,7 +74,7 @@ Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 ;Name: "{group}\Руководство пользователя КОМА"; Filename: "{app}\КОМА Руководство пользователя.pdf"
 
 [Run]
-Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2019 Redistributable...
+Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2022 Redistributable...
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{localappdata}\{#EngName}"
