@@ -48,10 +48,10 @@ Name: "desktopicon";     Description: "{cm:CreateDesktopIcon}";     GroupDescrip
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
 [Files]
-Source: "{#OUTPUT_DIR}\{#ARCH}\{#BUILD_TYPE}\{#EngName}\*"; DestDir: "{app}"; Excludes: "*.xml"; Flags: ignoreversion recursesubdirs 
+Source: "{#OUTPUT_DIR}\bin\*"; DestDir: "{app}"; Excludes: "*.xml"; Flags: ignoreversion recursesubdirs 
 Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
-Source: "{#OUTPUT_DIR}\{#ARCH}\{#BUILD_TYPE}\{#EngName}\settings\*.xml"; DestDir: "{localappdata}\{#EngName}"
-Source: "{#OUTPUT_DIR}\{#ARCH}\{#BUILD_TYPE}\{#EngName}\reports\*.lrxml"; DestDir: "{localappdata}\{#EngName}\reports"
+Source: "{#OUTPUT_DIR}\settings\*.xml"; DestDir: "{localappdata}\{#EngName}"
+Source: "{#OUTPUT_DIR}\reports\*.lrxml"; DestDir: "{localappdata}\{#EngName}\reports"
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
@@ -59,7 +59,7 @@ Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 ;Name: "{group}\Руководство пользователя КОМА"; Filename: "{app}\КОМА Руководство пользователя.pdf"
 
 [Run]
-Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2019 Redistributable...
+Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2022 Redistributable...
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{localappdata}\{#EngName}"
