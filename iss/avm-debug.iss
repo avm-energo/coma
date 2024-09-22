@@ -12,7 +12,7 @@
 #define QT_DIR "C:\Qt\6.7.0\msvc2019_64\bin"
 #define Redist_DIR "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143"
 #define OUTPUT_DIR  "..\output"
-#define ApplicationVersion GetFileVersion('..\output\Release\AVM-Debug\AVM-Debug.exe')
+#define ApplicationVersion GetFileVersion('..\output\bin\AVM-Debug.exe')
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
