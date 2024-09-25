@@ -5072,7 +5072,7 @@
 		<widget>
 			<type>DoubleSpinBoxGroup</type>
 			<group>7</group>
-			<string>&lt;br&gt;Давление газа, МПа &lt;br&bsol;&gt; &lt;br&gt;(1МПа = 10,19716 кгс/см^2)&lt;br&bsol;&gt;</string>
+			<string>Давление газа, МПа (1МПа = 10,19716 кгс/см^2)</string>
 			<count>3</count>
 			<string-array>
 				<item>Номинальное (давление заполнения)</item>
