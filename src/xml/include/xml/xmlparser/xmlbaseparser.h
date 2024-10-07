@@ -7,7 +7,7 @@
 
 namespace Xml
 {
-/// \brief Base classe for XML parser classes.
+/// \brief Base class for XML parser classes.
 /// \see ModuleParser, S2Parser.
 class BaseParser : public QObject
 {
