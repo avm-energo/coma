@@ -387,6 +387,10 @@ void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList
         auto moduleNode = document.firstChildElement(tags::module);
         if (!moduleNode.isNull())
         {
+            auto featuresNode = moduleNode.firstChildElement(tags::features);
+            if (!featuresNode.isNull())
+                parseNode(
+                    featuresNode, tags::features, [&](const QDomNode &featuresNode) { parseFeatures(featuresNode); });
             auto resources = moduleNode.firstChildElement(tags::res);
             parseResources(resources, nodes);
         }
@@ -409,6 +413,10 @@ void Xml::ModuleParser::parseDocument(const QStringList &filenames, const Device
             {
                 if (isCorrectDevice(moduleNode, device))
                 {
+                    auto featuresNode = moduleNode.firstChildElement(tags::features);
+                    if (!featuresNode.isNull())
+                        callForEachChild(
+                            featuresNode, [&](const QDomNode &featuresNode) { parseFeatures(featuresNode); });
                     auto resources = moduleNode.firstChildElement(tags::res);
                     parseResources(resources);
                 }
@@ -420,6 +428,17 @@ void Xml::ModuleParser::parseDocument(const QStringList &filenames, const Device
         }
         else
             emit parseError(QString("Файл %1 не найден").arg(filename));
+    }
+}
+
+void Xml::ModuleParser::parseFeatures(const QDomNode &featuresNode)
+{
+    auto featuresNodeElement = featuresNode.toElement();
+    if (!featuresNodeElement.isNull())
+    {
+        const QString key = featuresNodeElement.tagName();
+        const QString value = featuresNodeElement.attribute("value", "");
+        emit newFeatureParsedSignal(key, value);
     }
 }
 

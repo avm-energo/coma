@@ -5,6 +5,7 @@ namespace Device::XmlDataTypes
 
 void Settings::clear() noexcept
 {
+    m_featuresMap.clear();
     m_countMap.clear();
     m_signals.clear();
     m_tabs.clear();
@@ -16,6 +17,11 @@ void Settings::clear() noexcept
     m_critHighlight.clear();
     m_warnHighlight.clear();
     m_hiddenSettings.clear();
+}
+
+void Settings::appendFeature(const QString &key, const QString &value)
+{
+    m_featuresMap[key] = value;
 }
 
 void Settings::appendSignal(const u32 id, const Signal sig)
@@ -75,6 +81,11 @@ void Settings::appendHiddenTab(const HiddenTab &hiddenTab)
 void Settings::appendBsiExtItem(const u32 addr, const BinaryType type, bool visib, const QString &desc)
 {
     m_bsiExtSettings.push_back(BsiExtItem { addr, type, visib, std::move(desc) });
+}
+
+const FeaturesMap &Settings::getFeatures() const
+{
+    return m_featuresMap;
 }
 
 const DetailCountMap &Settings::getDetailConfigCount() const

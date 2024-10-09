@@ -5,6 +5,7 @@ namespace tags
 {
 // Main tags
 constexpr auto module = "module";
+constexpr auto features = "features";
 constexpr auto res = "resources";
 constexpr auto sigs = "signals";
 constexpr auto tabs = "section-tabs";

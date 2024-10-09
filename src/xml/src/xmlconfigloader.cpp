@@ -57,6 +57,8 @@ bool ConfigLoader::loadDeviceData() noexcept
         s2manager, &S2::DataManager::configDataReceive);                         //
     QObject::connect(moduleParser, &Xml::ModuleParser::configNameSending,        //
         s2manager, &S2::DataManager::configNameReceive);                         //
+    QObject::connect(moduleParser, &Xml::ModuleParser::newFeatureParsedSignal,   //
+        cfgStorage, &Device::ConfigStorage::featureReceive);                     //
     QObject::connect(moduleParser, &Xml::ModuleParser::signalDataSending,        //
         cfgStorage, &Device::ConfigStorage::signalDataReceive);                  //
     QObject::connect(moduleParser, &Xml::ModuleParser::tabDataSending,           //

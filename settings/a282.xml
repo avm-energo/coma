@@ -2,6 +2,9 @@
 <module mtypem="82" mtypeb="a2">
     <name>AVM-KTF</name>
     <version>0.6-0004</version>
+    <features>
+        <isBoxModule value="1"></isBoxModule>
+    </features>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">

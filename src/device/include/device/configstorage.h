@@ -25,6 +25,8 @@ public:
     void clear() noexcept;
 
 public slots:
+    /// \brief Slot for features save
+    void featureReceive(const QString &feature, const QString &value);
     /// \brief Slot for saving device's signal records.
     void signalDataReceive(const u32 id, const u32 addr, const u16 count, const XmlDataTypes::SignalType type);
     /// \brief Slot for saving check's tab records.

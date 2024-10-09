@@ -31,6 +31,7 @@ public:
 
 signals:
     void startNewConfig();
+    void newFeatureParsedSignal(const QString &featurename, const QString &featurevalue);
     void signalDataSending(const u32 id, const quint64 addr, const u16 count, const Xml::SignalType sigType);
     void tabDataSending(const u32 id, const QString &name);
     void sectionDataSending(const Xml::SGMap &sgmap, const QString &secHead);
@@ -69,6 +70,8 @@ private:
     void parseDocument(const QString &filename, const QStringList &nodes = {});
     /// \brief Парсинг указанного XML файла для подключённого устройства.
     void parseDocument(const QStringList &filenames, const Device::CurrentDevice *device);
+    /// \brief Парсинг раздела features
+    void parseFeatures(const QDomNode &featuresNode);
     /// \brief Парсинг XML файла конфигурации устройства.
     void parseResources(const QDomElement &resourcesNode, const QStringList &nodes = {});
     /// \brief Парсинг содержимого узла <resources>.

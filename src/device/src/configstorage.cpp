@@ -23,6 +23,11 @@ void ConfigStorage::clear() noexcept
     m_protocol.clear();
 }
 
+void ConfigStorage::featureReceive(const QString &feature, const QString &value)
+{
+    m_settings.appendFeature(feature, value);
+}
+
 void ConfigStorage::signalDataReceive(const u32 id, const u32 addr, //
     const u16 count, const XmlDataTypes::SignalType type)
 {

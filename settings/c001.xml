@@ -2,6 +2,10 @@
 <module mtypeb="c0" mtypem="01">
     <name>АВМ-МПЭ</name>
     <version>0.6-1000</version>
+    <features>
+        <isBoxModule value="1">
+        <isRTCExist value="0">
+    </features>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">

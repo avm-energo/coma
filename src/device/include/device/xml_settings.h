@@ -124,6 +124,7 @@ struct BsiExtItem
     QString desc;    ///< узел <desc>
 };
 
+using FeaturesMap = QMap<QString, QString>; ///< Специфические свойства модуля
 using SignalMap = std::map<u32, Signal>;  ///< Хранит узлы <signal> секции <signals>.
 using TabsMap = QHash<u32, QString>;      ///< Хранит узлы <tab> секции <section-tabs>.
 using HighlightMap = QMultiMap<u32, u32>; ///< Для подсветки элементов.
@@ -145,6 +146,8 @@ public:
     explicit Settings() = default;
     /// \brief Очистка настроек модуля.
     void clear() noexcept;
+    /// \brief Добавление свойства
+    void appendFeature(const QString &key, const QString &value);
     /// \brief Добавление нового сигнала в список сигналов.
     void appendSignal(const u32 id, const Signal sig);
     /// \brief Добавление новой вкладки в список вкладок.
@@ -166,6 +169,8 @@ public:
     /// \brief Добавление элемента BSI Ext.
     void appendBsiExtItem(const u32 addr, const BinaryType type, bool visib, const QString &desc);
 
+    /// \brief Constant getter for features map
+    [[nodiscard]] const FeaturesMap &getFeatures() const;
     /// \brief Constant getter for detailed count hashmap for current config list.
     [[nodiscard]] const DetailCountMap &getDetailConfigCount() const;
     /// \brief Constant getter for signals list.
@@ -190,6 +195,7 @@ public:
     [[nodiscard]] const BsiExtItemList &getBsiExtSettings() const;
 
 private:
+    FeaturesMap m_featuresMap;
     DetailCountMap m_countMap;
     SignalMap m_signals;
     TabsMap m_tabs;
