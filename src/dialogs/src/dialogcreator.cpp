@@ -228,6 +228,7 @@ void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
         hiddenDialog->setModuleName(m_device->getDeviceName());
         addDialogToList(hiddenDialog, "Секретные операции", "hidden");
     }
-    addDialogToList(new TimeDialog(m_device, m_parent), "Время", "time");
+    if (m_device->getConfigStorage()->getDeviceSettings().getFeatures()["isRTCExist"] == "1")
+        addDialogToList(new TimeDialog(m_device, m_parent), "Время", "time");
     addDialogToList(new InfoDialog(m_device, m_parent), "О приборе", "info");
 }
