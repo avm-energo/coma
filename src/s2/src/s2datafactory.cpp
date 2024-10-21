@@ -59,7 +59,11 @@ ctti::unnamed_type_id_t DataFactory::getType(const quint32 id) const
 {
     auto &typeMap = m_storage.getTypeByIdMap();
     auto search = typeMap.find(id);
-    assert(search != typeMap.cend());
+    if (search == typeMap.cend())
+    {
+        qDebug() << "id " << id << " is absent in s2files.xml";
+        return ctti::unnamed_type_id_t(ctti::type_id_t()); // return "void"
+    }
     return search->second;
 }
 
@@ -126,7 +130,7 @@ DataItem DataFactory::create(const DataRec &record) const
     case ctti::unnamed_type_id<CONFMAST>().hash():
         return DataItem { helper<CONFMAST>(record.header.numByte, rawdata) };
     default:
-        assert(false && "Unknown type id");
+        qDebug() << "Unknown type id: " << id;
         return DataItem {};
     }
 }
@@ -197,7 +201,7 @@ DataItem DataFactory::create(const quint32 id, const QString &str) const
     case ctti::unnamed_type_id<CONFMAST>().hash():
         return DataItem { helper<CONFMAST>(str) };
     default:
-        assert(false && "Unknown type id");
+        qDebug() << "Unknown type id: " << id;
         return DataItem {};
     }
 }

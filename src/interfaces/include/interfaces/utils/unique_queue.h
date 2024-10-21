@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDebug>
 #include <functional>
 #include <queue>
 #include <unordered_set>
@@ -94,7 +95,7 @@ public:
     void pop()
     {
         [[maybe_unused]] auto result = m_unique.erase(std::ref(m_data.front()));
-        assert(result && "Not found value");
+        qDebug() << "Value is not found in the uniQueue";
         m_data.pop();
     }
 
