@@ -30,6 +30,8 @@ DialogCreator::DialogCreator(Device::CurrentDevice *device, QWidget *parent)
     , m_typeB(static_cast<BaseBoard>(m_device->getBaseType()))
     , m_typeM(static_cast<MezzanineBoard>(m_device->getMezzType()))
 {
+    m_isBoxModule = (m_device->getConfigStorage()->getDeviceSettings().getFeatures()["isBoxModule"]
+                     == "1");
     Q_ASSERT(m_device != nullptr);
 }
 
@@ -68,8 +70,7 @@ void DialogCreator::addDialogToList(UDialog *dlg, const QString &caption, const 
 
 void DialogCreator::deleteDialogs()
 {
-    while (!m_dialogs.isEmpty())
-    {
+    while (!m_dialogs.isEmpty()) {
         auto dialog = m_dialogs.takeFirst();
         dialog->deleteLater();
     }
@@ -82,8 +83,7 @@ QList<UDialog *> &DialogCreator::getDialogs()
 
 void DialogCreator::createConfigDialogs()
 {
-    for (auto &[boardType, boardConf] : *m_device->getS2Datamanager())
-    {
+    for (auto &[boardType, boardConf] : *m_device->getS2Datamanager()) {
         boardConf.setDefaultConfig();
         auto confDialog = new ConfigDialog(m_device, boardType, m_parent);
         const auto &confDialogCaption = boardConf.m_tabName;
@@ -96,8 +96,7 @@ void DialogCreator::createCheckDialogs()
 {
     auto &sections = m_device->getConfigStorage()->getDeviceSettings().getSections();
     auto index = 0;
-    for (auto &section : sections)
-    {
+    for (auto &section : sections) {
         auto indexStr = QString::number(index);
         auto checkDialog = new CheckDialog(section, m_device, m_parent);
         addDialogToList(checkDialog, section.name, "check" + indexStr);
@@ -113,47 +112,51 @@ void DialogCreator::createJournalDialog()
 
 bool DialogCreator::isS2Available() noexcept
 {
-    try
-    {
+    try {
         [[maybe_unused]] volatile auto s2manager = m_device->getS2Datamanager();
-        [[maybe_unused]] volatile auto &workConfig = s2manager->getCurrentConfiguration().m_workingConfig;
+        [[maybe_unused]] volatile auto &workConfig = s2manager->getCurrentConfiguration()
+                                                         .m_workingConfig;
         return true;
-    } catch (...)
-    {
+    } catch (...) {
         return false;
     }
 }
 
 void DialogCreator::createTuneDialogs()
 {
-    if (!isS2Available())
-    {
+    if (!isS2Available()) {
         qCritical() << "Ошибка создания диалога регулировки";
         return;
     }
 
     GeneralTuneDialog *tuneDlg = nullptr;
-    switch (m_boxModel)
-    {
-    case Model::KIV:
-        tuneDlg = new TuneKIVDialog(m_device, m_parent);
-        break;
-    case Model::KTF:
-        /// TODO: Регулировка КТФ
-        break;
-    case Model::KDV:
-        /// TODO: Регулировка КДВ
-        break;
-    default:
-        if (m_typeB == BaseBoard::MTB_80)
-        {
+    if (m_isBoxModule) {
+        switch (m_boxModel) {
+        case Model::KIV:
+            tuneDlg = new TuneKIVDialog(m_device, m_parent);
+            break;
+        case Model::KTF:
+            /// TODO: Регулировка КТФ
+            break;
+        case Model::KDV:
+            /// TODO: Регулировка КДВ
+            break;
+        case Model::MPG:
+            /// TODO: Регулировка МПГ
+            break;
+        default:
+            break;
+        }
+    }
+
+    else {
+        if (m_typeB == BaseBoard::MTB_80) {
             if (m_typeM == Device::MezzanineBoard::MTM_81 || m_typeM == MezzanineBoard::MTM_82
                 || m_typeM == MezzanineBoard::MTM_83)
                 tuneDlg = new Tune82Dialog(m_device, m_parent);
             else if (m_typeM == MezzanineBoard::MTM_84)
                 tuneDlg = new Tune84Dialog(m_device, m_parent);
         }
-        break;
     }
     if (tuneDlg != nullptr)
         addDialogToList(tuneDlg, "Регулировка", "tune");
@@ -163,8 +166,7 @@ void DialogCreator::createStartupValuesDialog()
 {
     // Добавляем диалог начальных значений
     AbstractStartupDialog *startupDlg = nullptr;
-    switch (m_boxModel)
-    {
+    switch (m_boxModel) {
     case Model::KIV:
         startupDlg = new StartupKIVDialog(m_device, m_parent);
         break;
@@ -187,18 +189,18 @@ void DialogCreator::createStartupValuesDialog()
 void DialogCreator::createOscAndSwJourDialogs()
 {
     // Добавляем диалоги осциллограмм и журналов переключений
-    if (m_typeB == BaseBoard::MTB_80)
-    {
-        if (m_typeM == MezzanineBoard::MTM_81 || m_typeM == MezzanineBoard::MTM_82 || m_typeM == MezzanineBoard::MTM_83)
+    if (m_typeB == BaseBoard::MTB_80) {
+        if (m_typeM == MezzanineBoard::MTM_81 || m_typeM == MezzanineBoard::MTM_82
+            || m_typeM == MezzanineBoard::MTM_83)
             addDialogToList(new OscDialog(m_device, m_parent), "Осциллограммы", "osc");
-    }
-    else if ((m_typeB == BaseBoard::MTB_80 || m_typeB == BaseBoard::MTB_85) && (m_typeM == MezzanineBoard::MTM_85))
-    {
-        addDialogToList(new SwitchJournalDialog(m_device, m_parent), "Журнал переключений", "swjour");
+    } else if ((m_typeB == BaseBoard::MTB_80 || m_typeB == BaseBoard::MTB_85)
+               && (m_typeM == MezzanineBoard::MTM_85)) {
+        addDialogToList(new SwitchJournalDialog(m_device, m_parent),
+                        "Журнал переключений",
+                        "swjour");
         addDialogToList(new OscDialog(m_device, m_parent), "Осциллограммы", "osc");
-    }
-    else if (m_boxModel == Model::KIV || (m_typeB == BaseBoard::MTB_86 && m_typeM == MezzanineBoard::MTM_84))
-    {
+    } else if (m_boxModel == Model::KIV
+               || (m_typeB == BaseBoard::MTB_86 && m_typeM == MezzanineBoard::MTM_84)) {
         addDialogToList(new OscKivDialog(m_device, m_parent), "Осциллограммы", "osc");
     }
 }
@@ -206,7 +208,8 @@ void DialogCreator::createOscAndSwJourDialogs()
 void DialogCreator::createPlotDialog()
 {
     // Только для АВ-ТУК-82 и АВМ-КТФ добавляем диалог с векторными диаграммами
-    if ((m_typeB == BaseBoard::MTB_80 && m_typeM == MezzanineBoard::MTM_82) || (m_boxModel == Model::KTF))
+    if ((m_typeB == BaseBoard::MTB_80 && m_typeM == MezzanineBoard::MTM_82)
+        || (m_boxModel == Model::KTF))
         addDialogToList(new PlotDialog(m_device, m_parent), "Диаграммы", "plot");
 }
 
@@ -222,8 +225,7 @@ void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
     auto ifaceType = m_device->async()->getInterfaceType();
     if (ifaceType != Interface::IfaceType::Ethernet)
         addDialogToList(new FWUploadDialog(m_device, m_parent), "Загрузка ВПО", "upload");
-    if (appCfg == AppConfiguration::Debug)
-    {
+    if (appCfg == AppConfiguration::Debug) {
         auto hiddenDialog = new HiddenDialog(m_device, m_parent);
         hiddenDialog->setModuleName(m_device->getDeviceName());
         addDialogToList(hiddenDialog, "Секретные операции", "hidden");

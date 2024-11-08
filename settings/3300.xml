@@ -2,6 +2,10 @@
 <module mtypeb="33" mtypem="00">
     <name>AVTUK-3300</name>
     <version>3.7-0000</version>
+    <features>
+        <isBoxModule value="0">
+        <isRTCExist value="1">
+    </features>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>

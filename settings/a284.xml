@@ -2,6 +2,10 @@
 <module mtypeb="a2" mtypem="84">
     <name>AVM-KIV</name>
     <version>2.2-0000</version>
+    <features>
+        <isBoxModule value="1">
+        <isRTCExist value="1">
+    </features>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">

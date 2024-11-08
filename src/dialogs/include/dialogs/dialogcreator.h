@@ -17,6 +17,7 @@ class DialogCreator final : public QObject
     Q_OBJECT
 private:
     Device::CurrentDevice *m_device;
+    bool m_isBoxModule;
     Device::Model m_boxModel;
     Device::BaseBoard m_typeB;
     Device::MezzanineBoard m_typeM;

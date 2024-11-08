@@ -4,6 +4,7 @@
     <version>0.6-0004</version>
     <features>
         <isBoxModule value="1"></isBoxModule>
+        <isRTCExist value="1"></isRTCExist>
     </features>
     <resources>
         <alarms desc="Сигнализация">

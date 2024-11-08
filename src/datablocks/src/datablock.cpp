@@ -45,7 +45,7 @@ const QMap<DataTypes::DataBlockTypes, DataBlock::FilePropertiesStruct> DataBlock
 
 DataBlock::DataBlock(QObject *parent)
     : QObject(parent)
-    , valueNumberCounter(0) //
+    , m_valueNumberCounter(0) //
     , m_widgetIsSet(false)
     , m_isBottomButtonsWidgetCreated(false)
     , m_conn(nullptr)

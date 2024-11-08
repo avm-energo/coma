@@ -2,6 +2,10 @@
 <module mtypeb="86" mtypem="84">
     <name>AVTUK-8684</name>
     <version>0.0-0001</version>
+    <features>
+        <isBoxModule value="0">
+        <isRTCExist value="1">
+    </features>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>
