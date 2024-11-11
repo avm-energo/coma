@@ -14,7 +14,7 @@ ModuleAlarm::ModuleAlarm(const AlarmType type, const AlarmValue &alarms, //
 
 void ModuleAlarm::followToData(const SignalMap &sigMap)
 {
-    auto &addr = m_alarms.cbegin().key();
+    auto addr = m_alarms.cbegin().key();
     auto search = std::find_if(sigMap.cbegin(), sigMap.cend(), //
         [&addr](const Device::SigMapValue &element) -> bool {  //
             auto &signal = element.second;
