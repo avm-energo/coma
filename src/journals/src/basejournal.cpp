@@ -168,12 +168,12 @@ void BaseJournal::saveToExcel(const QString &filename)
         {
             currentCell.setColumn(1 + j);
             QVariant value = m_dataModel->data(m_dataModel->index(i, j), Qt::DisplayRole);
-            switch (value.type())
+            switch (value.typeId())
             {
-            case QVariant::Type::Double:
+            case QMetaType::Double:
                 workSheet->writeNumeric(currentCell, value.toFloat());
                 break;
-            case QVariant::Type::Int:
+            case QMetaType::Int:
                 workSheet->writeNumeric(currentCell, value.toInt());
                 break;
             default:
