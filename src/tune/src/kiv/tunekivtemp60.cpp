@@ -1,24 +1,25 @@
 #include "tune/kiv/tunekivtemp60.h"
 
-#include <QEventLoop>
-#include <QMessageBox>
-#include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 #include <tune/tunesequencefile.h>
-#include <tune/tunesteps.h>
 #include <widgets/epopup.h>
 #include <widgets/waitwidget.h>
 #include <widgets/wd_func.h>
 
+#include <QEventLoop>
+#include <QMessageBox>
+#include <QVBoxLayout>
+
 using namespace Interface;
 
-TuneKIVTemp60::TuneKIVTemp60(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent)
+TuneKIVTemp60::TuneKIVTemp60(TuneTypes tuneType, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(device, parent)
     , m_bac(new BacA284(this))
     , m_bdain(new BdaIn(this))
     , m_bd0(new Bd0(this))
+    , m_tuneType(tuneType)
 {
     m_bac->setup(m_device->getUID(), m_sync);
     m_bdain->setup(m_device->getUID(), m_sync);
@@ -51,7 +52,7 @@ void TuneKIVTemp60::setTuneFunctions()
     addTuneFunc("5. Ожидание установления температурного режима...", &TuneKIVTemp60::waitForTempToRise);
     addTuneFunc("6. Диалог об установлении входных сигналов...", &TuneKIVTemp60::showSignalsDialog);
     addTuneFunc("7. Измерения...", &TuneKIVTemp60::analogMeasurement);
-    if (m_tuneStep == KIVTS_60TUNING)
+    if (m_tuneType == TUNING60)
         addTuneFunc("8. Ввод данных энергомонитора и сохранение промежуточных данных...",
             &TuneKIVTemp60::inputEnergomonitorValues);
     else
@@ -88,7 +89,7 @@ Error::Msg TuneKIVTemp60::showTempDialog()
     //    QVBoxLayout *lyout = new QVBoxLayout;
 
     //    QWidget *w = new QWidget;
-    QString tempstr = (m_tuneStep == KIVTS_60TUNING) ? "+60" : "-20";
+    QString tempstr = (m_tuneType == TUNING60) ? "+60" : "-20";
     //    lyout->addWidget(
     //        WDFunc::NewLBL2(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"));
     //    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [&dlg] { dlg->close(); }));
@@ -112,7 +113,7 @@ Error::Msg TuneKIVTemp60::waitForTempToRise()
     const int time = 15;
 #endif
     WaitWidget::ww_struct wws = { true, false, WaitWidget::WW_TIME,
-        time }; // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
+        time };                   // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
     ww->Init(wws);
     ww->SetMessage("Пожалуйста, подождите");
     StdFunc::SetCancelDisabled(); // to prevent cancellation of the main algorythm while breaking waiting
@@ -215,14 +216,14 @@ Error::Msg TuneKIVTemp60::inputEnergomonitorValues()
     //    QPushButton *pb = new QPushButton("Продолжить");
     if (EMessageBox::editableNext(popup))
     {
-        if (m_tuneStep == KIVTS_60TUNING)
+        if (m_tuneType == TUNING60)
             saveIntermediateResults();
         else
             calcTuneCoefs();
     }
     else
         CancelTune();
-    //    if (m_tuneStep == KIVTS_60TUNING)
+    //    if (m_tuneType == TUNING60)
     //        connect(pb, &QPushButton::clicked, [&dlg, this]() {
     //            saveIntermediateResults();
     //            dlg->close();

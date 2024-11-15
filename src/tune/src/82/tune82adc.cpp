@@ -1,17 +1,17 @@
 #include "tune/82/tune82adc.h"
 
-#include <QMessageBox>
-#include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <tune/82/verification_offset.h>
-#include <tune/tunesteps.h>
 #include <widgets/epopup.h>
 #include <widgets/waitwidget.h>
 #include <widgets/wd_func.h>
 
-Tune82ADC::Tune82ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent)
+#include <QMessageBox>
+#include <QVBoxLayout>
+
+Tune82ADC::Tune82ADC(Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(device, parent)
     , m_bac(new Bac82(this))
     , m_bd1(new Bd182(m_typeM, this))
     , m_bda(new Bda82(this))

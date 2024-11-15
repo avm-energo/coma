@@ -1,5 +1,13 @@
 #pragma once
 
+#include "hexagonbutton.h"
+#include <gen/pch.h>
+#include <gen/std_ext.h>
+#include <widgets/basespinboxgroup.h>
+#include <widgets/checkboxgroup.h>
+#include <widgets/ecombobox.h>
+#include <widgets/etableview.h>
+
 #include <QCheckBox>
 #include <QDebug>
 #include <QDoubleSpinBox>
@@ -8,12 +16,6 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QValidator>
-#include <gen/pch.h>
-#include <gen/std_ext.h>
-#include <widgets/basespinboxgroup.h>
-#include <widgets/checkboxgroup.h>
-#include <widgets/ecombobox.h>
-#include <widgets/etableview.h>
 
 class PasswordLineEdit;
 class QMainWindow;
@@ -231,20 +233,23 @@ public:
     [[nodiscard]] static QVariant FloatValueWithCheck(float value);
 
     template <typename Functor>
-    inline static QPushButton *NewHexagonPB(QWidget *parent, const QString &pbname, Functor &&functor,
+    inline static HexagonButton *NewHexagonPB(QWidget *parent, const QString &pbname, Functor &&functor,
         const QString &icon = "", const QString &pbtooltip = "")
     {
-        auto pb = new QPushButton(parent);
+        auto pb = new HexagonButton(parent);
         pb->setObjectName(pbname);
         pb->setIcon(QIcon(icon));
-        pb->setAttribute(Qt::WA_Hover);
-        pb->setAttribute(Qt::WA_X11NetWmWindowTypeToolBar);
+        pb->setData(icon);
         pb->setToolTip(pbtooltip);
         pb->setMinimumSize(50, 50);
         pb->setIconSize(QSize(50, 50));
         QObject::connect(pb, &QPushButton::clicked, functor);
         return pb;
     }
+
+    static void setHexagonPBProcessed(QWidget *parent, const QString &name);
+    static void setHexagonPBRestricted(QWidget *parent, const QString &name);
+    static void setHexagonPBNormal(QWidget *parent, const QString &name);
 
     template <typename Func>
     inline static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, const Func *receiver,
@@ -335,4 +340,6 @@ public:
 private:
     [[nodiscard]] static QPushButton *NewPBCommon(QWidget *parent, const QString &pbname, const QString &text,
         const QString &icon = "", const QString &pbtooltip = "");
+    static void setHexagonPBIcon(QWidget *parent, const QString &name, const QStringList &attrs,
+                                 const QStringList &values);
 };

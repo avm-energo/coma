@@ -7,21 +7,27 @@
 #include <tune/21/tune21one.h>
 #include <widgets/wd_func.h>
 
-TuneKIVDialog::TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
+Tune21Dialog::Tune21Dialog(Device::BoardTypes bt, u8 &firstStepNumber, Device::CurrentDevice *device, QWidget *parent)
+    : GeneralTuneDialog(device, parent)
 {
+    m_tuneStartStep = firstStepNumber;
     setAttribute(Qt::WA_DeleteOnClose);
+    m_tuneStepCount
+        = firstStepNumber; // set step number to external variable (if there's more than one board in module)
     for (int i = 0; i < 8; ++i)
     {
-        auto Tune21OneDialog = new Tune21One(i, device, this);
-        m_dialogList += { "Регулировка канала " + QString::number(i), Tune21OneDialog };
+        auto Tune21OneDialog = new Tune21One(bt, i, device, this);
+        TuneDialogStruct dlgStruct = { "Регулировка канала " + QString::number(i), Tune21OneDialog };
+        addTuneDialog(dlgStruct);
     }
-    Bac21 *bac = new Bac21(this);
-    bac->setup(m_device->getUID(), m_device->sync());
-    addWidgetToTabWidget(bac->widget(), "Коэффициенты");
+    // Bac21 *bac = new Bac21((bt == Device::BoardTypes::BASEBOARD) ? 1 : 2, this);
+    // bac->setup(m_device->getUID(), m_device->sync());
+    // addWidgetToTabWidget(bac->widget(), "Коэффициенты");
+    firstStepNumber = m_tuneStepCount; // set external variable to step number for the next board in module
     SetupUI();
 }
 
-void TuneKIVDialog::prepareReport()
+void Tune21Dialog::prepareReport()
 {
     /*
         // данные в таблицу уже получены или из файла, или в процессе работы

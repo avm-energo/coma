@@ -1,21 +1,22 @@
 #include "tune/kiv/tunekivadc.h"
 
-#include <QMessageBox>
-#include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <tune/tunesteps.h>
 #include <widgets/epopup.h>
 #include <widgets/waitwidget.h>
 #include <widgets/wd_func.h>
 
-TuneKIVADC::TuneKIVADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent)
+#include <QMessageBox>
+#include <QVBoxLayout>
+
+TuneKIVADC::TuneKIVADC(TuneTypes tuneType, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(device, parent)
     , m_bac(new BacA284(this))
     , m_bac2(new Bac2A284(this))
     , m_bda(new BdaA284(this))
     , m_bdain(new BdaIn(this))
     , m_bd0(new Bd0(this))
+    , m_tuneType(tuneType)
 {
     m_bac->setup(m_device->getUID(), m_sync);
     m_bac2->setup(m_device->getUID(), m_sync);
@@ -41,13 +42,13 @@ void TuneKIVADC::setTuneFunctions()
     addTuneFunc("Отображение предупреждения...", &TuneKIVADC::showPreWarning);
     addTuneFunc("Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
     addTuneFunc("Проверка настроечных параметров...", &TuneKIVADC::checkTuneCoefs);
-    addTuneFunc("Задание режима конфигурирования модуля...", &TuneKIVADC::setSMode2);
-    if (m_tuneStep == KIVTS_ADCU)
+    addTuneFunc("Задание режима конфигурирования модуля...", &AbstractTuneDialog::setSMode2);
+    if (m_tuneType == ADCU)
     {
         addTuneFunc("Регулировка...", &TuneKIVADC::ADCCoef1);
         addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
     }
-    if (m_tuneStep == KIVTS_ADCI)
+    if (m_tuneType == ADCI)
     {
         addTuneFunc("Регулировка для Кацп = 1...", &TuneKIVADC::ADCCoef1);
         addTuneFunc("Отображение диалога задания входных данных...", &TuneKIVADC::showEnergomonitorInputDialog);
@@ -113,12 +114,6 @@ Error::Msg TuneKIVADC::checkTuneCoefs()
     return Error::Msg::NoError;
 }
 
-Error::Msg TuneKIVADC::setSMode2()
-{
-    m_async->writeCommand(Interface::Commands::C_SetMode, 0x02);
-    return Error::Msg::NoError;
-}
-
 Error::Msg TuneKIVADC::ADCCoef(int coef)
 {
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
@@ -176,27 +171,27 @@ Error::Msg TuneKIVADC::ADCCoef1()
 
 Error::Msg TuneKIVADC::ADCCoef2()
 {
-    return (m_tuneStep == KIVTS_ADCI || m_tuneStep == KIVTS_ADCU) ? ADCCoef(2) : Error::Msg::ResEmpty;
+    return (m_tuneType == ADCI || m_tuneType == ADCU) ? ADCCoef(2) : Error::Msg::ResEmpty;
 }
 
 Error::Msg TuneKIVADC::ADCCoef4()
 {
-    return (m_tuneStep == KIVTS_ADCI || m_tuneStep == KIVTS_ADCU) ? ADCCoef(4) : Error::Msg::ResEmpty;
+    return (m_tuneType == ADCI || m_tuneType == ADCU) ? ADCCoef(4) : Error::Msg::ResEmpty;
 }
 
 Error::Msg TuneKIVADC::ADCCoef8()
 {
-    return (m_tuneStep == KIVTS_ADCI || m_tuneStep == KIVTS_ADCU) ? ADCCoef(8) : Error::Msg::ResEmpty;
+    return (m_tuneType == ADCI || m_tuneType == ADCU) ? ADCCoef(8) : Error::Msg::ResEmpty;
 }
 
 Error::Msg TuneKIVADC::ADCCoef16()
 {
-    return (m_tuneStep == KIVTS_ADCI || m_tuneStep == KIVTS_ADCU) ? ADCCoef(16) : Error::Msg::ResEmpty;
+    return (m_tuneType == ADCI || m_tuneType == ADCU) ? ADCCoef(16) : Error::Msg::ResEmpty;
 }
 
 Error::Msg TuneKIVADC::ADCCoef32()
 {
-    return (m_tuneStep == KIVTS_ADCI || m_tuneStep == KIVTS_ADCU) ? ADCCoef(32) : Error::Msg::ResEmpty;
+    return (m_tuneType == ADCI || m_tuneType == ADCU) ? ADCCoef(32) : Error::Msg::ResEmpty;
 }
 
 Error::Msg TuneKIVADC::Tmk0()
@@ -286,12 +281,12 @@ void TuneKIVADC::IULayout(RegType type, int coef, QVBoxLayout *lyout)
         QString Ret10Coef;
     };
     QMap<int, retomStruct> retomCoefMap = {
-        { 1, { "2,9 A", "500 mA", "30:3" } }, //
-        { 2, { "2,5 A", "500 mA", "30:3" } }, //
-        { 4, { "1,4 A", "250 mA", "30:3" } }, //
-        { 8, { "8 A", "100 mA", "300:3" } },  //
-        { 16, { "4 A", "50 mA", "300:3" } },  //
-        { 32, { "2.3 A", "50 mA", "300:3" } } //
+        { 1, { "2,9 A", "500 mA", "30:3" } },  //
+        { 2, { "2,5 A", "500 mA", "30:3" } },  //
+        { 4, { "1,4 A", "250 mA", "30:3" } },  //
+        { 8, { "8 A", "100 mA", "300:3" } },   //
+        { 16, { "4 A", "50 mA", "300:3" } },   //
+        { 32, { "2.3 A", "50 mA", "300:3" } }  //
     };
     QMap<int, retomStruct> ImCoefMap = {
         { 1, { "290 mA", "500 mA", "30:3" } }, //
@@ -311,12 +306,12 @@ void TuneKIVADC::IULayout(RegType type, int coef, QVBoxLayout *lyout)
         tmps = "Задайте на РЕТОМ-51 режим однофазного напряжения и тока (ф. А)\n"
                "Угол между током и напряжением: 89.9 град.\n"
                "Значение напряжения ф. А: 57.75 В";
-    if (m_tuneStep == KIVTS_ADCI)
+    if (m_tuneType == ADCI)
         tmps += ", тока: " + map[type][coef].I;
     lyout->addWidget(WDFunc::NewLBL2(this, tmps));
     lyout->addWidget(
         WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
-    if (m_tuneStep == KIVTS_ADCI)
+    if (m_tuneType == ADCI)
         lyout->addWidget(WDFunc::NewLBL2(this,
             "Предел измерения тока в Энергомониторе: " + map[type][coef].EMRange
                 + "\nКоэффициент передачи РЕТ-10: " + map[type][coef].Ret10Coef));
@@ -334,7 +329,7 @@ bool TuneKIVADC::checkBdaIn(int current)
         {
             if (WDFunc::floatIsWithinLimits("напряжения", m_bdain->data()->IUeff_filtered[i], 57.75, 3.0))
             {
-                if (m_tuneStep == KIVTS_ADCU)
+                if (m_tuneType == ADCU)
                     continue;
                 if (WDFunc::floatIsWithinLimits("тока", m_bdain->data()->IUefNat_filt[i + 3], current, 50))
                 {
@@ -358,7 +353,7 @@ bool TuneKIVADC::checkBdaIn(int current)
 Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
 {
     EEditablePopup *popup = new EEditablePopup("Ввод значений сигналов c Энергомонитора");
-    if (m_tuneStep == KIVTS_ADCU)
+    if (m_tuneType == ADCU)
     {
         popup->addFloatParameter("Uэт, В", &m_midTuneStruct.uet);
         popup->addFloatParameter("fэт, Гц", &m_midTuneStruct.fet);
@@ -378,7 +373,7 @@ void TuneKIVADC::CalcTuneCoefs()
         = { { 1, &m_bac->data()->KmI1[0] }, { 2, &m_bac->data()->KmI2[0] }, { 4, &m_bac->data()->KmI4[0] },
               { 8, &m_bac->data()->KmI8[0] }, { 16, &m_bac->data()->KmI16[0] }, { 32, &m_bac->data()->KmI32[0] } };
 
-    if (m_tuneStep == KIVTS_ADCI)
+    if (m_tuneType == ADCI)
     {
         assert(kmimap.contains(m_curTuneStep));
         for (int i = 0; i < 3; ++i)

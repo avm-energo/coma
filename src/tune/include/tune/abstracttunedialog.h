@@ -1,15 +1,16 @@
 #pragma once
 
-#include <QByteArray>
-#include <QCloseEvent>
-#include <QDialog>
 #include <datablocks/datablock.h>
 #include <device/current_device.h>
 #include <device/device_list.h>
 #include <s2/s2configuration.h>
 #include <widgets/tunetabwidget.h>
 
-#define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
+#include <QByteArray>
+#include <QCloseEvent>
+#include <QDialog>
+
+#define MAXTUNESIZE 1024  // максимальный размер файла с данными настройки
 
 #define TD_TMK 25.0       // degrees
 #define TD_VBAT 3.0       // voltage
@@ -20,7 +21,7 @@
 #define TUNE_POINTSPER 500 // столько миллисекунд должно усредняться при регулировке
 #define WAITFORCONST 1 // seconds to let voltages be constant
 
-//#define DEBUGISON
+// #define DEBUGISON
 
 // disable all limits checks
 // #define NO_LIMITS
@@ -47,7 +48,7 @@ public:
         TuneFunc func;
     };
 
-    explicit AbstractTuneDialog(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
+    explicit AbstractTuneDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
     template <typename T> //
     void addTuneFunc(const QString &msg, Error::Msg (T::*func)())
@@ -77,6 +78,7 @@ public:
     void MsgSetVisible(MsgTypes type, int msg, bool visible = true);
     void MsgClear();
     void setBac(DataBlock *block);
+    void setTuneStep(u8 tuneStep);
     Error::Msg checkCalibrStep();
     //    void saveTuneSequenceFile(int step);
     Error::Msg saveWorkConfig();
@@ -88,6 +90,7 @@ public:
     Error::Msg readTuneCoefs();
     Error::Msg sendChangedConfig(const std::vector<std::pair<QString, S2::valueType>> &changes) const;
     static ReportData &getReportData();
+    Error::Msg setSMode2();
 
 protected:
     Device::CurrentDevice *m_device;
@@ -103,7 +106,7 @@ protected:
 
 private:
     QMap<int, DataBlock *> AbsBac;
-    TuneTabWidget *tuneTabWidget;
+    TuneTabWidget *m_tuneTabWidget;
     void readTuneCoefsByBac(int bacnum);
 
 signals:

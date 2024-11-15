@@ -5,12 +5,13 @@
 #include <datablocks/kiv/bda.h>
 #include <datablocks/kiv/bdain.h>
 #include <tune/abstracttunedialog.h>
+#include <tune/tunetypes.h>
 
 class Tune85ADC final : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune85ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
+    Tune85ADC(TuneTypes tuneType, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
     BacA284 *m_bac;
@@ -20,6 +21,7 @@ private:
     double m_pt100;
     bool m_isEnergoMonitorDialogCreated;
     int m_curTuneStep;
+    TuneTypes m_tuneType;
     BdaIn::BlockData m_bdainBlockData;
     int m_BacWidgetIndex, m_BdainWidgetIndex, m_Bd0WidgetIndex;
     struct MidTuneStruct
@@ -36,7 +38,6 @@ private:
 
     Error::Msg showPreWarning();
     Error::Msg checkTuneCoefs();
-    Error::Msg setSMode2();
     Error::Msg ADCCoef1();
     Error::Msg ADCCoef2();
     Error::Msg ADCCoef4();

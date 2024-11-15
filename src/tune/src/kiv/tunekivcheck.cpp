@@ -1,12 +1,5 @@
 #include "tune/kiv/tunekivcheck.h"
 
-#include <QCoreApplication>
-#include <QDialog>
-#include <QElapsedTimer>
-#include <QEventLoop>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <datablocks/kiv/bda.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
@@ -14,8 +7,15 @@
 #include <widgets/waitwidget.h>
 #include <widgets/wd_func.h>
 
-TuneKIVCheck::TuneKIVCheck(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent)
+#include <QCoreApplication>
+#include <QDialog>
+#include <QElapsedTimer>
+#include <QEventLoop>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+TuneKIVCheck::TuneKIVCheck(Device::CurrentDevice *device, QWidget *parent) : AbstractTuneDialog(device, parent)
 {
     setupUI();
 }
@@ -25,14 +25,8 @@ void TuneKIVCheck::setTuneFunctions()
     addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Отображение схемы подключения...", &TuneKIVCheck::showScheme);
-    addTuneFunc("Перевод в режим регулировки...", &TuneKIVCheck::setSMode2);
+    addTuneFunc("Перевод в режим регулировки...", &AbstractTuneDialog::setSMode2);
     addTuneFunc("Проверка...", &TuneKIVCheck::check);
-}
-
-Error::Msg TuneKIVCheck::setSMode2()
-{
-    m_async->writeCommand(Interface::Commands::C_SetMode, 0x02);
-    return Error::Msg::NoError;
 }
 
 Error::Msg TuneKIVCheck::showScheme()

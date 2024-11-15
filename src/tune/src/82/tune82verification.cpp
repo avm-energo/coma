@@ -1,6 +1,5 @@
 #include "tune/82/tune82verification.h"
 
-#include <cmath>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 #include <tune/82/verification_offset.h>
@@ -8,8 +7,8 @@
 #include <widgets/epopup.h>
 #include <widgets/wd_func.h>
 
-constexpr std::size_t iterCount = 21;
-constexpr inline std::array<RetomSettings, iterCount> settings = {
+constexpr std::size_t c_iterCount = 21;
+constexpr inline std::array<RetomSettings, c_iterCount> c_settings = {
     RetomSettings { 0.0, 60.0, 0.2 },   //
     RetomSettings { 0.0, 60.0, 0.4 },   //
     RetomSettings { 0.0, 60.0, 0.6 },   //
@@ -33,9 +32,8 @@ constexpr inline std::array<RetomSettings, iterCount> settings = {
     RetomSettings { 270.0, 60.0, 5.0 }  //
 };
 
-Tune82Verification::Tune82Verification(int tuneStep, //
-    Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent)
+Tune82Verification::Tune82Verification(Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(device, parent)
     , m_bd1(new Bd182(m_typeM, this))
     , m_mip(new Mip(false, m_typeM, this))
 {
@@ -175,7 +173,7 @@ Error::Msg Tune82Verification::verification()
     VerificationOffset offsetData { 0 };
     RetomSettings retomData { 0 };
 
-    for (std::size_t iter = 0; iter < iterCount; ++iter)
+    for (std::size_t iter = 0; iter < c_iterCount; ++iter)
     {
         if (iter == 0)
         {
@@ -190,7 +188,7 @@ Error::Msg Tune82Verification::verification()
                 return Error::Msg::GeneralError;
         }
 
-        retomData = settings[iter];
+        retomData = c_settings[iter];
         showRetomDialog(retomData);
         if (StdFunc::IsCancelled())
             return Error::Msg::GeneralError;

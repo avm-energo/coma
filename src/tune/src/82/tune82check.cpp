@@ -1,10 +1,5 @@
 #include "tune/82/tune82check.h"
 
-#include <QDialog>
-#include <QEventLoop>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <datablocks/82/bda.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
@@ -12,8 +7,13 @@
 #include <widgets/epopup.h>
 #include <widgets/wd_func.h>
 
-Tune82Check::Tune82Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent)
+#include <QDialog>
+#include <QEventLoop>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+Tune82Check::Tune82Check(Device::CurrentDevice *device, QWidget *parent) : AbstractTuneDialog(device, parent)
 {
     setupUI();
 }

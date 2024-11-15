@@ -2,11 +2,11 @@
 
 #include <tune/generaltunedialog.h>
 
-class TuneKIVDialog final : public GeneralTuneDialog
+class Tune21Dialog final : public GeneralTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
+    explicit Tune21Dialog(Device::BoardTypes bt, u8 &firstStepNumber, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
     void prepareReport();

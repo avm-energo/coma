@@ -4,12 +4,13 @@
 #include <datablocks/kiv/bac.h>
 #include <datablocks/kiv/bdain.h>
 #include <tune/abstracttunedialog.h>
+#include <tune/tunetypes.h>
 
 class Tune84Temp60 final : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84Temp60(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
+    Tune84Temp60(TuneTypes tuneType, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
     struct MidTuneStruct
@@ -32,6 +33,7 @@ private:
     BdaIn *m_bdain;
     Bd0 *m_bd0;
     MidTuneStruct m_midTuneStruct;
+    TuneTypes m_tuneType;
     QVector<TuneDescrStruct> m_tuneDescrVector()
     {
         QVector<TuneDescrStruct> vect;

@@ -1,17 +1,17 @@
 #include "tune/85/tune85check.h"
 
-#include <QDialog>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <datablocks/kiv/bda.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <widgets/epopup.h>
 #include <widgets/wd_func.h>
 
-Tune85Check::Tune85Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent)
+#include <QDialog>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+Tune85Check::Tune85Check(Device::CurrentDevice *device, QWidget *parent) : AbstractTuneDialog(device, parent)
 {
     setupUI();
 }

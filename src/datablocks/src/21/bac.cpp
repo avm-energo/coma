@@ -1,9 +1,9 @@
 #include "datablocks/21/bac.h"
 
-Bac21::Bac21(QObject *parent) : DataBlock(parent)
+Bac21::Bac21(u8 numblock, QObject *parent) : DataBlock(parent)
 {
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
-    setBlock({ 1, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, //
+    setBlock({ numblock, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, //
         m_blockData.get(), sizeof(BlockData), true });
     for (int i = 0; i < 8; ++i)
     {

@@ -1,12 +1,5 @@
 #include "tune/abstracttunedialog.h"
 
-#include <LimeReport>
-#include <QDebug>
-#include <QMessageBox>
-#include <QProgressBar>
-#include <QScrollArea>
-#include <QScrollBar>
-#include <QVBoxLayout>
 #include <gen/datatypes.h>
 #include <gen/error.h>
 #include <gen/files.h>
@@ -18,9 +11,17 @@
 #include <widgets/waitwidget.h>
 #include <widgets/wd_func.h>
 
+#include <LimeReport>
+#include <QDebug>
+#include <QMessageBox>
+#include <QProgressBar>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QVBoxLayout>
+
 ReportData AbstractTuneDialog::s_reportData {};
 
-AbstractTuneDialog::AbstractTuneDialog(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
+AbstractTuneDialog::AbstractTuneDialog(Device::CurrentDevice *device, QWidget *parent)
     : QDialog(parent)
     , m_device(device)
     , config(m_device->getS2Datamanager()->getCurrentConfiguration().m_workingConfig)
@@ -33,9 +34,8 @@ AbstractTuneDialog::AbstractTuneDialog(int tuneStep, Device::CurrentDevice *devi
     TuneVariant = 0;
     IsNeededDefConf = false;
     m_blockCount = 0;
-    m_tuneStep = tuneStep;
     m_finished = false;
-    tuneTabWidget = new TuneTabWidget;
+    m_tuneTabWidget = new TuneTabWidget;
     GeneralTuneDialog *dlg = qobject_cast<GeneralTuneDialog *>(parent);
     if (dlg)
         connect(this, &AbstractTuneDialog::Finished, dlg, &GeneralTuneDialog::setCalibrButtons);
@@ -103,7 +103,8 @@ QWidget *AbstractTuneDialog::tuneUI()
     hlyout->addStretch(300);
     hlyout->addWidget(WDFunc::NewHexagonPB(
         this, "finishpb",
-        [this]() {
+        [this]()
+        {
             emit Finished();
             this->hide();
         },
@@ -120,12 +121,7 @@ QWidget *AbstractTuneDialog::mainUI()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(tuneTabWidget->set());
-    //    QTabWidget *tw = new QTabWidget;
-    //    tw->setObjectName("tunetw");
-    //    for (int i = 0; i < m_mainWidgetList.size(); ++i)
-    //        tw->addTab(m_mainWidgetList.at(i).widget, m_mainWidgetList.at(i).caption);
-    //    lyout->addWidget(tw);
+    lyout->addWidget(m_tuneTabWidget->set());
     w->setLayout(lyout);
     return w;
 }
@@ -151,6 +147,11 @@ QWidget *AbstractTuneDialog::bottomUI()
 void AbstractTuneDialog::setBac(DataBlock *block)
 {
     AbsBac[block->block().blocknum] = block;
+}
+
+void AbstractTuneDialog::setTuneStep(u8 tuneStep)
+{
+    m_tuneStep = tuneStep;
 }
 
 void AbstractTuneDialog::waitNSeconds(int Seconds, bool isAllowedToStop)
@@ -192,13 +193,7 @@ Error::Msg AbstractTuneDialog::CheckPassword()
 
 int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
 {
-    return tuneTabWidget->addTabWidget(w, caption);
-    //    MainWidgetStruct str;
-    //    str.widget = w;
-    //    str.caption = caption;
-    //    int widgetindex = m_mainWidgetList.size();
-    //    m_mainWidgetList.append(str);
-    //    return widgetindex;
+    return m_tuneTabWidget->addTabWidget(w, caption);
 }
 
 void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int msg, bool visible)
@@ -282,6 +277,12 @@ void AbstractTuneDialog::startTune()
     WDFunc::SetEnabled(this, "finishpb", true);
     EMessageBox::information(this, "Настройка завершена!");
     TuneSequenceFile::saveTuneSequenceFile(m_tuneStep + 1); // +1 to let the next stage run
+}
+
+Error::Msg AbstractTuneDialog::setSMode2()
+{
+    m_async->writeCommand(Interface::Commands::C_SetMode, 0x02);
+    return Error::Msg::NoError;
 }
 
 void AbstractTuneDialog::setProgressSizeSlot(int size)
@@ -408,10 +409,12 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs(bool isUserChoosingRequired)
         }
         lyout->addWidget(tw);
         hlyout->addWidget(WDFunc::NewPB(this, "", "Записать", this, &AbstractTuneDialog::writeTuneCoefsSlot));
-        hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", [this]() {
-            CancelTune();
-            emit generalEventReceived();
-        }));
+        hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена",
+            [this]()
+            {
+                CancelTune();
+                emit generalEventReceived();
+            }));
 
         lyout->addLayout(hlyout);
         dlg->setLayout(lyout);

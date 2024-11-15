@@ -6,12 +6,13 @@
 #include <datablocks/kiv/bda.h>
 #include <datablocks/kiv/bdain.h>
 #include <tune/abstracttunedialog.h>
+#include <tune/tunetypes.h>
 
 class Tune84ADC final : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
+    Tune84ADC(TuneTypes tuneType, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
     BacA284 *m_bac;
@@ -33,12 +34,12 @@ private:
     };
 
     MidTuneStruct m_midTuneStruct;
+    TuneTypes m_tuneType;
 
     void setTuneFunctions() override;
 
     Error::Msg showPreWarning();
     Error::Msg checkTuneCoefs();
-    Error::Msg setSMode2();
     Error::Msg ADCCoef1();
     Error::Msg ADCCoef2();
     Error::Msg ADCCoef4();

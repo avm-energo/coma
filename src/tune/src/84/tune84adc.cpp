@@ -1,23 +1,24 @@
 #include "tune/84/tune84adc.h"
 
-#include <QMessageBox>
-#include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <tune/tunesteps.h>
 #include <widgets/epopup.h>
 #include <widgets/waitwidget.h>
 #include <widgets/wd_func.h>
 
+#include <QMessageBox>
+#include <QVBoxLayout>
+
 using namespace Interface;
 
-Tune84ADC::Tune84ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent)
+Tune84ADC::Tune84ADC(TuneTypes tuneType, Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(device, parent)
     , m_bac(new BacA284(this))
     , m_bac2(new Bac2A284(this))
     , m_bda(new BdaA284(this))
     , m_bdain(new BdaIn(this))
     , m_bd0(new Bd0(this))
+    , m_tuneType(tuneType)
 {
     m_bac->setup(m_device->getUID(), m_sync);
     m_bac2->setup(m_device->getUID(), m_sync);
@@ -43,13 +44,13 @@ void Tune84ADC::setTuneFunctions()
     addTuneFunc("Отображение предупреждения...", &Tune84ADC::showPreWarning);
     addTuneFunc("Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
     addTuneFunc("Проверка настроечных параметров...", &Tune84ADC::checkTuneCoefs);
-    addTuneFunc("Задание режима конфигурирования модуля...", &Tune84ADC::setSMode2);
-    if (m_tuneStep == TS84_ADCU)
+    addTuneFunc("Задание режима конфигурирования модуля...", &AbstractTuneDialog::setSMode2);
+    if (m_tuneType == ADCU)
     {
         addTuneFunc("Регулировка...", &Tune84ADC::ADCCoef1);
         addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
     }
-    if (m_tuneStep == TS84_ADCI)
+    if (m_tuneType == ADCI)
     {
         addTuneFunc("Регулировка для Кацп = 1...", &Tune84ADC::ADCCoef1);
         addTuneFunc("Отображение диалога задания входных данных...", &Tune84ADC::showEnergomonitorInputDialog);
@@ -112,12 +113,6 @@ Error::Msg Tune84ADC::checkTuneCoefs()
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune84ADC::setSMode2()
-{
-    m_async->writeCommand(Commands::C_SetMode, 0x02);
-    return Error::Msg::NoError;
-}
-
 Error::Msg Tune84ADC::ADCCoef(int coef)
 {
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
@@ -175,27 +170,27 @@ Error::Msg Tune84ADC::ADCCoef1()
 
 Error::Msg Tune84ADC::ADCCoef2()
 {
-    return (m_tuneStep == TS84_ADCI || m_tuneStep == TS84_ADCU) ? ADCCoef(2) : Error::Msg::ResEmpty;
+    return (m_tuneType == ADCI || m_tuneType == ADCU) ? ADCCoef(2) : Error::Msg::ResEmpty;
 }
 
 Error::Msg Tune84ADC::ADCCoef4()
 {
-    return (m_tuneStep == TS84_ADCI || m_tuneStep == TS84_ADCU) ? ADCCoef(4) : Error::Msg::ResEmpty;
+    return (m_tuneType == ADCI || m_tuneType == ADCU) ? ADCCoef(4) : Error::Msg::ResEmpty;
 }
 
 Error::Msg Tune84ADC::ADCCoef8()
 {
-    return (m_tuneStep == TS84_ADCI || m_tuneStep == TS84_ADCU) ? ADCCoef(8) : Error::Msg::ResEmpty;
+    return (m_tuneType == ADCI || m_tuneType == ADCU) ? ADCCoef(8) : Error::Msg::ResEmpty;
 }
 
 Error::Msg Tune84ADC::ADCCoef16()
 {
-    return (m_tuneStep == TS84_ADCI || m_tuneStep == TS84_ADCU) ? ADCCoef(16) : Error::Msg::ResEmpty;
+    return (m_tuneType == ADCI || m_tuneType == ADCU) ? ADCCoef(16) : Error::Msg::ResEmpty;
 }
 
 Error::Msg Tune84ADC::ADCCoef32()
 {
-    return (m_tuneStep == TS84_ADCI || m_tuneStep == TS84_ADCU) ? ADCCoef(32) : Error::Msg::ResEmpty;
+    return (m_tuneType == ADCI || m_tuneType == ADCU) ? ADCCoef(32) : Error::Msg::ResEmpty;
 }
 
 Error::Msg Tune84ADC::Tmk0()
@@ -280,12 +275,12 @@ Error::Msg Tune84ADC::showRetomDialog(int coef)
     tmps = "Задайте на РЕТОМ-51 трёхфазный режим токов и напряжений (Uabc, Iabc)\n"
            "Угол между токами и напряжениями: 89.9 град.\n"
            "Значения напряжений: 57.75 В";
-    if (m_tuneStep == TS84_ADCI)
+    if (m_tuneType == ADCI)
         tmps += ", токов: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
     vlyout->addWidget(WDFunc::NewLBL2(this, tmps));
     vlyout->addWidget(
         WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
-    if (m_tuneStep == TS84_ADCI)
+    if (m_tuneType == ADCI)
         vlyout->addWidget(WDFunc::NewLBL2(this,
             "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
                 + " мА.\nКоэффициент передачи РЕТ-10: " + retomCoefMap[coef].ret10_retom));
@@ -296,12 +291,12 @@ Error::Msg Tune84ADC::showRetomDialog(int coef)
     vlyout->addWidget(WDFunc::newHLine(this));
     tmps = "Установите на имитаторе АВМ-КИВ tg = 2 %,\n"
            "Значения напряжений: 57.75 В";
-    if (m_tuneStep == TS84_ADCI)
+    if (m_tuneType == ADCI)
         tmps += ", токов: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
     vlyout->addWidget(WDFunc::NewLBL2(this, tmps));
     vlyout->addWidget(
         WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
-    if (m_tuneStep == TS84_ADCI)
+    if (m_tuneType == ADCI)
         vlyout->addWidget(WDFunc::NewLBL2(this,
             "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
                 + " мА.\nКоэффициент передачи РЕТ-10: " + retomCoefMap[coef].ret10_imit));
@@ -309,7 +304,7 @@ Error::Msg Tune84ADC::showRetomDialog(int coef)
     w->setLayout(hlyout);
     if (!EMessageBox::next(this, w))
         CancelTune();
-    if (m_tuneStep == TS84_ADCU)
+    if (m_tuneType == ADCU)
         StdFunc::Wait(1000);
     return Error::Msg::NoError;
 }
@@ -322,7 +317,7 @@ bool Tune84ADC::checkBdaIn(int current)
         {
             if (WDFunc::floatIsWithinLimits("напряжения", m_bdain->data()->IUeff_filtered[i], 57.75, 3.0))
             {
-                if (m_tuneStep == TS84_ADCU)
+                if (m_tuneType == ADCU)
                     continue;
                 if (WDFunc::floatIsWithinLimits("тока", m_bdain->data()->IUefNat_filt[i + 3], current, 50))
                 {
@@ -345,7 +340,7 @@ bool Tune84ADC::checkBdaIn(int current)
 Error::Msg Tune84ADC::showEnergomonitorInputDialog()
 {
     EEditablePopup *popup = new EEditablePopup("Ввод значений сигналов c Энергомонитора");
-    if (m_tuneStep == TS84_ADCU)
+    if (m_tuneType == ADCU)
     {
         popup->addFloatParameter("Uэт, В", &m_midTuneStruct.uet);
         popup->addFloatParameter("fэт, Гц", &m_midTuneStruct.fet);
@@ -365,7 +360,7 @@ void Tune84ADC::CalcTuneCoefs()
         = { { 1, &m_bac->data()->KmI1[0] }, { 2, &m_bac->data()->KmI2[0] }, { 4, &m_bac->data()->KmI4[0] },
               { 8, &m_bac->data()->KmI8[0] }, { 16, &m_bac->data()->KmI16[0] }, { 32, &m_bac->data()->KmI32[0] } };
 
-    if (m_tuneStep == TS84_ADCI)
+    if (m_tuneType == ADCI)
     {
         assert(kmimap.contains(m_curTuneStep));
         for (int i = 0; i < 3; ++i)

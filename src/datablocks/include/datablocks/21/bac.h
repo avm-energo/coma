@@ -37,7 +37,7 @@ private:
     BlockDataForWidget m_blockDataW;
 
 public:
-    Bac21(QObject *parent = nullptr);
+    Bac21(u8 numblock, QObject *parent = nullptr);
     void setupValuesDesc() override;
     BlockData *data();
     void setDefBlock() override;
