@@ -43,7 +43,7 @@ Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
     auto io = new Tune82IoWidget(m_device, this);
     addWidgetToTabWidget(bac->widget(), "Регулировка");
     addWidgetToTabWidget(io, "Данные");
-    SetupUI();
+    SetupUI(true);
 }
 
 void Tune82Dialog::prepareReport()

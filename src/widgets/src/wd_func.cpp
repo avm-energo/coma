@@ -693,7 +693,7 @@ QPushButton *WDFunc::NewPBCommon(
     return pb;
 }
 
-void WDFunc::setHexagonPBIcon(QWidget *parent, const QString &name, const QStringList &attrs, const QStringList &values)
+void WDFunc::setHexagonPBIcon(QWidget *parent, const QString &name, QStringList &attrs, QStringList &values)
 {
     HexagonButton *pb = parent->findChild<HexagonButton *>(name);
     if (pb)
@@ -703,8 +703,9 @@ void WDFunc::setHexagonPBIcon(QWidget *parent, const QString &name, const QStrin
         file.open(QIODevice::ReadOnly);
         QByteArray baData = file.readAll();
         // load svg contents to xml document and edit contents
-        XmlFunc::AttrsSearchedStruct str = { "path", "style", "stroke", "#8cc800" };
-        XmlFunc::replaceDomWithNewAttrRecursively(baData, str, attrs, values);
+        // XmlFunc::AttrsSearchedStruct str = { "path", "style", "stroke", "#8cc800" };
+        // XmlFunc::replaceDomWithNewAttrRecursively(baData, str, attrs, values);
+        XmlFunc::replaceSimpleAttr(baData, "g", attrs, values); // change group colors
         // create svg renderer with edited contents
         QSvgRenderer svgRenderer(baData);
         // create pixmap target (could be a QImage)
@@ -855,18 +856,23 @@ QVariant WDFunc::FloatValueWithCheck(float value)
 
 void WDFunc::setHexagonPBProcessed(QWidget *parent, const QString &name)
 {
-    setHexagonPBIcon(
-        parent, name, { "stroke", "stroke-width", "fill", "fill-opacity" }, { "#0000ff", "1.5", "#8cc800", "0.3" });
+    QStringList attrs = { "stroke", "stroke-width", "fill", "fill-opacity" };
+    QStringList values = { "#7ad37a", "1.0", "#a5ff7a", "1.0" };
+    setHexagonPBIcon(parent, name, attrs, values);
 }
 
 void WDFunc::setHexagonPBRestricted(QWidget *parent, const QString &name)
 {
-    setHexagonPBIcon(parent, name, { "stroke", "stroke-width" }, { "#FF0000", "0.2" });
+    QStringList attrs = { "stroke", "stroke-width" };
+    QStringList values = { "#FF0000", "0.1" };
+    setHexagonPBIcon(parent, name, attrs, values);
 }
 
 void WDFunc::setHexagonPBNormal(QWidget *parent, const QString &name)
 {
-    setHexagonPBIcon(parent, name, { "stroke" }, { "#8cc800" });
+    QStringList attrs = { "stroke", "stroke-width" };
+    QStringList values = { "#8cc800", "0.1" };
+    setHexagonPBIcon(parent, name, attrs, values);
 }
 
 ETableView *WDFunc::NewTV(QWidget *parent, const QString &tvname, QAbstractItemModel *model)

@@ -23,14 +23,13 @@ GeneralTuneDialog::GeneralTuneDialog(Device::CurrentDevice *device, QWidget *par
     m_tuneStepCount = 0;
 }
 
-void GeneralTuneDialog::SetupUI()
+void GeneralTuneDialog::SetupUI(bool noReport)
 {
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addStretch(100);
     u8 count = 1;
     u8 startStep = m_tuneStartStep;
-    // m_tuneStepCount = m_dialogList.size() + 1;
     for (auto &d : m_dialogList)
     {
         QString tns = "tn" + QString::number(count++);
@@ -38,10 +37,13 @@ void GeneralTuneDialog::SetupUI()
             this, "tn" + QString::number(startStep++), [&d]() { d.dialog->show(); }, ":/tunes/" + tns + ".svg",
             d.caption));
     }
-    lyout->addWidget(WDFunc::NewHexagonPB(
-        this, "tnprotocol", [this]() { generateReport(); }, ":/tunes/tnprotocol.svg",
-        "Генерация протокола регулировки"));
-    ++m_tuneStepCount; // +1 на протокол регулировки
+    if (!noReport)
+    {
+        lyout->addWidget(WDFunc::NewHexagonPB(
+            this, "tnprotocol", [this]() { generateReport(); }, ":/tunes/tnprotocol.svg",
+            "Генерация протокола регулировки"));
+        ++m_tuneStepCount; // +1 на протокол регулировки
+    }
     lyout->addStretch(100);
     hlyout->addLayout(lyout);
     hlyout->addWidget(m_tuneTabWidget->set(), 100);
@@ -59,9 +61,9 @@ int GeneralTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
 
 void GeneralTuneDialog::addTuneDialog(TuneDialogStruct &dlgStruct)
 {
+    ++m_tuneStepCount;
     dlgStruct.dialog->setTuneStep(m_tuneStepCount);
     m_dialogList += dlgStruct;
-    ++m_tuneStepCount;
 }
 
 u8 GeneralTuneDialog::getTuneStepsCount()
@@ -75,7 +77,7 @@ void GeneralTuneDialog::setCalibrButtons()
     for (int i = 1; i < calibrstep; ++i)
         WDFunc::setHexagonPBProcessed(this, "tn" + QString::number(i));
     WDFunc::setHexagonPBNormal(this, "tn" + QString::number(calibrstep));
-    for (int i = (calibrstep + 1); i < m_tuneStepCount; ++i)
+    for (int i = (calibrstep + 1); i <= m_tuneStepCount; ++i)
         WDFunc::setHexagonPBRestricted(this, "tn" + QString::number(i));
     if (calibrstep < m_tuneStepCount)
         WDFunc::setHexagonPBRestricted(this, "tnprotocol");

@@ -27,7 +27,7 @@ TuneKIVDialog::TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent) : G
     bac2->setup(m_device->getUID(), m_device->sync());
     addWidgetToTabWidget(bac->widget(), "Первая часть");
     addWidgetToTabWidget(bac2->widget(), "Вторая часть");
-    SetupUI();
+    SetupUI(true);
 }
 
 void TuneKIVDialog::prepareReport()

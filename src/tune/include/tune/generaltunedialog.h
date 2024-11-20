@@ -22,7 +22,7 @@ public:
     QList<TuneDialogStruct> m_dialogList;
 
     explicit GeneralTuneDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
-    void SetupUI();
+    void SetupUI(bool noReport);
     virtual void prepareReport();
     int addWidgetToTabWidget(QWidget *w, const QString &caption);
     void addTuneDialog(TuneDialogStruct &dlgStruct);

@@ -33,7 +33,7 @@ private:
         float *fbin_U[8];
     };
 
-    std::unique_ptr<BlockData> m_blockData;
+    BlockData *m_blockData;
     BlockDataForWidget m_blockDataW;
 
 public:

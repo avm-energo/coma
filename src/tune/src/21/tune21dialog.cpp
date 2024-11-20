@@ -7,13 +7,14 @@
 #include <tune/21/tune21one.h>
 #include <widgets/wd_func.h>
 
-Tune21Dialog::Tune21Dialog(Device::BoardTypes bt, u8 &firstStepNumber, Device::CurrentDevice *device, QWidget *parent)
+Tune21Dialog::Tune21Dialog(
+    Device::BoardTypes bt, bool isMezExist, u8 &firstStepNumber, Device::CurrentDevice *device, QWidget *parent)
     : GeneralTuneDialog(device, parent)
 {
     m_tuneStartStep = firstStepNumber;
     setAttribute(Qt::WA_DeleteOnClose);
     m_tuneStepCount
-        = firstStepNumber; // set step number to external variable (if there's more than one board in module)
+        = firstStepNumber - 1; // set step number to external variable (if there's more than one board in module)
     for (int i = 0; i < 8; ++i)
     {
         auto Tune21OneDialog = new Tune21One(bt, i, device, this);
@@ -23,8 +24,8 @@ Tune21Dialog::Tune21Dialog(Device::BoardTypes bt, u8 &firstStepNumber, Device::C
     // Bac21 *bac = new Bac21((bt == Device::BoardTypes::BASEBOARD) ? 1 : 2, this);
     // bac->setup(m_device->getUID(), m_device->sync());
     // addWidgetToTabWidget(bac->widget(), "Коэффициенты");
-    firstStepNumber = m_tuneStepCount; // set external variable to step number for the next board in module
-    SetupUI();
+    firstStepNumber = m_tuneStepCount + 1; // set external variable to step number for the next board in module
+    SetupUI((bt == Device::BoardTypes::BASEBOARD) && isMezExist);
 }
 
 void Tune21Dialog::prepareReport()

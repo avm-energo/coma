@@ -340,6 +340,5 @@ public:
 private:
     [[nodiscard]] static QPushButton *NewPBCommon(QWidget *parent, const QString &pbname, const QString &text,
         const QString &icon = "", const QString &pbtooltip = "");
-    static void setHexagonPBIcon(QWidget *parent, const QString &name, const QStringList &attrs,
-                                 const QStringList &values);
+    static void setHexagonPBIcon(QWidget *parent, const QString &name, QStringList &attrs, QStringList &values);
 };

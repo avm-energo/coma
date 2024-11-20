@@ -173,10 +173,11 @@ void DialogCreator::createTuneDialogs()
             // tuneDlg = new Tune84Dialog(m_device, m_parent);
         }
         if (m_typeB == BaseBoard::MTB_21)
-            addDialogToList(new Tune21Dialog(BoardTypes::BASEBOARD, firstStepNumber, m_device, m_parent),
+            addDialogToList(new Tune21Dialog(BoardTypes::BASEBOARD, (m_typeM != MezzanineBoard::MTM_00),
+                                firstStepNumber, m_device, m_parent),
                 "Регулировка базовая", "tunebase");
         if (m_typeM == MezzanineBoard::MTM_21)
-            addDialogToList(new Tune21Dialog(BoardTypes::MEZZBOARD, firstStepNumber, m_device, m_parent),
+            addDialogToList(new Tune21Dialog(BoardTypes::MEZZBOARD, false, firstStepNumber, m_device, m_parent),
                 "Регулировка мезонин", "tunemez");
     }
     // if (tuneDlg != nullptr)

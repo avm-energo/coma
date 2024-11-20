@@ -9,7 +9,7 @@ Bda21::Bda21(u8 blockNum, QObject *parent) : DataBlock(parent)
 
 void Bda21::setupValuesDesc()
 {
-    addNewGroup("Данные без настройки", "bda", 8, 0, &m_blockData->sin[0], 5);
+    addNewGroup("Данные без настройки", "bda", 0, 8, &m_blockData->sin[0], 5);
 }
 
 Bda21::BlockData *Bda21::data()

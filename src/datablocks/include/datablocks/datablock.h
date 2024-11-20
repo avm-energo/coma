@@ -1,10 +1,11 @@
 #pragma once
 
+#include <gen/datatypes.h>
+#include <gen/error.h>
+
 #include <QHBoxLayout>
 #include <QScrollArea>
 #include <QWidget>
-#include <gen/datatypes.h>
-#include <gen/error.h>
 #include <variant>
 
 namespace Interface
@@ -116,6 +117,24 @@ public:
         {
             vg.values.append({ name + QString::number(i), "", "value[" + QString::number(m_valueNumberCounter) + "]",
                 startValue, precision });
+            ++startValue;
+            ++m_valueNumberCounter;
+        }
+        m_valuesDesc.append(vg);
+    }
+
+    template <typename T>                                                     //
+    void addNewGroupByPointers(const QString &groupName, const QString &name, //
+        int fromWhich, int howMuch, T **startValue, int precision)
+    {
+        ValueGroupStr vg;
+        vg.groupDesc = groupName;
+        int start = fromWhich;
+        int end = fromWhich + howMuch;
+        for (int i = start; i < end; ++i)
+        {
+            vg.values.append({ name + QString::number(i), "", "value[" + QString::number(m_valueNumberCounter) + "]",
+                *startValue, precision });
             ++startValue;
             ++m_valueNumberCounter;
         }

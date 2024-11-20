@@ -25,7 +25,7 @@ Tune85Dialog::Tune85Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
     BacA284 *bac = new BacA284(this);
     bac->setup(m_device->getUID(), m_device->sync());
     addWidgetToTabWidget(bac->widget(), "Регулировка");
-    SetupUI();
+    SetupUI(true);
 }
 
 void Tune85Dialog::prepareReport()
