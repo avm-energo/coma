@@ -24,6 +24,7 @@ class ConfigStorage : public QObject
 private:
     std::map<QString, quint32> m_idByName;
     std::map<quint32, ctti::unnamed_type_id_t> m_typeById;
+    std::map<quint32, bool> m_dtypes;
     config::widgetMap m_widgetMap;
     std::map<quint32, QString> m_configTabs;
     std::map<quint32, WidgetDetail> m_widgetDetailMap;
@@ -47,6 +48,8 @@ public:
     /// \brief Возвращает std::map, где key - ID записи S2,
     /// value - хэш типа хранимых данных, в записи с указанным S2 ID.
     const std::map<quint32, ctti::unnamed_type_id_t> &getTypeByIdMap() const;
+    /// \brief Возвращает true, если id дебажный и false, если нет
+    bool getDType(quint16 id);
     /// \brief Возвращает std::map, где key - ID записи S2, value - структура,
     /// описывающая виджет для представления данных указанной записи S2.
     const config::widgetMap &getWidgetMap() const;
@@ -67,6 +70,9 @@ public slots:
     /// \brief Слот для сохранения информации о типе данных записи S2 по его S2 ID.
     /// \see getTypeByIdMap.
     void typeDataReceive(const quint32 id, const std::uint64_t typeId);
+    /// \brief Слот для сохранения информации о дебажности параметра
+    /// \param typeId: Yes - дебажный, No или пустая строка - сервисный
+    void dtypeDataReceive(const quint32 id, const QString &dtype);
     /// \brief Слот для сохранения информации о виджете по его S2 ID.
     /// \see getWidgetMap.
     void widgetDataReceive(const quint32 id, const config::itemVariant &widget);

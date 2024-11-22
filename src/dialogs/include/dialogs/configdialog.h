@@ -1,5 +1,6 @@
 #pragma once
 
+#include <dialogs/dialogcreator.h>
 #include <dialogs/errconfstate.h>
 #include <s2/s2datamanager.h>
 #include <widgets/udialog.h>
@@ -10,7 +11,8 @@ class QTabWidget;
 class ConfigDialog final : public UDialog
 {
 public:
-    explicit ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent = nullptr);
+    explicit ConfigDialog(Device::CurrentDevice *device, const AppConfiguration appCfg, const S2BoardType boardType,
+        QWidget *parent = nullptr);
     void setDefaultConfig();
 
 private slots:
@@ -34,8 +36,10 @@ private:
     void writeConfig();
     void checkForDiff();
     bool isVisible(const quint16 id) const;
+    bool isDebugWidget(const quint16 id) const;
     void showConfigErrState();
 
+    AppConfiguration m_appCfg;
     S2DataManager &m_datamanager;
     S2BoardConfig &m_boardConfig;
     WidgetFactory m_factory;

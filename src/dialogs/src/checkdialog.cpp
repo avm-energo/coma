@@ -231,6 +231,10 @@ QVBoxLayout *CheckDialog::setupGroup(const SGroup &arg, UWidget *uwidget)
             if (widgetLayout != nullptr)
                 groupLayout->addLayout(widgetLayout);
         }
+        else if (mwidget.view == ViewType::Bitstring)
+        {
+            // TODO
+        }
     }
     return groupLayout;
 }

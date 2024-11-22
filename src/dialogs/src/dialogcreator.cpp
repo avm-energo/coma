@@ -37,7 +37,7 @@ void DialogCreator::createDialogs(const AppConfiguration appCfg)
 {
     auto ifaceType = m_device->async()->getInterfaceType();
     deleteDialogs();
-    createConfigDialogs();
+    createConfigDialogs(appCfg);
     createCheckDialogs();
     createJournalDialog();
 
@@ -80,12 +80,12 @@ QList<UDialog *> &DialogCreator::getDialogs()
     return m_dialogs;
 }
 
-void DialogCreator::createConfigDialogs()
+void DialogCreator::createConfigDialogs(const AppConfiguration appCfg)
 {
     for (auto &[boardType, boardConf] : *m_device->getS2Datamanager())
     {
         boardConf.setDefaultConfig();
-        auto confDialog = new ConfigDialog(m_device, boardType, m_parent);
+        auto confDialog = new ConfigDialog(m_device, appCfg, boardType, m_parent);
         const auto &confDialogCaption = boardConf.m_tabName;
         const auto confDialogName = "conf" + QString::number(static_cast<int>(boardType));
         addDialogToList(confDialog, confDialogCaption, confDialogName);

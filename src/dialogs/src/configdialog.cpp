@@ -14,8 +14,10 @@
 #include <widgets/epopup.h>
 #include <widgets/wd_func.h>
 
-ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent)
+ConfigDialog::ConfigDialog(
+    Device::CurrentDevice *device, const AppConfiguration appCfg, const S2BoardType boardType, QWidget *parent)
     : UDialog(device, parent)
+    , m_appCfg(appCfg)
     , m_datamanager(*m_device->getS2Datamanager())
     , m_boardConfig(m_datamanager.getConfiguration(boardType))
     , m_factory(m_boardConfig.m_workingConfig, device)
@@ -63,6 +65,11 @@ bool ConfigDialog::isVisible(const quint16 id) const
         return search->second.first;
     else
         return false;
+}
+
+bool ConfigDialog::isDebugWidget(const quint16 id) const
+{
+    return m_datamanager.getStorage().getDType(id);
 }
 
 void ConfigDialog::saveConfigToFile()
@@ -216,27 +223,31 @@ void ConfigDialog::setupUI()
         const auto id = record.first;
         if (isVisible(id))
         {
-            auto widget = m_factory.createWidget(id, this);
-            if (widget)
+            if ((m_appCfg == AppConfiguration::Debug) //
+                || ((m_appCfg == AppConfiguration::Service) && (!isDebugWidget(id))))
             {
-                auto tab = tabForId(id);
-                auto child = widgetAt(ConfTW, tab);
-                Q_ASSERT(child);
-                if (child)
+                auto widget = m_factory.createWidget(id, this);
+                if (widget)
                 {
-                    auto subBox = child->findChild<QGroupBox *>();
-                    Q_ASSERT(subBox);
-                    if (!subBox)
-                        widget->deleteLater();
-                    else
+                    auto tab = tabForId(id);
+                    auto child = widgetAt(ConfTW, tab);
+                    Q_ASSERT(child);
+                    if (child)
                     {
-                        auto subLayout = subBox->layout();
-                        subLayout->addWidget(widget);
+                        auto subBox = child->findChild<QGroupBox *>();
+                        Q_ASSERT(subBox);
+                        if (!subBox)
+                            widget->deleteLater();
+                        else
+                        {
+                            auto subLayout = subBox->layout();
+                            subLayout->addWidget(widget);
+                        }
                     }
                 }
+                else
+                    qWarning() << "Bad config widget for item: " << id;
             }
-            else
-                qWarning() << "Bad config widget for item: " << id;
         }
     }
     vlyout->addWidget(ConfTW);
@@ -250,15 +261,19 @@ void ConfigDialog::fill()
     {
         if (isVisible(id))
         {
-            std::visit(
-                // thanx to https://stackoverflow.com/a/46115028
-                // in C++20 lambdas could capture structured binding
-                [=, id = id](const auto &&value) {
-                    bool status = m_factory.fillWidget(this, id, value);
-                    if (!status)
-                        qWarning() << "Couldnt fill widget for item: " << id;
-                },
-                record.getData());
+            if ((m_appCfg == AppConfiguration::Debug) //
+                || ((m_appCfg == AppConfiguration::Service) && (!isDebugWidget(id))))
+            {
+                std::visit(
+                    // thanx to https://stackoverflow.com/a/46115028
+                    // in C++20 lambdas could capture structured binding
+                    [=, id = id](const auto &&value) {
+                        bool status = m_factory.fillWidget(this, id, value);
+                        if (!status)
+                            qWarning() << "Couldnt fill widget for item: " << id;
+                    },
+                    record.getData());
+            }
         }
     }
 }

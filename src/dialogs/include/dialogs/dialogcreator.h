@@ -37,7 +37,7 @@ private:
     /// \brief Adding the created dialog to the list for saving.
     void addDialogToList(UDialog *dlg, const QString &caption, const QString &name);
     /// \brief Creating config dialogs.
-    void createConfigDialogs();
+    void createConfigDialogs(const AppConfiguration appCfg);
     /// \brief Creating check dialogs.
     void createCheckDialogs();
     /// \brief Creating a journal dialog.

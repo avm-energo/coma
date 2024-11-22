@@ -93,6 +93,9 @@ void Xml::S2Parser::parseRecord(const QDomNode &recordNode)
         id = parseNum<quint32>(idNode);
         emit nameDataSending(id, parseString(recordNode, tags::name));
     }
+
+    emit dtypeDataSending(id, parseString(recordNode, tags::dtype));
+
     auto typeNode = recordNode.firstChildElement(tags::type);
     if (!typeNode.isNull())
         emit typeDataSending(id, parseType(typeNode));

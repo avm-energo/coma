@@ -24,6 +24,7 @@ public:
 signals:
     void nameDataSending(const quint32 id, const QString &itemName);
     void typeDataSending(const quint32 id, const std::uint64_t type);
+    void dtypeDataSending(const quint32 id, const QString &dtype);
     void widgetDataSending(const quint32 id, const config::itemVariant &widget);
     void configTabDataSending(const quint32 id, const QString &tabName);
 

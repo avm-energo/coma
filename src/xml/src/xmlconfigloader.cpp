@@ -32,6 +32,8 @@ bool ConfigLoader::loadS2Data() noexcept
             &s2storage, &S2::ConfigStorage::nameDataReceive);
         QObject::connect(mS2Parser, &Xml::S2Parser::typeDataSending, //
             &s2storage, &S2::ConfigStorage::typeDataReceive);
+        QObject::connect(mS2Parser, &Xml::S2Parser::dtypeDataSending, //
+            &s2storage, &S2::ConfigStorage::dtypeDataReceive);
         QObject::connect(mS2Parser, &Xml::S2Parser::widgetDataSending, //
             &s2storage, &S2::ConfigStorage::widgetDataReceive);
         QObject::connect(mS2Parser, &Xml::S2Parser::configTabDataSending, //
