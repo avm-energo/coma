@@ -381,7 +381,7 @@
                         <start-addr>1161</start-addr>
                         <toolTip>Давление от датчика LM75B фильтрованная, °С</toolTip>
                     </mwidget>
-                    <mwidget desc="Скорость изменения средней температуры" view="float">
+                    <mwidget desc="Скорость изменения средней температуры, °С/сек" view="float">
                         <start-addr>1162</start-addr>
                         <toolTip>Скорость изменения средней температуры</toolTip>
                     </mwidget>
@@ -405,11 +405,11 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Общие" tab="2">
-                    <mwidget desc="Плотность газа" view="float">
+                    <mwidget desc="Плотность газа, кг/м3" view="float">
                         <start-addr>1100</start-addr>
                         <toolTip>Плотность газа</toolTip>
                     </mwidget>
-                    <mwidget desc="Температура для расчёта плотности газа" view="float">
+                    <mwidget desc="Температура для расчёта плотности газа, °С" view="float">
                         <start-addr>1101</start-addr>
                         <toolTip>Температура для расчёта плотности газа</toolTip>
                     </mwidget>
