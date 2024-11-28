@@ -1,5 +1,6 @@
 #include "xml/xmlparser/xmls2parser.h"
 
+#include <appconfig/appconfig.h>
 #include <gen/datatypes.h>
 #include <s2/s2datatypes.h>
 
@@ -94,7 +95,7 @@ void Xml::S2Parser::parseRecord(const QDomNode &recordNode)
         emit nameDataSending(id, parseString(recordNode, tags::name));
     }
 
-    emit dtypeDataSending(id, parseString(recordNode, tags::dtype));
+    emit dtypeDataSending(id, AppConfiguration::notDenied(parseString(recordNode, tags::dtype)));
 
     auto typeNode = recordNode.firstChildElement(tags::type);
     if (!typeNode.isNull())

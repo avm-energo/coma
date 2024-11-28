@@ -31,6 +31,7 @@
 #include <QToolBar>
 #include <QtGlobal>
 #include <alarms/alarmwidget.h>
+#include <appconfig/appconfig.h>
 #include <comaresources/manage.h>
 #include <comaversion/comaversion.h>
 #include <device/current_device.h>
@@ -68,9 +69,8 @@
 namespace Core
 {
 
-Coma::Coma(const AppConfiguration appCfg, QWidget *parent)
+Coma::Coma(QWidget *parent)
     : QMainWindow(parent)
-    , m_appConfig(appCfg)
     , m_connectionManager(new ConnectionManager(this))
     , m_currentDevice(nullptr)
     , m_dlgManager(new DialogManager(this))
@@ -202,7 +202,7 @@ void Coma::setupMenubar()
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Конвертация файлов переключений", this, &Coma::loadSwjPackConvertor);
-    if (m_appConfig == AppConfiguration::Debug)
+    if (AppConfiguration::app() == AppConfiguration::Debug)
         menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
     menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
     menubar->addMenu(menu);
@@ -476,7 +476,7 @@ void Coma::connectStatusBar()
         msgConnectionImage->setPixmap(pixmap);
 
         // Показываем размер очереди только в Наладке
-        if (m_appConfig == AppConfiguration::Debug && msgQueueSize)
+        if (AppConfiguration::app() == AppConfiguration::Debug && msgQueueSize)
         {
             connect(currentConnection, &Interface::AsyncConnection::queueSizeChanged, this, //
                 [=](const quint64 size) { msgQueueSize->setText(QString("Queue size: %1").arg(size)); });
@@ -498,7 +498,7 @@ void Coma::prepareDialogs()
     cfgLoader->deleteLater();
 
     AlarmW->configure(m_currentDevice);
-    m_dlgManager->setupUI(m_currentDevice, m_appConfig, size());
+    m_dlgManager->setupUI(m_currentDevice, size());
     // Запрашиваем s2 конфигурацию от модуля
     // s2requestService->request(S2::FilesEnum::Config, true);
     m_currentDevice->getFileProvider()->request(S2::FilesEnum::Config, true);

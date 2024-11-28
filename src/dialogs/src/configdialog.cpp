@@ -3,21 +3,20 @@
 #include <QDebug>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QMap>
 #include <QScrollArea>
+#include <appconfig/appconfig.h>
 #include <device/current_device.h>
 #include <dialogs/keypressdialog.h>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <set>
 #include <widgets/epopup.h>
 #include <widgets/wd_func.h>
 
-ConfigDialog::ConfigDialog(
-    Device::CurrentDevice *device, const AppConfiguration appCfg, const S2BoardType boardType, QWidget *parent)
+ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent)
     : UDialog(device, parent)
-    , m_appCfg(appCfg)
     , m_datamanager(*m_device->getS2Datamanager())
     , m_boardConfig(m_datamanager.getConfiguration(boardType))
     , m_factory(m_boardConfig.m_workingConfig, device)
@@ -172,7 +171,7 @@ quint32 ConfigDialog::tabForId(quint16 id)
     return tab;
 }
 
-void ConfigDialog::createTabs(QTabWidget *tabWidget)
+std::set<delegate::WidgetGroup> ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
     std::set<delegate::WidgetGroup> uniqueTabs;
     auto &tabs = m_datamanager.getStorage().getConfigTabs();
@@ -202,6 +201,7 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
         scrollArea->setWidget(subBox);
         tabWidget->addTab(scrollArea, tabName);
     }
+    return uniqueTabs;
 }
 
 QWidget *widgetAt(QTabWidget *tabWidget, int tab)
@@ -216,20 +216,20 @@ void ConfigDialog::setupUI()
 {
     auto vlyout = new QVBoxLayout;
     auto ConfTW = new QTabWidget(this);
-    createTabs(ConfTW);
+    std::set<delegate::WidgetGroup> tabs = createTabs(ConfTW);
+    std::map<quint32, bool> tabUseMap;
 
     for (const auto &record : m_boardConfig.m_defaultConfig)
     {
         const auto id = record.first;
         if (isVisible(id))
         {
-            if ((m_appCfg == AppConfiguration::Debug) //
-                || ((m_appCfg == AppConfiguration::Service) && (!isDebugWidget(id))))
+            if (isDebugWidget(id))
             {
                 auto widget = m_factory.createWidget(id, this);
                 if (widget)
                 {
-                    auto tab = tabForId(id);
+                    const auto tab = tabForId(id);
                     auto child = widgetAt(ConfTW, tab);
                     Q_ASSERT(child);
                     if (child)
@@ -242,6 +242,7 @@ void ConfigDialog::setupUI()
                         {
                             auto subLayout = subBox->layout();
                             subLayout->addWidget(widget);
+                            tabUseMap[tab] = true;
                         }
                     }
                 }
@@ -249,6 +250,13 @@ void ConfigDialog::setupUI()
                     qWarning() << "Bad config widget for item: " << id;
             }
         }
+    }
+    quint8 count = 0;
+    for (const auto tab : tabs)
+    {
+        if (tabUseMap.find(tab) == tabUseMap.end())
+            ConfTW->setTabVisible(count, false);
+        ++count;
     }
     vlyout->addWidget(ConfTW);
     vlyout->addWidget(ConfButtons());
@@ -261,8 +269,7 @@ void ConfigDialog::fill()
     {
         if (isVisible(id))
         {
-            if ((m_appCfg == AppConfiguration::Debug) //
-                || ((m_appCfg == AppConfiguration::Service) && (!isDebugWidget(id))))
+            if (isDebugWidget(id))
             {
                 std::visit(
                     // thanx to https://stackoverflow.com/a/46115028
@@ -338,6 +345,11 @@ void ConfigDialog::checkConfig()
 {
     m_confErrors.clear();
     /// TODO: А как проверять конфигурацию?
+    /// для каждого widget record в S2Config (m_s2storage.getWidgetMap())
+    ///     std::visit(
+    ///     overloaded {
+    ///         [&](const delegate::DoubleSpinBoxGroup &arg) {
+    ///
 }
 
 void ConfigDialog::parseStatusHandle(const Error::Msg status)

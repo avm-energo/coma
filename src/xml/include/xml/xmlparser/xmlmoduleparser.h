@@ -33,7 +33,7 @@ signals:
     void startNewConfig();
     void newFeatureParsedSignal(const QString &featurename, const QString &featurevalue);
     void signalDataSending(const u32 id, const quint64 addr, const u16 count, const Xml::SignalType sigType);
-    void tabDataSending(const u32 id, const QString &name);
+    void tabDataSending(const u32 id, const SectionTabStruct &name);
     void sectionDataSending(const Xml::SGMap &sgmap, const QString &secHead);
     void alarmStateAllDataSending(const Xml::AlarmType type, const u32 index, const QString &desc);
     void alarmDataSending(const Xml::AlarmType type, const u32 addr, const QString &desc, const QList<u32> &highlights);

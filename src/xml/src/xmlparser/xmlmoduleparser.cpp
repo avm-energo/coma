@@ -1,5 +1,6 @@
 #include "xml/xmlparser/xmlmoduleparser.h"
 
+#include <appconfig/appconfig.h>
 #include <device/current_device.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
@@ -134,9 +135,12 @@ void Xml::ModuleParser::parseSignal(const QDomNode &sigNode)
 
 void Xml::ModuleParser::parseSTab(const QDomNode &sTabNode)
 {
+    bool isDebug;
     auto id = parseNumFromNode<u32>(sTabNode, tags::id);
     auto name = parseString(sTabNode, tags::name);
-    emit tabDataSending(id, name);
+    auto stabDType = parseString(sTabNode, tags::dtype);
+    isDebug = AppConfiguration::notDenied(stabDType);
+    emit tabDataSending(id, { name, isDebug });
 }
 
 void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
@@ -149,6 +153,7 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
         auto sgroupElem = sgroupNode.toElement();
         auto sgroupHeader = sgroupElem.attribute(tags::header, "");
         auto sgroupTab = sgroupElem.attribute(tags::tab, "").toUInt();
+        auto sgroupDType = sgroupElem.attribute(tags::dtype, "");
         callForEachChild(sgroupNode, [&](const QDomNode &mwidgetNode) {
             auto mwidgetElem = mwidgetNode.toElement();
             auto mwidgetDesc = mwidgetElem.attribute(tags::desc, "");

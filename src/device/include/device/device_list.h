@@ -12,7 +12,7 @@ enum class Model : u16
     KTF = 0xA282,
     KIV = 0xA284,
     KDV = 0xA387,
-    MPE = 0xC001
+    MPG = 0xC001
 };
 
 enum class BaseBoard : u8
@@ -58,7 +58,7 @@ static const std::unordered_map<Model, std::string_view> BoxModules {
     { Model::KTF, "AVM-KTF" }, //
     { Model::KIV, "AVM-KIV" }, //
     { Model::KDV, "AVM-KDV" }, //
-    { Model::MPE, "AVM-MPE" }, //
+    { Model::MPG, "AVM-MPG" }, //
 };
 
 static const std::unordered_map<BaseBoard, std::string_view> BaseBoards {

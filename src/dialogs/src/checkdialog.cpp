@@ -117,22 +117,26 @@ void CheckDialog::setupUI()
     const auto tabIds = mSection.sgMap.uniqueKeys();
     for (auto &&tabId : tabIds)
     {
-        auto widget = new UWidget(m_device, this);
-        auto layout = new QVBoxLayout;
-        const auto groups = mSection.sgMap.values(tabId);
-        for (auto &&group : groups)
+        if (tabs.value(tabId).notDenied)
         {
-            auto groupBox = new QGroupBox(widget);
-            groupBox->setTitle(group.name);
-            groupBox->setLayout(setupGroup(group, widget));
-            layout->addWidget(groupBox);
+            auto widget = new UWidget(m_device, this);
+            auto layout = new QVBoxLayout;
+            const auto groups = mSection.sgMap.values(tabId);
+            for (auto &&group : groups)
+            {
+                auto groupBox = new QGroupBox(widget);
+                groupBox->setTitle(group.name);
+                groupBox->setLayout(setupGroup(group, widget));
+                layout->addWidget(groupBox);
+            }
+            layout->addStretch(100);
+            widget->setLayout(layout);
+            addSignals(groups, widget);
+            m_TabList.push_back({ tabs.value(tabId).name, widget });
         }
-        layout->addStretch(100);
-        widget->setLayout(layout);
-        addSignals(groups, widget);
-        m_TabList.push_back({ tabs.value(tabId), widget });
     }
-    m_TabList.first().widget->engine()->setUpdatesEnabled();
+    if (!m_TabList.empty())
+        m_TabList.first().widget->engine()->setUpdatesEnabled();
     currentTabIndex = 0;
     setupTabWidget();
 }

@@ -72,7 +72,7 @@ public slots:
     void typeDataReceive(const quint32 id, const std::uint64_t typeId);
     /// \brief Слот для сохранения информации о дебажности параметра
     /// \param typeId: Yes - дебажный, No или пустая строка - сервисный
-    void dtypeDataReceive(const quint32 id, const QString &dtype);
+    void dtypeDataReceive(const quint32 id, bool dtype);
     /// \brief Слот для сохранения информации о виджете по его S2 ID.
     /// \see getWidgetMap.
     void widgetDataReceive(const quint32 id, const config::itemVariant &widget);

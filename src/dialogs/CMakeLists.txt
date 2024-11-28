@@ -20,12 +20,13 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 # Linking library dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  alarms
-  journals
-  oscillograms
-  startup
-  tune
-  Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
+    appconfig
+    alarms
+    journals
+    oscillograms
+    startup
+    tune
+    Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
 )
 
 # Building library with emulator support if this option enabled

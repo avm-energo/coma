@@ -29,7 +29,7 @@ public:
     /// \brief Returns pointers to UI elements (sidebar and main workspace) in QPair struct.
     QPair<QListWidget *, QStackedWidget *> getUI();
     /// \brief Setup UI using DialogCreator for creating dialogs for current device.
-    void setupUI(Device::CurrentDevice *device, const AppConfiguration appCfg, const QSize size);
+    void setupUI(Device::CurrentDevice *device, const QSize size);
     /// \brief Removing dialogs, clear and hide UI elements.
     void clearDialogs();
 

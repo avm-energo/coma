@@ -77,7 +77,7 @@
         <config desc="Конфигурация">
             <record>
                 <id>25</id>
-                <defaultValue>19200</defaultValue>
+                <defaultValue>38400</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
@@ -322,10 +322,12 @@
             <tab>
                 <id>2</id>
                 <name>Полные</name>
+                <dtype>Yes</dtype>
             </tab>
             <tab>
                 <id>3</id>
                 <name>Диагностика</name>
+                <dtype>Yes</dtype>
             </tab>
         </section-tabs>
         <sections desc="Разделы">

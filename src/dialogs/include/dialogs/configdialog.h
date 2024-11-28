@@ -3,6 +3,7 @@
 #include <dialogs/dialogcreator.h>
 #include <dialogs/errconfstate.h>
 #include <s2/s2datamanager.h>
+#include <set>
 #include <widgets/udialog.h>
 #include <widgets/widgetfactory.h>
 
@@ -11,8 +12,7 @@ class QTabWidget;
 class ConfigDialog final : public UDialog
 {
 public:
-    explicit ConfigDialog(Device::CurrentDevice *device, const AppConfiguration appCfg, const S2BoardType boardType,
-        QWidget *parent = nullptr);
+    explicit ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent = nullptr);
     void setDefaultConfig();
 
 private slots:
@@ -23,7 +23,7 @@ private slots:
 private:
     QWidget *ConfButtons();
     quint32 tabForId(quint16 id);
-    void createTabs(QTabWidget *tabWidget);
+    std::set<delegate::WidgetGroup> createTabs(QTabWidget *tabWidget);
     void setupUI();
 
     void fill();
@@ -39,7 +39,6 @@ private:
     bool isDebugWidget(const quint16 id) const;
     void showConfigErrState();
 
-    AppConfiguration m_appCfg;
     S2DataManager &m_datamanager;
     S2BoardConfig &m_boardConfig;
     WidgetFactory m_factory;
