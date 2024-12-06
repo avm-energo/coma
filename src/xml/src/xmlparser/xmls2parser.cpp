@@ -56,7 +56,7 @@ const QHash<QString, std::uint64_t> Xml::S2Parser::nameTypeMap = {
     { "FLOAT[6]", ctti::unnamed_type_id<S2::FLOAT_6t>().hash() },                     //
     { "FLOAT[8]", ctti::unnamed_type_id<S2::FLOAT_8t>().hash() },                     //
     { "INT32", ctti::unnamed_type_id<S2::INT32>().hash() },                           //
-    { "CONF_DENS[3]", ctti::unnamed_type_id<S2::CONF_DENS_3t>().hash() },             //
+    { "CONF_DENS[3]", ctti::unnamed_type_id<S2::GasDensity_3t>().hash() },            //
     { "CONFMAST", ctti::unnamed_type_id<S2::CONFMAST>().hash() },                     //
 }; ///< Хэш-мапа для идентификации типа в рантайме
 
@@ -121,7 +121,7 @@ void Xml::S2Parser::groupParse(delegate::Group &group, const QDomElement &widget
         group.items = items;
 }
 
-void Xml::S2Parser::comboBoxParse(delegate::QComboBox &comboBox, //
+void Xml::S2Parser::comboBoxParse(delegate::ComboBox &comboBox, //
     const QDomElement &widgetNode, const QStringList &items)
 {
     comboBox.model = items;
@@ -133,11 +133,11 @@ void Xml::S2Parser::comboBoxParse(delegate::QComboBox &comboBox, //
         if (!fieldStr.isEmpty())
         {
             if (fieldStr.contains(tags::data))
-                comboBox.primaryField = delegate::QComboBox::data;
+                comboBox.primaryField = delegate::ComboBox::data;
             else if (fieldStr.contains(tags::bitfield))
-                comboBox.primaryField = delegate::QComboBox::bitfield;
+                comboBox.primaryField = delegate::ComboBox::bitfield;
             else
-                comboBox.primaryField = delegate::QComboBox::index;
+                comboBox.primaryField = delegate::ComboBox::index;
         }
     }
 }
@@ -200,13 +200,13 @@ config::itemVariant Xml::S2Parser::parseWidget(const QDomElement &widgetNode)
         }
         case ctti::unnamed_type_id<QComboBox>().hash():
         {
-            delegate::QComboBox widget(type, description, widgetGroup, toolTip);
+            delegate::ComboBox widget(type, description, widgetGroup, toolTip);
             comboBoxParse(widget, widgetNode, items);
             return std::move(widget);
         }
         case ctti::unnamed_type_id<QComboBoxGroup>().hash():
         {
-            delegate::QComboBoxGroup widget(type, description, widgetGroup, toolTip);
+            delegate::ComboBoxGroup widget(type, description, widgetGroup, toolTip);
             groupParse(widget, widgetNode, items);
             comboBoxParse(widget, widgetNode, items);
             return std::move(widget);

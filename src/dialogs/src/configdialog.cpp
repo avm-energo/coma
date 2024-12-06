@@ -291,9 +291,12 @@ void ConfigDialog::fillBack()
     {
         if (isVisible(id))
         {
-            auto status = m_factory.fillBack(id, this);
-            if (!status)
-                qWarning() << "Couldnt fill back item from widget: " << id;
+            if (isDebugWidget(id))
+            {
+                auto status = m_factory.fillBack(id, this);
+                if (!status)
+                    qWarning() << "Couldnt fill back item from widget: " << id;
+            }
         }
     }
     checkConfig();

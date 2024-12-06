@@ -10,6 +10,7 @@ ModuleAlarm::ModuleAlarm(const AlarmType type, const AlarmValue &alarms, //
 {
     m_alarmColor = getColorByType(type);
     setupUI(m_alarms.values());
+    setMinimumWidth(300);
 }
 
 void ModuleAlarm::followToData(const SignalMap &sigMap)

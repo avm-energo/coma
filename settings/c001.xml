@@ -113,13 +113,13 @@
             </record>
             <record>
                 <id>1390</id>
-                <defaultValue>0, 0, 0</defaultValue>
+                <defaultValue>1;146.06;1.0;100,0,0</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1391</id>
-                <defaultValue>0, 0, 0</defaultValue>
+                <defaultValue>0.62, 0.58, 0.55</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
@@ -317,7 +317,7 @@
         <section-tabs desc="Вкладки">
             <tab>
                 <id>1</id>
-                <name>Краткие</name>
+                <name>Текущие</name>
             </tab>
             <tab>
                 <id>2</id>

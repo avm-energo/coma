@@ -5064,7 +5064,7 @@
 			<widget>
 				<type>GasDensityWidget</type>
 				<group>7</group>
-				<string>Виджет для передачи данных о газах</string>
+				<string>Данные о газах</string>
 			</widget>
 		</record>
 		<record>
@@ -5075,12 +5075,12 @@
 			<widget>
 				<type>DoubleSpinBoxGroup</type>
 				<group>7</group>
-				<string>Давление газа, МПа (1МПа = 10,19716 кгс/см^2)</string>
+				<string>Уставки</string>
 				<count>3</count>
 				<string-array>
-					<item>Номинальное (давление заполнения)</item>
-					<item>Давление предупредительной уставки</item>
-					<item>Давление аварийной уставки</item>
+					<item>Номинальное (давление заполнения), МПа</item>
+					<item>Давление предупредительной уставки, МПа</item>
+					<item>Давление аварийной уставки, МПа</item>
 				</string-array>
 				<min>0</min>
 				<max>5000</max>

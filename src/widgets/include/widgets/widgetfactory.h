@@ -37,7 +37,7 @@ private:
         ctti::unnamed_type_id_t type, const T &value);
     QList<QStandardItem *> createItem(quint16 key, const S2::CONFMAST &value);
     bool fillCheckBox(const QWidget *parent, quint16 key, bool value);
-    bool fillGasWidget(const QWidget *parent, quint16 key, const S2::CONF_DENS_3t &value);
+    bool fillGasWidget(const QWidget *parent, quint16 key, const S2::GasDensity_3t &value);
 
     template <typename T> bool fillBackItem(quint16 key, const QWidget *parent, quint16 parentKey) const;
 
@@ -49,9 +49,12 @@ private:
     bool fillBackSPBG(quint32 id, const QWidget *parent) const;
     bool fillBackSPB(quint32 id, const QWidget *parent) const;
     bool fillBackChBG(quint32 id, const QWidget *parent) const;
-    bool fillBackComboBox(quint32 id, const QWidget *parent, delegate::QComboBox::PrimaryField field) const;
+    bool fillBackComboBox(quint32 id, const QWidget *parent, delegate::ComboBox::PrimaryField field) const;
     bool fillBackComboBoxGroup(quint32 id, const QWidget *parent, int count) const;
     bool fillBackGasWidget(quint32 id, const QWidget *parent) const;
+
+    // add vertical line widget
+    void addVerticalLine(QLayout *lyout, QWidget *parent);
 };
 
 // Template definition
@@ -149,7 +152,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                                return;
                            }
                        }
-                       if constexpr (std::is_same_v<T, S2::CONF_DENS_3t>)
+                       if constexpr (std::is_same_v<T, S2::GasDensity_3t>)
                        {
                            if (arg.type == ctti::unnamed_type_id<GasDensityWidget>())
                            {
@@ -199,12 +202,12 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                            }
                        }
                    },
-                   [&](const delegate::QComboBox &arg) {
+                   [&](const delegate::ComboBox &arg) {
                        if constexpr (!std_ext::is_container<T>())
                        {
                            switch (arg.primaryField)
                            {
-                           case delegate::QComboBox::data:
+                           case delegate::ComboBox::data:
                            {
                                QString strValue;
                                if constexpr (std::is_floating_point_v<T>)
@@ -230,10 +233,10 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                            }
                        }
                    },
-                   [&](const delegate::QComboBoxGroup &arg) {
+                   [&](const delegate::ComboBoxGroup &arg) {
                        if constexpr (!std_ext::is_container<T>() && std::is_arithmetic_v<T>)
                        {
-                           std::bitset<sizeof(T) *CHAR_BIT> bitset = value;
+                           std::bitset<sizeof(T) * CHAR_BIT> bitset = value;
                            auto count = getRealCount(key);
                            bool flag = false;
                            for (auto i = 0; i != count; ++i)

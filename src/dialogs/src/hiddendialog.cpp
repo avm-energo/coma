@@ -51,7 +51,7 @@ void HiddenDialog::generateDefaultSettings()
                     BinaryType::uint32, ViewType::Version, true },
                 HiddenWidget { "reserved", "Резерв", 4, 8,          //
                     BinaryType::uint32, ViewType::LineEdit, false } //
-            } }                                                     //
+            } } //
     };
 }
 
@@ -118,7 +118,9 @@ void HiddenDialog::setupUI()
     connect(modeChangeBtn, &QAbstractButton::clicked, this, [this] {
         if (checkPassword())
         {
+            EMessageBox::warning(this, "Активирован режим Д'Артаньяна");
             m_isGodMode = true;
+            fill();
             updateUI();
         }
     });

@@ -75,7 +75,7 @@ struct CheckBoxGroup : Widget, Group
     }
 };
 
-struct QComboBox : Widget
+struct ComboBox : Widget
 {
     enum PrimaryField : int
     {
@@ -84,7 +84,7 @@ struct QComboBox : Widget
         bitfield = 2
     };
 
-    QComboBox(
+    ComboBox(
         const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
         : Widget(type_, desc_, group_, toolTip_)
     {
@@ -94,11 +94,11 @@ struct QComboBox : Widget
     QStringList model;
 };
 
-struct QComboBoxGroup : QComboBox, Group
+struct ComboBoxGroup : ComboBox, Group
 {
-    QComboBoxGroup(
+    ComboBoxGroup(
         const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
-        : QComboBox(type_, desc_, group_, toolTip_)
+        : ComboBox(type_, desc_, group_, toolTip_)
     {
     }
 };
@@ -140,11 +140,11 @@ struct Item : delegate::Widget
 
 using itemVariant = std::variant<  //
     delegate::Widget,              //
-    delegate::QComboBox,           //
+    delegate::ComboBox,           //
     delegate::DoubleSpinBoxGroup,  //
     delegate::DoubleSpinBoxWidget, //
     delegate::CheckBoxGroup,       //
-    delegate::QComboBoxGroup,      //
+    delegate::ComboBoxGroup,      //
     Item                           //
     >;
 

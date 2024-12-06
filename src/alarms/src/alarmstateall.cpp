@@ -13,6 +13,7 @@ AlarmStateAll::AlarmStateAll(Device::CurrentDevice *device, QWidget *parent)
     if (m_config.empty())
         generateDefaultConfig();
     setupUI();
+    setMinimumWidth(300);
 }
 
 void AlarmStateAll::generateDefaultConfig()

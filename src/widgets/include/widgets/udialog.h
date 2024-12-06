@@ -12,6 +12,7 @@ public:
 
     void disableSuccessMessage();
     void enableSuccessMessage();
+    void enableOnceMessage();
     bool disableMessages();
     bool enableMessages();
 
@@ -26,6 +27,7 @@ protected:
 private:
     QString m_successMsg;
     QString m_errorMsg;
-    bool showSuccessMessageFlag;
+    bool m_showSuccessMessageFlag;
     QMetaObject::Connection m_genRespConn;
+    bool m_showOnceMessage;
 };
