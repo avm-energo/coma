@@ -64,7 +64,7 @@ signals:
     /// \brief Сигнал для уведомления UI о том, что журнал загружен успешно.
     void ready();
     /// \brief Сигнал для JournalDialog о том, что нужно единожды показать сообщение
-    void showOnceSuccessMsg();
+    void showOnceSuccessMsg(const QString &msg);
 };
 
 }

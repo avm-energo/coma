@@ -36,7 +36,6 @@ void ModuleAlarm::setupUI(const QStringList &events)
     auto mainLayout = new QVBoxLayout(this);
     auto widget = new QWidget(this);
     auto vLayout = new QVBoxLayout(widget);
-    widget->setLayout(vLayout);
 
     // Создаём labels и circles
     m_labelStateStorage.reserve(events.size());
@@ -52,6 +51,7 @@ void ModuleAlarm::setupUI(const QStringList &events)
         m_labelStateStorage.append({ label, false });
         index++;
     }
+    widget->setLayout(vLayout);
 
     // Создаём QScrollArea
     auto scrollArea = new QScrollArea(this);

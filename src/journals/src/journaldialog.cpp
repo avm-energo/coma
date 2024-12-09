@@ -93,8 +93,9 @@ void JournalDialog::createJournalAndFillModel(const S2::S2BFile &journalFile)
     }
 }
 
-void JournalDialog::enableOnceSuccessMsg()
+void JournalDialog::enableOnceSuccessMsg(const QString &msg)
 {
+    setSuccessMsg(msg);
     enableOnceMessage();
 }
 

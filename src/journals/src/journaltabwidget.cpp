@@ -84,7 +84,7 @@ void JournalTabWidget::gettingJournal()
 
 void JournalTabWidget::eraseJournal()
 {
-    emit showOnceSuccessMsg();
+    emit showOnceSuccessMsg("Журнал очищен успешно");
     if (EMessageBox::password(this))
         m_async->writeCommand(Interface::Commands::C_EraseJournals, static_cast<quint16>(m_type));
 }

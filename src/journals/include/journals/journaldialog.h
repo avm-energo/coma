@@ -35,7 +35,7 @@ private slots:
     /// журнал в формате S2B одной из вкладок.
     void createJournalAndFillModel(const S2::S2BFile &journalFile);
     /// \brief Слот для включения однократного успешного сообщения
-    void enableOnceSuccessMsg();
+    void enableOnceSuccessMsg(const QString &msg);
 };
 
 }
