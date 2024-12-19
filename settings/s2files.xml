@@ -2445,12 +2445,12 @@
 		<record>
 			<id>1052</id>
 			<name>ITT1nom</name>
-			<description>Номинальный первичный ток А</description>
+			<description>Номинальный первичный ток ТТ, А</description>
 			<type>FLOAT</type>
 			<widget>
 				<type>QDoubleSpinBox</type>
 				<group>100</group>
-				<string>Номинальный первичный ток, кА</string>
+				<string>Номинальный первичный ток ТТ, А</string>
 				<min>0</min>
 				<max>10000</max>
 				<decimals>0</decimals>
@@ -2459,12 +2459,12 @@
 		<record>
 			<id>1053</id>
 			<name>ITT2nom</name>
-			<description>Номинальный вторичный ток , А</description>
+			<description>Номинальный вторичный ток ТТ, А</description>
 			<type>FLOAT</type>
 			<widget>
 				<type>QDoubleSpinBox</type>
 				<group>100</group>
-				<string>Номинальный вторичный ток, А</string>
+				<string>Номинальный вторичный ток ТТ, А</string>
 				<min>0</min>
 				<max>10000</max>
 				<decimals>1</decimals>
@@ -4187,7 +4187,7 @@
 				<string>Номинальное скольжение</string>
 				<min>0</min>
 				<max>10000</max>
-				<decimals>1</decimals>
+				<decimals>3</decimals>
 			</widget>
 		</record>
 		<record>
