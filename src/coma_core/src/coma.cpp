@@ -32,6 +32,7 @@
 #include <QtGlobal>
 #include <alarms/alarmwidget.h>
 #include <appconfig/appconfig.h>
+#include <autonomous/hex2binfileconverter.h>
 #include <comaresources/manage.h>
 #include <comaversion/comaversion.h>
 #include <device/current_device.h>
@@ -202,6 +203,7 @@ void Coma::setupMenubar()
     menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Конвертация файлов переключений", this, &Coma::loadSwjPackConvertor);
+    menu->addAction("Конвертация файлов HEX -> BIN", this, &Coma::hex2BinConverter);
     if (AppConfiguration::app() == AppConfiguration::Debug)
         menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
     menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
@@ -273,6 +275,12 @@ void Coma::loadSwjPackConvertor()
 {
     auto convertor = new SwjPackConvertor(this);
     convertor->selectDirectory();
+}
+
+void Coma::hex2BinConverter()
+{
+    Hex2BinFileConverter *converter = new Hex2BinFileConverter(this);
+    converter->start();
 }
 
 void Coma::loadJournal(const QString &filename)

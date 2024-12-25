@@ -29,10 +29,10 @@ struct HexRecord
     QByteArray data;       ///< Data unit of the record (may be null).
 };
 
-constexpr quint8 startCode = ':';                    ///< HEX record start code.
-constexpr auto minRecordSize = 5;                    ///< Min HEX record size.
-constexpr auto maxRecordSize = 0xff + minRecordSize; ///< Max HEX record size.
-constexpr quint16 idNotFound = 0xffff;               ///< ID for the invalid block address.
+constexpr quint8 c_startCode = ':';                      ///< HEX record start code.
+constexpr auto c_minRecordSize = 5;                      ///< Min HEX record size.
+constexpr auto c_maxRecordSize = 0xff + c_minRecordSize; ///< Max HEX record size.
+constexpr quint16 c_idNotFound = 0xffff;                 ///< ID for the invalid block address.
 
 /// \brief Enumeration to represent the error type of the HEX parser.
 enum class HexParseError : quint8
@@ -83,6 +83,9 @@ public:
 
     /// \brief Returns S2 format of the stored HEX records.
     std::vector<S2::FileStruct> getS2Format();
+
+    /// \brief Returns binary file of stored hex
+    QByteArray getBinaryFormat();
 
 signals:
     /// \brief The signal for the parsing error information.

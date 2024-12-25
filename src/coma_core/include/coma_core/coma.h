@@ -49,6 +49,7 @@ private slots:
     void loadOsc();
     void loadSwj();
     void loadSwjPackConvertor();
+    void hex2BinConverter();
     void openJournalViewer();
     void openXmlEditor();
     void showAboutDialog();
