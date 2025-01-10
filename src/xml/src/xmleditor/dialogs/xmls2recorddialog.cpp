@@ -1,7 +1,9 @@
-#include "xml/xmleditor/dialogs/xmls2recorddialog.h"
-
+#include <gen/stdfunc.h>
 #include <limits>
 #include <widgets/wd_func.h>
+#include <xml/xmleditor/dialogs/xmls2recorddialog.h>
+#include <xml/xmleditor/models/xmldatamodel.h>
+#include <xml/xmltags.h>
 
 const QStringList XmlS2RecordDialog::s_dataTypes {
     "BYTE", "BYTE[4]", "BYTE[6]", "BYTE[8]", "BYTE[16]", "BYTE[32]",       //
@@ -149,17 +151,13 @@ void XmlS2RecordDialog::createWidgetEditBox()
     widgetLayout->addLayout(widgetTypeLayout);
     m_dlgItems.append(widgetTypeInput);
 
+    bool ok = loadS2TabsData();
     // Виджеты для ID вкладки виджета
     auto groupLabel = new QLabel("ID вкладки виджета: ", this);
-    auto groupInput = new QSpinBox(this);
-    groupInput->setMinimum(0);
-    groupInput->setMaximum(idMax);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(groupInput, &QSpinBox::textChanged, this, //
+    auto groupInput = new QComboBox(this);
+    groupInput->addItems(m_s2TabsMap.keys());
+    QObject::connect(groupInput, &QComboBox::currentIndexChanged, this, //
         qOverload<const QString &>(&XmlS2RecordDialog::dataChanged));
-#endif
-    QObject::connect(groupInput, qOverload<int>(&QSpinBox::valueChanged), //
-        this, qOverload<int>(&XmlS2RecordDialog::dataChanged));
     groupLayout->addWidget(groupLabel);
     groupLayout->addWidget(groupInput);
     widgetLayout->addLayout(groupLayout);
@@ -294,4 +292,44 @@ void XmlS2RecordDialog::loadModelData(const QStringList &response)
 {
     XmlDialog::loadModelData(response);
     resetChangeState();
+}
+
+bool XmlS2RecordDialog::loadS2TabsData()
+{
+    QDir homeDir(StdFunc::GetSystemHomeDir());
+    auto filename = qvariant_cast<QString>("s2files.xml");
+    auto moduleFile = new QFile(homeDir.filePath(filename), this);
+    if (moduleFile->open(QIODevice::ReadOnly))
+    {
+        QDomDocument domDoc;
+        QString errMsg = "";
+        auto line = 0, column = 0;
+        if (domDoc.setContent(moduleFile, &errMsg, &line, &column))
+        {
+            auto domElement = domDoc.documentElement();
+            auto childs = domElement.childNodes();
+            int count = 0;
+            for (auto i = 0; i < childs.count(); i++)
+            {
+                auto child = childs.item(i);
+                if (!child.isComment() && child.isElement())
+                {
+                    auto childNodeName = child.nodeName();
+                    if (childNodeName == tags::conf_tabs)
+                    {
+                        sfvgasfgsf
+                    }
+                }
+            }
+        }
+        // Если QtXml парсер не смог корректно считать xml файл
+        else
+        {
+            qWarning() << errMsg << " File: " << filename << " Line: " << line << " Column: " << column;
+            return false;
+        }
+        moduleFile->close();
+    }
+    moduleFile->deleteLater();
+    return true;
 }
