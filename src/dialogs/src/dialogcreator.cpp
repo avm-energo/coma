@@ -145,6 +145,9 @@ void DialogCreator::createTuneDialogs()
     case Model::KDV:
         /// TODO: Регулировка КДВ
         break;
+    case Model::KOT:
+        /// TODO: Регулировка КОТ
+        break;
     default:
         if (m_typeB == BaseBoard::MTB_80)
         {
