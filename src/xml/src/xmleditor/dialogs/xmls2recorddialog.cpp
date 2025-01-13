@@ -1,4 +1,5 @@
 #include <gen/stdfunc.h>
+#include <gen/xml/xmlparse.h>
 #include <limits>
 #include <widgets/wd_func.h>
 #include <xml/xmleditor/dialogs/xmls2recorddialog.h>
@@ -154,10 +155,10 @@ void XmlS2RecordDialog::createWidgetEditBox()
     bool ok = loadS2TabsData();
     // Виджеты для ID вкладки виджета
     auto groupLabel = new QLabel("ID вкладки виджета: ", this);
-    auto groupInput = new QComboBox(this);
-    groupInput->addItems(m_s2TabsMap.keys());
-    QObject::connect(groupInput, &QComboBox::currentIndexChanged, this, //
-        qOverload<const QString &>(&XmlS2RecordDialog::dataChanged));
+    auto groupInput = new EComboBox(this);
+    groupInput->setItems(m_s2TabsMap);
+    QObject::connect(groupInput, &EComboBox::currentIndexChanged, this, //
+        qOverload<int>(&XmlS2RecordDialog::dataChanged));
     groupLayout->addWidget(groupLabel);
     groupLayout->addWidget(groupInput);
     widgetLayout->addLayout(groupLayout);
@@ -288,6 +289,13 @@ void XmlS2RecordDialog::createWidgetEditBox()
     m_widgetEdit->setLayout(widgetLayout);
 }
 
+void XmlS2RecordDialog::parseConfigTab(const QDomNode &tabNode)
+{
+    int index = XmlParse::parseNumFromNode<u32>(tabNode, tags::id);
+    QString desc = XmlParse::parseString(tabNode, tags::name);
+    m_s2TabsMap[desc] = index;
+}
+
 void XmlS2RecordDialog::loadModelData(const QStringList &response)
 {
     XmlDialog::loadModelData(response);
@@ -307,20 +315,9 @@ bool XmlS2RecordDialog::loadS2TabsData()
         if (domDoc.setContent(moduleFile, &errMsg, &line, &column))
         {
             auto domElement = domDoc.documentElement();
-            auto childs = domElement.childNodes();
-            int count = 0;
-            for (auto i = 0; i < childs.count(); i++)
-            {
-                auto child = childs.item(i);
-                if (!child.isComment() && child.isElement())
-                {
-                    auto childNodeName = child.nodeName();
-                    if (childNodeName == tags::conf_tabs)
-                    {
-                        sfvgasfgsf
-                    }
-                }
-            }
+            XmlParse::parseNode(domElement, tags::conf_tabs, [this](const QDomNode &tabNode) {
+                parseConfigTab(tabNode); //
+            });
         }
         // Если QtXml парсер не смог корректно считать xml файл
         else

@@ -6,16 +6,28 @@
 			<name>Пустая группа</name>
 		</tab>
 		<tab>
-			<id>210</id>
-			<name>IEC 60870-5-104</name>
+			<id>5</id>
+			<name>Гистерезис сигнализации</name>
 		</tab>
 		<tab>
-			<id>220</id>
-			<name>Настройки IP</name>
+			<id>7</id>
+			<name>Газовая смесь</name>
+		</tab>
+		<tab>
+			<id>9</id>
+			<name>Параметры двигателя</name>
 		</tab>
 		<tab>
 			<id>50</id>
 			<name>Коммутируемое оборудование</name>
+		</tab>
+		<tab>
+			<id>51</id>
+			<name>Параметры алгоритма</name>
+		</tab>
+		<tab>
+			<id>52</id>
+			<name>Коррекция по внешним условиям</name>
 		</tab>
 		<tab>
 			<id>100</id>
@@ -42,24 +54,12 @@
 			<name>Ресурс</name>
 		</tab>
 		<tab>
-			<id>51</id>
-			<name>Параметры алгоритма</name>
+			<id>210</id>
+			<name>IEC 60870-5-104</name>
 		</tab>
 		<tab>
-			<id>52</id>
-			<name>Коррекция по внешним условиям</name>
-		</tab>
-		<tab>
-			<id>5</id>
-			<name>Гистерезис сигнализации</name>
-		</tab>
-		<tab>
-			<id>7</id>
-			<name>Газовая смесь</name>
-		</tab>
-		<tab>
-			<id>300</id>
-			<name>Остальные</name>
+			<id>220</id>
+			<name>Настройки IP</name>
 		</tab>
 		<tab>
 			<id>230</id>
@@ -70,8 +70,12 @@
 			<name>Modbus RTU 2</name>
 		</tab>
 		<tab>
-			<id>9</id>
-			<name>Параметры двигателя</name>
+			<id>250</id>
+			<name>Фильтры</name>
+		</tab>
+		<tab>
+			<id>300</id>
+			<name>Остальные</name>
 		</tab>
 	</config-tabs>
 	<records desc="S2 записи">

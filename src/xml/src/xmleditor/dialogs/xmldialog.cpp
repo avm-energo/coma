@@ -58,6 +58,9 @@ QStringList XmlDialog::collectData()
                 [&](const QComboBox *widget) { //
                     collected.append(widget->currentText());
                 },
+                [&](const EComboBox *widget) { //
+                    collected.append(QString::number(widget->getValueByCurrentIndex()));
+                },
                 [&](const QSpinBox *widget) { //
                     collected.append(QString::number(widget->value()));
                 },
@@ -106,6 +109,9 @@ void XmlDialog::loadModelData(const QStringList &response)
                         widget->setCurrentIndex(itemIndex);
                     else
                         widget->setCurrentText(response[i]);
+                },
+                [&](EComboBox *widget) { //
+                    widget->setIndexByValue(response[i].toInt());
                 },
                 [&](QSpinBox *widget) { //
                     widget->setValue(response[i].toInt());

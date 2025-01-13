@@ -4,8 +4,11 @@
 #include <device/current_device.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
+#include <gen/xml/xmlbase.h>
+#include <gen/xml/xmlparse.h>
+#include <xml/xmltags.h>
 
-Xml::ModuleParser::ModuleParser(QObject *parent) : BaseParser(parent), m_ifaceType(Interface::IfaceType::Unknown)
+Xml::ModuleParser::ModuleParser(QObject *parent) : m_ifaceType(Interface::IfaceType::Unknown)
 {
 }
 
@@ -126,9 +129,9 @@ Xml::AlarmType Xml::ModuleParser::parseAlarmType(const QString &typeStr)
 
 void Xml::ModuleParser::parseSignal(const QDomNode &sigNode)
 {
-    auto id = parseNumFromNode<u32>(sigNode, tags::id);
-    auto addr = parseNumFromNode<u32>(sigNode, tags::start_addr);
-    auto count = parseNumFromNode<u16>(sigNode, tags::count);
+    auto id = XmlParse::XmlParse::parseNumFromNode<u32>(sigNode, tags::id);
+    auto addr = XmlParse::XmlParse::parseNumFromNode<u32>(sigNode, tags::start_addr);
+    auto count = XmlParse::XmlParse::parseNumFromNode<u16>(sigNode, tags::count);
     auto sigType = parseSignalType(sigNode);
     emit signalDataSending(id, addr, count, sigType);
 }
@@ -136,9 +139,9 @@ void Xml::ModuleParser::parseSignal(const QDomNode &sigNode)
 void Xml::ModuleParser::parseSTab(const QDomNode &sTabNode)
 {
     bool isDebug;
-    auto id = parseNumFromNode<u32>(sTabNode, tags::id);
-    auto name = parseString(sTabNode, tags::name);
-    auto stabDType = parseString(sTabNode, tags::dtype);
+    auto id = XmlParse::parseNumFromNode<u32>(sTabNode, tags::id);
+    auto name = XmlParse::parseString(sTabNode, tags::name);
+    auto stabDType = XmlParse::parseString(sTabNode, tags::dtype);
     isDebug = AppConfiguration::notDenied(stabDType);
     emit tabDataSending(id, { name, isDebug });
 }
@@ -148,22 +151,22 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
     using namespace Xml;
     auto secHeader = sectionNode.toElement().attribute(tags::header, "");
     SGMap sgmap;
-    callForEachChild(sectionNode, [&](const QDomNode &sgroupNode) {
+    XmlParse::callForEachChild(sectionNode, [&](const QDomNode &sgroupNode) {
         SGroup sgroup;
         auto sgroupElem = sgroupNode.toElement();
         auto sgroupHeader = sgroupElem.attribute(tags::header, "");
         auto sgroupTab = sgroupElem.attribute(tags::tab, "").toUInt();
         auto sgroupDType = sgroupElem.attribute(tags::dtype, "");
-        callForEachChild(sgroupNode, [&](const QDomNode &mwidgetNode) {
+        XmlParse::callForEachChild(sgroupNode, [&](const QDomNode &mwidgetNode) {
             auto mwidgetElem = mwidgetNode.toElement();
             auto mwidgetDesc = mwidgetElem.attribute(tags::desc, "");
             auto viewString = mwidgetElem.attribute(tags::view, "float");
-            auto addr = parseNumFromNode<u32>(mwidgetNode, tags::start_addr);
-            auto count = parseNumFromNode<u32>(mwidgetNode, tags::count);
+            auto addr = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::start_addr);
+            auto count = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::count);
             count = (count == 0) ? 1 : count;
-            auto tooltip = parseString(mwidgetNode, tags::tooltip);
+            auto tooltip = XmlParse::parseString(mwidgetNode, tags::tooltip);
             auto view = parseViewType(viewString);
-            auto itemList = parseStringArray(mwidgetNode);
+            auto itemList = XmlParse::parseArray(mwidgetNode, tags::str_array);
             sgroup.name = sgroupHeader;
             sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, view, itemList });
         });
@@ -174,57 +177,57 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
 
 void Xml::ModuleParser::parseAlarms(const QDomNode &alarmsNode)
 {
-    parseNode(alarmsNode, tags::state_all, [this](const QDomNode &alarmNode) { //
+    XmlParse::parseNode(alarmsNode, tags::state_all, [this](const QDomNode &alarmNode) { //
         parseAlarmStateAll(alarmNode);
     });
-    parseNode(alarmsNode, tags::crit, [this](const QDomNode &alarmNode) { //
+    XmlParse::parseNode(alarmsNode, tags::crit, [this](const QDomNode &alarmNode) { //
         parseAlarm(alarmNode, Xml::AlarmType::Critical);
     });
-    parseNode(alarmsNode, tags::warn, [this](const QDomNode &alarmNode) { //
+    XmlParse::parseNode(alarmsNode, tags::warn, [this](const QDomNode &alarmNode) { //
         parseAlarm(alarmNode, Xml::AlarmType::Warning);
     });
-    parseNode(alarmsNode, tags::info, [this](const QDomNode &alarmNode) { //
+    XmlParse::parseNode(alarmsNode, tags::info, [this](const QDomNode &alarmNode) { //
         parseAlarm(alarmNode, Xml::AlarmType::Info);
     });
 }
 
 void Xml::ModuleParser::parseAlarmStateAll(const QDomNode &alarmStateAllNode)
 {
-    auto index = parseNumFromNode<u32>(alarmStateAllNode, tags::addr);
-    auto desc = parseString(alarmStateAllNode, tags::string);
-    auto type = parseAlarmType(parseString(alarmStateAllNode, tags::type));
+    auto index = XmlParse::parseNumFromNode<u32>(alarmStateAllNode, tags::addr);
+    auto desc = XmlParse::parseString(alarmStateAllNode, tags::string);
+    auto type = parseAlarmType(XmlParse::parseString(alarmStateAllNode, tags::type));
     emit alarmStateAllDataSending(type, index, desc);
 }
 
 void Xml::ModuleParser::parseAlarm(const QDomNode &alarmNode, const AlarmType &type)
 {
-    auto addr = parseNumFromNode<u32>(alarmNode, tags::addr);
-    auto desc = parseString(alarmNode, tags::string);
-    auto hlValues = parseNumArray<u32>(alarmNode, tags::highlights);
+    auto addr = XmlParse::parseNumFromNode<u32>(alarmNode, tags::addr);
+    auto desc = XmlParse::parseString(alarmNode, tags::string);
+    auto hlValues = XmlParse::parseNumArray<u32>(alarmNode, tags::highlights);
     emit alarmDataSending(type, addr, desc, hlValues);
 }
 
 void Xml::ModuleParser::parseJournals(const QDomNode &joursNode)
 {
-    parseNode(joursNode, tags::work, [this](const QDomNode &jourNode) { parseWorkJournal(jourNode); });
-    parseNode(joursNode, tags::meas, [this](const QDomNode &jourNode) { parseMeasJournal(jourNode); });
+    XmlParse::parseNode(joursNode, tags::work, [this](const QDomNode &jourNode) { parseWorkJournal(jourNode); });
+    XmlParse::parseNode(joursNode, tags::meas, [this](const QDomNode &jourNode) { parseMeasJournal(jourNode); });
 }
 
 void Xml::ModuleParser::parseWorkJournal(const QDomNode &jourNode)
 {
-    auto id = parseNumFromNode<u32>(jourNode, tags::addr);
-    auto desc = parseString(jourNode, tags::desc);
+    auto id = XmlParse::parseNumFromNode<u32>(jourNode, tags::addr);
+    auto desc = XmlParse::parseString(jourNode, tags::desc);
     emit workJourDataSending(id, desc);
 }
 
 void Xml::ModuleParser::parseMeasJournal(const QDomNode &jourNode)
 {
-    auto index = parseNumFromNode<u32>(jourNode, tags::index);
-    auto header = parseString(jourNode, tags::header);
-    auto strType = parseString(jourNode, tags::type);
+    auto index = XmlParse::parseNumFromNode<u32>(jourNode, tags::index);
+    auto header = XmlParse::parseString(jourNode, tags::header);
+    auto strType = XmlParse::parseString(jourNode, tags::type);
     Xml::BinaryType type = parseBinaryType(strType);
     auto visibility = true;
-    if (parseString(jourNode, tags::visibility) == "false")
+    if (XmlParse::parseString(jourNode, tags::visibility) == "false")
         visibility = false;
     emit measJourDataSending(index, header, type, visibility);
 }
@@ -235,13 +238,14 @@ void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
     {
     case Interface::IfaceType::USB:
     case Interface::IfaceType::Emulator:
-        parseNode(resNode, tags::protocom, [&](const QDomNode &protocolNode) { parseProtocom(protocolNode); });
+        XmlParse::parseNode(
+            resNode, tags::protocom, [&](const QDomNode &protocolNode) { parseProtocom(protocolNode); });
         break;
     case Interface::IfaceType::RS485:
-        parseNode(resNode, tags::modbus, [&](const QDomNode &protocolNode) { parseModbus(protocolNode); });
+        XmlParse::parseNode(resNode, tags::modbus, [&](const QDomNode &protocolNode) { parseModbus(protocolNode); });
         break;
     case Interface::IfaceType::Ethernet:
-        parseNode(resNode, tags::iec, [&](const QDomNode &protocolNode) { parseIec(protocolNode); });
+        XmlParse::parseNode(resNode, tags::iec, [&](const QDomNode &protocolNode) { parseIec(protocolNode); });
         break;
     default:
         Q_ASSERT(false);
@@ -252,8 +256,8 @@ void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 
 void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode)
 {
-    auto signalId = parseNumFromNode<u32>(modbusNode, tags::sig_id);
-    auto regType = parseNumFromNode<u16>(modbusNode, tags::reg_type);
+    auto signalId = XmlParse::parseNumFromNode<u32>(modbusNode, tags::sig_id);
+    auto regType = XmlParse::parseNumFromNode<u16>(modbusNode, tags::reg_type);
     if (signalId != 0)
     {
         Protocol::AbstractGroup str { Interface::IfaceType::RS485, signalId, regType, quint16() };
@@ -263,8 +267,8 @@ void Xml::ModuleParser::parseModbus(const QDomNode &modbusNode)
 
 void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode)
 {
-    auto signalId = parseNumFromNode<u32>(protocomNode, tags::sig_id);
-    auto block = parseNumFromNode<u16>(protocomNode, tags::block);
+    auto signalId = XmlParse::parseNumFromNode<u32>(protocomNode, tags::sig_id);
+    auto block = XmlParse::parseNumFromNode<u16>(protocomNode, tags::block);
     if (signalId != 0)
     {
         Protocol::AbstractGroup str { Interface::IfaceType::USB, signalId, block, quint16() };
@@ -274,9 +278,9 @@ void Xml::ModuleParser::parseProtocom(const QDomNode &protocomNode)
 
 void Xml::ModuleParser::parseIec(const QDomNode &iecNode)
 {
-    auto signalId = parseNumFromNode<u32>(iecNode, tags::sig_id);
-    auto transType = parseNumFromNode<u16>(iecNode, tags::trans_type);
-    auto sigGroup = parseNumFromNode<u16>(iecNode, tags::sig_group);
+    auto signalId = XmlParse::parseNumFromNode<u32>(iecNode, tags::sig_id);
+    auto transType = XmlParse::parseNumFromNode<u16>(iecNode, tags::trans_type);
+    auto sigGroup = XmlParse::parseNumFromNode<u16>(iecNode, tags::sig_group);
     if (signalId != 0)
     {
         Protocol::AbstractGroup str { Interface::IfaceType::Ethernet, signalId, transType, sigGroup };
@@ -286,12 +290,12 @@ void Xml::ModuleParser::parseIec(const QDomNode &iecNode)
 
 void Xml::ModuleParser::parseConfig(const QDomNode &configNode)
 {
-    auto id = parseNumFromNode<u16>(configNode, tags::id);
-    auto defVal = parseString(configNode, tags::def_val);
+    auto id = XmlParse::parseNumFromNode<u16>(configNode, tags::id);
+    auto defVal = XmlParse::parseString(configNode, tags::def_val);
     auto visibility = true;
-    if (parseString(configNode, tags::visibility) == "false")
+    if (XmlParse::parseString(configNode, tags::visibility) == "false")
         visibility = false;
-    auto count = parseNumFromNode<u16>(configNode, tags::count);
+    auto count = XmlParse::parseNumFromNode<u16>(configNode, tags::count);
     emit configDataSending(id, defVal, visibility, count);
 }
 
@@ -303,18 +307,18 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
     auto tabPrefix = hiddenTabElem.attribute(tags::prefix);
     auto tabFlag = (hiddenTabElem.attribute(tags::flag)).toUShort();
     std::vector<Xml::HiddenWidget> widgets;
-    callForEachChild(hiddenTabNode, [this, &widgets](const QDomNode &hiddenWidgetNode) {
+    XmlParse::callForEachChild(hiddenTabNode, [this, &widgets](const QDomNode &hiddenWidgetNode) {
         auto hiddenWidgetElem = hiddenWidgetNode.toElement();
         auto viewStr = hiddenWidgetElem.attribute(tags::view, "LineEdit");
         auto title = hiddenWidgetElem.attribute(tags::title);
         auto view = parseViewType(viewStr);
-        auto name = parseString(hiddenWidgetNode, tags::name);
-        auto typeStr = parseString(hiddenWidgetNode, tags::type);
+        auto name = XmlParse::parseString(hiddenWidgetNode, tags::name);
+        auto typeStr = XmlParse::parseString(hiddenWidgetNode, tags::type);
         auto type = parseBinaryType(typeStr);
-        auto address = parseNumFromNode<u32>(hiddenWidgetNode, tags::addr);
-        auto index = parseNumFromNode<u16>(hiddenWidgetNode, tags::index);
+        auto address = XmlParse::parseNumFromNode<u32>(hiddenWidgetNode, tags::addr);
+        auto index = XmlParse::parseNumFromNode<u16>(hiddenWidgetNode, tags::index);
         auto visibility = true;
-        if (parseString(hiddenWidgetNode, tags::visibility) == "false")
+        if (XmlParse::parseString(hiddenWidgetNode, tags::visibility) == "false")
             visibility = false;
         widgets.push_back(Xml::HiddenWidget { name, title, address, index, type, view, visibility });
     });
@@ -323,12 +327,12 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
 
 void Xml::ModuleParser::parseBsiExtItem(const QDomNode &bsiExtItemNode)
 {
-    auto address = parseNumFromNode<u32>(bsiExtItemNode, tags::addr);
-    auto typeStr = parseString(bsiExtItemNode, tags::type);
-    auto desc = parseString(bsiExtItemNode, tags::desc);
+    auto address = XmlParse::parseNumFromNode<u32>(bsiExtItemNode, tags::addr);
+    auto typeStr = XmlParse::parseString(bsiExtItemNode, tags::type);
+    auto desc = XmlParse::parseString(bsiExtItemNode, tags::desc);
     auto type = parseBinaryType(typeStr);
     auto visibility = true;
-    if (parseString(bsiExtItemNode, tags::visibility) == "false")
+    if (XmlParse::parseString(bsiExtItemNode, tags::visibility) == "false")
         visibility = false;
     emit bsiExtItemDataSending(address, type, visibility, desc);
 }
@@ -337,15 +341,15 @@ void Xml::ModuleParser::parseDetector(const QDomNode &node)
 {
     const auto tag = node.toElement().tagName();
     if (tag == tags::sigs)
-        callForEachChild(node, [this](const QDomNode &sigNode) { parseSignal(sigNode); });
+        XmlParse::callForEachChild(node, [this](const QDomNode &sigNode) { parseSignal(sigNode); });
     else if (tag == tags::tabs)
-        callForEachChild(node, [this](const QDomNode &sTabNode) { parseSTab(sTabNode); });
+        XmlParse::callForEachChild(node, [this](const QDomNode &sTabNode) { parseSTab(sTabNode); });
     else if (tag == tags::sections)
-        callForEachChild(node, [this](const QDomNode &sectionNode) { parseSection(sectionNode); });
+        XmlParse::callForEachChild(node, [this](const QDomNode &sectionNode) { parseSection(sectionNode); });
     else if (tag == tags::hidden)
-        callForEachChild(node, [this](const QDomNode &hiddenTabNode) { parseHiddenTab(hiddenTabNode); });
+        XmlParse::callForEachChild(node, [this](const QDomNode &hiddenTabNode) { parseHiddenTab(hiddenTabNode); });
     else if (tag == tags::bsi_ext)
-        callForEachChild(node, [this](const QDomNode &bsiExtItemNode) { parseBsiExtItem(bsiExtItemNode); });
+        XmlParse::callForEachChild(node, [this](const QDomNode &bsiExtItemNode) { parseBsiExtItem(bsiExtItemNode); });
     else if (tag == tags::alarms)
         parseAlarms(node);
     else if (tag == tags::journals)
@@ -354,7 +358,7 @@ void Xml::ModuleParser::parseDetector(const QDomNode &node)
     {
         auto desc = node.toElement().attribute(tags::desc);
         emit configNameSending(desc);
-        callForEachChild(node, [this](const QDomNode &configNode) { parseConfig(configNode); });
+        XmlParse::callForEachChild(node, [this](const QDomNode &configNode) { parseConfig(configNode); });
     }
     else
     {
@@ -372,14 +376,14 @@ void Xml::ModuleParser::parseResources(const QDomElement &resourcesNode, const Q
         if (nodes.empty())
         {
             emit startNewConfig();
-            callForEachChild(resourcesNode, parseAction);
+            XmlParse::callForEachChild(resourcesNode, parseAction);
             // Настройки интерфейсов всегда парсим отдельно после парсинга сигналов
             parseInterface(resourcesNode);
         }
         else
         {
             for (auto &node : nodes)
-                callIfNodeExist(resourcesNode, node, parseAction);
+                XmlParse::callIfNodeExist(resourcesNode, node, parseAction);
         }
     }
     else
@@ -390,13 +394,14 @@ void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList
 {
     if (Files::isFileExist(filename))
     {
-        auto document = getFileContent(filename);
-        auto moduleNode = document.firstChildElement(tags::module);
+        /*        auto document = getFileContent(filename);
+                auto moduleNode = document.firstChildElement(tags::module); */
+        auto moduleNode = XmlBase::getXMLFirstElementFromFile(filename, tags::module);
         if (!moduleNode.isNull())
         {
             auto featuresNode = moduleNode.firstChildElement(tags::features);
             if (!featuresNode.isNull())
-                parseNode(
+                XmlParse::parseNode(
                     featuresNode, tags::features, [&](const QDomNode &featuresNode) { parseFeatures(featuresNode); });
             auto resources = moduleNode.firstChildElement(tags::res);
             parseResources(resources, nodes);
@@ -414,15 +419,17 @@ void Xml::ModuleParser::parseDocument(const QStringList &filenames, const Device
     {
         if (Files::isFileExist(filename))
         {
-            auto document = getFileContent(filename);
-            auto moduleNode = document.firstChildElement(tags::module);
+            /*            auto document = getFileContent(filename);
+                        auto moduleNode = document.firstChildElement(tags::module); */
+            auto moduleNode = XmlBase::getXMLFirstElementFromFile(filename, tags::module);
+
             if (!moduleNode.isNull())
             {
                 if (isCorrectDevice(moduleNode, device))
                 {
                     auto featuresNode = moduleNode.firstChildElement(tags::features);
                     if (!featuresNode.isNull())
-                        callForEachChild(
+                        XmlParse::callForEachChild(
                             featuresNode, [&](const QDomNode &featuresNode) { parseFeatures(featuresNode); });
                     auto resources = moduleNode.firstChildElement(tags::res);
                     parseResources(resources);

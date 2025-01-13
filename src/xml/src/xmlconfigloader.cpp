@@ -38,7 +38,6 @@ bool ConfigLoader::loadS2Data() noexcept
             &s2storage, &S2::ConfigStorage::widgetDataReceive);
         QObject::connect(mS2Parser, &Xml::S2Parser::configTabDataSending, //
             &s2storage, &S2::ConfigStorage::configTabDataReceive);
-        QObject::connect(mS2Parser, &Xml::S2Parser::parseError, this, &Xml::ConfigLoader::parseErrorHandle);
         // Парсинг s2files.xml
         mS2Parser->parse();
         // Успешно распарсили s2files.xml

@@ -20,7 +20,11 @@ private:
     /// \brief Получает данные по вкладкам S2Tabs
     bool loadS2TabsData();
 
+    /// \brief Создание редактирования виджета для записи
     void createWidgetEditBox();
+
+    /// \brief Парсинг узла <config-tabs>
+    void parseConfigTab(const QDomNode &tabNode);
 
 public:
     explicit XmlS2RecordDialog(QWidget *parent = nullptr);
