@@ -29,9 +29,9 @@ void Settings::appendSignal(const u32 id, const Signal sig)
     m_signals.insert({ id, sig });
 }
 
-void Settings::appendTab(const u32 id, const QString &tabName)
+void Settings::appendTab(const u32 id, const SectionTabStruct &sectionTab)
 {
-    m_tabs.insert(id, tabName);
+    m_tabs.insert(id, sectionTab);
 }
 
 void Settings::appendSection(const Section &section)

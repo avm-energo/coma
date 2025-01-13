@@ -2,7 +2,6 @@
 
 #include <gen/utils/crc16.h>
 #include <interfaces/utils/modbus_convertations.h>
-#include <stdexcept>
 
 namespace Interface
 {

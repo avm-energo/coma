@@ -34,6 +34,14 @@ const std::map<quint32, ctti::unnamed_type_id_t> &ConfigStorage::getTypeByIdMap(
     return m_typeById;
 }
 
+bool ConfigStorage::getDType(quint16 id)
+{
+    auto search = m_dtypes.find(id);
+    if (search == m_dtypes.end())
+        return false;
+    return search->second;
+}
+
 const std::map<quint32, QString> &ConfigStorage::getConfigTabs() const
 {
     return m_configTabs;
@@ -74,6 +82,13 @@ void ConfigStorage::typeDataReceive(const quint32 id, const std::uint64_t typeId
         qWarning() << "Invalid S2 config id: " << id;
     else if (typeId != 0)
         m_typeById.insert({ id, typeId });
+}
+
+void ConfigStorage::dtypeDataReceive(const quint32 id, bool dtype)
+{
+    if (id == 0)
+        qWarning() << "Invalid S2 config id: " << id;
+    m_dtypes.insert({ id, dtype });
 }
 
 void ConfigStorage::widgetDataReceive(const quint32 id, const config::itemVariant &widget)

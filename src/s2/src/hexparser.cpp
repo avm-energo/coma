@@ -1,7 +1,6 @@
 #include "s2/hexparser.h"
 
 #include <QDebug>
-#include <algorithm>
 #include <s2/s2datatypes.h>
 
 namespace S2
@@ -22,7 +21,7 @@ bool HexParser::verifyChecksum(const quint8 *data, int size)
 bool HexParser::parseASCII(const QString &strRecord, HexRecord &record)
 {
     // Verifying the start code of the given HEX record.
-    if (strRecord[0] != QChar(startCode))
+    if (strRecord[0] != QChar(c_startCode))
     {
         emit error(HexParseError::InvalidHexRecord);
         return false;
@@ -31,7 +30,7 @@ bool HexParser::parseASCII(const QString &strRecord, HexRecord &record)
     // Verifying the size of the given HEX record.
     auto byteRecord = QByteArray::fromHex(strRecord.toUtf8()); // str to byte array
     auto recordSize = byteRecord.size();
-    if (recordSize < minRecordSize || recordSize > maxRecordSize)
+    if (recordSize < c_minRecordSize || recordSize > c_maxRecordSize)
     {
         emit error(HexParseError::InvalidRecordSize);
         return false;
@@ -85,21 +84,21 @@ quint16 HexParser::getIdByAddress(const QByteArray &binAddr)
     else if (address >= 0x0801)
         return 8001;
     else
-        return idNotFound;
+        return c_idNotFound;
 }
 
 std::vector<S2::FileStruct> HexParser::getS2Format()
 {
     std::vector<S2::FileStruct> retVal;
     QByteArray data;
-    quint16 prevBlockId = idNotFound, currBlockId = idNotFound;
+    quint16 prevBlockId = c_idNotFound, currBlockId = c_idNotFound;
 
     for (auto &record : m_records)
     {
         if (record.recordType == RecordType::LinearAddr)
         {
             currBlockId = getIdByAddress(record.data);
-            if (currBlockId == idNotFound)
+            if (currBlockId == c_idNotFound)
             {
                 emit error(HexParseError::InvalidBlockAddress);
                 data.clear();
@@ -133,6 +132,25 @@ std::vector<S2::FileStruct> HexParser::getS2Format()
 
     retVal.push_back(S2::FileStruct { S2::dummyElement, QByteArray() });
     return retVal;
+}
+
+QByteArray HexParser::getBinaryFormat()
+{
+    QByteArray data;
+
+    for (auto &record : m_records)
+    {
+        if (record.recordType == RecordType::BinaryData)
+        {
+            data.append(record.data);
+        }
+        else if (record.recordType == RecordType::EndOfFile)
+        {
+            data.append(record.data);
+            return data;
+        }
+    }
+    return {};
 }
 
 }

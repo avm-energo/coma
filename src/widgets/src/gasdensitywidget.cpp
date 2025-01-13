@@ -184,6 +184,7 @@ void GasDensityWidget::setupUI()
 {
     // Начальное создание
     auto layout = new QGridLayout;
+    layout->setContentsMargins(10, 0, 10, 0);
     std::size_t row = 0, column = 1;
 
     auto gasMassModeBtn = new QRadioButton("Задание масс газов", this);
@@ -235,12 +236,12 @@ void GasDensityWidget::setStatus(const Status newStatus)
         m_status = newStatus;
         if (m_status == Status::Incorrect)
         {
-            m_statusWidget->setText("Incorrect data");
+            m_statusWidget->setText("Данные некорректные");
             m_statusWidget->setStyleSheet("QLabel { color : red; }");
         }
         else
         {
-            m_statusWidget->setText("Correct data");
+            m_statusWidget->setText("Данные корректные");
             m_statusWidget->setStyleSheet("QLabel { color : green; }");
         }
     }
@@ -458,11 +459,11 @@ void GasDensityWidget::recalc(const std::size_t indexChanged)
     setStatus(checkValues());
 }
 
-void GasDensityWidget::fill(const S2::CONF_DENS_3t &value)
+void GasDensityWidget::fill(const S2::GasDensity_3t &value)
 {
     for (auto index = 0; index < m_widgetRows.size(); index++)
     {
-        const auto &elem = value[index];
+        const auto &elem = value.density[index];
         auto &widgetRow = m_widgetRows[index];
         widgetRow.setGasType(GasType(elem.TypeGaz));
         widgetRow.setWeight(elem.Weight);
@@ -471,17 +472,18 @@ void GasDensityWidget::fill(const S2::CONF_DENS_3t &value)
     }
 }
 
-S2::CONF_DENS_3t GasDensityWidget::fillBack() const
+S2::GasDensity_3t GasDensityWidget::fillBack() const
 {
-    S2::CONF_DENS_3t retData;
+    S2::GasDensity_3t retData;
     for (auto index = 0; index < m_widgetRows.size(); index++)
     {
-        auto &elem = retData[index];
+        S2::GasDensity density;
         const auto &widgetRow = m_widgetRows[index];
-        elem.TypeGaz = std_ext::to_underlying(widgetRow.getGasType());
-        elem.Weight = widgetRow.getWeight();
-        elem.MolW = widgetRow.getMolarMass();
-        elem.MolFrac = widgetRow.getMoleFrac();
+        density.TypeGaz = std_ext::to_underlying(widgetRow.getGasType());
+        density.Weight = widgetRow.getWeight();
+        density.MolW = widgetRow.getMolarMass();
+        density.MolFrac = widgetRow.getMoleFrac();
+        retData.density.append(density);
     }
     return retData;
 }

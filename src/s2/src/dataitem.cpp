@@ -1,7 +1,5 @@
 #include "s2/dataitem.h"
 
-#include <type_traits>
-
 namespace S2
 {
 
@@ -25,13 +23,33 @@ bool operator!=(const DataItem &lhs, const DataItem &rhs)
 
 QByteArray DataItem::toByteArray() const
 {
-    return std::visit(
-        [](auto &arg) -> QByteArray {
-            using internalType = std::remove_reference_t<decltype(arg)>;
-            auto dataPtr = reinterpret_cast<const char *>(&arg);
-            return QByteArray::fromRawData(dataPtr, sizeof(internalType));
-        },
-        data);
+    if (std::holds_alternative<S2::GasDensity_3t>(data))
+    {
+        S2::GasDensity_3t density = value<S2::GasDensity_3t>();
+        std::array<S2::GasDensity, 3> densArray;
+        if (density.density.size() > 2)
+        {
+            for (int i = 0; i < 3; ++i)
+                densArray[i] = density.density.at(i);
+        }
+        else
+            return QByteArray();
+        char *dataPtr = reinterpret_cast<char *>(&densArray);
+        QByteArray ba(dataPtr, sizeof(densArray));
+        return ba;
+    }
+    else
+    {
+        int dataSizeof = std::visit(
+            [](auto &arg) -> int {
+                using internalType = std::remove_reference_t<decltype(arg)>;
+                return sizeof(internalType);
+            },
+            data);
+        const char *dataPtr = reinterpret_cast<const char *>(&data);
+        QByteArray ba(dataPtr, dataSizeof);
+        return ba;
+    }
 }
 
 valueType DataItem::getData() const

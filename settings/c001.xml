@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypeb="c0" mtypem="01">
-    <name>АВМ-МПЭ</name>
+    <name>АВМ-МПГ</name>
     <version>0.6-1000</version>
     <features>
-        <isBoxModule value="1">
-        <isRTCExist value="0">
+        <isBoxModule value="1"/>
+        <isRTCExist value="0"/>
     </features>
     <resources>
         <alarms desc="Сигнализация">
@@ -43,7 +43,7 @@
                 </item>
                 <item>
                     <addr>26</addr>
-                    <string>Нет связи с датчиком MS58</string>
+                    <string>Нет связи с датчиком MS5803</string>
                     <type>critical</type>
                 </item>
                 <item>
@@ -53,7 +53,7 @@
                 </item>
                 <item>
                     <addr>28</addr>
-                    <string>Ошибка связи с датчиком MS58</string>
+                    <string>Ошибка связи с датчиком MS5803</string>
                     <type>critical</type>
                 </item>
                 <item>
@@ -113,13 +113,13 @@
             </record>
             <record>
                 <id>1390</id>
-                <defaultValue>0, 0, 0</defaultValue>
+                <defaultValue>1;146.06;1.0;100,0,0</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1391</id>
-                <defaultValue>0, 0, 0</defaultValue>
+                <defaultValue>0.62, 0.58, 0.55</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
@@ -131,13 +131,13 @@
             </record>
             <record>
                 <id>1393</id>
-                <defaultValue>10</defaultValue>
+                <defaultValue>5</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1394</id>
-                <defaultValue>90</defaultValue>
+                <defaultValue>120</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
@@ -288,17 +288,81 @@
                 <type>float</type>
                 <desc>pressure</desc>
             </group>
+            <group>
+                <signal-id>11</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>shorts</desc>
+            </group>
+            <group>
+                <signal-id>12</signal-id>
+                <reg-type>4</reg-type>
+                <type>uint32</type>
+                <desc>diagnostics</desc>
+            </group>
+            <group>
+                <signal-id>13</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>uctemperature</desc>
+            </group>
+            <group>
+                <signal-id>14</signal-id>
+                <reg-type>4</reg-type>
+                <type>uint16</type>
+                <desc>heateron</desc>
+            </group>
         </modbus>
         <protocom desc="Протокол Protocom"/>
         <section-tabs desc="Вкладки">
             <tab>
                 <id>1</id>
-                <name>Основные</name>
+                <name>Текущие</name>
+            </tab>
+            <tab>
+                <id>2</id>
+                <name>Полные</name>
+                <dtype>Yes</dtype>
+            </tab>
+            <tab>
+                <id>3</id>
+                <name>Диагностика</name>
+                <dtype>Yes</dtype>
             </tab>
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные">
-                <sgroup header="Датчик HDC1080" tab="1">
+                <sgroup header="Текущие данные" tab="1">
+                    <mwidget desc="Давление, приведённое к 20 °С, бар" view="float">
+                        <start-addr>100</start-addr>
+                        <toolTip>Давление, приведённое к 20 °С, бар</toolTip>
+                    </mwidget>
+                    <mwidget desc="Температура элегаза, °С" view="float">
+                        <start-addr>101</start-addr>
+                        <toolTip>Температура элегаза, °С</toolTip>
+                    </mwidget>
+                    <mwidget desc="Абсолютное давление, бар" view="float">
+                        <start-addr>102</start-addr>
+                        <toolTip>Абсолютное давление, бар</toolTip>
+                    </mwidget>
+                    <mwidget desc="Плотность элегаза, кг/м3" view="float">
+                        <start-addr>103</start-addr>
+                        <toolTip>Расчётная плотность чистого элегаза при текущем измеренном давлении, kg/m3</toolTip>
+                    </mwidget>
+                    <mwidget desc="Относительная влажность, %" view="float">
+                        <start-addr>104</start-addr>
+                        <toolTip>Относительная влажность, %</toolTip>
+                    </mwidget>
+                    <mwidget desc="Концентрация влаги, ppmv" view="float">
+                        <start-addr>105</start-addr>
+                        <toolTip>Micro-water value, ppmv</toolTip>
+                    </mwidget>
+                    <mwidget desc="Точка росы, °С" view="float">
+                        <start-addr>106</start-addr>
+                        <toolTip>Точка росы, °С</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Датчик HDC1080" tab="2">
                     <mwidget desc="Температура от датчика HDC1080, °С" view="float">
                         <start-addr>1120</start-addr>
                         <toolTip>Температура от датчика HDC1080, °С</toolTip>
@@ -308,7 +372,7 @@
                         <toolTip>Влажность от датчика HDC1080, %</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Датчик LM75B" tab="1">
+                <sgroup header="Датчик LM75B" tab="2">
                     <mwidget desc="Температура от датчика LM75B, °С" view="float">
                         <start-addr>1160</start-addr>
                         <toolTip>Температура от датчика LM75B, °С</toolTip>
@@ -317,12 +381,12 @@
                         <start-addr>1161</start-addr>
                         <toolTip>Давление от датчика LM75B фильтрованная, °С</toolTip>
                     </mwidget>
-                    <mwidget desc="Скорость изменения средней температуры" view="float">
+                    <mwidget desc="Скорость изменения средней температуры, °С/сек" view="float">
                         <start-addr>1162</start-addr>
                         <toolTip>Скорость изменения средней температуры</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Датчик MS5803" tab="1">
+                <sgroup header="Датчик MS5803" tab="2">
                     <mwidget desc="Температура от датчика MS5803, °С" view="float">
                         <start-addr>1140</start-addr>
                         <toolTip>Температура от датчика MS5803, °С</toolTip>
@@ -335,15 +399,25 @@
                         <start-addr>1142</start-addr>
                         <toolTip>Давление от датчика без блокировки MS5803, МПа</toolTip>
                     </mwidget>
+                    <mwidget desc="Нагрев" view="bitset">
+                        <start-addr>1200</start-addr>
+                        <toolTip>Включён нагрев</toolTip>
+                    </mwidget>
                 </sgroup>
-                <sgroup header="Общие" tab="1">
-                    <mwidget desc="Плотность газа" view="float">
+                <sgroup header="Общие" tab="2">
+                    <mwidget desc="Плотность газа, кг/м3" view="float">
                         <start-addr>1100</start-addr>
                         <toolTip>Плотность газа</toolTip>
                     </mwidget>
-                    <mwidget desc="Температура для расчёта плотности газа" view="float">
+                    <mwidget desc="Температура для расчёта плотности газа, °С" view="float">
                         <start-addr>1101</start-addr>
                         <toolTip>Температура для расчёта плотности газа</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Диагностика" tab="3">
+                    <mwidget desc="Температура процессора, °С" view="float">
+                        <start-addr>400</start-addr>
+                        <toolTip>Температура процессора, °С</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
@@ -362,10 +436,28 @@
                 <type>BitString</type>
             </signal>
             <signal>
+                <start-addr>100</start-addr>
+                <count>7</count>
+                <id>11</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>200</start-addr>
+                <count>1</count>
+                <id>12</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
                 <start-addr>300</start-addr>
                 <count>2</count>
                 <id>6</id>
                 <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>400</start-addr>
+                <count>1</count>
+                <id>13</id>
+                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>1100</start-addr>
@@ -390,6 +482,12 @@
                 <count>3</count>
                 <id>8</id>
                 <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>1200</start-addr>
+                <count>1</count>
+                <id>14</id>
+                <type>BitString</type>
             </signal>
             <signal>
                 <start-addr>13000</start-addr>

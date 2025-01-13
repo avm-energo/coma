@@ -1,20 +1,21 @@
 #pragma once
 
+#include <QDomElement>
+#include <QObject>
 #include <s2/delegate_common.h>
-#include <xml/xmlparser/xmlbaseparser.h>
 
 namespace Xml
 {
 /// \brief Template check in compile time whether T is derived from the delegate::QComboBox class.
-template <typename T> constexpr bool is_comboBox = std::is_base_of_v<delegate::QComboBox, T>;
+template <typename T> constexpr bool is_comboBox = std::is_base_of_v<delegate::ComboBox, T>;
 
 /// \brief Class for parsing "s2files.xml" file.
-class S2Parser final : public BaseParser
+class S2Parser final : public QObject
 {
     Q_OBJECT
 private:
-    static const QHash<QString, std::uint64_t> nameTypeMap;
-    QDomElement content;
+    static const QHash<QString, std::uint64_t> s_nameTypeMap;
+    QDomElement m_content;
 
 public:
     explicit S2Parser(QObject *parent = nullptr);
@@ -24,6 +25,7 @@ public:
 signals:
     void nameDataSending(const quint32 id, const QString &itemName);
     void typeDataSending(const quint32 id, const std::uint64_t type);
+    void dtypeDataSending(const quint32 id, bool dtype);
     void widgetDataSending(const quint32 id, const config::itemVariant &widget);
     void configTabDataSending(const quint32 id, const QString &tabName);
 
@@ -39,7 +41,7 @@ private:
     /// \brief Парсинг тегов для потомков структуры delegate::Group.
     void groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items);
     /// \brief Парсинг тегов для структуры delegate::QComboBox и её потомков.
-    void comboBoxParse(delegate::QComboBox &comboBox, const QDomElement &widgetNode, const QStringList &items);
+    void comboBoxParse(delegate::ComboBox &comboBox, const QDomElement &widgetNode, const QStringList &items);
     /// \brief Парсинг тегов для структуры config::Item.
     config::Item parseItem(const QDomElement &domElement, //
         const QString &className, const ctti::unnamed_type_id_t &type);

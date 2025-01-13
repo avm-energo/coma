@@ -6,7 +6,8 @@
 
 UDialog::UDialog(Device::CurrentDevice *device, QWidget *parent) : UWidget(device, parent)
 {
-    showSuccessMessageFlag = true;
+    m_showSuccessMessageFlag = true;
+    m_showOnceMessage = false;
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
     m_genRespConn = m_device->async()->connection(this, &UDialog::updateGeneralResponse);
@@ -40,16 +41,22 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
     default:
         break;
     }
+    m_showOnceMessage = false;
 }
 
 void UDialog::disableSuccessMessage()
 {
-    showSuccessMessageFlag = false;
+    m_showSuccessMessageFlag = false;
 }
 
 void UDialog::enableSuccessMessage()
 {
-    showSuccessMessageFlag = true;
+    m_showSuccessMessageFlag = true;
+}
+
+void UDialog::enableOnceMessage()
+{
+    m_showOnceMessage = true;
 }
 
 bool UDialog::disableMessages()
@@ -65,7 +72,8 @@ bool UDialog::enableMessages()
 
 QString UDialog::successMsg() const
 {
-    return showSuccessMessageFlag ? m_successMsg : ""; // while empty string message will not appear
+    return (m_showSuccessMessageFlag || m_showOnceMessage) ? m_successMsg
+                                                           : ""; // while empty string message will not appear
 }
 
 void UDialog::setSuccessMsg(const QString &successMsg)

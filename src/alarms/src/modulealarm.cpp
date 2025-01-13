@@ -10,6 +10,7 @@ ModuleAlarm::ModuleAlarm(const AlarmType type, const AlarmValue &alarms, //
 {
     m_alarmColor = getColorByType(type);
     setupUI(m_alarms.values());
+    setMinimumWidth(300);
 }
 
 void ModuleAlarm::followToData(const SignalMap &sigMap)
@@ -35,7 +36,6 @@ void ModuleAlarm::setupUI(const QStringList &events)
     auto mainLayout = new QVBoxLayout(this);
     auto widget = new QWidget(this);
     auto vLayout = new QVBoxLayout(widget);
-    widget->setLayout(vLayout);
 
     // Создаём labels и circles
     m_labelStateStorage.reserve(events.size());
@@ -45,16 +45,18 @@ void ModuleAlarm::setupUI(const QStringList &events)
         auto hLayout = new QHBoxLayout;
         auto pixmap = WDFunc::NewCircle(m_normalColor, circleRadius);
         auto label = WDFunc::NewLBL2(this, "", QString::number(index), &pixmap);
-        hLayout->addWidget(label);
-        hLayout->addWidget(WDFunc::NewLBL2(this, desc), 1);
+        hLayout->addWidget(label, 1);
+        hLayout->addWidget(WDFunc::NewLBL2(this, desc), 100);
         vLayout->addLayout(hLayout);
         m_labelStateStorage.append({ label, false });
         index++;
     }
+    widget->setLayout(vLayout);
 
     // Создаём QScrollArea
     auto scrollArea = new QScrollArea(this);
     scrollArea->setWidget(widget);
+    scrollArea->setWidgetResizable(true);
     mainLayout->addWidget(scrollArea);
     // Создаём кнопку "Ок"
     auto pb = new QPushButton("Ok", this);

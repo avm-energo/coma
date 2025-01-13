@@ -3,14 +3,15 @@
 #include <QDebug>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QMap>
 #include <QScrollArea>
+#include <appconfig/appconfig.h>
 #include <device/current_device.h>
 #include <dialogs/keypressdialog.h>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <set>
 #include <widgets/epopup.h>
 #include <widgets/wd_func.h>
 
@@ -63,6 +64,11 @@ bool ConfigDialog::isVisible(const quint16 id) const
         return search->second.first;
     else
         return false;
+}
+
+bool ConfigDialog::isDebugWidget(const quint16 id) const
+{
+    return m_datamanager.getStorage().getDType(id);
 }
 
 void ConfigDialog::saveConfigToFile()
@@ -165,7 +171,7 @@ quint32 ConfigDialog::tabForId(quint16 id)
     return tab;
 }
 
-void ConfigDialog::createTabs(QTabWidget *tabWidget)
+std::set<delegate::WidgetGroup> ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
     std::set<delegate::WidgetGroup> uniqueTabs;
     auto &tabs = m_datamanager.getStorage().getConfigTabs();
@@ -195,6 +201,7 @@ void ConfigDialog::createTabs(QTabWidget *tabWidget)
         scrollArea->setWidget(subBox);
         tabWidget->addTab(scrollArea, tabName);
     }
+    return uniqueTabs;
 }
 
 QWidget *widgetAt(QTabWidget *tabWidget, int tab)
@@ -209,35 +216,47 @@ void ConfigDialog::setupUI()
 {
     auto vlyout = new QVBoxLayout;
     auto ConfTW = new QTabWidget(this);
-    createTabs(ConfTW);
+    std::set<delegate::WidgetGroup> tabs = createTabs(ConfTW);
+    std::map<quint32, bool> tabUseMap;
 
     for (const auto &record : m_boardConfig.m_defaultConfig)
     {
         const auto id = record.first;
         if (isVisible(id))
         {
-            auto widget = m_factory.createWidget(id, this);
-            if (widget)
+            if (isDebugWidget(id))
             {
-                auto tab = tabForId(id);
-                auto child = widgetAt(ConfTW, tab);
-                Q_ASSERT(child);
-                if (child)
+                auto widget = m_factory.createWidget(id, this);
+                if (widget)
                 {
-                    auto subBox = child->findChild<QGroupBox *>();
-                    Q_ASSERT(subBox);
-                    if (!subBox)
-                        widget->deleteLater();
-                    else
+                    const auto tab = tabForId(id);
+                    auto child = widgetAt(ConfTW, tab);
+                    Q_ASSERT(child);
+                    if (child)
                     {
-                        auto subLayout = subBox->layout();
-                        subLayout->addWidget(widget);
+                        auto subBox = child->findChild<QGroupBox *>();
+                        Q_ASSERT(subBox);
+                        if (!subBox)
+                            widget->deleteLater();
+                        else
+                        {
+                            auto subLayout = subBox->layout();
+                            subLayout->addWidget(widget);
+                            tabUseMap[tab] = true;
+                        }
                     }
                 }
+                else
+                    qWarning() << "Bad config widget for item: " << id;
             }
-            else
-                qWarning() << "Bad config widget for item: " << id;
         }
+    }
+    quint8 count = 0;
+    for (const auto tab : tabs)
+    {
+        if (tabUseMap.find(tab) == tabUseMap.end())
+            ConfTW->setTabVisible(count, false);
+        ++count;
     }
     vlyout->addWidget(ConfTW);
     vlyout->addWidget(ConfButtons());
@@ -250,15 +269,18 @@ void ConfigDialog::fill()
     {
         if (isVisible(id))
         {
-            std::visit(
-                // thanx to https://stackoverflow.com/a/46115028
-                // in C++20 lambdas could capture structured binding
-                [=, id = id](const auto &&value) {
-                    bool status = m_factory.fillWidget(this, id, value);
-                    if (!status)
-                        qWarning() << "Couldnt fill widget for item: " << id;
-                },
-                record.getData());
+            if (isDebugWidget(id))
+            {
+                std::visit(
+                    // thanx to https://stackoverflow.com/a/46115028
+                    // in C++20 lambdas could capture structured binding
+                    [=, id = id](const auto &&value) {
+                        bool status = m_factory.fillWidget(this, id, value);
+                        if (!status)
+                            qWarning() << "Couldnt fill widget for item: " << id;
+                    },
+                    record.getData());
+            }
         }
     }
 }
@@ -269,9 +291,12 @@ void ConfigDialog::fillBack()
     {
         if (isVisible(id))
         {
-            auto status = m_factory.fillBack(id, this);
-            if (!status)
-                qWarning() << "Couldnt fill back item from widget: " << id;
+            if (isDebugWidget(id))
+            {
+                auto status = m_factory.fillBack(id, this);
+                if (!status)
+                    qWarning() << "Couldnt fill back item from widget: " << id;
+            }
         }
     }
     checkConfig();
@@ -323,6 +348,11 @@ void ConfigDialog::checkConfig()
 {
     m_confErrors.clear();
     /// TODO: А как проверять конфигурацию?
+    /// для каждого widget record в S2Config (m_s2storage.getWidgetMap())
+    ///     std::visit(
+    ///     overloaded {
+    ///         [&](const delegate::DoubleSpinBoxGroup &arg) {
+    ///
 }
 
 void ConfigDialog::parseStatusHandle(const Error::Msg status)

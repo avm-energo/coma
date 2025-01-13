@@ -80,4 +80,5 @@ constexpr auto name = "name";
 constexpr auto widget = "widget";
 constexpr auto view = "view";
 constexpr auto index = "index";
+constexpr auto dtype = "dtype";
 }

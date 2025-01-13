@@ -24,7 +24,8 @@ enum class ViewType : u8
     Float = 0, ///< отображение чисел с плавающей точкой
     Bitset,    ///< отображение битового поля
     LineEdit,  ///< ввод данных
-    Version    ///< ввод или отображение версии
+    Version,   ///< ввод или отображение версии
+    Bitstring
 };
 
 /// \brief Структура для хранения информации узла <mwidget> из XML.
@@ -124,11 +125,17 @@ struct BsiExtItem
     QString desc;    ///< узел <desc>
 };
 
-using FeaturesMap = QMap<QString, QString>; ///< Специфические свойства модуля
-using SignalMap = std::map<u32, Signal>;  ///< Хранит узлы <signal> секции <signals>.
-using TabsMap = QHash<u32, QString>;      ///< Хранит узлы <tab> секции <section-tabs>.
-using HighlightMap = QMultiMap<u32, u32>; ///< Для подсветки элементов.
-using SectionList = std::vector<Section>; ///< Хранит узлы <section> секции <sections>.
+struct SectionTabStruct
+{
+    QString name;
+    bool notDenied;
+};
+
+using FeaturesMap = QMap<QString, QString>;  ///< Специфические свойства модуля
+using SignalMap = std::map<u32, Signal>;     ///< Хранит узлы <signal> секции <signals>.
+using TabsMap = QMap<u32, SectionTabStruct>; ///< Хранит узлы <tab> секции <section-tabs>.
+using HighlightMap = QMultiMap<u32, u32>;    ///< Для подсветки элементов.
+using SectionList = std::vector<Section>;    ///< Хранит узлы <section> секции <sections>.
 using AlarmValue = QMap<u32, QString>; ///< u32 - адрес сигнализации, QString - узел <desc> (описание).
 using WorkJourMap = QMap<u32, QString>; ///< Хранит узлы <item> секции <work> из <journals>.
 using AlarmStateAllConfig = std::vector<AlarmStateAllRecord>; ///< Хранит узлы <item> секции <state-all> из <alarms>.
@@ -151,7 +158,7 @@ public:
     /// \brief Добавление нового сигнала в список сигналов.
     void appendSignal(const u32 id, const Signal sig);
     /// \brief Добавление новой вкладки в список вкладок.
-    void appendTab(const u32 id, const QString &tabName);
+    void appendTab(const u32 id, const SectionTabStruct &sectionTab);
     /// \brief Добавление раздела в список разделов.
     void appendSection(const Section &section);
     /// \brief Добавление сигнализации состояния устройства.

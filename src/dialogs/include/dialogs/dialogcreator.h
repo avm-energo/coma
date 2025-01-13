@@ -4,13 +4,6 @@
 #include <device/device_list.h>
 #include <widgets/udialog.h>
 
-/// \brief Enumeration for application configuration.
-enum class AppConfiguration : bool
-{
-    Debug = false,
-    Service = true
-};
-
 /// \brief Class for creating and managing dialogs.
 class DialogCreator final : public QObject
 {
@@ -28,7 +21,7 @@ public:
     explicit DialogCreator(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
     /// \brief Creating the list with dialogs based on module settings for the current connected device.
-    void createDialogs(const AppConfiguration appCfg);
+    void createDialogs();
     /// \brief Removing all dialogs in the dialog list.
     void deleteDialogs();
     /// \brief Returns the list with dialogs.
@@ -56,5 +49,5 @@ private:
     /// \brief Creating a relay dialog.
     void createRelayDialog();
     /// \brief Creating common dialogs (all modules).
-    void createCommonDialogs(const AppConfiguration appCfg);
+    void createCommonDialogs();
 };

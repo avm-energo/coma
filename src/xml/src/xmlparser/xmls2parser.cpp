@@ -1,7 +1,11 @@
 #include "xml/xmlparser/xmls2parser.h"
 
+#include <appconfig/appconfig.h>
 #include <gen/datatypes.h>
+#include <gen/xml/xmlbase.h>
+#include <gen/xml/xmlparse.h>
 #include <s2/s2datatypes.h>
+#include <xml/xmltags.h>
 
 class DoubleSpinBoxGroup;
 class QLabel;
@@ -15,7 +19,7 @@ class IPCtrl;
 class QLineEdit;
 class GasDensityWidget;
 
-const QHash<QString, std::uint64_t> Xml::S2Parser::nameTypeMap = {
+const QHash<QString, std::uint64_t> Xml::S2Parser::s_nameTypeMap = {
     { "M_SP", ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash() }, //
     { "M_BO", ctti::unnamed_type_id<DataTypes::BitStringStruct>().hash() },           //
     { "M_ME", ctti::unnamed_type_id<DataTypes::FloatStruct>().hash() },               //
@@ -55,23 +59,24 @@ const QHash<QString, std::uint64_t> Xml::S2Parser::nameTypeMap = {
     { "FLOAT[6]", ctti::unnamed_type_id<S2::FLOAT_6t>().hash() },                     //
     { "FLOAT[8]", ctti::unnamed_type_id<S2::FLOAT_8t>().hash() },                     //
     { "INT32", ctti::unnamed_type_id<S2::INT32>().hash() },                           //
-    { "CONF_DENS[3]", ctti::unnamed_type_id<S2::CONF_DENS_3t>().hash() },             //
+    { "CONF_DENS[3]", ctti::unnamed_type_id<S2::GasDensity_3t>().hash() },            //
     { "CONFMAST", ctti::unnamed_type_id<S2::CONFMAST>().hash() },                     //
 }; ///< Хэш-мапа для идентификации типа в рантайме
 
-Xml::S2Parser::S2Parser(QObject *parent) : BaseParser(parent)
+Xml::S2Parser::S2Parser(QObject *parent)
 {
     constexpr auto filename = "s2files.xml";
-    auto document = getFileContent(filename);
-    if (!document.isNull())
-        content = document.firstChildElement(tags::s2files);
+    m_content = XmlBase::getXMLFirstElementFromFile(filename, tags::s2files);
+    /*    auto document = getFileContent(filename);
+        if (!document.isNull())
+            m_content = document.firstChildElement(tags::s2files); */
 }
 
 std::uint64_t Xml::S2Parser::parseType(const QDomElement &typeNode)
 {
     auto name = typeNode.text();
     name.replace(" ", "");
-    const auto &typeId = nameTypeMap.value(name, 0);
+    const auto &typeId = s_nameTypeMap.value(name, 0);
     if (typeId == 0)
         qDebug() << "Parsed unknown type: " << name;
     return typeId;
@@ -79,8 +84,8 @@ std::uint64_t Xml::S2Parser::parseType(const QDomElement &typeNode)
 
 void Xml::S2Parser::parseConfigTab(const QDomNode &tabNode)
 {
-    auto id = parseNumFromNode<quint32>(tabNode, tags::id);
-    auto name = parseString(tabNode, tags::name);
+    auto id = XmlParse::parseNumFromNode<quint32>(tabNode, tags::id);
+    auto name = XmlParse::parseString(tabNode, tags::name);
     emit configTabDataSending(id, name);
 }
 
@@ -90,9 +95,12 @@ void Xml::S2Parser::parseRecord(const QDomNode &recordNode)
     auto idNode = recordNode.firstChildElement(tags::id);
     if (!idNode.isNull())
     {
-        id = parseNum<quint32>(idNode);
-        emit nameDataSending(id, parseString(recordNode, tags::name));
+        id = XmlParse::parseNum<quint32>(idNode);
+        emit nameDataSending(id, XmlParse::parseString(recordNode, tags::name));
     }
+
+    emit dtypeDataSending(id, AppConfiguration::notDenied(XmlParse::parseString(recordNode, tags::dtype)));
+
     auto typeNode = recordNode.firstChildElement(tags::type);
     if (!typeNode.isNull())
         emit typeDataSending(id, parseType(typeNode));
@@ -103,21 +111,21 @@ void Xml::S2Parser::parseRecord(const QDomNode &recordNode)
 
 void Xml::S2Parser::dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode)
 {
-    dsbw.min = parseNumFromNode<double>(widgetNode, tags::min);
-    dsbw.max = parseNumFromNode<double>(widgetNode, tags::max);
-    dsbw.decimals = parseNumFromNode<quint32>(widgetNode, tags::decimals);
+    dsbw.min = XmlParse::parseNumFromNode<double>(widgetNode, tags::min);
+    dsbw.max = XmlParse::parseNumFromNode<double>(widgetNode, tags::max);
+    dsbw.decimals = XmlParse::parseNumFromNode<quint32>(widgetNode, tags::decimals);
 }
 
 void Xml::S2Parser::groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items)
 {
-    group.count = parseNumFromNode<quint32>(widgetNode, tags::count);
+    group.count = XmlParse::parseNumFromNode<quint32>(widgetNode, tags::count);
     // В оригинальном коде items для delegate::QComboBox присваивается переменной
     // model, а не items (см. функцию S2XmlParser::comboBoxParse)
     if constexpr (!is_comboBox<decltype(group)>)
         group.items = items;
 }
 
-void Xml::S2Parser::comboBoxParse(delegate::QComboBox &comboBox, //
+void Xml::S2Parser::comboBoxParse(delegate::ComboBox &comboBox, //
     const QDomElement &widgetNode, const QStringList &items)
 {
     comboBox.model = items;
@@ -129,11 +137,11 @@ void Xml::S2Parser::comboBoxParse(delegate::QComboBox &comboBox, //
         if (!fieldStr.isEmpty())
         {
             if (fieldStr.contains(tags::data))
-                comboBox.primaryField = delegate::QComboBox::data;
+                comboBox.primaryField = delegate::ComboBox::data;
             else if (fieldStr.contains(tags::bitfield))
-                comboBox.primaryField = delegate::QComboBox::bitfield;
+                comboBox.primaryField = delegate::ComboBox::bitfield;
             else
-                comboBox.primaryField = delegate::QComboBox::index;
+                comboBox.primaryField = delegate::ComboBox::index;
         }
     }
 }
@@ -147,12 +155,12 @@ config::Item Xml::S2Parser::parseItem(const QDomElement &itemNode, //
     else
         return { 0 };
 
-    auto widgetGroup = parseNumFromNode<int>(itemNode, tags::group);
+    auto widgetGroup = XmlParse::parseNumFromNode<int>(itemNode, tags::group);
     switch (itemType)
     {
     case delegate::ItemType::ModbusItem:
     {
-        auto parent = parseNumFromNode<quint16>(itemNode, tags::parent);
+        auto parent = XmlParse::parseNumFromNode<quint16>(itemNode, tags::parent);
         return config::Item(type, itemType, parent, widgetGroup);
     }
     default:
@@ -168,10 +176,10 @@ config::itemVariant Xml::S2Parser::parseWidget(const QDomElement &widgetNode)
 
     if (className.isEmpty())
     {
-        auto widgetGroup = parseNumFromNode<int>(widgetNode, tags::group);
-        const auto description = parseString(widgetNode, tags::string);
-        const auto toolTip = parseString(widgetNode, tags::tooltip);
-        const auto items = parseStringArray(widgetNode);
+        auto widgetGroup = XmlParse::parseNumFromNode<int>(widgetNode, tags::group);
+        const auto description = XmlParse::parseString(widgetNode, tags::string);
+        const auto toolTip = XmlParse::parseString(widgetNode, tags::tooltip);
+        const auto items = XmlParse::parseArray(widgetNode, tags::str_array);
 
         switch (type)
         {
@@ -196,13 +204,13 @@ config::itemVariant Xml::S2Parser::parseWidget(const QDomElement &widgetNode)
         }
         case ctti::unnamed_type_id<QComboBox>().hash():
         {
-            delegate::QComboBox widget(type, description, widgetGroup, toolTip);
+            delegate::ComboBox widget(type, description, widgetGroup, toolTip);
             comboBoxParse(widget, widgetNode, items);
             return std::move(widget);
         }
         case ctti::unnamed_type_id<QComboBoxGroup>().hash():
         {
-            delegate::QComboBoxGroup widget(type, description, widgetGroup, toolTip);
+            delegate::ComboBoxGroup widget(type, description, widgetGroup, toolTip);
             groupParse(widget, widgetNode, items);
             comboBoxParse(widget, widgetNode, items);
             return std::move(widget);
@@ -219,9 +227,9 @@ config::itemVariant Xml::S2Parser::parseWidget(const QDomElement &widgetNode)
 
 void Xml::S2Parser::parse()
 {
-    if (!content.isNull())
+    if (!m_content.isNull())
     {
-        parseNode(content, tags::conf_tabs, [this](const QDomNode &tabNode) { parseConfigTab(tabNode); });
-        parseNode(content, tags::records, [this](const QDomNode &recordNode) { parseRecord(recordNode); });
+        XmlParse::parseNode(m_content, tags::conf_tabs, [this](const QDomNode &tabNode) { parseConfigTab(tabNode); });
+        XmlParse::parseNode(m_content, tags::records, [this](const QDomNode &recordNode) { parseRecord(recordNode); });
     }
 }

@@ -13,14 +13,81 @@ namespace S2
 {
 constexpr quint32 dummyElement = 0xffffffff;
 
-struct GasDensity
+class GasDensity
 {
+
+public:
     quint32 TypeGaz; // Тип газа
     float MolW;      // Молярная масса, г/моль
     float Weight;    // Масса, кг
     float MolFrac;   // Мольная доля, %
 
     friend inline bool operator==(const GasDensity &lhs, const GasDensity &rhs);
+    /*    GasDensity &operator=(const GasDensity &lhs)
+        {
+            TypeGaz = lhs.TypeGaz;
+            MolW = lhs.MolW;
+            Weight = lhs.Weight;
+            MolFrac = lhs.MolFrac;
+            return *this;
+        } */
+
+    GasDensity()
+    {
+        TypeGaz = 0;
+        MolW = 0;
+        Weight = 0;
+        MolFrac = 0;
+    }
+
+    GasDensity(quint32 typeGaz, float molW, float weight, float molFrac)
+    {
+        TypeGaz = typeGaz;
+        MolW = molW;
+        Weight = weight;
+        MolFrac = molFrac;
+    }
+
+    GasDensity(const QStringList &initList)
+    {
+        GasDensity();
+        QStringList list = initList;
+        TypeGaz = (list.isEmpty()) ? TypeGaz : list.takeFirst().toUInt();
+        if (TypeGaz == 0) // no gas
+        {
+            MolW = 0.0;
+            Weight = 0.0;
+            MolFrac = 0.0;
+        }
+        else
+        {
+            MolW = (list.isEmpty()) ? MolW : list.takeFirst().toFloat();
+            Weight = (list.isEmpty()) ? Weight : list.takeFirst().toFloat();
+            MolFrac = (list.isEmpty()) ? MolFrac : list.takeFirst().toFloat();
+        }
+    }
+};
+
+struct GasDensity_3t
+{
+    QList<GasDensity> density;
+
+    GasDensity_3t()
+    {
+    }
+    GasDensity_3t(const char *buffer)
+    {
+        if (density.size() < 3)
+            density.resize(3);
+        const std::array<GasDensity, 3> _density = *reinterpret_cast<const std::array<GasDensity, 3> *>(buffer);
+        for (int i = 0; i < 3; ++i)
+        {
+            GasDensity dclass = _density[i];
+            density.replace(i, dclass);
+        }
+    }
+
+    friend inline bool operator==(const GasDensity_3t &lhs, const GasDensity_3t &rhs);
 };
 
 inline bool operator==(const GasDensity &lhs, const GasDensity &rhs)
@@ -30,6 +97,20 @@ inline bool operator==(const GasDensity &lhs, const GasDensity &rhs)
         (lhs.MolW == rhs.MolW) &&       //
         (lhs.Weight == rhs.Weight) &&   //
         (lhs.MolFrac == rhs.MolFrac);   //
+}
+
+inline bool operator==(const GasDensity_3t &lhs, const GasDensity_3t &rhs)
+{
+    if (lhs.density.size() != rhs.density.size())
+        return false;
+    for (int i = 0; i < lhs.density.count(); ++i)
+    {
+        if (lhs.density.at(i) == rhs.density.at(i))
+            continue;
+        else
+            return false;
+    }
+    return true;
 }
 
 using BYTE = std::uint8_t;
@@ -57,8 +138,6 @@ using FLOAT_3t = std::array<FLOAT, 3>;
 using FLOAT_4t = std::array<FLOAT, 4>;
 using FLOAT_6t = std::array<FLOAT, 6>;
 using FLOAT_8t = std::array<FLOAT, 8>;
-using CONF_DENS = GasDensity;
-using CONF_DENS_3t = std::array<CONF_DENS, 3>;
 using CONFMAST = ModbusItem::Item;
 
 static_assert(sizeof(BYTE) != sizeof(WORD), "Broken datatypes");
@@ -77,7 +156,7 @@ using valueType = std::variant<BYTE, WORD, DWORD, INT32,     //
     BYTE_16t, WORD_16t, DWORD_16t,                           //
     BYTE_32t, WORD_32t, DWORD_32t,                           //
     FLOAT, FLOAT_2t, FLOAT_3t, FLOAT_4t, FLOAT_6t, FLOAT_8t, //
-    CONF_DENS_3t, CONFMAST>;
+    GasDensity_3t, CONFMAST>;
 
 template <typename T> struct isValueType
 {
@@ -122,7 +201,7 @@ struct OscInfo
     DataRecHeader typeHeader;
     quint32 id; ///< Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...) <- неверное описание
     quint64 unixtime; ///< Время начала записи осциллограммы
-    quint32 idOsc0; ///< ID первой осциллограммы в файле (определяет структуру точки и номер канала)
+    quint32 idOsc0;   ///< ID первой осциллограммы в файле (определяет структуру точки и номер канала)
 
     friend inline QDebug operator<<(QDebug debug, const S2::OscInfo &st);
 };
@@ -141,25 +220,25 @@ struct SwitchJourInfo
     uint32_t num;        // Порядковый номер переключения
     uint16_t numA;       // Порядковый номер аппарата
     uint8_t typeA;       // Тип аппарата
-    uint8_t options; // Направление переключения, тип коммутации и коммутируемые фазы
-    uint64_t time; // Время, когда произведено переключение
+    uint8_t options;     // Направление переключения, тип коммутации и коммутируемые фазы
+    uint64_t time;       // Время, когда произведено переключение
 };
 
 struct SwitchJourRecord
 {
-    uint32_t num;   // Порядковый номер переключения
-    uint16_t numA;  // Порядковый номер аппарата
-    uint8_t typeA;  // Тип аппарата
-    uint8_t result; // Результат операции: успешно / с неисправностью
-    uint64_t time;  // Время, когда произведено переключение
-    uint8_t options; // Направление переключения, тип коммутации и коммутируемые фазы
-    float amperage[3];    // Значение тока в момент выдачи команды
-    float voltage[3];     // Значение напряжения в момент выдачи команды
-    uint16_t ownTime[3];  // Собственное время коммутации
-    uint16_t fullTime[3]; // Полное время коммутации (только для отключения, для включения будут нули)
-    uint16_t movTime[3];  // Время перемещения главного контакта
-    uint16_t archTime[3]; // Время горения дуги
-    float idleTime[3];    // Время безоперационного простоя
+    uint32_t num;          // Порядковый номер переключения
+    uint16_t numA;         // Порядковый номер аппарата
+    uint8_t typeA;         // Тип аппарата
+    uint8_t result;        // Результат операции: успешно / с неисправностью
+    uint64_t time;         // Время, когда произведено переключение
+    uint8_t options;       // Направление переключения, тип коммутации и коммутируемые фазы
+    float amperage[3];     // Значение тока в момент выдачи команды
+    float voltage[3];      // Значение напряжения в момент выдачи команды
+    uint16_t ownTime[3];   // Собственное время коммутации
+    uint16_t fullTime[3];  // Полное время коммутации (только для отключения, для включения будут нули)
+    uint16_t movTime[3];   // Время перемещения главного контакта
+    uint16_t archTime[3];  // Время горения дуги
+    float idleTime[3];     // Время безоперационного простоя
     int16_t inaccuracy[3]; // Погрешность синхронной коммутации (только для соответствующего типа коммутации, для
                            // остальных типов нули
     float supplyVoltage;   // Напряжение питания цепей соленоидов
@@ -226,7 +305,7 @@ struct OscHeader
 
 }
 
-Q_DECLARE_METATYPE(S2::GasDensity)
+Q_DECLARE_METATYPE(S2::GasDensity_3t)
 Q_DECLARE_METATYPE(S2::S2BFile)
 Q_DECLARE_METATYPE(S2::OscInfo)
 Q_DECLARE_METATYPE(S2::SwitchJourInfo)

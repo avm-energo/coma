@@ -27,7 +27,7 @@ class Coma : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit Coma(const AppConfiguration appCfg, QWidget *parent = nullptr);
+    explicit Coma(QWidget *parent = nullptr);
     virtual ~Coma();
 
     void go();
@@ -49,6 +49,7 @@ private slots:
     void loadOsc();
     void loadSwj();
     void loadSwjPackConvertor();
+    void hex2BinConverter();
     void openJournalViewer();
     void openXmlEditor();
     void showAboutDialog();
@@ -57,7 +58,6 @@ private slots:
     void showReconnectDialog();
 
 private:
-    AppConfiguration m_appConfig;
     Interface::ConnectionManager *m_connectionManager;
     Device::CurrentDevice *m_currentDevice;
     UniquePointer<DialogManager> m_dlgManager;

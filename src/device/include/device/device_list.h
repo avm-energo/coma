@@ -7,12 +7,6 @@
 namespace Device
 {
 
-enum class BoardTypes : u8
-{
-    BASEBOARD = 0x01,
-    MEZZBOARD = 0x02
-};
-
 enum class Model : u16
 {
     KTF = 0xA282,
@@ -64,39 +58,39 @@ static const std::unordered_map<Model, std::string_view> BoxModules {
     { Model::KTF, "AVM-KTF" }, //
     { Model::KIV, "AVM-KIV" }, //
     { Model::KDV, "AVM-KDV" }, //
-    { Model::MPG, "AVM-MPE" }, //
+    { Model::MPG, "AVM-MPG" }, //
 };
 
 static const std::unordered_map<BaseBoard, std::string_view> BaseBoards {
-    { BaseBoard::MTB_00, "АВ_ТУК-00" }, // нет базовой платы
-    { BaseBoard::MTB_14, "АВ_ТУК-14" }, // alise (ЦКУ sonica)
-    { BaseBoard::MTB_12, "АВ-ТУК-12" }, // процессорный, не комбинируется
-    { BaseBoard::MTB_21, "АВ-ТУК-21" }, // аналоговый ввод DC, комбинируется с 2x,3x
-    { BaseBoard::MTB_22, "АВ-ТУК-22" }, // аналоговый ввод DC, комбинируется с 2x,3x
-    { BaseBoard::MTB_31, "АВ-ТУК-31" }, // дискретный ввод, комбинируется с 2x,3x
-    { BaseBoard::MTB_33, "АВ-ТУК-33" }, // дискретный ввод, комбинируется с 2x,3x
-    { BaseBoard::MTB_34, "АВ-ТУК-34" }, // дискретный ввод, комбинируется с 2x,3x
-    { BaseBoard::MTB_35, "АВ-ТУК-35" }, // дискретный вывод, комбинируется с 2x,3x
-    { BaseBoard::MTB_80, "АВ-ТУК-80" }, // аналоговый ввод AC, комбинируется с 81,82,83
-    { BaseBoard::MTB_85, "АВ-ТУК-85" }, // УСК, комбинируется с 85
-    { BaseBoard::MTB_86, "АВ-ТУК-86" }, // комбинируется с 86 и ?
-    { BaseBoard::MTB_87, "АВ-ТУК-87" }, // ЧР, не комбинируется
-    { BaseBoard::MTB_A1, "ПКС-1" },     // ПКДН, прибор для Туркота, не комбинируется
-    { BaseBoard::MTB_A2, "АВМ" },       // МНК3, не комбинируется
+    { BaseBoard::MTB_00, "АВ_ТУК-00" },       // нет базовой платы
+    { BaseBoard::MTB_14, "АВ_ТУК-14" },       // alise (ЦКУ sonica)
+    { BaseBoard::MTB_12, "АВ-ТУК-12 (ЦКУ)" }, // процессорный, не комбинируется
+    { BaseBoard::MTB_21, "АВ-ТУК-21" },       // аналоговый ввод DC, комбинируется с 2x,3x
+    { BaseBoard::MTB_22, "АВ-ТУК-22" },       // аналоговый ввод DC, комбинируется с 2x,3x
+    { BaseBoard::MTB_31, "АВ-ТУК-31" },       // дискретный ввод, комбинируется с 2x,3x
+    { BaseBoard::MTB_33, "АВ-ТУК-33" },       // дискретный ввод, комбинируется с 2x,3x
+    { BaseBoard::MTB_34, "АВ-ТУК-34" },       // дискретный ввод, комбинируется с 2x,3x
+    { BaseBoard::MTB_35, "АВ-ТУК-35" },       // дискретный вывод, комбинируется с 2x,3x
+    { BaseBoard::MTB_80, "АВ-ТУК-80" },      // аналоговый ввод AC, комбинируется с 81,82,83
+    { BaseBoard::MTB_85, "АВ-ТУК-85" },      // УСК, комбинируется с 85
+    { BaseBoard::MTB_86, "АВ-ТУК-86" },      // комбинируется с 86 и ?
+    { BaseBoard::MTB_87, "АВ-ТУК-87 (ЧР)" }, // ЧР, не комбинируется
+    { BaseBoard::MTB_A1, "ПКС-1" }, // ПКДН, прибор для Туркота, не комбинируется
+    { BaseBoard::MTB_A2, "АВМ" },   // МНК3, не комбинируется
 };
 
 static const std::unordered_map<MezzanineBoard, std::string_view> MezzanineBoards {
-    { MezzanineBoard::MTM_00, "" },   // нет мезонина
-    { MezzanineBoard::MTM_21, "21" }, // аналоговый ввод, комбинируется с 2x,3x
-    { MezzanineBoard::MTM_22, "22" }, // аналоговый ввод, комбинируется с 2x,3x
-    { MezzanineBoard::MTM_31, "31" }, // дискретный ввод, комбинируется с 2x,3x
-    { MezzanineBoard::MTM_33, "33" }, // дискретный ввод, комбинируется с 2x,3x
-    { MezzanineBoard::MTM_35, "35" }, // дискретный вывод, комбинируется с 2x,3x
-    { MezzanineBoard::MTM_81, "81" }, // 0U6I, комбинируется с 80,84
-    { MezzanineBoard::MTM_82, "82" }, // 3U3I, комбинируется с 80,84
-    { MezzanineBoard::MTM_83, "83" }, // 6U0I, комбинируется с 80,84
-    { MezzanineBoard::MTM_84, "84" }, // 3U3I, комбинируется с 80,81
-    { MezzanineBoard::MTM_85, "85" } // 3U3I УСК (перегрузка по току 20х), комбинируется с 85
+    { MezzanineBoard::MTM_00, "" },           // нет мезонина
+    { MezzanineBoard::MTM_21, "21" },         // аналоговый ввод, комбинируется с 2x,3x
+    { MezzanineBoard::MTM_22, "22" },         // аналоговый ввод, комбинируется с 2x,3x
+    { MezzanineBoard::MTM_31, "31" },         // дискретный ввод, комбинируется с 2x,3x
+    { MezzanineBoard::MTM_33, "33" },         // дискретный ввод, комбинируется с 2x,3x
+    { MezzanineBoard::MTM_35, "35" },         // дискретный вывод, комбинируется с 2x,3x
+    { MezzanineBoard::MTM_81, "81 (Э2Т0Н)" }, // 0U6I, комбинируется с 80,84
+    { MezzanineBoard::MTM_82, "82 (Э1Т1Н)" }, // 3U3I, комбинируется с 80,84
+    { MezzanineBoard::MTM_83, "83 (Э0Т2Н)" }, // 6U0I, комбинируется с 80,84
+    { MezzanineBoard::MTM_84, "84" },         // 3U3I, комбинируется с 80,81
+    { MezzanineBoard::MTM_85, "85 (УСК)" } // 3U3I УСК (перегрузка по току 20х), комбинируется с 85
 };
 
 } // namespace Device

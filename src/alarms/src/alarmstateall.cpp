@@ -1,6 +1,8 @@
 #include "alarms/alarmstateall.h"
 
 #include <QBoxLayout>
+#include <QScrollArea>
+#include <QSizePolicy>
 #include <bitset>
 #include <device/current_device.h>
 #include <widgets/wd_func.h>
@@ -13,6 +15,7 @@ AlarmStateAll::AlarmStateAll(Device::CurrentDevice *device, QWidget *parent)
     if (m_config.empty())
         generateDefaultConfig();
     setupUI();
+    setMinimumWidth(300);
 }
 
 void AlarmStateAll::generateDefaultConfig()
@@ -45,7 +48,7 @@ void AlarmStateAll::reqUpdate()
 void AlarmStateAll::setupUI()
 {
     Q_ASSERT(m_config.size() > 0 && m_config.size() <= 32);
-    auto mainLayout = new QVBoxLayout(this);
+    auto lyout = new QVBoxLayout(this);
     for (std::size_t i = 0; i < m_config.size(); ++i)
     {
         Q_ASSERT(m_config[i].index < 32);
@@ -53,11 +56,24 @@ void AlarmStateAll::setupUI()
         auto label = WDFunc::NewLBL2(this, "", QString::number(m_config[i].index));
         auto pixmap = WDFunc::NewCircle(m_normalColor, circleRadius);
         label->setPixmap(pixmap);
-        hLayout->addWidget(label);
-        hLayout->addWidget(WDFunc::NewLBL2(this, m_config[i].desc), 1);
-        mainLayout->addLayout(hLayout);
+        hLayout->addWidget(label, 1);
+        hLayout->addWidget(WDFunc::NewLBL2(this, m_config[i].desc), 100);
+        lyout->addLayout(hLayout);
     }
-    mainLayout->addWidget(WDFunc::NewPB(this, "", "Ok", static_cast<QWidget *>(this), &QWidget::hide), 0);
+
+    auto widget = new QWidget;
+    widget->setLayout(lyout);
+    auto mainLayout = new QVBoxLayout(this);
+    // Создаём QScrollArea
+    auto scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    scrollArea->setWidget(widget);
+    mainLayout->addWidget(scrollArea);
+    // Создаём кнопку "Ок"
+    auto pb = new QPushButton("Ok", this);
+    QObject::connect(pb, &QPushButton::clicked, this, &QWidget::hide);
+    mainLayout->addWidget(pb);
     setLayout(mainLayout);
 }
 

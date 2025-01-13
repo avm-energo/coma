@@ -11,7 +11,7 @@ namespace S2
 
 QByteArray Util::convert(const quint32 id, const DataItem &item) const
 {
-    const auto bytes = item.toByteArray();
+    QByteArray bytes = item.toByteArray();
     S2::DataRecHeader header { id, static_cast<quint32>(bytes.size()) };
     QByteArray retValue = StdFunc::toByteArray(header);
     if (!bytes.isEmpty())

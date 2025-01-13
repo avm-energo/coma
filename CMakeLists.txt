@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(coma VERSION 3.0.1)
+project(coma VERSION 3.1.2)
 
 set(SOFTDEVELOPER "AVM-Energo")
 
@@ -82,6 +82,8 @@ include(expected)
 include(qcustomplot)
 include(limereport)
 include(qxlsx)
+add_subdirectory(src/appconfig)
+add_subdirectory(src/autonomous)
 add_subdirectory(src/comaversion)
 add_subdirectory(src/comaresources)
 add_subdirectory(src/ctti)

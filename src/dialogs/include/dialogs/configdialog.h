@@ -1,7 +1,9 @@
 #pragma once
 
+#include <dialogs/dialogcreator.h>
 #include <dialogs/errconfstate.h>
 #include <s2/s2datamanager.h>
+#include <set>
 #include <widgets/udialog.h>
 #include <widgets/widgetfactory.h>
 
@@ -21,7 +23,7 @@ private slots:
 private:
     QWidget *ConfButtons();
     quint32 tabForId(quint16 id);
-    void createTabs(QTabWidget *tabWidget);
+    std::set<delegate::WidgetGroup> createTabs(QTabWidget *tabWidget);
     void setupUI();
 
     void fill();
@@ -34,6 +36,7 @@ private:
     void writeConfig();
     void checkForDiff();
     bool isVisible(const quint16 id) const;
+    bool isDebugWidget(const quint16 id) const;
     void showConfigErrState();
 
     S2DataManager &m_datamanager;

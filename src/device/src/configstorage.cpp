@@ -41,14 +41,14 @@ void ConfigStorage::signalDataReceive(const u32 id, const u32 addr, //
         m_settings.appendSignal(id, { addr, count, type });
 }
 
-void ConfigStorage::tabDataReceive(const u32 id, const QString &name)
+void ConfigStorage::tabDataReceive(const u32 id, const XmlDataTypes::SectionTabStruct &sectionTab)
 {
     if (id == 0)
         qWarning() << "Invalid tab id: " << id;
-    else if (name == "")
+    else if (sectionTab.name == "")
         qWarning() << "Empty tab name, tab id: " << id;
     else
-        m_settings.appendTab(id, name);
+        m_settings.appendTab(id, sectionTab);
 }
 
 void ConfigStorage::sectionDataReceive(const XmlDataTypes::SGMap &sgmap, const QString &secHead)

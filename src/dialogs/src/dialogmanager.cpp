@@ -62,11 +62,11 @@ void DialogManager::reqUpdate()
     currentDialog->reqUpdate();
 }
 
-void DialogManager::setupUI(Device::CurrentDevice *device, const AppConfiguration appCfg, const QSize size)
+void DialogManager::setupUI(Device::CurrentDevice *device, const QSize size)
 {
     Q_ASSERT(m_workspace->count() == 0);
     m_dlgCreator.reset(new DialogCreator(device, this));
-    m_dlgCreator->createDialogs(appCfg);
+    m_dlgCreator->createDialogs();
     for (auto &dialog : m_dlgCreator->getDialogs())
     {
         dialog->engine()->setUpdatesEnabled(false);

@@ -3,7 +3,6 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <gen/files.h>
-#include <map>
 #include <widgets/epopup.h>
 #include <widgets/wd_func.h>
 
@@ -85,6 +84,7 @@ void JournalTabWidget::gettingJournal()
 
 void JournalTabWidget::eraseJournal()
 {
+    emit showOnceSuccessMsg("Журнал очищен успешно");
     if (EMessageBox::password(this))
         m_async->writeCommand(Interface::Commands::C_EraseJournals, static_cast<quint16>(m_type));
 }

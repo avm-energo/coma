@@ -12,11 +12,19 @@ std::array<T, N> operator<<(std::array<T, N> &array, const QStringList &list)
     return array;
 }
 
-template <typename T> //
+template <typename T, std::enable_if_t<!std::is_same_v<T, S2::GasDensity_3t>, bool> = true> //
 S2::valueType helper(unsigned int numByte, const char *rawdata)
 {
     assert(sizeof(T) == numByte);
+    T tmp = *reinterpret_cast<const T *>(rawdata);
     return *reinterpret_cast<const T *>(rawdata);
+}
+
+template <typename T, std::enable_if_t<std::is_same_v<T, S2::GasDensity_3t>, bool> = true> //
+S2::valueType helper(unsigned int numByte, const char *rawdata)
+{
+    assert(numByte == 48);
+    return S2::GasDensity_3t(rawdata);
 }
 
 template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool> = true> //
@@ -25,6 +33,20 @@ S2::valueType helper(const QString &str)
     T arr {};
     const auto list = str.split(',');
     arr << list;
+    return arr;
+}
+
+template <typename T, std::enable_if_t<std::is_same_v<T, S2::GasDensity_3t>, bool> = true> //
+S2::valueType helper(const QString &str)
+{
+    S2::GasDensity_3t arr;
+    const QStringList list = str.split(',');
+    for (QString inlist : list)
+    {
+        const QStringList inComponents = inlist.split(';');
+        S2::GasDensity dens(inComponents);
+        arr.density << dens;
+    }
     return arr;
 }
 
@@ -125,8 +147,8 @@ DataItem DataFactory::create(const DataRec &record) const
         return DataItem { helper<FLOAT_6t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
         return DataItem { helper<FLOAT_8t>(record.header.numByte, rawdata) };
-    case ctti::unnamed_type_id<CONF_DENS_3t>().hash():
-        return DataItem { helper<CONF_DENS_3t>(record.header.numByte, rawdata) };
+    case ctti::unnamed_type_id<GasDensity_3t>().hash():
+        return DataItem { helper<GasDensity_3t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<CONFMAST>().hash():
         return DataItem { helper<CONFMAST>(record.header.numByte, rawdata) };
     default:
@@ -196,8 +218,8 @@ DataItem DataFactory::create(const quint32 id, const QString &str) const
         return DataItem { helper<FLOAT_6t>(str) };
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
         return DataItem { helper<FLOAT_8t>(str) };
-    case ctti::unnamed_type_id<CONF_DENS_3t>().hash():
-        return DataItem { helper<CONF_DENS_3t>(str) };
+    case ctti::unnamed_type_id<GasDensity_3t>().hash():
+        return DataItem { helper<GasDensity_3t>(str) };
     case ctti::unnamed_type_id<CONFMAST>().hash():
         return DataItem { helper<CONFMAST>(str) };
     default:

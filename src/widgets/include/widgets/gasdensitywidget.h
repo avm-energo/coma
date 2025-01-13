@@ -120,7 +120,7 @@ public:
     explicit GasDensityWidget(QWidget *parent = nullptr);
 
     /// \brief Заполнить виджет данными в формате S2.
-    void fill(const S2::CONF_DENS_3t &value);
+    void fill(const S2::GasDensity_3t &value);
     /// \brief Получить данные от виджета в формате S2.
-    S2::CONF_DENS_3t fillBack() const;
+    S2::GasDensity_3t fillBack() const;
 };

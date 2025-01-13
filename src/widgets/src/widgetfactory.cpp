@@ -31,11 +31,18 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
 {
     QWidget *widget = new QWidget(parent);
     QHBoxLayout *lyout = new QHBoxLayout;
+    lyout->setContentsMargins(10, 0, 10, 0);
+
     auto label = new QLabel(arg.desc, parent);
     label->setToolTip(arg.toolTip);
     label->setToolTipDuration(60000);
     lyout->addWidget(label);
-    widget->setLayout(lyout);
+
+    QWidget *verticalLineWidget = new QWidget(parent);
+    verticalLineWidget->setFixedWidth(2);
+    verticalLineWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    verticalLineWidget->setStyleSheet(QString("background-color: #c0c0c0;"));
+    lyout->addWidget(verticalLineWidget);
 
     switch (arg.type.hash())
     {
@@ -43,21 +50,21 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
     {
         auto control = new IPCtrl(parent);
         control->setObjectName(QString::number(key));
-        lyout->addWidget(control);
+        lyout->addWidget(control, 100);
         break;
     }
     case ctti::unnamed_type_id<GasDensityWidget>().hash():
     {
         auto gasWidget = new GasDensityWidget(parent);
         gasWidget->setObjectName(QString::number(key));
-        lyout->addWidget(gasWidget);
+        lyout->addWidget(gasWidget, 100);
         break;
     }
     case ctti::unnamed_type_id<QCheckBox>().hash():
     {
         auto checkbox = new QCheckBox(parent);
         checkbox->setObjectName(QString::number(key));
-        lyout->addWidget(checkbox);
+        lyout->addWidget(checkbox, 100);
         break;
     }
     case ctti::unnamed_type_id<QLineEdit>().hash():
@@ -67,7 +74,7 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
         sizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
         lineEdit->setSizePolicy(sizePolicy);
         lineEdit->setObjectName(QString::number(key));
-        lyout->addWidget(lineEdit);
+        lyout->addWidget(lineEdit, 100);
         break;
     }
     default:
@@ -75,8 +82,10 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
         Q_ASSERT(false && "False type");
         widget->deleteLater();
         widget = nullptr;
-        break;
+        return widget;
     }
+
+    widget->setLayout(lyout);
     return widget;
 }
 
@@ -145,7 +154,8 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 else
                     spbGroup = WDFunc::NewSPBG(parent, QString::number(key), arg.count, arg.min, arg.max, arg.decimals);
 
-                lyout->addWidget(spbGroup);
+                addVerticalLine(lyout, parent);
+                lyout->addWidget(spbGroup, 100);
                 widget->setLayout(lyout);
             },
             [&](const delegate::DoubleSpinBoxWidget &arg) {
@@ -164,13 +174,14 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 label->setToolTip(arg.toolTip);
                 lyout->addWidget(label);
 
+                addVerticalLine(lyout, parent);
                 auto count = getRealCount(key);
                 auto group = new CheckBoxGroup(arg.items, count, parent);
                 group->setObjectName(QString::number(key));
                 lyout->addWidget(group);
                 widget->setLayout(lyout);
             },
-            [&](const delegate::QComboBox &arg) {
+            [&](const delegate::ComboBox &arg) {
                 widget = new QWidget(parent);
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
@@ -179,12 +190,13 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 lyout->addWidget(WDFunc::NewCB2(parent, QString::number(key), arg.model));
                 widget->setLayout(lyout);
             },
-            [&](const delegate::QComboBoxGroup &arg) {
+            [&](const delegate::ComboBoxGroup &arg) {
                 widget = new QWidget(parent);
                 QHBoxLayout *mainLyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
                 label->setToolTip(arg.toolTip);
                 mainLyout->addWidget(label);
+                addVerticalLine(mainLyout, parent);
                 auto count = getRealCount(key);
                 FlowLayout *flowLayout = new FlowLayout;
                 for (auto i = 0; i != count; ++i)
@@ -222,8 +234,8 @@ bool WidgetFactory::fillBack(quint16 key, const QWidget *parent) const
             [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) { status = fillBackSPBG(key, parent); },
             [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) { status = fillBackSPB(key, parent); },
             [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) { status = fillBackChBG(key, parent); },
-            [&](const delegate::QComboBox &arg) { status = fillBackComboBox(key, parent, arg.primaryField); },
-            [&](const delegate::QComboBoxGroup &arg) { status = fillBackComboBoxGroup(key, parent, arg.count); },
+            [&](const delegate::ComboBox &arg) { status = fillBackComboBox(key, parent, arg.primaryField); },
+            [&](const delegate::ComboBoxGroup &arg) { status = fillBackComboBoxGroup(key, parent, arg.count); },
             [&](const config::Item &arg) {
                 auto &record = m_config[key];
                 std::visit(
@@ -319,7 +331,7 @@ bool WidgetFactory::fillCheckBox(const QWidget *parent, quint16 key, bool value)
     return true;
 }
 
-bool WidgetFactory::fillGasWidget(const QWidget *parent, quint16 key, const S2::CONF_DENS_3t &value)
+bool WidgetFactory::fillGasWidget(const QWidget *parent, quint16 key, const S2::GasDensity_3t &value)
 {
     auto widget = parent->findChild<GasDensityWidget *>(QString::number(key));
     if (!widget)
@@ -417,7 +429,7 @@ quint16 WidgetFactory::getRealCount(const quint16 key)
         {
             std::visit(overloaded {
                            [&](const delegate::CheckBoxGroup &val) { realCount = val.count; },
-                           [&](const delegate::QComboBoxGroup &val) { realCount = val.count; },
+                           [&](const delegate::ComboBoxGroup &val) { realCount = val.count; },
                            [&]([[maybe_unused]] const auto &arg) { realCount = 0; },
                        },
                 widgetSearch->second);
@@ -560,9 +572,9 @@ bool WidgetFactory::fillBackSPBG(quint32 id, const QWidget *parent) const
             if constexpr (std_ext::is_container<internalType>())
             {
                 using container_type = typename internalType::value_type;
-                if constexpr (sizeof(container_type) != 1 &&    //
-                    !std_ext::is_container<container_type>() && //
-                    !std::is_same_v<container_type, S2::CONF_DENS>)
+                if constexpr (sizeof(container_type) != 1 &&  //
+                    !std_ext::is_container<container_type>()) //&&
+                // !std::is_same_v<container_type, S2::GasDensity_3t>)
                 {
                     internalType buffer {};
                     status = WDFunc::SPBGData(parent, QString::number(id), buffer);
@@ -582,7 +594,8 @@ bool WidgetFactory::fillBackSPB(quint32 id, const QWidget *parent) const
     std::visit(
         [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            if constexpr (!std_ext::is_container<internalType>() && !std::is_same_v<internalType, S2::CONFMAST>)
+            if constexpr (!std_ext::is_container<internalType>()
+                && !std::is_same_v<internalType, S2::CONFMAST> && !std::is_same_v<internalType, S2::GasDensity_3t>)
             {
                 auto buffer = WDFunc::SPBData<internalType>(parent, QString::number(id));
                 record.setData(buffer);
@@ -628,7 +641,7 @@ bool WidgetFactory::fillBackChBG(quint32 id, const QWidget *parent) const
     return status;
 }
 
-bool WidgetFactory::fillBackComboBox(quint32 id, const QWidget *parent, delegate::QComboBox::PrimaryField field) const
+bool WidgetFactory::fillBackComboBox(quint32 id, const QWidget *parent, delegate::ComboBox::PrimaryField field) const
 {
     bool status = false;
     auto &record = m_config[id];
@@ -639,13 +652,13 @@ bool WidgetFactory::fillBackComboBox(quint32 id, const QWidget *parent, delegate
             {
                 switch (field)
                 {
-                case delegate::QComboBox::data:
+                case delegate::ComboBox::data:
                 {
                     auto buffer = WDFunc::CBData<internalType>(parent, QString::number(id));
                     record.setData(buffer);
                     break;
                 }
-                case delegate::QComboBox::bitfield:
+                case delegate::ComboBox::bitfield:
                 {
                     // NOTE Nothing here
                 }
@@ -677,7 +690,7 @@ bool WidgetFactory::fillBackComboBoxGroup(quint32 id, const QWidget *parent, int
             typedef std::remove_reference_t<decltype(arg)> internalType;
             if constexpr (std::is_unsigned_v<internalType>)
             {
-                std::bitset<sizeof(internalType) *CHAR_BIT> bitset = 0;
+                std::bitset<sizeof(internalType) * CHAR_BIT> bitset = 0;
                 assert(size_t(count) <= bitset.size());
                 status = true;
                 for (int i = 0; i != count; ++i)
@@ -725,6 +738,15 @@ bool WidgetFactory::fillBackGasWidget(quint32 id, const QWidget *parent) const
     if (!widget)
         return false;
     auto &record = m_config[id];
-    record.setData(widget->fillBack());
+    record.setData(static_cast<S2::valueType>(widget->fillBack()));
     return true;
+}
+
+void WidgetFactory::addVerticalLine(QLayout *lyout, QWidget *parent)
+{
+    QWidget *verticalLineWidget = new QWidget(parent);
+    verticalLineWidget->setFixedWidth(2);
+    verticalLineWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    verticalLineWidget->setStyleSheet(QString("background-color: #c0c0c0;"));
+    lyout->addWidget(verticalLineWidget);
 }

@@ -1,5 +1,6 @@
 #include "dialogs/dialogcreator.h"
 
+#include <appconfig/appconfig.h>
 #include <device/current_device.h>
 #include <dialogs/checkdialog.h>
 #include <dialogs/configdialog.h>
@@ -35,7 +36,7 @@ DialogCreator::DialogCreator(Device::CurrentDevice *device, QWidget *parent)
     Q_ASSERT(m_device != nullptr);
 }
 
-void DialogCreator::createDialogs(const AppConfiguration appCfg)
+void DialogCreator::createDialogs()
 {
     auto ifaceType = m_device->async()->getInterfaceType();
     deleteDialogs();
@@ -44,7 +45,7 @@ void DialogCreator::createDialogs(const AppConfiguration appCfg)
     createJournalDialog();
 
     // Регулировка доступна только в АВМ-Наладке при связи по USB
-    if (appCfg == AppConfiguration::Debug && ifaceType == Interface::IfaceType::USB)
+    if (AppConfiguration::app() == AppConfiguration::Debug && ifaceType == Interface::IfaceType::USB)
         createTuneDialogs();
     // TODO: Временно выключено для модбаса
     if (ifaceType == Interface::IfaceType::USB)
@@ -53,7 +54,7 @@ void DialogCreator::createDialogs(const AppConfiguration appCfg)
     createOscAndSwJourDialogs();
     createPlotDialog();
     createRelayDialog();
-    createCommonDialogs(appCfg);
+    createCommonDialogs();
 }
 
 void DialogCreator::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
@@ -242,12 +243,12 @@ void DialogCreator::createRelayDialog()
         addDialogToList(new RelayDialog(4, m_device, m_parent), "Реле", "relay1");
 }
 
-void DialogCreator::createCommonDialogs(const AppConfiguration appCfg)
+void DialogCreator::createCommonDialogs()
 {
     auto ifaceType = m_device->async()->getInterfaceType();
     if (ifaceType != Interface::IfaceType::Ethernet)
         addDialogToList(new FWUploadDialog(m_device, m_parent), "Загрузка ВПО", "upload");
-    if (appCfg == AppConfiguration::Debug)
+    if (AppConfiguration::app() == AppConfiguration::Debug)
     {
         auto hiddenDialog = new HiddenDialog(m_device, m_parent);
         hiddenDialog->setModuleName(m_device->getDeviceName());

@@ -18,4 +18,4 @@ target_include_directories(coma_core PUBLIC
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 # Linking libraries for current target
-target_link_libraries(coma_core PUBLIC dialogs comaresources comaversion)
+target_link_libraries(coma_core PUBLIC autonomous dialogs comaresources comaversion)
