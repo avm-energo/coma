@@ -1,5 +1,18 @@
 #include "widgets/wd_func.h"
 
+#include <gen/colors.h>
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
+#include <gen/xml/xmlattr.h>
+#include <models/etablemodel.h>
+#include <widgets/edoublespinbox.h>
+#include <widgets/epopup.h>
+#include <widgets/etableview.h>
+#include <widgets/ipctrl.h>
+#include <widgets/passwordlineedit.h>
+#include <widgets/udialog.h>
+
 #include <QApplication>
 #include <QFileDialog>
 #include <QHBoxLayout>
@@ -11,24 +24,10 @@
 #include <QRegularExpression>
 #include <QStatusBar>
 #include <QStringListModel>
+#include <QSvgRenderer>
 #include <QTextEdit>
 #include <QtDebug>
 #include <QtMath>
-#include <gen/colors.h>
-#include <gen/error.h>
-#include <gen/files.h>
-#include <gen/stdfunc.h>
-#include <models/etablemodel.h>
-#include <widgets/edoublespinbox.h>
-#include <widgets/epopup.h>
-#include <widgets/etableview.h>
-#include <widgets/ipctrl.h>
-#include <widgets/passwordlineedit.h>
-#include <widgets/udialog.h>
-
-#ifdef __GNUC__
-#include <cfloat>
-#endif
 
 // clang-format off
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -694,6 +693,32 @@ QPushButton *WDFunc::NewPBCommon(
     return pb;
 }
 
+void WDFunc::setHexagonPBIcon(QWidget *parent, const QString &name, QStringList &attrs, QStringList &values)
+{
+    HexagonButton *pb = parent->findChild<HexagonButton *>(name);
+    if (pb)
+    {
+        // open svg resource load contents to qbytearray
+        QFile file(pb->data());
+        file.open(QIODevice::ReadOnly);
+        QByteArray baData = file.readAll();
+        // load svg contents to xml document and edit contents
+        // XmlFunc::AttrsSearchedStruct str = { "path", "style", "stroke", "#8cc800" };
+        // XmlFunc::replaceDomWithNewAttrRecursively(baData, str, attrs, values);
+        XmlAttr::replaceSimpleAttr(baData, "g", attrs, values); // change group colors
+        // create svg renderer with edited contents
+        QSvgRenderer svgRenderer(baData);
+        // create pixmap target (could be a QImage)
+        QPixmap pix(svgRenderer.defaultSize());
+        pix.fill(Qt::transparent);
+        // create painter to act over pixmap
+        QPainter pixPainter(&pix);
+        // use renderer to render over painter which paints on pixmap
+        svgRenderer.render(&pixPainter);
+        pb->setIcon(QIcon(pix));
+    }
+}
+
 QCheckBox *WDFunc::NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext)
 {
     auto chb = new QCheckBox(parent);
@@ -827,6 +852,27 @@ QVariant WDFunc::FloatValueWithCheck(float value)
     else
         tmps = value;
     return tmps;
+}
+
+void WDFunc::setHexagonPBProcessed(QWidget *parent, const QString &name)
+{
+    QStringList attrs = { "stroke", "stroke-width", "fill", "fill-opacity" };
+    QStringList values = { "#7ad37a", "1.0", "#a5ff7a", "1.0" };
+    setHexagonPBIcon(parent, name, attrs, values);
+}
+
+void WDFunc::setHexagonPBRestricted(QWidget *parent, const QString &name)
+{
+    QStringList attrs = { "stroke", "stroke-width" };
+    QStringList values = { "#FF0000", "0.1" };
+    setHexagonPBIcon(parent, name, attrs, values);
+}
+
+void WDFunc::setHexagonPBNormal(QWidget *parent, const QString &name)
+{
+    QStringList attrs = { "stroke", "stroke-width" };
+    QStringList values = { "#8cc800", "0.1" };
+    setHexagonPBIcon(parent, name, attrs, values);
 }
 
 ETableView *WDFunc::NewTV(QWidget *parent, const QString &tvname, QAbstractItemModel *model)
