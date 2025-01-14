@@ -246,6 +246,10 @@ public:
         return pb;
     }
 
+    static void setHexagonPBProcessed(QWidget *parent, const QString &name);
+    static void setHexagonPBRestricted(QWidget *parent, const QString &name);
+    static void setHexagonPBNormal(QWidget *parent, const QString &name);
+
     template <typename Func>
     inline static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, const Func *receiver,
         void (Func::*method)(), const QString &icon = "", const QString &pbtooltip = "")
@@ -335,4 +339,5 @@ public:
 private:
     [[nodiscard]] static QPushButton *NewPBCommon(QWidget *parent, const QString &pbname, const QString &text,
         const QString &icon = "", const QString &pbtooltip = "");
+    static void setHexagonPBIcon(QWidget *parent, const QString &name, QStringList &attrs, QStringList &values);
 };

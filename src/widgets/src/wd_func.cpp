@@ -1,18 +1,5 @@
 #include "widgets/wd_func.h"
 
-#include <gen/colors.h>
-#include <gen/error.h>
-#include <gen/files.h>
-#include <gen/stdfunc.h>
-#include <gen/xml/xmlattr.h>
-#include <models/etablemodel.h>
-#include <widgets/edoublespinbox.h>
-#include <widgets/epopup.h>
-#include <widgets/etableview.h>
-#include <widgets/ipctrl.h>
-#include <widgets/passwordlineedit.h>
-#include <widgets/udialog.h>
-
 #include <QApplication>
 #include <QFileDialog>
 #include <QHBoxLayout>
@@ -28,6 +15,19 @@
 #include <QTextEdit>
 #include <QtDebug>
 #include <QtMath>
+#include <gen/colors.h>
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
+#include <gen/xml/xmlattr.h>
+#include <models/etablemodel.h>
+#include <widgets/edoublespinbox.h>
+#include <widgets/epopup.h>
+#include <widgets/etableview.h>
+#include <widgets/hexagonbutton.h>
+#include <widgets/ipctrl.h>
+#include <widgets/passwordlineedit.h>
+#include <widgets/udialog.h>
 
 // clang-format off
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
