@@ -1,4 +1,4 @@
-#include <widgets/hexagonbutton.h>
+#include <widgets/hexagonbutton.h> //
 
 HexagonButton::HexagonButton(QWidget *parent) : QPushButton(parent)
 {

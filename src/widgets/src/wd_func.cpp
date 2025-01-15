@@ -1,17 +1,17 @@
-#include "widgets/wd_func.h"
-
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-#include <gen/xmlfunc.h>
+#include <gen/xml/xmlattr.h>
 #include <models/etablemodel.h>
 #include <widgets/edoublespinbox.h>
 #include <widgets/epopup.h>
 #include <widgets/etableview.h>
+#include <widgets/hexagonbutton.h>
 #include <widgets/ipctrl.h>
 #include <widgets/passwordlineedit.h>
 #include <widgets/udialog.h>
+#include <widgets/wd_func.h>
 
 #include <QApplication>
 #include <QFileDialog>
@@ -705,7 +705,7 @@ void WDFunc::setHexagonPBIcon(QWidget *parent, const QString &name, QStringList 
         // load svg contents to xml document and edit contents
         // XmlFunc::AttrsSearchedStruct str = { "path", "style", "stroke", "#8cc800" };
         // XmlFunc::replaceDomWithNewAttrRecursively(baData, str, attrs, values);
-        XmlFunc::replaceSimpleAttr(baData, "g", attrs, values); // change group colors
+        XmlAttr::replaceSimpleAttr(baData, "g", attrs, values); // change group colors
         // create svg renderer with edited contents
         QSvgRenderer svgRenderer(baData);
         // create pixmap target (could be a QImage)

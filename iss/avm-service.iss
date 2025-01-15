@@ -9,7 +9,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #define ARCH "win64"
 #define BUILD_TYPE "Release"
-#define QT_DIR "C:\Qt\6.7.0\msvc2019_64\bin"
 #define Redist_DIR "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143"
 #define OUTPUT_DIR  "..\output"
 #define ApplicationVersion() \
