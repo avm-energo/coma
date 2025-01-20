@@ -3,8 +3,8 @@
     <name>AVM-KDV</name>
     <version>0.10-0002</version>
     <features>
-        <isBoxModule value="1">
-        <isRTCExist value="1">
+        <isBoxModule>1</isBoxModule>
+        <isRTCExist>1</isRTCExist>
     </features>
     <resources>
         <alarms desc="Сигнализация">

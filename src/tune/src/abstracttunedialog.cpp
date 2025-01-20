@@ -232,13 +232,17 @@ void AbstractTuneDialog::MsgClear()
 void AbstractTuneDialog::startTune()
 {
     Error::Msg res;
+    if (CheckPassword() != Error::Msg::NoError)
+    {
+        EMessageBox::error(this, "Неверный пароль");
+        return;
+    }
     if (checkCalibrStep() != Error::Msg::NoError)
         return;
     WDFunc::SetEnabled(this, "starttune", false);
     WDFunc::SetEnabled(this, "finishpb", false);
     WDFunc::SetEnabled(this, "stoptune", true);
     // сохраняем на всякий случай настроечные коэффициенты
-    //    if (SaveBlocksToFiles(DataBlock::DataBlockTypes::BacBlock) != Error::Msg::NoError)
     readTuneCoefs();
     if (saveAllTuneCoefs() != Error::Msg::NoError)
     {
@@ -246,7 +250,8 @@ void AbstractTuneDialog::startTune()
             return;
     }
     StdFunc::ClearCancel();
-    MsgClear(); // очистка экрана с сообщениями
+    MsgClear();    // очистка экрана с сообщениями
+    setTuneMode(); // задание режима регулировки
     for (bStep = 0; bStep < m_tuneFunctions.size(); ++bStep)
     {
         MsgSetVisible(NoMsg, bStep);
@@ -270,12 +275,14 @@ void AbstractTuneDialog::startTune()
             WDFunc::SetEnabled(this, "finishpb", true);
             qWarning() << m_tuneFunctions.at(bStep).message;
             loadAllTuneCoefs();
+            setWorkMode();
             EMessageBox::error(this, Error::MsgStr[res]);
             return;
 #endif
         }
         }
     }
+    setWorkMode();
     MsgSetVisible(NoMsg, bStep); // выдаём надпись "Настройка завершена!"
     WDFunc::SetEnabled(this, "starttune", true);
     WDFunc::SetEnabled(this, "stoptune", false);
@@ -284,9 +291,15 @@ void AbstractTuneDialog::startTune()
     TuneSequenceFile::saveTuneSequenceFile(m_tuneStep + 1); // +1 to let the next stage run
 }
 
-Error::Msg AbstractTuneDialog::setSMode2()
+Error::Msg AbstractTuneDialog::setTuneMode()
 {
     m_async->writeCommand(Interface::Commands::C_SetMode, 0x02);
+    return Error::Msg::NoError;
+}
+
+Error::Msg AbstractTuneDialog::setWorkMode()
+{
+    m_async->writeCommand(Interface::Commands::C_SetMode, 0x00);
     return Error::Msg::NoError;
 }
 

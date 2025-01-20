@@ -45,20 +45,19 @@ TuneKIVTemp60::TuneKIVTemp60(TuneTypes tuneType, Device::CurrentDevice *device, 
 
 void TuneKIVTemp60::setTuneFunctions()
 {
-    addTuneFunc("1. Ввод пароля...", &AbstractTuneDialog::CheckPassword);
-    addTuneFunc("2. Сохранение конфигурации...", &AbstractTuneDialog::saveWorkConfig);
-    addTuneFunc("3. Задание временной конфигурации и настроечных параметров...", &TuneKIVTemp60::setNewConfAndTune);
-    addTuneFunc("4. Выдача диалога о температуре в камере...", &TuneKIVTemp60::showTempDialog);
-    addTuneFunc("5. Ожидание установления температурного режима...", &TuneKIVTemp60::waitForTempToRise);
-    addTuneFunc("6. Диалог об установлении входных сигналов...", &TuneKIVTemp60::showSignalsDialog);
-    addTuneFunc("7. Измерения...", &TuneKIVTemp60::analogMeasurement);
+    addTuneFunc("Сохранение конфигурации...", &AbstractTuneDialog::saveWorkConfig);
+    addTuneFunc("Задание временной конфигурации и настроечных параметров...", &TuneKIVTemp60::setNewConfAndTune);
+    addTuneFunc("Выдача диалога о температуре в камере...", &TuneKIVTemp60::showTempDialog);
+    addTuneFunc("Ожидание установления температурного режима...", &TuneKIVTemp60::waitForTempToRise);
+    addTuneFunc("Диалог об установлении входных сигналов...", &TuneKIVTemp60::showSignalsDialog);
+    addTuneFunc("Измерения...", &TuneKIVTemp60::analogMeasurement);
     if (m_tuneType == TUNING60)
-        addTuneFunc("8. Ввод данных энергомонитора и сохранение промежуточных данных...",
+        addTuneFunc("Ввод данных энергомонитора и сохранение промежуточных данных...",
             &TuneKIVTemp60::inputEnergomonitorValues);
     else
     {
-        addTuneFunc("8. Ввод данных энергомонитора...", &TuneKIVTemp60::inputEnergomonitorValues);
-        addTuneFunc("9. Запись коэффициентов в модуль...", &TuneKIVTemp60::writeTuneCoefs);
+        addTuneFunc("Ввод данных энергомонитора...", &TuneKIVTemp60::inputEnergomonitorValues);
+        addTuneFunc("Запись коэффициентов в модуль...", &TuneKIVTemp60::writeTuneCoefs);
     }
 }
 

@@ -37,12 +37,10 @@ TuneKIVADC::TuneKIVADC(TuneTypes tuneType, Device::CurrentDevice *device, QWidge
 
 void TuneKIVADC::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Отображение предупреждения...", &TuneKIVADC::showPreWarning);
-    addTuneFunc("Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
     addTuneFunc("Проверка настроечных параметров...", &TuneKIVADC::checkTuneCoefs);
-    addTuneFunc("Задание режима конфигурирования модуля...", &AbstractTuneDialog::setSMode2);
+    addTuneFunc("Задание режима конфигурирования модуля...", &AbstractTuneDialog::setTuneMode);
     if (m_tuneType == ADCU)
     {
         addTuneFunc("Регулировка...", &TuneKIVADC::ADCCoef1);

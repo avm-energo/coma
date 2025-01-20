@@ -22,10 +22,8 @@ TuneKIVCheck::TuneKIVCheck(Device::CurrentDevice *device, QWidget *parent) : Abs
 
 void TuneKIVCheck::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Отображение схемы подключения...", &TuneKIVCheck::showScheme);
-    addTuneFunc("Перевод в режим регулировки...", &AbstractTuneDialog::setSMode2);
     addTuneFunc("Проверка...", &TuneKIVCheck::check);
 }
 

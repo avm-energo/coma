@@ -44,20 +44,19 @@ void Tune84Temp60::setMessages() { }
 
 void Tune84Temp60::setTuneFunctions()
 {
-    addTuneFunc("1. Ввод пароля...", &AbstractTuneDialog::CheckPassword);
-    addTuneFunc("2. Сохранение конфигурации...", &AbstractTuneDialog::saveWorkConfig);
-    addTuneFunc("3. Задание временной конфигурации и настроечных параметров...", &Tune84Temp60::setNewConfAndTune);
-    addTuneFunc("4. Выдача диалога о температуре в камере...", &Tune84Temp60::showTempDialog);
-    addTuneFunc("5. Ожидание установления температурного режима...", &Tune84Temp60::waitForTempToRise);
-    addTuneFunc("6. Диалог об установлении входных сигналов...", &Tune84Temp60::showSignalsDialog);
-    addTuneFunc("7. Измерения...", &Tune84Temp60::analogMeasurement);
+    addTuneFunc("Сохранение конфигурации...", &AbstractTuneDialog::saveWorkConfig);
+    addTuneFunc("Задание временной конфигурации и настроечных параметров...", &Tune84Temp60::setNewConfAndTune);
+    addTuneFunc("Выдача диалога о температуре в камере...", &Tune84Temp60::showTempDialog);
+    addTuneFunc("Ожидание установления температурного режима...", &Tune84Temp60::waitForTempToRise);
+    addTuneFunc("Диалог об установлении входных сигналов...", &Tune84Temp60::showSignalsDialog);
+    addTuneFunc("Измерения...", &Tune84Temp60::analogMeasurement);
     if (m_tuneType == TUNING60)
-        addTuneFunc("8. Ввод данных энергомонитора и сохранение промежуточных данных...",
-            &Tune84Temp60::inputEnergomonitorValues);
+        addTuneFunc(
+            "Ввод данных энергомонитора и сохранение промежуточных данных...", &Tune84Temp60::inputEnergomonitorValues);
     else
     {
-        addTuneFunc("8. Ввод данных энергомонитора...", &Tune84Temp60::inputEnergomonitorValues);
-        addTuneFunc("9. Запись коэффициентов в модуль...", &AbstractTuneDialog::writeTuneCoefs);
+        addTuneFunc("Ввод данных энергомонитора...", &Tune84Temp60::inputEnergomonitorValues);
+        addTuneFunc("Запись коэффициентов в модуль...", &AbstractTuneDialog::writeTuneCoefs);
     }
 }
 

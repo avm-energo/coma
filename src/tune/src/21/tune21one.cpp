@@ -21,14 +21,12 @@ Tune21One::Tune21One(Device::BoardTypes boardType, u8 chNum, Device::CurrentDevi
     m_bda->setup(m_device->getUID(), m_sync);
 
     setBac(m_bac);
-    m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
-    m_BdainWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
+    addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
     setupUI();
 }
 
 void Tune21One::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Регулировка...", &Tune21One::tune);
     addTuneFunc("Запись настроечных коэффициентов и восстановление конфигурации...", &Tune21One::sendBac);

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <widgets/flowlayout.h>
+#include <widgets/helper.h>
+
 #include <QAbstractSpinBox>
 #include <QDebug>
 #include <QDoubleSpinBox>
@@ -7,8 +10,6 @@
 #include <QLabel>
 #include <QSpinBox>
 #include <QWidget>
-#include <widgets/flowlayout.h>
-#include <widgets/helper.h>
 
 template <typename T, class S, std::enable_if_t<std::is_base_of<QAbstractSpinBox, S>::value, bool> = true>
 class BaseSpinBoxGroup : public QWidget
@@ -36,7 +37,8 @@ public:
     }
 
     explicit BaseSpinBoxGroup(const QStringList &list, QWidget *parent = nullptr)
-        : QWidget(parent), m_count(list.size())
+        : QWidget(parent)
+        , m_count(list.size())
     {
         FlowLayout *flowLayout = new FlowLayout;
         for (auto i = 0; i != m_count; ++i)

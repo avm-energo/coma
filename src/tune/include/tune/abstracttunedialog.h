@@ -10,16 +10,16 @@
 #include <QCloseEvent>
 #include <QDialog>
 
-#define MAXTUNESIZE 1024  // максимальный размер файла с данными настройки
+#define MAXTUNESIZE 1024         // максимальный размер файла с данными настройки
 
-#define TD_TMK 25.0       // degrees
-#define TD_VBAT 3.0       // voltage
-#define TD_FREQ 50        // Hz
-#define MEASTIMERINT 1000 // интервал проведения измерений - 1 с
+#define TD_TMK 25.0              // degrees
+#define TD_VBAT 3.0              // voltage
+#define TD_FREQ 50               // Hz
+#define MEASTIMERINT 1000        // интервал проведения измерений - 1 с
 #define TIMEFORBDATOSETINMS 2000 // время, необходимое для значений Bda, чтобы установиться
 
-#define TUNE_POINTSPER 500 // столько миллисекунд должно усредняться при регулировке
-#define WAITFORCONST 1 // seconds to let voltages be constant
+#define TUNE_POINTSPER 500       // столько миллисекунд должно усредняться при регулировке
+#define WAITFORCONST 1           // seconds to let voltages be constant
 
 // #define DEBUGISON
 
@@ -90,7 +90,8 @@ public:
     Error::Msg readTuneCoefs();
     Error::Msg sendChangedConfig(const std::vector<std::pair<QString, S2::valueType>> &changes) const;
     static ReportData &getReportData();
-    Error::Msg setSMode2();
+    Error::Msg setTuneMode();
+    Error::Msg setWorkMode();
 
 protected:
     Device::CurrentDevice *m_device;

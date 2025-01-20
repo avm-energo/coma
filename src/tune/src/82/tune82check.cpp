@@ -20,7 +20,6 @@ Tune82Check::Tune82Check(Device::CurrentDevice *device, QWidget *parent) : Abstr
 
 void Tune82Check::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Отображение схемы подключения...", &Tune82Check::showScheme);
     addTuneFunc("Проверка связи с МИП...", &Tune82Check::checkMip);
     addTuneFunc("Проверка правильности измерения входных сигналов...", &Tune82Check::check);

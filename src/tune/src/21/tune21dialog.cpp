@@ -21,9 +21,10 @@ Tune21Dialog::Tune21Dialog(
         TuneDialogStruct dlgStruct = { "Регулировка канала " + QString::number(i), Tune21OneDialog };
         addTuneDialog(dlgStruct);
     }
-    // Bac21 *bac = new Bac21((bt == Device::BoardTypes::BASEBOARD) ? 1 : 2, this);
-    // bac->setup(m_device->getUID(), m_device->sync());
-    // addWidgetToTabWidget(bac->widget(), "Коэффициенты");
+    u8 blockNum = (bt == Device::BoardTypes::BASEBOARD) ? 1 : 2;
+    Bac21 *bac = new Bac21(blockNum, this);
+    bac->setup(m_device->getUID(), m_device->sync());
+    addWidgetToTabWidget(bac->widget(), "Коэффициенты");
     firstStepNumber = m_tuneStepCount + 1; // set external variable to step number for the next board in module
     SetupUI((bt == Device::BoardTypes::BASEBOARD) && isMezExist);
 }

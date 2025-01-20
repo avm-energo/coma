@@ -34,7 +34,6 @@ Tune82ADC::Tune82ADC(Device::CurrentDevice *device, QWidget *parent)
 
 void Tune82ADC::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Установка настроечных коэффициентов по умолчанию...", &Tune82ADC::setDefBac);
     addTuneFunc("Получение текущих аналоговых данных и их проверка...", &Tune82ADC::getAnalogData);

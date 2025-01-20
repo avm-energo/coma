@@ -14,7 +14,6 @@ private:
     Bac21 *m_bac;
     Bda21 *m_bda;
     u8 m_channelNumber;
-    int m_BacWidgetIndex, m_BacWidgetIndex2, m_BdainWidgetIndex, m_Bd0WidgetIndex;
 
     void setTuneFunctions() override;
 

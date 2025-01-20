@@ -18,7 +18,6 @@ Tune85Check::Tune85Check(Device::CurrentDevice *device, QWidget *parent) : Abstr
 
 void Tune85Check::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Отображение схемы подключения...", &Tune85Check::showScheme);
     addTuneFunc("Проверка...", &Tune85Check::check);

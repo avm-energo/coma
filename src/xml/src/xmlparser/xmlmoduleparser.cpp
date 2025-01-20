@@ -8,9 +8,7 @@
 #include <gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
-Xml::ModuleParser::ModuleParser(QObject *parent) : m_ifaceType(Interface::IfaceType::Unknown)
-{
-}
+Xml::ModuleParser::ModuleParser(QObject *parent) : m_ifaceType(Interface::IfaceType::Unknown) { }
 
 QString Xml::ModuleParser::getFileName(const quint16 typeB, const quint16 typeM)
 {
@@ -151,27 +149,31 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
     using namespace Xml;
     auto secHeader = sectionNode.toElement().attribute(tags::header, "");
     SGMap sgmap;
-    XmlParse::callForEachChild(sectionNode, [&](const QDomNode &sgroupNode) {
-        SGroup sgroup;
-        auto sgroupElem = sgroupNode.toElement();
-        auto sgroupHeader = sgroupElem.attribute(tags::header, "");
-        auto sgroupTab = sgroupElem.attribute(tags::tab, "").toUInt();
-        auto sgroupDType = sgroupElem.attribute(tags::dtype, "");
-        XmlParse::callForEachChild(sgroupNode, [&](const QDomNode &mwidgetNode) {
-            auto mwidgetElem = mwidgetNode.toElement();
-            auto mwidgetDesc = mwidgetElem.attribute(tags::desc, "");
-            auto viewString = mwidgetElem.attribute(tags::view, "float");
-            auto addr = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::start_addr);
-            auto count = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::count);
-            count = (count == 0) ? 1 : count;
-            auto tooltip = XmlParse::parseString(mwidgetNode, tags::tooltip);
-            auto view = parseViewType(viewString);
-            auto itemList = XmlParse::parseArray(mwidgetNode, tags::str_array);
-            sgroup.name = sgroupHeader;
-            sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, view, itemList });
+    XmlParse::callForEachChild(sectionNode,
+        [&](const QDomNode &sgroupNode)
+        {
+            SGroup sgroup;
+            auto sgroupElem = sgroupNode.toElement();
+            auto sgroupHeader = sgroupElem.attribute(tags::header, "");
+            auto sgroupTab = sgroupElem.attribute(tags::tab, "").toUInt();
+            auto sgroupDType = sgroupElem.attribute(tags::dtype, "");
+            XmlParse::callForEachChild(sgroupNode,
+                [&](const QDomNode &mwidgetNode)
+                {
+                    auto mwidgetElem = mwidgetNode.toElement();
+                    auto mwidgetDesc = mwidgetElem.attribute(tags::desc, "");
+                    auto viewString = mwidgetElem.attribute(tags::view, "float");
+                    auto addr = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::start_addr);
+                    auto count = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::count);
+                    count = (count == 0) ? 1 : count;
+                    auto tooltip = XmlParse::parseString(mwidgetNode, tags::tooltip);
+                    auto view = parseViewType(viewString);
+                    auto itemList = XmlParse::parseArray(mwidgetNode, tags::str_array);
+                    sgroup.name = sgroupHeader;
+                    sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, view, itemList });
+                });
+            sgmap.insert(sgroupTab, sgroup);
         });
-        sgmap.insert(sgroupTab, sgroup);
-    });
     emit sectionDataSending(sgmap, secHeader);
 }
 
@@ -307,21 +309,23 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
     auto tabPrefix = hiddenTabElem.attribute(tags::prefix);
     auto tabFlag = (hiddenTabElem.attribute(tags::flag)).toUShort();
     std::vector<Xml::HiddenWidget> widgets;
-    XmlParse::callForEachChild(hiddenTabNode, [this, &widgets](const QDomNode &hiddenWidgetNode) {
-        auto hiddenWidgetElem = hiddenWidgetNode.toElement();
-        auto viewStr = hiddenWidgetElem.attribute(tags::view, "LineEdit");
-        auto title = hiddenWidgetElem.attribute(tags::title);
-        auto view = parseViewType(viewStr);
-        auto name = XmlParse::parseString(hiddenWidgetNode, tags::name);
-        auto typeStr = XmlParse::parseString(hiddenWidgetNode, tags::type);
-        auto type = parseBinaryType(typeStr);
-        auto address = XmlParse::parseNumFromNode<u32>(hiddenWidgetNode, tags::addr);
-        auto index = XmlParse::parseNumFromNode<u16>(hiddenWidgetNode, tags::index);
-        auto visibility = true;
-        if (XmlParse::parseString(hiddenWidgetNode, tags::visibility) == "false")
-            visibility = false;
-        widgets.push_back(Xml::HiddenWidget { name, title, address, index, type, view, visibility });
-    });
+    XmlParse::callForEachChild(hiddenTabNode,
+        [this, &widgets](const QDomNode &hiddenWidgetNode)
+        {
+            auto hiddenWidgetElem = hiddenWidgetNode.toElement();
+            auto viewStr = hiddenWidgetElem.attribute(tags::view, "LineEdit");
+            auto title = hiddenWidgetElem.attribute(tags::title);
+            auto view = parseViewType(viewStr);
+            auto name = XmlParse::parseString(hiddenWidgetNode, tags::name);
+            auto typeStr = XmlParse::parseString(hiddenWidgetNode, tags::type);
+            auto type = parseBinaryType(typeStr);
+            auto address = XmlParse::parseNumFromNode<u32>(hiddenWidgetNode, tags::addr);
+            auto index = XmlParse::parseNumFromNode<u16>(hiddenWidgetNode, tags::index);
+            auto visibility = true;
+            if (XmlParse::parseString(hiddenWidgetNode, tags::visibility) == "false")
+                visibility = false;
+            widgets.push_back(Xml::HiddenWidget { name, title, address, index, type, view, visibility });
+        });
     emit hiddenTabDataSending(Xml::HiddenTab { tabTitle, tabBackground, tabPrefix, tabFlag, widgets });
 }
 
@@ -451,7 +455,7 @@ void Xml::ModuleParser::parseFeatures(const QDomNode &featuresNode)
     if (!featuresNodeElement.isNull())
     {
         const QString key = featuresNodeElement.tagName();
-        const QString value = featuresNodeElement.attribute("value", "");
+        const QString value = featuresNodeElement.text();
         emit newFeatureParsedSignal(key, value);
     }
 }

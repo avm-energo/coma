@@ -33,12 +33,9 @@ Tune85ADC::Tune85ADC(TuneTypes tuneType, Device::CurrentDevice *device, QWidget 
 
 void Tune85ADC::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Отображение предупреждения...", &Tune85ADC::showPreWarning);
-    addTuneFunc("Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
     addTuneFunc("Проверка настроечных параметров...", &Tune85ADC::checkTuneCoefs);
-    addTuneFunc("Задание режима конфигурирования модуля...", &AbstractTuneDialog::setSMode2);
     addTuneFunc("Регулировка для Кацп = 1...", &Tune85ADC::ADCCoef1);
     addTuneFunc("Отображение диалога задания входных данных...", &Tune85ADC::showEnergomonitorInputDialog);
     if (m_tuneType == ADCI)

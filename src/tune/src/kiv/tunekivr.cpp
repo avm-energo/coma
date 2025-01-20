@@ -25,13 +25,12 @@ TuneKIVR::TuneKIVR(Device::CurrentDevice *device, QWidget *parent)
 
 void TuneKIVR::setTuneFunctions()
 {
-    addTuneFunc("1. Ввод пароля...", &AbstractTuneDialog::CheckPassword);
-    addTuneFunc("2. Отображение предупреждения...", &TuneKIVR::showPreWarning);
-    addTuneFunc("3. Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
-    addTuneFunc("4. Настройка канала измерения температуры (КИТ): установка 80 Ом...", &TuneKIVR::setR80);
-    addTuneFunc("5. Настройка КИТ: обработка...", &TuneKIVR::processR80);
-    addTuneFunc("6. Настройка канала измерения температуры (КИТ): установка 120 Ом...", &TuneKIVR::setR120);
-    addTuneFunc("7. Настройка КИТ: обработка и запись коэффициентов...", &TuneKIVR::processR120);
+    addTuneFunc("Отображение предупреждения...", &TuneKIVR::showPreWarning);
+    addTuneFunc("Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
+    addTuneFunc("Настройка канала измерения температуры (КИТ): установка 80 Ом...", &TuneKIVR::setR80);
+    addTuneFunc("Настройка КИТ: обработка...", &TuneKIVR::processR80);
+    addTuneFunc("Настройка канала измерения температуры (КИТ): установка 120 Ом...", &TuneKIVR::setR120);
+    addTuneFunc("Настройка КИТ: обработка и запись коэффициентов...", &TuneKIVR::processR120);
 }
 
 Error::Msg TuneKIVR::showPreWarning()

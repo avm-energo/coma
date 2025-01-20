@@ -39,12 +39,10 @@ Tune84ADC::Tune84ADC(TuneTypes tuneType, Device::CurrentDevice *device, QWidget 
 
 void Tune84ADC::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Отображение предупреждения...", &Tune84ADC::showPreWarning);
-    addTuneFunc("Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
     addTuneFunc("Проверка настроечных параметров...", &Tune84ADC::checkTuneCoefs);
-    addTuneFunc("Задание режима конфигурирования модуля...", &AbstractTuneDialog::setSMode2);
+    addTuneFunc("Задание режима конфигурирования модуля...", &AbstractTuneDialog::setTuneMode);
     if (m_tuneType == ADCU)
     {
         addTuneFunc("Регулировка...", &Tune84ADC::ADCCoef1);
@@ -67,6 +65,7 @@ void Tune84ADC::setTuneFunctions()
         addTuneFunc("Регулировка канала Tmk0...", &Tune84ADC::Tmk0);
     }
     addTuneFunc("Запись настроечных коэффициентов и восстановление конфигурации...", &Tune84ADC::SendBac);
+    addTuneFunc("Восстановление рабочего режима модуля...", &AbstractTuneDialog::setWorkMode);
     addTuneFunc("Проверка регулировки...", &Tune84ADC::CheckTune);
 }
 
