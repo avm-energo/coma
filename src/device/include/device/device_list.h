@@ -7,6 +7,12 @@
 namespace Device
 {
 
+enum class BoardTypes : u8
+{
+    BASEBOARD = 0x01,
+    MEZZBOARD = 0x02
+};
+
 enum class Model : u16
 {
     KTF = 0xA282,
@@ -71,12 +77,12 @@ static const std::unordered_map<BaseBoard, std::string_view> BaseBoards {
     { BaseBoard::MTB_33, "АВ-ТУК-33" },       // дискретный ввод, комбинируется с 2x,3x
     { BaseBoard::MTB_34, "АВ-ТУК-34" },       // дискретный ввод, комбинируется с 2x,3x
     { BaseBoard::MTB_35, "АВ-ТУК-35" },       // дискретный вывод, комбинируется с 2x,3x
-    { BaseBoard::MTB_80, "АВ-ТУК-80" },      // аналоговый ввод AC, комбинируется с 81,82,83
-    { BaseBoard::MTB_85, "АВ-ТУК-85" },      // УСК, комбинируется с 85
-    { BaseBoard::MTB_86, "АВ-ТУК-86" },      // комбинируется с 86 и ?
-    { BaseBoard::MTB_87, "АВ-ТУК-87 (ЧР)" }, // ЧР, не комбинируется
-    { BaseBoard::MTB_A1, "ПКС-1" }, // ПКДН, прибор для Туркота, не комбинируется
-    { BaseBoard::MTB_A2, "АВМ" },   // МНК3, не комбинируется
+    { BaseBoard::MTB_80, "АВ-ТУК-80" },       // аналоговый ввод AC, комбинируется с 81,82,83
+    { BaseBoard::MTB_85, "АВ-ТУК-85" },       // УСК, комбинируется с 85
+    { BaseBoard::MTB_86, "АВ-ТУК-86" },       // комбинируется с 86 и ?
+    { BaseBoard::MTB_87, "АВ-ТУК-87 (ЧР)" },  // ЧР, не комбинируется
+    { BaseBoard::MTB_A1, "ПКС-1" },           // ПКДН, прибор для Туркота, не комбинируется
+    { BaseBoard::MTB_A2, "АВМ" },             // МНК3, не комбинируется
 };
 
 static const std::unordered_map<MezzanineBoard, std::string_view> MezzanineBoards {
@@ -90,7 +96,7 @@ static const std::unordered_map<MezzanineBoard, std::string_view> MezzanineBoard
     { MezzanineBoard::MTM_82, "82 (Э1Т1Н)" }, // 3U3I, комбинируется с 80,84
     { MezzanineBoard::MTM_83, "83 (Э0Т2Н)" }, // 6U0I, комбинируется с 80,84
     { MezzanineBoard::MTM_84, "84" },         // 3U3I, комбинируется с 80,81
-    { MezzanineBoard::MTM_85, "85 (УСК)" } // 3U3I УСК (перегрузка по току 20х), комбинируется с 85
+    { MezzanineBoard::MTM_85, "85 (УСК)" }    // 3U3I УСК (перегрузка по току 20х), комбинируется с 85
 };
 
 } // namespace Device

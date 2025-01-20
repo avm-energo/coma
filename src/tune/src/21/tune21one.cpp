@@ -40,16 +40,16 @@ Error::Msg Tune21One::checkTuneCoefs()
 #ifndef NO_LIMITS
     if (!WDFunc::floatIsWithinLimits(
             "коэффициента тока по наклону", m_bac->data()->bac1[m_channelNumber].fkiin, 1.0, 0.1))
-        return Error::Msg::GeneralError;
+        return Error::Msg::Cancelled;
     if (!WDFunc::floatIsWithinLimits(
             "коэффициента напряжения по наклону", m_bac->data()->bac1[m_channelNumber].fkuin, 1.0, 0.1))
-        return Error::Msg::GeneralError;
+        return Error::Msg::Cancelled;
     if (!WDFunc::floatIsWithinLimits(
             "коэффициента тока по смещению", m_bac->data()->bac1[m_channelNumber].fbin_I, 0.0, 1000.0))
-        return Error::Msg::GeneralError;
+        return Error::Msg::Cancelled;
     if (!WDFunc::floatIsWithinLimits(
             "коэффициента напряжения по смещению", m_bac->data()->bac2[m_channelNumber].fbin_U, 0.0, 1000.0))
-        return Error::Msg::GeneralError;
+        return Error::Msg::Cancelled;
 #endif
     return Error::Msg::NoError;
 }
@@ -60,7 +60,7 @@ Error::Msg Tune21One::tune()
     if (m_channelNumber > 7)
     {
         qDebug() << "Некорректный номер шага: " << m_channelNumber;
-        return Error::Msg::GeneralError;
+        return Error::Msg::StepError;
     }
     if (EMessageBox::next(this,
             "Включите режим измерения напряжений и\n"
@@ -89,20 +89,20 @@ Error::Msg Tune21One::tune()
                     m_bda->readAndUpdate();
                     i20 = m_bda->data()->sin[m_channelNumber];
                     if (!calcNewTuneCoefs(u0, u5, i0, i20))
-                        return Error::Msg::GeneralError;
+                        return Error::Msg::TuneCoefError;
                     else
                         return Error::Msg::NoError;
                 }
             }
         }
     }
-    return Error::Msg::GeneralError;
+    return Error::Msg::Cancelled;
 }
 
 bool Tune21One::calcNewTuneCoefs(float u0, float u5, float i0, float i20)
 {
-    m_bac->data()->bac1[m_channelNumber].fbin_I = -i0;
-    m_bac->data()->bac2[m_channelNumber].fbin_U = -u0;
+    m_bac->data()->bac1[m_channelNumber].fbin_I = 1.25f - i0;
+    m_bac->data()->bac2[m_channelNumber].fbin_U = 1.25f - u0;
     if ((StdFunc::FloatIsWithinLimits(u0, u5, 0.1f) || (StdFunc::FloatIsWithinLimits(i0, i20, 0.1f))))
     {
         qDebug() << "Ошибка в настроечных коэффициентах, деление на ноль";
@@ -117,9 +117,9 @@ Error::Msg Tune21One::sendBac()
 {
     m_bac->updateWidget();
     if (writeTuneCoefs() != Error::Msg::NoError)
-        return Error::Msg::GeneralError;
+        return Error::Msg::WriteError;
     if (loadWorkConfig() != Error::Msg::NoError)
-        return Error::Msg::GeneralError;
+        return Error::Msg::ReadError;
     return Error::Msg::NoError;
 }
 
@@ -135,7 +135,7 @@ Error::Msg Tune21One::showScheme()
     if (!EMessageBox::next(this, w))
     {
         CancelTune();
-        return Error::GeneralError;
+        return Error::Cancelled;
     }
     return Error::NoError;
 }

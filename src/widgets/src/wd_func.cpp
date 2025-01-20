@@ -857,7 +857,7 @@ QVariant WDFunc::FloatValueWithCheck(float value)
 void WDFunc::setHexagonPBProcessed(QWidget *parent, const QString &name)
 {
     QStringList attrs = { "stroke", "stroke-width", "fill", "fill-opacity" };
-    QStringList values = { "#7ad37a", "1.0", "#a5ff7a", "1.0" };
+    QStringList values = { "#7abe7a", "1.0", "#5ba166", "1.0" };
     setHexagonPBIcon(parent, name, attrs, values);
 }
 

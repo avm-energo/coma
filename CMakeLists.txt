@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(coma VERSION 3.1.2)
+project(coma VERSION 3.2.0)
 
 set(SOFTDEVELOPER "AVM-Energo")
 
@@ -53,9 +53,9 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
 
 if(SYSTEM_NAME STREQUAL "windows")
     message(STATUS "MSVC version: ${MSVC_VERSION}, toolset version: ${MSVC_TOOLSET_VERSION}")
-else()
-    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address,undefined -fstack-protector")
-    string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined -fstack-protector")
+# else()
+#     string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address,undefined -fstack-protector")
+#     string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined -fstack-protector")
 endif()
 
 # Enabling PVS Studio static analyzer

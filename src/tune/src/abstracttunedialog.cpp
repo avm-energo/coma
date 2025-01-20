@@ -251,7 +251,15 @@ void AbstractTuneDialog::startTune()
     {
         MsgSetVisible(NoMsg, bStep);
         res = (this->*m_tuneFunctions.at(bStep).func)();
-        if ((res == Error::Msg::GeneralError) || (StdFunc::IsCancelled()))
+        switch (res)
+        {
+        case Error::Msg::NoError:
+            MsgSetVisible(OkMsg, bStep);
+            break;
+        case Error::Msg::ResEmpty:
+            MsgSetVisible(SkMsg, bStep);
+            break;
+        default:
         {
             if (StdFunc::IsCancelled())
                 res = Error::Cancelled;
@@ -266,10 +274,7 @@ void AbstractTuneDialog::startTune()
             return;
 #endif
         }
-        else if (res == Error::Msg::ResEmpty)
-            MsgSetVisible(SkMsg, bStep);
-        else
-            MsgSetVisible(OkMsg, bStep);
+        }
     }
     MsgSetVisible(NoMsg, bStep); // выдаём надпись "Настройка завершена!"
     WDFunc::SetEnabled(this, "starttune", true);
