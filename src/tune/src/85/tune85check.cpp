@@ -73,12 +73,12 @@ Error::Msg Tune85Check::check()
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)
         if (!WDFunc::floatIsWithinLimits("напряжения", bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
-            return Error::Msg::GeneralError;
+            return Error::Msg::DataError;
     for (int i = 3; i < 6; ++i)
         if (!WDFunc::floatIsWithinLimits("тока", bda->data()->Ueff_ADC[i], 1220000.0, 60000.0))
-            return Error::Msg::GeneralError;
+            return Error::Msg::DataError;
     if (!WDFunc::floatIsWithinLimits("частоты", bda->data()->Frequency, 51.0, 0.05))
-        return Error::Msg::GeneralError;
+        return Error::Msg::DataError;
 #endif
     return Error::Msg::NoError;
 }

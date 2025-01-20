@@ -118,7 +118,7 @@ Error::Msg Tune82ADC::calcIUcoef1()
     if (!EMessageBox::next(this, "Задайте напряжения равными 60,0 В и токи, равными 1,0 А"))
     {
         CancelTune();
-        return Error::GeneralError;
+        return Error::Cancelled;
     }
     StdFunc::Wait(2000);
     // waitNSeconds(2);
@@ -156,7 +156,7 @@ Error::Msg Tune82ADC::calcIcoef5()
     if (!EMessageBox::next(this, "Задайте токи, равными 5,0 А"))
     {
         CancelTune();
-        return Error::GeneralError;
+        return Error::Cancelled;
     }
     StdFunc::Wait(2000);
     // waitNSeconds(2);
@@ -197,7 +197,7 @@ Error::Msg Tune82ADC::showPreWarning()
     if (!EMessageBox::next(this, w))
     {
         CancelTune();
-        return Error::GeneralError;
+        return Error::Cancelled;
     }
     return Error::NoError;
 }
@@ -225,7 +225,7 @@ Error::Msg Tune82ADC::checkTune()
         StdFunc::Wait(500);
     }
     if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
+        return Error::Msg::Cancelled;
     return Error::Msg::NoError;
 }
 

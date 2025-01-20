@@ -1,16 +1,19 @@
 #include "interfaces/conn/sync_connection.h"
 
-#include <QCoreApplication>
-#include <QDebug>
 #include <gen/std_ext.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/async_connection.h>
+
+#include <QCoreApplication>
+#include <QDebug>
 
 namespace Interface
 {
 
 SyncConnection::SyncConnection(AsyncConnection *connection) noexcept
-    : QObject(connection), m_connection(connection), m_timeoutTimer(new QTimer(this))
+    : QObject(connection)
+    , m_connection(connection)
+    , m_timeoutTimer(new QTimer(this))
 {
     m_timeoutTimer->setInterval(m_connection->getTimeout());
     connect(m_timeoutTimer, &QTimer::timeout, this, &SyncConnection::timeout);
@@ -71,12 +74,14 @@ Error::Msg SyncConnection::reqBSI()
 {
     reset();
     int count = 0;
-    auto conn = m_connection->connection(this, [&, &busy = m_busy](const DataTypes::BitStringStruct &bs) {
-        if (bs.sigAdr >= addr::bsiStartReg && bs.sigAdr < addr::bsiStartReg + addr::bsiCountRegs)
-            ++count;
-        if (count == addr::bsiCountRegs)
-            busy = false;
-    });
+    auto conn = m_connection->connection(this,
+        [&, &busy = m_busy](const DataTypes::BitStringStruct &bs)
+        {
+            if (bs.sigAdr >= addr::bsiStartReg && bs.sigAdr < addr::bsiStartReg + addr::bsiCountRegs)
+                ++count;
+            if (count == addr::bsiCountRegs)
+                busy = false;
+        });
     m_connection->reqBSI();
     eventloop();
     QObject::disconnect(conn);
@@ -90,20 +95,24 @@ bool SyncConnection::supportBSIExt()
 {
     reset();
     bool status = false;
-    auto connBitString = m_connection->connection(this, [&, &busy = m_busy](const DataTypes::BitStringStruct &bs) {
-        if (bs.sigAdr != addr::bsiExtStartReg)
-            return;
-        busy = false;
-        status = true;
-    });
-
-    auto connError = m_connection->connection(this, [&, &busy = m_busy](const DataTypes::GeneralResponseStruct &resp) {
-        if (resp.type == DataTypes::Error)
+    auto connBitString = m_connection->connection(this,
+        [&, &busy = m_busy](const DataTypes::BitStringStruct &bs)
         {
+            if (bs.sigAdr != addr::bsiExtStartReg)
+                return;
             busy = false;
-            status = false;
-        }
-    });
+            status = true;
+        });
+
+    auto connError = m_connection->connection(this,
+        [&, &busy = m_busy](const DataTypes::GeneralResponseStruct &resp)
+        {
+            if (resp.type == DataTypes::Error)
+            {
+                busy = false;
+                status = false;
+            }
+        });
 
     m_connection->reqBSIExt();
     eventloop();
@@ -150,12 +159,12 @@ Error::Msg SyncConnection::writeBlockSync(
         QObject::disconnect(conn);
         if (m_timeout)
             return Error::Msg::Timeout;
-        return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
+        return (m_responseResult) ? Error::Msg::NoError : Error::Msg::WriteError;
     }
     else
     {
         WARNMSG("Некорректный номер блока");
-        return Error::Msg::GeneralError;
+        return Error::Msg::WriteError;
     }
 }
 
@@ -168,7 +177,7 @@ Error::Msg SyncConnection::writeFileSync(S2::FilesEnum filenum, const QByteArray
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;
-    return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
+    return (m_responseResult) ? Error::Msg::NoError : Error::Msg::FileWriteError;
 }
 
 Error::Msg SyncConnection::writeConfigurationSync(const QByteArray &ba)
@@ -186,7 +195,7 @@ Error::Msg SyncConnection::readS2FileSync(S2::FilesEnum filenum)
     if (m_timeout)
         return Error::Msg::Timeout;
 
-    return (m_responseResult) ? Error::Msg::NoError : Error::Msg::GeneralError;
+    return (m_responseResult) ? Error::Msg::NoError : Error::Msg::ReadError;
 }
 
 Error::Msg SyncConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
@@ -209,18 +218,22 @@ Error::Msg SyncConnection::reqTimeSync(void *block, quint32 blocksize)
     QMetaObject::Connection conn;
     if (blocksize == sizeof(DataTypes::BitStringStruct))
     {
-        conn = m_connection->connection(this, [&](const DataTypes::BitStringStruct &bs) {
-            *static_cast<DataTypes::BitStringStruct *>(block) = bs;
-            m_busy = false;
-        });
+        conn = m_connection->connection(this,
+            [&](const DataTypes::BitStringStruct &bs)
+            {
+                *static_cast<DataTypes::BitStringStruct *>(block) = bs;
+                m_busy = false;
+            });
     }
 #ifdef Q_OS_LINUX
     else if (blocksize == sizeof(timespec))
     {
-        conn = m_connection->connection(this, [&](const timespec &ts) {
-            *static_cast<timespec *>(block) = ts;
-            m_busy = false;
-        });
+        conn = m_connection->connection(this,
+            [&](const timespec &ts)
+            {
+                *static_cast<timespec *>(block) = ts;
+                m_busy = false;
+            });
     }
 #endif
     m_connection->reqTime();

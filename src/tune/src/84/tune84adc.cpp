@@ -101,14 +101,14 @@ Error::Msg Tune84ADC::checkTuneCoefs()
     {
         foreach (float *coef, tcoefs)
             if (!WDFunc::floatIsWithinLimits("коэффициента по току", *(coef + i), 1.0, 0.05))
-                return Error::Msg::GeneralError;
+                return Error::Msg::TuneCoefError;
     }
     if (!WDFunc::floatIsWithinLimits("коэффициента по частоте", m_bac2->data()->K_freq, 1.0, 0.05))
-        return Error::Msg::GeneralError;
+        return Error::Msg::TuneCoefError;
     for (int i = 0; i < 6; ++i)
     {
         if (!WDFunc::floatIsWithinLimits("коэффициента по углу", m_bac->data()->DPsi[i], 0.0, 1.0))
-            return Error::Msg::GeneralError;
+            return Error::Msg::TuneCoefError;
     }
     return Error::Msg::NoError;
 }
@@ -124,7 +124,7 @@ Error::Msg Tune84ADC::ADCCoef(int coef)
         return res;
     showRetomDialog(coef);
     if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
+        return Error::Msg::Cancelled;
     showTWTab(m_BdainWidgetIndex);
     emit setProgressSize(StdFunc::TuneRequestCount());
     for (int i = 0; i < 6; ++i)
@@ -147,7 +147,7 @@ Error::Msg Tune84ADC::ADCCoef(int coef)
             m_bdainBlockData.Frequency += m_bdain->data()->Frequency;
         }
         else
-            return Error::Msg::GeneralError;
+            return Error::Msg::DataError;
         ++count;
         emit setProgressCount(count);
         StdFunc::Wait(500);
@@ -159,7 +159,7 @@ Error::Msg Tune84ADC::ADCCoef(int coef)
     }
     m_bdainBlockData.Frequency /= StdFunc::TuneRequestCount();
     if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
+        return Error::Msg::Cancelled;
     return Error::Msg::NoError;
 }
 
@@ -208,7 +208,7 @@ Error::Msg Tune84ADC::Tmk0()
         StdFunc::Wait(500);
     }
     if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
+        return Error::Msg::Cancelled;
     m_bac->data()->Tmk0 = tmk0 / 5;
     return Error::Msg::NoError;
 }
@@ -217,9 +217,9 @@ Error::Msg Tune84ADC::SendBac()
 {
     m_bac->updateWidget();
     if (writeTuneCoefs() != Error::Msg::NoError)
-        return Error::Msg::GeneralError;
+        return Error::Msg::WriteError;
     if (loadWorkConfig() != Error::Msg::NoError)
-        return Error::Msg::GeneralError;
+        return Error::Msg::ReadError;
     return Error::Msg::NoError;
 }
 
@@ -234,7 +234,7 @@ Error::Msg Tune84ADC::CheckTune()
         StdFunc::Wait(500);
     }
     if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
+        return Error::Msg::Cancelled;
     return Error::Msg::NoError;
 }
 
@@ -349,7 +349,7 @@ Error::Msg Tune84ADC::showEnergomonitorInputDialog()
     else
         popup->addFloatParameter("Iэт, мА", &m_midTuneStruct.iet);
     connect(popup, &EEditablePopup::accepted, this, &Tune84ADC::CalcTuneCoefs);
-    connect(popup, &EEditablePopup::cancelled, [] { return Error::GeneralError; });
+    connect(popup, &EEditablePopup::cancelled, [] { return Error::Cancelled; });
     popup->execPopup();
     return Error::Msg::NoError;
 }

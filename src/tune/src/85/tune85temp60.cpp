@@ -66,7 +66,7 @@ Error::Msg Tune85Temp60::setNewConfAndTune()
     auto s2file = config.toByteArray();
     auto status = m_sync->writeFileSync(S2::FilesEnum::Config, s2file);
     if (status != Error::Msg::NoError)
-        return Error::Msg::GeneralError;
+        return Error::Msg::FileWriteError;
 
     for (int i = 0; i < 6; ++i)
     {
@@ -76,7 +76,7 @@ Error::Msg Tune85Temp60::setNewConfAndTune()
     m_bac->data()->TKPsi_a[0] = m_bac->data()->TKPsi_a[1] = m_bac->data()->TKPsi_a[2] = 0;
     m_bac->data()->TKPsi_b[0] = m_bac->data()->TKPsi_b[1] = m_bac->data()->TKPsi_a[2] = 0;
     if (writeTuneCoefs(false) != Error::Msg::NoError)
-        return Error::Msg::GeneralError;
+        return Error::Msg::WriteError;
     return Error::Msg::NoError;
 }
 
@@ -188,7 +188,7 @@ Error::Msg Tune85Temp60::analogMeasurement()
     }
     m_midTuneStruct.tmk /= StdFunc::TuneRequestCount();
     if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
+        return Error::Msg::Cancelled;
     return Error::Msg::NoError;
 }
 
@@ -266,7 +266,7 @@ Error::Msg Tune85Temp60::calcTuneCoefs()
     m_bac->updateWidget();
     return Error::Msg::NoError;
     //    if (showTuneCoefs() != Error::Msg::NoError)
-    //        return Error::Msg::GeneralError;
+    //        return Error::Msg::DataError;
     //    return m_bac->writeBlockToModule();
 }
 

@@ -188,7 +188,7 @@ void AbstractTuneDialog::stopWait()
 
 Error::Msg AbstractTuneDialog::CheckPassword()
 {
-    return (EMessageBox::password(this) ? Error::Msg::NoError : Error::Msg::GeneralError);
+    return (EMessageBox::password(this) ? Error::Msg::NoError : Error::Msg::PswCheckError);
 }
 
 int AbstractTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
@@ -321,7 +321,7 @@ Error::Msg AbstractTuneDialog::saveAllTuneCoefs()
         if (it.value()->saveToFile() != Error::Msg::NoError)
             //        if (Files::SaveToFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba) !=
             //        Error::Msg::NoError)
-            return Error::Msg::GeneralError;
+            return Error::Msg::FileWriteError;
     }
     return Error::Msg::NoError;
 }
@@ -337,6 +337,8 @@ Error::Msg AbstractTuneDialog::loadAllTuneCoefs()
             //        if (Files::LoadFromFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba) ==
             //        Error::Msg::NoError)
             memcpy(it.value()->block().block, &(ba.data()[0]), it.value()->block().blocksize);
+        else
+            return Error::Msg::ReadError;
     }
     return Error::Msg::NoError;
 }
@@ -429,7 +431,7 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs(bool isUserChoosingRequired)
         ev.exec();
         dlg->close();
     }
-    return (StdFunc::IsCancelled() ? Error::Msg::GeneralError : Error::Msg::NoError);
+    return (StdFunc::IsCancelled() ? Error::Msg::Cancelled : Error::Msg::NoError);
 }
 
 void AbstractTuneDialog::writeTuneCoefsSlot()
@@ -485,7 +487,7 @@ Error::Msg AbstractTuneDialog::saveWorkConfig()
     QByteArray ba;
     auto status = m_sync->readFileSync(S2::FilesEnum::Config, ba);
     if (status != Error::Msg::NoError)
-        return Error::Msg::GeneralError;
+        return Error::Msg::ReadError;
     return Files::SaveToFile(StdFunc::GetSystemHomeDir() + m_device->getUID() + ".cf", ba);
 }
 

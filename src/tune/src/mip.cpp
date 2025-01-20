@@ -1,9 +1,5 @@
 #include "tune/mip.h"
 
-#include <QEventLoop>
-#include <QGroupBox>
-#include <QSettings>
-#include <QThread>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/ifaces/ethernet.h>
@@ -13,8 +9,18 @@
 #include <widgets/epopup.h>
 #include <widgets/wd_func.h>
 
+#include <QEventLoop>
+#include <QGroupBox>
+#include <QSettings>
+#include <QThread>
+
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
-    : QObject(parent), m_iface(nullptr), m_mipData { 0 }, m_parent(parent), m_withGUI(withGUI), m_moduleType(moduleType)
+    : QObject(parent)
+    , m_iface(nullptr)
+    , m_mipData { 0 }
+    , m_parent(parent)
+    , m_withGUI(withGUI)
+    , m_moduleType(moduleType)
 {
 }
 
@@ -110,10 +116,12 @@ void Mip::setupWidget()
     computedGroup->setLayout(computedLayout);
     mipWidgetLayout->addWidget(computedGroup);
 
-    mipWidgetLayout->addWidget(WDFunc::NewPB(m_widget, "", "Далее", [=] {
-        stop();
-        m_widget->close();
-    }));
+    mipWidgetLayout->addWidget(WDFunc::NewPB(m_widget, "", "Далее",
+        [=]
+        {
+            stop();
+            m_widget->close();
+        }));
     m_widget->setLayout(mipWidgetLayout);
 }
 
@@ -164,9 +172,7 @@ bool Mip::initConnection(const IEC104Settings &settings)
     using namespace DataTypes;
     auto conn = new AsyncConnection(this);
     conn->connection(this, //
-        [this](const FloatWithTimeStruct &fs) {
-            updateData(FloatStruct { fs.sigAdr, fs.sigVal, fs.sigQuality });
-        });
+        [this](const FloatWithTimeStruct &fs) { updateData(FloatStruct { fs.sigAdr, fs.sigVal, fs.sigQuality }); });
     m_iface = new Ethernet(settings);
     m_updater = new ModuleDataUpdater(conn, this);
     auto ifaceThread = new QThread;
@@ -176,11 +182,11 @@ bool Mip::initConnection(const IEC104Settings &settings)
     // Обмен данными
     QObject::connect(m_iface, &BaseInterface::dataReceived, //
         parser, &IEC104Parser::checkStartBytes, Qt::QueuedConnection);
-    QObject::connect(parser, &IEC104Parser::writeData, //
+    QObject::connect(parser, &IEC104Parser::writeData,      //
         m_iface, &BaseInterface::writeData, Qt::QueuedConnection);
-    QObject::connect(m_iface, &BaseInterface::finished, //
+    QObject::connect(m_iface, &BaseInterface::finished,     //
         parser, &IEC104Parser::stop, Qt::QueuedConnection);
-    QObject::connect(parser, &IEC104Parser::responseSend, //
+    QObject::connect(parser, &IEC104Parser::responseSend,   //
         conn, &AsyncConnection::responseHandle, Qt::DirectConnection);
     // Потоки
     QObject::connect(ifaceThread, &QThread::started, m_iface, &BaseInterface::poll);
@@ -191,13 +197,15 @@ bool Mip::initConnection(const IEC104Settings &settings)
     QObject::connect(parserThread, &QThread::finished, parser, &QObject::deleteLater);
     QObject::connect(ifaceThread, &QThread::finished, &QObject::deleteLater);
     QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
-    QObject::connect(m_iface, &BaseInterface::started, m_iface, [=] {
-        qInfo() << m_iface->metaObject()->className() << " connected";
-        m_iface->moveToThread(ifaceThread);
-        parser->moveToThread(parserThread);
-        ifaceThread->start();
-        parserThread->start();
-    });
+    QObject::connect(m_iface, &BaseInterface::started, m_iface,
+        [=]
+        {
+            qInfo() << m_iface->metaObject()->className() << " connected";
+            m_iface->moveToThread(ifaceThread);
+            parser->moveToThread(parserThread);
+            ifaceThread->start();
+            parserThread->start();
+        });
 
     if (!m_iface->connect())
     {
@@ -236,7 +244,7 @@ Error::Msg Mip::check()
         ithr = 0.05;
         break;
     default:
-        return Error::GeneralError;
+        return Error::DataError;
     }
 
     constexpr auto arraySize = 9;
@@ -257,7 +265,7 @@ Error::Msg Mip::check()
                 EMessageBox::warning(m_parent, errStr);
             else
                 qDebug() << errStr;
-            return Error::Msg::GeneralError;
+            return Error::Msg::DataError;
         }
     }
     return Error::Msg::NoError;

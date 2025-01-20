@@ -42,7 +42,7 @@ Error::Msg Tune82Check::showScheme()
         break;
     default:
         EMessageBox::error(this, "Mezzanine board is not one of 81, 82 or 83");
-        return Error::Msg::GeneralError;
+        return Error::Msg::NoDeviceError;
     }
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
