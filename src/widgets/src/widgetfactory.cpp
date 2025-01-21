@@ -217,7 +217,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                     w->setLayout(layout);
                     flowLayout->addWidget(w);
                 }
-                mainLyout->addLayout(flowLayout);
+                mainLyout->addLayout(flowLayout, 100);
                 widget->setLayout(mainLyout);
             },
             [&](const auto &arg) { widget = helper(arg, parent, key); },
