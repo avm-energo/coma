@@ -1,14 +1,16 @@
 #include "dialogs/hiddendialog.h"
 
+#include <QtSvg/QSvgRenderer>
+#include <device/current_device.h>
+#include <widgets/epopup.h>
+
 #include <QBoxLayout>
 #include <QGroupBox>
 #include <QPaintEvent>
 #include <QPainter>
 #include <QTabWidget>
-#include <QtSvg/QSvgRenderer>
-#include <device/current_device.h>
-#include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+// #include <widgets/wd_func.h>
+#include <widgets/lefunc.h>
 
 using namespace Device::XmlDataTypes;
 
@@ -30,27 +32,27 @@ HiddenDialog::HiddenDialog(Device::CurrentDevice *device, QWidget *parent)
 void HiddenDialog::generateDefaultSettings()
 {
     m_settings = {
-        HiddenTab { "Базовая плата", ":/images/BMn.svg", "base", 1, //
+        HiddenTab { "Базовая плата", ":/images/BMn.svg", "base", 1,            //
             {
-                HiddenWidget { "basetype", "Тип платы", 1, 1, //
+                HiddenWidget { "basetype", "Тип платы", 1, 1,                  //
                     BinaryType::uint32, ViewType::LineEdit, true },
-                HiddenWidget { "baseserial", "Серийный номер платы", 10, 2, //
+                HiddenWidget { "baseserial", "Серийный номер платы", 10, 2,    //
                     BinaryType::uint32, ViewType::LineEdit, true },
-                HiddenWidget { "baseversion", "Версия платы", 3, 3, //
+                HiddenWidget { "baseversion", "Версия платы", 3, 3,            //
                     BinaryType::uint32, ViewType::Version, true },
                 HiddenWidget { "moduleserial", "Серийный номер модуля", 13, 4, //
                     BinaryType::uint32, ViewType::LineEdit, true }             //
             } },                                                               //
         HiddenTab { "Мезонинная плата", ":/images/BnM.svg", "mezz", 2,         //
             {
-                HiddenWidget { "mezztype", "Тип платы", 2, 5, //
+                HiddenWidget { "mezztype", "Тип платы", 2, 5,                  //
                     BinaryType::uint32, ViewType::LineEdit, true },
-                HiddenWidget { "mezzserial", "Серийный номер платы", 11, 6, //
+                HiddenWidget { "mezzserial", "Серийный номер платы", 11, 6,    //
                     BinaryType::uint32, ViewType::LineEdit, true },
-                HiddenWidget { "mezzversion", "Версия платы", 12, 7, //
+                HiddenWidget { "mezzversion", "Версия платы", 12, 7,           //
                     BinaryType::uint32, ViewType::Version, true },
-                HiddenWidget { "reserved", "Резерв", 4, 8,          //
-                    BinaryType::uint32, ViewType::LineEdit, false } //
+                HiddenWidget { "reserved", "Резерв", 4, 8,                     //
+                    BinaryType::uint32, ViewType::LineEdit, false }            //
             } } //
     };
 }
@@ -64,7 +66,8 @@ void HiddenDialog::prepareInternalData(const SignalMap &sigMap)
         for (auto &&widgetSettings : tabSettings.widgets)
         {
             auto search = std::find_if(sigMap.cbegin(), sigMap.cend(), //
-                [start = widgetSettings.address](const Device::SigMapValue &element) -> bool {
+                [start = widgetSettings.address](const Device::SigMapValue &element) -> bool
+                {
                     auto &signal = element.second;
                     auto acceptStart = signal.startAddr;
                     auto acceptEnd = acceptStart + signal.count;
@@ -88,7 +91,7 @@ void HiddenDialog::setupUI()
     auto mainLayout = new QVBoxLayout;
     auto tabWidget = new QTabWidget(this);
     tabWidget->setStyleSheet("background-color: transparent;"); // tabWidget прозрачный
-    mainLayout->addWidget(WDFunc::NewLBLAndLE(this, "Имя модуля:", "modulename"));
+    mainLayout->addWidget(LEFunc::NewLBLAndLE(this, "Имя модуля:", "modulename"));
 
     for (auto &&tabSettings : m_settings)
     {
@@ -105,7 +108,8 @@ void HiddenDialog::setupUI()
 
     m_currentBackground = m_settings[0].background;
     connect(tabWidget, &QTabWidget::currentChanged, this, //
-        [this](int newIndex) {
+        [this](int newIndex)
+        {
             if (newIndex >= 0 && newIndex < m_settings.size())
                 m_currentBackground = m_settings[newIndex].background;
             update();
@@ -115,15 +119,17 @@ void HiddenDialog::setupUI()
     btnLayout->setAlignment(Qt::AlignRight);
 
     auto modeChangeBtn = new QPushButton("Режим Д'Артаньян", this);
-    connect(modeChangeBtn, &QAbstractButton::clicked, this, [this] {
-        if (checkPassword())
+    connect(modeChangeBtn, &QAbstractButton::clicked, this,
+        [this]
         {
-            EMessageBox::warning(this, "Активирован режим Д'Артаньяна");
-            m_isGodMode = true;
-            fill();
-            updateUI();
-        }
-    });
+            if (checkPassword())
+            {
+                EMessageBox::warning(this, "Активирован режим Д'Артаньяна");
+                m_isGodMode = true;
+                fill();
+                updateUI();
+            }
+        });
     btnLayout->addWidget(modeChangeBtn);
 
     auto updateBtn = new QPushButton("Обновить данные", this);
@@ -131,10 +137,12 @@ void HiddenDialog::setupUI()
     btnLayout->addWidget(updateBtn);
 
     auto writeBtn = new QPushButton("Записать", this);
-    connect(writeBtn, &QAbstractButton::clicked, this, [this] {
-        if (checkPassword())
-            write();
-    });
+    connect(writeBtn, &QAbstractButton::clicked, this,
+        [this]
+        {
+            if (checkPassword())
+                write();
+        });
     btnLayout->addWidget(writeBtn);
     mainLayout->addLayout(btnLayout, 1);
     setLayout(mainLayout);
@@ -160,14 +168,14 @@ QGroupBox *HiddenDialog::setupGroupBox(const HiddenTab &hiddenTab)
             auto title = widget.title + ':';
             if (widget.view == ViewType::Version)
             {
-                auto hLayout = new QHBoxLayout;
-                WDFunc::AddLabelAndLineeditH(this, hLayout, title, widget.name + 'm', false);
-                WDFunc::AddLabelAndLineeditH(this, hLayout, ".", widget.name + 'l', false);
-                WDFunc::AddLabelAndLineeditH(this, hLayout, ".", widget.name + 's', false);
-                gbLayout->addLayout(hLayout);
+                auto hlyout = new QHBoxLayout;
+                hlyout->addWidget(LEFunc::NewLBLAndLE(this, title, widget.name + 'm', false));
+                hlyout->addWidget(LEFunc::NewLBLAndLE(this, ".", widget.name + 'l', false));
+                hlyout->addWidget(LEFunc::NewLBLAndLE(this, ".", widget.name + 's', false));
+                gbLayout->addLayout(hlyout);
             }
             else
-                gbLayout->addWidget(WDFunc::NewLBLAndLE(this, title, widget.name, false));
+                gbLayout->addWidget(LEFunc::NewLBLAndLE(this, title, widget.name, false));
         }
     }
     tabGroupBox->setLayout(gbLayout);
@@ -284,14 +292,14 @@ void HiddenDialog::fillWidget(const quint32 value, const HiddenWidget &widgetDat
     if (widgetData.view == ViewType::Version)
     {
         QString tmps = QString::number(static_cast<quint8>((value & 0xFF000000) >> 24), 16);
-        WDFunc::SetLEData(this, widgetData.name + 'm', tmps, "^[a-fA-F0-9]$");
+        LEFunc::SetLEData(this, widgetData.name + 'm', tmps, "^[a-fA-F0-9]$");
         tmps = QString::number(static_cast<quint8>((value & 0x00FF0000) >> 16), 16);
-        WDFunc::SetLEData(this, widgetData.name + 'l', tmps, "^[a-fA-F0-9]$");
+        LEFunc::SetLEData(this, widgetData.name + 'l', tmps, "^[a-fA-F0-9]$");
         tmps = QString::number(static_cast<quint16>(value & 0x0000FFFF), 16);
-        WDFunc::SetLEData(this, widgetData.name + 's', tmps, "^[a-fA-F0-9]{0,2}$");
+        LEFunc::SetLEData(this, widgetData.name + 's', tmps, "^[a-fA-F0-9]{0,2}$");
     }
     else
-        WDFunc::SetLEData(this, widgetData.name, QString::number(value, 16), "^[a-fA-F0-9]{1,8}$");
+        LEFunc::SetLEData(this, widgetData.name, QString::number(value, 16), "^[a-fA-F0-9]{1,8}$");
 }
 
 quint32 HiddenDialog::getDataFrom(const HiddenWidget &widgetData)
@@ -303,18 +311,18 @@ quint32 HiddenDialog::getDataFrom(const HiddenWidget &widgetData)
         // Version fill back
         if (widgetData.view == ViewType::Version)
         {
-            WDFunc::LEData(this, widgetData.name + 'm', tmps);
+            LEFunc::LEData(this, widgetData.name + 'm', tmps);
             quint32 number = static_cast<quint32>(tmps.toInt()) << 24;
-            WDFunc::LEData(this, widgetData.name + 'l', tmps);
+            LEFunc::LEData(this, widgetData.name + 'l', tmps);
             number |= static_cast<quint32>(tmps.toInt()) << 16;
-            WDFunc::LEData(this, widgetData.name + 's', tmps);
+            LEFunc::LEData(this, widgetData.name + 's', tmps);
             number |= static_cast<quint32>(tmps.toInt());
             return number;
         }
         // Line edit fill back
         else
         {
-            WDFunc::LEData(this, widgetData.name, tmps);
+            LEFunc::LEData(this, widgetData.name, tmps);
             quint32 number = static_cast<quint32>(tmps.toUInt(nullptr, 16));
             return number;
         }
@@ -350,7 +358,7 @@ void HiddenDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct 
 
 void HiddenDialog::setModuleName(const QString &moduleName)
 {
-    WDFunc::SetLEData(this, "modulename", moduleName);
+    LEFunc::SetLEData(this, "modulename", moduleName);
 }
 
 void HiddenDialog::fill()

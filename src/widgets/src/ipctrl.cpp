@@ -6,7 +6,7 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLineEdit>
-#include <widgets/wd_func.h>
+#include <QRegularExpressionValidator>
 
 IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
 {
@@ -54,7 +54,8 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
         pEdit->setMaximumWidth(pixelsWide * 2);
         pEdit->installEventFilter(this);
 
-        auto validator = WDFunc::getRegExpValidator("^(0|[1-9]|[1-9][0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$", pEdit);
+        auto validator = new QRegularExpressionValidator(
+            QRegularExpression("^(0|[1-9]|[1-9][0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$"), pEdit);
         pEdit->setValidator(validator);
     }
     // setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
@@ -63,9 +64,7 @@ IPCtrl::IPCtrl(QWidget *parent) : QFrame(parent)
     connect(this, &IPCtrl::signalTextChanged, this, &IPCtrl::slotTextChanged, Qt::QueuedConnection);
 }
 
-IPCtrl::~IPCtrl()
-{
-}
+IPCtrl::~IPCtrl() { }
 
 void IPCtrl::slotTextChanged(QLineEdit *pEdit)
 {
@@ -188,4 +187,21 @@ void IPCtrl::movePrevLineEdit(int i)
         m_pLineEdit.at(i - 1)->setCursorPosition(m_pLineEdit[i - 1]->text().size());
         // m_pLineEdit[i-1]->selectAll();
     }
+}
+
+bool IPCtrl::SetIPCtrlData(const QObject *parent, const QString &name, const std::array<quint8, 4> &value)
+{
+    auto ipControl = parent->findChild<IPCtrl *>(name);
+    if (ipControl == nullptr)
+        return false;
+    ipControl->setIP(value);
+    return true;
+}
+
+std::array<quint8, 4> IPCtrl::IPCtrlData(const QObject *parent, const QString &name)
+{
+    auto ipControl = parent->findChild<IPCtrl *>(name);
+    if (ipControl == nullptr)
+        return { 0, 0, 0, 0 };
+    return ipControl->getIP();
 }

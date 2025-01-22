@@ -1,12 +1,14 @@
 #pragma once
 
-#include <QDialog>
-#include <QProgressDialog>
-#include <QWidget>
 #include <interfaces/conn/async_connection.h>
 #include <journals/basejournal.h>
 #include <s2/s2datatypes.h>
 #include <widgets/eprogressindicator.h>
+
+#include <QDialog>
+#include <QProgressDialog>
+#include <QTableView>
+#include <QWidget>
 
 class QVBoxLayout;
 
@@ -20,7 +22,7 @@ class JournalTabWidget : public QWidget
 private:
     UniquePointer<BaseJournal> m_currentJournal;
     QVBoxLayout *m_mainLayout;
-    ETableView *m_modelView;
+    QTableView *m_modelView;
     QDialog *m_progressDialog;
     EProgressIndicator *m_progressIndicator;
     QProgressDialog *m_saveProgressDialog;
