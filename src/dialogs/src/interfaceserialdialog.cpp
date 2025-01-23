@@ -8,7 +8,7 @@
 #include <gen/stdfunc.h>
 #include <interfaces/types/settingstypes.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
@@ -29,8 +29,8 @@ void InterfaceSerialDialog::setupUI()
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     auto firstRow = new QHBoxLayout;
-    auto addButton = WDFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceSerialDialog::addInterface);
-    auto removeButton = WDFunc::NewPB(this, "", "Удалить", this, [this] {
+    auto addButton = PBFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceSerialDialog::addInterface);
+    auto removeButton = PBFunc::NewPB(this, "", "Удалить", this, [this] {
         auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
         m_settings.remove(name);
         updateModel();
@@ -40,12 +40,12 @@ void InterfaceSerialDialog::setupUI()
     lyout->addLayout(firstRow);
 
     auto secondRow = new QHBoxLayout;
-    auto editButton = WDFunc::NewPB(this, "", "Редактировать", this, [this] {
+    auto editButton = PBFunc::NewPB(this, "", "Редактировать", this, [this] {
         auto index = m_tableView->currentIndex();
         editConnection(index);
         updateModel();
     });
-    auto searchButton = WDFunc::NewPB(this, "", "Поиск устройств", this, [this] {
+    auto searchButton = PBFunc::NewPB(this, "", "Поиск устройств", this, [this] {
         auto searchDialog = new SearchModbusDevicesDialog(this);
         searchDialog->exec();
     });
@@ -113,37 +113,37 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     auto layout = new QGridLayout;
     int count = 0;
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
     auto namele = WDFunc::NewLE2(dialog, "namele", name);
     layout->addWidget(namele, count++, 1, 1, 1);
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
     auto portcb = WDFunc::NewCB2(dialog, "portcb", ports);
     auto portIndex = ports.indexOf(port); // найти индекс сохранённого порта
     portcb->setCurrentIndex(portIndex >= 0 ? portIndex : 0); // проверить и выставить порт по умолчанию
     layout->addWidget(portcb, count++, 1, 1, 1);
     QStringList sl { "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
     auto speedcb = WDFunc::NewCB2(dialog, "speedcb", sl);
     speedcb->setCurrentIndex(sl.indexOf(speed));
     layout->addWidget(speedcb, count++, 1, 1, 1);
     sl = QStringList({ "Нет", "Нечет", "Чет" });
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
     auto paritycb = WDFunc::NewCB2(dialog, "paritycb", sl);
     paritycb->setCurrentIndex(sl.indexOf(parity));
     layout->addWidget(paritycb, count++, 1, 1, 1);
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
     sl = QStringList({ "1", "2" });
     auto stopbitcb = WDFunc::NewCB2(dialog, "stopbitcb", sl);
     stopbitcb->setCurrentIndex(sl.indexOf(stopbit));
     layout->addWidget(stopbitcb, count++, 1, 1, 1);
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
     auto addressspb = WDFunc::NewSPB2(dialog, "addressspb", 0, 255, 0);
     addressspb->setValue(address);
     layout->addWidget(addressspb, count++, 1, 1, 1);
 
     // Logic of working
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewPB(dialog, "acceptpb", "Сохранить", dialog, [=] {
+    hlyout->addWidget(PBFunc::NewPB(dialog, "acceptpb", "Сохранить", dialog, [=] {
         auto newName = namele->text();
         // Новое имя не совпадает со старым, но уже имеется в настройках
         if (newName != name && m_settings.isExist(newName))
@@ -163,7 +163,7 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
             qCritical() << Error::GeneralError;
         dialog->close();
     }));
-    hlyout->addWidget(WDFunc::NewPB(dialog, "cancelpb", "Отмена", dialog, [dialog] { dialog->close(); }));
+    hlyout->addWidget(PBFunc::NewPB(dialog, "cancelpb", "Отмена", dialog, [dialog] { dialog->close(); }));
     layout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
     dialog->setLayout(layout);
     dialog->adjustSize();
@@ -187,24 +187,24 @@ void InterfaceSerialDialog::addInterface()
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     auto layout = new QGridLayout;
     int count = 0;
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
     layout->addWidget(WDFunc::NewLE2(dialog, "namele"), count++, 1, 1, 1);
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
     layout->addWidget(WDFunc::NewCB2(dialog, "portcb", ports), count++, 1, 1, 1);
     QStringList sl { "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
     layout->addWidget(WDFunc::NewCB2(dialog, "speedcb", sl), count++, 1, 1, 1);
     sl = QStringList({ "Нет", "Нечет", "Чет" });
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
     layout->addWidget(WDFunc::NewCB2(dialog, "paritycb", sl), count++, 1, 1, 1);
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
     sl = QStringList({ "1", "2" });
     layout->addWidget(WDFunc::NewCB2(dialog, "stopbitcb", sl), count++, 1, 1, 1);
-    layout->addWidget(WDFunc::NewLBL2(dialog, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::NewLBL(dialog, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
     layout->addWidget(WDFunc::NewSPB2(dialog, "addressspb", 0, 255, 0), count++, 1, 1, 1);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewPB(dialog, "acceptpb", "Сохранить", this, &InterfaceSerialDialog::acceptedInterface));
-    hlyout->addWidget(WDFunc::NewPB(dialog, "cancelpb", "Отмена", dialog, [dialog] { dialog->close(); }));
+    hlyout->addWidget(PBFunc::NewPB(dialog, "acceptpb", "Сохранить", this, &InterfaceSerialDialog::acceptedInterface));
+    hlyout->addWidget(PBFunc::NewPB(dialog, "cancelpb", "Отмена", dialog, [dialog] { dialog->close(); }));
     layout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
     dialog->setLayout(layout);
     dialog->adjustSize();

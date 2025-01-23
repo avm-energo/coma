@@ -8,7 +8,7 @@
 #include <dialogs/interfaceserialdialog.h>
 #include <dialogs/interfaceusbdialog.h>
 #include <gen/error.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent), m_idialog(nullptr)
 {
@@ -21,7 +21,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent), m_idialog(nullp
     settings.beginGroup("settings");
 
     auto layout = new QVBoxLayout;
-    layout->addWidget(WDFunc::NewLBL2(this, "Выберите интерфейс связи"));
+    layout->addWidget(LBLFunc::NewLBL(this, "Выберите интерфейс связи"));
     auto intercb = WDFunc::NewCB2(this, "intercb", intersl);
     if (settings.contains("LastConnectionType"))
     {

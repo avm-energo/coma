@@ -6,7 +6,7 @@
 #include <gen/error.h>
 #include <interfaces/types/settingstypes.h>
 #include <interfaces/types/usbhidportinfo.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 InterfaceUSBDialog::InterfaceUSBDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {

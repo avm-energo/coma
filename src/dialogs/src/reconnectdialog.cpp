@@ -7,7 +7,7 @@
 #include <QVBoxLayout>
 #include <widgets/epopup.h>
 #include <widgets/eprogressindicator.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 constexpr auto successMsg { //
     "Переподключение прошло успешно!\n"

@@ -8,7 +8,7 @@
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <set>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 using namespace Device::XmlDataTypes;
 

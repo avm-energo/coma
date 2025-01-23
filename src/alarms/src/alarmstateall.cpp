@@ -5,7 +5,7 @@
 #include <QSizePolicy>
 #include <bitset>
 #include <device/current_device.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 AlarmStateAll::AlarmStateAll(Device::CurrentDevice *device, QWidget *parent)
     : BaseAlarm(device, parent)
@@ -53,11 +53,11 @@ void AlarmStateAll::setupUI()
     {
         Q_ASSERT(m_config[i].index < 32);
         auto hLayout = new QHBoxLayout;
-        auto label = WDFunc::NewLBL2(this, "", QString::number(m_config[i].index));
+        auto label = LBLFunc::NewLBL(this, "", QString::number(m_config[i].index));
         auto pixmap = WDFunc::NewCircle(m_normalColor, circleRadius);
         label->setPixmap(pixmap);
         hLayout->addWidget(label, 1);
-        hLayout->addWidget(WDFunc::NewLBL2(this, m_config[i].desc), 100);
+        hLayout->addWidget(LBLFunc::NewLBL(this, m_config[i].desc), 100);
         lyout->addLayout(hLayout);
     }
 

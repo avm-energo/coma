@@ -9,7 +9,7 @@
 #include <oscillograms/swjmanager.h>
 #include <s2/s2util.h>
 #include <widgets/pushbuttondelegate.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 // constexpr int MAXSWJNUM = 262144;
 constexpr unsigned char TECH_SWJ = 0x04;

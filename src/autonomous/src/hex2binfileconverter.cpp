@@ -3,7 +3,7 @@
 #include <gen/files.h>
 #include <s2/s2util.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 Hex2BinFileConverter::Hex2BinFileConverter(QWidget *parent) : QObject(parent), m_parent(parent)
 {

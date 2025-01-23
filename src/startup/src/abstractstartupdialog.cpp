@@ -6,7 +6,7 @@
 #include <gen/stdfunc.h>
 #include <tuple>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 AbstractStartupDialog::AbstractStartupDialog(Device::CurrentDevice *device, QWidget *parent)
     : UDialog(device, parent), m_updateState(ThereWasNoUpdatesRecently)

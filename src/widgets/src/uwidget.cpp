@@ -7,7 +7,7 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 UWidget::UWidget(Device::CurrentDevice *device, QWidget *parent)
     : QWidget(parent), m_dataUpdater(new ModuleDataUpdater(device->async(), this)), m_device(device)

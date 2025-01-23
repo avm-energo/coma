@@ -39,7 +39,7 @@
 #include <oscillograms/osc_ids.h>
 #include <widgets/epopup.h>
 #include <widgets/signalchoosewidget.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 constexpr int VOLTAGE_AXIS_INDEX = 0;
 constexpr int CURRENT_AXIS_INDEX = 1;

@@ -5,7 +5,7 @@
 #include <tune/tunereporter.h>
 #include <tune/tunesequencefile.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 #include <QHBoxLayout>
 #include <QIcon>

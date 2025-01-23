@@ -3,7 +3,7 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <variant>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 constexpr auto bTypeIndex = 1;
 constexpr auto versionIndex = 3;
@@ -27,7 +27,7 @@ void ModuleDialog::setupUI(QVBoxLayout *mainLayout)
     {
         auto labelText = itemSettings.first;
         auto itemName = itemSettings.second;
-        auto labelItem = WDFunc::NewLBL2(this, labelText, itemName + "Label");
+        auto labelItem = LBLFunc::NewLBL(this, labelText, itemName + "Label");
         auto inputItem = WDFunc::NewLE2(this, itemName);
         QObject::connect(
             inputItem, &QLineEdit::textEdited, this, qOverload<const QString &>(&ModuleDialog::dataChanged));

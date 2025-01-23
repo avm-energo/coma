@@ -4,7 +4,7 @@
 #include <QVBoxLayout>
 #include <gen/files.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 namespace journals
 {

@@ -7,7 +7,7 @@
 #include <QVBoxLayout>
 #include <gen/error.h>
 #include <widgets/passwordlineedit.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 KeyPressDialog::KeyPressDialog(QWidget *parent) : QDialog(parent)
 {
@@ -45,7 +45,7 @@ void KeyPressDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(
-        WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
+        LBLFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
     vlyout->addWidget(WDFunc::NewPswLE2(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
     setMinimumSize(200, 120);

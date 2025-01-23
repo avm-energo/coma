@@ -6,7 +6,7 @@
 #include <QStandardItemModel>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 InterfaceEmuDialog::InterfaceEmuDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
@@ -26,8 +26,8 @@ void InterfaceEmuDialog::setupUI()
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addStretch(10);
-    hlyout->addWidget(WDFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceEmuDialog::addInterface));
-    hlyout->addWidget(WDFunc::NewPB(this, "", tr("Удалить"), this, [this] {
+    hlyout->addWidget(PBFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceEmuDialog::addInterface));
+    hlyout->addWidget(PBFunc::NewPB(this, "", tr("Удалить"), this, [this] {
         auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
         m_settings.remove(name);
         updateModel();
@@ -96,20 +96,20 @@ void InterfaceEmuDialog::addInterface()
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QGridLayout *lyout = new QGridLayout;
     int count = 0;
-    lyout->addWidget(WDFunc::NewLBL2(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(LBLFunc::NewLBL(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewLE2(dlg, "namele"), count++, 1, 1, 1);
-    lyout->addWidget(WDFunc::NewLBL2(dlg, "typeB:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(LBLFunc::NewLBL(dlg, "typeB:"), count, 0, 1, 1, Qt::AlignLeft);
     auto lineEdit = WDFunc::NewLE2(dlg, "typeble");
     lineEdit->setInputMask("HH;");
     lyout->addWidget(lineEdit, count++, 1, 1, 1, Qt::AlignLeft);
 
-    lyout->addWidget(WDFunc::NewLBL2(dlg, "typeM:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(LBLFunc::NewLBL(dlg, "typeM:"), count, 0, 1, 1, Qt::AlignLeft);
     lineEdit = WDFunc::NewLE2(dlg, "typemle");
     lineEdit->setInputMask("HH;");
     lyout->addWidget(lineEdit, count++, 1, 1, 1);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, &InterfaceEmuDialog::acceptedInterface));
-    hlyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+    hlyout->addWidget(PBFunc::NewPB(dlg, "acceptpb", "Сохранить", this, &InterfaceEmuDialog::acceptedInterface));
+    hlyout->addWidget(PBFunc::NewPB(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
 
     lyout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
     dlg->setLayout(lyout);

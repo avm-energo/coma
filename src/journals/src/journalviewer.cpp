@@ -9,7 +9,7 @@
 #include <journals/workjournal.h>
 #include <s2/s2util.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 #include <xml/xmlparser/xmlmoduleparser.h>
 
 namespace journals

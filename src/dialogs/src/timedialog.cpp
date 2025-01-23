@@ -10,7 +10,7 @@
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/timefunc.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 constexpr char directOrder[] = "dd-MM-yyyy HH:mm:ss";
 constexpr char reverseOrder[] = "yyyy-MM-ddTHH:mm:ss";
@@ -41,7 +41,7 @@ void TimeDialog::setupUI()
         label->setText(datetime.toString(directOrder));
     });
     hlyout->addWidget(label);
-    label = WDFunc::NewLBL2(
+    label = LBLFunc::NewLBL(
         time, QDateTime::currentDateTimeUtc().toString(reverseOrder), settings::nameByValue(settings::DesktopDatetime));
     connect(Timer, &QTimer::timeout, [=] {
         auto datetime = QDateTime::currentDateTimeUtc().toTimeZone(TimeFunc::userTimeZone());
@@ -56,19 +56,19 @@ void TimeDialog::setupUI()
 
     mainLayout->addWidget(Button);
 
-    label = WDFunc::NewLBL2(time, "Дата и время в модуле:");
+    label = LBLFunc::NewLBL(time, "Дата и время в модуле:");
     hlyout->addWidget(label);
 
-    label = WDFunc::NewLBL2(time, directOrder, settings::nameByValue(settings::ModuleDatetimeUtc));
+    label = LBLFunc::NewLBL(time, directOrder, settings::nameByValue(settings::ModuleDatetimeUtc));
     hlyout->addWidget(label);
 
-    label = WDFunc::NewLBL2(time, directOrder, settings::nameByValue(settings::ModuleDatetime));
+    label = LBLFunc::NewLBL(time, directOrder, settings::nameByValue(settings::ModuleDatetime));
     hlyout->addWidget(label);
 
     mainLayout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
 
-    label = WDFunc::NewLBL2(time, "Дата и время для записи в модуль");
+    label = LBLFunc::NewLBL(time, "Дата и время для записи в модуль");
     hlyout->addWidget(label);
 
     auto *lineedit = WDFunc::NewLE2(time, settings::nameByValue(settings::WriteDatetime), directOrder);

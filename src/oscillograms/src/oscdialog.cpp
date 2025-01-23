@@ -8,7 +8,7 @@
 #include <s2/s2util.h>
 #include <widgets/etableview.h>
 #include <widgets/pushbuttondelegate.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 OscDialog::OscDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
@@ -29,7 +29,7 @@ void OscDialog::setupUI()
     connect(dg, &PushButtonDelegate::clicked, this, &OscDialog::getOsc);
     tv->setItemDelegateForColumn(Column::download, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
 
-    auto *getButton = WDFunc::NewPB(this, "", "Получить данные по осциллограммам ", this, [&, tv] {
+    auto *getButton = PBFunc::NewPB(this, "", "Получить данные по осциллограммам ", this, [&, tv] {
         oscMap.clear();
         tableModel = UniquePointer<ETableModel>(new ETableModel);
         tableModel->setHorizontalHeaderLabels({ "#", "Дата/Время", "ИД", "Длина", "Скачать" });
@@ -39,7 +39,7 @@ void OscDialog::setupUI()
     });
 
     hlyout->addWidget(getButton);
-    auto *eraseButton = WDFunc::NewPB(this, "", "Стереть все осциллограммы в памяти", this, &OscDialog::eraseOsc);
+    auto *eraseButton = PBFunc::NewPB(this, "", "Стереть все осциллограммы в памяти", this, &OscDialog::eraseOsc);
     hlyout->addWidget(eraseButton);
 
     hlyout->addWidget(eraseButton);

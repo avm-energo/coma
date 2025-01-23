@@ -9,11 +9,11 @@
 #include <QTimer>
 #include <settings/user_settings.h>
 #include <widgets/passwordlineedit.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent) : EPopup(parent)
 {
-    Create(type, WDFunc::NewLBL2(parent, msg), parent);
+    Create(type, LBLFunc::NewLBL(parent, msg), parent);
 }
 
 ESimplePopup::ESimplePopup(MessageTypes type, QWidget *w, QWidget *parent) : EPopup(parent)
@@ -45,7 +45,7 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
 
-    auto icon = WDFunc::NewIcon(parent, map[type].pxFile);
+    auto icon = GraphFunc::NewIcon(parent, map[type].pxFile);
     icon->setStyleSheet("QWidget {background-color: #" + map[type].bgrdColor + ";}");
     hlyout->addWidget(icon);
     hlyout->addWidget(w);
@@ -54,18 +54,18 @@ void ESimplePopup::Create(MessageTypes &type, QWidget *w, QWidget *parent)
     hlyout->addStretch(100);
     if (type == ESimplePopup::QUESTMSG)
     {
-        hlyout->addWidget(WDFunc::NewPB(parent, "", "Да", this, &ESimplePopup::acceptSlot));
+        hlyout->addWidget(PBFunc::NewPB(parent, "", "Да", this, &ESimplePopup::acceptSlot));
         hlyout->addStretch(5);
-        hlyout->addWidget(WDFunc::NewPB(parent, "", "Нет", this, &ESimplePopup::cancelSlot));
+        hlyout->addWidget(PBFunc::NewPB(parent, "", "Нет", this, &ESimplePopup::cancelSlot));
     }
     else if (type == ESimplePopup::NEXTMSG)
     {
-        hlyout->addWidget(WDFunc::NewPB(parent, "", "Далее", this, &ESimplePopup::acceptSlot));
+        hlyout->addWidget(PBFunc::NewPB(parent, "", "Далее", this, &ESimplePopup::acceptSlot));
         hlyout->addStretch(5);
-        hlyout->addWidget(WDFunc::NewPB(parent, "", "Отмена", this, &ESimplePopup::cancelSlot));
+        hlyout->addWidget(PBFunc::NewPB(parent, "", "Отмена", this, &ESimplePopup::cancelSlot));
     }
     else if (type != ESimplePopup::WITHOUTANYBUTTONS)
-        hlyout->addWidget(WDFunc::NewPB(parent, "", "Далее", [&] { this->aboutToClose(); }));
+        hlyout->addWidget(PBFunc::NewPB(parent, "", "Далее", [&] { this->aboutToClose(); }));
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
@@ -120,7 +120,7 @@ bool EMessageBox::question(QWidget *parent, const QString &msg)
 void EMessageBox::warning(QWidget *parent, const QString &msg)
 {
     m_result = false;
-    auto popup = new ESimplePopup(ESimplePopup::WARNMESSAGE, WDFunc::NewLBL2(parent, msg), parent);
+    auto popup = new ESimplePopup(ESimplePopup::WARNMESSAGE, LBLFunc::NewLBL(parent, msg), parent);
     popup->exec();
 }
 
@@ -228,14 +228,14 @@ void EEditablePopup::execPopup()
     auto widget = new QWidget(this);
     // widget->setStyleSheet("QWidget {background-color: #c8fcff;}");
     auto layout = new QVBoxLayout;
-    layout->addWidget(WDFunc::NewLBL2(this, caption));
+    layout->addWidget(LBLFunc::NewLBL(this, caption));
     for (std::map<QString, float *>::iterator it = m_floatParList.begin(); it != m_floatParList.end(); ++it)
         layout->addWidget(WDFunc::NewLBLAndLE(this, it->first, it->first, true));
     auto hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
-    hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", this, &EEditablePopup::acceptSlot));
+    hlyout->addWidget(PBFunc::NewPB(this, "", "Далее", this, &EEditablePopup::acceptSlot));
     hlyout->addStretch(5);
-    hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", this, &EEditablePopup::cancelSlot));
+    hlyout->addWidget(PBFunc::NewPB(this, "", "Отмена", this, &EEditablePopup::cancelSlot));
     hlyout->addStretch(100);
     layout->addLayout(hlyout);
     widget->setLayout(layout);
@@ -286,10 +286,10 @@ EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(pa
     isAboutToClose = false;
     m_hash = hash;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    auto icon = WDFunc::NewIcon(parent, ":/icons/psw-hex.svg");
+    auto icon = GraphFunc::NewIcon(parent, ":/icons/psw-hex.svg");
     icon->setStyleSheet(widgetStyle);
     hlyout->addWidget(icon);
-    auto text = WDFunc::NewLBL2(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl");
+    auto text = LBLFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl");
     text->setStyleSheet(widgetStyle);
     hlyout->addWidget(text);
     QVBoxLayout *vlyout = new QVBoxLayout;

@@ -2,7 +2,7 @@
 
 #include <QScrollArea>
 #include <QVBoxLayout>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 ModuleAlarm::ModuleAlarm(const AlarmType type, const AlarmValue &alarms, //
     Device::CurrentDevice *device, QWidget *parent)
@@ -44,9 +44,9 @@ void ModuleAlarm::setupUI(const QStringList &events)
     {
         auto hLayout = new QHBoxLayout;
         auto pixmap = WDFunc::NewCircle(m_normalColor, circleRadius);
-        auto label = WDFunc::NewLBL2(this, "", QString::number(index), &pixmap);
+        auto label = LBLFunc::NewLBL(this, "", QString::number(index), &pixmap);
         hLayout->addWidget(label, 1);
-        hLayout->addWidget(WDFunc::NewLBL2(this, desc), 100);
+        hLayout->addWidget(LBLFunc::NewLBL(this, desc), 100);
         vLayout->addLayout(hLayout);
         m_labelStateStorage.append({ label, false });
         index++;

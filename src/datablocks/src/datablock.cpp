@@ -25,14 +25,19 @@
 
 #include "datablocks/datablock.h"
 
-#include <QDialogButtonBox>
-#include <QGroupBox>
-#include <QScrollBar>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/filefunc.h>
+#include <widgets/hexpbfunc.h>
+#include <widgets/lefunc.h>
+#include <widgets/wdfunc.h>
+
+#include <QDialogButtonBox>
+#include <QGroupBox>
+#include <QLabel>
+#include <QScrollBar>
 
 using namespace Interface;
 
@@ -52,9 +57,7 @@ DataBlock::DataBlock(QObject *parent)
 {
 }
 
-DataBlock::~DataBlock()
-{
-}
+DataBlock::~DataBlock() { }
 
 void DataBlock::setBlock(const DataBlock::BlockStruct &bds)
 {
@@ -157,7 +160,7 @@ QWidget *DataBlock::blockButtonsUI()
         for (auto &i : funcs)
         {
             const QString &toolTip = i.first.first;
-            group->addButton(WDFunc::NewHexagonPB(m_bottomButtonsWidget, "", i.second, i.first.second, toolTip),
+            group->addButton(HexPBFunc::NewHexagonPB(m_bottomButtonsWidget, "", i.second, i.first.second, toolTip),
                 QDialogButtonBox::ActionRole);
         }
         group->setCenterButtons(true);
@@ -192,12 +195,12 @@ void DataBlock::updateWidget()
                 overloaded {                                                                       //
                     [&](float *arg)                                                                //
                     {                                                                              //
-                        WDFunc::SetLEData(                                                         //
+                        LEFunc::SetLEData(                                                         //
                             m_widget, valueDesc.valueId, WDFunc::StringFloatValueWithCheck(*arg)); //
                     },                                                                             //
                     [&](quint32 *arg)                                                              //
                     {                                                                              //
-                        WDFunc::SetLEData(m_widget, valueDesc.valueId, QString::number(*arg));     //
+                        LEFunc::SetLEData(m_widget, valueDesc.valueId, QString::number(*arg));     //
                     } },                                                                           //
                 valueDesc.value);
         }
@@ -212,20 +215,21 @@ void DataBlock::updateFromWidget()
         for (auto &valueDesc : group.values)
         {
             std::visit(
-                [&](auto *arg) {
+                [&](auto *arg)
+                {
                     using T = std::remove_pointer_t<decltype(arg)>;
                     if constexpr (std::is_same_v<T, float>)
                     {
-                        float tmpf = StdFunc::ToFloat(WDFunc::LEData(m_widget, valueDesc.valueId));
+                        float tmpf = StdFunc::ToFloat(LEFunc::LEData(m_widget, valueDesc.valueId));
                         *arg = tmpf;
                     }
                     else if constexpr (std::is_same_v<T, quint32>)
                     {
-                        quint32 tmpi = WDFunc::LEData(m_widget, valueDesc.valueId).toUInt();
+                        quint32 tmpi = LEFunc::LEData(m_widget, valueDesc.valueId).toUInt();
                         *arg = tmpi;
                     }
-                    //                        else
-                    //                            static_assert(false, "non-exhaustive visitor!");
+                    else
+                        qDebug() << "non-exhaustive visitor!";
                 },
                 valueDesc.value);
         }
@@ -296,7 +300,7 @@ void DataBlock::readBlockFromModule()
 
 void DataBlock::readFromFileUserChoose()
 {
-    auto filepath = WDFunc::ChooseFileForOpen(nullptr, ExtMap[m_block.blocktype].mask);
+    auto filepath = FileFunc::ChooseFileForOpen(nullptr, ExtMap[m_block.blocktype].mask);
     if (!filepath.isEmpty())
         loadFromFileAndWriteToModule(filepath);
 }
@@ -330,7 +334,7 @@ Error::Msg DataBlock::saveToFile()
 void DataBlock::saveToFileUserChoose()
 {
     readBlockFromModule();
-    auto filepath = WDFunc::ChooseFileForSave(nullptr, ExtMap[m_block.blocktype].mask, //
+    auto filepath = FileFunc::ChooseFileForSave(nullptr, ExtMap[m_block.blocktype].mask, //
         ExtMap[m_block.blocktype].extension, cpuIDFilenameStr());
     if (filepath.isEmpty())
         return;

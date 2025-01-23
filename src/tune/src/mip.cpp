@@ -7,7 +7,7 @@
 #include <interfaces/types/settingstypes.h>
 #include <settings/user_settings.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 #include <QEventLoop>
 #include <QGroupBox>
@@ -116,7 +116,7 @@ void Mip::setupWidget()
     computedGroup->setLayout(computedLayout);
     mipWidgetLayout->addWidget(computedGroup);
 
-    mipWidgetLayout->addWidget(WDFunc::NewPB(m_widget, "", "Далее",
+    mipWidgetLayout->addWidget(PBFunc::NewPB(m_widget, "", "Далее",
         [=]
         {
             stop();

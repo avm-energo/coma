@@ -10,7 +10,7 @@
 #include <gen/stdfunc.h>
 #include <gen/utils/crc16.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *parent)
     : QDialog(parent)

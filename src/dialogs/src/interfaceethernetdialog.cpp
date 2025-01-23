@@ -15,7 +15,7 @@
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 InterfaceEthernetDialog::InterfaceEthernetDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
@@ -35,9 +35,9 @@ void InterfaceEthernetDialog::setupUI()
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     lyout->addWidget(m_tableView);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewPB(this, "", tr("Добавить"), this, &InterfaceEthernetDialog::addInterface));
-    hlyout->addWidget(WDFunc::NewPB(this, "", tr("Сканировать"), this, &InterfaceEthernetDialog::scanInterface));
-    hlyout->addWidget(WDFunc::NewPB(this, "", tr("Удалить"), this, [this] {
+    hlyout->addWidget(PBFunc::NewPB(this, "", tr("Добавить"), this, &InterfaceEthernetDialog::addInterface));
+    hlyout->addWidget(PBFunc::NewPB(this, "", tr("Сканировать"), this, &InterfaceEthernetDialog::scanInterface));
+    hlyout->addWidget(PBFunc::NewPB(this, "", tr("Удалить"), this, [this] {
         auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
         m_settings.remove(name);
         updateModel();
@@ -124,8 +124,8 @@ void InterfaceEthernetDialog::addInterface()
     mainLayout->addLayout(hlayout);
 
     hlayout = new QHBoxLayout;
-    hlayout->addWidget(WDFunc::NewPB(dialog, "", tr("Сохранить"), this, &InterfaceEthernetDialog::acceptedInterface));
-    hlayout->addWidget(WDFunc::NewPB(dialog, "", tr("Отмена"), dialog, [dialog] { dialog->close(); }));
+    hlayout->addWidget(PBFunc::NewPB(dialog, "", tr("Сохранить"), this, &InterfaceEthernetDialog::acceptedInterface));
+    hlayout->addWidget(PBFunc::NewPB(dialog, "", tr("Отмена"), dialog, [dialog] { dialog->close(); }));
     mainLayout->addLayout(hlayout);
     dialog->setLayout(mainLayout);
     dialog->adjustSize();

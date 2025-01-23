@@ -24,7 +24,7 @@ QWidget *LBLFunc::NewLBLAndLBL(QWidget *parent, QString lblname, QString caption
     return widget;
 }
 
-QLabel *LBLFunc::NewLBL2(
+QLabel *LBLFunc::NewLBL(
     QWidget *parent, const QString &text, const QString &lblname, const QPixmap *pm, const QString &lbltip)
 {
     auto lbl = new QLabel(parent);
@@ -39,7 +39,7 @@ QLabel *LBLFunc::NewLBL2(
     return lbl;
 }
 
-QLabel *LBLFunc::NewLBLT2(
+QLabel *LBLFunc::NewLBLT(
     QWidget *parent, const QString &text, const QString &lblname, const QString &lbltip, bool fixed)
 {
     auto lbl = new QLabel(parent);

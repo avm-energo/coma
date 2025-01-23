@@ -14,7 +14,7 @@
 #include <widgets/epopup.h>
 #include <widgets/passwordlineedit.h>
 #include <widgets/styleloader.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 using namespace Settings;
 
@@ -102,7 +102,7 @@ void SettingsDialog::setupGeneralTab() noexcept
     themeLayout->addWidget(new QLabel("Тема", m_workspace));
     themeLayout->addWidget(themeComboBox);
     workspaceLayout->addLayout(themeLayout);
-    workspaceLayout->addWidget(WDFunc::newHLine(m_workspace));
+    workspaceLayout->addWidget(GraphFunc::newHLine(m_workspace));
 
     // Изменение таймзоны
     auto zoneList = QTimeZone::availableTimeZoneIds();
@@ -115,13 +115,13 @@ void SettingsDialog::setupGeneralTab() noexcept
     timezoneLayout->addWidget(new QLabel("Часовой пояс", m_workspace));
     timezoneLayout->addWidget(timezoneCB);
     workspaceLayout->addLayout(timezoneLayout);
-    workspaceLayout->addWidget(WDFunc::newHLine(m_workspace));
+    workspaceLayout->addWidget(GraphFunc::newHLine(m_workspace));
 
     // Изменение пароля
     auto passwordGB = new QGroupBox("Пароль", m_workspace);
     auto passwordLayout = new QGridLayout;
     auto passwordLE = m_settings.nameof<PasswordHash>();
-    passwordLayout->addWidget(WDFunc::NewLBL2(passwordGB, "Обновить пароль:"), 1, 1, 1, 1);
+    passwordLayout->addWidget(LBLFunc::NewLBL(passwordGB, "Обновить пароль:"), 1, 1, 1, 1);
     passwordLayout->addWidget(WDFunc::NewPswLE2(passwordGB, passwordLE, QLineEdit::Password), 1, 2, 1, 1);
     auto resetBtn = new QPushButton("Установить пароль по умолчанию", passwordGB);
     connect(resetBtn, &QAbstractButton::clicked, this, &SettingsDialog::resetPassword);
@@ -140,13 +140,13 @@ void SettingsDialog::setupConnectionTab() noexcept
     auto generalLayout = createTabLayout(setupTabs, "Общие");
     auto widgetName = m_settings.nameof<LoggingEnabled>();
     generalLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Запись обмена данными в файл"));
-    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
+    generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<AlarmsInterval>();
     generalLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Интервал запроса сигнализации, мс", widgetName, true));
-    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
+    generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<AlarmsEnabled>();
     generalLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Обновление сигнализации"));
-    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
+    generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<SilentInterval>();
     auto widget = WDFunc::NewLBLAndLE(m_workspace, "Время \"тихого\" переподключения, мс", widgetName, true);
     widget->setToolTip("<p><font size=\"4\">Для выполнения некоторых операций (загрузка конфигурации или обновление "
@@ -155,14 +155,14 @@ void SettingsDialog::setupConnectionTab() noexcept
                        "переподключение выполняется в фоновом режиме. Если указанного времени не хватит для "
                        "переподключения, диалог о переподключении к устройству появится в любом случае.</font></p>");
     generalLayout->addWidget(widget);
-    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
+    generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<TimeoutCount>();
     widget = WDFunc::NewLBLAndLE(m_workspace, "Кол-во таймаутов для переподключения", widgetName, true);
     widget->setToolTip("<p><font size=\"4\">Количество подряд полученных таймаутов на посылаемые устройству "
                        "запросы, после которых будет предпринята попытка переподключиться к устройству по "
                        "тем же настройкам и интерфейсу для восстановления связи.</font></p>");
     generalLayout->addWidget(widget);
-    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
+    generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<ErrorCount>();
     widget = WDFunc::NewLBLAndLE(m_workspace, "Кол-во ошибок для переподключения", widgetName, true);
     widget->setToolTip("<p><font size=\"4\">Количество подряд полученных ошибок от интерфейса связи с "
@@ -173,7 +173,7 @@ void SettingsDialog::setupConnectionTab() noexcept
     auto protocomLayout = createTabLayout(setupTabs, "USB HID");
     widgetName = m_settings.nameof<ProtocomTimeout>();
     protocomLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Таймаут отправки запроса, мс", widgetName, true));
-    protocomLayout->addWidget(WDFunc::newHLine(m_workspace));
+    protocomLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<ProtocomReconnect>();
     widget = WDFunc::NewLBLAndLE(m_workspace, "Интервал переподключения, мс", widgetName, true);
     widget->setToolTip(reconnectIntervalTooltip);
@@ -183,7 +183,7 @@ void SettingsDialog::setupConnectionTab() noexcept
     auto modbusLayout = createTabLayout(setupTabs, "Modbus");
     widgetName = m_settings.nameof<ModbusTimeout>();
     modbusLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Таймаут отправки запроса, мс", widgetName, true));
-    modbusLayout->addWidget(WDFunc::newHLine(m_workspace));
+    modbusLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<ModbusReconnect>();
     widget = WDFunc::NewLBLAndLE(m_workspace, "Интервал переподключения, мс", widgetName, true);
     widget->setToolTip(reconnectIntervalTooltip);
@@ -193,35 +193,35 @@ void SettingsDialog::setupConnectionTab() noexcept
     auto iec104Layout = createTabLayout(setupTabs, "МЭК 61850-104");
     widgetName = m_settings.nameof<Iec104Timeout>();
     iec104Layout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Таймаут отправки запроса, мс", widgetName, true));
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<Iec104Reconnect>();
     widget = WDFunc::NewLBLAndLE(m_workspace, "Интервал переподключения, мс", widgetName, true);
     widget->setToolTip(reconnectIntervalTooltip);
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
     widget = WDFunc::NewLBLAndLE(m_workspace, "t0, с", m_settings.nameof<Iec104T0>(), true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут при установке соединения.</font></p>");
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
     widget = WDFunc::NewLBLAndLE(m_workspace, "t1, с", m_settings.nameof<Iec104T1>(), true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут при посылке или тестировании APDU.</font></p>");
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
     widget = WDFunc::NewLBLAndLE(m_workspace, "t2, с", m_settings.nameof<Iec104T2>(), true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут для отправки подтверждения о принятых APDU "
                        "в случае отсутствия сообщения с данными.</font></p>");
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
     widget = WDFunc::NewLBLAndLE(m_workspace, "t3, с", m_settings.nameof<Iec104T3>(), true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут для посылки блоков тестирования "
                        "в случае долгого простоя соединения.</font></p>");
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
     widget = WDFunc::NewLBLAndLE(m_workspace, "k", m_settings.nameof<Iec104K>(), true);
     widget->setToolTip("<p><font size=\"4\">Максимальное число неподтверждённых "
                        "APDU, отправляемых станцией.</font></p>");
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
     widget = WDFunc::NewLBLAndLE(m_workspace, "w", m_settings.nameof<Iec104W>(), true);
     widget->setToolTip("<p><font size=\"4\">Количество APDU информационного формата (I-посылок), "
                        "после приёма которых требуется отправить подтверждение.</font></p>");
@@ -239,10 +239,10 @@ void SettingsDialog::setupTuneTab() noexcept
     auto mipLayout = createTabLayout(tuneTabs, "МИП-02");
     widgetName = m_settings.nameof<MipIp>();
     mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "IP адрес устройства", widgetName, true));
-    mipLayout->addWidget(WDFunc::newHLine(m_workspace));
+    mipLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<MipPort>();
     mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Порт устройства", widgetName, true));
-    mipLayout->addWidget(WDFunc::newHLine(m_workspace));
+    mipLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<MipBsAddress>();
     mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Адрес базовой станции", widgetName, true));
 }

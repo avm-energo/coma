@@ -6,7 +6,7 @@
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 InfoDialog::InfoDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
@@ -66,8 +66,8 @@ void InfoDialog::setupUI()
     auto slyout = new QGridLayout;
     for (int i = 0; i < dialogPage.size(); ++i)
     {
-        slyout->addWidget(WDFunc::NewLBL2(this, dialogPage.at(i).second), i, 0, 1, 1, Qt::AlignRight);
-        slyout->addWidget(WDFunc::NewLBL2(this, "", dialogPage.at(i).first), i, 1, 1, 1);
+        slyout->addWidget(LBLFunc::NewLBL(this, dialogPage.at(i).second), i, 0, 1, 1, Qt::AlignRight);
+        slyout->addWidget(LBLFunc::NewLBL(this, "", dialogPage.at(i).first), i, 1, 1, 1);
     }
     mainLayout->addLayout(slyout, 3);
     mainLayout->addStretch(4);

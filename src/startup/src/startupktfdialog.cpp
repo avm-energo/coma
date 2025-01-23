@@ -9,7 +9,7 @@
 #include <gen/timefunc.h>
 #include <widgets/epopup.h>
 #include <widgets/etableview.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 StartupKTFDialog::StartupKTFDialog(Device::CurrentDevice *device, QWidget *parent)
     : AbstractStartupDialog(device, parent)
@@ -33,7 +33,7 @@ void StartupKTFDialog::SetupUI()
     tv->setObjectName("cor");
     int row = 0;
 
-    glyout->addWidget(WDFunc::NewLBL2(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
+    glyout->addWidget(LBLFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB2(this, QString::number(907), 0, 1000000, 5), row, 2, 1, 2);
     row++;
 

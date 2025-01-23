@@ -5,47 +5,77 @@
 
 EStatusBar::EStatusBar(QWidget *parent) : QStatusBar(parent)
 {
-    auto bar = new QStatusBar(parent);
-    bar->setMaximumHeight(parent->height() / 20);
+    setMaximumHeight(parent->height() / 20);
 
     auto widget = new QWidget(parent);
-    widget->setMaximumHeight(bar->height());
+    widget->setMaximumHeight(height());
 
     auto layout = new QHBoxLayout;
     layout->setSpacing(parent->width() / 20);
     layout->setContentsMargins(1, 1, 1, 1);
 
-    auto queueSize = new QLabel(bar);
-    queueSize->setObjectName("QueueSize");
-    layout->addWidget(queueSize);
+    m_queueSizeLbl = new QLabel(this);
+    m_queueSizeLbl->setObjectName("QueueSize");
+    layout->addWidget(m_queueSizeLbl);
 
-    auto msgModel = new QLabel(bar);
-    msgModel->setObjectName("Model");
-    layout->addWidget(msgModel);
+    m_msgModelLbl = new QLabel(this);
+    m_msgModelLbl->setObjectName("Model");
+    layout->addWidget(m_msgModelLbl);
 
-    auto msgSerialNumber = new QLabel(bar);
-    msgSerialNumber->setObjectName("SerialNumber");
-    layout->addWidget(msgSerialNumber);
+    m_msgSNLbl = new QLabel(this);
+    m_msgSNLbl->setObjectName("SerialNumber");
+    layout->addWidget(m_msgSNLbl);
 
-    auto msgConnectionState = new QLabel(bar);
-    msgConnectionState->setObjectName("ConnectionState");
-    layout->addWidget(msgConnectionState);
+    m_connStateLbl = new QLabel(this);
+    m_connStateLbl->setObjectName("ConnectionState");
+    layout->addWidget(m_connStateLbl);
 
-    auto msgConnectionImage = new QLabel(bar);
-    msgConnectionImage->setObjectName("ConnectionImage");
-    layout->addWidget(msgConnectionImage);
+    m_connImageLbl = new QLabel(this);
+    m_connImageLbl->setObjectName("ConnectionImage");
+    layout->addWidget(m_connImageLbl);
 
-    auto msgConnectionType = new QLabel(bar);
-    msgConnectionType->setObjectName("ConnectionType");
-    layout->addWidget(msgConnectionType);
+    m_connTypeLbl = new QLabel(this);
+    m_connTypeLbl->setObjectName("ConnectionType");
+    layout->addWidget(m_connTypeLbl);
 
-    auto height = bar->height() - layout->contentsMargins().bottom();
+    auto height = this->height() - layout->contentsMargins().bottom();
     for (auto i = 0; i < layout->count(); ++i)
     {
         layout->itemAt(i)->widget()->setFixedHeight(height);
     }
 
     widget->setLayout(layout);
-    bar->addPermanentWidget(widget);
-    return bar;
+    addPermanentWidget(widget);
+}
+
+void EStatusBar::setQueueSize(const QString &sizestr)
+{
+    m_queueSizeLbl->setText(sizestr);
+}
+
+void EStatusBar::setModelString(const QString &str)
+{
+    m_msgModelLbl->setText(str);
+}
+
+void EStatusBar::setSerialNumber(quint32 number)
+{
+    m_msgSNLbl->setText(QString::number(number, 16));
+}
+
+void EStatusBar::setConnectionType(const QString &type)
+{
+    m_connTypeLbl->setText(type);
+}
+
+void EStatusBar::setConnectionState(const QString &state)
+{
+    m_connStateLbl->setText(state);
+    m_connStateLbl->setForegroundRole(QPalette::Highlight);
+    m_connStateLbl->setBackgroundRole(QPalette::HighlightedText);
+}
+
+void EStatusBar::setConnectionPixmap(const QPixmap &pixmap)
+{
+    m_connImageLbl->setPixmap(pixmap);
 }

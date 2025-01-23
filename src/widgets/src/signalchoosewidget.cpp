@@ -1,7 +1,7 @@
 #include "widgets/signalchoosewidget.h"
 
 #include <QVBoxLayout>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 SignalChooseWidget::SignalChooseWidget(const QStringList &snames, const QStringList &discr, QWidget *parent)
     : QScrollArea(parent)

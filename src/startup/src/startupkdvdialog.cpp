@@ -7,7 +7,7 @@
 #include <gen/timefunc.h>
 #include <widgets/epopup.h>
 #include <widgets/etableview.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 StartupKDVDialog::StartupKDVDialog(Device::CurrentDevice *device, QWidget *parent)
     : AbstractStartupDialog(device, parent)
@@ -34,13 +34,13 @@ void StartupKDVDialog::SetupUI()
     tv->setObjectName("cor");
     int row = 0;
 
-    glyout->addWidget(WDFunc::NewLBL2(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
+    glyout->addWidget(LBLFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB2(this, QString::number(907), 0, 1000000, 5), row, 2, 1, 2);
     row++;
-    glyout->addWidget(WDFunc::NewLBL2(this, "Текущея наработка при нормальной нагрузке, час:"), row, 1, 1, 1);
+    glyout->addWidget(LBLFunc::NewLBL(this, "Текущея наработка при нормальной нагрузке, час:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB2(this, QString::number(908), 0, 1000000, 5), row, 2, 1, 2);
     row++;
-    glyout->addWidget(WDFunc::NewLBL2(this, "Текущея наработка в режиме перегрузки, час:"), row, 1, 1, 1);
+    glyout->addWidget(LBLFunc::NewLBL(this, "Текущея наработка в режиме перегрузки, час:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB2(this, QString::number(909), 0, 1000000, 5), row, 2, 1, 2);
     row++;
 

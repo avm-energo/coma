@@ -22,14 +22,6 @@
 
 #include "coma_core/coma.h"
 
-#include <QApplication>
-#include <QDir>
-#include <QHBoxLayout>
-#include <QMenuBar>
-#include <QPainter>
-#include <QProgressBar>
-#include <QToolBar>
-#include <QtGlobal>
 #include <alarms/alarmwidget.h>
 #include <appconfig/appconfig.h>
 #include <autonomous/hex2binfileconverter.h>
@@ -43,16 +35,13 @@
 #include <dialogs/reconnectdialog.h>
 #include <dialogs/settingsdialog.h>
 #include <dialogs/switchjournaldialog.h>
-#include <functional>
 #include <gen/errorqueue.h>
 #include <gen/files.h>
 #include <gen/logger.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 #include <interfaces/types/settingstypes.h>
-#include <iostream>
 #include <journals/journalviewer.h>
-#include <memory>
 #include <oscillograms/swjmanager.h>
 #include <oscillograms/swjpackconvertor.h>
 #include <s2/s2configstorage.h>
@@ -63,9 +52,21 @@
 #include <widgets/splashscreen.h>
 #include <widgets/styleloader.h>
 #include <widgets/waitwidget.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 #include <xml/xmlconfigloader.h>
 #include <xml/xmleditor/xmleditor.h>
+
+#include <QApplication>
+#include <QDir>
+#include <QHBoxLayout>
+#include <QMenuBar>
+#include <QPainter>
+#include <QProgressBar>
+#include <QToolBar>
+#include <QtGlobal>
+#include <functional>
+#include <iostream>
+#include <memory>
 
 namespace Core
 {
@@ -113,27 +114,31 @@ QToolBar *Coma::createToolBar()
     toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::connectDialog);
     toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::disconnectAndClear);
     toolbar->addSeparator();
-    toolbar->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки", [this]() {
-        auto dialog = new SettingsDialog(this);
-        dialog->setMinimumSize(this->size() / 4);
-        connect(dialog, &SettingsDialog::alarmOperationUpdate, AlarmW, &AlarmWidget::updateAlarmOperation);
-        connect(dialog, &SettingsDialog::alarmIntervalUpdate, AlarmW, &AlarmWidget::updateAlarmInterval);
-        dialog->exec();
-        saveSettings();
-    });
+    toolbar->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки",
+        [this]()
+        {
+            auto dialog = new SettingsDialog(this);
+            dialog->setMinimumSize(this->size() / 4);
+            connect(dialog, &SettingsDialog::alarmOperationUpdate, AlarmW, &AlarmWidget::updateAlarmOperation);
+            connect(dialog, &SettingsDialog::alarmIntervalUpdate, AlarmW, &AlarmWidget::updateAlarmInterval);
+            dialog->exec();
+            saveSettings();
+        });
 
     const QIcon jourIcon(":/icons/tnfrosya.svg");
     auto jourAct = new QAction(jourIcon, tr("&Журнал..."), this);
     jourAct->setShortcuts(QKeySequence::Open);
     jourAct->setStatusTip(tr("Открыть протокол работы"));
 
-    connect(jourAct, &QAction::triggered, this, [this]() {
-        ErrorDialog *dlg = new ErrorDialog(this);
-        dlg->setMinimumWidth(this->width() / 2);
-        dlg->setMinimumHeight(this->height() / 2);
-        dlg->setAttribute(Qt::WA_DeleteOnClose);
-        dlg->show();
-    });
+    connect(jourAct, &QAction::triggered, this,
+        [this]()
+        {
+            ErrorDialog *dlg = new ErrorDialog(this);
+            dlg->setMinimumWidth(this->width() / 2);
+            dlg->setMinimumHeight(this->height() / 2);
+            dlg->setAttribute(Qt::WA_DeleteOnClose);
+            dlg->show();
+        });
     connect(jourAct, &QAction::triggered, [jourAct, jourIcon] { jourAct->setIcon(jourIcon); });
     const auto &queue = ErrorQueue::GetInstance();
     connect(&queue, &ErrorQueue::errCounts, this, std::bind(&convertPixmap, std::placeholders::_1, jourAct),
@@ -174,8 +179,8 @@ QWidget *Coma::least()
     auto line = new QFrame;
     lyout->addWidget(line);
     inlyout = new QHBoxLayout;
-    inlyout->addWidget(WDFunc::NewLBL2(this, "Обмен"));
-    inlyout->addWidget(WDFunc::NewLBL2(this, "", "prb1lbl"));
+    inlyout->addWidget(LBLFunc::NewLBL(this, "Обмен"));
+    inlyout->addWidget(LBLFunc::NewLBL(this, "", "prb1lbl"));
     QProgressBar *prb = new QProgressBar;
     prb->setObjectName("prb1prb");
     prb->setOrientation(Qt::Horizontal);
@@ -217,11 +222,12 @@ void Coma::loadOsc(const QString &filename)
     TrendViewModel *oscModel = nullptr;
     for (auto &item : fileVector)
     {
-        std::visit(overloaded {
-                       [&](S2::OscHeader &header) { oscManager.setHeader(header); },           //
-                       [](auto &&arg) { Q_UNUSED(arg) },                                       //
-                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
-                   },
+        std::visit(
+            overloaded {
+                [&](S2::OscHeader &header) { oscManager.setHeader(header); },           //
+                [](auto &&arg) { Q_UNUSED(arg) },                                       //
+                [&](std::unique_ptr<TrendViewModel> &model) { oscModel = model.get(); } //
+            },
             item);
     }
     if (oscModel)
@@ -238,11 +244,12 @@ void Coma::loadSwj(const QString &filename)
     std::unique_ptr<TrendViewModel> *oscModel = nullptr;
     for (auto &item : fileVector)
     {
-        std::visit(overloaded {
-                       [&](S2::OscHeader &header) { oscManager.setHeader(header); },      //
-                       [&](SwjModel &model) { swjModel = &model; },                       //
-                       [&](std::unique_ptr<TrendViewModel> &model) { oscModel = &model; } //
-                   },
+        std::visit(
+            overloaded {
+                [&](S2::OscHeader &header) { oscManager.setHeader(header); },      //
+                [&](SwjModel &model) { swjModel = &model; },                       //
+                [&](std::unique_ptr<TrendViewModel> &model) { oscModel = &model; } //
+            },
             item);
     }
     if (!swjModel || !oscModel)
@@ -327,7 +334,8 @@ void Coma::go()
         dir.mkpath(".");
     qInfo("=== Log started ===\n");
     loadSettings();
-    setStatusBar(WDFunc::NewSB(this));
+    m_bar = new EStatusBar(this);
+    setStatusBar(m_bar);
     setupUI();
     splash->finish(this);
     splash->deleteLater();
@@ -415,19 +423,21 @@ void Coma::initDevice(Interface::AsyncConnection *connection)
     m_currentDevice = DeviceFabric::create(connection);
     if (m_currentDevice)
     {
-        connect(m_currentDevice, &CurrentDevice::initBSIFinished, this, [this](const Error::Msg err) {
-            if (err == Error::Msg::NoError)
-                initInterfaceConnection();
-            else if (err == Error::Msg::Timeout)
+        connect(m_currentDevice, &CurrentDevice::initBSIFinished, this,
+            [this](const Error::Msg err)
             {
-                EMessageBox::error(this, "Превышено время ожидания блока BSI. Disconnect...");
-                disconnectAndClear();
-            }
-            else
-            {
-                /// TODO: Handle other error types?
-            }
-        });
+                if (err == Error::Msg::NoError)
+                    initInterfaceConnection();
+                else if (err == Error::Msg::Timeout)
+                {
+                    EMessageBox::error(this, "Превышено время ожидания блока BSI. Disconnect...");
+                    disconnectAndClear();
+                }
+                else
+                {
+                    /// TODO: Handle other error types?
+                }
+            });
         m_currentDevice->initBSI();
     }
 }
@@ -449,46 +459,28 @@ void Coma::connectStatusBar()
     };
     auto currentConnection = m_currentDevice->async();
 
-    auto msgModel = statusBar()->findChild<QLabel *>("Model");
-    auto msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
-    auto msgConnectionState = statusBar()->findChild<QLabel *>("ConnectionState");
-    auto msgConnectionType = statusBar()->findChild<QLabel *>("ConnectionType");
-    auto msgConnectionImage = statusBar()->findChild<QLabel *>("ConnectionImage");
-    auto msgQueueSize = statusBar()->findChild<QLabel *>("QueueSize");
+    int height = m_bar->height() - m_bar->layout()->contentsMargins().bottom();
+    m_bar->setModelString(m_currentDevice->getDeviceName());
+    connect(m_currentDevice, &Device::CurrentDevice::typeChanged, m_bar, &EStatusBar::setModelString);
+    m_bar->setSerialNumber(m_currentDevice->getSerialNumber());
+    connect(m_currentDevice, &Device::CurrentDevice::serialChanged, m_bar, &EStatusBar::setSerialNumber);
 
-    if (msgModel && msgSerialNumber && msgConnectionState && msgConnectionType && msgConnectionImage)
+    m_bar->setConnectionState(Interface::stateToString(m_currentDevice->async()->getConnectionState()));
+    connect(
+        currentConnection, &Interface::AsyncConnection::stateChanged, this, [=](const Interface::State state)
+        { m_bar->setConnectionState(Interface::stateToString(state)); }, Qt::QueuedConnection);
+
+    const auto interfaceType = currentConnection->getInterfaceType();
+    QString connName = QVariant::fromValue(interfaceType).toString();
+    m_bar->setConnectionType(connName);
+    QPixmap pixmap = QIcon(QString(images.value(interfaceType))).pixmap(QSize(height, height));
+    m_bar->setConnectionPixmap(pixmap);
+
+    // Показываем размер очереди только в Наладке
+    if (AppConfiguration::app() == AppConfiguration::Debug)
     {
-        int height = this->statusBar()->height() - this->statusBar()->layout()->contentsMargins().bottom();
-        msgModel->setText(m_currentDevice->getDeviceName());
-        connect(m_currentDevice, &Device::CurrentDevice::typeChanged, this,
-            [=](auto) { msgModel->setText(m_currentDevice->getDeviceName()); });
-
-        msgSerialNumber->setText(QString::number(m_currentDevice->getSerialNumber(), 16));
-        connect(m_currentDevice, &Device::CurrentDevice::serialChanged, this,
-            [=](u32 serialNumber) { msgSerialNumber->setText(QString::number(serialNumber, 16)); });
-
-        msgConnectionState->setText(Interface::stateToString(m_currentDevice->async()->getConnectionState()));
-        connect(
-            currentConnection, &Interface::AsyncConnection::stateChanged, this,
-            [=](const Interface::State state) {
-                msgConnectionState->setText(Interface::stateToString(state));
-                msgConnectionState->setForegroundRole(QPalette::Highlight);
-                msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
-            },
-            Qt::QueuedConnection);
-
-        const auto interfaceType = currentConnection->getInterfaceType();
-        QString connName = QVariant::fromValue(interfaceType).toString();
-        msgConnectionType->setText(connName);
-        QPixmap pixmap = QIcon(QString(images.value(interfaceType))).pixmap(QSize(height, height));
-        msgConnectionImage->setPixmap(pixmap);
-
-        // Показываем размер очереди только в Наладке
-        if (AppConfiguration::app() == AppConfiguration::Debug && msgQueueSize)
-        {
-            connect(currentConnection, &Interface::AsyncConnection::queueSizeChanged, this, //
-                [=](const quint64 size) { msgQueueSize->setText(QString("Queue size: %1").arg(size)); });
-        }
+        connect(currentConnection, &Interface::AsyncConnection::queueSizeChanged, this, //
+            [=](const quint64 size) { m_bar->setQueueSize(QString("Queue size: %1").arg(size)); });
     }
 }
 
@@ -550,14 +542,16 @@ void Coma::showReconnectDialog()
     if (m_reconnectDialog == nullptr)
     {
         m_reconnectDialog = new ReconnectDialog(this);
-        connect(m_connectionManager, &ConnectionManager::reconnectSuccess, //
+        connect(m_connectionManager, &ConnectionManager::reconnectSuccess,       //
             m_reconnectDialog, &ReconnectDialog::reconnectSuccess);
         connect(m_connectionManager, &ConnectionManager::reconnectSuccess, this, //
             [this] { m_reconnectDialog = nullptr; });
-        connect(m_reconnectDialog, &ReconnectDialog::breakConnection, this, [this] {
-            disconnectAndClear();
-            m_reconnectDialog = nullptr;
-        });
+        connect(m_reconnectDialog, &ReconnectDialog::breakConnection, this,
+            [this]
+            {
+                disconnectAndClear();
+                m_reconnectDialog = nullptr;
+            });
         m_reconnectDialog->open();
     }
 }
@@ -608,5 +602,4 @@ void ComaHelper::parserHelper(Coma *coma)
         }
     }
 }
-
 }

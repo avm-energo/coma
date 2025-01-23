@@ -3,7 +3,7 @@
 #include <QGroupBox>
 #include <QScrollArea>
 #include <tune/mip.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 Tune82IoWidget::Tune82IoWidget(Device::CurrentDevice *device, QWidget *parent)
     : QWidget(parent)

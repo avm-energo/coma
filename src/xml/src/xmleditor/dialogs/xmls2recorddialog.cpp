@@ -1,7 +1,7 @@
 #include <gen/stdfunc.h>
 #include <gen/xml/xmlparse.h>
 #include <limits>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 #include <xml/xmleditor/dialogs/xmls2recorddialog.h>
 #include <xml/xmleditor/models/xmldatamodel.h>
 #include <xml/xmltags.h>

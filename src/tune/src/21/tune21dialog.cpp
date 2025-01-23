@@ -5,7 +5,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <tune/21/tune21one.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 Tune21Dialog::Tune21Dialog(
     Device::BoardTypes bt, bool isMezExist, u8 &firstStepNumber, Device::CurrentDevice *device, QWidget *parent)

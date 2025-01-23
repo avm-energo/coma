@@ -6,7 +6,7 @@
 #include <QSerialPortInfo>
 #include <QVBoxLayout>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 SearchModbusDevicesDialog::SearchModbusDevicesDialog(QWidget *parent) : QDialog(parent)
 {
@@ -43,7 +43,7 @@ QGroupBox *SearchModbusDevicesDialog::createTimeoutGroupBox()
     auto timeoutGroupBoxLayout = new QHBoxLayout;
     auto timeoutSelect = WDFunc::NewSPB2(timeoutGroupBox, "timeoutSelect", 500, 5000, 0);
     widgets.timeout = timeoutSelect;
-    auto msLabel = WDFunc::NewLBL2(timeoutGroupBox, "мс.");
+    auto msLabel = LBLFunc::NewLBL(timeoutGroupBox, "мс.");
     timeoutGroupBoxLayout->addWidget(timeoutSelect, Qt::AlignRight);
     timeoutGroupBoxLayout->addWidget(msLabel, Qt::AlignLeft);
     timeoutGroupBox->setLayout(timeoutGroupBoxLayout);
@@ -55,13 +55,13 @@ QGroupBox *SearchModbusDevicesDialog::createAddressGroupBox()
     auto addrGroupBox = new QGroupBox("Адреса", this);
     auto addrGroupBoxLayout = new QVBoxLayout;
     auto firstItemLayout = new QHBoxLayout;
-    auto startAddrLabel = WDFunc::NewLBL2(addrGroupBox, "Начало:");
+    auto startAddrLabel = LBLFunc::NewLBL(addrGroupBox, "Начало:");
     auto startAddrSelect = WDFunc::NewSPB2(addrGroupBox, "startAddrSelect", 1, 254, 0);
     widgets.startAddr = startAddrSelect;
     firstItemLayout->addWidget(startAddrLabel);
     firstItemLayout->addWidget(startAddrSelect);
     auto secondItemLayout = new QHBoxLayout;
-    auto endAddrLabel = WDFunc::NewLBL2(addrGroupBox, "Конец:");
+    auto endAddrLabel = LBLFunc::NewLBL(addrGroupBox, "Конец:");
     auto endAddrSelect = WDFunc::NewSPB2(addrGroupBox, "endAddrSelect", 1, 254, 0);
     endAddrSelect->setValue(254);
     widgets.endAddr = endAddrSelect;
@@ -101,13 +101,13 @@ QGroupBox *SearchModbusDevicesDialog::createBaudGroupBox()
     baudGridLayout->addWidget(baudCheckBox7, 2, 0, 1, 1);
     widgets.baud[index] = baudCheckBox7;
     auto buttonsLayout = new QHBoxLayout;
-    auto selectAllButton = WDFunc::NewPB(baudGroupBox, "selectAllBaudButton", //
+    auto selectAllButton = PBFunc::NewPB(baudGroupBox, "selectAllBaudButton", //
         "Выбрать все", this, [this] {
             for (auto &checkBox : widgets.baud)
                 checkBox->setCheckState(Qt::CheckState::Checked);
         });
     buttonsLayout->addWidget(selectAllButton);
-    auto clearAllButton = WDFunc::NewPB(baudGroupBox, "clearAllBaudButton", //
+    auto clearAllButton = PBFunc::NewPB(baudGroupBox, "clearAllBaudButton", //
         "Очистить все", this, [this] {
             for (auto &checkBox : widgets.baud)
                 checkBox->setCheckState(Qt::CheckState::Unchecked);
@@ -157,9 +157,9 @@ QGroupBox *SearchModbusDevicesDialog::createStopbitsGroupBox()
 QHBoxLayout *SearchModbusDevicesDialog::createControlLayout()
 {
     auto controlLayout = new QHBoxLayout;
-    auto runSearchButton = WDFunc::NewPB(this, "runSearchButton", //
+    auto runSearchButton = PBFunc::NewPB(this, "runSearchButton", //
         "Поиск", this, [this] { runSearch(); });
-    auto cancelButton = WDFunc::NewPB(this, "cancelButton", //
+    auto cancelButton = PBFunc::NewPB(this, "cancelButton", //
         "Отмена", this, [this] { close(); });
     controlLayout->addWidget(runSearchButton);
     controlLayout->addWidget(cancelButton);

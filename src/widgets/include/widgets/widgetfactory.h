@@ -7,7 +7,7 @@
 #include <s2/delegate_common.h>
 #include <widgets/gasdensitywidget.h>
 #include <widgets/ipctrl.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 class WidgetFactory
 {

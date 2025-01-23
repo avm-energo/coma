@@ -2,7 +2,7 @@
 
 #include <gen/timefunc.h>
 #include <widgets/etableview.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 #include <QApplication>
 #include <QFile>

@@ -13,7 +13,7 @@
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent)
     : UDialog(device, parent)

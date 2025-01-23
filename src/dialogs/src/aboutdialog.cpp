@@ -1,6 +1,6 @@
 #include "dialogs/aboutdialog.h"
 
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent, Qt::Window | Qt::Dialog)
 {
@@ -12,10 +12,10 @@ void AboutDialog::setupUI()
     setWindowTitle("О программе");
     auto hlyout = new QHBoxLayout;
     auto lyout = new QVBoxLayout;
-    hlyout->addWidget(WDFunc::NewIcon(this, ":icons/avm-energo.svg"), 0);
+    hlyout->addWidget(GraphFunc::NewIcon(this, ":icons/avm-energo.svg"), 0);
     for (const auto &str : std::as_const(m_lines))
     {
-        auto label = WDFunc::NewLBL2(this, str);
+        auto label = LBLFunc::NewLBL(this, str);
         label->setTextInteractionFlags(Qt::TextSelectableByMouse);
         lyout->addWidget(label);
     }

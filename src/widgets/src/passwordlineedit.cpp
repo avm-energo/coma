@@ -2,7 +2,7 @@
 
 #include <QHBoxLayout>
 #include <QPushButton>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 PasswordLineEdit::PasswordLineEdit(QWidget *parent) : QWidget(parent)
 {

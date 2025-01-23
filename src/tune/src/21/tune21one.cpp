@@ -5,7 +5,7 @@
 #include <tune/tunetypes.h>
 #include <widgets/epopup.h>
 #include <widgets/waitwidget.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -126,8 +126,8 @@ Error::Msg Tune21One::showScheme()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
-    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tune21.png"));
-    lyout->addWidget(WDFunc::NewLBL2(this, "Соберите схему подключения по вышеприведённой картинке"));
+    lyout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tune21.png"));
+    lyout->addWidget(LBLFunc::NewLBL(this, "Соберите схему подключения по вышеприведённой картинке"));
     w->setLayout(lyout);
 
     if (!EMessageBox::next(this, w))

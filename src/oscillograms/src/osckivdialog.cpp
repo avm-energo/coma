@@ -7,7 +7,7 @@
 #include <limits>
 #include <oscillograms/osc_ids.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 constexpr std::string_view oscFilenumLblFmt { "Текущий номер осциллограммы: %1" };
 constexpr u32 oscStateAddr = 13100;
@@ -37,7 +37,7 @@ OscKivDialog::OscKivDialog(Device::CurrentDevice *device, QWidget *parent)
 void OscKivDialog::setupUI()
 {
     auto mainLayout = new QVBoxLayout;
-    m_oscFilenumLbl = WDFunc::NewLBL2(this, QString(oscFilenumLblFmt.data()).arg(' '), "oscFilenumLabel");
+    m_oscFilenumLbl = LBLFunc::NewLBL(this, QString(oscFilenumLblFmt.data()).arg(' '), "oscFilenumLabel");
     mainLayout->addWidget(m_oscFilenumLbl);
     auto pointsSpinbox = WDFunc::NewSPB2(this, "n_point", 1, 8, 0);
     mainLayout->addWidget(pointsSpinbox);
@@ -45,9 +45,9 @@ void OscKivDialog::setupUI()
     phaseCombobox->setCurrentIndex(0);
     mainLayout->addWidget(phaseCombobox);
     auto controlLayout = new QHBoxLayout;
-    m_commandBtn = WDFunc::NewPB(this, "commandBtn", "Запуск осциллограмм", this, &OscKivDialog::writeTypeOsc);
+    m_commandBtn = PBFunc::NewPB(this, "commandBtn", "Запуск осциллограмм", this, &OscKivDialog::writeTypeOsc);
     controlLayout->addWidget(m_commandBtn);
-    m_readBtn = WDFunc::NewPB(this, "readBtn", "Прочитать осциллограмму", this, &OscKivDialog::reqOscFile);
+    m_readBtn = PBFunc::NewPB(this, "readBtn", "Прочитать осциллограмму", this, &OscKivDialog::reqOscFile);
     controlLayout->addWidget(m_readBtn);
     mainLayout->addLayout(controlLayout);
     setLayout(mainLayout);

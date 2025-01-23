@@ -7,7 +7,7 @@
 #include <map>
 #include <s2/s2util.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 FWUploadDialog::FWUploadDialog(Device::CurrentDevice *device, QWidget *parent)
     : UDialog(device, parent), uploadStatus(FirmwareUploadStatus::Start), parser(new S2::HexParser(this))
@@ -20,7 +20,7 @@ FWUploadDialog::FWUploadDialog(Device::CurrentDevice *device, QWidget *parent)
 void FWUploadDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    QPushButton *pb = WDFunc::NewPB(this, "", "Записать ПО в память модуля", this, &FWUploadDialog::loadFirmware);
+    QPushButton *pb = PBFunc::NewPB(this, "", "Записать ПО в память модуля", this, &FWUploadDialog::loadFirmware);
     lyout->addWidget(pb);
     setLayout(lyout);
 }
