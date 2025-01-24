@@ -5,7 +5,8 @@
 #include <gen/stdfunc.h>
 #include <tune/mip.h>
 #include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 
 #include <QDialog>
 #include <QEventLoop>

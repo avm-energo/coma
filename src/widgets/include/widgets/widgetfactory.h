@@ -1,14 +1,20 @@
 #pragma once
 
-#include <QStandardItemModel>
-#include <bitset>
 #include <device/current_device.h>
 #include <gen/std_ext.h>
 #include <s2/delegate_common.h>
+#include <widgets/cbfunc.h>
+#include <widgets/chbfunc.h>
 #include <widgets/gasdensitywidget.h>
 #include <widgets/ipctrl.h>
-#include <widgets/wdfunc.h>
+#include <widgets/spbfunc.h>
 
+#include <QLineEdit>
+#include <QStandardItemModel>
+#include <QTableView>
+#include <bitset>
+
+class QLineEdit;
 class WidgetFactory
 {
 private:
@@ -133,153 +139,161 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
     }
 
     const auto var = search->second;
-    std::visit(overloaded {
-                   [&](const auto &arg) {
-                       using namespace delegate;
-                       if constexpr (std::is_same<T, IPCtrl::ip_container>::value)
-                       {
-                           if (arg.type == ctti::unnamed_type_id<IPCtrl>())
-                           {
-                               status = fillIpCtrl(parent, key, value);
-                               return;
-                           }
-                       }
-                       if constexpr (!std_ext::is_container<T>() && std::is_arithmetic_v<T>)
-                       {
-                           if (arg.type == ctti::unnamed_type_id<QCheckBox>())
-                           {
-                               status = fillCheckBox(parent, key, value);
-                               return;
-                           }
-                       }
-                       if constexpr (std::is_same_v<T, S2::GasDensity_3t>)
-                       {
-                           if (arg.type == ctti::unnamed_type_id<GasDensityWidget>())
-                           {
-                               status = fillGasWidget(parent, key, value);
-                               return;
-                           }
-                       }
-                       if constexpr (std::is_arithmetic_v<T>)
-                       {
-                           if (arg.type == ctti::unnamed_type_id<QLineEdit>())
-                           {
-                               status = fillLineEdit(parent, key, value);
-                               return;
-                           }
-                       }
-                   },
+    std::visit(
+        overloaded {
+            [&](const auto &arg)
+            {
+                using namespace delegate;
+                if constexpr (std::is_same<T, IPCtrl::ip_container>::value)
+                {
+                    if (arg.type == ctti::unnamed_type_id<IPCtrl>())
+                    {
+                        status = fillIpCtrl(parent, key, value);
+                        return;
+                    }
+                }
+                if constexpr (!std_ext::is_container<T>() && std::is_arithmetic_v<T>)
+                {
+                    if (arg.type == ctti::unnamed_type_id<QCheckBox>())
+                    {
+                        status = fillCheckBox(parent, key, value);
+                        return;
+                    }
+                }
+                if constexpr (std::is_same_v<T, S2::GasDensity_3t>)
+                {
+                    if (arg.type == ctti::unnamed_type_id<GasDensityWidget>())
+                    {
+                        status = fillGasWidget(parent, key, value);
+                        return;
+                    }
+                }
+                if constexpr (std::is_arithmetic_v<T>)
+                {
+                    if (arg.type == ctti::unnamed_type_id<QLineEdit>())
+                    {
+                        status = fillLineEdit(parent, key, value);
+                        return;
+                    }
+                }
+            },
 
-                   [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) {
-                       if constexpr (std_ext::is_container<T>())
-                       {
-                           using container_type = typename T::value_type;
-                           if constexpr (std::is_integral_v<container_type> || //
-                               std::is_floating_point_v<container_type>)
-                           {
-                               status = WDFunc::SetSPBGData(parent, QString::number(key), value);
-                           }
-                       }
-                   },
+            [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg)
+            {
+                if constexpr (std_ext::is_container<T>())
+                {
+                    using container_type = typename T::value_type;
+                    if constexpr (std::is_integral_v<container_type> || //
+                        std::is_floating_point_v<container_type>)
+                    {
+                        status = SPBFunc::SetSPBGData(parent, QString::number(key), value);
+                    }
+                }
+            },
 
-                   [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg) {
-                       if constexpr (std::is_integral_v<T> || std::is_floating_point_v<T>)
-                       {
-                           status = WDFunc::SetSPBData(parent, QString::number(key), value);
-                       }
-                   },
-                   [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg) {
-                       if constexpr (std::is_unsigned_v<T>)
-                       {
-                           status = WDFunc::SetChBGData(parent, QString::number(key), value);
-                       }
-                       else if constexpr (std_ext::is_container<T>())
-                       {
-                           typedef std::remove_reference_t<typename T::value_type> internalType;
-                           if constexpr (std::is_unsigned_v<internalType>)
-                           {
-                               status = WDFunc::SetChBGData(parent, QString::number(key), value);
-                           }
-                       }
-                   },
-                   [&](const delegate::ComboBox &arg) {
-                       if constexpr (!std_ext::is_container<T>())
-                       {
-                           switch (arg.primaryField)
-                           {
-                           case delegate::ComboBox::data:
-                           {
-                               QString strValue;
-                               if constexpr (std::is_floating_point_v<T>)
-                               {
-                                   strValue = QString::number(value, 'f', 2);
-                                   strValue.replace('.', ',');
-                               }
-                               else if constexpr (std::is_integral_v<T>)
-                               {
-                                   strValue = QString::number(value);
-                               }
-                               auto index = arg.model.indexOf(strValue);
-                               if (index != -1)
-                                   status = WDFunc::SetCBIndex(parent, QString::number(key), index);
-                               break;
-                           }
-                           default:
-                           {
-                               if constexpr (std::is_integral_v<T>)
-                                   status = WDFunc::SetCBIndex(parent, QString::number(key), value);
-                               break;
-                           }
-                           }
-                       }
-                   },
-                   [&](const delegate::ComboBoxGroup &arg) {
-                       if constexpr (!std_ext::is_container<T>() && std::is_arithmetic_v<T>)
-                       {
-                           std::bitset<sizeof(T) * CHAR_BIT> bitset = value;
-                           auto count = getRealCount(key);
-                           bool flag = false;
-                           for (auto i = 0; i != count; ++i)
-                           {
-                               status = WDFunc::SetCBIndex(parent, widgetName(key, i), bitset.test(i));
-                               // Q_ASSERT(status && "Couldn't fill QComboBox");
-                               if (!status && !flag)
-                               {
-                                   flag = true;
-                               }
-                               if (flag)
-                               {
-                                   status = false;
-                               }
-                           }
-                       }
-                       else if constexpr (std_ext::is_container<T>())
-                       {
-                           typedef std::remove_reference_t<typename T::value_type> internalType;
-                           if constexpr (std::is_unsigned_v<internalType>)
-                           {
-                               auto count = std::min(std::size_t(arg.count), value.size());
-                               bool flag = false;
-                               for (auto i = 0; i != count; ++i)
-                               {
-                                   status = WDFunc::SetCBIndex(parent, widgetName(key, i), value.at(i));
-                                   Q_ASSERT(status && "Couldn't fill QComboBox");
-                                   if (!status && !flag)
-                                   {
-                                       flag = true;
-                                   }
-                                   if (flag)
-                                   {
-                                       status = false;
-                                   }
-                               }
-                           }
-                       }
-                   },
-                   [&](const config::Item &arg) {
-                       status = fillTableView(parent, key, arg.parent, arg.type, value); //
-                   },
-               },
+            [&]([[maybe_unused]] const delegate::DoubleSpinBoxWidget &arg)
+            {
+                if constexpr (std::is_integral_v<T> || std::is_floating_point_v<T>)
+                {
+                    status = SPBFunc::SetSPBData(parent, QString::number(key), value);
+                }
+            },
+            [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg)
+            {
+                if constexpr (std::is_unsigned_v<T>)
+                {
+                    status = ChBFunc::SetChBGData(parent, QString::number(key), value);
+                }
+                else if constexpr (std_ext::is_container<T>())
+                {
+                    typedef std::remove_reference_t<typename T::value_type> internalType;
+                    if constexpr (std::is_unsigned_v<internalType>)
+                    {
+                        status = ChBFunc::SetChBGData(parent, QString::number(key), value);
+                    }
+                }
+            },
+            [&](const delegate::ComboBox &arg)
+            {
+                if constexpr (!std_ext::is_container<T>())
+                {
+                    switch (arg.primaryField)
+                    {
+                    case delegate::ComboBox::data:
+                    {
+                        QString strValue;
+                        if constexpr (std::is_floating_point_v<T>)
+                        {
+                            strValue = QString::number(value, 'f', 2);
+                            strValue.replace('.', ',');
+                        }
+                        else if constexpr (std::is_integral_v<T>)
+                        {
+                            strValue = QString::number(value);
+                        }
+                        auto index = arg.model.indexOf(strValue);
+                        if (index != -1)
+                            status = CBFunc::SetCBIndex(parent, QString::number(key), index);
+                        break;
+                    }
+                    default:
+                    {
+                        if constexpr (std::is_integral_v<T>)
+                            status = CBFunc::SetCBIndex(parent, QString::number(key), value);
+                        break;
+                    }
+                    }
+                }
+            },
+            [&](const delegate::ComboBoxGroup &arg)
+            {
+                if constexpr (!std_ext::is_container<T>() && std::is_arithmetic_v<T>)
+                {
+                    std::bitset<sizeof(T) * CHAR_BIT> bitset = value;
+                    auto count = getRealCount(key);
+                    bool flag = false;
+                    for (auto i = 0; i != count; ++i)
+                    {
+                        status = CBFunc::SetCBIndex(parent, widgetName(key, i), bitset.test(i));
+                        // Q_ASSERT(status && "Couldn't fill QComboBox");
+                        if (!status && !flag)
+                        {
+                            flag = true;
+                        }
+                        if (flag)
+                        {
+                            status = false;
+                        }
+                    }
+                }
+                else if constexpr (std_ext::is_container<T>())
+                {
+                    typedef std::remove_reference_t<typename T::value_type> internalType;
+                    if constexpr (std::is_unsigned_v<internalType>)
+                    {
+                        auto count = std::min(std::size_t(arg.count), value.size());
+                        bool flag = false;
+                        for (auto i = 0; i != count; ++i)
+                        {
+                            status = CBFunc::SetCBIndex(parent, widgetName(key, i), value.at(i));
+                            Q_ASSERT(status && "Couldn't fill QComboBox");
+                            if (!status && !flag)
+                            {
+                                flag = true;
+                            }
+                            if (flag)
+                            {
+                                status = false;
+                            }
+                        }
+                    }
+                }
+            },
+            [&](const config::Item &arg)
+            {
+                status = fillTableView(parent, key, arg.parent, arg.type, value); //
+            },
+        },
         var);
     return status;
 }

@@ -3,6 +3,8 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <widgets/epopup.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
 #include <widgets/wdfunc.h>
 

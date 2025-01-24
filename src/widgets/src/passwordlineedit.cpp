@@ -1,27 +1,28 @@
 #include "widgets/passwordlineedit.h"
 
+#include <widgets/lefunc.h>
+
 #include <QHBoxLayout>
 #include <QPushButton>
-#include <widgets/wdfunc.h>
 
-PasswordLineEdit::PasswordLineEdit(QWidget *parent) : QWidget(parent)
-{
-}
+PasswordLineEdit::PasswordLineEdit(QWidget *parent) : QWidget(parent) { }
 
 PasswordLineEdit::PasswordLineEdit(QLineEdit::EchoMode echostyle, QWidget *parent)
 {
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QLineEdit *le = WDFunc::NewLE2(parent, "pswle");
+    QLineEdit *le = LEFunc::NewLE(parent, "pswle");
     le->setEchoMode(echostyle);
     hlyout->addWidget(le, 10);
     QPushButton *pb = new QPushButton(parent);
     pb->setIcon(QIcon(":/icons/pswshow.png"));
-    QObject::connect(pb, &QAbstractButton::clicked, le, [=] {
-        if (le->echoMode() == QLineEdit::Normal)
-            le->setEchoMode(QLineEdit::Password);
-        else
-            le->setEchoMode(QLineEdit::Normal);
-    });
+    QObject::connect(pb, &QAbstractButton::clicked, le,
+        [=]
+        {
+            if (le->echoMode() == QLineEdit::Normal)
+                le->setEchoMode(QLineEdit::Password);
+            else
+                le->setEchoMode(QLineEdit::Normal);
+        });
     hlyout->addWidget(pb, 0);
     setLayout(hlyout);
 }

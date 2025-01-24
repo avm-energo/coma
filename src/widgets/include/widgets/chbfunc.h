@@ -10,7 +10,7 @@ class ChBFunc
 public:
     ChBFunc();
 
-    [[nodiscard]] static QCheckBox *NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext);
+    [[nodiscard]] static QCheckBox *NewChB(QWidget *parent, const QString &chbname, const QString &chbtext);
     static bool ChBData(const QWidget *parent, const QString &chbname, bool &data);
     static bool ChBData(const QWidget *parent, const QString &chbname);
 

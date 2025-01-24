@@ -2,15 +2,17 @@
 
 #include <QtSvg/QSvgRenderer>
 #include <device/current_device.h>
+#include <widgets/chbfunc.h>
 #include <widgets/epopup.h>
+#include <widgets/lefunc.h>
+#include <widgets/pbfunc.h>
+#include <widgets/wdfunc.h>
 
 #include <QBoxLayout>
 #include <QGroupBox>
 #include <QPaintEvent>
 #include <QPainter>
 #include <QTabWidget>
-// #include <widgets/wd_func.h>
-#include <widgets/lefunc.h>
 
 using namespace Device::XmlDataTypes;
 
@@ -156,7 +158,7 @@ QGroupBox *HiddenDialog::setupGroupBox(const HiddenTab &hiddenTab)
     auto gbLayout = new QVBoxLayout;
     if (hiddenTab.flag != 1)
     {
-        auto enableCheckBox = WDFunc::NewChB2(this, hiddenTab.prefix + "enable", "Установлена");
+        auto enableCheckBox = ChBFunc::NewChB(this, hiddenTab.prefix + "enable", "Установлена");
         enableCheckBox->setChecked(true);
         connect(enableCheckBox, &QCheckBox::stateChanged, this, [this](int) { updateUI(); });
         gbLayout->addWidget(enableCheckBox);
@@ -215,7 +217,7 @@ bool HiddenDialog::isTabEnabled(const HiddenTab &tabSettings) const noexcept
 {
     bool enabled = false;
     if (tabSettings.flag != 1)
-        WDFunc::ChBData(this, tabSettings.prefix + "enable", enabled);
+        ChBFunc::ChBData(this, tabSettings.prefix + "enable", enabled);
     else
         enabled = true;
     return enabled;

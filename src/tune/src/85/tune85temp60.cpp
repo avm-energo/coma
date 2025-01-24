@@ -4,8 +4,9 @@
 #include <gen/stdfunc.h>
 #include <tune/tunesequencefile.h>
 #include <widgets/epopup.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
-#include <widgets/wdfunc.h>
 
 #include <QEventLoop>
 #include <QMessageBox>
@@ -211,9 +212,9 @@ Error::Msg Tune85Temp60::inputEnergomonitorValues()
     //    QVBoxLayout *vlyout = new QVBoxLayout;
     //    vlyout->addWidget(LBLFunc::NewLBL(this, "Ввод значений сигналов c Энергомонитора"));
 
-    //    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
-    //    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
-    //    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
+    //    vlyout->addWidget(LEFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
+    //    vlyout->addWidget(LEFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
+    //    vlyout->addWidget(LEFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
     //    QPushButton *pb = new QPushButton("Продолжить");
     //    if (m_tuneType == TUNING60)
     //        connect(pb, &QPushButton::clicked, [&dlg, this]() {
@@ -233,9 +234,9 @@ Error::Msg Tune85Temp60::inputEnergomonitorValues()
 
 Error::Msg Tune85Temp60::calcTuneCoefs()
 {
-    //    m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
-    //    m_midTuneStruct.iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
-    //    m_midTuneStruct.yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"));
+    //    m_midTuneStruct.uet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneU"));
+    //    m_midTuneStruct.iet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneI"));
+    //    m_midTuneStruct.yet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneY"));
     MidTuneStruct tunenegative = m_midTuneStruct;
 
     loadWorkConfig();
@@ -282,9 +283,9 @@ void Tune85Temp60::loadIntermediateResults()
 
 void Tune85Temp60::saveIntermediateResults()
 {
-    //    m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
-    //    m_midTuneStruct.iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
-    //    m_midTuneStruct.yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"));
+    //    m_midTuneStruct.uet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneU"));
+    //    m_midTuneStruct.iet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneI"));
+    //    m_midTuneStruct.yet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneY"));
     //    QString cpuserialnum = Board::GetInstance().UID();
     //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     //    foreach (TuneDescrStruct item, m_tuneDescrVector())

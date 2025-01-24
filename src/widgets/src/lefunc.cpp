@@ -6,7 +6,7 @@
 
 LEFunc::LEFunc() { }
 
-QLineEdit *LEFunc::NewLE2(QWidget *parent, const QString &lename, const QString &letext, const QString &tooltip)
+QLineEdit *LEFunc::NewLE(QWidget *parent, const QString &lename, const QString &letext, const QString &tooltip)
 {
     auto le = new QLineEdit(parent);
     le->setObjectName(lename);
@@ -15,7 +15,7 @@ QLineEdit *LEFunc::NewLE2(QWidget *parent, const QString &lename, const QString 
     return le;
 }
 
-PasswordLineEdit *LEFunc::NewPswLE2(QWidget *parent, const QString &lename, QLineEdit::EchoMode echostyle)
+PasswordLineEdit *LEFunc::NewPswLE(QWidget *parent, const QString &lename, QLineEdit::EchoMode echostyle)
 {
     auto le = new PasswordLineEdit(echostyle, parent);
     le->setObjectName(lename);

@@ -1,12 +1,17 @@
 #include "startup/startupkivdialog.h"
 
-#include <QGridLayout>
-#include <QGroupBox>
 #include <gen/error.h>
 #include <gen/files.h>
-#include <tuple>
 #include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
+#include <widgets/filefunc.h>
+#include <widgets/lblfunc.h>
+#include <widgets/spbfunc.h>
+
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QTabWidget>
+#include <tuple>
 
 StartupKIVDialog::StartupKIVDialog(Device::CurrentDevice *device, QWidget *parent)
     : AbstractStartupDialog(device, parent)
@@ -71,7 +76,7 @@ QWidget *StartupKIVDialog::uiValuesTab(QWidget *parent)
     glyout->addWidget(LBLFunc::NewLBL(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        auto spinBox = WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + i), 0, 10000, 1);
+        auto spinBox = SPBFunc::NewSPB(this, QString::number(KIVSTARTUPINITREGR + i), 0, 10000, 1);
         glyout->addWidget(spinBox, row, 2 + i, 1, 1);
     }
     row++;
@@ -79,7 +84,7 @@ QWidget *StartupKIVDialog::uiValuesTab(QWidget *parent)
     glyout->addWidget(LBLFunc::NewLBL(this, "Начальные значения tg δ вводов, %:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        auto spinBox = WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 3 + i), -10, 10, 2);
+        auto spinBox = SPBFunc::NewSPB(this, QString::number(KIVSTARTUPINITREGR + 3 + i), -10, 10, 2);
         glyout->addWidget(spinBox, row, 2 + i, 1, 1);
     }
     row++;
@@ -87,16 +92,16 @@ QWidget *StartupKIVDialog::uiValuesTab(QWidget *parent)
     glyout->addWidget(LBLFunc::NewLBL(this, "Коррекция  tg δ вводов,%:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        auto spinBox = WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 6 + i), -10, 10, 2);
+        auto spinBox = SPBFunc::NewSPB(this, QString::number(KIVSTARTUPINITREGR + 6 + i), -10, 10, 2);
         glyout->addWidget(spinBox, row, 2 + i, 1, 1);
     }
     row++;
 
     glyout->addWidget(LBLFunc::NewLBL(this, "Начальное значение небаланса токов, %:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 9), 0, 10000, 1), row, 2, 1, 3);
+    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(KIVSTARTUPINITREGR + 9), 0, 10000, 1), row, 2, 1, 3);
     row++;
     glyout->addWidget(LBLFunc::NewLBL(this, "Начальное значение угла тока небаланса, град.:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(KIVSTARTUPINITREGR + 10), 0, 10000, 1), row, 2, 1, 3);
+    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(KIVSTARTUPINITREGR + 10), 0, 10000, 1), row, 2, 1, 3);
 
     layout->addLayout(glyout, Qt::AlignTop);
     layout->addWidget(buttonWidget());
@@ -122,10 +127,12 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
         auto setupCmd = std::get<0>(step);
         auto &phase = std::get<1>(step);
         auto setupValues = new QPushButton(QString("Задать начальные значения по фазе %1").arg(phase), widget);
-        connect(setupValues, &QPushButton::clicked, this, [this, setupCmd]() {
-            setSuccessMsg("Начальные значения записаны успешно");
-            sendCommand(setupCmd);
-        });
+        connect(setupValues, &QPushButton::clicked, this,
+            [this, setupCmd]()
+            {
+                setSuccessMsg("Начальные значения записаны успешно");
+                sendCommand(setupCmd);
+            });
         layout->addWidget(setupValues);
     }
 
@@ -133,7 +140,8 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
     {
         auto setupValues = new QPushButton("Задать начальные значения небаланса токов", widget);
         connect(setupValues, &QPushButton::clicked, this, //
-            [this]() {
+            [this]()
+            {
                 auto assocFields = findChildren<QDoubleSpinBox *>(QString::number(KIVSTARTUPINITREGR + 9));
                 assocFields.append(findChildren<QDoubleSpinBox *>(QString::number(KIVSTARTUPINITREGR + 10)));
                 setSuccessMsg("Начальные значения записаны успешно");
@@ -143,34 +151,42 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
         layout->addWidget(setupValues);
 
         auto clearValues = new QPushButton("Сбросить начальные значения небаланса токов", widget);
-        connect(clearValues, &QPushButton::clicked, this, [this]() {
-            setSuccessMsg("Начальные значения сброшены успешно");
-            sendCommand(Commands::C_ClearStartupUnbounced);
-        });
+        connect(clearValues, &QPushButton::clicked, this,
+            [this]()
+            {
+                setSuccessMsg("Начальные значения сброшены успешно");
+                sendCommand(Commands::C_ClearStartupUnbounced);
+            });
         layout->addWidget(clearValues);
     }
 
     // Create UI commands trans off and reset starup init error
     {
         auto resetStartupErr = new QPushButton("Сброс ошибки задания начальных значений", widget);
-        connect(resetStartupErr, &QPushButton::clicked, this, [this]() {
-            setSuccessMsg("Ошибка сброшена успешно");
-            sendCommand(Commands::C_ClearStartupError);
-        });
+        connect(resetStartupErr, &QPushButton::clicked, this,
+            [this]()
+            {
+                setSuccessMsg("Ошибка сброшена успешно");
+                sendCommand(Commands::C_ClearStartupError);
+            });
         layout->addWidget(resetStartupErr);
 
         auto setTransOff = new QPushButton("Послать команду \"Трансформатор включён\"", widget);
-        connect(setTransOff, &QPushButton::clicked, this, [this]() {
-            setSuccessMsg("Начальные значения записаны успешно");
-            sendCommand(Commands::C_SetTransOff, false);
-        });
+        connect(setTransOff, &QPushButton::clicked, this,
+            [this]()
+            {
+                setSuccessMsg("Начальные значения записаны успешно");
+                sendCommand(Commands::C_SetTransOff, false);
+            });
         layout->addWidget(setTransOff);
 
         auto setTransOn = new QPushButton("Послать команду \"Трансформатор отключён\"", widget);
-        connect(setTransOn, &QPushButton::clicked, this, [this]() {
-            setSuccessMsg("Начальные значения записаны успешно");
-            sendCommand(Commands::C_SetTransOff);
-        });
+        connect(setTransOn, &QPushButton::clicked, this,
+            [this]()
+            {
+                setSuccessMsg("Начальные значения записаны успешно");
+                sendCommand(Commands::C_SetTransOff);
+            });
         layout->addWidget(setTransOn);
     }
 
@@ -191,7 +207,7 @@ void StartupKIVDialog::SetupUI()
 
 void StartupKIVDialog::SaveToFile()
 {
-    auto filepath = WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor");
+    auto filepath = FileFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor");
     if (filepath.isEmpty())
         return;
 
@@ -219,7 +235,7 @@ void StartupKIVDialog::SaveToFile()
 
 void StartupKIVDialog::ReadFromFile()
 {
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
+    auto filepath = FileFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
     if (filepath.isEmpty())
         return;
 

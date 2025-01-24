@@ -1,15 +1,18 @@
 #include "startup/abstractstartupdialog.h"
 
+#include <gen/stdfunc.h>
+#include <widgets/epopup.h>
+#include <widgets/spbfunc.h>
+
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QPushButton>
-#include <gen/stdfunc.h>
+#include <QVBoxLayout>
 #include <tuple>
-#include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
 
 AbstractStartupDialog::AbstractStartupDialog(Device::CurrentDevice *device, QWidget *parent)
-    : UDialog(device, parent), m_updateState(ThereWasNoUpdatesRecently)
+    : UDialog(device, parent)
+    , m_updateState(ThereWasNoUpdatesRecently)
 {
     m_updateState = ThereWasNoUpdatesRecently;
     m_corNeedsToCheck = NoChecks;
@@ -144,7 +147,7 @@ void AbstractStartupDialog::FillBd(const QString &name, const QString &value)
     double d = value.toDouble(&ok);
     if (ok)
     {
-        if (!WDFunc::SetSPBData(this, name, d))
+        if (!SPBFunc::SetSPBData(this, name, d))
             qDebug() << "Failed to find SpinBox";
     }
     else
@@ -153,7 +156,7 @@ void AbstractStartupDialog::FillBd(const QString &name, const QString &value)
 
 void AbstractStartupDialog::FillBd(const QString &name, const float value)
 {
-    if (!WDFunc::SetSPBData(this, name, value))
+    if (!SPBFunc::SetSPBData(this, name, value))
     {
         qDebug() << "Failed to find SpinBox with name: " << name << " to setup value: " << value;
     }
@@ -178,14 +181,14 @@ bool AbstractStartupDialog::addReg(quint16 regW, quint16 regR, float *ptr)
 void AbstractStartupDialog::FillCor()
 {
     for (auto it = m_regMapR.cbegin(); it != m_regMapR.cend(); ++it)
-        if (!WDFunc::SetSPBData(this, QString::number(it.key()), *it.value()))
+        if (!SPBFunc::SetSPBData(this, QString::number(it.key()), *it.value()))
             qDebug() << "Not found";
 }
 
 void AbstractStartupDialog::FillBackCor()
 {
     for (auto it = m_regMapR.begin(); it != m_regMapR.end(); ++it)
-        if (!WDFunc::SPBData(this, QString::number(it.key()), *it.value()))
+        if (!SPBFunc::SPBData(this, QString::number(it.key()), *it.value()))
             qDebug() << "Not found";
 }
 

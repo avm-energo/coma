@@ -1,16 +1,17 @@
 #include "journals/journalviewer.h"
 
-#include <QMessageBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <gen/files.h>
 #include <journals/measjournal.h>
 #include <journals/sysjournal.h>
 #include <journals/workjournal.h>
 #include <s2/s2util.h>
 #include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
+#include <widgets/filefunc.h>
 #include <xml/xmlparser/xmlmoduleparser.h>
+
+#include <QMessageBox>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 namespace journals
 {
@@ -113,7 +114,7 @@ void JournalViewer::saveExcelJournal()
     auto suggestedFilename = m_journal->getSuggestedFilename();
     if (!suggestedFilename.isEmpty())
     {
-        auto filename = WDFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
+        auto filename = FileFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
         if (!filename.isEmpty())
         {
             m_journal->saveToExcel(filename);

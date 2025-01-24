@@ -4,14 +4,14 @@
 
 CBFunc::CBFunc() { }
 
-QComboBox *CBFunc::NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl)
+QComboBox *CBFunc::NewCB(QWidget *parent, const QString &cbname, const QStringList &cbsl)
 {
-    auto cb = NewCB2(parent, cbsl);
+    auto cb = NewCB(parent, cbsl);
     cb->setObjectName(cbname);
     return cb;
 }
 
-QComboBox *CBFunc::NewCB2(QWidget *parent, const QStringList &cbsl)
+QComboBox *CBFunc::NewCB(QWidget *parent, const QStringList &cbsl)
 {
     auto cb = new QComboBox(parent);
     auto cblm = new QStringListModel(cbsl, cb);

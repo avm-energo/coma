@@ -3,7 +3,7 @@
 
 ChBFunc::ChBFunc() { }
 
-QCheckBox *ChBFunc::NewChB2(QWidget *parent, const QString &chbname, const QString &chbtext)
+QCheckBox *ChBFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext)
 {
     auto chb = new QCheckBox(parent);
     chb->setObjectName(chbname);

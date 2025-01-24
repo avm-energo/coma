@@ -1,15 +1,14 @@
 #include "oscillograms/swjpackconvertor.h"
 
-#include <QDir>
 #include <gen/timefunc.h>
 #include <oscillograms/swjmanager.h>
 #include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
+#include <widgets/filefunc.h>
+
+#include <QDir>
 #include <xlsxdocument.h>
 
-SwjPackConvertor::SwjPackConvertor(QWidget *parent) : QObject(parent), m_parent(parent)
-{
-}
+SwjPackConvertor::SwjPackConvertor(QWidget *parent) : QObject(parent), m_parent(parent) { }
 
 void SwjPackConvertor::readFile(const QString &swjfilepath)
 {
@@ -18,7 +17,8 @@ void SwjPackConvertor::readFile(const QString &swjfilepath)
     auto swjVector = swjManager.loadFromFile(swjfilepath);
     for (auto &item : swjVector)
     {
-        std::visit(overloaded //
+        std::visit(
+            overloaded                                                           //
             {
                 [this](SwjModel &model) { m_data.push_back(std::move(model)); }, //
                 [](S2::OscHeader &header) { Q_UNUSED(header); },                 //
@@ -30,15 +30,17 @@ void SwjPackConvertor::readFile(const QString &swjfilepath)
 
 void SwjPackConvertor::sortData()
 {
-    std::sort(m_data.begin(), m_data.end(), [](SwjModel &lhs, SwjModel &rhs) -> bool {
-        auto commonLhs = lhs.commonModel.get();
-        auto commonRhs = rhs.commonModel.get();
-        auto dateLhsStr = commonLhs->data(commonLhs->index(1, 1)).toString();
-        auto dateRhsStr = commonRhs->data(commonRhs->index(1, 1)).toString();
-        auto lhsDateTime = QDateTime::fromString(dateLhsStr, "yyyy/MM/dd hh:mm:ss.zzz");
-        auto rhsDateTime = QDateTime::fromString(dateRhsStr, "yyyy/MM/dd hh:mm:ss.zzz");
-        return lhsDateTime < rhsDateTime;
-    });
+    std::sort(m_data.begin(), m_data.end(),
+        [](SwjModel &lhs, SwjModel &rhs) -> bool
+        {
+            auto commonLhs = lhs.commonModel.get();
+            auto commonRhs = rhs.commonModel.get();
+            auto dateLhsStr = commonLhs->data(commonLhs->index(1, 1)).toString();
+            auto dateRhsStr = commonRhs->data(commonRhs->index(1, 1)).toString();
+            auto lhsDateTime = QDateTime::fromString(dateLhsStr, "yyyy/MM/dd hh:mm:ss.zzz");
+            auto rhsDateTime = QDateTime::fromString(dateRhsStr, "yyyy/MM/dd hh:mm:ss.zzz");
+            return lhsDateTime < rhsDateTime;
+        });
 }
 
 void SwjPackConvertor::writeHeader(QXlsx::Worksheet *sheet)
@@ -167,7 +169,7 @@ void SwjPackConvertor::writeToFile(const QString &filepath)
 
 void SwjPackConvertor::selectDirectory()
 {
-    auto dirPath = WDFunc::ChooseDirectoryForOpen(m_parent);
+    auto dirPath = FileFunc::ChooseDirectoryForOpen(m_parent);
     if (!dirPath.isEmpty())
     {
         QDir swjDirectory(dirPath);
@@ -178,7 +180,7 @@ void SwjPackConvertor::selectDirectory()
             for (const auto &file : std::as_const(entryFiles))
                 readFile(dirPath + "/" + file);
             sortData();
-            auto excelFilepath = WDFunc::ChooseFileForSave(m_parent, "Excel files (*.xlsx)", "xlsx", "test");
+            auto excelFilepath = FileFunc::ChooseFileForSave(m_parent, "Excel files (*.xlsx)", "xlsx", "test");
             if (!excelFilepath.isEmpty())
                 writeToFile(excelFilepath);
             else

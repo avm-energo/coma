@@ -1,7 +1,8 @@
 #include "widgets/signalchoosewidget.h"
 
+#include <widgets/chbfunc.h>
+
 #include <QVBoxLayout>
-#include <widgets/wdfunc.h>
 
 SignalChooseWidget::SignalChooseWidget(const QStringList &snames, const QStringList &discr, QWidget *parent)
     : QScrollArea(parent)
@@ -13,7 +14,7 @@ SignalChooseWidget::SignalChooseWidget(const QStringList &snames, const QStringL
         int idx = snames.size() - i - 1; // инверсия индекса
         QString name = snames.at(idx);
         QHBoxLayout *hlyout = new QHBoxLayout;
-        QCheckBox *chb = WDFunc::NewChB2(this, name, "");
+        QCheckBox *chb = ChBFunc::NewChB(this, name, "");
         connect(chb, &QAbstractButton::toggled, this, [=](bool isChecked) { emit signalToggled(name, isChecked); });
         hlyout->addWidget(chb);
         auto msWidget = new MarkSignalWidget(name, this);
@@ -29,7 +30,7 @@ SignalChooseWidget::SignalChooseWidget(const QStringList &snames, const QStringL
 
 void SignalChooseWidget::setChecked(QString signame, bool checked)
 {
-    WDFunc::SetChBData(this, signame, checked);
+    ChBFunc::SetChBData(this, signame, checked);
 }
 
 MarkSignalWidget::MarkSignalWidget(const QString &text, QWidget *parent) : QLabel(parent)

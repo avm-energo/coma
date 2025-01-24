@@ -4,6 +4,8 @@
 #include <gen/stdfunc.h>
 #include <tune/tunetypes.h>
 #include <widgets/epopup.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
 #include <widgets/wdfunc.h>
 
@@ -21,6 +23,7 @@ Tune21One::Tune21One(Device::BoardTypes boardType, u8 chNum, Device::CurrentDevi
     m_bda->setup(m_device->getUID(), m_sync);
 
     setBac(m_bac);
+    m_bac->createWidget();
     addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
     setupUI();
 }

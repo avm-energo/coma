@@ -1,6 +1,9 @@
 #include "dialogs/relaydialog.h"
 
-#include <widgets/wdfunc.h>
+#include <widgets/lblfunc.h>
+
+#include <QPushButton>
+#include <QVBoxLayout>
 
 RelayDialog::RelayDialog(int relayCount, Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
@@ -69,7 +72,7 @@ void RelayDialog::changeRelay(int number, bool state)
     QString text = "Разомкнуто";
     if (state)
         text = "Замкнуто";
-    WDFunc::SetLBLText(this, "lbl" + QString::number(number), text);
+    LBLFunc::SetLBLText(this, "lbl" + QString::number(number), text);
 }
 
 void RelayDialog::resetRelays(int count)

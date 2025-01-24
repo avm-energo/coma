@@ -48,7 +48,10 @@
 #include <s2/s2datafactory.h>
 #include <s2/s2util.h>
 #include <widgets/epopup.h>
+#include <widgets/filefunc.h>
 #include <widgets/gasdensitywidget.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 #include <widgets/splashscreen.h>
 #include <widgets/styleloader.h>
 #include <widgets/waitwidget.h>
@@ -94,7 +97,7 @@ void convertPixmap(size_t size, QAction *jourAct)
     const QIcon jourIcon(":/icons/tnfrosya.svg");
     QPixmap pix = jourIcon.pixmap(QSize(40, 40), QIcon::Disabled);
     QPainter painter(&pix);
-    painter.drawPixmap(QRect(20, 0, 20, 20), WDFunc::NewCircle(Qt::red, 20));
+    painter.drawPixmap(QRect(20, 0, 20, 20), GraphFunc::NewCircle(Qt::red, 20));
     QFont font(painter.font());
     font.setPixelSize(14);
     painter.setFont(font);
@@ -266,14 +269,14 @@ void Coma::loadSwj(const QString &filename)
 
 void Coma::loadOsc()
 {
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
+    auto filepath = FileFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
     if (!filepath.isEmpty())
         loadOsc(filepath);
 }
 
 void Coma::loadSwj()
 {
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
+    auto filepath = FileFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
     if (!filepath.isEmpty())
         loadSwj(filepath);
 }
@@ -298,7 +301,7 @@ void Coma::loadJournal(const QString &filename)
 
 void Coma::openJournalViewer()
 {
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Journal files (*.jn*)");
+    auto filepath = FileFunc::ChooseFileForOpen(this, "Journal files (*.jn*)");
     if (!filepath.isEmpty())
         loadJournal(filepath);
 }
@@ -367,7 +370,7 @@ void Coma::setProgressBarSize(int prbnum, int size)
         qDebug("Пустой prb");
         return;
     }
-    WDFunc::SetLBLText(this, lblname, QString::number(size), false);
+    LBLFunc::SetLBLText(this, lblname, QString::number(size), false);
     prb->setMinimum(0);
     prb->setMaximum(size);
 }
@@ -380,12 +383,12 @@ void Coma::setProgressBarCount(int prbnum, int count)
     if (prb != nullptr)
     {
         prb->setValue(count);
-        WDFunc::SetLBLText(this, lblname, QString::number(count) + " из " + QString::number(prb->maximum()));
+        LBLFunc::SetLBLText(this, lblname, QString::number(count) + " из " + QString::number(prb->maximum()));
         // Сброс прогресс-бара после окончания операции чтения/записи
         if (prb->value() >= prb->maximum())
         {
             prb->setValue(0);
-            WDFunc::SetLBLText(this, lblname, " ");
+            LBLFunc::SetLBLText(this, lblname, " ");
         }
     }
 }

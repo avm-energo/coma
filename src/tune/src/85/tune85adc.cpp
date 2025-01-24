@@ -3,6 +3,8 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <widgets/epopup.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
 #include <widgets/wdfunc.h>
 
@@ -354,7 +356,7 @@ void Tune85ADC::CalcTuneCoefs()
 
         if (m_tuneType == ADCI)
         {
-            //        iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"), &ok);
+            //        iet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneI"), &ok);
             //        if (ok)
             //        {
             assert(kmimap.contains(m_curTuneStep));
@@ -373,13 +375,13 @@ void Tune85ADC::CalcTuneCoefs()
         }
         else
         {
-            //        uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"), &ok);
+            //        uet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneU"), &ok);
             //        if (ok)
             //        {
-            //            yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"), &ok);
+            //            yet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneY"), &ok);
             //            if (ok)
             //            {
-            //                fet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneF"), &ok);
+            //                fet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneF"), &ok);
             //                if (ok)
             //                {
             for (int i = 0; i < 3; ++i)

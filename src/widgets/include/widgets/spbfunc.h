@@ -9,7 +9,7 @@ class SPBFunc
 public:
     SPBFunc();
 
-    [[nodiscard]] static QDoubleSpinBox *NewSPB2(
+    [[nodiscard]] static QDoubleSpinBox *NewSPB(
         QWidget *parent, const QString &spbname, const double min, const double max, const int decimals);
     [[nodiscard]] static DoubleSpinBoxGroup *NewSPBG(
         QWidget *parent, const QString &spbname, int count, const double min, const double max, const int decimals);

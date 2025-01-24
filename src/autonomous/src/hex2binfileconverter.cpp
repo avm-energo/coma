@@ -1,18 +1,17 @@
-#include <QDir>
 #include <autonomous/hex2binfileconverter.h>
 #include <gen/files.h>
 #include <s2/s2util.h>
 #include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
+#include <widgets/filefunc.h>
 
-Hex2BinFileConverter::Hex2BinFileConverter(QWidget *parent) : QObject(parent), m_parent(parent)
-{
-}
+#include <QDir>
+
+Hex2BinFileConverter::Hex2BinFileConverter(QWidget *parent) : QObject(parent), m_parent(parent) { }
 
 void Hex2BinFileConverter::start()
 {
     m_errorHappened = false;
-    auto filePath = WDFunc::ChooseFileForOpen(m_parent, "*.hex");
+    auto filePath = FileFunc::ChooseFileForOpen(m_parent, "*.hex");
     if (!filePath.isEmpty())
     {
         QByteArray ba = readFile(filePath);
@@ -58,7 +57,7 @@ bool Hex2BinFileConverter::toBinConvert(QByteArray &ba)
     if (m_errorHappened)
         return false;
     ba = parser->getBinaryFormat();
-    auto filePath = WDFunc::ChooseFileForSave(m_parent, "*.bin", "bin", "output");
+    auto filePath = FileFunc::ChooseFileForSave(m_parent, "*.bin", "bin", "output");
     if (!filePath.isEmpty())
     {
         writeToFile(filePath, ba);
@@ -84,7 +83,7 @@ bool Hex2BinFileConverter::toS2Convert(QByteArray &ba)
         EMessageBox::error(m_parent, "Получен файл с некорректным размером.");
         return false;
     }
-    auto filePath = WDFunc::ChooseFileForSave(m_parent, "*.s2", "s2", "output");
+    auto filePath = FileFunc::ChooseFileForSave(m_parent, "*.s2", "s2", "output");
     if (!filePath.isEmpty())
     {
         if (writeToFile(filePath, s2ba))

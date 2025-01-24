@@ -1,28 +1,32 @@
 #include "dialogs/timedialog.h"
 
+#include <gen/colors.h>
+#include <gen/error.h>
+#include <gen/timefunc.h>
+#include <widgets/lblfunc.h>
+#include <widgets/lefunc.h>
+
 #include <QDateTime>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QMessageBox>
+#include <QPushButton>
+#include <QTabWidget>
 #include <QTimeZone>
 #include <QTimer>
 #include <QVBoxLayout>
-#include <gen/colors.h>
-#include <gen/error.h>
-#include <gen/timefunc.h>
-#include <widgets/wdfunc.h>
 
 constexpr char directOrder[] = "dd-MM-yyyy HH:mm:ss";
 constexpr char reverseOrder[] = "yyyy-MM-ddTHH:mm:ss";
 
 TimeDialog::TimeDialog(Device::CurrentDevice *device, QWidget *parent)
-    : UDialog(device, parent), First(false), Timer(new QTimer(this))
+    : UDialog(device, parent)
+    , First(false)
+    , Timer(new QTimer(this))
 {
 }
 
-TimeDialog::~TimeDialog()
-{
-}
+TimeDialog::~TimeDialog() { }
 
 void TimeDialog::setupUI()
 {
@@ -36,17 +40,21 @@ void TimeDialog::setupUI()
     hlyout = new QHBoxLayout;
     hlyout->addWidget(new QLabel("Дата и время:", this));
     auto *label = new QLabel(this);
-    connect(Timer, &QTimer::timeout, [=] {
-        auto datetime = QDateTime::currentDateTimeUtc();
-        label->setText(datetime.toString(directOrder));
-    });
+    connect(Timer, &QTimer::timeout,
+        [=]
+        {
+            auto datetime = QDateTime::currentDateTimeUtc();
+            label->setText(datetime.toString(directOrder));
+        });
     hlyout->addWidget(label);
     label = LBLFunc::NewLBL(
         time, QDateTime::currentDateTimeUtc().toString(reverseOrder), settings::nameByValue(settings::DesktopDatetime));
-    connect(Timer, &QTimer::timeout, [=] {
-        auto datetime = QDateTime::currentDateTimeUtc().toTimeZone(TimeFunc::userTimeZone());
-        label->setText(datetime.toString(directOrder));
-    });
+    connect(Timer, &QTimer::timeout,
+        [=]
+        {
+            auto datetime = QDateTime::currentDateTimeUtc().toTimeZone(TimeFunc::userTimeZone());
+            label->setText(datetime.toString(directOrder));
+        });
     hlyout->addWidget(label);
     mainLayout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
@@ -71,29 +79,33 @@ void TimeDialog::setupUI()
     label = LBLFunc::NewLBL(time, "Дата и время для записи в модуль");
     hlyout->addWidget(label);
 
-    auto *lineedit = WDFunc::NewLE2(time, settings::nameByValue(settings::WriteDatetime), directOrder);
+    auto *lineedit = LEFunc::NewLE(time, settings::nameByValue(settings::WriteDatetime), directOrder);
     lineedit->setPlaceholderText("dd-MM-yyyy HH:mm:ss");
     lineedit->setClearButtonEnabled(true);
     lineedit->setToolTip("день-месяц-год часы:минуты:секунды");
     lineedit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    connect(lineedit, &QLineEdit::textChanged, this, [lineedit](const QString &str) {
-        if (str.isEmpty())
+    connect(lineedit, &QLineEdit::textChanged, this,
+        [lineedit](const QString &str)
         {
-            auto datetime = QDateTime::currentDateTimeUtc().toTimeZone(TimeFunc::userTimeZone());
-            lineedit->setText(datetime.toString(directOrder));
-        }
-    });
+            if (str.isEmpty())
+            {
+                auto datetime = QDateTime::currentDateTimeUtc().toTimeZone(TimeFunc::userTimeZone());
+                lineedit->setText(datetime.toString(directOrder));
+            }
+        });
 
     label = new QLabel(this);
-    connect(lineedit, &QLineEdit::textChanged, label, [label](const QString &str) {
-        if (!str.isEmpty())
+    connect(lineedit, &QLineEdit::textChanged, label,
+        [label](const QString &str)
         {
-            auto datetime = QDateTime::fromString(str, directOrder);
-            datetime.setTimeZone(TimeFunc::userTimeZone());
-            auto timeStr = datetime.toUTC().toString(directOrder);
-            label->setText(timeStr.isEmpty() ? "Invalid" : timeStr);
-        }
-    });
+            if (!str.isEmpty())
+            {
+                auto datetime = QDateTime::fromString(str, directOrder);
+                datetime.setTimeZone(TimeFunc::userTimeZone());
+                auto timeStr = datetime.toUTC().toString(directOrder);
+                label->setText(timeStr.isEmpty() ? "Invalid" : timeStr);
+            }
+        });
     hlyout->addWidget(label);
     hlyout->addWidget(lineedit);
 
@@ -130,7 +142,7 @@ void TimeDialog::writeTime(QDateTime &myDateTime)
 void TimeDialog::writeDate()
 {
     QDateTime myDateTime
-        = QDateTime::fromString(WDFunc::LEData(this, settings::nameByValue(settings::WriteDatetime)), directOrder);
+        = QDateTime::fromString(LEFunc::LEData(this, settings::nameByValue(settings::WriteDatetime)), directOrder);
     myDateTime.setTimeZone(TimeFunc::userTimeZone());
 
     auto buffer = myDateTime.toUTC();
@@ -164,11 +176,11 @@ void TimeDialog::setTime(quint32 unixtimestamp)
     QDateTime myDateTime = QDateTime::fromSecsSinceEpoch(unixtimestamp, TimeFunc::userTimeZone());
     QString moduleTime = myDateTime.toString(directOrder);
     QString moduleTimeUtc = myDateTime.toUTC().toString(directOrder);
-    WDFunc::SetLBLText(this, settings::nameByValue(settings::ModuleDatetime), moduleTime);
-    WDFunc::SetLBLText(this, settings::nameByValue(settings::ModuleDatetimeUtc), moduleTimeUtc);
+    LBLFunc::SetLBLText(this, settings::nameByValue(settings::ModuleDatetime), moduleTime);
+    LBLFunc::SetLBLText(this, settings::nameByValue(settings::ModuleDatetimeUtc), moduleTimeUtc);
     if (First == 0)
     {
-        WDFunc::SetLEData(this, settings::nameByValue(settings::WriteDatetime), moduleTime);
+        LEFunc::SetLEData(this, settings::nameByValue(settings::WriteDatetime), moduleTime);
         First = 1;
     }
 }
@@ -176,5 +188,5 @@ void TimeDialog::setTime(quint32 unixtimestamp)
 void TimeDialog::errorRead()
 {
 
-    WDFunc::SetLBLText(this, settings::nameByValue(settings::ModuleDatetime), "Ошибка чтения");
+    LBLFunc::SetLBLText(this, settings::nameByValue(settings::ModuleDatetime), "Ошибка чтения");
 }

@@ -3,7 +3,7 @@
 
 SPBFunc::SPBFunc() { }
 
-QDoubleSpinBox *SPBFunc::NewSPB2(
+QDoubleSpinBox *SPBFunc::NewSPB(
     QWidget *parent, const QString &spbname, const double min, const double max, const int decimals)
 {
     auto dsb = new QDoubleSpinBox(parent);

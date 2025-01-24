@@ -1,16 +1,20 @@
 #include "dialogs/fwuploaddialog.h"
 
-#include <QDebug>
-#include <QVBoxLayout>
 #include <gen/error.h>
 #include <gen/files.h>
-#include <map>
 #include <s2/s2util.h>
 #include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
+#include <widgets/filefunc.h>
+#include <widgets/pbfunc.h>
+
+#include <QDebug>
+#include <QVBoxLayout>
+#include <map>
 
 FWUploadDialog::FWUploadDialog(Device::CurrentDevice *device, QWidget *parent)
-    : UDialog(device, parent), uploadStatus(FirmwareUploadStatus::Start), parser(new S2::HexParser(this))
+    : UDialog(device, parent)
+    , uploadStatus(FirmwareUploadStatus::Start)
+    , parser(new S2::HexParser(this))
 {
     QObject::connect(parser, &S2::HexParser::error, this, &FWUploadDialog::errorHandle);
     setSuccessMsg("Переход на новое ПО выполнен успешно");
@@ -35,7 +39,7 @@ void FWUploadDialog::loadFirmware()
         return;
     }
 
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Program Version (*.hex)");
+    auto filepath = FileFunc::ChooseFileForOpen(this, "Program Version (*.hex)");
     if (filepath.isEmpty())
         return;
 

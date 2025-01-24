@@ -1,13 +1,14 @@
 #include "dialogs/reconnectdialog.h"
 
+#include <widgets/epopup.h>
+#include <widgets/eprogressindicator.h>
+#include <widgets/hexpbfunc.h>
+
 #include <QLabel>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QTimer>
 #include <QVBoxLayout>
-#include <widgets/epopup.h>
-#include <widgets/eprogressindicator.h>
-#include <widgets/wdfunc.h>
 
 constexpr auto successMsg { //
     "Переподключение прошло успешно!\n"
@@ -15,7 +16,10 @@ constexpr auto successMsg { //
 };
 
 ReconnectDialog::ReconnectDialog(QWidget *parent)
-    : QDialog(parent), m_success(false), m_seconds(5), m_closeTimer(new QTimer(this))
+    : QDialog(parent)
+    , m_success(false)
+    , m_seconds(5)
+    , m_closeTimer(new QTimer(this))
 {
     setupUI();
     m_closeTimer->setSingleShot(false);
@@ -93,7 +97,7 @@ void ReconnectDialog::reconnectSuccess()
     mainLayout->removeWidget(m_cancelButton);
     m_progressIndicator->stopAnimation();
     m_messageLabel->setText(QString(successMsg).arg(m_seconds));
-    mainLayout->addWidget(WDFunc::NewHexagonPB(
-        this, "", [this]() { this->reject(); }, ":/icons/tnyes.svg", "Закрыть"));
+    mainLayout->addWidget(
+        HexPBFunc::NewHexagonPB(this, "", [this]() { this->reject(); }, ":/icons/tnyes.svg", "Закрыть"));
     m_closeTimer->start();
 }

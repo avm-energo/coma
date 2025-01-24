@@ -1,16 +1,18 @@
 #include "dialogs/searchproccessdialog.h"
 
+#include <gen/stdfunc.h>
+#include <gen/utils/crc16.h>
+#include <widgets/epopup.h>
+#include <widgets/tvfunc.h>
+
 #include <QCoreApplication>
+#include <QHBoxLayout>
 #include <QHeaderView>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QThread>
 #include <QTimer>
-#include <gen/stdfunc.h>
-#include <gen/utils/crc16.h>
-#include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
 
 SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *parent)
     : QDialog(parent)
@@ -43,20 +45,22 @@ void SearchProccessDialog::setupUI()
     auto tableViewModel = new QStandardItemModel(this);
     QStringList headers { "Порт", "Адрес", "Скорость", "Чётность", "Стоп бит", "Статус" };
     tableViewModel->setHorizontalHeaderLabels(headers);
-    tableView = WDFunc::NewQTV(this, "devicesTable", tableViewModel);
+    tableView = TVFunc::NewQTV(this, "devicesTable", tableViewModel);
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     mainLayout->addWidget(tableView);
     progressBar = new QProgressBar(this);
     progressBar->setOrientation(Qt::Horizontal);
     mainLayout->addWidget(progressBar);
     auto stopButton = new QPushButton("Остановить поиск", this);
-    QObject::connect(stopButton, &QPushButton::clicked, this, [this]() {
-        if (!stop)
+    QObject::connect(stopButton, &QPushButton::clicked, this,
+        [this]()
         {
-            stop = true;
-            EMessageBox::information(this, "Поиск остановлен!");
-        }
-    });
+            if (!stop)
+            {
+                stop = true;
+                EMessageBox::information(this, "Поиск остановлен!");
+            }
+        });
     mainLayout->addWidget(stopButton);
     setLayout(mainLayout);
     setMinimumSize(700, 600);

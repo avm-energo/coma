@@ -1,10 +1,5 @@
 #include "dialogs/configdialog.h"
 
-#include <QDebug>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QMap>
-#include <QScrollArea>
 #include <appconfig/appconfig.h>
 #include <device/current_device.h>
 #include <dialogs/keypressdialog.h>
@@ -13,7 +8,15 @@
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 #include <widgets/epopup.h>
+#include <widgets/filefunc.h>
 #include <widgets/wdfunc.h>
+
+#include <QDebug>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QMap>
+#include <QPushButton>
+#include <QScrollArea>
 
 ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent)
     : UDialog(device, parent)
@@ -73,7 +76,7 @@ bool ConfigDialog::isDebugWidget(const quint16 id) const
 
 void ConfigDialog::saveConfigToFile()
 {
-    auto filepath = WDFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf");
+    auto filepath = FileFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf");
     if (filepath.isEmpty())
         return;
 
@@ -111,7 +114,7 @@ void ConfigDialog::saveConfigToFile()
 
 void ConfigDialog::loadConfigFromFile()
 {
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Config files (*.cf)");
+    auto filepath = FileFunc::ChooseFileForOpen(this, "Config files (*.cf)");
     if (filepath.isEmpty())
         return;
 
@@ -274,7 +277,8 @@ void ConfigDialog::fill()
                 std::visit(
                     // thanx to https://stackoverflow.com/a/46115028
                     // in C++20 lambdas could capture structured binding
-                    [=, id = id](const auto &&value) {
+                    [=, id = id](const auto &&value)
+                    {
                         bool status = m_factory.fillWidget(this, id, value);
                         if (!status)
                             qWarning() << "Couldnt fill widget for item: " << id;

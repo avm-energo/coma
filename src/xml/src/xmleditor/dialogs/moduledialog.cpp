@@ -1,16 +1,15 @@
 #include "xml/xmleditor/dialogs/moduledialog.h"
 
+#include <widgets/lblfunc.h>
+#include <widgets/lefunc.h>
+
 #include <QGuiApplication>
 #include <QScreen>
-#include <variant>
-#include <widgets/wdfunc.h>
 
 constexpr auto bTypeIndex = 1;
 constexpr auto versionIndex = 3;
 
-ModuleDialog::ModuleDialog(QWidget *parent) : XmlDialog(parent)
-{
-}
+ModuleDialog::ModuleDialog(QWidget *parent) : XmlDialog(parent) { }
 
 void ModuleDialog::setupUI(QVBoxLayout *mainLayout)
 {
@@ -28,7 +27,7 @@ void ModuleDialog::setupUI(QVBoxLayout *mainLayout)
         auto labelText = itemSettings.first;
         auto itemName = itemSettings.second;
         auto labelItem = LBLFunc::NewLBL(this, labelText, itemName + "Label");
-        auto inputItem = WDFunc::NewLE2(this, itemName);
+        auto inputItem = LEFunc::NewLE(this, itemName);
         QObject::connect(
             inputItem, &QLineEdit::textEdited, this, qOverload<const QString &>(&ModuleDialog::dataChanged));
 

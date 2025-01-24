@@ -1,14 +1,20 @@
 #include "dialogs/interfaceserialdialog.h"
 
-#include <QSerialPortInfo>
-#include <QStandardItemModel>
-#include <QVBoxLayout>
 #include <dialogs/searchmodbusdevicesdialog.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/settingstypes.h>
+#include <widgets/cbfunc.h>
 #include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
+#include <widgets/lblfunc.h>
+#include <widgets/lefunc.h>
+#include <widgets/pbfunc.h>
+#include <widgets/spbfunc.h>
+#include <widgets/tvfunc.h>
+
+#include <QSerialPortInfo>
+#include <QStandardItemModel>
+#include <QVBoxLayout>
 
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
@@ -24,31 +30,37 @@ InterfaceSerialDialog::~InterfaceSerialDialog() noexcept
 void InterfaceSerialDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    m_tableView = WDFunc::NewQTV(this, "", nullptr);
+    m_tableView = TVFunc::NewQTV(this, "", nullptr);
     lyout->addWidget(m_tableView);
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     auto firstRow = new QHBoxLayout;
     auto addButton = PBFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceSerialDialog::addInterface);
-    auto removeButton = PBFunc::NewPB(this, "", "Удалить", this, [this] {
-        auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
-        m_settings.remove(name);
-        updateModel();
-    });
+    auto removeButton = PBFunc::NewPB(this, "", "Удалить", this,
+        [this]
+        {
+            auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
+            m_settings.remove(name);
+            updateModel();
+        });
     firstRow->addWidget(addButton);
     firstRow->addWidget(removeButton);
     lyout->addLayout(firstRow);
 
     auto secondRow = new QHBoxLayout;
-    auto editButton = PBFunc::NewPB(this, "", "Редактировать", this, [this] {
-        auto index = m_tableView->currentIndex();
-        editConnection(index);
-        updateModel();
-    });
-    auto searchButton = PBFunc::NewPB(this, "", "Поиск устройств", this, [this] {
-        auto searchDialog = new SearchModbusDevicesDialog(this);
-        searchDialog->exec();
-    });
+    auto editButton = PBFunc::NewPB(this, "", "Редактировать", this,
+        [this]
+        {
+            auto index = m_tableView->currentIndex();
+            editConnection(index);
+            updateModel();
+        });
+    auto searchButton = PBFunc::NewPB(this, "", "Поиск устройств", this,
+        [this]
+        {
+            auto searchDialog = new SearchModbusDevicesDialog(this);
+            searchDialog->exec();
+        });
     secondRow->addWidget(editButton);
     secondRow->addWidget(searchButton);
     lyout->addLayout(secondRow);
@@ -114,55 +126,57 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
     auto layout = new QGridLayout;
     int count = 0;
     layout->addWidget(LBLFunc::NewLBL(dialog, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
-    auto namele = WDFunc::NewLE2(dialog, "namele", name);
+    auto namele = LEFunc::NewLE(dialog, "namele", name);
     layout->addWidget(namele, count++, 1, 1, 1);
     layout->addWidget(LBLFunc::NewLBL(dialog, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
-    auto portcb = WDFunc::NewCB2(dialog, "portcb", ports);
-    auto portIndex = ports.indexOf(port); // найти индекс сохранённого порта
+    auto portcb = CBFunc::NewCB(dialog, "portcb", ports);
+    auto portIndex = ports.indexOf(port);                    // найти индекс сохранённого порта
     portcb->setCurrentIndex(portIndex >= 0 ? portIndex : 0); // проверить и выставить порт по умолчанию
     layout->addWidget(portcb, count++, 1, 1, 1);
     QStringList sl { "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
     layout->addWidget(LBLFunc::NewLBL(dialog, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
-    auto speedcb = WDFunc::NewCB2(dialog, "speedcb", sl);
+    auto speedcb = CBFunc::NewCB(dialog, "speedcb", sl);
     speedcb->setCurrentIndex(sl.indexOf(speed));
     layout->addWidget(speedcb, count++, 1, 1, 1);
     sl = QStringList({ "Нет", "Нечет", "Чет" });
     layout->addWidget(LBLFunc::NewLBL(dialog, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
-    auto paritycb = WDFunc::NewCB2(dialog, "paritycb", sl);
+    auto paritycb = CBFunc::NewCB(dialog, "paritycb", sl);
     paritycb->setCurrentIndex(sl.indexOf(parity));
     layout->addWidget(paritycb, count++, 1, 1, 1);
     layout->addWidget(LBLFunc::NewLBL(dialog, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
     sl = QStringList({ "1", "2" });
-    auto stopbitcb = WDFunc::NewCB2(dialog, "stopbitcb", sl);
+    auto stopbitcb = CBFunc::NewCB(dialog, "stopbitcb", sl);
     stopbitcb->setCurrentIndex(sl.indexOf(stopbit));
     layout->addWidget(stopbitcb, count++, 1, 1, 1);
     layout->addWidget(LBLFunc::NewLBL(dialog, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
-    auto addressspb = WDFunc::NewSPB2(dialog, "addressspb", 0, 255, 0);
+    auto addressspb = SPBFunc::NewSPB(dialog, "addressspb", 0, 255, 0);
     addressspb->setValue(address);
     layout->addWidget(addressspb, count++, 1, 1, 1);
 
     // Logic of working
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(PBFunc::NewPB(dialog, "acceptpb", "Сохранить", dialog, [=] {
-        auto newName = namele->text();
-        // Новое имя не совпадает со старым, но уже имеется в настройках
-        if (newName != name && m_settings.isExist(newName))
+    hlyout->addWidget(PBFunc::NewPB(dialog, "acceptpb", "Сохранить", dialog,
+        [=]
         {
-            EMessageBox::error(this, "Такое имя уже имеется");
-            return;
-        }
-        m_settings.remove(name);
+            auto newName = namele->text();
+            // Новое имя не совпадает со старым, но уже имеется в настройках
+            if (newName != name && m_settings.isExist(newName))
+            {
+                EMessageBox::error(this, "Такое имя уже имеется");
+                return;
+            }
+            m_settings.remove(name);
 
-        Settings::ScopedSettingsGroup _ { m_settings, newName };
-        m_settings.set<Settings::SerialPort>(portcb->currentText());
-        m_settings.set<Settings::SerialSpeed>(speedcb->currentText());
-        m_settings.set<Settings::SerialParity>(paritycb->currentText());
-        m_settings.set<Settings::SerialStop>(stopbitcb->currentText());
-        m_settings.set<Settings::ModbusAddress>(static_cast<int>(addressspb->value()));
-        if (!updateModel())
-            qCritical() << Error::GeneralError;
-        dialog->close();
-    }));
+            Settings::ScopedSettingsGroup _ { m_settings, newName };
+            m_settings.set<Settings::SerialPort>(portcb->currentText());
+            m_settings.set<Settings::SerialSpeed>(speedcb->currentText());
+            m_settings.set<Settings::SerialParity>(paritycb->currentText());
+            m_settings.set<Settings::SerialStop>(stopbitcb->currentText());
+            m_settings.set<Settings::ModbusAddress>(static_cast<int>(addressspb->value()));
+            if (!updateModel())
+                qCritical() << Error::GeneralError;
+            dialog->close();
+        }));
     hlyout->addWidget(PBFunc::NewPB(dialog, "cancelpb", "Отмена", dialog, [dialog] { dialog->close(); }));
     layout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
     dialog->setLayout(layout);
@@ -188,20 +202,20 @@ void InterfaceSerialDialog::addInterface()
     auto layout = new QGridLayout;
     int count = 0;
     layout->addWidget(LBLFunc::NewLBL(dialog, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
-    layout->addWidget(WDFunc::NewLE2(dialog, "namele"), count++, 1, 1, 1);
+    layout->addWidget(LEFunc::NewLE(dialog, "namele"), count++, 1, 1, 1);
     layout->addWidget(LBLFunc::NewLBL(dialog, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
-    layout->addWidget(WDFunc::NewCB2(dialog, "portcb", ports), count++, 1, 1, 1);
+    layout->addWidget(CBFunc::NewCB(dialog, "portcb", ports), count++, 1, 1, 1);
     QStringList sl { "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
     layout->addWidget(LBLFunc::NewLBL(dialog, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
-    layout->addWidget(WDFunc::NewCB2(dialog, "speedcb", sl), count++, 1, 1, 1);
+    layout->addWidget(CBFunc::NewCB(dialog, "speedcb", sl), count++, 1, 1, 1);
     sl = QStringList({ "Нет", "Нечет", "Чет" });
     layout->addWidget(LBLFunc::NewLBL(dialog, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
-    layout->addWidget(WDFunc::NewCB2(dialog, "paritycb", sl), count++, 1, 1, 1);
+    layout->addWidget(CBFunc::NewCB(dialog, "paritycb", sl), count++, 1, 1, 1);
     layout->addWidget(LBLFunc::NewLBL(dialog, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
     sl = QStringList({ "1", "2" });
-    layout->addWidget(WDFunc::NewCB2(dialog, "stopbitcb", sl), count++, 1, 1, 1);
+    layout->addWidget(CBFunc::NewCB(dialog, "stopbitcb", sl), count++, 1, 1, 1);
     layout->addWidget(LBLFunc::NewLBL(dialog, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
-    layout->addWidget(WDFunc::NewSPB2(dialog, "addressspb", 0, 255, 0), count++, 1, 1, 1);
+    layout->addWidget(SPBFunc::NewSPB(dialog, "addressspb", 0, 255, 0), count++, 1, 1, 1);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(PBFunc::NewPB(dialog, "acceptpb", "Сохранить", this, &InterfaceSerialDialog::acceptedInterface));
     hlyout->addWidget(PBFunc::NewPB(dialog, "cancelpb", "Отмена", dialog, [dialog] { dialog->close(); }));
@@ -247,7 +261,7 @@ void InterfaceSerialDialog::acceptedInterface()
     auto dialog = this->findChild<QDialog *>("rsCreateDialog");
     if (dialog == nullptr)
         return;
-    QString name = WDFunc::LEData(dialog, "namele");
+    QString name = LEFunc::LEData(dialog, "namele");
     // check if there's such name in registry
     if (m_settings.isExist(name))
     {
@@ -257,11 +271,11 @@ void InterfaceSerialDialog::acceptedInterface()
     {
         int spbdata;
         Settings::ScopedSettingsGroup _ { m_settings, name };
-        m_settings.set<Settings::SerialPort>(WDFunc::CBData(dialog, "portcb"));
-        m_settings.set<Settings::SerialSpeed>(WDFunc::CBData(dialog, "speedcb"));
-        m_settings.set<Settings::SerialParity>(WDFunc::CBData(dialog, "paritycb"));
-        m_settings.set<Settings::SerialStop>(WDFunc::CBData(dialog, "stopbitcb"));
-        if (WDFunc::SPBData(dialog, "addressspb", spbdata))
+        m_settings.set<Settings::SerialPort>(CBFunc::CBData(dialog, "portcb"));
+        m_settings.set<Settings::SerialSpeed>(CBFunc::CBData(dialog, "speedcb"));
+        m_settings.set<Settings::SerialParity>(CBFunc::CBData(dialog, "paritycb"));
+        m_settings.set<Settings::SerialStop>(CBFunc::CBData(dialog, "stopbitcb"));
+        if (SPBFunc::SPBData(dialog, "addressspb", spbdata))
             m_settings.set<Settings::ModbusAddress>(spbdata);
     }
     if (!updateModel())

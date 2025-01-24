@@ -2,7 +2,7 @@
 
 #include <gen/timefunc.h>
 #include <widgets/etableview.h>
-#include <widgets/wdfunc.h>
+#include <widgets/tvfunc.h>
 
 #include <QApplication>
 #include <QFile>
@@ -48,7 +48,7 @@ void BaseJournal::setUserTimezone(QStringList &data)
 
 QTableView *BaseJournal::createModelView(QWidget *parent) const
 {
-    auto modelView = WDFunc::NewQTV(parent, m_viewName, m_proxyModel.get());
+    auto modelView = TVFunc::NewQTV(parent, m_viewName, m_proxyModel.get());
     return modelView;
 }
 

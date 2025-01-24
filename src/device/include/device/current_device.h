@@ -102,7 +102,7 @@ signals:
     void initBSIFinished(const Error::Msg status);
 
     /// \brief Сигнал для уведомления об изменении типа устройства.
-    void typeChanged(const u16 type);
+    void typeChanged(const QString &type);
     /// \brief Сигнал для уведомления об изменении состояния устройства.
     void healthChanged(const u32 health);
     /// \brief Сигнал для уведомления об изменении серийного номера устройства.

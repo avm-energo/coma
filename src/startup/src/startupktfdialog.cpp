@@ -1,7 +1,5 @@
 #include "startup/startupktfdialog.h"
 
-#include <QGridLayout>
-#include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/files.h>
@@ -9,7 +7,13 @@
 #include <gen/timefunc.h>
 #include <widgets/epopup.h>
 #include <widgets/etableview.h>
-#include <widgets/wdfunc.h>
+#include <widgets/filefunc.h>
+#include <widgets/lblfunc.h>
+#include <widgets/pbfunc.h>
+#include <widgets/spbfunc.h>
+
+#include <QGridLayout>
+#include <QVBoxLayout>
 
 StartupKTFDialog::StartupKTFDialog(Device::CurrentDevice *device, QWidget *parent)
     : AbstractStartupDialog(device, parent)
@@ -34,7 +38,7 @@ void StartupKTFDialog::SetupUI()
     int row = 0;
 
     glyout->addWidget(LBLFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(907), 0, 1000000, 5), row, 2, 1, 2);
+    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(907), 0, 1000000, 5), row, 2, 1, 2);
     row++;
 
     QPushButton *pb = new QPushButton("Прочитать из модуля");
@@ -67,12 +71,12 @@ void StartupKTFDialog::SetupUI()
 
 // void StartupKTFDialog::FillBackCor()
 //{
-//    WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
+//    SPBFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
 //}
 
 // void StartupKTFDialog::FillCor()
 //{
-//    WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
+//    SPBFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
 //}
 
 // void StartupKTFDialog::GetCorBd()
@@ -184,7 +188,7 @@ void StartupKTFDialog::SetupUI()
 void StartupKTFDialog::SaveToFile()
 {
 
-    auto filepath = WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor");
+    auto filepath = FileFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor");
     if (filepath.isEmpty())
         return;
 
@@ -212,7 +216,7 @@ void StartupKTFDialog::SaveToFile()
 
 void StartupKTFDialog::ReadFromFile()
 {
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
+    auto filepath = FileFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
     if (filepath.isEmpty())
         return;
 

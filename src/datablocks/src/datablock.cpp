@@ -186,6 +186,11 @@ DataBlock::BlockStruct DataBlock::block()
 
 void DataBlock::updateWidget()
 {
+    if (!m_widgetIsSet)
+    {
+        qDebug() << "Widget is not set!";
+        return;
+    }
     specificUpdateWidget();
     for (auto &group : m_valuesDesc)
     {
@@ -209,6 +214,11 @@ void DataBlock::updateWidget()
 
 void DataBlock::updateFromWidget()
 {
+    if (!m_widgetIsSet)
+    {
+        qDebug() << "Widget is not set!";
+        return;
+    }
     specificUpdateFromWidget();
     for (auto &group : m_valuesDesc)
     {
@@ -238,6 +248,11 @@ void DataBlock::updateFromWidget()
 
 Error::Msg DataBlock::writeBlockToModule(const bool showMessage)
 {
+    if (!m_widgetIsSet)
+    {
+        qDebug() << "Widget is not set!";
+        return Error::Msg::GeneralError;
+    }
     Q_ASSERT(m_conn != nullptr);
     // auto conn = ActiveConnection::sync();
     switch (m_block.blocktype)

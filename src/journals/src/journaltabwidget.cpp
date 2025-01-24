@@ -1,10 +1,11 @@
 #include "journals/journaltabwidget.h"
 
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <gen/files.h>
 #include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
+#include <widgets/filefunc.h>
+
+#include <QPushButton>
+#include <QVBoxLayout>
 
 namespace journals
 {
@@ -60,12 +61,14 @@ void JournalTabWidget::setupUI()
     saveBinaryButton->setEnabled(false);
     hLayout2->addWidget(saveBinaryButton);
 
-    connect(this, &JournalTabWidget::ready, this, [this, saveExcelButton, saveBinaryButton] {
-        m_progressDialog->close();
-        m_modelView->setUpdatesEnabled(true);
-        saveExcelButton->setEnabled(true);
-        saveBinaryButton->setEnabled(true);
-    });
+    connect(this, &JournalTabWidget::ready, this,
+        [this, saveExcelButton, saveBinaryButton]
+        {
+            m_progressDialog->close();
+            m_modelView->setUpdatesEnabled(true);
+            saveExcelButton->setEnabled(true);
+            saveBinaryButton->setEnabled(true);
+        });
 
     m_mainLayout->setAlignment(Qt::AlignTop);
     m_mainLayout->addLayout(hLayout1);
@@ -95,7 +98,7 @@ void JournalTabWidget::saveExcelJournal()
     if (!suggestedFilename.isEmpty())
     {
         suggestedFilename += ".xlsx";
-        auto filename = WDFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
+        auto filename = FileFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
         if (!filename.isEmpty())
         {
             m_saveProgressDialog->setMinimumDuration(0);
@@ -110,7 +113,7 @@ void JournalTabWidget::saveBinaryJournal()
     if (!suggestedFilename.isEmpty())
     {
         suggestedFilename += ".jn";
-        auto filename = WDFunc::ChooseFileForSave(this, "Journal files (*.jn)", "jn", suggestedFilename);
+        auto filename = FileFunc::ChooseFileForSave(this, "Journal files (*.jn)", "jn", suggestedFilename);
         if (!filename.isEmpty())
         {
             const auto &journalFile = m_currentJournal->getFile();

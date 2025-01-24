@@ -1,5 +1,12 @@
 #include "widgets/epopup.h"
 
+#include <settings/user_settings.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
+#include <widgets/lefunc.h>
+#include <widgets/passwordlineedit.h>
+#include <widgets/pbfunc.h>
+
 #include <QApplication>
 #include <QCryptographicHash>
 #include <QEventLoop>
@@ -7,9 +14,7 @@
 #include <QPropertyAnimation>
 #include <QScreen>
 #include <QTimer>
-#include <settings/user_settings.h>
-#include <widgets/passwordlineedit.h>
-#include <widgets/wdfunc.h>
+#include <QVBoxLayout>
 
 ESimplePopup::ESimplePopup(MessageTypes type, const QString &msg, QWidget *parent) : EPopup(parent)
 {
@@ -230,7 +235,7 @@ void EEditablePopup::execPopup()
     auto layout = new QVBoxLayout;
     layout->addWidget(LBLFunc::NewLBL(this, caption));
     for (std::map<QString, float *>::iterator it = m_floatParList.begin(); it != m_floatParList.end(); ++it)
-        layout->addWidget(WDFunc::NewLBLAndLE(this, it->first, it->first, true));
+        layout->addWidget(LEFunc::NewLBLAndLE(this, it->first, it->first, true));
     auto hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
     hlyout->addWidget(PBFunc::NewPB(this, "", "Далее", this, &EEditablePopup::acceptSlot));
@@ -252,7 +257,7 @@ void EEditablePopup::acceptSlot()
     {
         bool isOk = false;
         float fl;
-        fl = WDFunc::LEData(this, it->first).toFloat(&isOk);
+        fl = LEFunc::LEData(this, it->first).toFloat(&isOk);
         float *tmpf = it->second;
         if (isOk)
             *tmpf = fl;
@@ -294,7 +299,7 @@ EPasswordPopup::EPasswordPopup(const QString &hash, QWidget *parent) : EPopup(pa
     hlyout->addWidget(text);
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addLayout(hlyout);
-    vlyout->addWidget(WDFunc::NewPswLE2(this, "pswle", QLineEdit::Password));
+    vlyout->addWidget(LEFunc::NewPswLE(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
     adjustSize();
     setStyleSheet(dialogStyle);
@@ -318,7 +323,7 @@ void EPasswordPopup::keyPressEvent(QKeyEvent *e)
 
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {
-        if (checkPassword(WDFunc::LEData(this, "pswle")))
+        if (checkPassword(LEFunc::LEData(this, "pswle")))
         {
             emit passwordIsCorrect();
             aboutToClose();

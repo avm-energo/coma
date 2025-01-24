@@ -1,5 +1,16 @@
 #include "dialogs/interfaceethernetdialog.h"
 
+#include <QtConcurrent/QtConcurrent>
+#include <QtConcurrent/QtConcurrentMap>
+#include <QtNetwork/QHostAddress>
+#include <gen/error.h>
+#include <gen/stdfunc.h>
+#include <widgets/epopup.h>
+#include <widgets/lefunc.h>
+#include <widgets/pbfunc.h>
+#include <widgets/spbfunc.h>
+#include <widgets/tvfunc.h>
+
 #include <QCoreApplication>
 #include <QDebug>
 #include <QFuture>
@@ -9,13 +20,6 @@
 #include <QSettings>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
-#include <QtConcurrent/QtConcurrent>
-#include <QtConcurrent/QtConcurrentMap>
-#include <QtNetwork/QHostAddress>
-#include <gen/error.h>
-#include <gen/stdfunc.h>
-#include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
 
 InterfaceEthernetDialog::InterfaceEthernetDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
@@ -31,17 +35,19 @@ InterfaceEthernetDialog::~InterfaceEthernetDialog() noexcept
 void InterfaceEthernetDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    m_tableView = WDFunc::NewQTV(this, "", nullptr);
+    m_tableView = TVFunc::NewQTV(this, "", nullptr);
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     lyout->addWidget(m_tableView);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(PBFunc::NewPB(this, "", tr("Добавить"), this, &InterfaceEthernetDialog::addInterface));
     hlyout->addWidget(PBFunc::NewPB(this, "", tr("Сканировать"), this, &InterfaceEthernetDialog::scanInterface));
-    hlyout->addWidget(PBFunc::NewPB(this, "", tr("Удалить"), this, [this] {
-        auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
-        m_settings.remove(name);
-        updateModel();
-    }));
+    hlyout->addWidget(PBFunc::NewPB(this, "", tr("Удалить"), this,
+        [this]
+        {
+            auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
+            m_settings.remove(name);
+            updateModel();
+        }));
     lyout->addLayout(hlyout);
     setLayout(lyout);
     connect(m_tableView, &QTableView::doubleClicked, this, &InterfaceEthernetDialog::setInterface);
@@ -93,7 +99,7 @@ void InterfaceEthernetDialog::addInterface()
     hlayout->addWidget(lbl);
     for (int i = 0; i < 4; ++i)
     {
-        auto ipCell = WDFunc::NewSPB2(dialog, QString("iple_%1").arg(i), 0, 255, 0);
+        auto ipCell = SPBFunc::NewSPB(dialog, QString("iple_%1").arg(i), 0, 255, 0);
         hlayout->addWidget(ipCell);
         if (i != 3)
         {
@@ -108,7 +114,7 @@ void InterfaceEthernetDialog::addInterface()
     hlayout = new QHBoxLayout;
     lbl = new QLabel(tr("Порт:"), dialog);
     hlayout->addWidget(lbl);
-    auto portspb = WDFunc::NewSPB2(dialog, "portspb", u16min, u16max, 0);
+    auto portspb = SPBFunc::NewSPB(dialog, "portspb", u16min, u16max, 0);
     /// TODO: Значение 2404 должно быть настраиваемым значением
     portspb->setValue(2404);
     hlayout->addWidget(portspb);
@@ -117,7 +123,7 @@ void InterfaceEthernetDialog::addInterface()
     hlayout = new QHBoxLayout;
     lbl = new QLabel(tr("Адрес БС:"), dialog);
     hlayout->addWidget(lbl);
-    auto bsaddrspb = WDFunc::NewSPB2(dialog, "bsaddrspb", u16min, u16max, 0);
+    auto bsaddrspb = SPBFunc::NewSPB(dialog, "bsaddrspb", u16min, u16max, 0);
     /// TODO: Значение 205 должно быть настраиваемым значением
     bsaddrspb->setValue(205);
     hlayout->addWidget(bsaddrspb);
@@ -166,7 +172,7 @@ void InterfaceEthernetDialog::acceptedInterface()
     auto dialog = this->findChild<QDialog *>("ethCreateDialog");
     if (dialog == nullptr)
         return;
-    QString name = WDFunc::LEData(dialog, "namele");
+    QString name = LEFunc::LEData(dialog, "namele");
     // check if there's such name in registry
     if (m_settings.isExist(name))
     {
@@ -174,13 +180,13 @@ void InterfaceEthernetDialog::acceptedInterface()
         return;
     }
 
-    QString ipstr =                                                     //
-        QString::number(WDFunc::SPBData<int>(dialog, "iple_0")) + "." + //
-        QString::number(WDFunc::SPBData<int>(dialog, "iple_1")) + "." + //
-        QString::number(WDFunc::SPBData<int>(dialog, "iple_2")) + "." + //
-        QString::number(WDFunc::SPBData<int>(dialog, "iple_3"));        //
-    auto port = WDFunc::SPBData<quint16>(dialog, "portspb");
-    auto bsAddress = WDFunc::SPBData<quint16>(dialog, "bsaddrspb");
+    QString ipstr =                                                      //
+        QString::number(SPBFunc::SPBData<int>(dialog, "iple_0")) + "." + //
+        QString::number(SPBFunc::SPBData<int>(dialog, "iple_1")) + "." + //
+        QString::number(SPBFunc::SPBData<int>(dialog, "iple_2")) + "." + //
+        QString::number(SPBFunc::SPBData<int>(dialog, "iple_3"));        //
+    auto port = SPBFunc::SPBData<quint16>(dialog, "portspb");
+    auto bsAddress = SPBFunc::SPBData<quint16>(dialog, "bsaddrspb");
     if (bsAddress == 0)
     {
         EMessageBox::error(this, "Адрес базовой станции не может быть равен нулю");
@@ -239,11 +245,13 @@ void InterfaceEthernetDialog::createPingTask(quint32 ip)
 
     connect(watcher, &QFutureWatcher<quint32>::finished, this, &InterfaceEthernetDialog::handlePing);
     connect(watcher, &QFutureWatcher<quint32>::canceled, &QObject::deleteLater);
-    connect(watcher, &QFutureWatcher<quint32>::finished, this, [this] {
-        m_progress->setValue(m_progress->value() + 1);
-        if (m_progress->value() == -1)
-            emit pingFinished();
-    });
+    connect(watcher, &QFutureWatcher<quint32>::finished, this,
+        [this]
+        {
+            m_progress->setValue(m_progress->value() + 1);
+            if (m_progress->value() == -1)
+                emit pingFinished();
+        });
     QFuture<quint32> future = QtConcurrent::run(&StdFunc::Ping, ip);
     watcher->setFuture(future);
 }

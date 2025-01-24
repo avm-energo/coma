@@ -9,9 +9,9 @@ class LEFunc
 public:
     LEFunc();
 
-    [[nodiscard]] static QLineEdit *NewLE2(
+    [[nodiscard]] static QLineEdit *NewLE(
         QWidget *parent, const QString &lename, const QString &letext = "", const QString &tooltip = "");
-    [[nodiscard]] static PasswordLineEdit *NewPswLE2(
+    [[nodiscard]] static PasswordLineEdit *NewPswLE(
         QWidget *parent, const QString &lename, QLineEdit::EchoMode echostyle = QLineEdit::Normal);
     static bool SetLEData(QObject *parent, const QString &lename, const QString &levalue, const QString &restring = "");
     [[nodiscard]] static QString LEData(QObject *parent, const QString &lename);

@@ -1,12 +1,16 @@
 #include "alarms/modulealarm.h"
 
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
+
+#include <QPushButton>
 #include <QScrollArea>
 #include <QVBoxLayout>
-#include <widgets/wdfunc.h>
 
 ModuleAlarm::ModuleAlarm(const AlarmType type, const AlarmValue &alarms, //
     Device::CurrentDevice *device, QWidget *parent)
-    : BaseAlarm(device, parent), m_alarms(std::move(alarms))
+    : BaseAlarm(device, parent)
+    , m_alarms(std::move(alarms))
 {
     m_alarmColor = getColorByType(type);
     setupUI(m_alarms.values());
@@ -43,7 +47,7 @@ void ModuleAlarm::setupUI(const QStringList &events)
     for (auto &&desc : events)
     {
         auto hLayout = new QHBoxLayout;
-        auto pixmap = WDFunc::NewCircle(m_normalColor, circleRadius);
+        auto pixmap = GraphFunc::NewCircle(m_normalColor, circleRadius);
         auto label = LBLFunc::NewLBL(this, "", QString::number(index), &pixmap);
         hLayout->addWidget(label, 1);
         hLayout->addWidget(LBLFunc::NewLBL(this, desc), 100);
@@ -81,7 +85,7 @@ void ModuleAlarm::updatePixmap(const bool &isSet, const quint32 &position)
     {
         const auto color = isSet ? m_alarmColor : m_normalColor;
         auto label = m_labelStateStorage[position].first;
-        const auto pixmap = WDFunc::NewCircle(color, circleRadius);
+        const auto pixmap = GraphFunc::NewCircle(color, circleRadius);
         label->setPixmap(pixmap);
         m_labelStateStorage[position].second = isSet;
         if (isSet or isAllPixmapInactive())

@@ -1,12 +1,13 @@
 #include "dialogs/interfaceusbdialog.h"
 
-#include <QMessageBox>
-#include <QStandardItem>
-#include <QVBoxLayout>
 #include <gen/error.h>
 #include <interfaces/types/settingstypes.h>
 #include <interfaces/types/usbhidportinfo.h>
-#include <widgets/wdfunc.h>
+#include <widgets/tvfunc.h>
+
+#include <QMessageBox>
+#include <QStandardItem>
+#include <QVBoxLayout>
 
 InterfaceUSBDialog::InterfaceUSBDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
@@ -16,7 +17,7 @@ InterfaceUSBDialog::InterfaceUSBDialog(QWidget *parent) : AbstractInterfaceDialo
 void InterfaceUSBDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    m_tableView = WDFunc::NewQTV(this, "usbtv", nullptr);
+    m_tableView = TVFunc::NewQTV(this, "usbtv", nullptr);
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers); // no editable view
     lyout->addWidget(m_tableView);
     connect(m_tableView, &QTableView::doubleClicked, this, &InterfaceUSBDialog::setInterface);
@@ -71,7 +72,7 @@ bool InterfaceUSBDialog::updateModel()
             new QStandardItem(QString::number(row.product_id, 16)), //
             new QStandardItem(row.serial),                          //
 #ifdef QT_DEBUG
-            new QStandardItem(row.path) //
+            new QStandardItem(row.path)                             //
 #endif
         };
         mdl->appendRow(device);

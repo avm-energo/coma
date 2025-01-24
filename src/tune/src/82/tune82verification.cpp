@@ -5,7 +5,9 @@
 #include <tune/82/verification_offset.h>
 #include <tune/mip.h>
 #include <widgets/epopup.h>
-#include <widgets/wdfunc.h>
+
+#include <QLabel>
+#include <QPushButton>
 
 constexpr std::size_t c_iterCount = 21;
 constexpr inline std::array<RetomSettings, c_iterCount> c_settings = {

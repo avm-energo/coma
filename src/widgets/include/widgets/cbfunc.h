@@ -7,8 +7,8 @@ class CBFunc
 public:
     CBFunc();
 
-    [[nodiscard]] static QComboBox *NewCB2(QWidget *parent, const QString &cbname, const QStringList &cbsl);
-    [[nodiscard]] static QComboBox *NewCB2(QWidget *parent, const QStringList &cbsl);
+    [[nodiscard]] static QComboBox *NewCB(QWidget *parent, const QString &cbname, const QStringList &cbsl);
+    [[nodiscard]] static QComboBox *NewCB(QWidget *parent, const QStringList &cbsl);
     static bool SetCBData(const QWidget *parent, const QString &cbname, const QString &cbvalue);
     static bool SetCBIndex(const QObject *parent, const QString &cbname, int index);
     static bool SetCBColor(QWidget *parent, const QString &cbname, const QString &color);

@@ -4,8 +4,9 @@
 #include <gen/stdfunc.h>
 #include <tune/82/verification_offset.h>
 #include <widgets/epopup.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
-#include <widgets/wdfunc.h>
 
 #include <QMessageBox>
 #include <QVBoxLayout>
