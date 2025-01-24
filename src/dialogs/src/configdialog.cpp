@@ -1,10 +1,5 @@
 #include "dialogs/configdialog.h"
 
-#include <QDebug>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QMap>
-#include <QScrollArea>
 #include <appconfig/appconfig.h>
 #include <device/current_device.h>
 #include <dialogs/keypressdialog.h>
@@ -14,6 +9,12 @@
 #include <gen/timefunc.h>
 #include <widgets/epopup.h>
 #include <widgets/wd_func.h>
+
+#include <QDebug>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QMap>
+#include <QScrollArea>
 
 ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent)
     : UDialog(device, parent)
@@ -231,11 +232,9 @@ void ConfigDialog::setupUI()
                 {
                     const auto tab = tabForId(id);
                     auto child = widgetAt(ConfTW, tab);
-                    Q_ASSERT(child);
                     if (child)
                     {
                         auto subBox = child->findChild<QGroupBox *>();
-                        Q_ASSERT(subBox);
                         if (!subBox)
                             widget->deleteLater();
                         else
@@ -256,6 +255,19 @@ void ConfigDialog::setupUI()
     {
         if (tabUseMap.find(tab) == tabUseMap.end())
             ConfTW->setTabVisible(count, false);
+        else
+        {
+            auto child = widgetAt(ConfTW, tab);
+            if (child)
+            {
+                auto subBox = child->findChild<QGroupBox *>();
+                if (subBox)
+                {
+                    QVBoxLayout *subLayout = qobject_cast<QVBoxLayout *>(subBox->layout());
+                    subLayout->addStretch(100);
+                }
+            }
+        }
         ++count;
     }
     vlyout->addWidget(ConfTW);
@@ -274,7 +286,8 @@ void ConfigDialog::fill()
                 std::visit(
                     // thanx to https://stackoverflow.com/a/46115028
                     // in C++20 lambdas could capture structured binding
-                    [=, id = id](const auto &&value) {
+                    [=, id = id](const auto &&value)
+                    {
                         bool status = m_factory.fillWidget(this, id, value);
                         if (!status)
                             qWarning() << "Couldnt fill widget for item: " << id;
