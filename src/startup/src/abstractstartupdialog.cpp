@@ -1,6 +1,7 @@
 #include "startup/abstractstartupdialog.h"
 
 #include <gen/stdfunc.h>
+#include <gen/pch.h>
 #include <widgets/epopup.h>
 #include <widgets/spbfunc.h>
 

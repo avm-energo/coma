@@ -1,6 +1,7 @@
 #include <gen/stdfunc.h>
 #include <widgets/epopup.h>
 #include <widgets/wdfunc.h>
+#include <gen/pch.h>
 
 #include <QApplication>
 #include <QMainWindow>
