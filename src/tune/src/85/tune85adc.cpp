@@ -3,8 +3,10 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <widgets/epopup.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -60,13 +62,13 @@ Error::Msg Tune85ADC::showPreWarning()
 {
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
-    lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
-    lyout->addWidget(WDFunc::NewLBL2(this,
+    lyout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
+    lyout->addWidget(LBLFunc::NewLBL(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
+    lyout->addWidget(LBLFunc::NewLBL(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
         "по напряжению 60 В, по току - 2,5 А;"));
-    lyout->addWidget(WDFunc::NewLBL2(this,
+    lyout->addWidget(LBLFunc::NewLBL(this,
         "3. Данный этап регулировки должен выполняться при температуре"
         "окружающего воздуха +20±7 °С. Если температура окружающего воздуха отличается от указанной,"
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
@@ -252,42 +254,42 @@ Error::Msg Tune85ADC::showRetomDialog(int coef)
     QWidget *w = new QWidget(this);
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
-    vlyout->addWidget(WDFunc::NewLBL2(this, "РЕТОМ"));
-    vlyout->addWidget(WDFunc::newHLine(this));
+    vlyout->addWidget(LBLFunc::NewLBL(this, "РЕТОМ"));
+    vlyout->addWidget(GraphFunc::newHLine(this));
     QString tmps;
     tmps = "Задайте на РЕТОМ-51 трёхфазный режим токов и напряжений (Uabc, Iabc)\n"
            "Угол между токами и напряжениями: 89.9 град.\n"
            "Значения напряжений: 57.75 В";
     if (m_tuneType == ADCI)
         tmps += ", токов: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
-    vlyout->addWidget(WDFunc::NewLBL2(this, tmps));
+    vlyout->addWidget(LBLFunc::NewLBL(this, tmps));
     vlyout->addWidget(
-        WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
+        LBLFunc::NewLBL(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
     if (m_tuneType == ADCI)
-        vlyout->addWidget(WDFunc::NewLBL2(this,
+        vlyout->addWidget(LBLFunc::NewLBL(this,
             "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
                 + " А.\nКоэффициент передачи РЕТ-10 30:3"));
     hlyout->addLayout(vlyout);
-    hlyout->addWidget(WDFunc::newVLine(this));
+    hlyout->addWidget(GraphFunc::newVLine(this));
     vlyout = new QVBoxLayout;
-    vlyout->addWidget(WDFunc::NewLBL2(this, "ИМИТАТОР"));
-    vlyout->addWidget(WDFunc::newHLine(this));
+    vlyout->addWidget(LBLFunc::NewLBL(this, "ИМИТАТОР"));
+    vlyout->addWidget(GraphFunc::newHLine(this));
     tmps = "Установите на имитаторе АВМ-КИВ tg = 2 %,\n"
            "Значения напряжений: 57.75 В";
     if (m_tuneType == ADCI)
         tmps += ", токов: " + QString::number(retomCoefMap[coef].i, 'f', 2) + " мА";
-    vlyout->addWidget(WDFunc::NewLBL2(this, tmps));
+    vlyout->addWidget(LBLFunc::NewLBL(this, tmps));
     vlyout->addWidget(
-        WDFunc::NewLBL2(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
+        LBLFunc::NewLBL(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
     if (m_tuneType == ADCI)
-        vlyout->addWidget(WDFunc::NewLBL2(this,
+        vlyout->addWidget(LBLFunc::NewLBL(this,
             "Предел измерения тока в Энергомониторе: " + QString::number(retomCoefMap[coef].range, 'f', 2)
                 + " А.\nКоэффициент передачи РЕТ-10 " + retomCoefMap[coef].ret10c));
     hlyout->addLayout(vlyout);
     w->setLayout(hlyout);
     if (!EMessageBox::next(this, w))
         CancelTune();
-    //    lyout->addWidget(WDFunc::NewLBL2(this, tmps));
+    //    lyout->addWidget(LBLFunc::NewLBL(this, tmps));
     //    QPushButton *pb = new QPushButton("Готово");
     //    connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
     //    lyout->addWidget(pb);
@@ -354,7 +356,7 @@ void Tune85ADC::CalcTuneCoefs()
 
         if (m_tuneType == ADCI)
         {
-            //        iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"), &ok);
+            //        iet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneI"), &ok);
             //        if (ok)
             //        {
             assert(kmimap.contains(m_curTuneStep));
@@ -373,13 +375,13 @@ void Tune85ADC::CalcTuneCoefs()
         }
         else
         {
-            //        uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"), &ok);
+            //        uet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneU"), &ok);
             //        if (ok)
             //        {
-            //            yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"), &ok);
+            //            yet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneY"), &ok);
             //            if (ok)
             //            {
-            //                fet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneF"), &ok);
+            //                fet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneF"), &ok);
             //                if (ok)
             //                {
             for (int i = 0; i < 3; ++i)

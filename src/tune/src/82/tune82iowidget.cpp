@@ -1,9 +1,11 @@
 #include "tune/82/tune82iowidget.h"
 
-#include <QGroupBox>
-#include <QScrollArea>
 #include <tune/mip.h>
-#include <widgets/wd_func.h>
+#include <widgets/lblfunc.h>
+
+#include <QGroupBox>
+#include <QPushButton>
+#include <QScrollArea>
 
 Tune82IoWidget::Tune82IoWidget(Device::CurrentDevice *device, QWidget *parent)
     : QWidget(parent)
@@ -30,46 +32,48 @@ void Tune82IoWidget::setupUI()
     auto box = new QGroupBox("Данные", this);
 
     mipLayout->addWidget(new QLabel("Данные МИП:", this));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "FreqMIP", "Частота", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "UA_MIP", "UA_MIP", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "UB_MIP", "UB_MIP", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "UC_MIP", "UC_MIP", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "IA_MIP", "IA_MIP", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "IB_MIP", "IB_MIP", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "IC_MIP", "IC_MIP", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiLA_MIP", "PhiLA_MIP", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiLB_MIP", "PhiLB_MIP", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiLC_MIP", "PhiLC_MIP", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiUab_MIP", "PhiUab_MIP", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiUbc_MIP", "PhiUbc_MIP", true));
-    mipLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiUca_MIP", "PhiUca_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "FreqMIP", "Частота", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "UA_MIP", "UA_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "UB_MIP", "UB_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "UC_MIP", "UC_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "IA_MIP", "IA_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "IB_MIP", "IB_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "IC_MIP", "IC_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiLA_MIP", "PhiLA_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiLB_MIP", "PhiLB_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiLC_MIP", "PhiLC_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiUab_MIP", "PhiUab_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiUbc_MIP", "PhiUbc_MIP", true));
+    mipLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiUca_MIP", "PhiUca_MIP", true));
 
     deviceLayout->addWidget(new QLabel("Данные устройства:", this));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "Freq", "Freq", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "UA", "UA", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "UB", "UB", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "UC", "UC", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "IA", "IA", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "IB", "IB", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "IC", "IC", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiLA", "PhiLA", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiLB", "PhiLB", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiLC", "PhiLC", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiUab", "PhiUab", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiUbc", "PhiUbc", true));
-    deviceLayout->addWidget(WDFunc::NewLBLAndLBL(this, "PhiUca", "PhiUca", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "Freq", "Freq", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "UA", "UA", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "UB", "UB", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "UC", "UC", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "IA", "IA", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "IB", "IB", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "IC", "IC", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiLA", "PhiLA", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiLB", "PhiLB", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiLC", "PhiLC", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiUab", "PhiUab", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiUbc", "PhiUbc", true));
+    deviceLayout->addWidget(LBLFunc::NewLBLAndLBL(this, "PhiUca", "PhiUca", true));
 
     auto startBtn = new QPushButton("Запустить обмен данными", this);
     auto cancelBtn = new QPushButton("Выключить обмен данными", this);
     cancelBtn->setEnabled(false);
     connect(startBtn, &QPushButton::clicked, this, //
-        [this, startBtn, cancelBtn] {
+        [this, startBtn, cancelBtn]
+        {
             m_timer->start();
             startBtn->setEnabled(false);
             cancelBtn->setEnabled(true);
         });
     connect(cancelBtn, &QPushButton::clicked, this, //
-        [this, startBtn, cancelBtn] {
+        [this, startBtn, cancelBtn]
+        {
             m_timer->stop();
             startBtn->setEnabled(true);
             cancelBtn->setEnabled(false);
@@ -103,34 +107,34 @@ void Tune82IoWidget::updateData()
 
 void Tune82IoWidget::updateUI(const MipDataStruct &mipData)
 {
-    WDFunc::SetLBLText(this, "FreqMIP", QString::number(mipData.freqUPhase[0], 'f', 3));
-    WDFunc::SetLBLText(this, "UA_MIP", QString::number(mipData.uPhase[0], 'f', 3));
-    WDFunc::SetLBLText(this, "UB_MIP", QString::number(mipData.uPhase[1], 'f', 3));
-    WDFunc::SetLBLText(this, "UC_MIP", QString::number(mipData.uPhase[2], 'f', 3));
-    WDFunc::SetLBLText(this, "IA_MIP", QString::number(mipData.iPhase[0], 'f', 3));
-    WDFunc::SetLBLText(this, "IB_MIP", QString::number(mipData.iPhase[1], 'f', 3));
-    WDFunc::SetLBLText(this, "IC_MIP", QString::number(mipData.iPhase[2], 'f', 3));
-    WDFunc::SetLBLText(this, "PhiLA_MIP", QString::number(mipData.phiLoadPhase[0], 'f', 3));
-    WDFunc::SetLBLText(this, "PhiLB_MIP", QString::number(mipData.phiLoadPhase[1], 'f', 3));
-    WDFunc::SetLBLText(this, "PhiLC_MIP", QString::number(mipData.phiLoadPhase[2], 'f', 3));
-    WDFunc::SetLBLText(this, "PhiUab_MIP", QString::number(mipData.phiUab, 'f', 3));
-    WDFunc::SetLBLText(this, "PhiUbc_MIP", QString::number(mipData.phiUbc, 'f', 3));
-    WDFunc::SetLBLText(this, "PhiUca_MIP", QString::number(mipData.phiUca, 'f', 3));
+    LBLFunc::SetLBLText(this, "FreqMIP", QString::number(mipData.freqUPhase[0], 'f', 3));
+    LBLFunc::SetLBLText(this, "UA_MIP", QString::number(mipData.uPhase[0], 'f', 3));
+    LBLFunc::SetLBLText(this, "UB_MIP", QString::number(mipData.uPhase[1], 'f', 3));
+    LBLFunc::SetLBLText(this, "UC_MIP", QString::number(mipData.uPhase[2], 'f', 3));
+    LBLFunc::SetLBLText(this, "IA_MIP", QString::number(mipData.iPhase[0], 'f', 3));
+    LBLFunc::SetLBLText(this, "IB_MIP", QString::number(mipData.iPhase[1], 'f', 3));
+    LBLFunc::SetLBLText(this, "IC_MIP", QString::number(mipData.iPhase[2], 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiLA_MIP", QString::number(mipData.phiLoadPhase[0], 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiLB_MIP", QString::number(mipData.phiLoadPhase[1], 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiLC_MIP", QString::number(mipData.phiLoadPhase[2], 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiUab_MIP", QString::number(mipData.phiUab, 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiUbc_MIP", QString::number(mipData.phiUbc, 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiUca_MIP", QString::number(mipData.phiUca, 'f', 3));
 }
 
 void Tune82IoWidget::updateUI(const Bd182::BlockData &devData)
 {
-    WDFunc::SetLBLText(this, "Freq", QString::number(devData.Frequency, 'f', 3));
-    WDFunc::SetLBLText(this, "UA", QString::number(devData.IUefNat_filt[0], 'f', 3));
-    WDFunc::SetLBLText(this, "UB", QString::number(devData.IUefNat_filt[1], 'f', 3));
-    WDFunc::SetLBLText(this, "UC", QString::number(devData.IUefNat_filt[2], 'f', 3));
-    WDFunc::SetLBLText(this, "IA", QString::number(devData.IUefNat_filt[3], 'f', 3));
-    WDFunc::SetLBLText(this, "IB", QString::number(devData.IUefNat_filt[4], 'f', 3));
-    WDFunc::SetLBLText(this, "IC", QString::number(devData.IUefNat_filt[5], 'f', 3));
-    WDFunc::SetLBLText(this, "PhiLA", QString::number(m_calcValues.phiLoad[0], 'f', 3));
-    WDFunc::SetLBLText(this, "PhiLB", QString::number(m_calcValues.phiLoad[1], 'f', 3));
-    WDFunc::SetLBLText(this, "PhiLC", QString::number(m_calcValues.phiLoad[2], 'f', 3));
-    WDFunc::SetLBLText(this, "PhiUab", QString::number(m_calcValues.phiUab, 'f', 3));
-    WDFunc::SetLBLText(this, "PhiUbc", QString::number(m_calcValues.phiUbc, 'f', 3));
-    WDFunc::SetLBLText(this, "PhiUca", QString::number(m_calcValues.phiUca, 'f', 3));
+    LBLFunc::SetLBLText(this, "Freq", QString::number(devData.Frequency, 'f', 3));
+    LBLFunc::SetLBLText(this, "UA", QString::number(devData.IUefNat_filt[0], 'f', 3));
+    LBLFunc::SetLBLText(this, "UB", QString::number(devData.IUefNat_filt[1], 'f', 3));
+    LBLFunc::SetLBLText(this, "UC", QString::number(devData.IUefNat_filt[2], 'f', 3));
+    LBLFunc::SetLBLText(this, "IA", QString::number(devData.IUefNat_filt[3], 'f', 3));
+    LBLFunc::SetLBLText(this, "IB", QString::number(devData.IUefNat_filt[4], 'f', 3));
+    LBLFunc::SetLBLText(this, "IC", QString::number(devData.IUefNat_filt[5], 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiLA", QString::number(m_calcValues.phiLoad[0], 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiLB", QString::number(m_calcValues.phiLoad[1], 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiLC", QString::number(m_calcValues.phiLoad[2], 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiUab", QString::number(m_calcValues.phiUab, 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiUbc", QString::number(m_calcValues.phiUbc, 'f', 3));
+    LBLFunc::SetLBLText(this, "PhiUca", QString::number(m_calcValues.phiUca, 'f', 3));
 }

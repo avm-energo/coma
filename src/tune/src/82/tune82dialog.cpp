@@ -10,7 +10,7 @@
 #include <tune/82/tune82verification.h>
 #include <tune/tunereporter.h>
 #include <tune/tunetypes.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {

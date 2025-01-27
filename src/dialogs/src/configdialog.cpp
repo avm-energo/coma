@@ -8,7 +8,15 @@
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/filefunc.h>
+#include <widgets/wdfunc.h>
+
+#include <QDebug>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QMap>
+#include <QPushButton>
+#include <QScrollArea>
 
 #include <QDebug>
 #include <QGridLayout>
@@ -74,7 +82,7 @@ bool ConfigDialog::isDebugWidget(const quint16 id) const
 
 void ConfigDialog::saveConfigToFile()
 {
-    auto filepath = WDFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf");
+    auto filepath = FileFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf");
     if (filepath.isEmpty())
         return;
 
@@ -112,7 +120,7 @@ void ConfigDialog::saveConfigToFile()
 
 void ConfigDialog::loadConfigFromFile()
 {
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Config files (*.cf)");
+    auto filepath = FileFunc::ChooseFileForOpen(this, "Config files (*.cf)");
     if (filepath.isEmpty())
         return;
 

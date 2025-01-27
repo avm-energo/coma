@@ -8,7 +8,7 @@
 #include <tune/84/tune84check.h>
 #include <tune/84/tune84temp60.h>
 #include <tune/tunetypes.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 Tune84Dialog::Tune84Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {

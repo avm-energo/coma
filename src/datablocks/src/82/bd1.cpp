@@ -2,7 +2,7 @@
 
 #include <QtMath>
 /// TODO: [Card https://asu-vei.kaiten.ru/space/120909/card/28627204]
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 Bd182::Bd182(Device::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
 {

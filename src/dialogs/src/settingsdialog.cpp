@@ -1,5 +1,15 @@
 #include "dialogs/settingsdialog.h"
 
+#include <widgets/cbfunc.h>
+#include <widgets/chbfunc.h>
+#include <widgets/epopup.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
+#include <widgets/lefunc.h>
+#include <widgets/passwordlineedit.h>
+#include <widgets/pbfunc.h>
+#include <widgets/styleloader.h>
+
 #include <QCryptographicHash>
 #include <QGroupBox>
 #include <QGuiApplication>
@@ -11,10 +21,6 @@
 #include <QTimeZone>
 #include <QVBoxLayout>
 #include <QtDebug>
-#include <widgets/epopup.h>
-#include <widgets/passwordlineedit.h>
-#include <widgets/styleloader.h>
-#include <widgets/wd_func.h>
 
 using namespace Settings;
 
@@ -94,7 +100,7 @@ void SettingsDialog::setupGeneralTab() noexcept
 {
     auto workspaceLayout = createWorkspaceLayout("Общие настройки");
     // Изменение темы
-    auto themeComboBox = WDFunc::NewCB2(m_workspace, StyleLoader::availableStyles());
+    auto themeComboBox = CBFunc::NewCB(m_workspace, StyleLoader::availableStyles());
     int position = StyleLoader::GetInstance().styleNumber();
     themeComboBox->setCurrentIndex(position);
     connect(themeComboBox, &QComboBox::currentTextChanged, this, &SettingsDialog::themeChanged);
@@ -102,27 +108,27 @@ void SettingsDialog::setupGeneralTab() noexcept
     themeLayout->addWidget(new QLabel("Тема", m_workspace));
     themeLayout->addWidget(themeComboBox);
     workspaceLayout->addLayout(themeLayout);
-    workspaceLayout->addWidget(WDFunc::newHLine(m_workspace));
+    workspaceLayout->addWidget(GraphFunc::newHLine(m_workspace));
 
     // Изменение таймзоны
     auto zoneList = QTimeZone::availableTimeZoneIds();
     QStringList zonestrList;
     std::copy_if(zoneList.cbegin(), zoneList.cend(), std::back_inserter(zonestrList),
         [](const auto array) { return (array.contains("UTC+")); });
-    auto timezoneCB = WDFunc::NewCB2(m_workspace, m_settings.nameof<Timezone>(), zonestrList);
+    auto timezoneCB = CBFunc::NewCB(m_workspace, m_settings.nameof<Timezone>(), zonestrList);
     timezoneCB->setCurrentText(m_settings.defaultValue(Timezone).toString());
     auto timezoneLayout = new QHBoxLayout;
     timezoneLayout->addWidget(new QLabel("Часовой пояс", m_workspace));
     timezoneLayout->addWidget(timezoneCB);
     workspaceLayout->addLayout(timezoneLayout);
-    workspaceLayout->addWidget(WDFunc::newHLine(m_workspace));
+    workspaceLayout->addWidget(GraphFunc::newHLine(m_workspace));
 
     // Изменение пароля
     auto passwordGB = new QGroupBox("Пароль", m_workspace);
     auto passwordLayout = new QGridLayout;
     auto passwordLE = m_settings.nameof<PasswordHash>();
-    passwordLayout->addWidget(WDFunc::NewLBL2(passwordGB, "Обновить пароль:"), 1, 1, 1, 1);
-    passwordLayout->addWidget(WDFunc::NewPswLE2(passwordGB, passwordLE, QLineEdit::Password), 1, 2, 1, 1);
+    passwordLayout->addWidget(LBLFunc::NewLBL(passwordGB, "Обновить пароль:"), 1, 1, 1, 1);
+    passwordLayout->addWidget(LEFunc::NewPswLE(passwordGB, passwordLE, QLineEdit::Password), 1, 2, 1, 1);
     auto resetBtn = new QPushButton("Установить пароль по умолчанию", passwordGB);
     connect(resetBtn, &QAbstractButton::clicked, this, &SettingsDialog::resetPassword);
     passwordLayout->addWidget(resetBtn, 2, 1, 1, 2);
@@ -139,32 +145,32 @@ void SettingsDialog::setupConnectionTab() noexcept
     // Вкладка "Общие"
     auto generalLayout = createTabLayout(setupTabs, "Общие");
     auto widgetName = m_settings.nameof<LoggingEnabled>();
-    generalLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Запись обмена данными в файл"));
-    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
+    generalLayout->addWidget(ChBFunc::NewChB(m_workspace, widgetName, "Запись обмена данными в файл"));
+    generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<AlarmsInterval>();
-    generalLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Интервал запроса сигнализации, мс", widgetName, true));
-    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
+    generalLayout->addWidget(LEFunc::NewLBLAndLE(m_workspace, "Интервал запроса сигнализации, мс", widgetName, true));
+    generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<AlarmsEnabled>();
-    generalLayout->addWidget(WDFunc::NewChB2(m_workspace, widgetName, "Обновление сигнализации"));
-    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
+    generalLayout->addWidget(ChBFunc::NewChB(m_workspace, widgetName, "Обновление сигнализации"));
+    generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<SilentInterval>();
-    auto widget = WDFunc::NewLBLAndLE(m_workspace, "Время \"тихого\" переподключения, мс", widgetName, true);
+    auto widget = LEFunc::NewLBLAndLE(m_workspace, "Время \"тихого\" переподключения, мс", widgetName, true);
     widget->setToolTip("<p><font size=\"4\">Для выполнения некоторых операций (загрузка конфигурации или обновление "
                        "ВПО) требуется перезапуск устройства. Для таких операций предусмотрена возможность \"тихого\""
                        "переподключения, при котором не отображается диалог переподключения к устройству, а само "
                        "переподключение выполняется в фоновом режиме. Если указанного времени не хватит для "
                        "переподключения, диалог о переподключении к устройству появится в любом случае.</font></p>");
     generalLayout->addWidget(widget);
-    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
+    generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<TimeoutCount>();
-    widget = WDFunc::NewLBLAndLE(m_workspace, "Кол-во таймаутов для переподключения", widgetName, true);
+    widget = LEFunc::NewLBLAndLE(m_workspace, "Кол-во таймаутов для переподключения", widgetName, true);
     widget->setToolTip("<p><font size=\"4\">Количество подряд полученных таймаутов на посылаемые устройству "
                        "запросы, после которых будет предпринята попытка переподключиться к устройству по "
                        "тем же настройкам и интерфейсу для восстановления связи.</font></p>");
     generalLayout->addWidget(widget);
-    generalLayout->addWidget(WDFunc::newHLine(m_workspace));
+    generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<ErrorCount>();
-    widget = WDFunc::NewLBLAndLE(m_workspace, "Кол-во ошибок для переподключения", widgetName, true);
+    widget = LEFunc::NewLBLAndLE(m_workspace, "Кол-во ошибок для переподключения", widgetName, true);
     widget->setToolTip("<p><font size=\"4\">Количество подряд полученных ошибок от интерфейса связи с "
                        "устройством, после которых будет предпринята попытка переподключения к устройству.</font></p>");
     generalLayout->addWidget(widget);
@@ -172,57 +178,57 @@ void SettingsDialog::setupConnectionTab() noexcept
     // Вкладка "USB HID"
     auto protocomLayout = createTabLayout(setupTabs, "USB HID");
     widgetName = m_settings.nameof<ProtocomTimeout>();
-    protocomLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Таймаут отправки запроса, мс", widgetName, true));
-    protocomLayout->addWidget(WDFunc::newHLine(m_workspace));
+    protocomLayout->addWidget(LEFunc::NewLBLAndLE(m_workspace, "Таймаут отправки запроса, мс", widgetName, true));
+    protocomLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<ProtocomReconnect>();
-    widget = WDFunc::NewLBLAndLE(m_workspace, "Интервал переподключения, мс", widgetName, true);
+    widget = LEFunc::NewLBLAndLE(m_workspace, "Интервал переподключения, мс", widgetName, true);
     widget->setToolTip(reconnectIntervalTooltip);
     protocomLayout->addWidget(widget);
 
     // Вкладка "Modbus"
     auto modbusLayout = createTabLayout(setupTabs, "Modbus");
     widgetName = m_settings.nameof<ModbusTimeout>();
-    modbusLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Таймаут отправки запроса, мс", widgetName, true));
-    modbusLayout->addWidget(WDFunc::newHLine(m_workspace));
+    modbusLayout->addWidget(LEFunc::NewLBLAndLE(m_workspace, "Таймаут отправки запроса, мс", widgetName, true));
+    modbusLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<ModbusReconnect>();
-    widget = WDFunc::NewLBLAndLE(m_workspace, "Интервал переподключения, мс", widgetName, true);
+    widget = LEFunc::NewLBLAndLE(m_workspace, "Интервал переподключения, мс", widgetName, true);
     widget->setToolTip(reconnectIntervalTooltip);
     modbusLayout->addWidget(widget);
 
     // Вкладка "МЭК 61850-104"
     auto iec104Layout = createTabLayout(setupTabs, "МЭК 61850-104");
     widgetName = m_settings.nameof<Iec104Timeout>();
-    iec104Layout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Таймаут отправки запроса, мс", widgetName, true));
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
+    iec104Layout->addWidget(LEFunc::NewLBLAndLE(m_workspace, "Таймаут отправки запроса, мс", widgetName, true));
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<Iec104Reconnect>();
-    widget = WDFunc::NewLBLAndLE(m_workspace, "Интервал переподключения, мс", widgetName, true);
+    widget = LEFunc::NewLBLAndLE(m_workspace, "Интервал переподключения, мс", widgetName, true);
     widget->setToolTip(reconnectIntervalTooltip);
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
-    widget = WDFunc::NewLBLAndLE(m_workspace, "t0, с", m_settings.nameof<Iec104T0>(), true);
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
+    widget = LEFunc::NewLBLAndLE(m_workspace, "t0, с", m_settings.nameof<Iec104T0>(), true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут при установке соединения.</font></p>");
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
-    widget = WDFunc::NewLBLAndLE(m_workspace, "t1, с", m_settings.nameof<Iec104T1>(), true);
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
+    widget = LEFunc::NewLBLAndLE(m_workspace, "t1, с", m_settings.nameof<Iec104T1>(), true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут при посылке или тестировании APDU.</font></p>");
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
-    widget = WDFunc::NewLBLAndLE(m_workspace, "t2, с", m_settings.nameof<Iec104T2>(), true);
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
+    widget = LEFunc::NewLBLAndLE(m_workspace, "t2, с", m_settings.nameof<Iec104T2>(), true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут для отправки подтверждения о принятых APDU "
                        "в случае отсутствия сообщения с данными.</font></p>");
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
-    widget = WDFunc::NewLBLAndLE(m_workspace, "t3, с", m_settings.nameof<Iec104T3>(), true);
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
+    widget = LEFunc::NewLBLAndLE(m_workspace, "t3, с", m_settings.nameof<Iec104T3>(), true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут для посылки блоков тестирования "
                        "в случае долгого простоя соединения.</font></p>");
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
-    widget = WDFunc::NewLBLAndLE(m_workspace, "k", m_settings.nameof<Iec104K>(), true);
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
+    widget = LEFunc::NewLBLAndLE(m_workspace, "k", m_settings.nameof<Iec104K>(), true);
     widget->setToolTip("<p><font size=\"4\">Максимальное число неподтверждённых "
                        "APDU, отправляемых станцией.</font></p>");
     iec104Layout->addWidget(widget);
-    iec104Layout->addWidget(WDFunc::newHLine(m_workspace));
-    widget = WDFunc::NewLBLAndLE(m_workspace, "w", m_settings.nameof<Iec104W>(), true);
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
+    widget = LEFunc::NewLBLAndLE(m_workspace, "w", m_settings.nameof<Iec104W>(), true);
     widget->setToolTip("<p><font size=\"4\">Количество APDU информационного формата (I-посылок), "
                        "после приёма которых требуется отправить подтверждение.</font></p>");
     iec104Layout->addWidget(widget);
@@ -234,57 +240,57 @@ void SettingsDialog::setupTuneTab() noexcept
     // Вкладка "Общие"
     auto generalLayout = createTabLayout(tuneTabs, "Общие");
     auto widgetName = m_settings.nameof<TuneCount>();
-    generalLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Степень усреднения для регулировки", widgetName, true));
+    generalLayout->addWidget(LEFunc::NewLBLAndLE(m_workspace, "Степень усреднения для регулировки", widgetName, true));
     // Вкладка "МИП-02"
     auto mipLayout = createTabLayout(tuneTabs, "МИП-02");
     widgetName = m_settings.nameof<MipIp>();
-    mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "IP адрес устройства", widgetName, true));
-    mipLayout->addWidget(WDFunc::newHLine(m_workspace));
+    mipLayout->addWidget(LEFunc::NewLBLAndLE(m_workspace, "IP адрес устройства", widgetName, true));
+    mipLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<MipPort>();
-    mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Порт устройства", widgetName, true));
-    mipLayout->addWidget(WDFunc::newHLine(m_workspace));
+    mipLayout->addWidget(LEFunc::NewLBLAndLE(m_workspace, "Порт устройства", widgetName, true));
+    mipLayout->addWidget(GraphFunc::newHLine(m_workspace));
     widgetName = m_settings.nameof<MipBsAddress>();
-    mipLayout->addWidget(WDFunc::NewLBLAndLE(m_workspace, "Адрес базовой станции", widgetName, true));
+    mipLayout->addWidget(LEFunc::NewLBLAndLE(m_workspace, "Адрес базовой станции", widgetName, true));
 }
 
 void SettingsDialog::fill()
 {
-    WDFunc::SetCBData(this, m_settings.nameof<Timezone>(), m_settings.get<Timezone>());
-    WDFunc::SetChBData(this, m_settings.nameof<LoggingEnabled>(), m_settings.get<LoggingEnabled>());
-    WDFunc::SetLEData(this, m_settings.nameof<AlarmsInterval>(), m_settings.get<AlarmsInterval>());
-    WDFunc::SetChBData(this, m_settings.nameof<AlarmsEnabled>(), m_settings.get<AlarmsEnabled>());
-    WDFunc::SetLEData(this, m_settings.nameof<SilentInterval>(), m_settings.get<SilentInterval>());
-    WDFunc::SetLEData(this, m_settings.nameof<TimeoutCount>(), m_settings.get<TimeoutCount>());
-    WDFunc::SetLEData(this, m_settings.nameof<ErrorCount>(), m_settings.get<ErrorCount>());
-    WDFunc::SetLEData(this, m_settings.nameof<TuneCount>(), m_settings.get<TuneCount>());
-    WDFunc::SetLEData(this, m_settings.nameof<MipIp>(), m_settings.get<MipIp>());
-    WDFunc::SetLEData(this, m_settings.nameof<MipPort>(), m_settings.get<MipPort>());
-    WDFunc::SetLEData(this, m_settings.nameof<MipBsAddress>(), m_settings.get<MipBsAddress>());
-    WDFunc::SetLEData(this, m_settings.nameof<ProtocomTimeout>(), m_settings.get<ProtocomTimeout>());
-    WDFunc::SetLEData(this, m_settings.nameof<ProtocomReconnect>(), m_settings.get<ProtocomReconnect>());
-    WDFunc::SetLEData(this, m_settings.nameof<ModbusTimeout>(), m_settings.get<ModbusTimeout>());
-    WDFunc::SetLEData(this, m_settings.nameof<ModbusReconnect>(), m_settings.get<ModbusReconnect>());
-    WDFunc::SetLEData(this, m_settings.nameof<Iec104Timeout>(), m_settings.get<Iec104Timeout>());
-    WDFunc::SetLEData(this, m_settings.nameof<Iec104Reconnect>(), m_settings.get<Iec104Reconnect>());
-    WDFunc::SetLEData(this, m_settings.nameof<Iec104T0>(), m_settings.get<Iec104T0>());
-    WDFunc::SetLEData(this, m_settings.nameof<Iec104T1>(), m_settings.get<Iec104T1>());
-    WDFunc::SetLEData(this, m_settings.nameof<Iec104T2>(), m_settings.get<Iec104T2>());
-    WDFunc::SetLEData(this, m_settings.nameof<Iec104T3>(), m_settings.get<Iec104T3>());
-    WDFunc::SetLEData(this, m_settings.nameof<Iec104K>(), m_settings.get<Iec104K>());
-    WDFunc::SetLEData(this, m_settings.nameof<Iec104W>(), m_settings.get<Iec104W>());
+    CBFunc::SetCBData(this, m_settings.nameof<Timezone>(), m_settings.get<Timezone>());
+    ChBFunc::SetChBData(this, m_settings.nameof<LoggingEnabled>(), m_settings.get<LoggingEnabled>());
+    LEFunc::SetLEData(this, m_settings.nameof<AlarmsInterval>(), m_settings.get<AlarmsInterval>());
+    ChBFunc::SetChBData(this, m_settings.nameof<AlarmsEnabled>(), m_settings.get<AlarmsEnabled>());
+    LEFunc::SetLEData(this, m_settings.nameof<SilentInterval>(), m_settings.get<SilentInterval>());
+    LEFunc::SetLEData(this, m_settings.nameof<TimeoutCount>(), m_settings.get<TimeoutCount>());
+    LEFunc::SetLEData(this, m_settings.nameof<ErrorCount>(), m_settings.get<ErrorCount>());
+    LEFunc::SetLEData(this, m_settings.nameof<TuneCount>(), m_settings.get<TuneCount>());
+    LEFunc::SetLEData(this, m_settings.nameof<MipIp>(), m_settings.get<MipIp>());
+    LEFunc::SetLEData(this, m_settings.nameof<MipPort>(), m_settings.get<MipPort>());
+    LEFunc::SetLEData(this, m_settings.nameof<MipBsAddress>(), m_settings.get<MipBsAddress>());
+    LEFunc::SetLEData(this, m_settings.nameof<ProtocomTimeout>(), m_settings.get<ProtocomTimeout>());
+    LEFunc::SetLEData(this, m_settings.nameof<ProtocomReconnect>(), m_settings.get<ProtocomReconnect>());
+    LEFunc::SetLEData(this, m_settings.nameof<ModbusTimeout>(), m_settings.get<ModbusTimeout>());
+    LEFunc::SetLEData(this, m_settings.nameof<ModbusReconnect>(), m_settings.get<ModbusReconnect>());
+    LEFunc::SetLEData(this, m_settings.nameof<Iec104Timeout>(), m_settings.get<Iec104Timeout>());
+    LEFunc::SetLEData(this, m_settings.nameof<Iec104Reconnect>(), m_settings.get<Iec104Reconnect>());
+    LEFunc::SetLEData(this, m_settings.nameof<Iec104T0>(), m_settings.get<Iec104T0>());
+    LEFunc::SetLEData(this, m_settings.nameof<Iec104T1>(), m_settings.get<Iec104T1>());
+    LEFunc::SetLEData(this, m_settings.nameof<Iec104T2>(), m_settings.get<Iec104T2>());
+    LEFunc::SetLEData(this, m_settings.nameof<Iec104T3>(), m_settings.get<Iec104T3>());
+    LEFunc::SetLEData(this, m_settings.nameof<Iec104K>(), m_settings.get<Iec104K>());
+    LEFunc::SetLEData(this, m_settings.nameof<Iec104W>(), m_settings.get<Iec104W>());
 }
 
 void SettingsDialog::acceptSettings()
 {
     bool tmpb = false;
-    QString timezone = WDFunc::CBData(this, m_settings.nameof<Timezone>());
+    QString timezone = CBFunc::CBData(this, m_settings.nameof<Timezone>());
     if (!timezone.isEmpty())
         m_settings.set<Timezone>(timezone);
-    auto newPassword = WDFunc::LEData(this, "pswle");
+    auto newPassword = LEFunc::LEData(this, "pswle");
     if (!newPassword.isEmpty())
         updatePassword(newPassword);
 
-    auto tuneCount = WDFunc::LEData(this, m_settings.nameof<TuneCount>()).toInt(&tmpb);
+    auto tuneCount = LEFunc::LEData(this, m_settings.nameof<TuneCount>()).toInt(&tmpb);
     if (tmpb)
     {
         if ((tuneCount < 0) || (tuneCount > 100))
@@ -296,39 +302,39 @@ void SettingsDialog::acceptSettings()
         }
         m_settings.set<TuneCount>(tuneCount);
     }
-    m_settings.set<MipIp>(WDFunc::LEData(this, m_settings.nameof<MipIp>()));
-    m_settings.set<MipPort>(WDFunc::LEData(this, m_settings.nameof<MipPort>()));
-    m_settings.set<MipBsAddress>(WDFunc::LEData(this, m_settings.nameof<MipBsAddress>()));
+    m_settings.set<MipIp>(LEFunc::LEData(this, m_settings.nameof<MipIp>()));
+    m_settings.set<MipPort>(LEFunc::LEData(this, m_settings.nameof<MipPort>()));
+    m_settings.set<MipBsAddress>(LEFunc::LEData(this, m_settings.nameof<MipBsAddress>()));
 
-    if (WDFunc::ChBData(this, m_settings.nameof<LoggingEnabled>(), tmpb))
+    if (ChBFunc::ChBData(this, m_settings.nameof<LoggingEnabled>(), tmpb))
         m_settings.set<LoggingEnabled>(tmpb);
-    auto alarmsInterval = WDFunc::LEData(this, m_settings.nameof<AlarmsInterval>()).toInt(&tmpb);
+    auto alarmsInterval = LEFunc::LEData(this, m_settings.nameof<AlarmsInterval>()).toInt(&tmpb);
     if (tmpb)
     {
         m_settings.set<AlarmsInterval>(alarmsInterval);
         emit alarmIntervalUpdate(alarmsInterval);
     }
-    if (WDFunc::ChBData(this, m_settings.nameof<AlarmsEnabled>(), tmpb))
+    if (ChBFunc::ChBData(this, m_settings.nameof<AlarmsEnabled>(), tmpb))
     {
         m_settings.set<AlarmsEnabled>(tmpb);
         emit alarmOperationUpdate(tmpb);
     }
-    m_settings.set<SilentInterval>(WDFunc::LEData(this, m_settings.nameof<SilentInterval>()));
-    m_settings.set<TimeoutCount>(WDFunc::LEData(this, m_settings.nameof<TimeoutCount>()));
-    m_settings.set<ErrorCount>(WDFunc::LEData(this, m_settings.nameof<ErrorCount>()));
+    m_settings.set<SilentInterval>(LEFunc::LEData(this, m_settings.nameof<SilentInterval>()));
+    m_settings.set<TimeoutCount>(LEFunc::LEData(this, m_settings.nameof<TimeoutCount>()));
+    m_settings.set<ErrorCount>(LEFunc::LEData(this, m_settings.nameof<ErrorCount>()));
 
-    m_settings.set<ProtocomTimeout>(WDFunc::LEData(this, m_settings.nameof<ProtocomTimeout>()));
-    m_settings.set<ProtocomReconnect>(WDFunc::LEData(this, m_settings.nameof<ProtocomReconnect>()));
-    m_settings.set<ModbusTimeout>(WDFunc::LEData(this, m_settings.nameof<ModbusTimeout>()));
-    m_settings.set<ModbusReconnect>(WDFunc::LEData(this, m_settings.nameof<ModbusReconnect>()));
-    m_settings.set<Iec104Timeout>(WDFunc::LEData(this, m_settings.nameof<Iec104Timeout>()));
-    m_settings.set<Iec104Reconnect>(WDFunc::LEData(this, m_settings.nameof<Iec104Reconnect>()));
-    m_settings.set<Iec104T0>(WDFunc::LEData(this, m_settings.nameof<Iec104T0>()));
-    m_settings.set<Iec104T1>(WDFunc::LEData(this, m_settings.nameof<Iec104T1>()));
-    m_settings.set<Iec104T2>(WDFunc::LEData(this, m_settings.nameof<Iec104T2>()));
-    m_settings.set<Iec104T3>(WDFunc::LEData(this, m_settings.nameof<Iec104T3>()));
-    m_settings.set<Iec104K>(WDFunc::LEData(this, m_settings.nameof<Iec104K>()));
-    m_settings.set<Iec104W>(WDFunc::LEData(this, m_settings.nameof<Iec104W>()));
+    m_settings.set<ProtocomTimeout>(LEFunc::LEData(this, m_settings.nameof<ProtocomTimeout>()));
+    m_settings.set<ProtocomReconnect>(LEFunc::LEData(this, m_settings.nameof<ProtocomReconnect>()));
+    m_settings.set<ModbusTimeout>(LEFunc::LEData(this, m_settings.nameof<ModbusTimeout>()));
+    m_settings.set<ModbusReconnect>(LEFunc::LEData(this, m_settings.nameof<ModbusReconnect>()));
+    m_settings.set<Iec104Timeout>(LEFunc::LEData(this, m_settings.nameof<Iec104Timeout>()));
+    m_settings.set<Iec104Reconnect>(LEFunc::LEData(this, m_settings.nameof<Iec104Reconnect>()));
+    m_settings.set<Iec104T0>(LEFunc::LEData(this, m_settings.nameof<Iec104T0>()));
+    m_settings.set<Iec104T1>(LEFunc::LEData(this, m_settings.nameof<Iec104T1>()));
+    m_settings.set<Iec104T2>(LEFunc::LEData(this, m_settings.nameof<Iec104T2>()));
+    m_settings.set<Iec104T3>(LEFunc::LEData(this, m_settings.nameof<Iec104T3>()));
+    m_settings.set<Iec104K>(LEFunc::LEData(this, m_settings.nameof<Iec104K>()));
+    m_settings.set<Iec104W>(LEFunc::LEData(this, m_settings.nameof<Iec104W>()));
     close();
 }
 

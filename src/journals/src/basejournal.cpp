@@ -1,10 +1,11 @@
 #include "journals/basejournal.h"
 
-#include <QApplication>
-#include <QFile>
 #include <gen/timefunc.h>
 #include <widgets/etableview.h>
-#include <widgets/wd_func.h>
+#include <widgets/tvfunc.h>
+
+#include <QApplication>
+#include <QFile>
 #include <xlsxdocument.h>
 
 namespace journals
@@ -45,9 +46,9 @@ void BaseJournal::setUserTimezone(QStringList &data)
         time_pos->replace("UTC", TimeFunc::userTimeZoneName());
 }
 
-ETableView *BaseJournal::createModelView(QWidget *parent) const
+QTableView *BaseJournal::createModelView(QWidget *parent) const
 {
-    auto modelView = WDFunc::NewTV(parent, m_viewName, m_proxyModel.get());
+    auto modelView = TVFunc::NewQTV(parent, m_viewName, m_proxyModel.get());
     return modelView;
 }
 

@@ -5,7 +5,8 @@
 #include <tune/tunereporter.h>
 #include <tune/tunesequencefile.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/filefunc.h>
+#include <widgets/hexpbfunc.h>
 
 #include <QHBoxLayout>
 #include <QIcon>
@@ -33,13 +34,13 @@ void GeneralTuneDialog::SetupUI(bool noReport)
     for (auto &d : m_dialogList)
     {
         QString tns = "tn" + QString::number(count++);
-        lyout->addWidget(WDFunc::NewHexagonPB(
+        lyout->addWidget(HexPBFunc::NewHexagonPB(
             this, "tn" + QString::number(startStep++), [&d]() { d.dialog->show(); }, ":/tunes/" + tns + ".svg",
             d.caption));
     }
     if (!noReport)
     {
-        lyout->addWidget(WDFunc::NewHexagonPB(
+        lyout->addWidget(HexPBFunc::NewHexagonPB(
             this, "tnprotocol", [this]() { generateReport(); }, ":/tunes/tnprotocol.svg",
             "Генерация протокола регулировки"));
         ++m_tuneStepCount; // +1 на протокол регулировки
@@ -75,19 +76,19 @@ void GeneralTuneDialog::setCalibrButtons()
 {
     int calibrstep = TuneSequenceFile::value("step", "1").toInt();
     for (int i = 1; i < calibrstep; ++i)
-        WDFunc::setHexagonPBProcessed(this, "tn" + QString::number(i));
-    WDFunc::setHexagonPBNormal(this, "tn" + QString::number(calibrstep));
+        HexPBFunc::setHexagonPBProcessed(this, "tn" + QString::number(i));
+    HexPBFunc::setHexagonPBNormal(this, "tn" + QString::number(calibrstep));
     for (int i = (calibrstep + 1); i <= m_tuneStepCount; ++i)
-        WDFunc::setHexagonPBRestricted(this, "tn" + QString::number(i));
+        HexPBFunc::setHexagonPBRestricted(this, "tn" + QString::number(i));
     if (calibrstep < m_tuneStepCount)
-        WDFunc::setHexagonPBRestricted(this, "tnprotocol");
+        HexPBFunc::setHexagonPBRestricted(this, "tnprotocol");
 }
 
 void GeneralTuneDialog::generateReport()
 {
     if (EMessageBox::question(this, "Сохранить протокол поверки?"))
     {
-        QString filename = WDFunc::ChooseFileForSave(this, "*.pdf", "pdf");
+        QString filename = FileFunc::ChooseFileForSave(this, "*.pdf", "pdf");
         if (!filename.isEmpty())
         {
             prepareReport();

@@ -1,6 +1,9 @@
 #include "dialogs/relaydialog.h"
 
-#include <widgets/wd_func.h>
+#include <widgets/lblfunc.h>
+
+#include <QPushButton>
+#include <QVBoxLayout>
 
 RelayDialog::RelayDialog(int relayCount, Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
@@ -25,7 +28,7 @@ QWidget *RelayDialog::RelayWidget(int relayCount, QWidget *parent)
         QHBoxLayout *hlayout = new QHBoxLayout;
         QPushButton *button = new QPushButton("Переключить реле №" + QString::number(i + 1));
         hlayout->addWidget(button);
-        QLabel *label = WDFunc::NewLBL2(parent, "Разомкнуто", "lbl" + QString::number(i + startRelayReg));
+        QLabel *label = LBLFunc::NewLBL(parent, "Разомкнуто", "lbl" + QString::number(i + startRelayReg));
         hlayout->addWidget(label);
         connect(button, &QPushButton::clicked, this, [=] { changeRelay(i + startRelayReg); });
         vlyout->addLayout(hlayout);
@@ -69,7 +72,7 @@ void RelayDialog::changeRelay(int number, bool state)
     QString text = "Разомкнуто";
     if (state)
         text = "Замкнуто";
-    WDFunc::SetLBLText(this, "lbl" + QString::number(number), text);
+    LBLFunc::SetLBLText(this, "lbl" + QString::number(number), text);
 }
 
 void RelayDialog::resetRelays(int count)

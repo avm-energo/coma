@@ -1,11 +1,13 @@
 #include "alarms/alarmwidget.h"
 
-#include <QDialogButtonBox>
-#include <QTimer>
 #include <alarms/alarmbutton.h>
 #include <device/current_device.h>
 #include <settings/user_settings.h>
-#include <widgets/wd_func.h>
+#include <widgets/graphfunc.h>
+
+#include <QDialogButtonBox>
+#include <QTimer>
+#include <QVBoxLayout>
 
 AlarmWidget::AlarmWidget(QWidget *parent) : QWidget(parent), m_timer(new QTimer(this))
 {
@@ -64,13 +66,13 @@ void AlarmWidget::addAlarm(BaseAlarm *alarm, const QString caption)
         {
             alarm->setWindowTitle(caption);
             auto aButton = new AlarmButton(alarm);
-            aButton->setPixmap(WDFunc::NewCircle(Qt::transparent, circleRadius));
+            aButton->setPixmap(GraphFunc::NewCircle(Qt::transparent, circleRadius));
             aButton->setText(caption);
             connect(aButton, &QPushButton::clicked, alarm, &BaseAlarm::show);
             connect(m_timer, &QTimer::timeout, alarm, &BaseAlarm::reqUpdate);
             connect(alarm, &BaseAlarm::updateColor, aButton,                    //
                 [=](const QColor &color) {                                      //
-                    aButton->setPixmap(WDFunc::NewCircle(color, circleRadius)); //
+                    aButton->setPixmap(GraphFunc::NewCircle(color, circleRadius)); //
                 });                                                             //
 
             m_alarms.append(alarm);

@@ -1,16 +1,20 @@
 #include "widgets/uwidget.h"
 
-#include <QCoreApplication>
-#include <QDebug>
-#include <QEventLoop>
 #include <device/current_device.h>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/lblfunc.h>
+#include <widgets/wdfunc.h>
+
+#include <QCoreApplication>
+#include <QDebug>
+#include <QEventLoop>
 
 UWidget::UWidget(Device::CurrentDevice *device, QWidget *parent)
-    : QWidget(parent), m_dataUpdater(new ModuleDataUpdater(device->async(), this)), m_device(device)
+    : QWidget(parent)
+    , m_dataUpdater(new ModuleDataUpdater(device->async(), this))
+    , m_device(device)
 {
     Q_ASSERT(m_device != nullptr);
     // Отключим обновление виджета по умолчанию
@@ -34,9 +38,9 @@ void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     bool result;
     if (fl.sigQuality != DataTypes::Quality::Good)
-        result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), "***");
+        result = LBLFunc::SetLBLText(this, QString::number(fl.sigAdr), "***");
     else
-        result = WDFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));
+        result = LBLFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));
 #ifdef UWIDGET_DEBUG
     if (!result)
         qDebug() << Error::DescError << QString::number(fl.sigAdr) << WDFunc::StringValueWithCheck(fl.sigVal, 3);
@@ -75,9 +79,7 @@ void UWidget::reqUpdate()
     m_dataUpdater->requestUpdates();
 }
 
-void UWidget::uponInterfaceSetting()
-{
-}
+void UWidget::uponInterfaceSetting() { }
 
 bool UWidget::checkPassword()
 {

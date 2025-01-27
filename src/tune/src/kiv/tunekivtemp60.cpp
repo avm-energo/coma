@@ -5,8 +5,9 @@
 #include <interfaces/conn/sync_connection.h>
 #include <tune/tunesequencefile.h>
 #include <widgets/epopup.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
-#include <widgets/wd_func.h>
 
 #include <QEventLoop>
 #include <QMessageBox>
@@ -90,9 +91,9 @@ Error::Msg TuneKIVTemp60::showTempDialog()
     //    QWidget *w = new QWidget;
     QString tempstr = (m_tuneType == TUNING60) ? "+60" : "-20";
     //    lyout->addWidget(
-    //        WDFunc::NewLBL2(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"));
-    //    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", [&dlg] { dlg->close(); }));
-    //    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", [&dlg] { dlg->close(); }));
+    //        LBLFunc::NewLBL(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"));
+    //    lyout->addWidget(PBFunc::NewPB(this, "", "Готово", [&dlg] { dlg->close(); }));
+    //    lyout->addWidget(PBFunc::NewPB(this, "cancelpb", "Отмена", [&dlg] { dlg->close(); }));
     //    w->setLayout(lyout);
     if (!EMessageBox::next(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"))
         CancelTune();
@@ -128,28 +129,28 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
 {
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
-    lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
-    lyout->addWidget(WDFunc::NewLBL2(this,
+    lyout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
+    lyout->addWidget(LBLFunc::NewLBL(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
+    lyout->addWidget(LBLFunc::NewLBL(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
         "по напряжению 60 В, по току - 2,5 А;"));
-    lyout->addWidget(WDFunc::newHLine(w));
+    lyout->addWidget(GraphFunc::newHLine(w));
 
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
-    vlyout->addWidget(WDFunc::NewLBL2(w, "РЕТОМ-51"));
-    vlyout->addWidget(WDFunc::newHLine(w));
-    vlyout->addWidget(WDFunc::NewLBL2(w,
+    vlyout->addWidget(LBLFunc::NewLBL(w, "РЕТОМ-51"));
+    vlyout->addWidget(GraphFunc::newHLine(w));
+    vlyout->addWidget(LBLFunc::NewLBL(w,
         "Задайте трёхфазный режим токов и напряжений (Uabc, Iabc)\n"
         "Угол между токами и напряжениями: 89.9 град.,\n"
         "Значения напряжений: 57.75 В, токов: 140 мА"));
     hlyout->addLayout(vlyout);
-    hlyout->addWidget(WDFunc::newVLine(w));
+    hlyout->addWidget(GraphFunc::newVLine(w));
     vlyout = new QVBoxLayout;
-    vlyout->addWidget(WDFunc::NewLBL2(w, "ИМИТАТОР"));
-    vlyout->addWidget(WDFunc::newHLine(w));
-    vlyout->addWidget(WDFunc::NewLBL2(w, "Задайте tg 2 %, значения напряжений: 57.75 В, токов: 140 мА"));
+    vlyout->addWidget(LBLFunc::NewLBL(w, "ИМИТАТОР"));
+    vlyout->addWidget(GraphFunc::newHLine(w));
+    vlyout->addWidget(LBLFunc::NewLBL(w, "Задайте tg 2 %, значения напряжений: 57.75 В, токов: 140 мА"));
     hlyout->addLayout(vlyout);
     lyout->addLayout(hlyout);
     w->setLayout(lyout);
@@ -204,14 +205,14 @@ Error::Msg TuneKIVTemp60::inputEnergomonitorValues()
     //    dlg->setObjectName("energomonitordlg");
 
     //    QVBoxLayout *vlyout = new QVBoxLayout;
-    //    vlyout->addWidget(WDFunc::NewLBL2(this, "Ввод значений сигналов c Энергомонитора"));
+    //    vlyout->addWidget(LBLFunc::NewLBL(this, "Ввод значений сигналов c Энергомонитора"));
 
     popup->addFloatParameter("Uэт, В", &m_midTuneStruct.uet);
     popup->addFloatParameter("Iэт, мА", &m_midTuneStruct.iet);
     popup->addFloatParameter("Yэт, град", &m_midTuneStruct.yet);
-    //    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
-    //    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
-    //    vlyout->addWidget(WDFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
+    //    vlyout->addWidget(LEFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
+    //    vlyout->addWidget(LEFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
+    //    vlyout->addWidget(LEFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
     //    QPushButton *pb = new QPushButton("Продолжить");
     if (EMessageBox::editableNext(popup))
     {
@@ -240,9 +241,9 @@ Error::Msg TuneKIVTemp60::inputEnergomonitorValues()
 
 Error::Msg TuneKIVTemp60::calcTuneCoefs()
 {
-    //    m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
-    //    m_midTuneStruct.iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
-    //    m_midTuneStruct.yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"));
+    //    m_midTuneStruct.uet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneU"));
+    //    m_midTuneStruct.iet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneI"));
+    //    m_midTuneStruct.yet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneY"));
     MidTuneStruct tunenegative = m_midTuneStruct;
 
     loadWorkConfig();
@@ -282,9 +283,9 @@ void TuneKIVTemp60::loadIntermediateResults()
 
 void TuneKIVTemp60::saveIntermediateResults()
 {
-    //    m_midTuneStruct.uet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneU"));
-    //    m_midTuneStruct.iet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneI"));
-    //    m_midTuneStruct.yet = StdFunc::toFloat(WDFunc::LEData(this, "ValuetuneY"));
+    //    m_midTuneStruct.uet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneU"));
+    //    m_midTuneStruct.iet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneI"));
+    //    m_midTuneStruct.yet = StdFunc::toFloat(LEFunc::LEData(this, "ValuetuneY"));
     //    QString cpuserialnum = Board::GetInstance().UID();
     //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     //    for (const TuneDescrStruct &item : m_tuneDescrVector())

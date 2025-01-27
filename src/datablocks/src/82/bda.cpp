@@ -1,7 +1,7 @@
 #include "datablocks/82/bda.h"
 
 /// TODO: [Card https://asu-vei.kaiten.ru/space/120909/card/28627204]
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 Bda82::Bda82(QObject *parent) : DataBlock(parent)
 {

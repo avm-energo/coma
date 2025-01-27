@@ -4,8 +4,10 @@
 #include <gen/stdfunc.h>
 #include <tune/tunetypes.h>
 #include <widgets/epopup.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -21,6 +23,7 @@ Tune21One::Tune21One(Device::BoardTypes boardType, u8 chNum, Device::CurrentDevi
     m_bda->setup(m_device->getUID(), m_sync);
 
     setBac(m_bac);
+    m_bac->createWidget();
     addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
     setupUI();
 }
@@ -126,8 +129,8 @@ Error::Msg Tune21One::showScheme()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
-    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tune21.png"));
-    lyout->addWidget(WDFunc::NewLBL2(this, "Соберите схему подключения по вышеприведённой картинке"));
+    lyout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tune21.png"));
+    lyout->addWidget(LBLFunc::NewLBL(this, "Соберите схему подключения по вышеприведённой картинке"));
     w->setLayout(lyout);
 
     if (!EMessageBox::next(this, w))

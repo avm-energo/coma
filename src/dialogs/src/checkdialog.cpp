@@ -1,14 +1,16 @@
 #include "dialogs/checkdialog.h"
 
-#include <QGroupBox>
-#include <QTabWidget>
-#include <bitset>
 #include <device/current_device.h>
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
+
+#include <QGroupBox>
+#include <QTabWidget>
+#include <bitset>
 #include <set>
-#include <widgets/wd_func.h>
 
 using namespace Device::XmlDataTypes;
 
@@ -21,7 +23,8 @@ constexpr auto errStyle = "QLabel {border: 1px solid green; border-radius: 4px; 
                           "background-color: %1; color: black;}";
 
 CheckDialog::CheckDialog(const Section &section, Device::CurrentDevice *device, QWidget *parent)
-    : UDialog(device, parent), mSection(section)
+    : UDialog(device, parent)
+    , mSection(section)
 {
     auto &settings = m_device->getConfigStorage()->getDeviceSettings();
     setHighlights(AlarmType::Critical, settings.getHighlights(AlarmType::Critical));
@@ -169,7 +172,8 @@ void CheckDialog::addSignals(const QList<SGroup> &groups, UWidget *widget)
             // ... среди сигналов ищем такой, чтобы...
             auto search = std::find_if(sigMap.cbegin(), sigMap.cend(),
                 // ... виджет попадал в допустимый диапазон сигнала...
-                [&](const Device::SigMapValue &element) -> bool {
+                [&](const Device::SigMapValue &element) -> bool
+                {
                     auto &signal = element.second;
                     auto start = widget.startAddr;
                     auto end = (widget.view == ViewType::Bitset) ? (start + 1) : (start + widget.count);
@@ -278,8 +282,8 @@ void CheckDialog::updatePixmap(const MWidget &mwidget, const DataTypes::BitStrin
         for (auto i = 0; i < mwidget.count; ++i)
         {
             auto isSet = bitSet.test(i);
-            auto pixmap = WDFunc::NewCircle((isSet) ? activeColor : normalColor, circleRadius);
-            WDFunc::SetLBLImage(uwidget, stringAddr + "_" + QString::number(i), &pixmap);
+            auto pixmap = GraphFunc::NewCircle((isSet) ? activeColor : normalColor, circleRadius);
+            LBLFunc::SetLBLImage(uwidget, stringAddr + "_" + QString::number(i), &pixmap);
         }
     }
 }
@@ -289,7 +293,7 @@ QLabel *CheckDialog::createPixmapIndicator(const MWidget &mwidget, const quint32
     // TODO: Must be member of mwidget
     constexpr auto startIndex = 0;
 
-    auto pixmap = WDFunc::NewCircle(normalColor, circleRadius);
+    auto pixmap = GraphFunc::NewCircle(normalColor, circleRadius);
     auto indicatorLabel = new QLabel(this);
     indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(index));
     indicatorLabel->setPixmap(pixmap);

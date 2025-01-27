@@ -1,6 +1,10 @@
 #include "dialogs/aboutdialog.h"
 
-#include <widgets/wd_func.h>
+#include <widgets/graphfunc.h>
+#include <widgets/hexpbfunc.h>
+#include <widgets/lblfunc.h>
+
+#include <QVBoxLayout>
 
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent, Qt::Window | Qt::Dialog)
 {
@@ -12,10 +16,10 @@ void AboutDialog::setupUI()
     setWindowTitle("О программе");
     auto hlyout = new QHBoxLayout;
     auto lyout = new QVBoxLayout;
-    hlyout->addWidget(WDFunc::NewIcon(this, ":icons/avm-energo.svg"), 0);
+    hlyout->addWidget(GraphFunc::NewIcon(this, ":icons/avm-energo.svg"), 0);
     for (const auto &str : std::as_const(m_lines))
     {
-        auto label = WDFunc::NewLBL2(this, str);
+        auto label = LBLFunc::NewLBL(this, str);
         label->setTextInteractionFlags(Qt::TextSelectableByMouse);
         lyout->addWidget(label);
     }
@@ -24,8 +28,7 @@ void AboutDialog::setupUI()
     lyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
-    hlyout->addWidget(WDFunc::NewHexagonPB(
-        this, "", [this]() { this->close(); }, ":/icons/tnyes.svg", "Закрыть"));
+    hlyout->addWidget(HexPBFunc::NewHexagonPB(this, "", [this]() { this->close(); }, ":/icons/tnyes.svg", "Закрыть"));
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);

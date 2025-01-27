@@ -7,12 +7,16 @@
 #include <interfaces/types/settingstypes.h>
 #include <settings/user_settings.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/lblfunc.h>
+#include <widgets/pbfunc.h>
+#include <widgets/waitwidget.h>
+#include <widgets/wdfunc.h>
 
 #include <QEventLoop>
 #include <QGroupBox>
 #include <QSettings>
 #include <QThread>
+#include <QVBoxLayout>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
     : QObject(parent)
@@ -47,7 +51,7 @@ void Mip::updateData(const DataTypes::FloatStruct &fl)
     }
     if (m_withGUI)
     {
-        WDFunc::SetLBLText(m_widget, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));
+        LBLFunc::SetLBLText(m_widget, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));
         // m_widget->updateFloatData(fl);
     }
 }
@@ -69,54 +73,55 @@ void Mip::setupWidget()
     {
         auto phase = QString::number(i + 10, 16).toUpper();
         measLayout->addWidget(
-            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 1), "Частота ф. " + phase, true), 0, i);
+            LBLFunc::NewLBLAndLBL(m_widget, QString::number(i + 1), "Частота ф. " + phase, true), 0, i);
         measLayout->addWidget(
-            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 4), "Фазное напряжение ф. " + phase, true), 1, i);
+            LBLFunc::NewLBLAndLBL(m_widget, QString::number(i + 4), "Фазное напряжение ф. " + phase, true), 1, i);
         measLayout->addWidget(
-            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 7), "Фазный ток ф. " + phase, true), 3, i);
+            LBLFunc::NewLBLAndLBL(m_widget, QString::number(i + 7), "Фазный ток ф. " + phase, true), 3, i);
         measLayout->addWidget(
-            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 11), "Угол нагрузки ф. " + phase, true), 4, i);
+            LBLFunc::NewLBLAndLBL(m_widget, QString::number(i + 11), "Угол нагрузки ф. " + phase, true), 4, i);
         measLayout->addWidget(
-            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 14), "Фазовый угол напряжения ф. " + phase, true), 5, i);
+            LBLFunc::NewLBLAndLBL(m_widget, QString::number(i + 14), "Фазовый угол напряжения ф. " + phase, true), 5,
+            i);
     }
-    measLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "10", "Ток нулевого провода", true), 6, 0);
-    measLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "17", "Температура МИП", true), 6, 1);
+    measLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "10", "Ток нулевого провода", true), 6, 0);
+    measLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "17", "Температура МИП", true), 6, 1);
     measGroup->setLayout(measLayout);
     mipWidgetLayout->addWidget(measGroup);
 
     auto computedGroup = new QGroupBox("Вычисляемые параметры", m_widget);
     auto computedLayout = new QGridLayout;
-    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "19", "Линейное напряжение AB", true), 0, 0);
-    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "20", "Линейное напряжение BC", true), 0, 1);
-    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "21", "Линейное напряжение CA", true), 0, 2);
+    computedLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "19", "Линейное напряжение AB", true), 0, 0);
+    computedLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "20", "Линейное напряжение BC", true), 0, 1);
+    computedLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "21", "Линейное напряжение CA", true), 0, 2);
     for (int i = 0; i < 3; ++i)
     {
         auto phase = QString::number(i + 10, 16).toUpper();
         computedLayout->addWidget(
-            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 22), "Активная мощность ф. " + phase, true), 1, i);
+            LBLFunc::NewLBLAndLBL(m_widget, QString::number(i + 22), "Активная мощность ф. " + phase, true), 1, i);
         computedLayout->addWidget(
-            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 26), "Реактивная мощность ф. " + phase, true), 2, i);
+            LBLFunc::NewLBLAndLBL(m_widget, QString::number(i + 26), "Реактивная мощность ф. " + phase, true), 2, i);
         computedLayout->addWidget(
-            WDFunc::NewLBLAndLBL(m_widget, QString::number(i + 30), "Полная мощность ф. " + phase, true), 3, i);
+            LBLFunc::NewLBLAndLBL(m_widget, QString::number(i + 30), "Полная мощность ф. " + phase, true), 3, i);
     }
-    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "25", "Активная общая мощность", true), 4, 0);
-    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "29", "Реактивная общая мощность", true), 4, 1);
-    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "33", "Полная общая мощность", true), 4, 2);
+    computedLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "25", "Активная общая мощность", true), 4, 0);
+    computedLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "29", "Реактивная общая мощность", true), 4, 1);
+    computedLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "33", "Полная общая мощность", true), 4, 2);
     computedLayout->addWidget(
-        WDFunc::NewLBLAndLBL(m_widget, "36", "Напряжение нулевой последовательности", true), 5, 0);
+        LBLFunc::NewLBLAndLBL(m_widget, "36", "Напряжение нулевой последовательности", true), 5, 0);
     computedLayout->addWidget( //
-        WDFunc::NewLBLAndLBL(m_widget, "37", "Напряжение прямой последовательности", true), 5, 1);
+        LBLFunc::NewLBLAndLBL(m_widget, "37", "Напряжение прямой последовательности", true), 5, 1);
     computedLayout->addWidget(
-        WDFunc::NewLBLAndLBL(m_widget, "38", "Напряжение обратной последовательности", true), 5, 2);
-    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "39", "Ток нулевой последовательности", true), 6, 0);
-    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "40", "Ток прямой последовательности", true), 6, 1);
-    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "41", "Ток обратной последовательности", true), 6, 2);
-    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "43", "phiUab", true), 7, 0);
-    computedLayout->addWidget(WDFunc::NewLBLAndLBL(m_widget, "44", "phiUbc", true), 7, 1);
+        LBLFunc::NewLBLAndLBL(m_widget, "38", "Напряжение обратной последовательности", true), 5, 2);
+    computedLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "39", "Ток нулевой последовательности", true), 6, 0);
+    computedLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "40", "Ток прямой последовательности", true), 6, 1);
+    computedLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "41", "Ток обратной последовательности", true), 6, 2);
+    computedLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "43", "phiUab", true), 7, 0);
+    computedLayout->addWidget(LBLFunc::NewLBLAndLBL(m_widget, "44", "phiUbc", true), 7, 1);
     computedGroup->setLayout(computedLayout);
     mipWidgetLayout->addWidget(computedGroup);
 
-    mipWidgetLayout->addWidget(WDFunc::NewPB(m_widget, "", "Далее",
+    mipWidgetLayout->addWidget(PBFunc::NewPB(m_widget, "", "Далее",
         [=]
         {
             stop();
