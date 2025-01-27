@@ -10,7 +10,7 @@
 #include <oscillograms/parseid10040.h>
 #include <oscillograms/parseid10050.h>
 #include <s2/s2util.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
 
 OscManager::~OscManager()
 {

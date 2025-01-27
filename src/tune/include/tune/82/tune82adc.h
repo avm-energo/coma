@@ -11,7 +11,7 @@ class Tune82ADC final : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune82ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
+    Tune82ADC(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
     Bac82 *m_bac;

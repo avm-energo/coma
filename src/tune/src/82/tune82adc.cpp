@@ -1,17 +1,18 @@
 #include "tune/82/tune82adc.h"
 
-#include <QMessageBox>
-#include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <tune/82/verification_offset.h>
-#include <tune/tunesteps.h>
 #include <widgets/epopup.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
-#include <widgets/wd_func.h>
 
-Tune82ADC::Tune82ADC(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent)
+#include <QMessageBox>
+#include <QVBoxLayout>
+
+Tune82ADC::Tune82ADC(Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(device, parent)
     , m_bac(new Bac82(this))
     , m_bd1(new Bd182(m_typeM, this))
     , m_bda(new Bda82(this))
@@ -34,7 +35,6 @@ Tune82ADC::Tune82ADC(int tuneStep, Device::CurrentDevice *device, QWidget *paren
 
 void Tune82ADC::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Установка настроечных коэффициентов по умолчанию...", &Tune82ADC::setDefBac);
     addTuneFunc("Получение текущих аналоговых данных и их проверка...", &Tune82ADC::getAnalogData);
@@ -118,7 +118,7 @@ Error::Msg Tune82ADC::calcIUcoef1()
     if (!EMessageBox::next(this, "Задайте напряжения равными 60,0 В и токи, равными 1,0 А"))
     {
         CancelTune();
-        return Error::GeneralError;
+        return Error::Cancelled;
     }
     StdFunc::Wait(2000);
     // waitNSeconds(2);
@@ -156,7 +156,7 @@ Error::Msg Tune82ADC::calcIcoef5()
     if (!EMessageBox::next(this, "Задайте токи, равными 5,0 А"))
     {
         CancelTune();
-        return Error::GeneralError;
+        return Error::Cancelled;
     }
     StdFunc::Wait(2000);
     // waitNSeconds(2);
@@ -186,9 +186,9 @@ Error::Msg Tune82ADC::showPreWarning()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
-    lyout->addWidget(WDFunc::NewIcon(this, ":/tunes/tune82.png"));
-    lyout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
-    lyout->addWidget(WDFunc::NewLBL2(this,
+    lyout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tune82.png"));
+    lyout->addWidget(LBLFunc::NewLBL(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
+    lyout->addWidget(LBLFunc::NewLBL(this,
         "2. Задайте на РЕТОМ трехфазный режим токов и напряжений с углами сдвига"
         "в фазах А токов и напряжений 0 градусов, в фазах В - 240, в фазах С - 120 градусов,"
         "НЕ МЕНЯЯ ЗНАЧЕНИЙ НАПРЯЖЕНИЙ И ТОКОВ!"));
@@ -197,7 +197,7 @@ Error::Msg Tune82ADC::showPreWarning()
     if (!EMessageBox::next(this, w))
     {
         CancelTune();
-        return Error::GeneralError;
+        return Error::Cancelled;
     }
     return Error::NoError;
 }
@@ -225,7 +225,7 @@ Error::Msg Tune82ADC::checkTune()
         StdFunc::Wait(500);
     }
     if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
+        return Error::Msg::Cancelled;
     return Error::Msg::NoError;
 }
 

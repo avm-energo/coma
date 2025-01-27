@@ -1,13 +1,15 @@
 #pragma once
 
-#include <QApplication>
-#include <QListWidget>
-#include <QMainWindow>
-#include <QStackedWidget>
 #include <dialogs/dialogmanager.h>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/types/settingstypes.h>
 #include <oscillograms/oscmanager.h>
+#include <widgets/estatusbar.h>
+
+#include <QApplication>
+#include <QListWidget>
+#include <QMainWindow>
+#include <QStackedWidget>
 
 class AlarmWidget;
 class Module;
@@ -62,6 +64,7 @@ private:
     Device::CurrentDevice *m_currentDevice;
     UniquePointer<DialogManager> m_dlgManager;
     ReconnectDialog *m_reconnectDialog;
+    EStatusBar *m_bar;
 
     AlarmWidget *AlarmW;
     OscManager oscManager;

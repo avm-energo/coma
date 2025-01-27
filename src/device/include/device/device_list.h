@@ -7,6 +7,12 @@
 namespace Device
 {
 
+enum class BoardTypes : u8
+{
+    BASEBOARD = 0x01,
+    MEZZBOARD = 0x02
+};
+
 enum class Model : u16
 {
     KTF = 0xA282,

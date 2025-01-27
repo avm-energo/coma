@@ -1,15 +1,18 @@
 #include "dialogs/switchjournaldialog.h"
 
-#include <QHeaderView>
-#include <QMessageBox>
 #include <device/current_device.h>
 #include <gen/files.h>
 #include <gen/timefunc.h>
 #include <models/etablemodel.h>
 #include <oscillograms/swjmanager.h>
 #include <s2/s2util.h>
+#include <widgets/etableview.h>
+#include <widgets/filefunc.h>
 #include <widgets/pushbuttondelegate.h>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
+
+#include <QHeaderView>
+#include <QMessageBox>
 
 // constexpr int MAXSWJNUM = 262144;
 constexpr unsigned char TECH_SWJ = 0x04;
@@ -26,15 +29,17 @@ void SwitchJournalDialog::setupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Получить журналы переключений");
-    connect(pb, &QAbstractButton::clicked, this, [&] {
-        swjMap.clear();
-        tableModel = UniquePointer<ETableModel>(new ETableModel);
-        tableModel->setHorizontalHeaderLabels(
-            { "#", "Номер переключения", "Дата/Время", "Аппарат", "Переключение", "Скачать" });
-        swjTableView->setModel(tableModel.get());
+    connect(pb, &QAbstractButton::clicked, this,
+        [&]
+        {
+            swjMap.clear();
+            tableModel = UniquePointer<ETableModel>(new ETableModel);
+            tableModel->setHorizontalHeaderLabels(
+                { "#", "Номер переключения", "Дата/Время", "Аппарат", "Переключение", "Скачать" });
+            swjTableView->setModel(tableModel.get());
 
-        engine()->currentConnection()->writeCommand(Commands::C_ReqBlkDataTech, TECH_SWJ);
-    });
+            engine()->currentConnection()->writeCommand(Commands::C_ReqBlkDataTech, TECH_SWJ);
+        });
 
     hlyout->addWidget(pb);
     pb = new QPushButton("Стереть журнал переключений");
@@ -178,7 +183,7 @@ void SwitchJournalDialog::exportSwJ(uint32_t swjNum)
     if (!swjFile.exists() || (swjFile.size() < size))
         QMessageBox::information(this, "Сохранение", "Скачайте перед сохранением");
 
-    auto newFile = WDFunc::ChooseFileForSave(this, "Файлы журналов (*.swj)", "swj");
+    auto newFile = FileFunc::ChooseFileForSave(this, "Файлы журналов (*.swj)", "swj");
     if (!QFile::copy(currentFile, newFile))
     {
         QMessageBox::warning(this, "Сохранение", "Скачайте перед сохранением");
@@ -285,12 +290,14 @@ void SwitchJournalViewDialog::setupUI(SwjModel &swjModel, TrendViewModelCRef osc
     pb->setToolTip("Открыть");
     pb->setMinimumSize(50, 50);
     pb->setIconSize(QSize(50, 50));
-    connect(pb, &QPushButton::clicked, this, [&] {
-        if (oscModel)
+    connect(pb, &QPushButton::clicked, this,
+        [&]
         {
-            oscManager.loadOsc(oscModel.get());
-        }
-    });
+            if (oscModel)
+            {
+                oscManager.loadOsc(oscModel.get());
+            }
+        });
     buttonLayout->addWidget(pb);
     auto swjDialog = qobject_cast<SwitchJournalDialog *>(parent());
     if (swjDialog)

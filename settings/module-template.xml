@@ -2,6 +2,10 @@
 <module mtypeb="%2" mtypem="%3">
     <name>%1</name>
     <version>%4</version>
+    <features>
+        <isBoxModule>0</isBoxModule>
+        <isRTCExist>1</isRTCExist>
+    </features>
     <resources>
         <signals desc="Сигналы">
         </signals>

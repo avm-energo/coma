@@ -11,9 +11,12 @@ public:
         float sin[8];
     };
 
-    Bda21(QObject *parent = nullptr);
+    Bda21(u8 blockNum, QObject *parent = nullptr);
     void setupValuesDesc() override;
 
 private:
-    BlockData *m_blockData;
+    std::unique_ptr<BlockData> m_blockData;
+
+public:
+    BlockData *data();
 };

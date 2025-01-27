@@ -8,16 +8,16 @@
 #include <tune/kiv/tunekivcheck.h>
 #include <tune/kiv/tunekivr.h>
 #include <tune/kiv/tunekivtemp60.h>
-#include <tune/tunesteps.h>
-#include <widgets/wd_func.h>
+#include <tune/tunetypes.h>
+#include <widgets/wdfunc.h>
 
 TuneKIVDialog::TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    auto TKIVADCUDialog = new TuneKIVADC(KIVTS_ADCU, device, this);
-    auto TKIVADCIDialog = new TuneKIVADC(KIVTS_ADCI, device, this);
-    auto TKIVCheckDialog = new TuneKIVCheck(KIVTS_CHECKING, device, this);
-    auto TKIVRDialog = new TuneKIVR(KIVTS_PT100, device, this);
+    auto TKIVADCUDialog = new TuneKIVADC(ADCU, device, this);
+    auto TKIVADCIDialog = new TuneKIVADC(ADCI, device, this);
+    auto TKIVCheckDialog = new TuneKIVCheck(device, this);
+    auto TKIVRDialog = new TuneKIVR(device, this);
     m_dialogList = { { "Проверка правильности измерения входных сигналов", TKIVCheckDialog },
         { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
         { "Регулировка каналов тока", TKIVADCIDialog } };
@@ -27,7 +27,7 @@ TuneKIVDialog::TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent) : G
     bac2->setup(m_device->getUID(), m_device->sync());
     addWidgetToTabWidget(bac->widget(), "Первая часть");
     addWidgetToTabWidget(bac2->widget(), "Вторая часть");
-    SetupUI();
+    SetupUI(true);
 }
 
 void TuneKIVDialog::prepareReport()

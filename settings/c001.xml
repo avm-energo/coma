@@ -3,8 +3,8 @@
     <name>АВМ-МПГ</name>
     <version>0.6-1000</version>
     <features>
-        <isBoxModule value="1"/>
-        <isRTCExist value="0"/>
+        <isBoxModule>1</isBoxModule>
+        <isRTCExist>0</isRTCExist>
     </features>
     <resources>
         <alarms desc="Сигнализация">

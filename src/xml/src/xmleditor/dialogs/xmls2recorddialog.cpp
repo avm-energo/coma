@@ -1,7 +1,10 @@
-#include "xml/xmleditor/dialogs/xmls2recorddialog.h"
-
+#include <gen/stdfunc.h>
+#include <gen/xml/xmlparse.h>
 #include <limits>
-#include <widgets/wd_func.h>
+#include <widgets/wdfunc.h>
+#include <xml/xmleditor/dialogs/xmls2recorddialog.h>
+#include <xml/xmleditor/models/xmldatamodel.h>
+#include <xml/xmltags.h>
 
 const QStringList XmlS2RecordDialog::s_dataTypes {
     "BYTE", "BYTE[4]", "BYTE[6]", "BYTE[8]", "BYTE[16]", "BYTE[32]",       //
@@ -149,17 +152,13 @@ void XmlS2RecordDialog::createWidgetEditBox()
     widgetLayout->addLayout(widgetTypeLayout);
     m_dlgItems.append(widgetTypeInput);
 
+    bool ok = loadS2TabsData();
     // Виджеты для ID вкладки виджета
     auto groupLabel = new QLabel("ID вкладки виджета: ", this);
-    auto groupInput = new QSpinBox(this);
-    groupInput->setMinimum(0);
-    groupInput->setMaximum(idMax);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(groupInput, &QSpinBox::textChanged, this, //
-        qOverload<const QString &>(&XmlS2RecordDialog::dataChanged));
-#endif
-    QObject::connect(groupInput, qOverload<int>(&QSpinBox::valueChanged), //
-        this, qOverload<int>(&XmlS2RecordDialog::dataChanged));
+    auto groupInput = new EComboBox(this);
+    groupInput->setItems(m_s2TabsMap);
+    QObject::connect(groupInput, &EComboBox::currentIndexChanged, this, //
+        qOverload<int>(&XmlS2RecordDialog::dataChanged));
     groupLayout->addWidget(groupLabel);
     groupLayout->addWidget(groupInput);
     widgetLayout->addLayout(groupLayout);
@@ -290,8 +289,44 @@ void XmlS2RecordDialog::createWidgetEditBox()
     m_widgetEdit->setLayout(widgetLayout);
 }
 
+void XmlS2RecordDialog::parseConfigTab(const QDomNode &tabNode)
+{
+    int index = XmlParse::parseNumFromNode<u32>(tabNode, tags::id);
+    QString desc = XmlParse::parseString(tabNode, tags::name);
+    m_s2TabsMap[desc] = index;
+}
+
 void XmlS2RecordDialog::loadModelData(const QStringList &response)
 {
     XmlDialog::loadModelData(response);
     resetChangeState();
+}
+
+bool XmlS2RecordDialog::loadS2TabsData()
+{
+    QDir homeDir(StdFunc::GetSystemHomeDir());
+    auto filename = qvariant_cast<QString>("s2files.xml");
+    auto moduleFile = new QFile(homeDir.filePath(filename), this);
+    if (moduleFile->open(QIODevice::ReadOnly))
+    {
+        QDomDocument domDoc;
+        QString errMsg = "";
+        auto line = 0, column = 0;
+        if (domDoc.setContent(moduleFile, &errMsg, &line, &column))
+        {
+            auto domElement = domDoc.documentElement();
+            XmlParse::parseNode(domElement, tags::conf_tabs, [this](const QDomNode &tabNode) {
+                parseConfigTab(tabNode); //
+            });
+        }
+        // Если QtXml парсер не смог корректно считать xml файл
+        else
+        {
+            qWarning() << errMsg << " File: " << filename << " Line: " << line << " Column: " << column;
+            return false;
+        }
+        moduleFile->close();
+    }
+    moduleFile->deleteLater();
+    return true;
 }

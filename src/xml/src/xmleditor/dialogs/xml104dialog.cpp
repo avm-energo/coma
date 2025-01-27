@@ -1,9 +1,10 @@
 #include "xml/xmleditor/dialogs/xml104dialog.h"
 
+#include <widgets/wdfunc.h>
+
 #include <QHash>
 #include <cstdint>
 #include <variant>
-#include <widgets/wd_func.h>
 
 namespace StringData
 {
@@ -20,9 +21,7 @@ constexpr auto noneNum = "";
 
 constexpr auto transTypeIndex = 2;
 
-Xml104Dialog::Xml104Dialog(QWidget *parent) : XmlDialog(parent)
-{
-}
+Xml104Dialog::Xml104Dialog(QWidget *parent) : XmlDialog(parent) { }
 
 QString Xml104Dialog::convertStringToType(const QString &namedTransType)
 {
@@ -77,7 +76,7 @@ void Xml104Dialog::setupUI(QVBoxLayout *mainLayout)
     // Виджеты для типа регистра
     auto sigTypeLabel = new QLabel("Тип регистра: ", this);
     auto sigTypeInput = new QLineEdit("", this);
-    sigTypeInput->setValidator(WDFunc::getRegExpValidator("^([1-9][0-9]*|0)", this));
+    sigTypeInput->setValidator(new QRegularExpressionValidator(QRegularExpression("^([1-9][0-9]*|0)"), this));
     QObject::connect(
         sigTypeInput, &QLineEdit::textEdited, this, qOverload<const QString &>(&Xml104Dialog::dataChanged));
     sigTypeLayout->addWidget(sigTypeLabel);

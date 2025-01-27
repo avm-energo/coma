@@ -1,15 +1,19 @@
 #include "tune/kiv/tunekivr.h"
 
-#include <QMessageBox>
-#include <QVBoxLayout>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <widgets/epopup.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
-#include <widgets/wd_func.h>
 
-TuneKIVR::TuneKIVR(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent), m_bac(new Bac2A284(this)), m_bda(new BdaA284(this))
+#include <QMessageBox>
+#include <QVBoxLayout>
+
+TuneKIVR::TuneKIVR(Device::CurrentDevice *device, QWidget *parent)
+    : AbstractTuneDialog(device, parent)
+    , m_bac(new Bac2A284(this))
+    , m_bda(new BdaA284(this))
 {
     m_bac->setup(m_device->getUID(), m_sync);
     m_bda->setup(m_device->getUID(), m_sync);
@@ -22,13 +26,12 @@ TuneKIVR::TuneKIVR(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
 
 void TuneKIVR::setTuneFunctions()
 {
-    addTuneFunc("1. Ввод пароля...", &AbstractTuneDialog::CheckPassword);
-    addTuneFunc("2. Отображение предупреждения...", &TuneKIVR::showPreWarning);
-    addTuneFunc("3. Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
-    addTuneFunc("4. Настройка канала измерения температуры (КИТ): установка 80 Ом...", &TuneKIVR::setR80);
-    addTuneFunc("5. Настройка КИТ: обработка...", &TuneKIVR::processR80);
-    addTuneFunc("6. Настройка канала измерения температуры (КИТ): установка 120 Ом...", &TuneKIVR::setR120);
-    addTuneFunc("7. Настройка КИТ: обработка и запись коэффициентов...", &TuneKIVR::processR120);
+    addTuneFunc("Отображение предупреждения...", &TuneKIVR::showPreWarning);
+    addTuneFunc("Запрос настроечных параметров...", &AbstractTuneDialog::readTuneCoefs);
+    addTuneFunc("Настройка канала измерения температуры (КИТ): установка 80 Ом...", &TuneKIVR::setR80);
+    addTuneFunc("Настройка КИТ: обработка...", &TuneKIVR::processR80);
+    addTuneFunc("Настройка канала измерения температуры (КИТ): установка 120 Ом...", &TuneKIVR::setR120);
+    addTuneFunc("Настройка КИТ: обработка и запись коэффициентов...", &TuneKIVR::processR120);
 }
 
 Error::Msg TuneKIVR::showPreWarning()
@@ -37,13 +40,13 @@ Error::Msg TuneKIVR::showPreWarning()
     auto widget = new QWidget(this);
     auto layout = new QVBoxLayout;
 
-    layout->addWidget(WDFunc::NewIcon(this, ":/tunes/tunekiv1.png"), 0);
-    layout->addWidget(WDFunc::NewLBL2(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
-    layout->addWidget(WDFunc::NewLBL2(this,
+    layout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tunekiv1.png"), 0);
+    layout->addWidget(LBLFunc::NewLBL(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
+    layout->addWidget(LBLFunc::NewLBL(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока "
         "и напряжения в однофазной сети переменного тока, установите предел измерения "
         "по напряжению 60 В, по току - 2,5 А;"));
-    layout->addWidget(WDFunc::NewLBL2(this,
+    layout->addWidget(LBLFunc::NewLBL(this,
         "3. Данный этап регулировки должен выполняться при температуре "
         "окружающего воздуха +20±7 °С. Если температура окружающего воздуха отличается от указанной, "
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
@@ -84,7 +87,7 @@ Error::Msg TuneKIVR::processR120()
     if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
 #ifndef NO_LIMITS
-    if (WDFunc::floatIsWithinLimits("сопротивления", pt100_120, m_pt100, 40, false))
+    if (StdFunc::FloatIsWithinLimits(pt100_120, m_pt100, 40))
     {
         WARNMSG("Ошибка в полученных данных, значения сопротивлений равны");
         StdFunc::Cancel();

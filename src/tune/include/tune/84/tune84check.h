@@ -6,7 +6,7 @@ class Tune84Check final : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    Tune84Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
+    Tune84Check(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
     void setTuneFunctions() override;

@@ -1,10 +1,11 @@
 #pragma once
 
+#include <gen/datatypes.h>
+#include <gen/error.h>
+
 #include <QHBoxLayout>
 #include <QScrollArea>
 #include <QWidget>
-#include <gen/datatypes.h>
-#include <gen/error.h>
 #include <variant>
 
 namespace Interface
@@ -114,10 +115,28 @@ public:
         int end = fromWhich + howMuch;
         for (int i = start; i < end; ++i)
         {
-            vg.values.append({ name + QString::number(i), "", "value[" + QString::number(valueNumberCounter) + "]",
+            vg.values.append({ name + QString::number(i), "", "value[" + QString::number(m_valueNumberCounter) + "]",
                 startValue, precision });
             ++startValue;
-            ++valueNumberCounter;
+            ++m_valueNumberCounter;
+        }
+        m_valuesDesc.append(vg);
+    }
+
+    template <typename T>                                                     //
+    void addNewGroupByPointers(const QString &groupName, const QString &name, //
+        int fromWhich, int howMuch, T **startValue, int precision)
+    {
+        ValueGroupStr vg;
+        vg.groupDesc = groupName;
+        int start = fromWhich;
+        int end = fromWhich + howMuch;
+        for (int i = start; i < end; ++i)
+        {
+            vg.values.append({ name + QString::number(i), "", "value[" + QString::number(m_valueNumberCounter) + "]",
+                *startValue, precision });
+            ++startValue;
+            ++m_valueNumberCounter;
         }
         m_valuesDesc.append(vg);
     }
@@ -126,8 +145,8 @@ public:
     void addNewValue(const QString &name, const QString &tooltip, T *value, int precision = 3)
     {
         ValueGroupStr vg;
-        vg.values.append({ name, tooltip, "value[" + QString::number(valueNumberCounter) + "]", value, precision });
-        ++valueNumberCounter;
+        vg.values.append({ name, tooltip, "value[" + QString::number(m_valueNumberCounter) + "]", value, precision });
+        ++m_valueNumberCounter;
         m_valuesDesc.append(vg);
     }
 
@@ -146,7 +165,7 @@ public slots:
     void saveToFileUserChoose();
 
 private:
-    int valueNumberCounter;
+    int m_valueNumberCounter;
     bool m_widgetIsSet;
     bool m_isBottomButtonsWidgetCreated;
     QWidget *m_widget;

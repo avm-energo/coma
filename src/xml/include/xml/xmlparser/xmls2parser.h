@@ -1,7 +1,8 @@
 #pragma once
 
+#include <QDomElement>
+#include <QObject>
 #include <s2/delegate_common.h>
-#include <xml/xmlparser/xmlbaseparser.h>
 
 namespace Xml
 {
@@ -9,12 +10,12 @@ namespace Xml
 template <typename T> constexpr bool is_comboBox = std::is_base_of_v<delegate::ComboBox, T>;
 
 /// \brief Class for parsing "s2files.xml" file.
-class S2Parser final : public BaseParser
+class S2Parser final : public QObject
 {
     Q_OBJECT
 private:
-    static const QHash<QString, std::uint64_t> nameTypeMap;
-    QDomElement content;
+    static const QHash<QString, std::uint64_t> s_nameTypeMap;
+    QDomElement m_content;
 
 public:
     explicit S2Parser(QObject *parent = nullptr);

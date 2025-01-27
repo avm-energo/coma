@@ -2,6 +2,10 @@
 <module mtypeb="21" mtypem="00">
     <name>AVTUK-2100</name>
     <version>3.2-0000</version>
+    <features>
+        <isBoxModule>0</isBoxModule>
+        <isRTCExist>1</isRTCExist>
+    </features>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">

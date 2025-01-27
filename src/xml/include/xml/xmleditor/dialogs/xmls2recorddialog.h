@@ -10,13 +10,21 @@ class XmlS2RecordDialog final : public XmlDialog
 private:
     static const QStringList s_dataTypes;
     static const QStringList s_widgetTypes;
+    QMap<QString, int> m_s2TabsMap;
 
     QGroupBox *m_widgetEdit;
 
     /// \brief Сохраняет полученные из модели данные для отображения в UI.
     void loadModelData(const QStringList &response) override;
 
+    /// \brief Получает данные по вкладкам S2Tabs
+    bool loadS2TabsData();
+
+    /// \brief Создание редактирования виджета для записи
     void createWidgetEditBox();
+
+    /// \brief Парсинг узла <config-tabs>
+    void parseConfigTab(const QDomNode &tabNode);
 
 public:
     explicit XmlS2RecordDialog(QWidget *parent = nullptr);

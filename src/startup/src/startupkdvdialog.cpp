@@ -7,7 +7,12 @@
 #include <gen/timefunc.h>
 #include <widgets/epopup.h>
 #include <widgets/etableview.h>
-#include <widgets/wd_func.h>
+#include <widgets/filefunc.h>
+#include <widgets/lblfunc.h>
+#include <widgets/spbfunc.h>
+
+#include <QPushButton>
+#include <QVBoxLayout>
 
 StartupKDVDialog::StartupKDVDialog(Device::CurrentDevice *device, QWidget *parent)
     : AbstractStartupDialog(device, parent)
@@ -34,14 +39,14 @@ void StartupKDVDialog::SetupUI()
     tv->setObjectName("cor");
     int row = 0;
 
-    glyout->addWidget(WDFunc::NewLBL2(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(907), 0, 1000000, 5), row, 2, 1, 2);
+    glyout->addWidget(LBLFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
+    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(907), 0, 1000000, 5), row, 2, 1, 2);
     row++;
-    glyout->addWidget(WDFunc::NewLBL2(this, "Текущея наработка при нормальной нагрузке, час:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(908), 0, 1000000, 5), row, 2, 1, 2);
+    glyout->addWidget(LBLFunc::NewLBL(this, "Текущея наработка при нормальной нагрузке, час:"), row, 1, 1, 1);
+    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(908), 0, 1000000, 5), row, 2, 1, 2);
     row++;
-    glyout->addWidget(WDFunc::NewLBL2(this, "Текущея наработка в режиме перегрузки, час:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB2(this, QString::number(909), 0, 1000000, 5), row, 2, 1, 2);
+    glyout->addWidget(LBLFunc::NewLBL(this, "Текущея наработка в режиме перегрузки, час:"), row, 1, 1, 1);
+    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(909), 0, 1000000, 5), row, 2, 1, 2);
     row++;
 
     QPushButton *pb = new QPushButton("Прочитать из модуля");
@@ -74,20 +79,20 @@ void StartupKDVDialog::SetupUI()
 
 // void StartupKDVDialog::FillBackCor()
 //{
-//    WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
+//    SPBFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
 //}
 
 // void StartupKDVDialog::FillBackWBd8()
 //{
-//    WDFunc::SPBData(this, QString::number(908), WBd8Block->MHnInit);
-//    WDFunc::SPBData(this, QString::number(909), WBd8Block->MotHovInit);
+//    SPBFunc::SPBData(this, QString::number(908), WBd8Block->MHnInit);
+//    SPBFunc::SPBData(this, QString::number(909), WBd8Block->MotHovInit);
 //}
 
 // void StartupKDVDialog::FillCor()
 //{
-//    WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
-//    WDFunc::SetSPBData(this, QString::number(908), Bd9Block->MotHnorm);
-//    WDFunc::SetSPBData(this, QString::number(909), Bd9Block->MotHover);
+//    SPBFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
+//    SPBFunc::SetSPBData(this, QString::number(908), Bd9Block->MotHnorm);
+//    SPBFunc::SetSPBData(this, QString::number(909), Bd9Block->MotHover);
 //}
 
 // void StartupKDVDialog::GetCorBd()
@@ -205,7 +210,7 @@ void StartupKDVDialog::SetupUI()
 
 void StartupKDVDialog::SaveToFile()
 {
-    auto filepath = WDFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor");
+    auto filepath = FileFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor");
     if (filepath.isEmpty())
         return;
 
@@ -237,7 +242,7 @@ void StartupKDVDialog::SaveToFile()
 
 void StartupKDVDialog::ReadFromFile()
 {
-    auto filepath = WDFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
+    auto filepath = FileFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
     if (filepath.isEmpty())
         return;
 

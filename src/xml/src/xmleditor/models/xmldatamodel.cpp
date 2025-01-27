@@ -212,7 +212,7 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
         break;                                                //
     case ModelType::S2Tabs:                                   //
         parseTag(node, tags::id, row, 0, "", true);           // ID
-        parseTag(node, tags::name, row, 1);                   // Значение по умолчанию
+        parseTag(node, tags::name, row, 1);                   // Наименование
         break;                                                //
     default:
         qWarning() << "Can't parse undefined tag of XML model!";

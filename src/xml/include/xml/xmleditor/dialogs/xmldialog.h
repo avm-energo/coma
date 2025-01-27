@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <variant>
+#include <widgets/ecombobox.h>
 #include <xml/xmleditor/models/baseeditormodel.h>
 
 constexpr auto createId = -1;
@@ -27,7 +28,7 @@ class XmlDialog : public QDialog
 {
     Q_OBJECT
 private:
-    using Widget = std::variant<QLineEdit *, QComboBox *, QSpinBox *, QCheckBox *>;
+    using Widget = std::variant<QLineEdit *, QComboBox *, QSpinBox *, QCheckBox *, EComboBox *>;
 
 protected:
     QString m_title;

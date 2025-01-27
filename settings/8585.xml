@@ -2,6 +2,10 @@
 <module mtypeb="85" mtypem="85">
     <name>AVTUK-8585</name>
     <version>6.1-0000</version>
+    <features>
+        <isBoxModule>0</isBoxModule>
+        <isRTCExist>1</isRTCExist>
+    </features>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">

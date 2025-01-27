@@ -1,12 +1,16 @@
 #include "dialogs/interfaceemudialog.h"
 
+#include <gen/error.h>
+#include <gen/stdfunc.h>
+#include <widgets/lblfunc.h>
+#include <widgets/lefunc.h>
+#include <widgets/pbfunc.h>
+#include <widgets/tvfunc.h>
+
 #include <QCoreApplication>
 #include <QMessageBox>
 #include <QSettings>
 #include <QStandardItemModel>
-#include <gen/error.h>
-#include <gen/stdfunc.h>
-#include <widgets/wd_func.h>
 
 InterfaceEmuDialog::InterfaceEmuDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
@@ -21,17 +25,19 @@ InterfaceEmuDialog::~InterfaceEmuDialog() noexcept
 void InterfaceEmuDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    m_tableView = WDFunc::NewQTV(this, "", nullptr);
+    m_tableView = TVFunc::NewQTV(this, "", nullptr);
     lyout->addWidget(m_tableView);
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addStretch(10);
-    hlyout->addWidget(WDFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceEmuDialog::addInterface));
-    hlyout->addWidget(WDFunc::NewPB(this, "", tr("Удалить"), this, [this] {
-        auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
-        m_settings.remove(name);
-        updateModel();
-    }));
+    hlyout->addWidget(PBFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceEmuDialog::addInterface));
+    hlyout->addWidget(PBFunc::NewPB(this, "", tr("Удалить"), this,
+        [this]
+        {
+            auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
+            m_settings.remove(name);
+            updateModel();
+        }));
     hlyout->addStretch(10);
     lyout->addLayout(hlyout);
     setLayout(lyout);
@@ -96,20 +102,20 @@ void InterfaceEmuDialog::addInterface()
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QGridLayout *lyout = new QGridLayout;
     int count = 0;
-    lyout->addWidget(WDFunc::NewLBL2(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewLE2(dlg, "namele"), count++, 1, 1, 1);
-    lyout->addWidget(WDFunc::NewLBL2(dlg, "typeB:"), count, 0, 1, 1, Qt::AlignLeft);
-    auto lineEdit = WDFunc::NewLE2(dlg, "typeble");
+    lyout->addWidget(LBLFunc::NewLBL(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(LEFunc::NewLE(dlg, "namele"), count++, 1, 1, 1);
+    lyout->addWidget(LBLFunc::NewLBL(dlg, "typeB:"), count, 0, 1, 1, Qt::AlignLeft);
+    auto lineEdit = LEFunc::NewLE(dlg, "typeble");
     lineEdit->setInputMask("HH;");
     lyout->addWidget(lineEdit, count++, 1, 1, 1, Qt::AlignLeft);
 
-    lyout->addWidget(WDFunc::NewLBL2(dlg, "typeM:"), count, 0, 1, 1, Qt::AlignLeft);
-    lineEdit = WDFunc::NewLE2(dlg, "typemle");
+    lyout->addWidget(LBLFunc::NewLBL(dlg, "typeM:"), count, 0, 1, 1, Qt::AlignLeft);
+    lineEdit = LEFunc::NewLE(dlg, "typemle");
     lineEdit->setInputMask("HH;");
     lyout->addWidget(lineEdit, count++, 1, 1, 1);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, &InterfaceEmuDialog::acceptedInterface));
-    hlyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+    hlyout->addWidget(PBFunc::NewPB(dlg, "acceptpb", "Сохранить", this, &InterfaceEmuDialog::acceptedInterface));
+    hlyout->addWidget(PBFunc::NewPB(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
 
     lyout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
     dlg->setLayout(lyout);
@@ -122,7 +128,7 @@ void InterfaceEmuDialog::acceptedInterface()
     QDialog *dlg = this->findChild<QDialog *>("emudlg");
     if (dlg == nullptr)
         return;
-    QString name = WDFunc::LEData(dlg, "namele");
+    QString name = LEFunc::LEData(dlg, "namele");
     // check if there's such name in registry
     if (m_settings.isExist(name))
     {
@@ -133,8 +139,8 @@ void InterfaceEmuDialog::acceptedInterface()
     QString key = QCoreApplication::applicationName();
     key += "\\" + name;
     UniquePointer<QSettings> settings(new QSettings(QCoreApplication::organizationName(), key));
-    settings->setValue("typeb", WDFunc::LEData(dlg, "typeble"));
-    settings->setValue("typem", WDFunc::LEData(dlg, "typemle"));
+    settings->setValue("typeb", LEFunc::LEData(dlg, "typeble"));
+    settings->setValue("typem", LEFunc::LEData(dlg, "typemle"));
 
     if (!updateModel())
         qCritical() << Error::GeneralError;

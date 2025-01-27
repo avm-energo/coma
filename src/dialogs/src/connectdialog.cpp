@@ -1,14 +1,17 @@
 #include "dialogs/connectdialog.h"
 
-#include <QCoreApplication>
-#include <QDebug>
-#include <QVBoxLayout>
 #include <dialogs/interfaceemudialog.h>
 #include <dialogs/interfaceethernetdialog.h>
 #include <dialogs/interfaceserialdialog.h>
 #include <dialogs/interfaceusbdialog.h>
 #include <gen/error.h>
-#include <widgets/wd_func.h>
+#include <widgets/cbfunc.h>
+#include <widgets/lblfunc.h>
+
+#include <QCoreApplication>
+#include <QDebug>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent), m_idialog(nullptr)
 {
@@ -21,8 +24,8 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent), m_idialog(nullp
     settings.beginGroup("settings");
 
     auto layout = new QVBoxLayout;
-    layout->addWidget(WDFunc::NewLBL2(this, "Выберите интерфейс связи"));
-    auto intercb = WDFunc::NewCB2(this, "intercb", intersl);
+    layout->addWidget(LBLFunc::NewLBL(this, "Выберите интерфейс связи"));
+    auto intercb = CBFunc::NewCB(this, "intercb", intersl);
     if (settings.contains("LastConnectionType"))
     {
         auto lastConnectionType = settings.value("LastConnectionType").toString();
@@ -68,7 +71,8 @@ void ConnectDialog::setInterface()
     connect(m_idialog, &AbstractInterfaceDialog::accepted, this, &ConnectDialog::accepted);
     // closing dialogs after selecting device
     connect(m_idialog, &AbstractInterfaceDialog::accepted, this, //
-        [this](const ConnectStruct &) {
+        [this](const ConnectStruct &)
+        {
             m_idialog->close();
             close();
         });

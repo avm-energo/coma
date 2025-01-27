@@ -1,11 +1,13 @@
 #pragma once
 
-#include <QObject>
-#include <QSortFilterProxyModel>
-#include <QTimeZone>
 #include <gen/stdfunc.h>
 #include <models/edynamictablemodel.h>
 #include <s2/s2datatypes.h>
+
+#include <QObject>
+#include <QSortFilterProxyModel>
+#include <QTableView>
+#include <QTimeZone>
 
 class ETableView;
 
@@ -51,7 +53,7 @@ public:
 
     /// \brief Создаёт объект-потомок ETableView по указателю на его родительский объект.
     /// \see JournalDialog
-    ETableView *createModelView(QWidget *parent) const;
+    QTableView *createModelView(QWidget *parent) const;
 
     /// \brief Заполняет модель данными, приходящими извне.
     /// \param journalFile[in] - файл в формате S2B, содержащий прочитанный бинарный файл журнала.

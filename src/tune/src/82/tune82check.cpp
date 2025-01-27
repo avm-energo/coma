@@ -1,26 +1,26 @@
 #include "tune/82/tune82check.h"
 
-#include <QDialog>
-#include <QEventLoop>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <datablocks/82/bda.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <tune/mip.h>
 #include <widgets/epopup.h>
-#include <widgets/wd_func.h>
+#include <widgets/graphfunc.h>
+#include <widgets/lblfunc.h>
 
-Tune82Check::Tune82Check(int tuneStep, Device::CurrentDevice *device, QWidget *parent)
-    : AbstractTuneDialog(tuneStep, device, parent)
+#include <QDialog>
+#include <QEventLoop>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+Tune82Check::Tune82Check(Device::CurrentDevice *device, QWidget *parent) : AbstractTuneDialog(device, parent)
 {
     setupUI();
 }
 
 void Tune82Check::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Отображение схемы подключения...", &Tune82Check::showScheme);
     addTuneFunc("Проверка связи с МИП...", &Tune82Check::checkMip);
     addTuneFunc("Проверка правильности измерения входных сигналов...", &Tune82Check::check);
@@ -42,21 +42,21 @@ Error::Msg Tune82Check::showScheme()
         break;
     default:
         EMessageBox::error(this, "Mezzanine board is not one of 81, 82 or 83");
-        return Error::Msg::GeneralError;
+        return Error::Msg::NoDeviceError;
     }
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(WDFunc::NewIcon(this, pmpfile));
-    lyout->addWidget(WDFunc::NewLBL2(this, "1. Отключите выходы РЕТОМ;"));
-    lyout->addWidget(WDFunc::NewLBL2(w, "2. Соберите схему подключения по вышеприведённой картинке;"));
-    lyout->addWidget(WDFunc::NewLBL2(w,
+    lyout->addWidget(GraphFunc::NewIcon(this, pmpfile));
+    lyout->addWidget(LBLFunc::NewLBL(this, "1. Отключите выходы РЕТОМ;"));
+    lyout->addWidget(LBLFunc::NewLBL(w, "2. Соберите схему подключения по вышеприведённой картинке;"));
+    lyout->addWidget(LBLFunc::NewLBL(w,
         "3. Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "
         "сдвига по всем фазам 0 град.;"));
-    lyout->addWidget(WDFunc::NewLBL2(w, "4. Задайте на РЕТОМ значения напряжений по фазам 60 В;"));
+    lyout->addWidget(LBLFunc::NewLBL(w, "4. Задайте на РЕТОМ значения напряжений по фазам 60 В;"));
     if (m_typeM != Device::MezzanineBoard::MTM_83)
-        lyout->addWidget(WDFunc::NewLBL2(w, "    значения токов по фазам 1 А;"));
-    lyout->addWidget(WDFunc::NewLBL2(w, "    частоту 50 Гц."));
-    lyout->addWidget(WDFunc::NewLBL2(w, "5. Включите выходы РЕТОМ"));
+        lyout->addWidget(LBLFunc::NewLBL(w, "    значения токов по фазам 1 А;"));
+    lyout->addWidget(LBLFunc::NewLBL(w, "    частоту 50 Гц."));
+    lyout->addWidget(LBLFunc::NewLBL(w, "5. Включите выходы РЕТОМ"));
     w->setLayout(lyout);
     if (!EMessageBox::next(this, w))
         CancelTune();

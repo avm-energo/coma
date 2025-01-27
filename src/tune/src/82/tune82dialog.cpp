@@ -9,8 +9,8 @@
 #include <tune/82/tune82iowidget.h>
 #include <tune/82/tune82verification.h>
 #include <tune/tunereporter.h>
-#include <tune/tunesteps.h>
-#include <widgets/wd_func.h>
+#include <tune/tunetypes.h>
+#include <widgets/wdfunc.h>
 
 Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {
@@ -33,18 +33,17 @@ Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
         break;
     }
     m_dialogList = {
-        { "Проверка правильности измерения входных сигналов", new Tune82Check(TS82_CHECKING, device, this) }, //
-        { step2Caption, new Tune82ADC(TS82_ADC, device, this) },                                              //
-        { "Поверка", new Tune82Verification(TS82_VERIFICATION, device, this) }                                //
+        { "Проверка правильности измерения входных сигналов", new Tune82Check(device, this) }, //
+        { step2Caption, new Tune82ADC(device, this) },                                         //
+        { "Поверка", new Tune82Verification(device, this) }                                    //
     };
 
-    m_calibrSteps = m_dialogList.size() + 1;
     Bac82 *bac = new Bac82(this);
     bac->setup(m_device->getUID(), m_device->sync());
     auto io = new Tune82IoWidget(m_device, this);
     addWidgetToTabWidget(bac->widget(), "Регулировка");
     addWidgetToTabWidget(io, "Данные");
-    SetupUI();
+    SetupUI(true);
 }
 
 void Tune82Dialog::prepareReport()

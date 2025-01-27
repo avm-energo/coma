@@ -156,7 +156,7 @@ void CurrentDevice::compareAndUpdate() noexcept
     if (m_bsi.Hth != m_previous.Hth)
         emit healthChanged(m_bsi.Hth);
     if ((m_bsi.MTypeB != m_previous.MTypeB) || (m_bsi.MTypeM != m_previous.MTypeM))
-        emit typeChanged(getDeviceType());
+        emit typeChanged(QString::number(getDeviceType(), 16));
     if (m_bsi.SerialNum != m_previous.SerialNum)
         emit serialChanged(m_bsi.SerialNum);
 

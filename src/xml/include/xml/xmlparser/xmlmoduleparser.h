@@ -1,8 +1,8 @@
 #pragma once
 
+#include <QDomElement>
 #include <device/xml_settings.h>
 #include <interfaces/types/common_types.h>
-#include <xml/xmlparser/xmlbaseparser.h>
 
 namespace Device
 {
@@ -15,7 +15,7 @@ namespace Xml
 using namespace ::Device::XmlDataTypes;
 
 /// \brief Класс для парсинга XML файлов конфигурации устройств.
-class ModuleParser final : public BaseParser
+class ModuleParser final : public QObject
 {
     Q_OBJECT
 private:
@@ -30,6 +30,7 @@ public:
     void parse(Device::CurrentDevice *device);
 
 signals:
+    void parseError(const QString &errMsg);
     void startNewConfig();
     void newFeatureParsedSignal(const QString &featurename, const QString &featurevalue);
     void signalDataSending(const u32 id, const quint64 addr, const u16 count, const Xml::SignalType sigType);

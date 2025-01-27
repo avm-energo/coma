@@ -3,7 +3,8 @@
     <name>AVM-KTF</name>
     <version>0.6-0004</version>
     <features>
-        <isBoxModule value="1"></isBoxModule>
+        <isBoxModule>1</isBoxModule>
+        <isRTCExist>1</isRTCExist>
     </features>
     <resources>
         <alarms desc="Сигнализация">

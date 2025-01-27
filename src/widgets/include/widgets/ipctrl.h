@@ -21,6 +21,9 @@ public:
     ip_container getIP() const;
     void setIP(const ip_container ipAddr);
 
+    static bool SetIPCtrlData(const QObject *parent, const QString &name, const std::array<quint8, 4> &value);
+    static std::array<quint8, 4> IPCtrlData(const QObject *parent, const QString &name);
+
 signals:
     void signalTextChanged(QLineEdit *pEdit);
 

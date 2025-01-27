@@ -1,21 +1,24 @@
-AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortFunctionsOnASingleLine : false
-AlignTrailingComments: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortFunctionsOnASingleLine : Empty
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 2
 BasedOnStyle: WebKit
-BreakBeforeBraces: Custom
-BraceWrapping:
-  AfterClass: true
-  AfterControlStatement: Always
-  AfterEnum: true
-  AfterStruct: true
-  SplitEmptyFunction: true
-  BeforeLambdaBody: false
-  AfterCaseLabel: true
-  AfterFunction : true
-  AfterNamespace : true
-  BeforeElse: true
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
+BreakBeforeBraces: Allman
 ColumnLimit: 120
-PointerBindsToType: false
+PackConstructorInitializers: CurrentLine
+PointerAlignment: Right
 SpaceBeforeParens: ControlStatements
 IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'
+    Priority:        2
+    SortPriority:    2
+    CaseSensitive:   true
+  - Regex:           '^((<|")(gtest|gmock|isl|json)/)'
+    Priority:        3
+  - Regex:           '<[[:alnum:].]+>'
+    Priority:        4
+  - Regex:           '.*'
+    Priority:        1
+    SortPriority:    0

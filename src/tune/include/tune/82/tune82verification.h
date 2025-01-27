@@ -24,7 +24,7 @@ private:
     Error::Msg verification();
 
 public:
-    Tune82Verification(int tuneStep, Device::CurrentDevice *device, QWidget *parent = nullptr);
+    Tune82Verification(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
     void setTuneFunctions() override;
 };
