@@ -87,19 +87,16 @@
             <id>1</id>
             <name>MTypeB_ID</name>
             <type>DWORD</type>
-            <description>Тип базовой платы</description>
         </record>
         <record>
             <id>2</id>
             <name>MTypeE_ID</name>
             <type>DWORD</type>
-            <description>Тип мезонинной платы</description>
         </record>
         <record>
             <id>3</id>
             <name>CType</name>
             <type>DWORD</type>
-            <description>Тип синхронизации времени от модуля Ц</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>220</group>
@@ -117,7 +114,6 @@
             <id>4</id>
             <name>Abs_104</name>
             <type>DWORD</type>
-            <description>Адрес базовой станции для протокола 104</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>210</group>
@@ -131,7 +127,6 @@
             <id>5</id>
             <name>Cycle_104</name>
             <type>DWORD</type>
-            <description>Интервал циклического опроса по  протоколу МЭК 60870-5-104</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>210</group>
@@ -145,7 +140,6 @@
             <id>6</id>
             <name>T1_104</name>
             <type>DWORD</type>
-            <description>Тайм-аут Т1 для протокола 104</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>210</group>
@@ -159,7 +153,6 @@
             <id>7</id>
             <name>T2_104</name>
             <type>DWORD</type>
-            <description>Тайм-аут Т2 для протокола 104</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>210</group>
@@ -173,7 +166,6 @@
             <id>8</id>
             <name>T3_104</name>
             <type>DWORD</type>
-            <description>Тайм-аут Т3 для протокола 104</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>210</group>
@@ -187,7 +179,6 @@
             <id>9</id>
             <name>k_104</name>
             <type>DWORD</type>
-            <description>Mакс. кол-во неподтв. сообщений</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>210</group>
@@ -201,7 +192,6 @@
             <id>10</id>
             <name>w_104</name>
             <type>DWORD</type>
-            <description>Макс. кол-во сообщений, после которых необх. выдать подтверждение</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>210</group>
@@ -215,7 +205,6 @@
             <id>11</id>
             <name>timezone</name>
             <type>INT32</type>
-            <description>Часовой пояс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>210</group>
@@ -229,7 +218,6 @@
             <id>20</id>
             <name>IP_ID</name>
             <type>BYTE[4]</type>
-            <description>IP адрес модуля</description>
             <widget>
                 <type>IpControl</type>
                 <group>220</group>
@@ -240,7 +228,6 @@
             <id>21</id>
             <name>Mask_ID</name>
             <type>BYTE[4]</type>
-            <description>Маска Ethernet порта</description>
             <widget>
                 <type>IpControl</type>
                 <group>220</group>
@@ -251,7 +238,6 @@
             <id>22</id>
             <name>GW_ID</name>
             <type>BYTE[4]</type>
-            <description>Шлюз Ethernet порта</description>
             <widget>
                 <type>IpControl</type>
                 <group>220</group>
@@ -262,7 +248,6 @@
             <id>23</id>
             <name>Port_ID</name>
             <type>WORD[4]</type>
-            <description>Порты протоколов</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>220</group>
@@ -281,7 +266,6 @@
             <id>24</id>
             <name>NTP_ID</name>
             <type>BYTE[4]</type>
-            <description>IP адрес NTP сервера</description>
             <widget>
                 <type>IpControl</type>
                 <group>220</group>
@@ -292,7 +276,6 @@
             <id>25</id>
             <name>Baud_ID</name>
             <type>DWORD</type>
-            <description>Скорость COM порта</description>
             <widget>
                 <type>QComboBox</type>
                 <group>230</group>
@@ -313,7 +296,6 @@
             <id>26</id>
             <name>Parity_ID</name>
             <type>BYTE</type>
-            <description>Чётность COM порта</description>
             <widget>
                 <type>QComboBox</type>
                 <group>230</group>
@@ -329,7 +311,6 @@
             <id>27</id>
             <name>stopbit_ID</name>
             <type>BYTE</type>
-            <description>Кол-во стоп битов COM порта</description>
             <widget>
                 <type>QComboBox</type>
                 <group>230</group>
@@ -344,7 +325,6 @@
             <id>28</id>
             <name>adrMB_ID</name>
             <type>BYTE</type>
-            <description>Адрес modbus</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>230</group>
@@ -358,7 +338,6 @@
             <id>29</id>
             <name>IsNTP_ID</name>
             <type>BYTE</type>
-            <description>Наличие NTP сервера</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>220</group>
@@ -369,13 +348,11 @@
             <id>30</id>
             <name>IsPPS_ID</name>
             <type>BYTE</type>
-            <description>Наличие сигнала PPS</description>
         </record>
         <record>
             <id>101</id>
             <name>in_typeA_IDB</name>
             <type>BYTE[8]</type>
-            <description>Тип входа №0…7</description>
             <widget>
                 <type>QComboBoxGroup</type>
                 <group>100</group>
@@ -394,7 +371,6 @@
             <id>102</id>
             <name>in_min_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Минимальное значение диапазона   изменения сигнала</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
@@ -409,7 +385,6 @@
             <id>103</id>
             <name>in_max_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Максимальное значение диапазона    изменения сигнала</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
@@ -424,7 +399,6 @@
             <id>104</id>
             <name>in_vmin_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Минимальное значение сигнала в инженерных единицах</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
@@ -439,7 +413,6 @@
             <id>105</id>
             <name>in_vmax_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Максимальное значение сигнала в инженерных единицах</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
@@ -454,7 +427,6 @@
             <id>106</id>
             <name>setminminA_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Значение аварийной уставки по  минимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -469,7 +441,6 @@
             <id>107</id>
             <name>setminA_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Значение предупредительной уставки по  минимальному начению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -484,7 +455,6 @@
             <id>108</id>
             <name>setmaxA_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Значение предупредительной уставки по  максимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -499,7 +469,6 @@
             <id>109</id>
             <name>setmaxmaxA_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Значение аварийной уставки по  максимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -514,13 +483,11 @@
             <id>110</id>
             <name>osc_IDB</name>
             <type>BYTE[8]</type>
-            <description>Признаки источника запуска осциллограмм</description>
         </record>
         <record>
             <id>111</id>
             <name>oscdly_IDB</name>
             <type>WORD</type>
-            <description>Задержка в мс начала фиксации</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -534,7 +501,6 @@
             <id>112</id>
             <name>oscthr_IDB</name>
             <type>FLOAT</type>
-            <description>Гистерезис для уставок</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -549,7 +515,6 @@
             <id>113</id>
             <name>filterthr_IDB</name>
             <type>FLOAT</type>
-            <description>Степень фильтрации (0…255)  0 – фильтрация отсутствует</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -564,7 +529,6 @@
             <id>114</id>
             <name>filtern_IDB</name>
             <type>FLOAT</type>
-            <description>Пороговое значение, при превышении которого между замерами фильтр не работает</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -578,7 +542,6 @@
             <id>115</id>
             <name>hysteresisA_IDB</name>
             <type>FLOAT</type>
-            <description>Пороговое значение, при превышении которого начинается запись осциллограмм (одно на все каналы)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -592,7 +555,6 @@
             <id>116</id>
             <name>Osc104_IDB</name>
             <type>DWORD</type>
-            <description>Признаки  запуска осциллограмм по команде 104, по канально</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
@@ -614,7 +576,6 @@
             <id>117</id>
             <name>OscI2C_IDB</name>
             <type>DWORD</type>
-            <description>Признаки  запуска осциллограмм по I2C, по канально</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
@@ -636,7 +597,6 @@
             <id>118</id>
             <name>OscAlg_IDB</name>
             <type>DWORD</type>
-            <description>Признаки запуска осциллограмм по заданному алгоритму</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
@@ -658,7 +618,6 @@
             <id>121</id>
             <name>in_typeA_IDE</name>
             <type>BYTE[8]</type>
-            <description>Тип входа №0…7</description>
             <widget>
                 <type>QComboBoxGroup</type>
                 <group>100</group>
@@ -677,7 +636,6 @@
             <id>122</id>
             <name>in_min_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Минимальное значение диапазона   изменения сигнала</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
@@ -692,7 +650,6 @@
             <id>123</id>
             <name>in_max_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Максимальное значение сигнала в инженерных единицах</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
@@ -707,7 +664,6 @@
             <id>124</id>
             <name>in_vmin_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Минимальное значение сигнала в инженерных единицах</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
@@ -722,7 +678,6 @@
             <id>125</id>
             <name>in_vmax_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Максимальное значение сигнала в инженерных единицах</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
@@ -737,7 +692,6 @@
             <id>126</id>
             <name>setminminA_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Значение аварийной уставки по  минимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -752,7 +706,6 @@
             <id>127</id>
             <name>setminA_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Значение предупредительной уставки по  минимальному начению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -767,7 +720,6 @@
             <id>128</id>
             <name>setmaxA_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Значение предупредительной уставки по  максимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -782,7 +734,6 @@
             <id>129</id>
             <name>setmaxmaxA_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Значение аварийной уставки по  максимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -797,13 +748,11 @@
             <id>130</id>
             <name>osc_IDE</name>
             <type>BYTE[8]</type>
-            <description>Признаки источника запуска осциллограмм</description>
         </record>
         <record>
             <id>131</id>
             <name>oscdly_IDE</name>
             <type>WORD</type>
-            <description>Задержка в мс начала фиксации</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -817,7 +766,6 @@
             <id>132</id>
             <name>oscthr_IDE</name>
             <type>FLOAT</type>
-            <description>Пороговое значение, при превышении которого начинается запись осциллограмм (одно на все каналы)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -832,7 +780,6 @@
             <id>133</id>
             <name>filterthr_IDE</name>
             <type>FLOAT</type>
-            <description>Степень фильтрации (0…255)  0 – фильтрация отсутствует</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -847,7 +794,6 @@
             <id>134</id>
             <name>filtern_IDE</name>
             <type>FLOAT</type>
-            <description>Пороговое значение, при превышении которого между замерами фильтр не работает</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -861,7 +807,6 @@
             <id>135</id>
             <name>hysteresisA_IDE</name>
             <type>FLOAT</type>
-            <description>Гистерезис для уставок</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -875,7 +820,6 @@
             <id>136</id>
             <name>Osc104_IDE</name>
             <type>DWORD</type>
-            <description>Признаки  запуска осциллограмм по команде 104, по канально</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
@@ -897,7 +841,6 @@
             <id>137</id>
             <name>OscI2C_IDE</name>
             <type>DWORD</type>
-            <description>Признаки  запуска осциллограмм по I2C, по канально</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
@@ -919,7 +862,6 @@
             <id>138</id>
             <name>OscAlg_IDE</name>
             <type>DWORD</type>
-            <description>Признаки запуска осциллограмм по заданному алгоритму</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
@@ -941,7 +883,6 @@
             <id>201</id>
             <name>in_typeD_IDB</name>
             <type>BYTE[16]</type>
-            <description>Тип входа №0…15</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>100</group>
@@ -971,7 +912,6 @@
             <id>202</id>
             <name>dly_time_IDB</name>
             <type>DWORD[16]</type>
-            <description>Время  задержки  для контроля  дребезга контактов входы №0…15</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -986,13 +926,11 @@
             <id>203</id>
             <name>Pair_IDB</name>
             <type>WORD[8]</type>
-            <description>Номера каналов в паре «НЗ-НР» №0…15</description>
         </record>
         <record>
             <id>204</id>
             <name>AC_per_IDB</name>
             <type>WORD</type>
-            <description>Время определения состояние сигнала переменного напряжения мс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1006,7 +944,6 @@
             <id>205</id>
             <name>Invert_IDB</name>
             <type>DWORD</type>
-            <description>Инверсия</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
@@ -1050,7 +987,6 @@
             <id>206</id>
             <name>typeU_IDB</name>
             <type>DWORD</type>
-            <description>Тип напряжения</description>
             <widget>
                 <type>QComboBoxGroup</type>
                 <group>300</group>
@@ -1066,7 +1002,6 @@
             <id>211</id>
             <name>in_typeD32_IDB</name>
             <type>BYTE[32]</type>
-            <description>Тип входа №16…32</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
@@ -1110,7 +1045,6 @@
             <id>212</id>
             <name>dly_time32_IDB</name>
             <type>DWORD[32]</type>
-            <description>Время  задержки  для контроля  дребезга контактов входы №16…32</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1125,7 +1059,6 @@
             <id>231</id>
             <name>in_typeD_IDE</name>
             <type>BYTE[16]</type>
-            <description>Тип входа №0…15</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>100</group>
@@ -1155,7 +1088,6 @@
             <id>232</id>
             <name>dly_time_IDE</name>
             <type>DWORD[16]</type>
-            <description>Время  задержки  для контроля  дребезга контактов входы №0…15</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1170,13 +1102,11 @@
             <id>233</id>
             <name>Pair_IDE</name>
             <type>WORD[8]</type>
-            <description>Номера каналов в паре «НЗ-НР» №0…15</description>
         </record>
         <record>
             <id>234</id>
             <name>AC_per_IDE</name>
             <type>WORD</type>
-            <description>Время определения состояние сигнала переменного напряжения мс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1190,7 +1120,6 @@
             <id>235</id>
             <name>Invert_IDE</name>
             <type>DWORD</type>
-            <description>Инверсия</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
@@ -1234,7 +1163,6 @@
             <id>236</id>
             <name>typeU_IDE</name>
             <type>DWORD</type>
-            <description>Тип напряжения</description>
             <widget>
                 <type>QComboBoxGroup</type>
                 <group>300</group>
@@ -1250,7 +1178,6 @@
             <id>241</id>
             <name>in_typeD32_IDB</name>
             <type>BYTE[32]</type>
-            <description>Тип входа №16…32</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
@@ -1294,7 +1221,6 @@
             <id>242</id>
             <name>dly_time32_IDB</name>
             <type>DWORD[32]</type>
-            <description>Время  задержки  для контроля  дребезга контактов входы №16…32</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1309,7 +1235,6 @@
             <id>301</id>
             <name>W100_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Сопротивление при 100 град. С</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1324,7 +1249,6 @@
             <id>302</id>
             <name>in_minT_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Минимальное значение сигнала в градусах</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1339,7 +1263,6 @@
             <id>303</id>
             <name>in_maxT_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Максимальное значение сигнала в градусах</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1354,7 +1277,6 @@
             <id>304</id>
             <name>setminminT_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Значение аварийной уставки по  минимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -1369,7 +1291,6 @@
             <id>305</id>
             <name>setminT_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Значение предупредительной уставки по минимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -1384,7 +1305,6 @@
             <id>306</id>
             <name>setmaxT_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Значение предупредительной уставки по  максимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -1399,7 +1319,6 @@
             <id>307</id>
             <name>setmaxmaxT_IDB</name>
             <type>FLOAT[8]</type>
-            <description>Значение аварийной уставки по  максимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -1414,7 +1333,6 @@
             <id>308</id>
             <name>kf_filtrT_IDE</name>
             <type>FLOAT</type>
-            <description>Пороговое значение, при превышении которого между замерами фильтр не работает</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1429,7 +1347,6 @@
             <id>309</id>
             <name>cnt_filtrT_IDE</name>
             <type>FLOAT</type>
-            <description>Степень фильтрации (0…255)  0 – фильтрация отсутствует</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1444,7 +1361,6 @@
             <id>310</id>
             <name>hysteresisT_IDB</name>
             <type>FLOAT</type>
-            <description>Гистерезис для уставок</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1458,7 +1374,6 @@
             <id>311</id>
             <name>RzeroT_IDB</name>
             <type>DWORD[8]</type>
-            <description>Сопротивление при 0 градусов</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1473,7 +1388,6 @@
             <id>321</id>
             <name>W100_IDЕ</name>
             <type>FLOAT[8]</type>
-            <description>Сопротивление при 100 град. С</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1488,7 +1402,6 @@
             <id>322</id>
             <name>in_minT_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Минимальное значение сигнала в градусах</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1503,7 +1416,6 @@
             <id>323</id>
             <name>in_maxT_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Максимальное значение сигнала в градусах</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1518,7 +1430,6 @@
             <id>324</id>
             <name>setminminT_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Значение аварийной уставки по  минимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -1533,7 +1444,6 @@
             <id>325</id>
             <name>setminT_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Значение предупредительной уставки по  минимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -1548,7 +1458,6 @@
             <id>326</id>
             <name>setmaxT_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Значение предупредительной уставки по  максимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -1563,7 +1472,6 @@
             <id>327</id>
             <name>setmaxmaxT_IDE</name>
             <type>FLOAT[8]</type>
-            <description>Значение аварийной уставки по  максимальному значению</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -1578,7 +1486,6 @@
             <id>328</id>
             <name>kf_filtrT_IDE</name>
             <type>FLOAT</type>
-            <description>Пороговое значение, при превышении которого между замерами фильтр не работает</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1593,7 +1500,6 @@
             <id>329</id>
             <name>cnt_filtrT_IDE</name>
             <type>FLOAT</type>
-            <description>Степень фильтрации (0…255)  0 – фильтрация отсутствует</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1608,7 +1514,6 @@
             <id>330</id>
             <name>hysteresisT_IDE</name>
             <type>FLOAT</type>
-            <description>Гистерезис для уставок</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1622,7 +1527,6 @@
             <id>331</id>
             <name>RzeroT_IDE</name>
             <type>DWORD[8]</type>
-            <description>Сопротивление при 0 градусов</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1637,7 +1541,6 @@
             <id>401</id>
             <name>wd_type_IDB</name>
             <type>BYTE</type>
-            <description>Тип WatchDog</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>300</group>
@@ -1648,7 +1551,6 @@
             <id>402</id>
             <name>wd_nout_IDB</name>
             <type>BYTE</type>
-            <description>Номер  выхода для WD</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1662,7 +1564,6 @@
             <id>403</id>
             <name>wd_tm_IDB</name>
             <type>BYTE</type>
-            <description>Время WD</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1676,7 +1577,6 @@
             <id>404</id>
             <name>pulse_short_IDB</name>
             <type>FLOAT</type>
-            <description>Ширина короткого импульса</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1690,7 +1590,6 @@
             <id>405</id>
             <name>pulse_long_IDB</name>
             <type>FLOAT</type>
-            <description>Ширина длинного импульса</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1704,13 +1603,11 @@
             <id>406</id>
             <name>out_type_IDB</name>
             <type>BYTE[16]</type>
-            <description>Тип выхода</description>
         </record>
         <record>
             <id>407</id>
             <name>ispulse_IDB</name>
             <type>DWORD</type>
-            <description>Постоянный сигнал или импульс</description>
             <widget>
                 <type>QComboBoxGroup</type>
                 <group>300</group>
@@ -1726,7 +1623,6 @@
             <id>408</id>
             <name>type_pulse_IDB</name>
             <type>DWORD</type>
-            <description>Короткий или длинный импульс</description>
             <widget>
                 <type>QComboBoxGroup</type>
                 <group>300</group>
@@ -1742,7 +1638,6 @@
             <id>421</id>
             <name>wd_type_IDE</name>
             <type>BYTE</type>
-            <description>Тип WatchDog</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>300</group>
@@ -1753,7 +1648,6 @@
             <id>422</id>
             <name>wd_nout_IDE</name>
             <type>BYTE</type>
-            <description>Номер  выхода для WD</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1767,7 +1661,6 @@
             <id>423</id>
             <name>wd_tm_IDE</name>
             <type>BYTE</type>
-            <description>Время WD</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1781,7 +1674,6 @@
             <id>424</id>
             <name>pulse_short_IDE</name>
             <type>FLOAT</type>
-            <description>Ширина короткого импульса</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1795,7 +1687,6 @@
             <id>425</id>
             <name>pulse_long_IDE</name>
             <type>FLOAT</type>
-            <description>Ширина длинного импульса</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1809,13 +1700,11 @@
             <id>426</id>
             <name>out_type_IDE</name>
             <type>BYTE[16]</type>
-            <description>Тип выхода</description>
         </record>
         <record>
             <id>427</id>
             <name>ispulse_IDE</name>
             <type>DWORD</type>
-            <description>Постоянный сигнал или импульс</description>
             <widget>
                 <type>QComboBoxGroup</type>
                 <group>300</group>
@@ -1831,7 +1720,6 @@
             <id>428</id>
             <name>type_pulse_IDE</name>
             <type>DWORD</type>
-            <description>Короткий или длинный импульс</description>
             <widget>
                 <type>QComboBoxGroup</type>
                 <group>300</group>
@@ -1847,7 +1735,6 @@
             <id>1001</id>
             <name>Eq_type_ID</name>
             <type>DWORD</type>
-            <description>Тип контролируемого оборудования</description>
             <widget>
                 <type>QComboBox</type>
                 <group>50</group>
@@ -1864,7 +1751,6 @@
             <id>1002</id>
             <name>NPOINTS_ID</name>
             <type>DWORD</type>
-            <description>Количество точек оцифровки на период</description>
             <widget>
                 <type>QComboBox</type>
                 <group>300</group>
@@ -1882,7 +1768,6 @@
             <id>1003</id>
             <name>NFiltr_ID</name>
             <type>DWORD</type>
-            <description>Интервал усреднения данных (в периодах основной частоты)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1896,7 +1781,6 @@
             <id>1004</id>
             <name>NHarmFilt_ID</name>
             <type>DWORD</type>
-            <description>постоянная времени фильтрации гармоник</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -1910,7 +1794,6 @@
             <id>1005</id>
             <name>DDOsc_ID</name>
             <type>DWORD</type>
-            <description>Разрешение запуска осциллограммы</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
@@ -1927,7 +1810,6 @@
             <id>1006</id>
             <name>Unom1</name>
             <type>FLOAT</type>
-            <description>Номинальное линейное напряжение, кВ</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -1941,7 +1823,6 @@
             <id>1007</id>
             <name>Unom2</name>
             <type>FLOAT</type>
-            <description>Класс напряжения гр.2</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -1956,7 +1837,6 @@
             <id>1008</id>
             <name>I1nom</name>
             <type>FLOAT[6]</type>
-            <description>Номинальный первичный ток</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1971,7 +1851,6 @@
             <id>1009</id>
             <name>I2nom</name>
             <type>FLOAT[6]</type>
-            <description>Номинальный вторичный ток</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -1986,7 +1865,6 @@
             <id>1010</id>
             <name>DUosc</name>
             <type>FLOAT</type>
-            <description>Уставка скачка напряжения для запуска осциллографирования</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2000,7 +1878,6 @@
             <id>1011</id>
             <name>DIosc_ID</name>
             <type>FLOAT</type>
-            <description>Уставка скачка тока для запуска  осциллографирования</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2014,7 +1891,6 @@
             <id>1012</id>
             <name>DUImin_ID</name>
             <type>FLOAT</type>
-            <description>Уставка контроля минимума сигналов</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2028,7 +1904,6 @@
             <id>1013</id>
             <name>Imin</name>
             <type>FLOAT</type>
-            <description>Уставка контроля минимума токов</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2042,31 +1917,26 @@
             <id>1014</id>
             <name>Imax</name>
             <type>FLOAT[3]</type>
-            <description>Максимальное действующее значение тока</description>
         </record>
         <record>
             <id>1015</id>
             <name>C_init</name>
             <type>FLOAT[3]</type>
-            <description>Начальные значения емкостей С1, пФ</description>
         </record>
         <record>
             <id>1016</id>
             <name>Tg_init</name>
             <type>FLOAT[3]</type>
-            <description>Начальные значения tg δ, %</description>
         </record>
         <record>
             <id>1017</id>
             <name>corTg</name>
             <type>FLOAT[3]</type>
-            <description>Коррекция  tg δ, %</description>
         </record>
         <record>
             <id>1018</id>
             <name>dC_pred</name>
             <type>FLOAT</type>
-            <description>Уставка предупредительной сигнализации по ∆С, %</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2080,7 +1950,6 @@
             <id>1019</id>
             <name>dC_alarm</name>
             <type>FLOAT</type>
-            <description>Уставка аварийной сигнализации по ∆С, %</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2094,7 +1963,6 @@
             <id>1020</id>
             <name>dTg_pred</name>
             <type>FLOAT</type>
-            <description>Уставка предупредительной сигнализации по ∆tg δ, %</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2108,7 +1976,6 @@
             <id>1021</id>
             <name>dTg_alarm</name>
             <type>FLOAT</type>
-            <description>Уставка аварийной сигнализации по ∆tg δ, %</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2122,7 +1989,6 @@
             <id>1022</id>
             <name>dIunb_pred</name>
             <type>FLOAT</type>
-            <description>Уставка предупредительной сигнализации по небалансу токов, %</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2136,7 +2002,6 @@
             <id>1023</id>
             <name>dIunb_alarm</name>
             <type>FLOAT</type>
-            <description>Уставка аварийной сигнализации по небалансу токов, %</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2150,7 +2015,6 @@
             <id>1024</id>
             <name>GdC</name>
             <type>FLOAT</type>
-            <description>Гистерезис на отключение сигнализации по ∆С, %</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -2164,7 +2028,6 @@
             <id>1025</id>
             <name>GdTg</name>
             <type>FLOAT</type>
-            <description>Гистерезис на отключение сигнализации по ∆tg δ, %</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -2178,7 +2041,6 @@
             <id>1026</id>
             <name>GdIunb</name>
             <type>FLOAT</type>
-            <description>Гистерезис на отключение сигнализации по небалансу токов, %</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -2192,7 +2054,6 @@
             <id>1027</id>
             <name>RTerm</name>
             <type>FLOAT</type>
-            <description>Номинальное сопротивление термометра при 0 град.С, Ом</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -2206,7 +2067,6 @@
             <id>1028</id>
             <name>W100</name>
             <type>FLOAT</type>
-            <description>Температурный коэффициент термометра</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -2220,19 +2080,16 @@
             <id>1029</id>
             <name>Iunb_init</name>
             <type>FLOAT</type>
-            <description>Начальное значение небаланса токов , %</description>
         </record>
         <record>
             <id>1030</id>
             <name>Phy_unb_init</name>
             <type>FLOAT</type>
-            <description>Начальное значение угла небаланса токов, град.</description>
         </record>
         <record>
             <id>1031</id>
             <name>T_Data_Rec</name>
             <type>DWORD</type>
-            <description>Интервал записи данных в ПЗУ (тренд), сек.</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -2246,7 +2103,6 @@
             <id>1032</id>
             <name>LowU</name>
             <type>FLOAT</type>
-            <description>Низкое напряжение для сигнализации %</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2260,45 +2116,26 @@
             <id>1033</id>
             <name>IsU</name>
             <type>BYTE</type>
-            <description>Метод прямых измерений</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>51</group>
                 <string>Метод прямого измерения параметров изоляции</string>
-                <toolTip>
-				&lt;p>
-				&lt;font size="4">Измеряются мгновенные значения напряжений и токов утечки вводов трех фаз. Рассчитываются частота в сети, амплитуды и фазы первых гармоник напряжений и токов, активные и реактивные составляющие токов.&lt;/font>
-				&lt;/p>
-				&lt;p>
-				&lt;font size="4">По реактивной составляющей тока каждого ввода, напряжению и частоте вычисляется емкость основной изоляции, по отношению активной и реактивной составляющих тока tg δ. Контролируются отклонения параметров от начальных значений (для здорового ввода).&lt;/font>
-				&lt;/p>
-				</toolTip>
             </widget>
         </record>
         <record>
             <id>1034</id>
             <name>IsIuIunb</name>
             <type>BYTE</type>
-            <description>Метод по небалансу токов</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>51</group>
                 <string>Метод контроля небаланса токов</string>
-                <toolTip>
-				&lt;p>
-				&lt;font size="4">Измеряется сумма мгновенных значений токов утечки вводов трех фаз. При симметричной трехфазной системе напряжений и идентичных параметрах изоляции трех вводов (одинаковые емкости и одинаковые потери в изоляции) сумма мгновенных значений полных токов утечки вводов трех фаз равна нулю.&lt;/font>
-				&lt;/p>
-				&lt;p>
-				&lt;font size="4">При ухудшении параметров изоляции одного из вводов этот баланс нарушается. По амплитуде тока небаланса и его фазе относительно полного тока, например, фазы А, можно судить о степени изменения параметров изоляции ввода.&lt;/font>
-				&lt;/p>
-				</toolTip>
             </widget>
         </record>
         <record>
             <id>1035</id>
             <name>Tevent_pred</name>
             <type>DWORD</type>
-            <description>Задержка на формирование предупредительных событий, сек.</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2312,7 +2149,6 @@
             <id>1036</id>
             <name>Tevent_alarm</name>
             <type>DWORD</type>
-            <description>Задержка на формирование аварийных событий, сек.</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2326,7 +2162,6 @@
             <id>1037</id>
             <name>Trele_pred</name>
             <type>DWORD</type>
-            <description>Задержка на срабатывание реле предупредительной сигнализации, сек.</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2340,7 +2175,6 @@
             <id>1038</id>
             <name>Trele_alarm</name>
             <type>DWORD</type>
-            <description>Задержка на срабатывание реле аварийной сигнализации, сек.</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2354,7 +2188,6 @@
             <id>1039</id>
             <name>Tg_Pasp_ID</name>
             <type>FLOAT[3]</type>
-            <description>Паспортные значения tg δ, %</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -2369,7 +2202,6 @@
             <id>1040</id>
             <name>C_Pasp_ID</name>
             <type>FLOAT[3]</type>
-            <description>Паспортные значения емкостей С1, пФ</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -2384,7 +2216,6 @@
             <id>1041</id>
             <name>SourseT</name>
             <type>BYTE</type>
-            <description>Источник температуры окр. среды</description>
             <widget>
                 <type>QComboBox</type>
                 <group>100</group>
@@ -2399,7 +2230,6 @@
             <id>1042</id>
             <name>NoSign</name>
             <type>BYTE</type>
-            <description>Запрет фаз</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>51</group>
@@ -2416,7 +2246,6 @@
             <id>1043</id>
             <name>DinEn</name>
             <type>BYTE</type>
-            <description>Разрешение использования дискретного входа</description>
             <widget>
                 <type>QComboBox</type>
                 <group>100</group>
@@ -2431,7 +2260,6 @@
             <id>1044</id>
             <name>filtrDI</name>
             <type>WORD</type>
-            <description>Период фильтрации дискретного входа DI24 (мс)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>250</group>
@@ -2445,7 +2273,6 @@
             <id>1045</id>
             <name>RejDelta</name>
             <type>BYTE</type>
-            <description>Разрешение функции дельта режима</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>51</group>
@@ -2457,7 +2284,6 @@
             <id>1050</id>
             <name>U2nom</name>
             <type>FLOAT</type>
-            <description>Номинальное линейное вторичное напряжение ТН, В</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2471,7 +2297,6 @@
             <id>1051</id>
             <name>U2nom_2</name>
             <type>FLOAT</type>
-            <description>Номинальное вторичное напряжение</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2485,7 +2310,6 @@
             <id>1052</id>
             <name>ITT1nom</name>
             <type>FLOAT</type>
-            <description>Номинальный первичный ток ТТ, А</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2499,7 +2323,6 @@
             <id>1053</id>
             <name>ITT2nom</name>
             <type>FLOAT</type>
-            <description>Номинальный вторичный ток ТТ, А</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2513,7 +2336,6 @@
             <id>1054</id>
             <name>TTconf1</name>
             <type>BYTE</type>
-            <description>включение ТТ 1-й тройки: 0 – в линейных проводах (по умолчанию),1 – в обмотках, соединенных в треугольник.</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>50</group>
@@ -2525,7 +2347,6 @@
             <id>1055</id>
             <name>TTconf2</name>
             <type>BYTE</type>
-            <description>включение ТТ 2-й тройки: 0 – в линейных проводах (по умолчанию),1 – в обмотках, соединенных в треугольник.</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>50</group>
@@ -2537,7 +2358,6 @@
             <id>1070</id>
             <name>Cool_type</name>
             <type>DWORD</type>
-            <description>вид охлаждения: 0 – естественное,  1 – принудительное</description>
             <widget>
                 <type>QComboBox</type>
                 <group>200</group>
@@ -2552,7 +2372,6 @@
             <id>1071</id>
             <name>W_mat</name>
             <type>DWORD</type>
-            <description>материал обмотки: 0 – медь, 1 – алюминий</description>
             <widget>
                 <type>QComboBox</type>
                 <group>200</group>
@@ -2567,7 +2386,6 @@
             <id>1072</id>
             <name>TNNTdop</name>
             <type>FLOAT</type>
-            <description>Предельно допустимая температура ННТ в°С</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2581,7 +2399,6 @@
             <id>1073</id>
             <name>TNNTpred</name>
             <type>FLOAT</type>
-            <description>Уставка предупредительной сигнализации по температуре ННТ в °С</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>200</group>
@@ -2595,7 +2412,6 @@
             <id>1074</id>
             <name>Tamb_nom</name>
             <type>FLOAT</type>
-            <description>Номинальная температура окружающей среды,  °С</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2609,7 +2425,6 @@
             <id>1075</id>
             <name>dTNNTnom</name>
             <type>FLOAT</type>
-            <description>Превышение температуры ННТ при номинальной нагрузке, °С</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2623,7 +2438,6 @@
             <id>1076</id>
             <name>Kdob</name>
             <type>FLOAT</type>
-            <description>Коэффициент добавочных потерь</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2637,7 +2451,6 @@
             <id>1077</id>
             <name>TauWnom</name>
             <type>FLOAT</type>
-            <description>Постоянная времени нагрева обмотки в номинальном режиме, мин</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2651,7 +2464,6 @@
             <id>1078</id>
             <name>Umaxm</name>
             <type>FLOAT</type>
-            <description>Максимальное измеряемое фазное напряжение на входе прибора, В эфф (не более 305В)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2665,7 +2477,6 @@
             <id>1079</id>
             <name>Imaxm</name>
             <type>FLOAT</type>
-            <description>Максимальное измеряемый ток на входе прибора, А эфф  (не более 33А)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2679,7 +2490,6 @@
             <id>1080</id>
             <name>Iwnom</name>
             <type>FLOAT</type>
-            <description>Номинальный ток контролируемой обмотки, А</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2693,7 +2503,6 @@
             <id>1081</id>
             <name>OscPoints</name>
             <type>DWORD</type>
-            <description>Количество точек осциллограммы на период основной частоты</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
@@ -2707,7 +2516,6 @@
             <id>1082</id>
             <name>GTnnt</name>
             <type>FLOAT</type>
-            <description>Гистерезис сигнализации по температуре ННТ,  град.С</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>5</group>
@@ -2721,7 +2529,6 @@
             <id>1083</id>
             <name>GOvc</name>
             <type>FLOAT</type>
-            <description>Гистерезис сигнализации по токовой перегрузке, % от</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>5</group>
@@ -2735,7 +2542,6 @@
             <id>1084</id>
             <name>TdatNum</name>
             <type>DWORD</type>
-            <description>Количество датчиков температуры обмоток, подключенных по Modbus Master</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2749,7 +2555,6 @@
             <id>1101</id>
             <name>Eq_type</name>
             <type>DWORD</type>
-            <description>Тип коммутируемого оборудования</description>
             <widget>
                 <type>QComboBox</type>
                 <group>50</group>
@@ -2767,7 +2572,6 @@
             <id>1102</id>
             <name>Core_type</name>
             <type>DWORD</type>
-            <description>Тип магнитопровода</description>
             <widget>
                 <type>QComboBox</type>
                 <group>50</group>
@@ -2783,7 +2587,6 @@
             <id>1103</id>
             <name>D_win</name>
             <type>DWORD</type>
-            <description>Наличие обмотки соединенной в треугольник</description>
             <widget>
                 <type>QComboBox</type>
                 <group>50</group>
@@ -2800,7 +2603,6 @@
             <id>1104</id>
             <name>N_type</name>
             <type>DWORD</type>
-            <description>Схема подключения нейтрали</description>
             <widget>
                 <type>QComboBox</type>
                 <group>50</group>
@@ -2815,7 +2617,6 @@
             <id>1105</id>
             <name>Op_type</name>
             <type>DWORD</type>
-            <description>Тип обслуживаемых коммутационных операций</description>
             <widget>
                 <type>QComboBox</type>
                 <group>51</group>
@@ -2832,7 +2633,6 @@
             <id>1106</id>
             <name>Is_U2</name>
             <type>DWORD</type>
-            <description>Наличие (1) или отсутствие (0) сигналов  второй тройки напряжений (сторона нагрузки)</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>100</group>
@@ -2844,7 +2644,6 @@
             <id>1107</id>
             <name>Residue</name>
             <type>DWORD</type>
-            <description>Учитывается (1) или нет (0) остаточный магнитный поток при коммутации трансформатора</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>101</group>
@@ -2855,7 +2654,6 @@
             <id>1108</id>
             <name>Is_I</name>
             <type>DWORD</type>
-            <description>Наличие (1) или отсутствие (0) сигналов  тока</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>100</group>
@@ -2866,7 +2664,6 @@
             <id>1111</id>
             <name>RES_max</name>
             <type>FLOAT</type>
-            <description>Предельное значение механического ресурса</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>203</group>
@@ -2880,7 +2677,6 @@
             <id>1112</id>
             <name>RESkz_max</name>
             <type>FLOAT</type>
-            <description>Предельное значение коммутационного ресурса</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>203</group>
@@ -2894,7 +2690,6 @@
             <id>1113</id>
             <name>Unom</name>
             <type>FLOAT</type>
-            <description>Класс напряжения (номинальное линейное первичное напряжение внешнего ТН, кВ)</description>
             <widget>
                 <type>QComboBox</type>
                 <group>100</group>
@@ -2916,7 +2711,6 @@
             <id>1114</id>
             <name>Inom</name>
             <type>FLOAT</type>
-            <description>Номинальный ток выключателя, А</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>102</group>
@@ -2930,7 +2724,6 @@
             <id>1115</id>
             <name>Ikz</name>
             <type>FLOAT</type>
-            <description>Номинальный ток отключения выключателя, кА</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>102</group>
@@ -2944,7 +2737,6 @@
             <id>1116</id>
             <name>ITT1nom</name>
             <type>FLOAT</type>
-            <description>Номинальный первичный ток внешнего ТТ, А</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -2958,7 +2750,6 @@
             <id>1117</id>
             <name>ITT2nom</name>
             <type>FLOAT</type>
-            <description>Номинальный вторичный ток внешнего ТТ (1А или 5А)</description>
             <widget>
                 <type>QComboBox</type>
                 <group>100</group>
@@ -2975,7 +2766,6 @@
             <id>1118</id>
             <name>T_arc</name>
             <type>FLOAT</type>
-            <description>Целевое время, предоставляемое  для горения дуги, мс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>102</group>
@@ -2989,7 +2779,6 @@
             <id>1119</id>
             <name>RDDS</name>
             <type>FLOAT</type>
-            <description>Cкорость снижения пробивного напряжения между контактами при включении, кВ/мс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>102</group>
@@ -3003,7 +2792,6 @@
             <id>1120</id>
             <name>RRDS</name>
             <type>FLOAT</type>
-            <description>Cкорость роста пробивного напряжения между контактами при отключении, кВ/мс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>102</group>
@@ -3017,7 +2805,6 @@
             <id>1121</id>
             <name>Ts_OFF</name>
             <type>FLOAT[3]</type>
-            <description>Собственное время отключения полюсов А,В,С, мс</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>102</group>
@@ -3037,7 +2824,6 @@
             <id>1122</id>
             <name>Ts_ON</name>
             <type>FLOAT[3]</type>
-            <description>Собственное время включения полюсов А,В,С мс</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>102</group>
@@ -3057,7 +2843,6 @@
             <id>1123</id>
             <name>Tzad_OFF</name>
             <type>FLOAT[3]</type>
-            <description>Задержка отключения полюсов А,В,С в свободно конфигурируемом режиме относительно перехода через ноль напряжения фазы А в положительном направлении, мс</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>51</group>
@@ -3078,7 +2863,6 @@
             <id>1124</id>
             <name>Tzad_ON</name>
             <type>FLOAT[3]</type>
-            <description>Задержка включения полюсов А,В,С в свободно конфигурируемом режиме относительно перехода через ноль напряжения фазы А в положительном направлении, мс</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>51</group>
@@ -3099,7 +2883,6 @@
             <id>1125</id>
             <name>Tbk_OFF_ON</name>
             <type>FLOAT[3]</type>
-            <description>Механическая задержка срабатывания блок-контакта отключенного состояния относительно перемещения главного контакта  для полюсов А,В,С, мс, при включении</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>102</group>
@@ -3120,7 +2903,6 @@
             <id>1126</id>
             <name>Tbk_ON_ON</name>
             <type>FLOAT[3]</type>
-            <description>Механическая задержка срабатывания блок-контакта включенного состояния относительно перемещения главного контакта  для полюсов А,В,С, мс, при включении</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>102</group>
@@ -3141,7 +2923,6 @@
             <id>1127</id>
             <name>Duosc</name>
             <type>FLOAT</type>
-            <description>Уставка скачка напряжения для запуска осциллографирования (в %% от номинала)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -3155,7 +2936,6 @@
             <id>1128</id>
             <name>Diosc</name>
             <type>FLOAT</type>
-            <description>Уставка скачка тока для запуска осциллографирования (в %%  от ITT2nom)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -3169,7 +2949,6 @@
             <id>1129</id>
             <name>Dumin</name>
             <type>FLOAT</type>
-            <description>Уставка контроля минимума напряжения (в %% от номинала)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -3183,7 +2962,6 @@
             <id>1130</id>
             <name>Dimin</name>
             <type>FLOAT</type>
-            <description>Уставка контроля минимума тока (в %% от номинала)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -3197,7 +2975,6 @@
             <id>1131</id>
             <name>Ts_OFFpred</name>
             <type>FLOAT</type>
-            <description>Собственное время отключения полюса выключателя (повышенное значение / предупредительная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -3212,7 +2989,6 @@
             <id>1132</id>
             <name>Ts_OFFalarm</name>
             <type>FLOAT</type>
-            <description>Собственное время отключения полюса  выключателя (повышенное значение / аварийная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -3227,7 +3003,6 @@
             <id>1133</id>
             <name>Ts_Onpred</name>
             <type>FLOAT</type>
-            <description>Собственное время включения полюса выключателя (повышенное значение / предупредительная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -3242,7 +3017,6 @@
             <id>1134</id>
             <name>Ts_Onalarm</name>
             <type>FLOAT</type>
-            <description>Собственное время включения полюса выключателя (повышенное значение / аварийная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -3257,7 +3031,6 @@
             <id>1135</id>
             <name>Tmain_OFFpred</name>
             <type>FLOAT</type>
-            <description>Время перемещения главного контакта при отключении полюса выключателя (повышенное значение / предупредительная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -3272,7 +3045,6 @@
             <id>1136</id>
             <name>Tmain_OFFalarm</name>
             <type>FLOAT</type>
-            <description>Время перемещения главного контакта при отключении полюса выключателя (повышенное значение / аварийная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -3287,7 +3059,6 @@
             <id>1137</id>
             <name>Tmain_Onpred</name>
             <type>FLOAT</type>
-            <description>Время перемещения главного контакта при включении полюса выключателя (повышенное значение / предупредительная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -3302,7 +3073,6 @@
             <id>1138</id>
             <name>Tmain_ONalarm</name>
             <type>FLOAT</type>
-            <description>Время перемещения главного контакта при включении полюса выключателя (повышенное значение / аварийная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -3317,7 +3087,6 @@
             <id>1139</id>
             <name>dT_OFFpred</name>
             <type>FLOAT</type>
-            <description>Погрешность выполненной синхронной коммутации при отключении (повышенное значение / предупредительная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -3332,7 +3101,6 @@
             <id>1140</id>
             <name>dT_OFFalarm</name>
             <type>FLOAT</type>
-            <description>Погрешность выполненной синхронной коммутации при отключении (повышенное значение / аварийная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -3347,7 +3115,6 @@
             <id>1141</id>
             <name>dT_Onpred</name>
             <type>FLOAT</type>
-            <description>Погрешность выполненной синхронной коммутации при включении (повышенное значение / предупредительная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -3362,7 +3129,6 @@
             <id>1142</id>
             <name>dT_Onalarm</name>
             <type>FLOAT</type>
-            <description>Погрешность выполненной синхронной коммутации при включении (повышенное значение / аварийная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -3377,7 +3143,6 @@
             <id>1143</id>
             <name>Tras_pred</name>
             <type>FLOAT</type>
-            <description>Время рассинхронизации фаз выключателя (повышенное значение / предупредительная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -3392,7 +3157,6 @@
             <id>1144</id>
             <name>Tras_alarm</name>
             <type>FLOAT</type>
-            <description>Время рассинхронизации фаз выключателя (повышенное значение / аварийная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -3407,7 +3171,6 @@
             <id>1145</id>
             <name>Tarc_pred</name>
             <type>FLOAT[2]</type>
-            <description>Время горения дуги в полюсе выключателя (повышенное значение / предупредительная уставка)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -3427,7 +3190,6 @@
             <id>1146</id>
             <name>Tarc_alarm</name>
             <type>FLOAT[2]</type>
-            <description>Время горения дуги в полюсе выключателя (повышенное значение / аварийная уставка)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -3447,7 +3209,6 @@
             <id>1147</id>
             <name>RESnom_pred</name>
             <type>DWORD</type>
-            <description>Остаточный механический ресурс (пониженное значение / предупредительная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -3462,7 +3223,6 @@
             <id>1148</id>
             <name>RESnom_alarm</name>
             <type>DWORD</type>
-            <description>Остаточный механический ресурс (пониженное значение / аварийная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -3477,7 +3237,6 @@
             <id>1149</id>
             <name>RESkz_pred</name>
             <type>FLOAT</type>
-            <description>Остаточный коммутационный ресурс (пониженное значение / предупредительная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -3492,7 +3251,6 @@
             <id>1150</id>
             <name>RESkz_alarm</name>
             <type>FLOAT</type>
-            <description>Остаточный коммутационный ресурс (пониженное значение / аварийная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -3507,7 +3265,6 @@
             <id>1151</id>
             <name>I_pred</name>
             <type>FLOAT</type>
-            <description>Ток в выключателе при выполнении коммутации (повышенное значение / предупредительная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -3522,7 +3279,6 @@
             <id>1152</id>
             <name>I_alarm</name>
             <type>FLOAT</type>
-            <description>Ток в выключателе при выполнении коммутации (повышенное значение / аварийная уставка)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -3537,7 +3293,6 @@
             <id>1153</id>
             <name>Aux</name>
             <type>DWORD</type>
-            <description>Использование вспомогательного аналогового сигнала, 0 – отсутствие этого сигнала</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>51</group>
@@ -3562,7 +3317,6 @@
             <id>1154</id>
             <name>Tbk_OFF_OFF</name>
             <type>FLOAT[3]</type>
-            <description>Механическая задержка срабатывания блок-контакта отключенного состояния относительно перемещения главного контакта  для полюсов А,В,С, мс, при отключении</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>102</group>
@@ -3583,7 +3337,6 @@
             <id>1155</id>
             <name>Tbk_ON_OFF</name>
             <type>FLOAT[3]</type>
-            <description>Механическая задержка срабатывания блок-контакта включенного состояния относительно перемещения главного контакта  для полюсов А,В,С, мс, при отключении</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>102</group>
@@ -3604,7 +3357,6 @@
             <id>1156</id>
             <name>C_on_tbo</name>
             <type>FLOAT</type>
-            <description>Постоянная времени коррекции собственного времени включения выключателя по длительности безоперационного простоя, час</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>52</group>
@@ -3619,7 +3371,6 @@
             <id>1157</id>
             <name>C_off_tbo</name>
             <type>FLOAT</type>
-            <description>Постоянная времени коррекции собственного времени отключения выключателя по длительности безоперационного простоя, час</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>52</group>
@@ -3634,7 +3385,6 @@
             <id>1158</id>
             <name>dT_pol_ON_BAT_s</name>
             <type>DWORD</type>
-            <description>Интервал подключения полюсов КБ, соединенной в звезду с заземленной нейтралью, град.;опции:  60 (обратный порядок чередования фаз) или 120  (прямой порядок чередования фаз)</description>
             <widget>
                 <type>QComboBox</type>
                 <group>51</group>
@@ -3651,7 +3401,6 @@
             <id>1159</id>
             <name>dT_pol_OFF_BAT_s</name>
             <type>DWORD</type>
-            <description>Интервал отключения полюсов КБ, соединенной в звезду с заземленной нейтралью, град.;опции:  60 (обратный порядок чередования фаз) или 120  (прямой порядок чередования фаз)</description>
             <widget>
                 <type>QComboBox</type>
                 <group>51</group>
@@ -3668,7 +3417,6 @@
             <id>1160</id>
             <name>dT3_pol_ON_BAT_d</name>
             <type>DWORD</type>
-            <description>Интервал подключения последней фазы КБ, соединенной в треугольник или в звезду с изолированной нейтралью, град.; опции:  90 или 270.</description>
             <widget>
                 <type>QComboBox</type>
                 <group>51</group>
@@ -3685,7 +3433,6 @@
             <id>1161</id>
             <name>dT_pol_ON_R_5core</name>
             <type>DWORD</type>
-            <description>Интервал подключения полюсов реактора с магнитно-независимыми фазами, град.;опции:  60 (обратный порядок чередования фаз) или 120  (прямой порядок чередования фаз)</description>
             <widget>
                 <type>QComboBox</type>
                 <group>51</group>
@@ -3701,7 +3448,6 @@
             <id>1162</id>
             <name>Adapt</name>
             <type>DWORD</type>
-            <description>1 – использовать адаптивный алгоритм определения времен включения и отключения, 0 – не использовать.</description>
             <widget>
                 <type>QCheckBox</type>
                 <group>51</group>
@@ -3712,7 +3458,6 @@
             <id>1163</id>
             <name>TsolON</name>
             <type>FLOAT</type>
-            <description>Допустимое время включения соленоида включения, мс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>102</group>
@@ -3726,7 +3471,6 @@
             <id>1164</id>
             <name>TsolOFF</name>
             <type>FLOAT</type>
-            <description>Допустимое время включения соленоида отключения, мс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>102</group>
@@ -3740,7 +3484,6 @@
             <id>1165</id>
             <name>NumA</name>
             <type>DWORD</type>
-            <description>Порядковый номер аппарата</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>102</group>
@@ -3754,7 +3497,6 @@
             <id>1166</id>
             <name>TypeA</name>
             <type>DWORD</type>
-            <description>Тип аппарата</description>
             <widget>
                 <type>QComboBox</type>
                 <group>102</group>
@@ -3770,7 +3512,6 @@
             <id>1168</id>
             <name>RESnom_max</name>
             <type>FLOAT</type>
-            <description>Предельное значение коммутационного ресурса при номинальном токе</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>203</group>
@@ -3784,7 +3525,6 @@
             <id>1169</id>
             <name>Pdrive_nom</name>
             <type>FLOAT</type>
-            <description>Номинальное давление в гидроприводе Мпа</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>102</group>
@@ -3798,7 +3538,6 @@
             <id>1170</id>
             <name>Pdrive_pred</name>
             <type>FLOAT</type>
-            <description>Предупредительная уставка давления в гидроприводе</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -3812,7 +3551,6 @@
             <id>1171</id>
             <name>Pdrive_alarm</name>
             <type>FLOAT</type>
-            <description>Аварийная уставка давления в гидроприводе</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -3826,7 +3564,6 @@
             <id>1172</id>
             <name>dTs_OFF</name>
             <type>FLOAT</type>
-            <description>Допустимое отклонение собственного времени отключения мс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>102</group>
@@ -3840,7 +3577,6 @@
             <id>1173</id>
             <name>dTs_ON</name>
             <type>FLOAT</type>
-            <description>Допустимое отклонение собственного времени включения, мс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>102</group>
@@ -3854,7 +3590,6 @@
             <id>1176</id>
             <name>RES_const_A_big</name>
             <type>FLOAT</type>
-            <description>Константа запрограммированная под конкретный тип выключателя</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>203</group>
@@ -3868,7 +3603,6 @@
             <id>1177</id>
             <name>RES_const_a_small</name>
             <type>FLOAT</type>
-            <description>Константа запрограммированная под конкретный тип выключателя</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>203</group>
@@ -3882,7 +3616,6 @@
             <id>1178</id>
             <name>RES_const_n_small</name>
             <type>FLOAT</type>
-            <description>Константа запрограммированная под конкретный тип выключателя</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>203</group>
@@ -3896,7 +3629,6 @@
             <id>1179</id>
             <name>RES_const_b</name>
             <type>FLOAT</type>
-            <description>Константа запрограммированная под конкретный тип выключателя</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>203</group>
@@ -3910,7 +3642,6 @@
             <id>1180</id>
             <name>RES_const_N_big</name>
             <type>FLOAT</type>
-            <description>Константа запрограммированная под конкретный тип выключателя</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>203</group>
@@ -3924,7 +3655,6 @@
             <id>1181</id>
             <name>Algorithm_Choice</name>
             <type>BYTE</type>
-            <description>Выбор алгоритма расчёта ресурса</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>203</group>
@@ -3938,7 +3668,6 @@
             <id>1182</id>
             <name>Iotc</name>
             <type>FLOAT</type>
-            <description>Ток отсечки выключателя</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>203</group>
@@ -3952,7 +3681,6 @@
             <id>1183</id>
             <name>Tdis_OFF</name>
             <type>FLOAT[3]</type>
-            <description>Дополнительное смещение момента отключения, град</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>51</group>
@@ -3972,7 +3700,6 @@
             <id>1184</id>
             <name>Tdis_ON</name>
             <type>FLOAT[3]</type>
-            <description>Дополнительное смещение момента включения, град</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>51</group>
@@ -3992,7 +3719,6 @@
             <id>1190</id>
             <name>K_on_volt</name>
             <type>FLOAT[4]</type>
-            <description>Поправка ко времени выключателя по напряжению питания соленоида</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>52</group>
@@ -4013,7 +3739,6 @@
             <id>1191</id>
             <name>K_off_volt</name>
             <type>FLOAT[4]</type>
-            <description>Поправка ко времени выключателя по напряжению питания соленоида</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>52</group>
@@ -4034,7 +3759,6 @@
             <id>1192</id>
             <name>K_on_tamb</name>
             <type>FLOAT[4]</type>
-            <description>Поправка ко времени выключателя по температуре окружающей среды</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>52</group>
@@ -4055,7 +3779,6 @@
             <id>1193</id>
             <name>K_off_tamb</name>
             <type>FLOAT[4]</type>
-            <description>Поправка ко времени выключателя по температуре окружающей среды</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>52</group>
@@ -4076,7 +3799,6 @@
             <id>1194</id>
             <name>K_on_tdr</name>
             <type>FLOAT[4]</type>
-            <description>Поправка ко времени выключателя по температуре в приводе</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>52</group>
@@ -4097,7 +3819,6 @@
             <id>1195</id>
             <name>K_off_tdr</name>
             <type>FLOAT[4]</type>
-            <description>Поправка ко времени выключателя по температуре в приводе</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>52</group>
@@ -4118,7 +3839,6 @@
             <id>1196</id>
             <name>K_on_hdr</name>
             <type>FLOAT[4]</type>
-            <description>Поправка ко времени выключателя по давлению в приводе</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>52</group>
@@ -4139,7 +3859,6 @@
             <id>1197</id>
             <name>K_off_hdr</name>
             <type>FLOAT[4]</type>
-            <description>Поправка ко времени выключателя по давлению в приводе</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>52</group>
@@ -4160,7 +3879,6 @@
             <id>1198</id>
             <name>dT_ON_tbo</name>
             <type>FLOAT</type>
-            <description>Максимальная коррекция собственного времени включения выключателя по длительности безоперационного простоя, мс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>52</group>
@@ -4175,7 +3893,6 @@
             <id>1199</id>
             <name>dT_OFF_tbo</name>
             <type>FLOAT</type>
-            <description>Максимальная коррекция собственного времени отключения выключателя по длительности безоперационного простоя, мс</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>52</group>
@@ -4190,7 +3907,6 @@
             <id>1200</id>
             <name>Kad</name>
             <type>FLOAT</type>
-            <description>Коэффициент адаптации расчетных собственных времён вкл/откл по фактическим значениям</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>51</group>
@@ -4205,7 +3921,6 @@
             <id>1201</id>
             <name>Fnom</name>
             <type>FLOAT</type>
-            <description>Номинальная частота сети, Гц</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -4219,7 +3934,6 @@
             <id>1202</id>
             <name>nom_slip</name>
             <type>FLOAT</type>
-            <description>Номинальное скольжение</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>100</group>
@@ -4233,7 +3947,6 @@
             <id>1203</id>
             <name>UVmax</name>
             <type>FLOAT</type>
-            <description>Максимальная амплитуда сигналов вибраций, В</description>
             <widget>
                 <type>QComboBox</type>
                 <group>100</group>
@@ -4250,7 +3963,6 @@
             <id>1204</id>
             <name>Poles</name>
             <type>DWORD</type>
-            <description>Число пар полюсов машины</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>9</group>
@@ -4264,7 +3976,6 @@
             <id>1205</id>
             <name>Stator_Slotes</name>
             <type>DWORD</type>
-            <description>Число пазов на статоре</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>9</group>
@@ -4278,7 +3989,6 @@
             <id>1206</id>
             <name>Rotor_bars</name>
             <type>DWORD</type>
-            <description>Число стержней ротора</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>9</group>
@@ -4292,7 +4002,6 @@
             <id>1207</id>
             <name>VibroType</name>
             <type>DWORD</type>
-            <description>Тип датчика вибраций</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>9</group>
@@ -4306,7 +4015,6 @@
             <id>1208</id>
             <name>Sensors</name>
             <type>DWORD</type>
-            <description>Подключенные датчики</description>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>9</group>
@@ -4326,7 +4034,6 @@
             <id>1209</id>
             <name>Kvibr</name>
             <type>FLOAT</type>
-            <description>Коэффициент передачи датчика вибраций (В/(м/с/с))</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>9</group>
@@ -4340,7 +4047,6 @@
             <id>1210</id>
             <name>VibrA_pred</name>
             <type>FLOAT</type>
-            <description>Предупредительная уставка по СКЗ ускорения (м/с/с)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -4354,7 +4060,6 @@
             <id>1211</id>
             <name>VibrV_pred</name>
             <type>FLOAT</type>
-            <description>Предупредительная уставка по СКЗ скорости (мм/с)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -4368,7 +4073,6 @@
             <id>1212</id>
             <name>VibrD_pred</name>
             <type>FLOAT</type>
-            <description>Предупредительная уставка по СКЗ виброперемещения (мкм)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -4382,7 +4086,6 @@
             <id>1213</id>
             <name>VibrA_alarm</name>
             <type>FLOAT</type>
-            <description>Аварийная уставка по СКЗ виброускорения (м/с/с)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -4396,7 +4099,6 @@
             <id>1214</id>
             <name>VibrV_alarm</name>
             <type>FLOAT</type>
-            <description>Аварийная уставка по СКЗ виброскорости (мм/с)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -4410,7 +4112,6 @@
             <id>1215</id>
             <name>VibrD_alarm</name>
             <type>FLOAT</type>
-            <description>Аварийная уставка по СКЗ виброперемещения (мкм)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -4424,7 +4125,6 @@
             <id>1216</id>
             <name>VVibrA_pred</name>
             <type>FLOAT</type>
-            <description>Предупредительная уставка по скорости роста СКЗ виброускорения (м/с/с/час)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -4438,7 +4138,6 @@
             <id>1217</id>
             <name>VVibrV_pred</name>
             <type>FLOAT</type>
-            <description>Предупредительная уставка по скорости роста СКЗ виброскорости (мм/с/час)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -4452,7 +4151,6 @@
             <id>1218</id>
             <name>VVibrD_pred</name>
             <type>FLOAT</type>
-            <description>Предупредительная уставка по скорости роста СКЗ виброперемещения (мкм/час)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -4466,7 +4164,6 @@
             <id>1219</id>
             <name>VVibrA_alarm</name>
             <type>FLOAT</type>
-            <description>Аварийная уставка по скорости роста СКЗ виброускорения (м/с/с/час)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -4480,7 +4177,6 @@
             <id>1220</id>
             <name>VVibrV_alarm</name>
             <type>FLOAT</type>
-            <description>Аварийная уставка по скорости роста СКЗ виброскорости (мм/с/час)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -4494,7 +4190,6 @@
             <id>1221</id>
             <name>VVibrD_alarm</name>
             <type>FLOAT</type>
-            <description>Аварийная уставка по скорости роста СКЗ виброперемещения (мкм/час)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -4508,7 +4203,6 @@
             <id>1222</id>
             <name>NumA</name>
             <type>DWORD</type>
-            <description>Порядковый номер двигателя</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>9</group>
@@ -4522,7 +4216,6 @@
             <id>1223</id>
             <name>Istart_pred</name>
             <type>FLOAT</type>
-            <description>Предупредительная уставка по пусковому току (% от Iном)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -4536,7 +4229,6 @@
             <id>1224</id>
             <name>Istart_alarm</name>
             <type>FLOAT</type>
-            <description>Аварийная уставка по пусковому току (% от Iном)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -4550,7 +4242,6 @@
             <id>1225</id>
             <name>I2_pred</name>
             <type>FLOAT</type>
-            <description>Предупредительная уставка по току обратной последовательности (% от I1)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -4564,7 +4255,6 @@
             <id>1226</id>
             <name>I2_alarm</name>
             <type>FLOAT</type>
-            <description>Аварийная уставка по току обратной последовательности (% от I1)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -4578,7 +4268,6 @@
             <id>1227</id>
             <name>Ih_pred</name>
             <type>FLOAT</type>
-            <description>Предупредительная уставка по коэффициенту гармонических искажений тока (% от 1-й гармоники)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>201</group>
@@ -4592,7 +4281,6 @@
             <id>1228</id>
             <name>Ih_alarm</name>
             <type>FLOAT</type>
-            <description>Аварийная уставка по коэффициенту гармонических искажений тока (% от 1-й гармоники)</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>202</group>
@@ -4606,7 +4294,6 @@
             <id>1233</id>
             <name>UVmax6</name>
             <type>FLOAT[6]</type>
-            <description>Максимальная амплитуда сигналов вибраций, В (1,25, 2,5, 5,0)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>100</group>
@@ -4629,7 +4316,6 @@
             <id>1237</id>
             <name>VibroType6</name>
             <type>DWORD[6]</type>
-            <description>Тип датчика вибраций</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>9</group>
@@ -4652,7 +4338,6 @@
             <id>1239</id>
             <name>Kvibr6</name>
             <type>FLOAT[6]</type>
-            <description>Коэффициент передачи датчика вибраций (В/(м/с/с))</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>9</group>
@@ -4675,7 +4360,6 @@
             <id>1240</id>
             <name>VibrA6_pred</name>
             <type>FLOAT[6]</type>
-            <description>Предупредительная уставка по СКЗ ускорения (м/с/с)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -4698,7 +4382,6 @@
             <id>1241</id>
             <name>VibrV6_pred</name>
             <type>FLOAT[6]</type>
-            <description>Предупредительная уставка по СКЗ скорости (мм/с)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -4721,7 +4404,6 @@
             <id>1242</id>
             <name>VibrD6_pred</name>
             <type>FLOAT[6]</type>
-            <description>Предупредительная уставка по СКЗ виброперемещения (мкм)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -4744,7 +4426,6 @@
             <id>1243</id>
             <name>VibrA6_alarm</name>
             <type>FLOAT[6]</type>
-            <description>Аварийная уставка по СКЗ виброускорения (м/с/с)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -4767,7 +4448,6 @@
             <id>1244</id>
             <name>VibrV6_alarm</name>
             <type>FLOAT[6]</type>
-            <description>Аварийная уставка по СКЗ виброскорости (мм/с)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -4790,7 +4470,6 @@
             <id>1245</id>
             <name>VibrD6_alarm</name>
             <type>FLOAT[6]</type>
-            <description>Аварийная уставка по СКЗ виброперемещения (мкм)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -4813,7 +4492,6 @@
             <id>1246</id>
             <name>VVibrA6_pred</name>
             <type>FLOAT[6]</type>
-            <description>Предупредительная уставка по скорости роста СКЗ виброускорения (м/с/с/час)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -4836,7 +4514,6 @@
             <id>1247</id>
             <name>VVibrV6_pred</name>
             <type>FLOAT[6]</type>
-            <description>Предупредительная уставка по скорости роста СКЗ виброскорости (мм/с/час)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -4859,7 +4536,6 @@
             <id>1248</id>
             <name>VVibrD6_pred</name>
             <type>FLOAT[6]</type>
-            <description>Предупредительная уставка по скорости роста СКЗ вибросмещения (мкм/час)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
@@ -4882,7 +4558,6 @@
             <id>1249</id>
             <name>VVibrA6_alarm</name>
             <type>FLOAT[6]</type>
-            <description>Аварийная уставка по скорости роста СКЗ виброускорения (м/с/с/час)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -4905,7 +4580,6 @@
             <id>1250</id>
             <name>VVibrV6_alarm</name>
             <type>FLOAT[6]</type>
-            <description>Аварийная уставка по скорости роста СКЗ виброскорости (мм/с/час)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -4928,7 +4602,6 @@
             <id>1251</id>
             <name>VVibrD6_alarm</name>
             <type>FLOAT[6]</type>
-            <description>Аварийная уставка по скорости роста СКЗ вибросмещения (мкм/час)</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
@@ -4948,10 +4621,516 @@
             </widget>
         </record>
         <record>
+            <id>1261</id>
+            <name>TnntWarn</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>201</group>
+                <string>Предупредительная уставка по температуре ННТ для обмоток, °С</string>
+                <toolTip>Предупредительная уставка по температуре ННТ для обмоток, °С</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1262</id>
+            <name>TnntAlarm</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>202</group>
+                <string>Аварийная уставка по температуре ННТ для обмоток, °С</string>
+                <toolTip>Аварийная уставка по температуре ННТ для обмоток, °С</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1263</id>
+            <name>GisTnntWarn</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>201</group>
+                <string>Гистерезис для предупредительных уставок по температуре ННТ, °С</string>
+                <toolTip>Гистерезис для предупредительных уставок по температуре ННТ, °С</toolTip>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1264</id>
+            <name>GisTnntAlarm</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>202</group>
+                <string>Гистерезис для аварийных уставок по температуре ННТ, °С</string>
+                <toolTip>Гистерезис для аварийных уставок по температуре ННТ, °С</toolTip>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1265</id>
+            <name>ToilWarn</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>201</group>
+                <string>Предупредительная уставка по температуре ВСМ, °С</string>
+                <toolTip>Предупредительная уставка по температуре ВСМ, °С</toolTip>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1266</id>
+            <name>ToilAlarm</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>202</group>
+                <string>Аварийная уставка по температуре ВСМ, °С</string>
+                <toolTip>Аварийная уставка по температуре ВСМ, °С</toolTip>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1267</id>
+            <name>GisToilWarn</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>201</group>
+                <string>Гистерезис для предупредительной уставки по температуре ВСМ, °С</string>
+                <toolTip>Гистерезис для предупредительной уставки по температуре ВСМ, °С</toolTip>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1268</id>
+            <name>GisToilAlarm</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>None</type>
+                <group>202</group>
+                <string>Гистерезис для аварийной уставки по температуре ВСМ, °С</string>
+                <toolTip>Гистерезис для аварийной уставки по температуре ВСМ, °С</toolTip>
+            </widget>
+        </record>
+        <record>
+            <id>1269</id>
+            <name>ToilD</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Уставка температуры ВСМ по ступеням, °С</string>
+                <toolTip>Уставка температуры ВСМ по ступеням, °С</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>Д1</item>
+                    <item>Д2</item>
+                    <item>ДЦ</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1270</id>
+            <name>GisToilD1</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Гистерезис температуры ВСМ по ступеням, °С</string>
+                <toolTip>Гистерезис температуры ВСМ по ступеням, °С</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>Д1</item>
+                    <item>Д2</item>
+                    <item>ДЦ</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1271</id>
+            <name>TnntD</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Уставка температуры ННТ по ступеням, °С</string>
+                <toolTip>Уставка температуры ННТ по ступеням, °С</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>Д1</item>
+                    <item>Д2</item>
+                    <item>ДЦ</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1272</id>
+            <name>GisTnntD</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Гистерезис температуры ННТ по ступеням, °С</string>
+                <toolTip>Гистерезис температуры ННТ по ступеням, °С</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>Д1</item>
+                    <item>Д2</item>
+                    <item>ДЦ</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1273</id>
+            <name>KclD</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Уставка токовой нагрузки по ступеням, %</string>
+                <toolTip>Уставка токовой нагрузки по ступеням, %</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>1000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>Д1</item>
+                    <item>Д2</item>
+                    <item>ДЦ</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1274</id>
+            <name>GisKclD</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Гистерезис токовой нагрузки по ступеням, %</string>
+                <toolTip>Гистерезис токовой нагрузки по ступеням, %</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>1000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>Д1</item>
+                    <item>Д2</item>
+                    <item>ДЦ</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1275</id>
+            <name>TimerOffD</name>
+            <type>WORD[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Время отключения по ступеням, сек</string>
+                <toolTip>Время отключения по ступеням, сек</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>Д1</item>
+                    <item>Д2</item>
+                    <item>ДЦ</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1276</id>
+            <name>PauseOnD</name>
+            <type>WORD[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Время паузы между включением выходов по ступеням, сек</string>
+                <toolTip>Время паузы между включением выходов по ступеням, сек</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>Д1</item>
+                    <item>Д2</item>
+                    <item>ДЦ</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1277</id>
+            <name>PauseOffD</name>
+            <type>WORD[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Время паузы между отключением выходов по ступеням, сек</string>
+                <toolTip>Время паузы между отключением выходов по ступеням, сек</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>Д1</item>
+                    <item>Д2</item>
+                    <item>ДЦ</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1278</id>
+            <name>EnBlkOilPump</name>
+            <type>BYTE</type>
+            <widget>
+                <type>QCheckBox</type>
+                <group>51</group>
+                <string>Ввод в работу алгоритма блокировки маслонасосов</string>
+                <toolTip>Ввод в работу алгоритма блокировки маслонасосов</toolTip>
+            </widget>
+        </record>
+        <record>
+            <id>1279</id>
+            <name>TBlkOilPump</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>51</group>
+                <string>Уставка  температуры ВСМ для блокировки  включения маслонасосов, °С</string>
+                <toolTip>Уставка  температуры ВСМ для блокировки  включения маслонасосов, °С</toolTip>
+                <min>-10000</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1290</id>
+            <name>Tau_vsm</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>51</group>
+                <string>Постоянная времени температуры ВСМ, мин</string>
+                <toolTip>Постоянная времени температуры ВСМ, мин</toolTip>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1291</id>
+            <name>Tau_nnt</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>51</group>
+                <string>Постоянная времени температуры ННТ для обмотvок, мин</string>
+                <toolTip>Постоянная времени температуры ННТ для обмотvок, мин</toolTip>
+                <min>1</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1292</id>
+            <name>dTnnt</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Превышение ННТ над ВСМ при номинальном токе для обмоток, °С</string>
+                <toolTip>Превышение температуры ННТ над температурой ВСМ при номинальном токе для обмоток, °С</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1293</id>
+            <name>k21</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Константа теплового уравнения для обмоток</string>
+                <toolTip>Константа теплового уравнения для обмоток</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1294</id>
+            <name>k22</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Константа теплового уравнения для обмоток</string>
+                <toolTip>Константа теплового уравнения для обмоток</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1295</id>
+            <name>Unom</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>100</group>
+                <string>Номинальное напряжение для трех обмоток, кВ</string>
+                <toolTip>Номинальное напряжение для трех обмоток, кВ</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1296</id>
+            <name>K22</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>51</group>
+                <string>Константа теплового уравнения для обмоток</string>
+                <toolTip>Константа теплового уравнения для обмоток</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1297</id>
+            <name>Unom</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>100</group>
+                <string>Номинальное напряжение для обмоток, кВ</string>
+                <toolTip>Номинальное напряжение для обмоток, кВ</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1298</id>
+            <name>Calc_Kcl3</name>
+            <type>BYTE</type>
+            <widget>
+                <type>QCheckBox</type>
+                <group>51</group>
+                <string>Считать токовую нагрузку для третьей обмотки</string>
+                <toolTip>Считать токовую нагрузку для третьей обмотки</toolTip>
+            </widget>
+        </record>
+        <record>
+            <id>1299</id>
+            <name>Calc_Tnnt</name>
+            <type>BYTE[3]</type>
+            <widget>
+                <type>CheckBoxGroup</type>
+                <group>51</group>
+                <string>Считать температуры ННТ для обмоток</string>
+                <toolTip>Считать температуры ННТ для обмоток</toolTip>
+                <count>3</count>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
             <id>1300</id>
             <name>MB1Master</name>
             <type>BYTE</type>
-            <description>Используется Modbus в режиме мастер</description>
             <widget>
                 <type>QComboBox</type>
                 <group>230</group>
@@ -4966,7 +5145,6 @@
             <id>1301</id>
             <name>ConfMas1_1</name>
             <type>CONFMAST</type>
-            <description>Параметры датчика 1 RS-485_1</description>
             <widget class="ModbusItem">
                 <type>QTableView</type>
                 <group>230</group>
@@ -4977,7 +5155,6 @@
             <id>1302</id>
             <name>ConfMas1_2</name>
             <type>CONFMAST</type>
-            <description>Параметры датчика 2 RS-485_1</description>
             <widget class="ModbusItem">
                 <type>QTableView</type>
                 <group>230</group>
@@ -4988,7 +5165,6 @@
             <id>1303</id>
             <name>ConfMas1_3</name>
             <type>CONFMAST</type>
-            <description>Параметры датчика 3 RS-485_1</description>
             <widget class="ModbusItem">
                 <type>QTableView</type>
                 <group>230</group>
@@ -4999,7 +5175,6 @@
             <id>1304</id>
             <name>ConfMas1_4</name>
             <type>CONFMAST</type>
-            <description>Параметры датчика 4 RS-485_1</description>
             <widget class="ModbusItem">
                 <type>QTableView</type>
                 <group>230</group>
@@ -5010,7 +5185,6 @@
             <id>1320</id>
             <name>MB1Master</name>
             <type>BYTE</type>
-            <description>Используется Modbus в режиме мастер</description>
             <widget>
                 <type>QComboBox</type>
                 <group>231</group>
@@ -5025,7 +5199,6 @@
             <id>1321</id>
             <name>ConfMas2_1</name>
             <type>CONFMAST</type>
-            <description>Параметры датчика 1 RS-485_2</description>
             <widget class="ModbusItem">
                 <type>QTableView</type>
                 <group>231</group>
@@ -5036,7 +5209,6 @@
             <id>1322</id>
             <name>ConfMas2_2</name>
             <type>CONFMAST</type>
-            <description>Параметры датчика 2 RS-485_2</description>
             <widget class="ModbusItem">
                 <type>QTableView</type>
                 <group>231</group>
@@ -5047,7 +5219,6 @@
             <id>1323</id>
             <name>ConfMas2_3</name>
             <type>CONFMAST</type>
-            <description>Параметры датчика 3 RS-485_2</description>
             <widget class="ModbusItem">
                 <type>QTableView</type>
                 <group>231</group>
@@ -5058,7 +5229,6 @@
             <id>1324</id>
             <name>ConfMas2_4</name>
             <type>CONFMAST</type>
-            <description>Параметры датчика 4 RS-485_2</description>
             <widget class="ModbusItem">
                 <type>QTableView</type>
                 <group>231</group>
@@ -5069,7 +5239,6 @@
             <id>1388</id>
             <name>DelayHeat</name>
             <type>DWORD</type>
-            <description>Задержка при нагреве после достижения нужной температуры</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>51</group>
@@ -5083,7 +5252,6 @@
             <id>1389</id>
             <name>N_minusDT</name>
             <type>DWORD</type>
-            <description>Кол-во минусовых значений скорости изменения средней температуры</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>51</group>
@@ -5097,7 +5265,6 @@
             <id>1390</id>
             <name>Density</name>
             <type>CONF_DENS[3]</type>
-            <description>Виджет для передачи данных о газах</description>
             <widget>
                 <type>GasDensityWidget</type>
                 <group>7</group>
@@ -5108,7 +5275,6 @@
             <id>1391</id>
             <name>Press</name>
             <type>FLOAT[3]</type>
-            <description>Давление газа</description>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>7</group>
@@ -5128,7 +5294,6 @@
             <id>1392</id>
             <name>Heat</name>
             <type>FLOAT</type>
-            <description>Уставка вкл. нагрева</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>51</group>
@@ -5142,7 +5307,6 @@
             <id>1393</id>
             <name>GisHeat</name>
             <type>FLOAT</type>
-            <description>Гистерезис откл. нагрева</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>51</group>
@@ -5156,7 +5320,6 @@
             <id>1394</id>
             <name>TimeoutOn</name>
             <type>DWORD</type>
-            <description>Тайм-аут на включение нагревателя</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>51</group>
@@ -5170,7 +5333,6 @@
             <id>1395</id>
             <name>TimeoutOаа</name>
             <type>DWORD</type>
-            <description>Тайм-аут на установление температуры</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>51</group>
@@ -5184,7 +5346,6 @@
             <id>1396</id>
             <name>NFiltdiff</name>
             <type>DWORD</type>
-            <description>Степень фильтра скользящего среднего</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>51</group>
@@ -5199,7 +5360,6 @@
             <id>1397</id>
             <name>dTavgmax</name>
             <type>FLOAT</type>
-            <description>Диапазон скорости изменения средней температуры</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>51</group>
@@ -5213,7 +5373,6 @@
             <id>1398</id>
             <name>DelayTavg</name>
             <type>DWORD</type>
-            <description>Пропуск измерения скорости изменения средней температуры</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>51</group>
@@ -5227,7 +5386,6 @@
             <id>1399</id>
             <name>n_pointT</name>
             <type>DWORD</type>
-            <description>Пропуск точек температуры</description>
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>51</group>
@@ -5242,259 +5400,417 @@
             <id>8000</id>
             <name>FW_Hdr</name>
             <type>Type</type>
-            <description>Заголовок встроенного ПО</description>
         </record>
         <record>
             <id>8001</id>
             <name>FW_FW</name>
             <type>BYTE[]</type>
-            <description>Встроенное ПО</description>
         </record>
         <record>
             <id>9000</id>
             <name>Osc_1</name>
             <type>OscHeader_Data</type>
-            <description>Заголовок осциллограммы  №1</description>
         </record>
         <record>
             <id>9001</id>
             <name>Osc_2</name>
             <type>OscHeader_Data</type>
-            <description>Заголовок осциллограммы  №2</description>
         </record>
         <record>
             <id>9002</id>
             <name>Osc_3</name>
             <type>OscHeader_Data</type>
-            <description>Заголовок осциллограммы  №3</description>
         </record>
         <record>
             <id>9003</id>
             <name>Osc_4</name>
             <type>OscHeader_Data</type>
-            <description>Заголовок осциллограммы  №4</description>
         </record>
         <record>
             <id>9050</id>
             <name>Spect</name>
             <type>SpectHeader_Data</type>
-            <description>Осциллограмма и спектрограмма</description>
         </record>
         <record>
             <id>10001</id>
             <name>Osc21_0</name>
             <type>BYTE[]</type>
-            <description>0-й канал модуля 2100</description>
         </record>
         <record>
             <id>10002</id>
             <name>Osc21_1</name>
             <type>BYTE[]</type>
-            <description>1-й канал модуля 2100</description>
         </record>
         <record>
             <id>10003</id>
             <name>Osc21_2</name>
             <type>BYTE[]</type>
-            <description>2-й канал модуля 2100</description>
         </record>
         <record>
             <id>10004</id>
             <name>Osc21_3</name>
             <type>BYTE[]</type>
-            <description>3-й канал модуля 2100</description>
         </record>
         <record>
             <id>10005</id>
             <name>Osc21_4</name>
             <type>BYTE[]</type>
-            <description>4-й канал модуля 2100</description>
         </record>
         <record>
             <id>10006</id>
             <name>Osc21_5</name>
             <type>BYTE[]</type>
-            <description>5-й канал модуля 2100</description>
         </record>
         <record>
             <id>10007</id>
             <name>Osc21_6</name>
             <type>BYTE[]</type>
-            <description>6-й канал модуля 2100</description>
         </record>
         <record>
             <id>10008</id>
             <name>Osc21_7</name>
             <type>BYTE[]</type>
-            <description>7-й канал модуля 2100</description>
         </record>
         <record>
             <id>10009</id>
             <name>Osc21_8</name>
             <type>BYTE[]</type>
-            <description>8-й канал модуля 2121</description>
         </record>
         <record>
             <id>10010</id>
             <name>Osc21_9</name>
             <type>BYTE[]</type>
-            <description>9-й канал модуля 2121</description>
         </record>
         <record>
             <id>10011</id>
             <name>Osc21_10</name>
             <type>BYTE[]</type>
-            <description>10-й канал модуля 2121</description>
         </record>
         <record>
             <id>10012</id>
             <name>Osc21_11</name>
             <type>BYTE[]</type>
-            <description>11-й канал модуля 2121</description>
         </record>
         <record>
             <id>10013</id>
             <name>Osc21_12</name>
             <type>BYTE[]</type>
-            <description>12-й канал модуля 2121</description>
         </record>
         <record>
             <id>10014</id>
             <name>Osc21_13</name>
             <type>BYTE[]</type>
-            <description>13-й канал модуля 2121</description>
         </record>
         <record>
             <id>10015</id>
             <name>Osc21_14</name>
             <type>BYTE[]</type>
-            <description>14-й канал модуля 2121</description>
         </record>
         <record>
             <id>10016</id>
             <name>Osc21_15</name>
             <type>BYTE[]</type>
-            <description>15-й канал модуля 2121</description>
         </record>
         <record>
             <id>10020</id>
             <name>Osc80</name>
             <type>BYTE[]</type>
-            <description>Осциллограмма модуля 8081, 8082, 8083,8087</description>
         </record>
         <record>
             <id>10021</id>
             <name>Osc86</name>
             <type>BYTE[]</type>
-            <description>Осциллограмма вибраций</description>
         </record>
         <record>
             <id>10030</id>
             <name>Osc85</name>
             <type>DataPoint_Osc85</type>
-            <description>Осциллограмма 85 модуля</description>
         </record>
         <record>
             <id>10031</id>
             <name>Sw85</name>
             <type>SwRepDataStruct</type>
-            <description>Журнал переключения</description>
         </record>
         <record>
             <id>10040</id>
             <name>Osc87_0</name>
             <type>DataPoint_Osc87</type>
-            <description>Осциллограмма 87 модуля, 0-й канал</description>
         </record>
         <record>
             <id>10041</id>
             <name>Osc87_1</name>
             <type>DataPoint_Osc87</type>
-            <description>Осциллограмма 87 модуля, 1-й канал</description>
         </record>
         <record>
             <id>10042</id>
             <name>Osc87_2</name>
             <type>DataPoint_Osc87</type>
-            <description>Осциллограмма 87 модуля, 2-й канал</description>
         </record>
         <record>
             <id>10043</id>
             <name>Osc87_3</name>
             <type>DataPoint_Osc87</type>
-            <description>Осциллограмма 87 модуля, 3-й канал</description>
         </record>
         <record>
             <id>10044</id>
             <name>Osc87_4</name>
             <type>DataPoint_Osc87</type>
-            <description>Осциллограмма 87 модуля, 4-й канал</description>
         </record>
         <record>
             <id>10045</id>
             <name>Osc87_5</name>
             <type>DataPoint_Osc87</type>
-            <description>Осциллограмма 87 модуля, 5-й канал</description>
         </record>
         <record>
             <id>10046</id>
             <name>Osc87_6</name>
             <type>DataPoint_Osc87</type>
-            <description>Осциллограмма 87 модуля, 6-й канал</description>
         </record>
         <record>
             <id>10047</id>
             <name>Osc87_7</name>
             <type>DataPoint_Osc87</type>
-            <description>Осциллограмма 87 модуля, 7-й канал</description>
         </record>
         <record>
             <id>10050</id>
             <name>Spect87_0</name>
             <type>DataPoint_Spect87</type>
-            <description>Cпектрограмма 87 модуля, 0-й канал</description>
         </record>
         <record>
             <id>10051</id>
             <name>Spect87_1</name>
             <type>DataPoint_Spect87</type>
-            <description>Cпектрограмма 87 модуля, 1-й канал</description>
         </record>
         <record>
             <id>10052</id>
             <name>Spect87_2</name>
             <type>DataPoint_Spect87</type>
-            <description>Cпектрограмма 87 модуля, 2-й канал</description>
         </record>
         <record>
             <id>10053</id>
             <name>Spect87_3</name>
             <type>DataPoint_Spect87</type>
-            <description>Cпектрограмма 87 модуля, 3-й канал</description>
         </record>
         <record>
             <id>10054</id>
             <name>Spect87_4</name>
             <type>DataPoint_Spect87</type>
-            <description>Cпектрограмма 87 модуля, 4-й канал</description>
         </record>
         <record>
             <id>10055</id>
             <name>Spect87_5</name>
             <type>DataPoint_Spect87</type>
-            <description>Cпектрограмма 87 модуля, 5-й канал</description>
         </record>
         <record>
             <id>10056</id>
             <name>Spect87_6</name>
             <type>DataPoint_Spect87</type>
-            <description>Cпектрограмма 87 модуля, 6-й канал</description>
         </record>
         <record>
             <id>10057</id>
             <name>Spect87_7</name>
             <type>DataPoint_Spect87</type>
-            <description>Cпектрограмма 87 модуля, 7-й канал</description>
+        </record>
+        <record>
+            <id>1280</id>
+            <name>EnBlkFun</name>
+            <type>BYTE</type>
+            <widget>
+                <type>QCheckBox</type>
+                <group>51</group>
+                <string>Ввод в работу алгоритма блокировки вентиляторов</string>
+                <toolTip>Ввод в работу алгоритма блокировки вентиляторов</toolTip>
+            </widget>
+        </record>
+        <record>
+            <id>1281</id>
+            <name>TBlkFun</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>51</group>
+                <string>Уставка  температуры ВСМ для блокировки  включения вентиляторов, °С</string>
+                <toolTip>Уставка  температуры ВСМ для блокировки  включения вентиляторов, °С</toolTip>
+                <min>-10000</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1282</id>
+            <name>EnDxContr</name>
+            <type>BYTE[3]</type>
+            <widget>
+                <type>CheckBoxGroup</type>
+                <group>51</group>
+                <string>Разрешение ступеней управления охлаждением</string>
+                <toolTip>Разрешение ступеней управления охлаждением</toolTip>
+                <count>3</count>
+                <string-array>
+                    <item>Д1</item>
+                    <item>Д2</item>
+                    <item>ДЦ</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1284</id>
+            <name>Inom</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>100</group>
+                <string>Номинальный ток для обмоток, А</string>
+                <toolTip>Номинальный ток для обмоток, А</toolTip>
+                <count>3</count>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>1</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>140</id>
+            <name>In3_type_ID</name>
+            <type>BYTE[3]</type>
+            <widget>
+                <type>QComboBoxGroup</type>
+                <group>100</group>
+                <string>Тип аналоговых входов</string>
+                <toolTip>Тип аналоговых входов</toolTip>
+                <count>3</count>
+                <string-array>
+                    <item>Не используется</item>
+                    <item>Токовая петля 4..20 мА</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>141</id>
+            <name>In3_vmin_ID</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>101</group>
+                <string>Минимальные значения сигналов в инженерных единицах для аналоговых входов</string>
+                <toolTip>Минимальные значения сигналов в инженерных единицах для аналоговых входов</toolTip>
+                <count>3</count>
+                <min>-10000</min>
+                <max>10000</max>
+                <decimals>1</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>142</id>
+            <name>In3_vmax_ID</name>
+            <type>FLOAT[3]</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>101</group>
+                <string>Максимальные значения сигналов в инженерных единицах аналоговых входов</string>
+                <toolTip>Максимальные значения сигналов в инженерных единицах аналоговых входов</toolTip>
+                <count>3</count>
+                <min>-10000</min>
+                <max>10000</max>
+                <decimals>1</decimals>
+                <string-array>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>143</id>
+            <name>T_FiltrIn</name>
+            <type>WORD</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>250</group>
+                <string>Время фильтрации для трех входов, сек</string>
+                <toolTip>Время фильтрации для трех входов, сек</toolTip>
+                <count>3</count>
+                <min>1</min>
+                <max>20</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1260</id>
+            <name>T_filtrToil</name>
+            <type>WORD</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>250</group>
+                <string>Время фильтрации для температуры ВСМ, сек</string>
+                <toolTip>Время фильтрации для температуры ВСМ, сек</toolTip>
+                <min>1</min>
+                <max>20</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>245</id>
+            <name>DinEn_3M</name>
+            <type>BYTE[3]</type>
+            <widget>
+                <type>CheckBoxGroup</type>
+                <group>51</group>
+                <string>Использовать дискретные входы на мезонинной плате</string>
+                <toolTip>«Превышение 0,75 номинального тока трансформатора (Д1)»; «Превышение 0,85 номинального тока трансформатора (Д2)»; «Превышение 1,05 номинального тока трансформатора (ДЦ)»</toolTip>
+                <count>3</count>
+            </widget>
+        </record>
+        <record>
+            <id>246</id>
+            <name>filtrDI_M</name>
+            <type>WORD</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>250</group>
+                <string>Время фильтрации дискретных входов на мезонинной плате</string>
+                <toolTip>Время фильтрации дискретных входов на мезонинной плате</toolTip>
+                <min>0</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1285</id>
+            <name>Tevent_errdatch</name>
+            <type>WORD</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>200</group>
+                <string>Задержка на формирование сигнала неисправности внешнего датчиков, сек:</string>
+                <toolTip>Задержка на формирование сигнала неисправности внешнего датчиков, сек:</toolTip>
+                <min>0</min>
+                <max>240</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1286</id>
+            <name>TdelayDO</name>
+            <type>WORD</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>200</group>
+                <string>Задержка на формирование управляющих сигналов, сек</string>
+                <toolTip>Задержка на формирование управляющих сигналов, сек</toolTip>
+                <min>0</min>
+                <max>240</max>
+                <decimals>0</decimals>
+            </widget>
         </record>
     </records>
 </s2files>

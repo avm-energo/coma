@@ -1,11 +1,12 @@
 #pragma once
 
-#include <QDebug>
-#include <array>
 #include <gen/std_ext.h>
 #include <gen/timefunc.h>
 #include <s2/filestruct.h>
 #include <s2/modbusitem.h>
+
+#include <QDebug>
+#include <array>
 #include <variant>
 #include <vector>
 
@@ -72,9 +73,7 @@ struct GasDensity_3t
 {
     QList<GasDensity> density;
 
-    GasDensity_3t()
-    {
-    }
+    GasDensity_3t() { }
     GasDensity_3t(const char *buffer)
     {
         if (density.size() < 3)
@@ -117,7 +116,9 @@ using BYTE = std::uint8_t;
 using WORD = std::uint16_t;
 using DWORD = std::uint32_t;
 using INT32 = std::int32_t;
+using BYTE_3t = std::array<BYTE, 3>;
 using BYTE_4t = std::array<BYTE, 4>;
+using WORD_3t = std::array<WORD, 3>;
 using WORD_4t = std::array<WORD, 4>;
 using DWORD_4t = std::array<DWORD, 4>;
 using BYTE_6t = std::array<BYTE, 6>;
@@ -249,7 +250,7 @@ struct SwitchJourRecord
     uint8_t Reserve;       // Резерв
     uint32_t timeF;        // Время записи в журнал
 };
-#pragma pack(pop) /* restore original alignment from stack */
+#pragma pack(pop)          /* restore original alignment from stack */
 
 /// S2: Определение типа заголовка
 /// Заголовок файла (Прил. 1)
