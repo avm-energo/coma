@@ -1,17 +1,18 @@
 #include <gen/stdfunc.h>
 #include <gen/xml/xmlparse.h>
-#include <limits>
 #include <widgets/wdfunc.h>
 #include <xml/xmleditor/dialogs/xmls2recorddialog.h>
 #include <xml/xmleditor/models/xmldatamodel.h>
 #include <xml/xmltags.h>
 
+#include <limits>
+
 const QStringList XmlS2RecordDialog::s_dataTypes {
-    "BYTE", "BYTE[4]", "BYTE[6]", "BYTE[8]", "BYTE[16]", "BYTE[32]",       //
-    "WORD", "WORD[4]", "WORD[6]", "WORD[8]", "WORD[16]", "WORD[32]",       //
-    "DWORD", "DWORD[4]", "DWORD[6]", "DWORD[8]", "DWORD[16]", "DWORD[32]", //
-    "FLOAT", "FLOAT[2]", "FLOAT[3]", "FLOAT[4]", "FLOAT[6]", "FLOAT[8]",   //
-    "CONF_DENS", "CONF_DENS[3]", "BYTE[]", "INT32",                        //
+    "BYTE", "BYTE[3]", "BYTE[4]", "BYTE[6]", "BYTE[8]", "BYTE[16]", "BYTE[32]", //
+    "WORD", "WORD[3]", "WORD[4]", "WORD[6]", "WORD[8]", "WORD[16]", "WORD[32]", //
+    "DWORD", "DWORD[4]", "DWORD[6]", "DWORD[8]", "DWORD[16]", "DWORD[32]",      //
+    "FLOAT", "FLOAT[2]", "FLOAT[3]", "FLOAT[4]", "FLOAT[6]", "FLOAT[8]",        //
+    "CONF_DENS", "CONF_DENS[3]", "BYTE[]", "INT32",                             //
 };
 
 const QStringList XmlS2RecordDialog::s_widgetTypes {
@@ -21,7 +22,8 @@ const QStringList XmlS2RecordDialog::s_widgetTypes {
 };
 
 XmlS2RecordDialog::XmlS2RecordDialog(QWidget *parent)
-    : XmlDialog(parent), m_widgetEdit(new QGroupBox("Редактирование виджета", this))
+    : XmlDialog(parent)
+    , m_widgetEdit(new QGroupBox("Редактирование виджета", this))
 {
     m_widgetEdit->hide();
 }
@@ -44,7 +46,7 @@ void XmlS2RecordDialog::setupUI(QVBoxLayout *mainLayout)
     idInput->setMinimum(idMin);
     idInput->setMaximum(idMax);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(idInput, &QSpinBox::textChanged, this, //
+    QObject::connect(idInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlS2RecordDialog::dataChanged));
 #endif
     QObject::connect(idInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -94,7 +96,8 @@ void XmlS2RecordDialog::setupUI(QVBoxLayout *mainLayout)
     m_dlgItems.append(widgetFlag);
 
     QObject::connect(widgetFlag, &QCheckBox::stateChanged, this, //
-        [this, mainLayout](const int state) {
+        [this, mainLayout](const int state)
+        {
             if (state == Qt::Unchecked)
             {
                 mainLayout->removeWidget(m_widgetEdit);
@@ -190,7 +193,7 @@ void XmlS2RecordDialog::createWidgetEditBox()
     parentInput->setMinimum(0);
     parentInput->setMaximum(idMax);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(parentInput, &QSpinBox::textChanged, this, //
+    QObject::connect(parentInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlS2RecordDialog::dataChanged));
 #endif
     QObject::connect(parentInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -206,7 +209,7 @@ void XmlS2RecordDialog::createWidgetEditBox()
     countInput->setMinimum(countMin);
     countInput->setMaximum(countMax);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(countInput, &QSpinBox::textChanged, this, //
+    QObject::connect(countInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlS2RecordDialog::dataChanged));
 #endif
     QObject::connect(countInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -221,10 +224,10 @@ void XmlS2RecordDialog::createWidgetEditBox()
     // Виджеты для узла <min>
     auto minLabel = new QLabel("Минимальное значение: ", this);
     auto minInput = new QSpinBox(this);
-    countInput->setMinimum(int_min);
-    countInput->setMaximum(int_max);
+    minInput->setMinimum(int_min);
+    minInput->setMaximum(int_max);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(minInput, &QSpinBox::textChanged, this, //
+    QObject::connect(minInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlS2RecordDialog::dataChanged));
 #endif
     QObject::connect(minInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -240,7 +243,7 @@ void XmlS2RecordDialog::createWidgetEditBox()
     maxInput->setMinimum(idMin);
     maxInput->setMaximum(idMax);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(maxInput, &QSpinBox::textChanged, this, //
+    QObject::connect(maxInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlS2RecordDialog::dataChanged));
 #endif
     QObject::connect(maxInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -256,7 +259,7 @@ void XmlS2RecordDialog::createWidgetEditBox()
     decimalsInput->setMinimum(0);
     decimalsInput->setMaximum(32);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(decimalsInput, &QSpinBox::textChanged, this, //
+    QObject::connect(decimalsInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlS2RecordDialog::dataChanged));
 #endif
     QObject::connect(decimalsInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -315,9 +318,11 @@ bool XmlS2RecordDialog::loadS2TabsData()
         if (domDoc.setContent(moduleFile, &errMsg, &line, &column))
         {
             auto domElement = domDoc.documentElement();
-            XmlParse::parseNode(domElement, tags::conf_tabs, [this](const QDomNode &tabNode) {
-                parseConfigTab(tabNode); //
-            });
+            XmlParse::parseNode(domElement, tags::conf_tabs,
+                [this](const QDomNode &tabNode)
+                {
+                    parseConfigTab(tabNode); //
+                });
         }
         // Если QtXml парсер не смог корректно считать xml файл
         else

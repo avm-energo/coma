@@ -57,9 +57,7 @@ const std::map<ModelType, QStringList> XmlModel::s_headers {
     { ModelType::S2Records, { "ID элемента", "Название", "Тип", "Описание" } },                          //
 };
 
-XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : BaseEditorModel(rows, cols, type, parent)
-{
-}
+XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : BaseEditorModel(rows, cols, type, parent) { }
 
 QVariant XmlModel::data(const QModelIndex &index, int nRole) const
 {

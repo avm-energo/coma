@@ -131,7 +131,7 @@ void XmlHideDataModel::parseNode(QDomNode &node, int &row)
         parseTag(node, tags::id, row, 0, "", true);  // ID
         parseTag(node, tags::name, row, 1);          // Имя записи
         parseTag(node, tags::type, row, 2, "DWORD"); // Тип данных записи
-        parseTag(node, tags::description, row, 3);   // Описание
+        // parseTag(node, tags::description, row, 3);   // Описание
         setData(index(row, 0), QVariant::fromValue(parseS2RecordData(node)), S2RecordDataRole);
         break;
     default:
@@ -299,7 +299,7 @@ QDomElement XmlHideDataModel::makeS2RecordsNode(QDomDocument &doc)
         makeElement(doc, record, tags::id, data(index(row, 0)));
         makeElement(doc, record, tags::name, data(index(row, 1)));
         makeElement(doc, record, tags::type, data(index(row, 2)));
-        makeElement(doc, record, tags::description, data(index(row, 3)));
+        // makeElement(doc, record, tags::description, data(index(row, 3)));
         // Скрытые данные
         auto hideData = data(index(row, 0), S2RecordDataRole);
         if (hideData.isValid() && hideData.canConvert<S2RecordHideData>())

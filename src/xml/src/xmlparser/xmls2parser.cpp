@@ -35,12 +35,14 @@ const QHash<QString, std::uint64_t> Xml::S2Parser::s_nameTypeMap = {
     { "QTableView", ctti::unnamed_type_id<QTableView>().hash() },                     //
     { "GasDensityWidget", ctti::unnamed_type_id<GasDensityWidget>().hash() },         //
     { "BYTE", ctti::unnamed_type_id<S2::BYTE>().hash() },                             //
+    { "BYTE[3]", ctti::unnamed_type_id<S2::BYTE_3t>().hash() },                       //
     { "BYTE[4]", ctti::unnamed_type_id<S2::BYTE_4t>().hash() },                       //
     { "BYTE[6]", ctti::unnamed_type_id<S2::BYTE_6t>().hash() },                       //
     { "BYTE[8]", ctti::unnamed_type_id<S2::BYTE_8t>().hash() },                       //
     { "BYTE[16]", ctti::unnamed_type_id<S2::BYTE_16t>().hash() },                     //
     { "BYTE[32]", ctti::unnamed_type_id<S2::BYTE_32t>().hash() },                     //
     { "WORD", ctti::unnamed_type_id<S2::WORD>().hash() },                             //
+    { "WORD[3]", ctti::unnamed_type_id<S2::WORD_3t>().hash() },                       //
     { "WORD[4]", ctti::unnamed_type_id<S2::WORD_4t>().hash() },                       //
     { "WORD[6]", ctti::unnamed_type_id<S2::WORD_6t>().hash() },                       //
     { "WORD[8]", ctti::unnamed_type_id<S2::WORD_8t>().hash() },                       //
