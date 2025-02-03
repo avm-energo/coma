@@ -1,5 +1,8 @@
 #pragma once
 
+#include <widgets/ecombobox.h>
+#include <xml/xmleditor/models/baseeditormodel.h>
+
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDialog>
@@ -10,11 +13,9 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <variant>
-#include <widgets/ecombobox.h>
-#include <xml/xmleditor/models/baseeditormodel.h>
 
 constexpr auto createId = -1;
-constexpr auto idMin = 1;
+constexpr auto idMin = 0;
 constexpr auto idMax = 0xffff;
 constexpr auto addrMin = idMin;
 constexpr auto addrMax = 0xffffff;

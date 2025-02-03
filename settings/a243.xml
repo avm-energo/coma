@@ -4,9 +4,79 @@
     <version>1.0</version>
     <resources>
         <alarms desc="Сигнализация">
-            <critical desc="Критичные"/>
-            <warning desc="Предупреждения"/>
+            <critical desc="Критичные">
+                <item>
+                    <addr>1100</addr>
+                    <string>Обобщённый сигнал «неисправность датчика»</string>
+                </item>
+                <item>
+                    <addr>1102</addr>
+                    <string>Обобщённый сигнал аварийная сигнализация</string>
+                </item>
+                <item>
+                    <addr>1103</addr>
+                    <string>Неисправность датчика температуры ВСМ</string>
+                    <highlights>
+                        <item>1000</item>
+                    </highlights>
+                </item>
+                <item>
+                    <addr>1104</addr>
+                    <string>Неисправность датчика тока 1-ая обмотка</string>
+                    <highlights>
+                        <item>1001</item>
+                    </highlights>
+                </item>
+                <item>
+                    <addr>1105</addr>
+                    <string>Неисправность датчика тока 2-ая обмотка</string>
+                    <highlights>
+                        <item>1002</item>
+                    </highlights>
+                </item>
+                <item>
+                    <addr>1106</addr>
+                    <string>Неисправность датчика окр. среды</string>
+                    <highlights>
+                        <item>1007</item>
+                    </highlights>
+                </item>
+                <item>
+                    <addr>1111</addr>
+                    <string>Аварийная сигнализация температуры ВСМ</string>
+                </item>
+                <item>
+                    <addr>1112</addr>
+                    <string>Аварийная сигнализация температуры 1-ая обмотка</string>
+                </item>
+                <item>
+                    <addr>1113</addr>
+                    <string>Аварийная сигнализация температуры 2-ая обмотка</string>
+                </item>
+                <item>
+                    <addr>1114</addr>
+                    <string>Аварийная сигнализация температуры 3-ая обмотка</string>
+                </item>
+            </critical>
             <info desc="Информационные"/>
+            <warning desc="Предупреждения">
+                <item>
+                    <addr>1107</addr>
+                    <string>Предупредительная сигнализация температуры ВСМ</string>
+                </item>
+                <item>
+                    <addr>1108</addr>
+                    <string>Предупредительная сигнализация температуры 1-ая обмотка</string>
+                </item>
+                <item>
+                    <addr>1109</addr>
+                    <string>Предупредительная сигнализация температуры 2-ая обмотка</string>
+                </item>
+                <item>
+                    <addr>1110</addr>
+                    <string>Предупредительная сигнализация температуры 3-ая обмотка</string>
+                </item>
+            </warning>
         </alarms>
         <config desc="Конфигурация">
             <record>
@@ -76,6 +146,144 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>20</id>
+                <defaultValue>172,16,29,25</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>21</id>
+                <defaultValue>255,255,252,0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>22</id>
+                <defaultValue>172,16,29,1</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>23</id>
+                <defaultValue>2404,502,2405,503</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>24</id>
+                <defaultValue>172,16,31,222</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>25</id>
+                <defaultValue>38400</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>26</id>
+                <defaultValue>0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>27</id>
+                <defaultValue>0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>28</id>
+                <defaultValue>1</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>29</id>
+                <defaultValue>0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>140</id>
+                <defaultValue>0,0,0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>141</id>
+                <defaultValue>0,0,-50</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>142</id>
+                <defaultValue>2000,1000,150</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>143</id>
+                <defaultValue>5</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>245</id>
+                <defaultValue>0,0,0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>246</id>
+                <defaultValue>5</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1013</id>
+                <defaultValue>10</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1027</id>
+                <defaultValue>100</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1028</id>
+                <defaultValue>1.385</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1035</id>
+                <defaultValue>5</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1036</id>
+                <defaultValue>5</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1043</id>
+                <defaultValue>1</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1044</id>
+                <defaultValue>5</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1090</id>
                 <defaultValue>1</defaultValue>
                 <count>0</count>
@@ -88,50 +296,8 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1292</id>
-                <defaultValue>150</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1293</id>
-                <defaultValue>15,15,15</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1294</id>
-                <defaultValue>20,20,20</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1295</id>
-                <defaultValue>0,0,0</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1296</id>
-                <defaultValue>0,0,0</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1297</id>
-                <defaultValue>110,10,0</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1298</id>
-                <defaultValue>0</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1299</id>
-                <defaultValue>0,0,0</defaultValue>
+                <id>1260</id>
+                <defaultValue>5</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
@@ -208,12 +374,6 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1275</id>
-                <defaultValue>0,0,0</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
                 <id>1273</id>
                 <defaultValue>80,90,105</defaultValue>
                 <count>0</count>
@@ -222,6 +382,12 @@
             <record>
                 <id>1274</id>
                 <defaultValue>5,5,5</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1275</id>
+                <defaultValue>0,0,0</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
@@ -268,78 +434,6 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1013</id>
-                <defaultValue>10</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>140</id>
-                <defaultValue>0,0,0</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>141</id>
-                <defaultValue>0,0,-50</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>142</id>
-                <defaultValue>2000,1000,150</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>143</id>
-                <defaultValue>5</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1260</id>
-                <defaultValue>5</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1043</id>
-                <defaultValue>1</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1044</id>
-                <defaultValue>5</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>245</id>
-                <defaultValue>0,0,0</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>246</id>
-                <defaultValue>5</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1035</id>
-                <defaultValue>5</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1036</id>
-                <defaultValue>5</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
                 <id>1285</id>
                 <defaultValue>5</defaultValue>
                 <count>0</count>
@@ -352,88 +446,582 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>20</id>
-                <defaultValue>172,16,29,25</defaultValue>
+                <id>1292</id>
+                <defaultValue>150</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>21</id>
-                <defaultValue>255,255,252,0</defaultValue>
+                <id>1293</id>
+                <defaultValue>15,15,15</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>22</id>
-                <defaultValue>172,16,29,1</defaultValue>
+                <id>1294</id>
+                <defaultValue>20,20,20</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>23</id>
-                <defaultValue>2404,502,2405,503</defaultValue>
+                <id>1295</id>
+                <defaultValue>0,0,0</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>24</id>
-                <defaultValue>172,16,31,222</defaultValue>
+                <id>1296</id>
+                <defaultValue>0,0,0</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>25</id>
-                <defaultValue>38400</defaultValue>
+                <id>1297</id>
+                <defaultValue>110,10,0</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>26</id>
+                <id>1298</id>
                 <defaultValue>0</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>27</id>
-                <defaultValue>0</defaultValue>
+                <id>1299</id>
+                <defaultValue>0,0,0</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>28</id>
-                <defaultValue>1</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>29</id>
-                <defaultValue>0</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1027</id>
-                <defaultValue>100</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1028</id>
-                <defaultValue>1.385</defaultValue>
+                <id>1284</id>
+                <defaultValue>0,0,0</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
         </config>
-        <hidden desc="Секретные операции"/>
-        <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104"/>
+        <hidden desc="Секретные операции">
+            <hidden-tab background="" desc="Базовая плата" flag="1" prefix="base">
+                <mwidget title="Тип базовой платы" view="LineEdit">
+                    <index>1</index>
+                    <name>basetype</name>
+                    <type>uint32</type>
+                    <addr>1</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Серийный номер платы" view="LineEdit">
+                    <index>2</index>
+                    <name>baseserial</name>
+                    <type>uint32</type>
+                    <addr>10</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Версия платы" view="Version">
+                    <index>3</index>
+                    <name>baseversion</name>
+                    <type>uint32</type>
+                    <addr>3</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Серийный номер модуля" view="LineEdit">
+                    <index>4</index>
+                    <name>moduleserial</name>
+                    <type>uint32</type>
+                    <addr>13</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+            </hidden-tab>
+            <hidden-tab background="" desc="Плата датчиков" flag="2" prefix="mezz">
+                <mwidget title="Тип платы датчиков" view="LineEdit">
+                    <index>5</index>
+                    <name>mezztype</name>
+                    <type>uint32</type>
+                    <addr>2</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Серийный номер платы" view="LineEdit">
+                    <index>6</index>
+                    <name>mezzserial</name>
+                    <type>uint32</type>
+                    <addr>11</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Версия платы" view="Version">
+                    <index>7</index>
+                    <name>mezzversion</name>
+                    <type>uint32</type>
+                    <addr>12</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Зарезервировано" view="LineEdit">
+                    <index>8</index>
+                    <name>reserved</name>
+                    <type>uint32</type>
+                    <addr>4</addr>
+                    <visibility>false</visibility>
+                </mwidget>
+            </hidden-tab>
+        </hidden>
+        <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
+            <group>
+                <signal-id>1</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>1</sig-group>
+            </group>
+            <group>
+                <signal-id>2</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>1</sig-group>
+            </group>
+            <group>
+                <signal-id>3</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>4</signal-id>
+                <sig-type>7</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>5</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>1</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>6</signal-id>
+                <sig-type>30</sig-type>
+                <trans-type>3</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>7</signal-id>
+                <sig-type>30</sig-type>
+                <trans-type>3</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>8</signal-id>
+                <sig-type>30</sig-type>
+                <trans-type>3</trans-type>
+                <sig-group></sig-group>
+            </group>
+            <group>
+                <signal-id>9</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>2</sig-group>
+            </group>
+        </iec60870>
         <journals desc="Журналы">
-            <work desc="Рабочий журнал"/>
-            <meas desc="Журнал измерений"/>
+            <meas desc="Журнал измерений">
+                <item>
+                    <index>1</index>
+                    <header>№</header>
+                    <type>uint32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>2</index>
+                    <header>Время</header>
+                    <type>time32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>3</index>
+                    <header>Температура ВСМ</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>4</index>
+                    <header>Ток в 1-ой обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>5</index>
+                    <header>Ток в 2-ой обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>6</index>
+                    <header>Ток в 3-й обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>7</index>
+                    <header>Температура окружающей среды</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>8</index>
+                    <header>Температура ННТ в 1-ой обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>9</index>
+                    <header>Температура ННТ в 2-ой обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>10</index>
+                    <header>Температура ННТ в 3-й обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>11</index>
+                    <header>Дискретные сигналы</header>
+                    <type>uint32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>12</index>
+                    <header>Резерв 1</header>
+                    <type>float32</type>
+                    <visibility>false</visibility>
+                </item>
+                <item>
+                    <index>13</index>
+                    <header>Резерв 2</header>
+                    <type>float32</type>
+                    <visibility>false</visibility>
+                </item>
+            </meas>
+            <work desc="Рабочий журнал">
+                <item>
+                    <addr>1100</addr>
+                    <desc>Обобщённый сигнал «неисправность датчика»</desc>
+                </item>
+                <item>
+                    <addr>1101</addr>
+                    <desc>Обобщённый сигнал предупредительная сигнализация</desc>
+                </item>
+                <item>
+                    <addr>1102</addr>
+                    <desc>Обобщённый сигнал аварийная сигнализация</desc>
+                </item>
+                <item>
+                    <addr>1103</addr>
+                    <desc>Неисправность датчика температуры ВСМ</desc>
+                </item>
+                <item>
+                    <addr>1104</addr>
+                    <desc>Неисправность датчика тока 1-ая обмотка</desc>
+                </item>
+                <item>
+                    <addr>1105</addr>
+                    <desc>Неисправность датчика тока 2-ая обмотка</desc>
+                </item>
+                <item>
+                    <addr>1106</addr>
+                    <desc>Неисправность датчика окр. среды</desc>
+                </item>
+                <item>
+                    <addr>1107</addr>
+                    <desc>Предупредительная сигнализация температуры ВСМ</desc>
+                </item>
+                <item>
+                    <addr>1108</addr>
+                    <desc>Предупредительная сигнализация температуры 1-ая обмотка</desc>
+                </item>
+                <item>
+                    <addr>1109</addr>
+                    <desc>Предупредительная сигнализация температуры 2-ая обмотка</desc>
+                </item>
+                <item>
+                    <addr>1110</addr>
+                    <desc>Предупредительная сигнализация температуры 3-ая обмотка</desc>
+                </item>
+                <item>
+                    <addr>1111</addr>
+                    <desc>Аварийная сигнализация температуры ВСМ</desc>
+                </item>
+                <item>
+                    <addr>1112</addr>
+                    <desc>Аварийная сигнализация температуры 1-ая обмотка</desc>
+                </item>
+                <item>
+                    <addr>1113</addr>
+                    <desc>Аварийная сигнализация температуры 2-ая обмотка</desc>
+                </item>
+                <item>
+                    <addr>1114</addr>
+                    <desc>Аварийная сигнализация температуры 3-ая обмотка</desc>
+                </item>
+                <item>
+                    <addr>1200</addr>
+                    <desc>Ручной режим</desc>
+                </item>
+                <item>
+                    <addr>1201</addr>
+                    <desc>Включен сигнал D1_1</desc>
+                </item>
+                <item>
+                    <addr>1202</addr>
+                    <desc>Включен сигнал D1_2</desc>
+                </item>
+                <item>
+                    <addr>1203</addr>
+                    <desc>Включен сигнал D2_1</desc>
+                </item>
+                <item>
+                    <addr>1204</addr>
+                    <desc>Включен сигнал D2_2</desc>
+                </item>
+                <item>
+                    <addr>1205</addr>
+                    <desc>Включен сигнал DС_1</desc>
+                </item>
+                <item>
+                    <addr>1206</addr>
+                    <desc>Включен сигнал DС_2</desc>
+                </item>
+                <item>
+                    <addr>1207</addr>
+                    <desc>Включен сигнал DС_3</desc>
+                </item>
+                <item>
+                    <addr>1208</addr>
+                    <desc>Включен сигнал DС_4</desc>
+                </item>
+                <item>
+                    <addr>1209</addr>
+                    <desc>Блокировка маслонасосов</desc>
+                </item>
+                <item>
+                    <addr>1210</addr>
+                    <desc>Блокировка вентиляторов</desc>
+                </item>
+                <item>
+                    <addr>1300</addr>
+                    <desc>Вход 1 замкнут</desc>
+                </item>
+                <item>
+                    <addr>1301</addr>
+                    <desc>Вход 2 замкнут</desc>
+                </item>
+                <item>
+                    <addr>1302</addr>
+                    <desc>Вход 3 замкнут</desc>
+                </item>
+            </work>
         </journals>
         <modbus desc="Протокол Modbus"/>
-        <protocom desc="Протокол Protocom"/>
-        <section-tabs desc="Вкладки"/>
-        <sections desc="Разделы"/>
-        <signals desc="Сигналы"/>
+        <protocom desc="Протокол Protocom">
+            <group>
+                <block>0</block>
+                <signal-id>3</signal-id>
+            </group>
+            <group>
+                <block>2</block>
+                <signal-id>5</signal-id>
+            </group>
+            <group>
+                <block>200</block>
+                <signal-id>7</signal-id>
+            </group>
+            <group>
+                <block>3</block>
+                <signal-id>8</signal-id>
+            </group>
+            <group>
+                <block>4</block>
+                <signal-id>9</signal-id>
+            </group>
+            <group>
+                <block>100</block>
+                <signal-id>6</signal-id>
+            </group>
+        </protocom>
+        <section-tabs desc="Вкладки">
+            <tab>
+                <id>1</id>
+                <name>Основные</name>
+            </tab>
+            <tab>
+                <id>2</id>
+                <name>Дискретные</name>
+            </tab>
+            <tab>
+                <id>3</id>
+                <name>Прочие</name>
+            </tab>
+        </section-tabs>
+        <sections desc="Разделы">
+            <section header="Текущие данные">
+                <sgroup header="Общие" tab="3">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
+                        <start-addr>101</start-addr>
+                        <toolTip>Температура микроконтроллера, °С</toolTip>
+                    </mwidget>
+                    <mwidget desc="Напряжение батареи, В" view="float">
+                        <start-addr>102</start-addr>
+                        <toolTip>Напряжение батареи, В</toolTip>
+                    </mwidget>
+                    <mwidget desc="Текущее время в модуле Unixtime" view="float">
+                        <start-addr>120</start-addr>
+                        <toolTip>Текущее время в модуле Unixtime</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Предельные" tab="3">
+                    <mwidget desc="Максимальное значение температуры ВСМ за последние сутки" view="float">
+                        <start-addr>1400</start-addr>
+                        <toolTip>Максимальное значение температуры ВСМ за последние сутки</toolTip>
+                    </mwidget>
+                    <mwidget desc="Минимальное значение температуры ВСМ за последние сутки" view="float">
+                        <start-addr>1401</start-addr>
+                        <toolTip>Минимальное значение температуры ВСМ за последние сутки</toolTip>
+                    </mwidget>
+                    <mwidget desc="Максимальное значение температуры ВСМ за последнюю неделю" view="float">
+                        <start-addr>1402</start-addr>
+                        <toolTip>Максимальное значение температуры ВСМ за последнюю неделю</toolTip>
+                    </mwidget>
+                    <mwidget desc="Минимальное значение температуры ВСМ за последнюю неделю" view="float">
+                        <start-addr>1403</start-addr>
+                        <toolTip>Минимальное значение температуры ВСМ за последнюю неделю</toolTip>
+                    </mwidget>
+                    <mwidget desc="Максимальное значение температуры ВСМ за последний месяц" view="float">
+                        <start-addr>1404</start-addr>
+                        <toolTip>Максимальное значение температуры ВСМ за последний месяц</toolTip>
+                    </mwidget>
+                    <mwidget desc="Минимальное значение температуры ВСМ за последний месяц" view="float">
+                        <start-addr>1405</start-addr>
+                        <toolTip>Минимальное значение температуры ВСМ за последний месяц</toolTip>
+                    </mwidget>
+                    <mwidget desc="Максимальное значение температуры ВСМ за последний год" view="float">
+                        <start-addr>1406</start-addr>
+                        <toolTip>Максимальное значение температуры ВСМ за последний год</toolTip>
+                    </mwidget>
+                    <mwidget desc="Минимальное значение температуры ВСМ за последний год" view="float">
+                        <start-addr>1407</start-addr>
+                        <toolTip>Минимальное значение температуры ВСМ за последний год</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Режим" tab="2">
+                    <mwidget desc="Ручной режим" view="bitset">
+                        <start-addr>1200</start-addr>
+                        <toolTip>Ручной режим</toolTip>
+                    </mwidget>
+                    <mwidget desc="D1_%1" view="bitset">
+                        <start-addr>1201</start-addr>
+                        <count>2</count>
+                    </mwidget>
+                    <mwidget desc="D2_%1" view="bitset">
+                        <start-addr>1203</start-addr>
+                        <count>2</count>
+                    </mwidget>
+                    <mwidget desc="DC_%1" view="bitset">
+                        <start-addr>1205</start-addr>
+                        <count>4</count>
+                    </mwidget>
+                    <mwidget desc="Блокировка маслонасосов" view="bitset">
+                        <start-addr>1209</start-addr>
+                        <toolTip>Блокировка маслонасосов</toolTip>
+                    </mwidget>
+                    <mwidget desc="Блокировка вентиляторов" view="bitset">
+                        <start-addr>1210</start-addr>
+                        <toolTip>Блокировка вентиляторов</toolTip>
+                    </mwidget>
+                    <mwidget desc="Din_%1" view="bitset">
+                        <start-addr>1300</start-addr>
+                        <count>3</count>
+                        <toolTip>Вход %1 замкнут</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Текущие" tab="1">
+                    <mwidget desc="Температура ВСМ, °С" view="float">
+                        <start-addr>1000</start-addr>
+                        <toolTip>Температура ВСМ, °С</toolTip>
+                    </mwidget>
+                    <mwidget desc="Ток в %1-ой обмотке, А" view="float">
+                        <start-addr>1001</start-addr>
+                        <count>3</count>
+                        <toolTip>Ток в %1-ой обмотке, А</toolTip>
+                    </mwidget>
+                    <mwidget desc="Коэффициент нагрузки в %1-ой обмотке, А" view="float">
+                        <start-addr>1004</start-addr>
+                        <count>3</count>
+                        <toolTip>Коэффициент нагрузки в %1-ой обмотке, А</toolTip>
+                    </mwidget>
+                    <mwidget desc="Температура окружающей среды, °С" view="float">
+                        <start-addr>1007</start-addr>
+                        <toolTip>Температура окружающей среды, °С</toolTip>
+                    </mwidget>
+                    <mwidget desc="Температура ННТ в %1-ой обмотке, °С" view="float">
+                        <start-addr>1008</start-addr>
+                        <count>3</count>
+                        <toolTip>Температура ННТ в %1-ой обмотке, °С</toolTip>
+                    </mwidget>
+                </sgroup>
+            </section>
+        </sections>
+        <signals desc="Сигналы">
+            <signal>
+                <start-addr>1</start-addr>
+                <count>15</count>
+                <id>1</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>40</start-addr>
+                <count>5</count>
+                <id>2</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>101</start-addr>
+                <count>2</count>
+                <id>3</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>120</start-addr>
+                <count>1</count>
+                <id>4</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>1000</start-addr>
+                <count>11</count>
+                <id>5</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>1100</start-addr>
+                <count>15</count>
+                <id>6</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>1200</start-addr>
+                <count>11</count>
+                <id>7</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>1300</start-addr>
+                <count>3</count>
+                <id>8</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>1400</start-addr>
+                <count>8</count>
+                <id>9</id>
+                <type>Float</type>
+            </signal>
+        </signals>
     </resources>
 </module>
