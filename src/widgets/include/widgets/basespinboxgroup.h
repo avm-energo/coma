@@ -29,6 +29,7 @@ public:
     explicit BaseSpinBoxGroup(int count, QWidget *parent = nullptr) : QWidget(parent), m_count(count)
     {
         FlowLayout *flowLayout = new FlowLayout;
+        flowLayout->setObjectName("basespinboxgroup");
         for (auto i = 0; i != m_count; ++i)
         {
             flowLayout->addWidget(createWidget(QString::number(i + 1)));
@@ -41,6 +42,7 @@ public:
         , m_count(list.size())
     {
         FlowLayout *flowLayout = new FlowLayout;
+        flowLayout->setObjectName("basespinboxgroup2");
         for (auto i = 0; i != m_count; ++i)
         {
             flowLayout->addWidget(createWidget(list.at(i)));

@@ -18,12 +18,6 @@
 #include <QPushButton>
 #include <QScrollArea>
 
-#include <QDebug>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QMap>
-#include <QScrollArea>
-
 ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boardType, QWidget *parent)
     : UDialog(device, parent)
     , m_datamanager(*m_device->getS2Datamanager())

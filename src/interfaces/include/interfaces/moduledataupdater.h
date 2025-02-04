@@ -1,9 +1,10 @@
 #ifndef MODULEDATAUPDATER_H
 #define MODULEDATAUPDATER_H
 
-#include <QObject>
 #include <gen/datatypes.h>
 #include <interfaces/conn/async_connection.h>
+
+#include <QObject>
 
 using namespace Interface;
 class ModuleDataUpdater : public QObject

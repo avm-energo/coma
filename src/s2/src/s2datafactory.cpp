@@ -73,9 +73,7 @@ S2::valueType helper(const QString &str)
 namespace S2
 {
 
-DataFactory::DataFactory(const S2ConfigStorage &confStorage) : m_storage(confStorage)
-{
-}
+DataFactory::DataFactory(const S2ConfigStorage &confStorage) : m_storage(confStorage) { }
 
 ctti::unnamed_type_id_t DataFactory::getType(const quint32 id) const
 {
@@ -105,6 +103,8 @@ DataItem DataFactory::create(const DataRec &record) const
         return DataItem { helper<DWORD>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<INT32>().hash():
         return DataItem { helper<INT32>(record.header.numByte, rawdata) };
+    case ctti::unnamed_type_id<WORD_3t>().hash():
+        return DataItem { helper<WORD_3t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<BYTE_4t>().hash():
         return DataItem { helper<BYTE_4t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<WORD_4t>().hash():
@@ -176,6 +176,8 @@ DataItem DataFactory::create(const quint32 id, const QString &str) const
         return DataItem { helper<DWORD>(str) };
     case ctti::unnamed_type_id<INT32>().hash():
         return DataItem { helper<INT32>(str) };
+    case ctti::unnamed_type_id<WORD_3t>().hash():
+        return DataItem { helper<WORD_3t>(str) };
     case ctti::unnamed_type_id<BYTE_4t>().hash():
         return DataItem { helper<BYTE_4t>(str) };
     case ctti::unnamed_type_id<WORD_4t>().hash():

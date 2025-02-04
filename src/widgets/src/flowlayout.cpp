@@ -72,6 +72,11 @@ int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
     int y = effectiveRect.y();
     int lineHeight = 0;
 
+    if (itemList.isEmpty())
+    {
+        qWarning() << "itemList is empty";
+        return 0;
+    }
     auto result = std::max_element(itemList.cbegin(), itemList.cend(),
         [](QLayoutItem *lhs, QLayoutItem *rhs) { return lhs->sizeHint().width() < rhs->sizeHint().width(); });
     const auto maxWidth = (*result)->sizeHint().width();

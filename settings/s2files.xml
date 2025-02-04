@@ -920,7 +920,7 @@
             <name>In3_vmax_ID</name>
             <type>FLOAT[3]</type>
             <widget>
-                <type>QDoubleSpinBox</type>
+                <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
                 <string>Максимальные значения сигналов в инженерных единицах аналоговых входов</string>
                 <toolTip>Максимальные значения сигналов в инженерных единицах аналоговых входов</toolTip>
@@ -1312,6 +1312,11 @@
                 <string>Использовать дискретные входы на мезонинной плате</string>
                 <toolTip>«Превышение 0,75 номинального тока трансформатора (Д1)»; «Превышение 0,85 номинального тока трансформатора (Д2)»; «Превышение 1,05 номинального тока трансформатора (ДЦ)»</toolTip>
                 <count>3</count>
+                <string-array>
+                    <item>Превышение 0.75 номинального тока трансформатора (Д1)</item>
+                    <item>Превышение 0.85 номинального тока трансформатора (Д2)</item>
+                    <item>Превышение 1.05 номинального тока трансформатора (ДЦ)</item>
+                </string-array>
             </widget>
         </record>
         <record>
@@ -2646,6 +2651,42 @@
                 <min>0</min>
                 <max>10000</max>
                 <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1090</id>
+            <name>Eq_type2</name>
+            <type>DWORD</type>
+            <widget>
+                <type>QComboBox</type>
+                <group>51</group>
+                <string>Тип контролируемого оборудования</string>
+                <toolTip>Тип контролируемого оборудования</toolTip>
+                <string-array>
+                    <item>реактор</item>
+                    <item>двухобмоточный трансформатор</item>
+                    <item>двухобмоточный автотрансформатор</item>
+                    <item>двухобмоточный трансформатор с расщепленными обмотками</item>
+                    <item>трёхобмоточный трансформатор</item>
+                    <item>трёхобмоточный автотрансформатор</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1091</id>
+            <name>Cool_type2</name>
+            <type>DWORD</type>
+            <widget>
+                <type>QComboBox</type>
+                <group>51</group>
+                <string>Тип системы охлаждения</string>
+                <toolTip>Тип системы охлаждения</toolTip>
+                <string-array>
+                    <item>М</item>
+                    <item>Д</item>
+                    <item>ДЦ</item>
+                    <item>НДЦ</item>
+                </string-array>
             </widget>
         </record>
         <record>
@@ -4846,10 +4887,13 @@
             <name>GisToilAlarm</name>
             <type>FLOAT</type>
             <widget>
-                <type>None</type>
+                <type>QDoubleSpinBox</type>
                 <group>202</group>
                 <string>Гистерезис для аварийной уставки по температуре ВСМ, °С</string>
                 <toolTip>Гистерезис для аварийной уставки по температуре ВСМ, °С</toolTip>
+                <min>0</min>
+                <max>1000</max>
+                <decimals>0</decimals>
             </widget>
         </record>
         <record>
@@ -5811,42 +5855,6 @@
             <id>10057</id>
             <name>Spect87_7</name>
             <type>DataPoint_Spect87</type>
-        </record>
-        <record>
-            <id>1090</id>
-            <name>Eq_type2</name>
-            <type>DWORD</type>
-            <widget>
-                <type>QComboBox</type>
-                <group>51</group>
-                <string>Тип контролируемого оборудования</string>
-                <toolTip>Тип контролируемого оборудования</toolTip>
-                <string-array>
-                    <item>реактор</item>
-                    <item>двухобмоточный трансформатор</item>
-                    <item>двухобмоточный автотрансформатор</item>
-                    <item>двухобмоточный трансформатор с расщепленными обмотками</item>
-                    <item>трёхобмоточный трансформатор</item>
-                    <item>трёхобмоточный автотрансформатор</item>
-                </string-array>
-            </widget>
-        </record>
-        <record>
-            <id>1091</id>
-            <name>Cool_type2</name>
-            <type>DWORD</type>
-            <widget>
-                <type>QComboBox</type>
-                <group>51</group>
-                <string>Тип системы охлаждения</string>
-                <toolTip>Тип системы охлаждения</toolTip>
-                <string-array>
-                    <item>М</item>
-                    <item>Д</item>
-                    <item>ДЦ</item>
-                    <item>НДЦ</item>
-                </string-array>
-            </widget>
         </record>
     </records>
 </s2files>

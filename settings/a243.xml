@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypeb="A2" mtypem="43">
     <name>AVM-KOT</name>
-    <version>1.0</version>
+    <version>0.0-0005</version>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">
@@ -79,18 +79,6 @@
             </warning>
         </alarms>
         <config desc="Конфигурация">
-            <record>
-                <id>1</id>
-                <defaultValue>a2</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>2</id>
-                <defaultValue>43</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
             <record>
                 <id>3</id>
                 <defaultValue>8</defaultValue>
@@ -434,6 +422,12 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1284</id>
+                <defaultValue>0,0,0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1285</id>
                 <defaultValue>5</defaultValue>
                 <count>0</count>
@@ -489,12 +483,6 @@
             </record>
             <record>
                 <id>1299</id>
-                <defaultValue>0,0,0</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1284</id>
                 <defaultValue>0,0,0</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
@@ -1008,13 +996,13 @@
                 <start-addr>1200</start-addr>
                 <count>11</count>
                 <id>7</id>
-                <type>BitString</type>
+                <type>SinglePoint</type>
             </signal>
             <signal>
                 <start-addr>1300</start-addr>
                 <count>3</count>
                 <id>8</id>
-                <type>BitString</type>
+                <type>SinglePoint</type>
             </signal>
             <signal>
                 <start-addr>1400</start-addr>

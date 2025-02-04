@@ -80,7 +80,6 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
     }
     default:
         qWarning() << "Type not found " << key;
-        Q_ASSERT(false && "False type");
         widget->deleteLater();
         widget = nullptr;
         return widget;
@@ -185,9 +184,12 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 addVerticalLine(lyout, parent);
                 auto count = getRealCount(key);
                 auto group = new CheckBoxGroup(arg.items, count, parent);
-                group->setObjectName(QString::number(key));
-                lyout->addWidget(group, 100);
-                widget->setLayout(lyout);
+                if (group)
+                {
+                    group->setObjectName(QString::number(key));
+                    lyout->addWidget(group, 100);
+                    widget->setLayout(lyout);
+                }
             },
             [&](const delegate::ComboBox &arg)
             {
@@ -210,6 +212,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 addVerticalLine(mainLyout, parent);
                 auto count = getRealCount(key);
                 FlowLayout *flowLayout = new FlowLayout;
+                flowLayout->setObjectName(arg.desc);
                 for (auto i = 0; i != count; ++i)
                 {
                     QWidget *w = new QWidget;
