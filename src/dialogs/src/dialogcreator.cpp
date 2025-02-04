@@ -17,6 +17,7 @@
 #include <startup/startupkdvdialog.h>
 #include <startup/startupkivdialog.h>
 #include <startup/startupktfdialog.h>
+#include <tune/21/tune21dialog.h>
 #include <tune/82/tune82dialog.h>
 #include <tune/84/tune84dialog.h>
 #include <tune/kiv/tunekivdialog.h>
@@ -31,6 +32,7 @@ DialogCreator::DialogCreator(Device::CurrentDevice *device, QWidget *parent)
     , m_typeB(static_cast<BaseBoard>(m_device->getBaseType()))
     , m_typeM(static_cast<MezzanineBoard>(m_device->getMezzType()))
 {
+    m_isBoxModule = (m_device->getConfigStorage()->getDeviceSettings().getFeatures()["isBoxModule"] == "1");
     Q_ASSERT(m_device != nullptr);
 }
 
@@ -119,7 +121,8 @@ bool DialogCreator::isS2Available() noexcept
         [[maybe_unused]] volatile auto s2manager = m_device->getS2Datamanager();
         [[maybe_unused]] volatile auto &workConfig = s2manager->getCurrentConfiguration().m_workingConfig;
         return true;
-    } catch (...)
+    }
+    catch (...)
     {
         return false;
     }
@@ -129,38 +132,54 @@ void DialogCreator::createTuneDialogs()
 {
     if (!isS2Available())
     {
-        qCritical() << "Ошибка создания диалога регулировки";
+        qCritical() << "Ошибка создания диалога регулировки, отсутствует конфигурация S2";
         return;
     }
 
-    GeneralTuneDialog *tuneDlg = nullptr;
-    switch (m_boxModel)
+    u8 firstStepNumber = 1;
+
+    if (m_isBoxModule)
     {
-    case Model::KIV:
-        tuneDlg = new TuneKIVDialog(m_device, m_parent);
-        break;
-    case Model::KTF:
-        /// TODO: Регулировка КТФ
-        break;
-    case Model::KDV:
-        /// TODO: Регулировка КДВ
-        break;
-    case Model::KOT:
-        /// TODO: Регулировка КОТ
-        break;
-    default:
+        switch (m_boxModel)
+        {
+        case Model::KIV:
+            addDialogToList(new TuneKIVDialog(m_device, m_parent), "Регулировка", "tune");
+            break;
+        case Model::KTF:
+            /// TODO: Регулировка КТФ
+            break;
+        case Model::KDV:
+            /// TODO: Регулировка КДВ
+            break;
+        case Model::KOT:
+            /// TODO: Регулировка КОТ
+            break;
+        case Model::MPG:
+            /// TODO: Регулировка МПГ
+            break;
+        default:
+            break;
+        }
+    }
+
+    else
+    {
         if (m_typeB == BaseBoard::MTB_80)
         {
             if (m_typeM == Device::MezzanineBoard::MTM_81 || m_typeM == MezzanineBoard::MTM_82
                 || m_typeM == MezzanineBoard::MTM_83)
-                tuneDlg = new Tune82Dialog(m_device, m_parent);
+                addDialogToList(new Tune82Dialog(m_device, m_parent), "Регулировка", "tune");
             else if (m_typeM == MezzanineBoard::MTM_84)
-                tuneDlg = new Tune84Dialog(m_device, m_parent);
+                addDialogToList(new Tune84Dialog(m_device, m_parent), "Регулировка", "tune");
         }
-        break;
+        if (m_typeB == BaseBoard::MTB_21)
+            addDialogToList(new Tune21Dialog(BoardTypes::BASEBOARD, (m_typeM != MezzanineBoard::MTM_00),
+                                firstStepNumber, m_device, m_parent),
+                "Регулировка базовая", "tunebase");
+        if (m_typeM == MezzanineBoard::MTM_21)
+            addDialogToList(new Tune21Dialog(BoardTypes::MEZZBOARD, false, firstStepNumber, m_device, m_parent),
+                "Регулировка мезонин", "tunemez");
     }
-    if (tuneDlg != nullptr)
-        addDialogToList(tuneDlg, "Регулировка", "tune");
 }
 
 void DialogCreator::createStartupValuesDialog()

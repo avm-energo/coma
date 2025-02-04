@@ -2367,7 +2367,7 @@
                 <group>250</group>
                 <string>Период фильтрации дискретного входа DI24 (мс)</string>
                 <min>0</min>
-                <max>10000</max>
+                <max>60000</max>
                 <decimals>0</decimals>
             </widget>
         </record>
