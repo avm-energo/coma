@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(coma VERSION 3.2.0)
+project(coma VERSION 3.3.0)
 
 set(SOFTDEVELOPER "AVM-Energo")
 
@@ -78,6 +78,7 @@ endif()
 # Step 1: Build dependencies
 
 include(gen)
+include(avm-widgets)
 include(expected)
 include(qcustomplot)
 include(limereport)

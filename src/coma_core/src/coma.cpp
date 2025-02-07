@@ -350,7 +350,6 @@ void Coma::loadSettings()
     auto homeDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"
         + QCoreApplication::applicationName() + "/";
     QSettings settings;
-    StyleLoader::GetInstance().attach();
     StdFunc::SetHomeDir(settings.value("Homedir", homeDirectory).toString());
 }
 

@@ -16,6 +16,7 @@ file(GLOB_RECURSE files_cpp ${SRC_PATH}/*.cpp)
 # Creating library target
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 target_include_directories(${PROJECT_NAME} PRIVATE ${avm-gen_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PRIVATE ${avm-widgets_SOURCE_DIR}/include)
 
 # Including directories for library
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -26,6 +27,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Widgets
-    widgets
+    s2
+    avm-widgets
     avm-gen
 )
