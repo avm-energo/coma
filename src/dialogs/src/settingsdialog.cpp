@@ -370,6 +370,6 @@ void SettingsDialog::themeChanged(const QString &newTheme)
         auto &styleLoader = StyleLoader::GetInstance();
         styleLoader.setStyle(newTheme);
         styleLoader.setAppStyleSheet();
-        styleLoader.save();
+        Settings::UserSettings::GetInstance().set<Settings::Theme>(newTheme);
     }
 }

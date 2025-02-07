@@ -210,7 +210,7 @@ void StartupKDVDialog::SetupUI()
 
 void StartupKDVDialog::SaveToFile()
 {
-    auto filepath = FileFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor");
+    auto filepath = FileFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor", getFilenameForDevice());
     if (filepath.isEmpty())
         return;
 

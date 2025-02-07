@@ -152,7 +152,7 @@ static_assert(sizeof(FLOAT_2t) == sizeof(BYTE_8t), "Broken datatypes");
 static_assert(sizeof(CONFMAST) == 15, "Broken datatypes");
 
 using valueType = std::variant<BYTE, WORD, DWORD, INT32,     //
-    WORD_3t,                                                 //
+    BYTE_3t, WORD_3t,                                        //
     BYTE_4t, WORD_4t, DWORD_4t,                              //
     BYTE_6t, WORD_6t, DWORD_6t,                              //
     BYTE_8t, WORD_8t, DWORD_8t,                              //

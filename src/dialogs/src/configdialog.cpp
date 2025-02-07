@@ -76,7 +76,7 @@ bool ConfigDialog::isDebugWidget(const quint16 id) const
 
 void ConfigDialog::saveConfigToFile()
 {
-    auto filepath = FileFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf");
+    auto filepath = FileFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf", getFilenameForDevice());
     if (filepath.isEmpty())
         return;
 

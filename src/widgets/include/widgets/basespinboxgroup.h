@@ -1,14 +1,14 @@
 #pragma once
 
+#include <widgets/edoublespinbox.h>
+#include <widgets/espinbox.h>
 #include <widgets/flowlayout.h>
 #include <widgets/helper.h>
 
 #include <QAbstractSpinBox>
 #include <QDebug>
-#include <QDoubleSpinBox>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QSpinBox>
 #include <QWidget>
 
 template <typename T, class S, std::enable_if_t<std::is_base_of<QAbstractSpinBox, S>::value, bool> = true>
@@ -143,5 +143,5 @@ private:
     int m_decimals;
 };
 
-using DoubleSpinBoxGroup = BaseSpinBoxGroup<double, QDoubleSpinBox>;
-using SpinBoxGroup = BaseSpinBoxGroup<int, QSpinBox>;
+using DoubleSpinBoxGroup = BaseSpinBoxGroup<double, EDoubleSpinBox>;
+using SpinBoxGroup = BaseSpinBoxGroup<int, ESpinBox>;

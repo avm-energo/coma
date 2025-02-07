@@ -2367,7 +2367,7 @@
                 <group>250</group>
                 <string>Период фильтрации дискретного входа DI24 (мс)</string>
                 <min>0</min>
-                <max>60000</max>
+                <max>10000</max>
                 <decimals>0</decimals>
             </widget>
         </record>
@@ -5192,7 +5192,7 @@
             </widget>
         </record>
         <record>
-            <id>1290</id>
+            <id>1292</id>
             <name>Tau_vsm</name>
             <type>FLOAT</type>
             <widget>
@@ -5206,14 +5206,15 @@
             </widget>
         </record>
         <record>
-            <id>1291</id>
+            <id>1293</id>
             <name>Tau_nnt</name>
             <type>FLOAT[3]</type>
             <widget>
-                <type>QDoubleSpinBox</type>
+                <type>DoubleSpinBoxGroup</type>
                 <group>51</group>
-                <string>Постоянная времени температуры ННТ для обмотvок, мин</string>
-                <toolTip>Постоянная времени температуры ННТ для обмотvок, мин</toolTip>
+                <string>Постоянная времени температуры ННТ для обмоток, мин</string>
+                <toolTip>Постоянная времени температуры ННТ для обмоток, мин</toolTip>
+                <count>3</count>
                 <min>1</min>
                 <max>10000</max>
                 <decimals>0</decimals>
@@ -5225,7 +5226,7 @@
             </widget>
         </record>
         <record>
-            <id>1292</id>
+            <id>1294</id>
             <name>dTnnt</name>
             <type>FLOAT[3]</type>
             <widget>
@@ -5245,7 +5246,7 @@
             </widget>
         </record>
         <record>
-            <id>1293</id>
+            <id>1295</id>
             <name>k21</name>
             <type>FLOAT[3]</type>
             <widget>
@@ -5265,48 +5266,8 @@
             </widget>
         </record>
         <record>
-            <id>1294</id>
-            <name>k22</name>
-            <type>FLOAT[3]</type>
-            <widget>
-                <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Константа теплового уравнения для обмоток</string>
-                <toolTip>Константа теплового уравнения для обмоток</toolTip>
-                <count>3</count>
-                <min>0</min>
-                <max>10</max>
-                <decimals>0</decimals>
-                <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
-                </string-array>
-            </widget>
-        </record>
-        <record>
-            <id>1295</id>
-            <name>Unom</name>
-            <type>FLOAT[3]</type>
-            <widget>
-                <type>DoubleSpinBoxGroup</type>
-                <group>100</group>
-                <string>Номинальное напряжение для трех обмоток, кВ</string>
-                <toolTip>Номинальное напряжение для трех обмоток, кВ</toolTip>
-                <count>3</count>
-                <min>0</min>
-                <max>10000</max>
-                <decimals>0</decimals>
-                <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
-                </string-array>
-            </widget>
-        </record>
-        <record>
             <id>1296</id>
-            <name>K22</name>
+            <name>k22</name>
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>

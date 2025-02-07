@@ -1,15 +1,14 @@
 #pragma once
 
 #include <widgets/basespinboxgroup.h>
-
-#include <QDoubleSpinBox>
+#include <widgets/edoublespinbox.h>
 
 class SPBFunc
 {
 public:
     SPBFunc();
 
-    [[nodiscard]] static QDoubleSpinBox *NewSPB(
+    [[nodiscard]] static EDoubleSpinBox *NewSPB(
         QWidget *parent, const QString &spbname, const double min, const double max, const int decimals);
     [[nodiscard]] static DoubleSpinBoxGroup *NewSPBG(
         QWidget *parent, const QString &spbname, int count, const double min, const double max, const int decimals);

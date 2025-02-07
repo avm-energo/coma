@@ -183,7 +183,7 @@ void SwitchJournalDialog::exportSwJ(uint32_t swjNum)
     if (!swjFile.exists() || (swjFile.size() < size))
         QMessageBox::information(this, "Сохранение", "Скачайте перед сохранением");
 
-    auto newFile = FileFunc::ChooseFileForSave(this, "Файлы журналов (*.swj)", "swj");
+    auto newFile = FileFunc::ChooseFileForSave(this, "Файлы журналов (*.swj)", "swj", getFilenameForDevice());
     if (!QFile::copy(currentFile, newFile))
     {
         QMessageBox::warning(this, "Сохранение", "Скачайте перед сохранением");

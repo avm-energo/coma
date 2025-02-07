@@ -32,9 +32,7 @@ const std::map<Interface::Commands, Proto::Commands> ProtocomRequestParser::s_pr
     { Commands::C_WriteTypeOsc, Proto::WriteBlkData }              //
 };
 
-ProtocomRequestParser::ProtocomRequestParser(QObject *parent) : BaseRequestParser(parent)
-{
-}
+ProtocomRequestParser::ProtocomRequestParser(QObject *parent) : BaseRequestParser(parent) { }
 
 void ProtocomRequestParser::basicProtocolSetup() noexcept
 {
@@ -107,8 +105,10 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         case FilesEnum::JourSys:
         case FilesEnum::JourWork:
         case FilesEnum::JourMeas:
+#if defined(Q_OS_WINDOWS)
             setExceptionalSituationStatus(true);
             break;
+#endif
         default:
             m_request = prepareBlock(Proto::Commands::ReadFile, StdFunc::toByteArray(cmd.arg1.value<quint16>()));
             m_continueCommand = createContinueCommand(Proto::Commands::ReadFile);
@@ -259,6 +259,7 @@ QByteArray ProtocomRequestParser::prepareBlock(
 
 void ProtocomRequestParser::processFileFromDisk(const S2::FilesEnum fileNum)
 {
+    QStringList files, drives;
     QString fileToFind;
     switch (fileNum)
     {
@@ -277,16 +278,18 @@ void ProtocomRequestParser::processFileFromDisk(const S2::FilesEnum fileNum)
     }
 
 #if defined(Q_OS_LINUX)
-    QStringList drives { "/media" };
-    QStringList files = Files::SearchForFile(drives, fileToFind, true);
+    // drives = QStringList({ "/media" });
+    // files = Files::SearchForFile(drives, fileToFind, true);
+    qWarning() << "Not implemented in Linux OS";
+    return;
 #elif defined(Q_OS_WINDOWS)
-    QStringList drives = Files::Drives();
+    drives = Files::Drives();
     if (drives.isEmpty())
     {
         qCritical() << Error::NoDeviceError;
         return;
     }
-    QStringList files = Files::SearchForFile(drives, fileToFind);
+    files = Files::SearchForFile(drives, fileToFind);
 #endif
     if (files.isEmpty())
     {
@@ -317,7 +320,7 @@ void ProtocomRequestParser::prepareLongData(const Proto::Commands cmd, const QBy
     // Количество сегментов
     quint64 segCount = (data.size() + 1) // +1 Т.к. некоторые команды имеют в значимой части один дополнительный байт
             / MaxSegmenthLength          // Максимальная длинна сегмента
-        + 1; // Добавляем еще один сегмент, в него попадет последняя часть
+        + 1;                             // Добавляем еще один сегмент, в него попадет последняя часть
 
     QByteArray tba = data.left(MaxSegmenthLength);
     m_longDataSections.push_back(prepareBlock(cmd, tba));

@@ -15,16 +15,22 @@ std::array<T, N> operator<<(std::array<T, N> &array, const QStringList &list)
 template <typename T, std::enable_if_t<!std::is_same_v<T, S2::GasDensity_3t>, bool> = true> //
 S2::valueType helper(unsigned int numByte, const char *rawdata)
 {
-    assert(sizeof(T) == numByte);
-    T tmp = *reinterpret_cast<const T *>(rawdata);
-    return *reinterpret_cast<const T *>(rawdata);
+    if (sizeof(T) == numByte)
+    {
+        T tmp = *reinterpret_cast<const T *>(rawdata);
+        return *reinterpret_cast<const T *>(rawdata);
+    }
+    else
+        return S2::valueType();
 }
 
 template <typename T, std::enable_if_t<std::is_same_v<T, S2::GasDensity_3t>, bool> = true> //
 S2::valueType helper(unsigned int numByte, const char *rawdata)
 {
-    assert(numByte == 48);
-    return S2::GasDensity_3t(rawdata);
+    if (numByte == 48)
+        return S2::GasDensity_3t(rawdata);
+    else
+        return S2::GasDensity_3t();
 }
 
 template <typename T, std::enable_if_t<std_ext::is_container<T>::value, bool> = true> //
@@ -103,6 +109,8 @@ DataItem DataFactory::create(const DataRec &record) const
         return DataItem { helper<DWORD>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<INT32>().hash():
         return DataItem { helper<INT32>(record.header.numByte, rawdata) };
+    case ctti::unnamed_type_id<BYTE_3t>().hash():
+        return DataItem { helper<BYTE_3t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<WORD_3t>().hash():
         return DataItem { helper<WORD_3t>(record.header.numByte, rawdata) };
     case ctti::unnamed_type_id<BYTE_4t>().hash():
@@ -176,6 +184,8 @@ DataItem DataFactory::create(const quint32 id, const QString &str) const
         return DataItem { helper<DWORD>(str) };
     case ctti::unnamed_type_id<INT32>().hash():
         return DataItem { helper<INT32>(str) };
+    case ctti::unnamed_type_id<BYTE_3t>().hash():
+        return DataItem { helper<BYTE_3t>(str) };
     case ctti::unnamed_type_id<WORD_3t>().hash():
         return DataItem { helper<WORD_3t>(str) };
     case ctti::unnamed_type_id<BYTE_4t>().hash():

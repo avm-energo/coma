@@ -3,10 +3,10 @@
 
 SPBFunc::SPBFunc() { }
 
-QDoubleSpinBox *SPBFunc::NewSPB(
+EDoubleSpinBox *SPBFunc::NewSPB(
     QWidget *parent, const QString &spbname, const double min, const double max, const int decimals)
 {
-    auto dsb = new QDoubleSpinBox(parent);
+    auto dsb = new EDoubleSpinBox(parent);
     double step = qPow(0.1f, decimals);
     dsb->setObjectName(spbname);
     dsb->setSingleStep(step);
@@ -44,7 +44,7 @@ DoubleSpinBoxGroup *SPBFunc::NewSPBG(QWidget *parent, const QString &spbname, co
 
 bool SPBFunc::SetSPBData(const QObject *parent, const QString &spbname, const double &spbvalue)
 {
-    auto spb = parent->findChild<QDoubleSpinBox *>(spbname);
+    auto spb = parent->findChild<EDoubleSpinBox *>(spbname);
     if (spb == nullptr)
     {
         qDebug() << Error::NullDataError << spbname;

@@ -88,7 +88,7 @@ void GeneralTuneDialog::generateReport()
 {
     if (EMessageBox::question(this, "Сохранить протокол поверки?"))
     {
-        QString filename = FileFunc::ChooseFileForSave(this, "*.pdf", "pdf");
+        QString filename = FileFunc::ChooseFileForSave(this, "*.pdf", "pdf", getFilenameForDevice());
         if (!filename.isEmpty())
         {
             prepareReport();
