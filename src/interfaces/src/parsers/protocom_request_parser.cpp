@@ -105,10 +105,10 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         case FilesEnum::JourSys:
         case FilesEnum::JourWork:
         case FilesEnum::JourMeas:
-#if defined(Q_OS_WINDOWS)
-            setExceptionalSituationStatus(true);
-            break;
-#endif
+            // #if defined(Q_OS_WINDOWS)
+            //             setExceptionalSituationStatus(true);
+            //             break;
+            // #endif
         default:
             m_request = prepareBlock(Proto::Commands::ReadFile, StdFunc::toByteArray(cmd.arg1.value<quint16>()));
             m_continueCommand = createContinueCommand(Proto::Commands::ReadFile);
