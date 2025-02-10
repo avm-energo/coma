@@ -2174,8 +2174,8 @@
                 <group>300</group>
                 <string>Температурный коэффициент термометра</string>
                 <min>0</min>
-                <max>10000</max>
-                <decimals>0</decimals>
+                <max>100</max>
+                <decimals>3</decimals>
             </widget>
         </record>
         <record>
