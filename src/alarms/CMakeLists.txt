@@ -35,4 +35,4 @@ else()
 endif()
 
 # Linking dependencies
-target_link_libraries(${PROJECT_NAME} PUBLIC widgets)
+target_link_libraries(${PROJECT_NAME} PUBLIC comawidgets)

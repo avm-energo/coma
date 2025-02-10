@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(widgets LANGUAGES CXX)
+project(comawidgets LANGUAGES CXX)
 
 # Collecting sources
-set(WIDGETS_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/widgets")
+set(WIDGETS_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/comawidgets")
 set(WIDGETS_SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 file(GLOB_RECURSE files_h   ${WIDGETS_INCLUDE_PATH}/*.h)
 file(GLOB_RECURSE files_cpp ${WIDGETS_SRC_PATH}/*.cpp)
