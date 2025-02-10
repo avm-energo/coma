@@ -374,7 +374,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
-                <string>Мин. значение диапазона изменения сигнала</string>
+                <string>Мин. значение диапазона изменения сигнала (мА, В)</string>
                 <count>8</count>
                 <min>0</min>
                 <max>65534</max>
@@ -388,7 +388,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
-                <string>Макс. значение диапазона изменения сигнала</string>
+                <string>Макс. значение диапазона изменения сигнала (мА, В)</string>
                 <count>8</count>
                 <min>0</min>
                 <max>65534</max>
@@ -558,7 +558,7 @@
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
-                <string>Признаки запуска осциллограмм по команде 104, поканально</string>
+                <string>Разрешение запуска осциллограмм по команде 104, поканально</string>
                 <count>8</count>
                 <string-array>
                     <item>1</item>
@@ -579,7 +579,7 @@
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
-                <string>Признаки запуска осциллограмм по I2C, поканально</string>
+                <string>Разрешение запуска осциллограмм по I2C, поканально</string>
                 <count>8</count>
                 <string-array>
                     <item>1</item>
@@ -600,7 +600,7 @@
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
-                <string>Признаки запуска осциллограмм по заданному алгоритму</string>
+                <string>Разрешение запуска осциллограмм по заданному алгоритму</string>
                 <count>8</count>
                 <string-array>
                     <item>1</item>
@@ -639,7 +639,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
-                <string>Мин. значение диапазона изменения сигнала</string>
+                <string>Мин. значение диапазона изменения сигнала (мА, В)</string>
                 <count>8</count>
                 <min>0</min>
                 <max>65534</max>
@@ -653,7 +653,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>101</group>
-                <string>Макс. значение диапазона изменения сигнала</string>
+                <string>Макс. значение диапазона изменения сигнала (мА, В)</string>
                 <count>8</count>
                 <min>0</min>
                 <max>65534</max>
@@ -823,7 +823,7 @@
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
-                <string>Признаки запуска осциллограмм по команде 104, поканально</string>
+                <string>Разрешение запуска осциллограмм по команде 104, поканально</string>
                 <count>8</count>
                 <string-array>
                     <item>1</item>
@@ -844,7 +844,7 @@
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
-                <string>Признаки запуска осциллограмм по I2C, поканально</string>
+                <string>Разрешение запуска осциллограмм по I2C, поканально</string>
                 <count>8</count>
                 <string-array>
                     <item>1</item>
@@ -865,7 +865,7 @@
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>300</group>
-                <string>Признаки запуска осциллограмм по заданному алгоритму</string>
+                <string>Разрешение запуска осциллограмм по заданному алгоритму</string>
                 <count>8</count>
                 <string-array>
                     <item>1</item>
