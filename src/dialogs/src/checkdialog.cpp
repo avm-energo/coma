@@ -21,6 +21,8 @@ constexpr auto activeColor = Qt::yellow;
 constexpr auto defaultStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
 constexpr auto errStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
                           "background-color: %1; color: black;}";
+const auto errorStyle = QString(errStyle).arg("red");
+const auto warnStyle = QString(errStyle).arg("yellow");
 
 CheckDialog::CheckDialog(const Section &section, Device::CurrentDevice *device, QWidget *parent)
     : UDialog(device, parent)
@@ -29,6 +31,14 @@ CheckDialog::CheckDialog(const Section &section, Device::CurrentDevice *device, 
     auto &settings = m_device->getConfigStorage()->getDeviceSettings();
     setHighlights(AlarmType::Critical, settings.getHighlights(AlarmType::Critical));
     setHighlights(AlarmType::Warning, settings.getHighlights(AlarmType::Warning));
+
+    // collect all highlight regs
+    QList<HighlightMap::mapped_type> regs = m_highlightWarn.values();
+    for (const auto reg : std::as_const(regs))
+        m_curHighlight[reg] = Highlights::CLEAN;
+    regs = m_highlightCrit.values();
+    for (const auto reg : std::as_const(regs))
+        m_curHighlight[reg] = Highlights::CLEAN;
 }
 
 CheckDialog::~CheckDialog()
@@ -55,32 +65,31 @@ void CheckDialog::setHighlights(AlarmType type, const HighlightMap &map)
 void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
     bool status = sp.sigVal;
-    if (m_highlightCrit.contains(sp.sigAdr) && status)
-    {
-        const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
-        const auto errorStyle = QString(errStyle).arg("red");
-        for (const auto reg : std::as_const(regs))
-        {
-            auto label = findChild<QLabel *>(QString::number(reg));
-            if (label)
-                label->setStyleSheet(errorStyle);
-        }
-    }
-    else if (m_highlightWarn.contains(sp.sigAdr))
+    if (m_highlightWarn.contains(sp.sigAdr))
     {
         const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
         const auto errorStyle = QString(errStyle).arg("yellow");
         for (const auto reg : std::as_const(regs))
         {
-            auto label = findChild<QLabel *>(QString::number(reg));
-            if (!label)
-                continue;
             if (status)
-                label->setStyleSheet(errorStyle);
+                setYellow(reg);
             else
-                label->setStyleSheet(defaultStyle);
+                clearYellow(reg);
         }
     }
+    if (m_highlightCrit.contains(sp.sigAdr))
+    {
+        const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
+        const auto errorStyle = QString(errStyle).arg("red");
+        for (const auto reg : std::as_const(regs))
+        {
+            if (status)
+                setRed(reg);
+            else
+                clearRed(reg);
+        }
+    }
+    setHighlights();
 }
 
 void CheckDialog::uponInterfaceSetting()
@@ -298,7 +307,7 @@ QLabel *CheckDialog::createPixmapIndicator(const MWidget &mwidget, const quint32
     indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(index));
     indicatorLabel->setPixmap(pixmap);
     if (!mwidget.tooltip.isEmpty())
-        indicatorLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, index, startIndex));
+        indicatorLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, index + 1, startIndex));
     return indicatorLabel;
 }
 
@@ -315,21 +324,14 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const MWidget &mwidget, UWidget *wid
     for (auto i = 0; i < mwidget.count; i++)
     {
         auto layout = new QHBoxLayout;
-        if (mwidget.desc.isEmpty())
+        const auto limit = i + maxIndicatorCountInRow;
+        for (; (i < mwidget.count) && (i < limit); i++)
         {
-            // По 10 индикаторов в строке, если нет описания
-            const auto limit = i + maxIndicatorCountInRow;
-            for (; (i < mwidget.count) && (i < limit); i++)
-                layout->addWidget(createPixmapIndicator(mwidget, i));
-            i--;
-        }
-        else
-        {
-            // По 1 индикатору и описанию в строку, если оно есть
-            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i, startIndex), this);
+            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i + 1, startIndex), this);
             layout->addWidget(textLabel);
             layout->addWidget(createPixmapIndicator(mwidget, i));
         }
+        layout->addStretch(100);
         gridLayout->addLayout(layout);
     }
 
@@ -341,4 +343,48 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const MWidget &mwidget, UWidget *wid
     bitsetWidget->setLayout(gridLayout);
     widgetLayout->addWidget(bitsetWidget);
     return widgetLayout;
+}
+
+void CheckDialog::setYellow(quint32 reg)
+{
+    if (m_curHighlight[reg] != Highlights::RED)
+        m_curHighlight[reg] = Highlights::YELLOW;
+}
+
+void CheckDialog::clearYellow(quint32 reg)
+{
+    switch (m_curHighlight[reg])
+    {
+    case Highlights::RED:
+        break;
+    default:
+        m_curHighlight[reg] = Highlights::CLEAN;
+    }
+}
+
+void CheckDialog::setRed(quint32 reg)
+{
+    m_curHighlight[reg] = Highlights::RED;
+}
+
+void CheckDialog::clearRed(quint32 reg)
+{
+    if (m_curHighlight[reg] == Highlights::RED)
+        m_curHighlight[reg] = Highlights::REDQ;
+}
+
+void CheckDialog::setHighlights()
+{
+    for (auto [key, value] : m_curHighlight.asKeyValueRange())
+    {
+        auto label = findChild<QLabel *>(QString::number(key));
+        if (!label)
+            continue;
+        if ((value == Highlights::RED) || (value == Highlights::REDQ))
+            label->setStyleSheet(errorStyle);
+        else if ((value == Highlights::YELLOW) || (value == Highlights::YELLOWQ))
+            label->setStyleSheet(warnStyle);
+        else
+            label->setStyleSheet(defaultStyle);
+    }
 }
