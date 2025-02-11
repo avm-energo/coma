@@ -1,9 +1,10 @@
 #pragma once
 
-#include <QHBoxLayout>
-#include <QLabel>
 #include <device/xml_settings.h>
 #include <widgets/udialog.h>
+
+#include <QHBoxLayout>
+#include <QLabel>
 
 /// \brief Абстрактный класс проверки работы модулей АВ-ТУК
 class CheckDialog final : public UDialog
@@ -21,6 +22,15 @@ public slots:
     void reqUpdate() override;
 
 private:
+    enum Highlights
+    {
+        CLEAN,
+        YELLOW,
+        YELLOWQ,
+        RED,
+        REDQ
+    };
+
     struct BdBlocks
     {
         void *block;
@@ -44,6 +54,7 @@ private:
     const Device::XmlDataTypes::Section &mSection;
     int currentTabIndex;
     HighlightMap m_highlightWarn, m_highlightCrit;
+    QMap<quint32, Highlights> m_curHighlight;
 
     void setupUI();
     void setupTabWidget();
@@ -52,12 +63,17 @@ private:
     void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp) override;
     QString getFormatted(const Device::XmlDataTypes::MWidget &widget, //
         const QString &form, const quint32 number, const quint32 start = 1);
-    void updatePixmap(const Device::XmlDataTypes::MWidget &mwidget, //
+    void updatePixmap(const Device::XmlDataTypes::MWidget &mwidget,   //
         const DataTypes::BitStringStruct &bs, UWidget *uwidget);
     QLabel *createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const quint32 index);
     QVBoxLayout *setupGroup(const Device::XmlDataTypes::SGroup &arg, UWidget *uwidget);
     QGridLayout *setupFloatWidget(const Device::XmlDataTypes::MWidget &mwidget, const int wCount);
     QVBoxLayout *setupBitsetWidget(const Device::XmlDataTypes::MWidget &mwidget, UWidget *dataUpdater);
+    void setYellow(quint32 reg);
+    void clearYellow(quint32 reg);
+    void setRed(quint32 reg);
+    void clearRed(quint32 reg);
+    void setHighlights();
 
 private slots:
     void tabChanged(int newIndex);
