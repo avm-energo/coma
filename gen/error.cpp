@@ -23,7 +23,7 @@ void Error::Init()
         return;
     QString tmpString;
     QTextStream streamfile(&file);
-    streamfile.setCodec("WIN-1251");
+    // streamfile.setCodec("WIN-1251");
     do
     {
         tmpString = streamfile.readLine();

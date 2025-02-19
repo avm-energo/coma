@@ -1,4 +1,4 @@
-#include <QTime>
+#include <QElapsedTimer>
 #include <QtMath>
 #include <QSettings>
 #include <QTabWidget>
@@ -761,7 +761,7 @@ int TuneDialogA1::Start60PointsMeasurements(int whichtomeasure, void *dst1, void
             w->Stop();
             return Error::ER_GENERALERROR;
         }
-        QTime tme;
+        QElapsedTimer tme;
         tme.start();
         while (tme.elapsed() < TUNE_POINTSPER)
             QCoreApplication::processEvents(QEventLoop::AllEvents);

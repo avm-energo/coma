@@ -336,7 +336,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
         }
         // разберём время
         quint32 tmpi = Results.Time >> 32;
-        QDateTime tn = QDateTime::fromTime_t(tmpi, Qt::UTC);
+        QDateTime tn = QDateTime::fromSecsSinceEpoch(tmpi, Qt::UTC);
         ReportHeader.PovDateTime = tn.toString("dd-MM-yyyy hh:mm:ss");
         ChA1->Bda_h.HarmBuf[0][0] = Results.THD;
         TuneVariant = (Results.VarNum >= TUNEVARIANTSNUM) ? 0 : Results.VarNum;

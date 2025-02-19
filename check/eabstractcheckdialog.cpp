@@ -221,7 +221,7 @@ void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
     pb = this->findChild<QPushButton *>("pbmeasurements");
     if (pb != nullptr)
         pb->setEnabled(false);
-    ElapsedTimeCounter = new QTime;
+    ElapsedTimeCounter = new QElapsedTimer;
     ElapsedTimeCounter->start();
     StartAnalogMeasurements();
 }

@@ -2,7 +2,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPainter>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QCoreApplication>
 #include <QGroupBox>
 #include <QPushButton>
@@ -218,7 +218,7 @@ void HiddenDialog::AcceptChanges()
         return;
     }
 #endif
-    QTime tme;
+    QElapsedTimer tme;
     tme.start();
     int endcounter = RSTTIMEOUT / 1000;
     int counter = endcounter;

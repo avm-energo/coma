@@ -169,5 +169,5 @@ quint32 S2::GetCRC32(char *data, quint32 len)
 quint32 S2::getTime32()
 {
     QDateTime dt;
-    return dt.currentDateTime().toTime_t();
+    return dt.currentDateTime().toMSecsSinceEpoch();
 }

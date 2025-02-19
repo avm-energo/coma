@@ -1,6 +1,5 @@
 #include <QHeaderView>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QDialog>
 #include "etableview.h"
 

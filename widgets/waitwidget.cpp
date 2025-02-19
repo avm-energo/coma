@@ -6,10 +6,8 @@
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QDateTime>
 #include <QFontMetrics>
-#include <math.h>
 #include "waitwidget.h"
 #include "../gen/stdfunc.h"
 
@@ -22,7 +20,6 @@ WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
     Message = "";
     resize(310, 380);
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    qsrand(QDateTime::currentDateTime().toTime_t());
     vel1 = 0.5;
 }
 
@@ -39,7 +36,7 @@ void WaitWidget::Init(WaitWidget::ww_struct &ww)
     this->Seconds = ww.initialseconds;
     QFont font;
     QFontMetrics fm(font);
-    PressAnyKeyStringWidth = fm.width(PressAnyKeyString);//+10;
+    PressAnyKeyStringWidth = fm.horizontalAdvance(PressAnyKeyString);//+10;
 }
 
 void WaitWidget::Start()
@@ -110,7 +107,7 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     QFont font;
     QFontMetrics fm(font);
     int center = wsize.width()/2;
-    int msgwidth = fm.width(Message);//+10;
+    int msgwidth = fm.horizontalAdvance(Message);//+10;
     left = center - msgwidth/2;
     QRect mrect = QRect(left,height()-20,msgwidth,20);
 //    p.setPen(Qt::blue);

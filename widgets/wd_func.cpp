@@ -1,7 +1,7 @@
 #include <QPalette>
 #include <QTextEdit>
 #include <QHBoxLayout>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QPainter>
 #include <QStringListModel>
 #include <QtMath>
@@ -35,9 +35,9 @@ bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue
     le->setText(levalue);
     if (!restring.isEmpty())
     {
-        QRegExp re;
+        QRegularExpression re;
         re.setPattern(restring);
-        QValidator *val = new QRegExpValidator(re);
+        QValidator *val = new QRegularExpressionValidator(re);
         le->setValidator(val);
     }
     return true;

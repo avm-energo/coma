@@ -2,6 +2,8 @@
 #include <QComboBox>
 #include <QLayout>
 #include <QPushButton>
+#include <QElapsedTimer>
+#include <QRandomGenerator64>
 #include "eabstracttunedialoga1dn.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/waitwidget.h"
@@ -622,7 +624,7 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out, int index)
             tmpbd.UefNat_filt[0] += ChA1->Bda_in.UefNat_filt[0];
             tmpbd.UefNat_filt[1] += ChA1->Bda_in.UefNat_filt[1];
         }
-        QTime tme;
+        QElapsedTimer tme;
         tme.start();
         while (tme.elapsed() < TUNE_POINTSPER)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -774,12 +776,13 @@ void EAbstractTuneDialogA1DN::FillMedian(int index)
 void EAbstractTuneDialogA1DN::TempRandomizeModel()
 {
     // 1983
+    QRandomGenerator64 generator;
     PovType = GOST_23625;
     RepModel->SetModel(GOST23625ROWCOUNT, GOST23625COLCOUNT);
     for (int i=0; i<GOST23625ROWCOUNT; ++i)
     {
         for (int j=0; j<GOST23625COLCOUNT; ++j)
-            RepModel->UpdateItem(i, j, static_cast<float>(qrand())/RAND_MAX, 5);
+            RepModel->UpdateItem(i, j, static_cast<float>(generator.bounded(RAND_MAX))/RAND_MAX, 5);
     }
     FillHeaders();
 }

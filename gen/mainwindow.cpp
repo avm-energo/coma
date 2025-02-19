@@ -1196,11 +1196,14 @@ void MainWindow::ProtocolFromFile()
     dlg->close();
     StartA1Dialog(filename);
 }
+
+#ifndef MODULE_A1
 void MainWindow::ShowOsc()
 {
     dlg->dlg->PlotShow();
     dlg->dlg->show();
 }
+#endif
 
 void MainWindow::FinishHim()
 {

@@ -16,6 +16,7 @@
 
 #include <QDialog>
 #include <QTimer>
+#include <QElapsedTimer>
 #include "QtXlsx/xlsxdocument.h"
 #include "../gen/modulebsi.h"
 
@@ -81,7 +82,7 @@ private:
 
     Bip Bip_block;
     bool XlsxWriting, Busy;
-    QTime *ElapsedTimeCounter;
+    QElapsedTimer *ElapsedTimeCounter;
 //    QWidget *Parent;
 
     void CheckIP();
