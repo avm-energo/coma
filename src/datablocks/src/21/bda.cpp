@@ -2,9 +2,9 @@
 
 Bda21::Bda21(u8 blockNum, QObject *parent) : DataBlock(parent)
 {
-    m_blockData = std::unique_ptr<BlockData>(new BlockData);
-    setBlock({ blockNum, "Сырые измерения", DataTypes::DataBlockTypes::BdaBlock, m_blockData.get(), sizeof(BlockData),
-        false });
+    m_blockData = new BlockData;
+    setBlock(
+        { blockNum, "Сырые измерения", DataTypes::DataBlockTypes::BdaBlock, m_blockData, sizeof(BlockData), false });
 }
 
 void Bda21::setupValuesDesc()
@@ -14,5 +14,5 @@ void Bda21::setupValuesDesc()
 
 Bda21::BlockData *Bda21::data()
 {
-    return m_blockData.get();
+    return m_blockData;
 }

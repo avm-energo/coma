@@ -24,6 +24,6 @@ public:
     BlockData *data();
 
 private:
-    std::unique_ptr<BlockData> m_blockData;
+    BlockData *m_blockData;
     Error::Msg checkAnalogValues(QList<float>, QList<float> tolerances);
 };

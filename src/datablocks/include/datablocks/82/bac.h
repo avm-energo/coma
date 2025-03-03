@@ -18,11 +18,10 @@ public:
 
     Bac82(QObject *parent = nullptr);
 
-    void setDefBlock(Bac82::BlockData &blck);
     void setupValuesDesc() override;
     BlockData *data();
     void setDefBlock() override;
 
 private:
-    std::unique_ptr<BlockData> m_blockData;
+    BlockData *m_blockData;
 };

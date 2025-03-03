@@ -18,8 +18,6 @@ private:
     Bac82::BlockData m_bacNewBlock;
     Bd182 *m_bd1;
     Bda82 *m_bda;
-    Bd0 *m_bd0;
-    int m_curTuneStep;
     int m_BacWidgetIndex, m_BdaWidgetIndex, m_Bd0WidgetIndex;
     float IUefNat_filt_old[6]; // для сохранения значений по п. 7.3.2
 

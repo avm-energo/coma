@@ -16,20 +16,16 @@ Tune82ADC::Tune82ADC(Device::CurrentDevice *device, QWidget *parent)
     , m_bac(new Bac82(this))
     , m_bd1(new Bd182(m_typeM, this))
     , m_bda(new Bda82(this))
-    , m_bd0(new Bd0(this))
     , m_bacNewBlock {}
 {
     m_bac->setup(m_device->getUID(), m_sync);
     m_bd1->setup(m_device->getUID(), m_sync);
     m_bda->setup(m_device->getUID(), m_sync);
-    m_bd0->setup(m_device->getUID(), m_sync);
 
     setBac(m_bac);
     m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     m_BacWidgetIndex = addWidgetToTabWidget(m_bd1->widget(), "Текущие данные");
     m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Данные в единицах АЦП");
-    m_Bd0WidgetIndex = addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
-    m_curTuneStep = 0;
     setupUI();
 }
 
@@ -53,7 +49,6 @@ void Tune82ADC::setTuneFunctions()
 Error::Msg Tune82ADC::setDefBac()
 {
     m_bac->setDefBlock();
-    m_bac->setDefBlock(m_bacNewBlock);
     m_bac->updateWidget();
     return m_bac->writeBlockToModule(false);
 }
@@ -61,7 +56,6 @@ Error::Msg Tune82ADC::setDefBac()
 Error::Msg Tune82ADC::getAnalogData()
 {
     StdFunc::Wait(1000);
-    // waitNSeconds(1);
     m_bda->readAndUpdate();
     m_bd1->readAndUpdate();
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();

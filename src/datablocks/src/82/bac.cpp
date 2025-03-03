@@ -1,9 +1,9 @@
 #include "datablocks/82/bac.h"
 
-Bac82::Bac82(QObject *parent) : DataBlock(parent), m_blockData(std::make_unique<BlockData>())
+Bac82::Bac82(QObject *parent) : DataBlock(parent)
 {
-    setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData.get(), sizeof(BlockData),
-        true });
+    m_blockData = new BlockData;
+    setBlock({ 2, "Настроечные параметры", DataTypes::DataBlockTypes::BacBlock, m_blockData, sizeof(BlockData), true });
 }
 
 void Bac82::setupValuesDesc()
@@ -18,23 +18,18 @@ void Bac82::setupValuesDesc()
 
 void Bac82::setDefBlock()
 {
-    setDefBlock(*m_blockData);
-}
-
-void Bac82::setDefBlock(Bac82::BlockData &blck)
-{
-    blck.Kinter = 0.0;
-    blck.K_freq = 1.0;
+    m_blockData->Kinter = 0.0;
+    m_blockData->K_freq = 1.0;
     for (int i = 0; i < 6; i++)
     {
-        blck.DPsi[i] = 0.0;
-        blck.KmI_1[i] = 1.0;
-        blck.KmI_5[i] = 1.0;
-        blck.KmU[i] = 1.0;
+        m_blockData->DPsi[i] = 0.0;
+        m_blockData->KmI_1[i] = 1.0;
+        m_blockData->KmI_5[i] = 1.0;
+        m_blockData->KmU[i] = 1.0;
     }
 }
 
 Bac82::BlockData *Bac82::data()
 {
-    return m_blockData.get();
+    return m_blockData;
 }
