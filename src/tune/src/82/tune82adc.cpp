@@ -16,20 +16,16 @@ Tune82ADC::Tune82ADC(Device::CurrentDevice *device, QWidget *parent)
     , m_bac(new Bac82(this))
     , m_bd1(new Bd182(m_typeM, this))
     , m_bda(new Bda82(this))
-    , m_bd0(new Bd0(this))
 {
     m_bacNewBlock = new Bac82::BlockData;
     m_bac->setup(m_device->getUID(), m_sync);
     m_bd1->setup(m_device->getUID(), m_sync);
     m_bda->setup(m_device->getUID(), m_sync);
-    m_bd0->setup(m_device->getUID(), m_sync);
 
     setBac(m_bac);
-    m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
-    m_BacWidgetIndex = addWidgetToTabWidget(m_bd1->widget(), "Текущие данные");
-    m_BdaWidgetIndex = addWidgetToTabWidget(m_bda->widget(), "Данные в единицах АЦП");
-    m_Bd0WidgetIndex = addWidgetToTabWidget(m_bd0->widget(), "Общие данные");
-    m_curTuneStep = 0;
+    addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
+    addWidgetToTabWidget(m_bd1->widget(), "Текущие данные");
+    addWidgetToTabWidget(m_bda->widget(), "Данные в единицах АЦП");
     setupUI();
 }
 
@@ -211,7 +207,7 @@ Error::Msg Tune82ADC::saveNewBac()
 Error::Msg Tune82ADC::checkTune()
 {
     /// Возвращаем виджет обратно на диалоговое окно
-    m_BacWidgetIndex = addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
+    addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     getBd1();
     EMessageBox::information(this,
         "После закрытия данного сообщения для завершения настройки нажмите Enter\n"
