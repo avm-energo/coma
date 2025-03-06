@@ -1,12 +1,11 @@
 #include "datablocks/82/bda.h"
 
-/// TODO: [Card https://asu-vei.kaiten.ru/space/120909/card/28627204]
 #include <widgets/wdfunc.h>
 
 Bda82::Bda82(QObject *parent) : DataBlock(parent)
 {
-    m_blockData = std::unique_ptr<BlockData>(new BlockData);
-    setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdaBlock, m_blockData.get(), sizeof(BlockData), false });
+    m_blockData = new BlockData;
+    setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdaBlock, m_blockData, sizeof(BlockData), false });
     createWidget();
 }
 
@@ -65,5 +64,5 @@ Error::Msg Bda82::checkAnalogValues(QList<float> valuesToCheck, QList<float> tol
 
 Bda82::BlockData *Bda82::data()
 {
-    return m_blockData.get();
+    return m_blockData;
 }

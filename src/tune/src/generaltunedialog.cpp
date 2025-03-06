@@ -60,7 +60,7 @@ int GeneralTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
     return m_tuneTabWidget->addTabWidget(w, caption);
 }
 
-void GeneralTuneDialog::addTuneDialog(TuneDialogStruct &dlgStruct)
+void GeneralTuneDialog::addTuneDialog(const TuneDialogStruct &dlgStruct)
 {
     ++m_tuneStepCount;
     dlgStruct.dialog->setTuneStep(m_tuneStepCount);

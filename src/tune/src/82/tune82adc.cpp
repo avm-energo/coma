@@ -61,7 +61,6 @@ Error::Msg Tune82ADC::setDefBac()
 Error::Msg Tune82ADC::getAnalogData()
 {
     StdFunc::Wait(1000);
-    // waitNSeconds(1);
     m_bda->readAndUpdate();
     m_bd1->readAndUpdate();
     const auto inom = config["I2nom"].value<S2::FLOAT_6t>();

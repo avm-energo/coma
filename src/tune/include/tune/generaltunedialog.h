@@ -25,7 +25,7 @@ public:
     void SetupUI(bool noReport);
     virtual void prepareReport();
     int addWidgetToTabWidget(QWidget *w, const QString &caption);
-    void addTuneDialog(TuneDialogStruct &dlgStruct);
+    void addTuneDialog(const TuneDialogStruct &dlgStruct);
     u8 getTuneStepsCount();
 
 protected:

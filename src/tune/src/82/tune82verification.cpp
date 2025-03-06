@@ -45,7 +45,6 @@ Tune82Verification::Tune82Verification(Device::CurrentDevice *device, QWidget *p
 
 void Tune82Verification::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Уменьшение интервала усреднения данных...", &Tune82Verification::setupNFiltrValue);
     addTuneFunc("Поверка...", &Tune82Verification::verification);
@@ -57,13 +56,6 @@ Error::Msg Tune82Verification::setupNFiltrValue()
     config.setRecord("NFiltr_ID", S2::DWORD(10));
     auto result = m_sync->writeConfigurationSync(config.toByteArray());
     StdFunc::Wait(12000);
-    // StdFunc::Wait(5000);
-    // waitNSeconds(10);
-    //    if (!EMessageBox::next(this, "Убедитесь в корректности подключения с устройством"))
-    //    {
-    //        CancelTune();
-    //        return Error::GeneralError;
-    //    }
     return result;
 }
 
