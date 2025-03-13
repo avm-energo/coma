@@ -91,9 +91,13 @@ void Tune82IoWidget::setupUI()
 
 void Tune82IoWidget::updateData()
 {
+    bool ok;
     float i2nom = 1.0;
     QCoreApplication::processEvents();
-    auto mipData = m_mip->takeOneMeasurement(i2nom);
+    // auto mipData = m_mip->takeOneMeasurement(i2nom);
+    auto mipData = m_mip->takeOneMeasurement(ok);
+    if (!ok)
+        this->close();
     QCoreApplication::processEvents();
     updateUI(mipData);
     QCoreApplication::processEvents();

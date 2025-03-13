@@ -52,13 +52,13 @@ public:
     void setModuleType(MType type);
     void setNominalCurrent(float inom);
     QWidget *widget();
-    MipDataStruct takeOneMeasurement(float i2nom);
+    MipDataStruct takeOneMeasurement(bool &ok);
 
 private:
     BaseInterface *m_iface;
     MipDataStruct m_mipData;
     MType m_moduleType;
-    float iNom;
+    float m_iNom;
     QWidget *m_widget;
     QWidget *m_parent;
     bool m_withGUI;

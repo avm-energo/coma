@@ -310,6 +310,17 @@ Error::Msg AbstractTuneDialog::setWorkMode()
     return Error::Msg::NoError;
 }
 
+bool AbstractTuneDialog::checkFloat(const QString &name, double var, double base, double tolerance)
+{
+    if (!StdFunc::FloatIsWithinLimits(var, base, tolerance))
+    {
+        EMessageBox::warning(
+            this, name + " лежит вне диапазона " + QString::number(base) + " +/- " + QString::number(tolerance));
+        return false;
+    }
+    return true;
+}
+
 void AbstractTuneDialog::setProgressSizeSlot(int size)
 {
     QProgressBar *prb = this->findChild<QProgressBar *>("prb");
@@ -470,9 +481,6 @@ void AbstractTuneDialog::writeTuneCoefsSlot()
 
 Error::Msg AbstractTuneDialog::checkCalibrStep()
 {
-    //    QString cpuserialnum = Board::GetInstance().UID();
-    //    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-    //    if (!storedcalibrations.contains(cpuserialnum + "/step"))
     if (!TuneSequenceFile::contains("step"))
     {
         EMessageBox::warning(this,
@@ -480,7 +488,6 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
             "начните заново с шага 1");
         return Error::Msg::ResEmpty;
     }
-    //    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
     int calibrstep = TuneSequenceFile::value("step").toInt();
     if (calibrstep < m_tuneStep)
     {
@@ -492,15 +499,6 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
     }
     return Error::Msg::NoError;
 }
-
-// void AbstractTuneDialog::saveTuneSequenceFile(int step)
-//{
-//    QString cpuserialnum = Board::GetInstance().UID();
-//    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
-//    int calibrstep = storedcalibrations.value(cpuserialnum + "/step", "1").toInt();
-//    if (step > calibrstep)
-//        storedcalibrations.setValue(cpuserialnum + "/step", step);
-//}
 
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {

@@ -92,18 +92,7 @@ public:
     static ReportData &getReportData();
     Error::Msg setTuneMode();
     Error::Msg setWorkMode();
-
-protected:
-    Device::CurrentDevice *m_device;
-    S2::Configuration &config;
-    Interface::AsyncConnection *m_async;
-    Interface::SyncConnection *m_sync;
-    Device::BaseBoard m_typeB;
-    Device::MezzanineBoard m_typeM;
-    static ReportData s_reportData;
-
-    Error::Msg setCurrentsTo(const float value);
-    static void writeReportData(const QString &name, const QString &value);
+    bool checkFloat(const QString &name, double var, double base, double tolerance);
 
 private:
     QMap<int, DataBlock *> AbsBac;
@@ -131,6 +120,16 @@ private slots:
     void setProgressCountSlot(int count);
 
 protected:
+    Device::CurrentDevice *m_device;
+    S2::Configuration &config;
+    Interface::AsyncConnection *m_async;
+    Interface::SyncConnection *m_sync;
+    Device::BaseBoard m_typeB;
+    Device::MezzanineBoard m_typeM;
+    static ReportData s_reportData;
+
+    Error::Msg setCurrentsTo(const float value);
+    static void writeReportData(const QString &name, const QString &value);
     void closeEvent(QCloseEvent *e);
     void keyPressEvent(QKeyEvent *e);
 };
