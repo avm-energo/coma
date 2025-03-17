@@ -40,10 +40,10 @@ Error::Msg Tune21One::checkTuneCoefs()
 {
 #ifndef NO_LIMITS
     if (!WDFunc::floatIsWithinLimits(
-            "коэффициента тока по наклону", m_bac->data()->bac1[m_channelNumber].fkiin, 1.0, 0.1))
+            "коэффициента тока по наклону", m_bac->data()->bac1[m_channelNumber].fkiin, 1.0, 0.5))
         return Error::Msg::Cancelled;
     if (!WDFunc::floatIsWithinLimits(
-            "коэффициента напряжения по наклону", m_bac->data()->bac1[m_channelNumber].fkuin, 1.0, 0.1))
+            "коэффициента напряжения по наклону", m_bac->data()->bac1[m_channelNumber].fkuin, 1.0, 0.5))
         return Error::Msg::Cancelled;
     if (!WDFunc::floatIsWithinLimits(
             "коэффициента тока по смещению", m_bac->data()->bac1[m_channelNumber].fbin_I, 0.0, 1000.0))
