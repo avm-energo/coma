@@ -2,6 +2,10 @@
 <module mtypeb="A2" mtypem="43">
     <name>AVM-KOT</name>
     <version>0.0-0005</version>
+    <features>
+        <isBoxModule>1</isBoxModule>
+        <isRTCExist>1</isRTCExist>
+    </features>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">
@@ -916,31 +920,31 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Режим" tab="2">
-                    <mwidget desc="Ручной режим" view="bitset">
+                    <mwidget desc="Ручной режим" view="SinglePoint">
                         <start-addr>1200</start-addr>
                         <toolTip>Ручной режим</toolTip>
                     </mwidget>
-                    <mwidget desc="D1_%1" view="bitset">
+                    <mwidget desc="D1_%1" view="SinglePoint">
                         <start-addr>1201</start-addr>
                         <count>2</count>
                     </mwidget>
-                    <mwidget desc="D2_%1" view="bitset">
+                    <mwidget desc="D2_%1" view="SinglePoint">
                         <start-addr>1203</start-addr>
                         <count>2</count>
                     </mwidget>
-                    <mwidget desc="DC_%1" view="bitset">
+                    <mwidget desc="DC_%1" view="SinglePoint">
                         <start-addr>1205</start-addr>
                         <count>4</count>
                     </mwidget>
-                    <mwidget desc="Блокировка маслонасосов" view="bitset">
+                    <mwidget desc="Блокировка маслонасосов" view="SinglePoint">
                         <start-addr>1209</start-addr>
                         <toolTip>Блокировка маслонасосов</toolTip>
                     </mwidget>
-                    <mwidget desc="Блокировка вентиляторов" view="bitset">
+                    <mwidget desc="Блокировка вентиляторов" view="SinglePoint">
                         <start-addr>1210</start-addr>
                         <toolTip>Блокировка вентиляторов</toolTip>
                     </mwidget>
-                    <mwidget desc="Din_%1" view="bitset">
+                    <mwidget desc="Din_%1" view="SinglePoint">
                         <start-addr>1300</start-addr>
                         <count>3</count>
                         <toolTip>Вход %1 замкнут</toolTip>
@@ -956,7 +960,7 @@
                         <count>3</count>
                         <toolTip>Ток в %1-ой обмотке, А</toolTip>
                     </mwidget>
-                    <mwidget desc="Коэффициент нагрузки в %1-ой обмотке, А" view="float">
+                    <mwidget desc="Коэффициент нагрузки в %1-ой обмотке, %" view="float">
                         <start-addr>1004</start-addr>
                         <count>3</count>
                         <toolTip>Коэффициент нагрузки в %1-ой обмотке, А</toolTip>

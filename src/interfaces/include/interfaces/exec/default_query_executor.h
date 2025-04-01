@@ -1,10 +1,12 @@
 #pragma once
 
-#include <QTimer>
+#include <gen/error.h>
 #include <gen/logclass.h>
 #include <interfaces/types/base_settings.h>
 #include <interfaces/types/protocol_settings.h>
 #include <interfaces/utils/request_queue.h>
+
+#include <QTimer>
 
 namespace Interface
 {
@@ -129,6 +131,8 @@ signals:
     void responseSend(const Interface::DeviceResponse &resp);
     /// \brief Сигнал для отправки запроса устройству в бинарном представлении.
     void sendDataToInterface(const QByteArray &data);
+    /// \brief Сигнал об ошибке, чтобы не зависать в ожидании ответа
+    void responseError(Error::Msg);
 };
 
 } // namespace Interface

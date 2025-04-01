@@ -72,7 +72,7 @@ bool LBLFunc::SetLBLTColor(QWidget *parent, const QString &lblname, const QStrin
 bool LBLFunc::SetLBLImage(QWidget *parent, const QString &lblname, QPixmap *pm)
 {
     auto lbl = parent->findChild<QLabel *>(lblname);
-    Q_ASSERT(lbl != nullptr);
+    // Q_ASSERT(lbl != nullptr);
     if (lbl == nullptr)
     {
         qDebug() << Error::DescError << lblname;

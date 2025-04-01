@@ -93,8 +93,8 @@ Xml::ViewType Xml::ModuleParser::parseViewType(const QString &viewString)
         return Xml::ViewType::LineEdit;
     else if (viewString.contains("Version", Qt::CaseInsensitive))
         return Xml::ViewType::Version;
-    else if (viewString.contains("bitstring", Qt::CaseInsensitive))
-        return Xml::ViewType::Bitstring;
+    else if (viewString.contains("SinglePoint", Qt::CaseInsensitive))
+        return Xml::ViewType::SinglePoint;
     else
         return Xml::ViewType::Float;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gen/error.h>
 #include <interfaces/types/protocol_settings.h>
 #include <interfaces/utils/request_queue.h>
 #include <interfaces/utils/slot_trait.h>
@@ -67,7 +68,9 @@ signals:
     void protocolSettingsUpdated(const ProtocolDescription &desc);
     void queueSizeChanged(const quint64 size);
     void executorWakeUp();
+    void responseError(Error::Msg);
 
+    void responseSend(const DataTypes::GeneralResponseStruct &resp);
     // Response signals
     // clazy:excludeall=overloaded-signal
     void response(const QByteArray &resp);

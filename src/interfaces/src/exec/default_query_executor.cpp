@@ -18,12 +18,15 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, const BaseSettin
 {
     m_timeoutTimer.setSingleShot(true);
     m_timeoutTimer.setInterval(settings.m_timeout);
-    connect(&m_timeoutTimer, &QTimer::timeout, this, [this] {
-        qCritical() << "Timeout, command: " << m_lastRequestedCommand.load();
-        m_log.error("Timeout");
-        cancelQuery();
-        emit this->timeout();
-    });
+    connect(&m_timeoutTimer, &QTimer::timeout, this,
+        [this]
+        {
+            qCritical() << "Timeout, command: " << m_lastRequestedCommand.load();
+            m_log.error("Timeout");
+            cancelQuery();
+            emit this->timeout();
+            emit responseError(Error::Msg::Timeout);
+        });
 }
 
 void DefaultQueryExecutor::initLogger(const QString &protocolName) noexcept
@@ -52,16 +55,20 @@ void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponse
         connect(m_responseParser, &BaseResponseParser::cancelRequest,     //
             this, &DefaultQueryExecutor::cancelQuery);                    //
 
-        m_requestParser->basicProtocolSetup(); // basic protocol setup
-        connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
-            setState(ExecutorState::WritingLongData);
-            m_timeoutTimer.setInterval(m_timeoutTimer.interval() * 5);
-            m_queue.get().deactivate();
-        });
-        connect(m_responseParser, &BaseResponseParser::readingLongData, this, [this] {
-            setState(ExecutorState::ReadingLongData);
-            m_queue.get().deactivate();
-        });
+        m_requestParser->basicProtocolSetup();                            // basic protocol setup
+        connect(m_requestParser, &BaseRequestParser::writingLongData, this,
+            [this]
+            {
+                setState(ExecutorState::WritingLongData);
+                m_timeoutTimer.setInterval(m_timeoutTimer.interval() * 5);
+                m_queue.get().deactivate();
+            });
+        connect(m_responseParser, &BaseResponseParser::readingLongData, this,
+            [this]
+            {
+                setState(ExecutorState::ReadingLongData);
+                m_queue.get().deactivate();
+            });
     }
 }
 

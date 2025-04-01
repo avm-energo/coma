@@ -19,6 +19,7 @@ JournalTabWidget::JournalTabWidget(const JournalType type, Interface::AsyncConne
     , m_saveProgressDialog(new QProgressDialog(this))
     , m_async(async)
     , m_type(type)
+    , isJournalOperationActive(false)
 {
     setupProgressDialogs();
     setupUI();
@@ -82,6 +83,7 @@ void JournalTabWidget::gettingJournal()
         m_modelView->deleteLater();
     m_progressDialog->show();
     m_progressIndicator->startAnimation();
+    isJournalOperationActive = true;
     m_async->reqFile(static_cast<quint16>(m_type));
 }
 
@@ -131,13 +133,41 @@ void JournalTabWidget::saveBinaryJournal()
 void JournalTabWidget::done(const QString &message)
 {
     emit ready();
+    isJournalOperationActive = false;
+    stopAndHideIndicator();
     EMessageBox::information(this, message);
 }
 
 void JournalTabWidget::error(const QString &message)
 {
     EMessageBox::error(this, message);
+    isJournalOperationActive = false;
+    stopAndHideIndicator();
     qCritical() << message;
+}
+
+void JournalTabWidget::stopProgressIndicator(Error::Msg msg)
+{
+    if (isJournalOperationActive)
+        EMessageBox::error(this, Error::MsgStr[msg]);
+    isJournalOperationActive = false;
+    stopAndHideIndicator();
+}
+
+void JournalTabWidget::stopProgressIndicatorResp(const DataTypes::GeneralResponseStruct &resp)
+{
+    if (resp.data != Error::Msg::NoError)
+    {
+        isJournalOperationActive = false;
+        Error::Msg msg = static_cast<Error::Msg>(resp.data);
+        stopProgressIndicator(msg);
+    }
+}
+
+void JournalTabWidget::stopAndHideIndicator()
+{
+    m_progressIndicator->stopAnimation();
+    m_progressDialog->hide();
 }
 
 void JournalTabWidget::update(BaseJournal *newJournal)

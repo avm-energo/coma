@@ -64,9 +64,11 @@ void CheckDialog::setHighlights(AlarmType type, const HighlightMap &map)
 
 void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
 {
+    bool needUpdate = false;
     bool status = sp.sigVal;
     if (m_highlightWarn.contains(sp.sigAdr))
     {
+        needUpdate = true;
         const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
         const auto errorStyle = QString(errStyle).arg("yellow");
         for (const auto reg : std::as_const(regs))
@@ -79,6 +81,7 @@ void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
     }
     if (m_highlightCrit.contains(sp.sigAdr))
     {
+        needUpdate = true;
         const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
         const auto errorStyle = QString(errStyle).arg("red");
         for (const auto reg : std::as_const(regs))
@@ -89,7 +92,8 @@ void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
                 clearRed(reg);
         }
     }
-    setHighlights();
+    if (needUpdate)
+        setHighlights();
 }
 
 void CheckDialog::uponInterfaceSetting()
@@ -248,9 +252,11 @@ QVBoxLayout *CheckDialog::setupGroup(const SGroup &arg, UWidget *uwidget)
             if (widgetLayout != nullptr)
                 groupLayout->addLayout(widgetLayout);
         }
-        else if (mwidget.view == ViewType::Bitstring)
+        else if (mwidget.view == ViewType::SinglePoint)
         {
-            // TODO
+            auto widgetLayout = setupSinglePointWidget(mwidget, uwidget);
+            if (widgetLayout != nullptr)
+                groupLayout->addLayout(widgetLayout);
         }
     }
     return groupLayout;
@@ -297,17 +303,34 @@ void CheckDialog::updatePixmap(const MWidget &mwidget, const DataTypes::BitStrin
     }
 }
 
+void CheckDialog::updatePixmap(
+    const Device::XmlDataTypes::MWidget &mwidget, const DataTypes::SinglePointWithTimeStruct &sp, UWidget *uwidget)
+{
+    if ((sp.sigAdr >= mwidget.startAddr) && (sp.sigAdr < (mwidget.startAddr + mwidget.count))
+        && sp.sigQuality == DataTypes::Quality::Good)
+    {
+        auto pixmap = GraphFunc::NewCircle((sp.sigVal != 0) ? activeColor : normalColor, circleRadius);
+        LBLFunc::SetLBLImage(uwidget, QString::number(sp.sigAdr), &pixmap);
+    }
+}
+
 QLabel *CheckDialog::createPixmapIndicator(const MWidget &mwidget, const quint32 index)
 {
-    // TODO: Must be member of mwidget
-    constexpr auto startIndex = 0;
-
     auto pixmap = GraphFunc::NewCircle(normalColor, circleRadius);
     auto indicatorLabel = new QLabel(this);
     indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(index));
     indicatorLabel->setPixmap(pixmap);
     if (!mwidget.tooltip.isEmpty())
-        indicatorLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, index + 1, startIndex));
+        indicatorLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, index + 1, 0));
+    return indicatorLabel;
+}
+
+QLabel *CheckDialog::createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const QString name)
+{
+    auto pixmap = GraphFunc::NewCircle(normalColor, circleRadius);
+    auto indicatorLabel = new QLabel(this);
+    indicatorLabel->setObjectName(name);
+    indicatorLabel->setPixmap(pixmap);
     return indicatorLabel;
 }
 
@@ -342,6 +365,38 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const MWidget &mwidget, UWidget *wid
 
     bitsetWidget->setLayout(gridLayout);
     widgetLayout->addWidget(bitsetWidget);
+    return widgetLayout;
+}
+
+QVBoxLayout *CheckDialog::setupSinglePointWidget(const MWidget &mwidget, UWidget *widget)
+{
+    auto widgetLayout = new QVBoxLayout;
+    auto spWidget = new QWidget(this);
+    auto vlyout = new QVBoxLayout;
+
+    for (auto i = 0; i < mwidget.count; i++)
+    {
+        auto hlyout = new QHBoxLayout;
+        const auto limit = i + maxIndicatorCountInRow;
+        for (; (i < mwidget.count) && (i < limit); i++)
+        {
+            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i + 1, 0), this);
+            hlyout->addWidget(textLabel);
+            auto indicator = createPixmapIndicator(mwidget, QString::number(mwidget.startAddr + i));
+            indicator->setToolTip(getFormatted(mwidget, mwidget.tooltip, i + 1, 0));
+            hlyout->addWidget(indicator);
+        }
+        hlyout->addStretch(100);
+        vlyout->addLayout(hlyout);
+    }
+
+    auto dataUpdater = widget->engine();
+    connect(dataUpdater, &ModuleDataUpdater::itsTimeToUpdateSinglePointSignal, this,
+        [mwidget, widget, this](const DataTypes::SinglePointWithTimeStruct &sp) -> void //
+        { updatePixmap(mwidget, sp, widget); });
+
+    spWidget->setLayout(vlyout);
+    widgetLayout->addWidget(spWidget);
     return widgetLayout;
 }
 

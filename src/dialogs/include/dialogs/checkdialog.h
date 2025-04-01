@@ -65,10 +65,14 @@ private:
         const QString &form, const quint32 number, const quint32 start = 1);
     void updatePixmap(const Device::XmlDataTypes::MWidget &mwidget,   //
         const DataTypes::BitStringStruct &bs, UWidget *uwidget);
+    void updatePixmap(const Device::XmlDataTypes::MWidget &mwidget,   //
+        const DataTypes::SinglePointWithTimeStruct &sp, UWidget *uwidget);
     QLabel *createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const quint32 index);
+    QLabel *createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const QString name);
     QVBoxLayout *setupGroup(const Device::XmlDataTypes::SGroup &arg, UWidget *uwidget);
     QGridLayout *setupFloatWidget(const Device::XmlDataTypes::MWidget &mwidget, const int wCount);
-    QVBoxLayout *setupBitsetWidget(const Device::XmlDataTypes::MWidget &mwidget, UWidget *dataUpdater);
+    QVBoxLayout *setupBitsetWidget(const Device::XmlDataTypes::MWidget &mwidget, UWidget *widget);
+    QVBoxLayout *setupSinglePointWidget(const Device::XmlDataTypes::MWidget &mwidget, UWidget *widget);
     void setYellow(quint32 reg);
     void clearYellow(quint32 reg);
     void setRed(quint32 reg);

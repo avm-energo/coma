@@ -160,7 +160,11 @@ QGroupBox *HiddenDialog::setupGroupBox(const HiddenTab &hiddenTab)
     {
         auto enableCheckBox = ChBFunc::NewChB(this, hiddenTab.prefix + "enable", "Установлена");
         enableCheckBox->setChecked(true);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 8, 2))
         connect(enableCheckBox, &QCheckBox::stateChanged, this, [this](int) { updateUI(); });
+#else
+        connect(enableCheckBox, &QCheckBox::checkStateChanged, this, [this](int) { updateUI(); });
+#endif
         gbLayout->addWidget(enableCheckBox);
     }
     for (auto &&widget : hiddenTab.widgets)

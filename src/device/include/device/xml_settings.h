@@ -1,9 +1,10 @@
 #pragma once
 
-#include <QHash>
 #include <gen/datatypes.h>
 #include <interfaces/types/protocol_settings.h>
 #include <s2/dataitem.h>
+
+#include <QHash>
 
 namespace Device::XmlDataTypes
 {
@@ -21,11 +22,11 @@ struct Signal final
 /// \brief Перечисление для хранения типа отображения мультивиджета.
 enum class ViewType : u8
 {
-    Float = 0, ///< отображение чисел с плавающей точкой
-    Bitset,    ///< отображение битового поля
-    LineEdit,  ///< ввод данных
-    Version,   ///< ввод или отображение версии
-    Bitstring
+    Float = 0,  ///< отображение чисел с плавающей точкой
+    Bitset,     ///< отображение битового поля
+    LineEdit,   ///< ввод данных
+    Version,    ///< ввод или отображение версии
+    SinglePoint ///< отображение битовых индикаторов
 };
 
 /// \brief Структура для хранения информации узла <mwidget> из XML.
@@ -42,8 +43,8 @@ struct MWidget final
 /// \brief Структура для хранения информации узла <sgroup> из XML.
 struct SGroup final
 {
-    QString name;                 ///< атрибут "header"
-    std::vector<MWidget> widgets; ///< узлы <mwidget>
+    QString name;                     ///< атрибут "header"
+    std::vector<MWidget> widgets;     ///< узлы <mwidget>
 };
 
 using SGMap = QMultiMap<u32, SGroup>; ///< u32 - id вкладки, SGroup - группы для вкладки.
@@ -136,8 +137,8 @@ using SignalMap = std::map<u32, Signal>;     ///< Хранит узлы <signal>
 using TabsMap = QMap<u32, SectionTabStruct>; ///< Хранит узлы <tab> секции <section-tabs>.
 using HighlightMap = QMultiMap<u32, u32>;    ///< Для подсветки элементов.
 using SectionList = std::vector<Section>;    ///< Хранит узлы <section> секции <sections>.
-using AlarmValue = QMap<u32, QString>; ///< u32 - адрес сигнализации, QString - узел <desc> (описание).
-using WorkJourMap = QMap<u32, QString>; ///< Хранит узлы <item> секции <work> из <journals>.
+using AlarmValue = QMap<u32, QString>;       ///< u32 - адрес сигнализации, QString - узел <desc> (описание).
+using WorkJourMap = QMap<u32, QString>;      ///< Хранит узлы <item> секции <work> из <journals>.
 using AlarmStateAllConfig = std::vector<AlarmStateAllRecord>; ///< Хранит узлы <item> секции <state-all> из <alarms>.
 using AlarmMap = QHash<AlarmType, AlarmValue>; ///< Хранит узлы <item> секций <critical>, <warning>, <info> из <alarms>.
 using MeasJourList = std::vector<MeasJournal>; ///< Хранит узлы <item> секции <meas> из <journals>.
