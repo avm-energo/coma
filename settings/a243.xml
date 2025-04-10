@@ -509,6 +509,12 @@
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
+            <record>
+                <id>1283</id>
+                <defaultValue>0,0,0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
         </config>
         <hidden desc="Секретные операции">
             <hidden-tab background="" desc="Базовая плата" flag="1" prefix="base">

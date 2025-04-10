@@ -5817,5 +5817,22 @@
             <name>Spect87_7</name>
             <type>DataPoint_Spect87</type>
         </record>
+        <record>
+            <id>1283</id>
+            <name>EnContrNNT</name>
+            <type>BYTE[3]</type>
+            <widget>
+                <type>CheckBoxGroup</type>
+                <group>51</group>
+                <string>Разрешение  управления охлаждением по ННТ</string>
+                <toolTip>0 – используется, 1 – не используется</toolTip>
+                <count>3</count>
+                <string-array>
+                    <item>Обм1</item>
+                    <item>Обм2</item>
+                    <item>Обм3</item>
+                </string-array>
+            </widget>
+        </record>
     </records>
 </s2files>
