@@ -15,7 +15,7 @@ Tune21Dialog::Tune21Dialog(
     setAttribute(Qt::WA_DeleteOnClose);
     m_tuneStepCount
         = firstStepNumber - 1; // set step number to external variable (if there's more than one board in module)
-    for (int i = 0; i < 8; ++i)
+    for (int i = 1; i <= 8; ++i)
         addTuneDialog({ "Регулировка канала " + QString::number(i), new Tune21One(bt, i, device, this) });
     u8 blockNum = (bt == Device::BoardTypes::BASEBOARD) ? 1 : 2;
     Bac21 *bac = new Bac21(blockNum, this);

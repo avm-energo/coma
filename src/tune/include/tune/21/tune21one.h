@@ -13,7 +13,7 @@ public:
 private:
     Bac21 *m_bac;
     Bda21 *m_bda;
-    u8 m_channelNumber;
+    u8 m_channelNumber, m_chArrIndex;
 
     void setTuneFunctions() override;
 

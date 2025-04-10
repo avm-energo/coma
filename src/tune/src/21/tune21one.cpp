@@ -15,6 +15,7 @@
 Tune21One::Tune21One(Device::BoardTypes boardType, u8 chNum, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(device, parent)
     , m_channelNumber(chNum)
+    , m_chArrIndex(chNum - 1)
 {
     u8 blockNum = (boardType == Device::BoardTypes::BASEBOARD) ? 1 : 2;
     m_bac = new Bac21(blockNum, this);
@@ -39,17 +40,16 @@ void Tune21One::setTuneFunctions()
 Error::Msg Tune21One::checkTuneCoefs()
 {
 #ifndef NO_LIMITS
-    if (!WDFunc::floatIsWithinLimits(
-            "коэффициента тока по наклону", m_bac->data()->bac1[m_channelNumber].fkiin, 1.0, 0.5))
+    if (!WDFunc::floatIsWithinLimits("коэффициента тока по наклону", m_bac->data()->bac1[m_chArrIndex].fkiin, 1.0, 0.5))
         return Error::Msg::Cancelled;
     if (!WDFunc::floatIsWithinLimits(
-            "коэффициента напряжения по наклону", m_bac->data()->bac1[m_channelNumber].fkuin, 1.0, 0.5))
+            "коэффициента напряжения по наклону", m_bac->data()->bac1[m_chArrIndex].fkuin, 1.0, 0.5))
         return Error::Msg::Cancelled;
     if (!WDFunc::floatIsWithinLimits(
-            "коэффициента тока по смещению", m_bac->data()->bac1[m_channelNumber].fbin_I, 0.0, 1000.0))
+            "коэффициента тока по смещению", m_bac->data()->bac1[m_chArrIndex].fbin_I, 0.0, 1000.0))
         return Error::Msg::Cancelled;
     if (!WDFunc::floatIsWithinLimits(
-            "коэффициента напряжения по смещению", m_bac->data()->bac2[m_channelNumber].fbin_U, 0.0, 1000.0))
+            "коэффициента напряжения по смещению", m_bac->data()->bac2[m_chArrIndex].fbin_U, 0.0, 1000.0))
         return Error::Msg::Cancelled;
 #endif
     return Error::Msg::NoError;
@@ -58,7 +58,7 @@ Error::Msg Tune21One::checkTuneCoefs()
 Error::Msg Tune21One::tune()
 {
     float i0, i20, u0, u5;
-    if (m_channelNumber > 7)
+    if (m_channelNumber > 8)
     {
         qDebug() << "Некорректный номер шага: " << m_channelNumber;
         return Error::Msg::StepError;
@@ -69,26 +69,26 @@ Error::Msg Tune21One::tune()
                 + QString::number(m_channelNumber) + " модуля и нажмите Далее"))
     {
         m_bda->readAndUpdate();
-        u0 = m_bda->data()->sin[m_channelNumber];
+        u0 = m_bda->data()->sin[m_chArrIndex];
         if (EMessageBox::next(this,
                 "На калибраторе задайте напряжение 5 В на\nвходе " + QString::number(m_channelNumber)
                     + " модуля и нажмите Далее"))
         {
             m_bda->readAndUpdate();
-            u5 = m_bda->data()->sin[m_channelNumber];
+            u5 = m_bda->data()->sin[m_chArrIndex];
             if (EMessageBox::next(this,
                     "Включите режим измерения токов и\n"
                     "на калибраторе задайте ток 0 мА на\nвходе "
                         + QString::number(m_channelNumber) + " модуля и нажмите Далее"))
             {
                 m_bda->readAndUpdate();
-                i0 = m_bda->data()->sin[m_channelNumber];
+                i0 = m_bda->data()->sin[m_chArrIndex];
                 if (EMessageBox::next(this,
                         "На калибраторе задайте ток 20 мА на\nвходе " + QString::number(m_channelNumber)
                             + " модуля и нажмите Далее"))
                 {
                     m_bda->readAndUpdate();
-                    i20 = m_bda->data()->sin[m_channelNumber];
+                    i20 = m_bda->data()->sin[m_chArrIndex];
                     if (!calcNewTuneCoefs(u0, u5, i0, i20))
                         return Error::Msg::TuneCoefError;
                     else
@@ -102,15 +102,15 @@ Error::Msg Tune21One::tune()
 
 bool Tune21One::calcNewTuneCoefs(float u0, float u5, float i0, float i20)
 {
-    m_bac->data()->bac1[m_channelNumber].fbin_I = 1.25f - i0;
-    m_bac->data()->bac2[m_channelNumber].fbin_U = 1.25f - u0;
+    m_bac->data()->bac1[m_chArrIndex].fbin_I = 1.25f - i0;
+    m_bac->data()->bac2[m_chArrIndex].fbin_U = 1.25f - u0;
     if ((StdFunc::FloatIsWithinLimits(u0, u5, 0.1f) || (StdFunc::FloatIsWithinLimits(i0, i20, 0.1f))))
     {
         qDebug() << "Ошибка в настроечных коэффициентах, деление на ноль";
         return false;
     }
-    m_bac->data()->bac1[m_channelNumber].fkuin = 1 / (u0 - u5);
-    m_bac->data()->bac1[m_channelNumber].fkiin = 1 / (i0 - i20);
+    m_bac->data()->bac1[m_chArrIndex].fkuin = 1 / (u0 - u5);
+    m_bac->data()->bac1[m_chArrIndex].fkiin = 1 / (i0 - i20);
     return true;
 }
 
