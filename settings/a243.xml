@@ -668,42 +668,60 @@
                 </item>
                 <item>
                     <index>7</index>
-                    <header>Температура окружающей среды</header>
+                    <header>Токовая нагрузка в 1-й обмотке</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
                     <index>8</index>
-                    <header>Температура ННТ в 1-ой обмотке</header>
+                    <header>Токовая нагрузка в 2-й обмотке</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
                     <index>9</index>
-                    <header>Температура ННТ в 2-ой обмотке</header>
+                    <header>Токовая нагрузка в 3-й обмотке</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
                     <index>10</index>
-                    <header>Температура ННТ в 3-й обмотке</header>
+                    <header>Температура окружающей среды</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
                     <index>11</index>
+                    <header>Температура ННТ в 1-ой обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>12</index>
+                    <header>Температура ННТ в 2-ой обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>13</index>
+                    <header>Температура ННТ в 3-й обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>14</index>
                     <header>Дискретные сигналы</header>
                     <type>uint32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <index>12</index>
+                    <index>15</index>
                     <header>Резерв 1</header>
                     <type>float32</type>
                     <visibility>false</visibility>
                 </item>
                 <item>
-                    <index>13</index>
+                    <index>16</index>
                     <header>Резерв 2</header>
                     <type>float32</type>
                     <visibility>false</visibility>
