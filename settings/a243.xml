@@ -56,19 +56,22 @@
                     <addr>1112</addr>
                     <string>Аварийная сигнализация температуры 1-ая обмотка</string>
                     <highlights>
-                        <item>1001</item>
+                        <item>1008</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>1113</addr>
                     <string>Аварийная сигнализация температуры 2-ая обмотка</string>
                     <highlights>
-                        <item>1002</item>
+                        <item>1009</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>1114</addr>
                     <string>Аварийная сигнализация температуры 3-ая обмотка</string>
+                    <highlights>
+                        <item>1010</item>
+                    </highlights>
                 </item>
             </critical>
             <info desc="Информационные"/>
