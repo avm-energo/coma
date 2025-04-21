@@ -14,7 +14,7 @@ Tune21Dialog::Tune21Dialog(
     m_tuneStartStep = firstStepNumber;
     setAttribute(Qt::WA_DeleteOnClose);
     m_tuneStepCount
-        = firstStepNumber - 1; // set step number to external variable (if there's more than one board in module)
+        = firstStepNumber - 1; // set step number to external variable -1 (if there's more than one board in module)
     QString tmps = "Регулировка ";
     tmps += ((bt == Device::BoardTypes::BASEBOARD) ? "базы" : "мезонина");
     addTuneDialog({ tmps, new Tune21One(bt, device, this) });
