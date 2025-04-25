@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QWidget>
 #include <interfaces/moduledataupdater.h>
+
+#include <QWidget>
 
 namespace Device
 {
@@ -27,6 +28,7 @@ public:
     virtual void updateFloatData(const DataTypes::FloatStruct &fl);
     virtual void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
     virtual void updateBitStringData(const DataTypes::BitStringStruct &bs);
+    virtual void writeCommand(const DataTypes::SingleCommand &cmd);
     ModuleDataUpdater *engine();
     Device::CurrentDevice *device();
 

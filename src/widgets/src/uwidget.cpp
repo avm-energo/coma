@@ -59,6 +59,11 @@ void UWidget::updateBitStringData(const DataTypes::BitStringStruct &bs)
     Q_UNUSED(bs)
 }
 
+void UWidget::writeCommand(const DataTypes::SingleCommand &cmd)
+{
+    engine()->sendCommand(cmd);
+}
+
 ModuleDataUpdater *UWidget::engine()
 {
     return m_dataUpdater;

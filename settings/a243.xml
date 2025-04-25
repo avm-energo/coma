@@ -901,6 +901,12 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные">
+                <sgroup header="Команды" tab="3">
+                    <mwidget desc="Сброс значений" view="command">
+                        <start-addr>814</start-addr>
+                        <toolTip>Сброс всех значений максимумов и минимумов</toolTip>
+                    </mwidget>
+                </sgroup>
                 <sgroup header="Общие" tab="3">
                     <mwidget desc="Температура микроконтроллера, °С" view="float">
                         <start-addr>101</start-addr>
@@ -974,10 +980,15 @@
                         <start-addr>1210</start-addr>
                         <toolTip>Блокировка вентиляторов</toolTip>
                     </mwidget>
-                    <mwidget desc="Din_%1" view="SinglePoint">
+                    <mwidget desc="Di%1" view="SinglePoint">
                         <start-addr>1300</start-addr>
                         <count>3</count>
                         <toolTip>Вход %1 замкнут</toolTip>
+                        <string-array>
+                            <item>2</item>
+                            <item>3</item>
+                            <item>4</item>
+                        </string-array>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Текущие" tab="1">
@@ -1031,6 +1042,12 @@
                 <count>1</count>
                 <id>4</id>
                 <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>814</start-addr>
+                <count>1</count>
+                <id>10</id>
+                <type>Command</type>
             </signal>
             <signal>
                 <start-addr>1000</start-addr>

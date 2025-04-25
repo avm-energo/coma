@@ -4,8 +4,10 @@
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <widgets/chbfunc.h>
 #include <widgets/graphfunc.h>
 #include <widgets/lblfunc.h>
+#include <widgets/pbfunc.h>
 
 #include <QGroupBox>
 #include <QTabWidget>
@@ -14,15 +16,15 @@
 
 using namespace Device::XmlDataTypes;
 
-constexpr auto maxIndicatorCountInRow = 10;
-constexpr auto circleRadius = 12;
-constexpr auto normalColor = Qt::gray;
-constexpr auto activeColor = Qt::yellow;
-constexpr auto defaultStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
-constexpr auto errStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
-                          "background-color: %1; color: black;}";
-const auto errorStyle = QString(errStyle).arg("red");
-const auto warnStyle = QString(errStyle).arg("yellow");
+constexpr auto c_maxIndicatorCountInRow = 10;
+constexpr auto c_circleRadius = 12;
+constexpr auto c_normalColor = Qt::gray;
+constexpr auto c_activeColor = Qt::yellow;
+constexpr auto c_defaultStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
+constexpr auto c_errStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
+                            "background-color: %1; color: black;}";
+const auto c_errorStyle = QString(c_errStyle).arg("red");
+const auto c_warnStyle = QString(c_errStyle).arg("yellow");
 
 CheckDialog::CheckDialog(const Section &section, Device::CurrentDevice *device, QWidget *parent)
     : UDialog(device, parent)
@@ -70,7 +72,6 @@ void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
     {
         needUpdate = true;
         const QList<HighlightMap::mapped_type> regs = m_highlightWarn.values(sp.sigAdr);
-        const auto errorStyle = QString(errStyle).arg("yellow");
         for (const auto reg : std::as_const(regs))
         {
             if (status)
@@ -83,7 +84,6 @@ void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
     {
         needUpdate = true;
         const QList<HighlightMap::mapped_type> regs = m_highlightCrit.values(sp.sigAdr);
-        const auto errorStyle = QString(errStyle).arg("red");
         for (const auto reg : std::as_const(regs))
         {
             if (status)
@@ -258,6 +258,12 @@ QVBoxLayout *CheckDialog::setupGroup(const SGroup &arg, UWidget *uwidget)
             if (widgetLayout != nullptr)
                 groupLayout->addLayout(widgetLayout);
         }
+        else if ((mwidget.view == ViewType::Command) || (mwidget.view == ViewType::CommandWValue))
+        {
+            auto widgetLayout = setupCommandWidget(mwidget, arg.widgets.size(), mwidget.view == ViewType::Command);
+            if (widgetLayout != nullptr)
+                groupLayout->addLayout(widgetLayout);
+        }
     }
     return groupLayout;
 }
@@ -281,7 +287,7 @@ QGridLayout *CheckDialog::setupFloatWidget(const MWidget &mwidget, const int wCo
             valueLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, i));
 
         valueLabel->setObjectName(QString::number(mwidget.startAddr + i));
-        valueLabel->setStyleSheet(defaultStyle);
+        valueLabel->setStyleSheet(c_defaultStyle);
         layout->addWidget(valueLabel);
         gridLayout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
     }
@@ -297,7 +303,7 @@ void CheckDialog::updatePixmap(const MWidget &mwidget, const DataTypes::BitStrin
         for (auto i = 0; i < mwidget.count; ++i)
         {
             auto isSet = bitSet.test(i);
-            auto pixmap = GraphFunc::NewCircle((isSet) ? activeColor : normalColor, circleRadius);
+            auto pixmap = GraphFunc::NewCircle((isSet) ? c_activeColor : c_normalColor, c_circleRadius);
             LBLFunc::SetLBLImage(uwidget, stringAddr + "_" + QString::number(i), &pixmap);
         }
     }
@@ -309,14 +315,16 @@ void CheckDialog::updatePixmap(
     if ((sp.sigAdr >= mwidget.startAddr) && (sp.sigAdr < (mwidget.startAddr + mwidget.count))
         && sp.sigQuality == DataTypes::Quality::Good)
     {
-        auto pixmap = GraphFunc::NewCircle((sp.sigVal != 0) ? activeColor : normalColor, circleRadius);
+        if (sp.sigAdr == 1300)
+            qDebug() << "1";
+        auto pixmap = GraphFunc::NewCircle((sp.sigVal != 0) ? c_activeColor : c_normalColor, c_circleRadius);
         LBLFunc::SetLBLImage(uwidget, QString::number(sp.sigAdr), &pixmap);
     }
 }
 
 QLabel *CheckDialog::createPixmapIndicator(const MWidget &mwidget, const quint32 index)
 {
-    auto pixmap = GraphFunc::NewCircle(normalColor, circleRadius);
+    auto pixmap = GraphFunc::NewCircle(c_normalColor, c_circleRadius);
     auto indicatorLabel = new QLabel(this);
     indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(index));
     indicatorLabel->setPixmap(pixmap);
@@ -327,7 +335,7 @@ QLabel *CheckDialog::createPixmapIndicator(const MWidget &mwidget, const quint32
 
 QLabel *CheckDialog::createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const QString name)
 {
-    auto pixmap = GraphFunc::NewCircle(normalColor, circleRadius);
+    auto pixmap = GraphFunc::NewCircle(c_normalColor, c_circleRadius);
     auto indicatorLabel = new QLabel(this);
     indicatorLabel->setObjectName(name);
     indicatorLabel->setPixmap(pixmap);
@@ -347,7 +355,7 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const MWidget &mwidget, UWidget *wid
     for (auto i = 0; i < mwidget.count; i++)
     {
         auto layout = new QHBoxLayout;
-        const auto limit = i + maxIndicatorCountInRow;
+        const auto limit = i + c_maxIndicatorCountInRow;
         for (; (i < mwidget.count) && (i < limit); i++)
         {
             auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i + 1, startIndex), this);
@@ -377,7 +385,7 @@ QVBoxLayout *CheckDialog::setupSinglePointWidget(const MWidget &mwidget, UWidget
     for (auto i = 0; i < mwidget.count; i++)
     {
         auto hlyout = new QHBoxLayout;
-        const auto limit = i + maxIndicatorCountInRow;
+        const auto limit = i + c_maxIndicatorCountInRow;
         for (; (i < mwidget.count) && (i < limit); i++)
         {
             auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i + 1, 0), this);
@@ -398,6 +406,44 @@ QVBoxLayout *CheckDialog::setupSinglePointWidget(const MWidget &mwidget, UWidget
     spWidget->setLayout(vlyout);
     widgetLayout->addWidget(spWidget);
     return widgetLayout;
+}
+
+QGridLayout *CheckDialog::setupCommandWidget(const Device::XmlDataTypes::MWidget &mwidget, const int wCount, bool type)
+{
+    auto gridLayout = new QGridLayout;
+    auto count = mwidget.count;
+    auto itemsOneLine = StdFunc::goldenRatio(count);
+    for (auto i = 0; i < count; ++i)
+    {
+        int realAddr = mwidget.startAddr + i;
+        QBoxLayout *layout = nullptr;
+        if (wCount == 1)
+            layout = new QVBoxLayout;
+        else
+            layout = new QHBoxLayout;
+        auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i), this);
+        layout->addWidget(textLabel);
+        if (!type)
+        {
+            QCheckBox *cb = ChBFunc::NewChB(this, QString::number(realAddr), "");
+            if (!mwidget.tooltip.isEmpty())
+                cb->setToolTip(getFormatted(mwidget, mwidget.tooltip, i));
+            layout->addWidget(cb);
+        }
+        layout->addWidget(PBFunc::NewPB(this, "", "Послать",
+            [&, realAddr, type]()
+            {
+                bool cbdata = false;
+                DataTypes::SingleCommand cmd;
+                cmd.addr = realAddr;
+                if (!type)
+                    cbdata = ChBFunc::ChBData(this, QString::number(realAddr));
+                cmd.value = cbdata;
+            }));
+
+        gridLayout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+    }
+    return gridLayout;
 }
 
 void CheckDialog::setYellow(quint32 reg)
@@ -436,10 +482,10 @@ void CheckDialog::setHighlights()
         if (!label)
             continue;
         if ((value == Highlights::RED) || (value == Highlights::REDQ))
-            label->setStyleSheet(errorStyle);
+            label->setStyleSheet(c_errorStyle);
         else if ((value == Highlights::YELLOW) || (value == Highlights::YELLOWQ))
-            label->setStyleSheet(warnStyle);
+            label->setStyleSheet(c_warnStyle);
         else
-            label->setStyleSheet(defaultStyle);
+            label->setStyleSheet(c_defaultStyle);
     }
 }

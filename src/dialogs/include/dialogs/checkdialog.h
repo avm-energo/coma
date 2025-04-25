@@ -73,6 +73,13 @@ private:
     QGridLayout *setupFloatWidget(const Device::XmlDataTypes::MWidget &mwidget, const int wCount);
     QVBoxLayout *setupBitsetWidget(const Device::XmlDataTypes::MWidget &mwidget, UWidget *widget);
     QVBoxLayout *setupSinglePointWidget(const Device::XmlDataTypes::MWidget &mwidget, UWidget *widget);
+
+    /// \brief Prepares command widget with button
+    /// \param mwidget - MWidget info from corresponding XML tag
+    /// \param wCount -
+    /// \param type - true if widget is button only, false - with checkbox widget
+    QGridLayout *setupCommandWidget(const Device::XmlDataTypes::MWidget &mwidget, const int wCount, bool type);
+
     void setYellow(quint32 reg);
     void clearYellow(quint32 reg);
     void setRed(quint32 reg);
