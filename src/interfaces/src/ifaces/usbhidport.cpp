@@ -1,13 +1,16 @@
 #include "interfaces/ifaces/usbhidport.h"
 
-#include <QDebug>
 #include <hidapi/hidapi.h>
+
+#include <QDebug>
 
 constexpr int MaxSegmenthLength = 64; ///< Максимальная длина одного сегмента (0x40)
 constexpr int hidApiErrorCode = -1;   ///< Код ошибки от HID API
 
 UsbHidPort::UsbHidPort(const UsbHidSettings &settings, QObject *parent)
-    : BaseInterface("UsbHidPort", settings, parent), m_hidDevice(nullptr), m_settings(settings)
+    : BaseInterface("UsbHidPort", settings, parent)
+    , m_hidDevice(nullptr)
+    , m_settings(settings)
 {
 }
 
@@ -129,7 +132,7 @@ void UsbHidPort::hidErrorHandle()
     if (m_isLoggingEnabled)
     {
         auto errString = "HID API Error: " + QString::fromStdWString(hid_error(m_hidDevice));
-        m_log.error(errString);
+        m_log.writeLog(Logger::Critical, errString);
     }
 }
 
