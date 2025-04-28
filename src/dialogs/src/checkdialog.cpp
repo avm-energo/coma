@@ -217,6 +217,8 @@ void CheckDialog::addSignals(const QList<SGroup> &groups, UWidget *widget)
         case SignalType::BitString:
             widget->engine()->addBs({ signal.startAddr, signal.count });
             break;
+        case SignalType::Command: // commands are not supposed to be added to update list
+            break;
         default:
             qWarning() << "Unknown signal type: " << signal.sigType;
             break;
@@ -439,6 +441,7 @@ QGridLayout *CheckDialog::setupCommandWidget(const Device::XmlDataTypes::MWidget
                 if (!type)
                     cbdata = ChBFunc::ChBData(this, QString::number(realAddr));
                 cmd.value = cbdata;
+                writeCommand(cmd);
             }));
 
         gridLayout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
