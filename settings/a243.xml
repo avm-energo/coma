@@ -454,6 +454,12 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1283</id>
+                <defaultValue>0,0,0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1284</id>
                 <defaultValue>0,0,0</defaultValue>
                 <count>0</count>
@@ -472,6 +478,18 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1287</id>
+                <defaultValue>5</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1288</id>
+                <defaultValue>5</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1292</id>
                 <defaultValue>150</defaultValue>
                 <count>0</count>
@@ -479,7 +497,7 @@
             </record>
             <record>
                 <id>1293</id>
-                <defaultValue>15,15,15</defaultValue>
+                <defaultValue>150,150,150</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
@@ -519,12 +537,7 @@
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
-            <record>
-                <id>1283</id>
-                <defaultValue>0,0,0</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
+
         </config>
         <hidden desc="Секретные операции">
             <hidden-tab background="" desc="Базовая плата" flag="1" prefix="base">
