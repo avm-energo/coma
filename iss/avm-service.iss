@@ -31,6 +31,7 @@ Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 OutputBaseFilename={#EngName}-{#ApplicationVersion}
+OutputDir={#OUTPUT_DIR}
 VersionInfoVersion={#ApplicationVersion}
 LicenseFile="..\license.txt"
 InfoAfterFile="..\AVM-Service.NOTES"

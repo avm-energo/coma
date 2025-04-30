@@ -31,6 +31,7 @@ Compression=lzma
 ChangesAssociations=yes
 SolidCompression=yes
 WizardStyle=modern
+OutputDir={#OUTPUT_DIR}
 OutputBaseFilename={#EngName}-{#ApplicationVersion}
 VersionInfoVersion={#ApplicationVersion}
 LicenseFile="..\license.txt"
