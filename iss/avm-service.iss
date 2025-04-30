@@ -4,18 +4,14 @@
 #define GroupName "АВМ-Сервис"
 #define EngName "AVM-Service"
 #define Publisher "AVM-Energo"
-#define URL "http://www.avmenergo.ru"
+#define URL "https://www.avmenergo.ru"
 #define ExeName "AVM-Service.exe"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #define ARCH "win64"
 #define BUILD_TYPE "Release"
 #define Redist_DIR "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143"
 #define OUTPUT_DIR  "..\output"
-#define ApplicationVersion() \
-   GetVersionComponents('..\output\bin\AVM-Service.exe', \
-       Local[0], Local[1], Local[2], Local[3]), \
-   Str(Local[0]) + "." + Str(Local[1]) + "." + Str(Local[2])
-; #define ApplicationVersion GetFileVersion('..\output\bin\AVM-Service.exe')
+#define ApplicationVersion() GetVersionNumbersString('..\output\bin\AVM-Service.exe')
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -27,7 +23,7 @@ AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-DefaultDirName={commonpf64}\{#EngName}
+DefaultDirName={userappdata}\{#EngName}
 DefaultGroupName="{#EngName}"
 UsedUserAreasWarning=no
 SetupIconFile=..\coma.ico
@@ -35,7 +31,6 @@ Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 OutputBaseFilename={#EngName}-{#ApplicationVersion}
-OutputDir=..\output
 VersionInfoVersion={#ApplicationVersion}
 LicenseFile="..\license.txt"
 InfoAfterFile="..\AVM-Service.NOTES"
