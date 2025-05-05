@@ -60,8 +60,8 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 [Files]
 Source: "{#OUTPUT_DIR}\bin\*"; DestDir: "{app}"; Excludes: "*.xml"; Flags: ignoreversion recursesubdirs 
 Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
-Source: "{#OUTPUT_DIR}\settings\*.xml"; DestDir: "{localappdata}\{#EngName}"
-Source: "{#OUTPUT_DIR}\reports\*.lrxml"; DestDir: "{localappdata}\{#EngName}\reports"
+Source: "{#OUTPUT_DIR}\settings\*.xml"; DestDir: "{userappdata}\{#Publisher}\{#EngName}"
+Source: "{#OUTPUT_DIR}\reports\*.lrxml"; DestDir: "{userappdata}\{#Publisher}\{#EngName}\reports"
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
@@ -72,4 +72,4 @@ Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2022 Redistributable...
 
 [UninstallDelete]
-Type: filesandordirs; Name: "{localappdata}\{#EngName}"
+Type: filesandordirs; Name: "{userappdata}\{#Publisher}\{#EngName}"
