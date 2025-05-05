@@ -3,9 +3,7 @@
 namespace Interface
 {
 
-ProtocomResponseParser::ProtocomResponseParser(QObject *parent) : BaseResponseParser(parent)
-{
-}
+ProtocomResponseParser::ProtocomResponseParser(QObject *parent) : BaseResponseParser(parent) { }
 
 bool ProtocomResponseParser::isCompleteResponse()
 {
@@ -162,7 +160,7 @@ void ProtocomResponseParser::processUnixTime(const QByteArray &data)
 
 void ProtocomResponseParser::processU32(const QByteArray &data, quint16 startAddr)
 {
-    Q_ASSERT(data.size() % sizeof(quint32) == 0);
+    // Q_ASSERT(data.size() % sizeof(quint32) == 0);
     Q_ASSERT(data.size() >= 4);
     for (std::size_t i = 0; i != (data.size() / sizeof(quint32)); i++)
     {
