@@ -47,5 +47,5 @@ Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
 
 void Tune82Dialog::prepareReport()
 {
-    m_reporter->setTemplatePath(StdFunc::GetSystemHomeDir() + "reports/82report.lrxml");
+    m_reporter->setTemplatePath(StdFunc::configDir() + "reports/82report.lrxml");
 }

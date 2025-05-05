@@ -111,10 +111,10 @@ void TuneKIVR::setR(int r)
 double TuneKIVR::processR()
 {
     showTWTab(m_BdaWidgetIndex);
-    emit setProgressSize(StdFunc::TuneRequestCount());
+    emit setProgressSize(m_tuneRequestCount);
     int i = 0;
     double pt100 = 0.0;
-    while ((!StdFunc::IsCancelled()) && (i < StdFunc::TuneRequestCount()))
+    while ((!StdFunc::IsCancelled()) && (i < m_tuneRequestCount))
     {
         m_bda->readAndUpdate();
         pt100 += m_bda->data()->Pt100;

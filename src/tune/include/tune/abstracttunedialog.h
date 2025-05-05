@@ -64,6 +64,7 @@ public:
     // ReportModel *RepModel; // модель, в которую заносим данные для отчёта
     int m_tuneStep;
     bool m_finished;
+    int m_tuneRequestCount;
 
     void setupUI();
     QWidget *tuneUI();

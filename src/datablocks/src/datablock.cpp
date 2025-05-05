@@ -335,13 +335,13 @@ Error::Msg DataBlock::loadFromFileAndWriteToModule(const QString &filename)
 
 Error::Msg DataBlock::readFromFile()
 {
-    return loadFromFileAndWriteToModule(StdFunc::GetSystemHomeDir() + cpuIDFilenameStr());
+    return loadFromFileAndWriteToModule(StdFunc::dataDir() + cpuIDFilenameStr());
 }
 
 Error::Msg DataBlock::saveToFile()
 {
     QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
-    QString filestr = StdFunc::GetSystemHomeDir() + cpuIDFilenameStr();
+    QString filestr = StdFunc::dataDir() + cpuIDFilenameStr();
     return Files::SaveToFile(filestr, ba);
 }
 

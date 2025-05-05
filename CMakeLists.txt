@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(coma VERSION 3.3.1)
+project(coma VERSION 3.3.2)
 
 set(SOFTDEVELOPER "AVM-Energo")
 
@@ -18,10 +18,6 @@ set(HIDAPI_WITH_TESTS OFF)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/scripts")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-##### OPTIONS #####
-option(ENABLE_EMULATOR "Enable emulator interface" OFF)
-option(ENABLE_PVS "Enable PVS-Studio" OFF)
 
 # Getting CMake system name
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" SYSTEM_NAME)
@@ -43,30 +39,8 @@ message(STATUS "Qt major version: ${QT_VERSION_MAJOR}")
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
   Core Gui PrintSupport Widgets REQUIRED)
 
-# Using Qt6: finding Qt6 QmlIntegration library
-# Q: Why?
-# A: LimeReport use Qml and if we want use LimeReport,
-# we must find QmlIntegration for using its private headers.
-#if(${QT_VERSION_MAJOR} EQUAL 6)
-#  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS QmlIntegration REQUIRED)
-#endif()
-
 if(SYSTEM_NAME STREQUAL "windows")
     message(STATUS "MSVC version: ${MSVC_VERSION}, toolset version: ${MSVC_TOOLSET_VERSION}")
-# else()
-#     string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address,undefined -fstack-protector")
-#     string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fsanitize=address,undefined -fstack-protector")
-endif()
-
-# Enabling PVS Studio static analyzer
-if(ENABLE_PVS)
-  include(FetchContent)
-  FetchContent_Declare(
-    PVS_CMakeModule
-    GIT_REPOSITORY "https://github.com/viva64/pvs-studio-cmake-module.git"
-    GIT_TAG        "master")
-  FetchContent_MakeAvailable(PVS_CMakeModule)
-  include("${pvs_cmakemodule_SOURCE_DIR}/PVS-Studio.cmake")
 endif()
 
 # Including ctest
@@ -111,13 +85,3 @@ endif()
 # Step 3: Build executable targets
 add_subdirectory(src/AVM-Debug)
 add_subdirectory(src/AVM-Service)
-
-# Running PVS Studio static analyzer
-if(ENABLE_PVS)
-  pvs_studio_add_target(
-    TARGET ${PROJECT_NAME}.analyze ALL
-    OUTPUT FORMAT errorfile
-    COMPILE_COMMANDS
-    MODE GA:1,2
-    LOG ${PROJECT_NAME}.err)
-endif()

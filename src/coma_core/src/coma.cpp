@@ -332,7 +332,7 @@ void Coma::go()
     auto splash = new SplashScreen();
     splash->show();
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
-    QDir dir(StdFunc::GetHomeDir());
+    QDir dir(StdFunc::dataDir());
     if (!dir.exists())
         dir.mkpath(".");
     qInfo("=== Log started ===\n");
@@ -351,13 +351,13 @@ void Coma::loadSettings()
         + QCoreApplication::applicationName() + "/";
     QSettings settings;
     StyleLoader::GetInstance().attach();
-    StdFunc::SetHomeDir(settings.value("Homedir", homeDirectory).toString());
+    // StdFunc::SetHomeDir(settings.value("Homedir", homeDirectory).toString());
 }
 
 void Coma::saveSettings()
 {
     QSettings settings;
-    settings.setValue("Homedir", StdFunc::GetHomeDir());
+    settings.setValue("Homedir", StdFunc::dataDir());
 }
 
 void Coma::setProgressBarSize(int prbnum, int size)
@@ -572,7 +572,7 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setApplicationVersion(version);
     initResources();
     StdFunc::Init();
-    Logger::writeStart(StdFunc::GetSystemHomeDir() + "coma.log");
+    Logger::writeStart(StdFunc::dataDir() + "coma.log");
     qInstallMessageHandler(Logger::messageHandlerWithErrorQueue);
 }
 

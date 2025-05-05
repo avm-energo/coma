@@ -27,10 +27,6 @@
 
 #include "oscillograms/trendview/trendviewdialog.h"
 
-#include <QAction>
-#include <QPen>
-#include <QToolBar>
-#include <algorithm>
 #include <gen/comaexception.h>
 #include <gen/error.h>
 #include <gen/files.h>
@@ -41,11 +37,19 @@
 #include <widgets/signalchoosewidget.h>
 #include <widgets/wdfunc.h>
 
+#include <QAction>
+#include <QPen>
+#include <QToolBar>
+#include <algorithm>
+
 constexpr int VOLTAGE_AXIS_INDEX = 0;
 constexpr int CURRENT_AXIS_INDEX = 1;
 
 TrendViewDialog::TrendViewDialog(QWidget *parent)
-    : QDialog(parent, Qt::Window), rangeChangeInProgress(false), starting(true), rangeAxisInProgress(false)
+    : QDialog(parent, Qt::Window)
+    , rangeChangeInProgress(false)
+    , starting(true)
+    , rangeAxisInProgress(false)
 {
     analog.rescaleActivated = false;
     digital.rescaleActivated = false;
@@ -93,7 +97,8 @@ void TrendViewDialog::addSig(QString signame)
     if (!scw)
         return;
 
-    auto helper = [](const Signals &sig, int counter, QCPGraph *graph, QString name) {
+    auto helper = [](const Signals &sig, int counter, QCPGraph *graph, QString name)
+    {
         QPen pen;
         sig.legend->addItem(new QCPPlottableLegendItem(sig.legend, graph));
         if (!sig.description.colors.value(name).isEmpty())
@@ -466,10 +471,10 @@ void TrendViewDialog::exportToExcel()
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getSaveFileName(this, "Сохранить файл", StdFunc::GetHomeDir(), "Excel files (*.xlsx)",
-        nullptr, QFileDialog::DontUseNativeDialog);
-    QFileInfo info(filename);
-    StdFunc::SetHomeDir(info.absolutePath());
+    QString filename = dlg->getSaveFileName(
+        this, "Сохранить файл", StdFunc::dataDir(), "Excel files (*.xlsx)", nullptr, QFileDialog::DontUseNativeDialog);
+    // QFileInfo info(filename);
+    // StdFunc::SetHomeDir(info.absolutePath());
     dlg->close();
     m_trendModel->setFilename(filename);
     m_trendModel->toExcel();

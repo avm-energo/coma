@@ -42,6 +42,8 @@ AbstractTuneDialog::AbstractTuneDialog(Device::CurrentDevice *device, QWidget *p
     GeneralTuneDialog *dlg = qobject_cast<GeneralTuneDialog *>(parent);
     if (dlg)
         connect(this, &AbstractTuneDialog::Finished, dlg, &GeneralTuneDialog::setCalibrButtons);
+    QSettings settings;
+    m_tuneRequestCount = settings.value("TuneRequestCount", "60").toInt();
 }
 
 void AbstractTuneDialog::setupUI()
@@ -506,13 +508,13 @@ Error::Msg AbstractTuneDialog::saveWorkConfig()
     auto status = m_sync->readFileSync(S2::FilesEnum::Config, ba);
     if (status != Error::Msg::NoError)
         return Error::Msg::ReadError;
-    return Files::SaveToFile(StdFunc::GetSystemHomeDir() + m_device->getUID() + ".cf", ba);
+    return Files::SaveToFile(StdFunc::dataDir() + m_device->getUID() + ".cf", ba);
 }
 
 Error::Msg AbstractTuneDialog::loadWorkConfig()
 {
     QByteArray ba;
-    auto res = Files::LoadFromFile(StdFunc::GetSystemHomeDir() + m_device->getUID() + ".cf", ba);
+    auto res = Files::LoadFromFile(StdFunc::dataDir() + m_device->getUID() + ".cf", ba);
     if (res != Error::Msg::NoError)
         return res;
     else

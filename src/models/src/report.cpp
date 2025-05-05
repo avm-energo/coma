@@ -1,13 +1,12 @@
 #include "models/report.h"
 
-#include <limereport/lrreportengine.h>
-#include <QStandardItem>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <limereport/lrreportengine.h>
 
-ReportModel::ReportModel(QObject *parent) : QStandardItemModel(parent)
-{
-}
+#include <QStandardItem>
+
+ReportModel::ReportModel(QObject *parent) : QStandardItemModel(parent) { }
 
 void ReportModel::UpdateItem(int row, int column, const QString &value)
 {
@@ -58,7 +57,7 @@ void ReportModel::SetModel(int rowcount, int columncount)
 Report::Report(const QString &templatepath, QWidget *parent)
 {
     Rep = new LimeReport::ReportEngine(parent);
-    QString path = StdFunc::GetSystemHomeDir() + templatepath + ".lrxml";
+    QString path = StdFunc::configDir() + templatepath + ".lrxml";
     Rep->loadFromFile(path);
 }
 
