@@ -7,8 +7,8 @@
 Bd182::Bd182(Device::MezzanineBoard typem, QObject *parent) : DataBlock(parent)
 {
     m_typeM = typem;
-    m_blockData = std::unique_ptr<BlockData>(new BlockData);
-    setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdBlock, m_blockData.get(), sizeof(BlockData), false });
+    m_blockData = new BlockData;
+    setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdBlock, m_blockData, sizeof(BlockData), false });
 }
 
 void Bd182::setupValuesDesc()
@@ -109,5 +109,5 @@ Error::Msg Bd182::checkAnalogValues(double u, double i, double p, double q, doub
 
 Bd182::BlockData *Bd182::data()
 {
-    return m_blockData.get();
+    return m_blockData;
 }

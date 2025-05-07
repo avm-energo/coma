@@ -12,9 +12,8 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-Tune21One::Tune21One(Device::BoardTypes boardType, u8 chNum, Device::CurrentDevice *device, QWidget *parent)
+Tune21One::Tune21One(Device::BoardTypes boardType, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(device, parent)
-    , m_channelNumber(chNum)
 {
     u8 blockNum = (boardType == Device::BoardTypes::BASEBOARD) ? 1 : 2;
     m_bac = new Bac21(blockNum, this);
@@ -31,7 +30,11 @@ Tune21One::Tune21One(Device::BoardTypes boardType, u8 chNum, Device::CurrentDevi
 void Tune21One::setTuneFunctions()
 {
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
-    addTuneFunc("Регулировка...", &Tune21One::tune);
+    addTuneFunc("Регулировка 0 В...", &Tune21One::tune0);
+    addTuneFunc("Регулировка 5 В...", &Tune21One::tune5);
+    addTuneFunc("Регулировка 4 мА...", &Tune21One::tune4);
+    addTuneFunc("Регулировка 20 мА...", &Tune21One::tune20);
+    addTuneFunc("Расчёт коэффициентов...", &Tune21One::calcNewTuneCoefs);
     addTuneFunc("Запись настроечных коэффициентов и восстановление конфигурации...", &Tune21One::sendBac);
     addTuneFunc("Проверка регулировки...", &Tune21One::checkTuneCoefs);
 }
@@ -39,79 +42,107 @@ void Tune21One::setTuneFunctions()
 Error::Msg Tune21One::checkTuneCoefs()
 {
 #ifndef NO_LIMITS
-    if (!WDFunc::floatIsWithinLimits(
-            "коэффициента тока по наклону", m_bac->data()->bac1[m_channelNumber].fkiin, 1.0, 0.1))
-        return Error::Msg::Cancelled;
-    if (!WDFunc::floatIsWithinLimits(
-            "коэффициента напряжения по наклону", m_bac->data()->bac1[m_channelNumber].fkuin, 1.0, 0.1))
-        return Error::Msg::Cancelled;
-    if (!WDFunc::floatIsWithinLimits(
-            "коэффициента тока по смещению", m_bac->data()->bac1[m_channelNumber].fbin_I, 0.0, 1000.0))
-        return Error::Msg::Cancelled;
-    if (!WDFunc::floatIsWithinLimits(
-            "коэффициента напряжения по смещению", m_bac->data()->bac2[m_channelNumber].fbin_U, 0.0, 1000.0))
-        return Error::Msg::Cancelled;
+    for (int i = 0; i < 8; ++i)
+    {
+        if (!WDFunc::floatIsWithinLimits("коэффициента тока по наклону", m_bac->data()->bac1[i].fkiin, 1.0, 0.5))
+            return Error::Msg::Cancelled;
+        if (!WDFunc::floatIsWithinLimits("коэффициента напряжения по наклону", m_bac->data()->bac1[i].fkuin, 1.0, 0.5))
+            return Error::Msg::Cancelled;
+        if (!WDFunc::floatIsWithinLimits("коэффициента тока по смещению", m_bac->data()->bac1[i].fbin_I, 0.0, 1000.0))
+            return Error::Msg::Cancelled;
+        if (!WDFunc::floatIsWithinLimits(
+                "коэффициента напряжения по смещению", m_bac->data()->bac2[i].fbin_U, 0.0, 1000.0))
+            return Error::Msg::Cancelled;
+    }
 #endif
     return Error::Msg::NoError;
 }
 
-Error::Msg Tune21One::tune()
+Error::Msg Tune21One::tune0()
 {
-    float i0, i20, u0, u5;
-    if (m_channelNumber > 7)
+    for (int i = 0; i < 8; ++i)
     {
-        qDebug() << "Некорректный номер шага: " << m_channelNumber;
-        return Error::Msg::StepError;
-    }
-    if (EMessageBox::next(this,
-            "Включите режим измерения напряжений и\n"
-            "на калибраторе задайте напряжение 0 В на\nвходе "
-                + QString::number(m_channelNumber) + " модуля и нажмите Далее"))
-    {
-        m_bda->readAndUpdate();
-        u0 = m_bda->data()->sin[m_channelNumber];
         if (EMessageBox::next(this,
-                "На калибраторе задайте напряжение 5 В на\nвходе " + QString::number(m_channelNumber)
+                "Включите режим измерения напряжений и\n"
+                "на калибраторе задайте напряжение 0 В на\nвходе "
+                    + QString::number(i + 1) + " модуля и нажмите Далее"))
+        {
+            m_bda->readAndUpdate();
+            m_u0[i] = m_bda->data()->sin[i];
+        }
+        else
+            return Error::Msg::Cancelled;
+    }
+    return Error::Msg::NoError;
+}
+
+Error::Msg Tune21One::tune4()
+{
+    for (int i = 0; i < 8; ++i)
+    {
+        if (EMessageBox::next(this,
+                "Включите режим измерения токов и\n"
+                "на калибраторе задайте ток 0 мА на\nвходе "
+                    + QString::number(i + 1) + " модуля и нажмите Далее"))
+        {
+            m_bda->readAndUpdate();
+            m_i0[i] = m_bda->data()->sin[i];
+        }
+        else
+            return Error::Msg::Cancelled;
+    }
+    return Error::Msg::NoError;
+}
+
+Error::Msg Tune21One::tune5()
+{
+    for (int i = 0; i < 8; ++i)
+    {
+        if (EMessageBox::next(this,
+                "На калибраторе задайте напряжение 5 В на\nвходе " + QString::number(i + 1)
                     + " модуля и нажмите Далее"))
         {
             m_bda->readAndUpdate();
-            u5 = m_bda->data()->sin[m_channelNumber];
-            if (EMessageBox::next(this,
-                    "Включите режим измерения токов и\n"
-                    "на калибраторе задайте ток 0 мА на\nвходе "
-                        + QString::number(m_channelNumber) + " модуля и нажмите Далее"))
-            {
-                m_bda->readAndUpdate();
-                i0 = m_bda->data()->sin[m_channelNumber];
-                if (EMessageBox::next(this,
-                        "На калибраторе задайте ток 20 мА на\nвходе " + QString::number(m_channelNumber)
-                            + " модуля и нажмите Далее"))
-                {
-                    m_bda->readAndUpdate();
-                    i20 = m_bda->data()->sin[m_channelNumber];
-                    if (!calcNewTuneCoefs(u0, u5, i0, i20))
-                        return Error::Msg::TuneCoefError;
-                    else
-                        return Error::Msg::NoError;
-                }
-            }
+            m_u5[i] = m_bda->data()->sin[i];
         }
+        else
+            return Error::Msg::Cancelled;
     }
-    return Error::Msg::Cancelled;
+    return Error::Msg::NoError;
 }
 
-bool Tune21One::calcNewTuneCoefs(float u0, float u5, float i0, float i20)
+Error::Msg Tune21One::tune20()
 {
-    m_bac->data()->bac1[m_channelNumber].fbin_I = 1.25f - i0;
-    m_bac->data()->bac2[m_channelNumber].fbin_U = 1.25f - u0;
-    if ((StdFunc::FloatIsWithinLimits(u0, u5, 0.1f) || (StdFunc::FloatIsWithinLimits(i0, i20, 0.1f))))
+    for (int i = 0; i < 8; ++i)
     {
-        qDebug() << "Ошибка в настроечных коэффициентах, деление на ноль";
-        return false;
+        if (EMessageBox::next(this,
+                "На калибраторе задайте ток 20 мА на\nвходе " + QString::number(i + 1) + " модуля и нажмите Далее"))
+        {
+            m_bda->readAndUpdate();
+            m_i20[i] = m_bda->data()->sin[i];
+        }
+        else
+            return Error::Msg::Cancelled;
     }
-    m_bac->data()->bac1[m_channelNumber].fkuin = 1 / (u0 - u5);
-    m_bac->data()->bac1[m_channelNumber].fkiin = 1 / (i0 - i20);
-    return true;
+    return Error::Msg::NoError;
+}
+
+Error::Msg Tune21One::calcNewTuneCoefs()
+{
+    for (int i = 0; i < 8; ++i)
+    {
+        m_bac->data()->bac1[i].fbin_I = 1.25f - m_i0[i];
+        m_bac->data()->bac2[i].fbin_U = 1.25f - m_u0[i];
+        if ((StdFunc::FloatIsWithinLimits(m_u0[i], m_u5[i], 0.1f)
+                || (StdFunc::FloatIsWithinLimits(m_i0[i], m_i20[i], 0.1f))))
+        {
+            qDebug() << "Ошибка в настроечных коэффициентах, деление на ноль";
+            return Error::Msg::TuneCoefError;
+        }
+        m_bac->data()->bac1[i].fkuin = 1 / (m_u0[i] - m_u5[i]);
+        m_bac->data()->bac1[i].fkiin = 1 / (m_i0[i] - m_i20[i]);
+    }
+    return Error::Msg::NoError;
 }
 
 Error::Msg Tune21One::sendBac()

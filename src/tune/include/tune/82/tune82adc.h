@@ -15,12 +15,10 @@ public:
 
 private:
     Bac82 *m_bac;
-    Bac82::BlockData m_bacNewBlock;
+    Bac82::BlockData *m_bacNewBlock;
     Bd182 *m_bd1;
     Bda82 *m_bda;
-    Bd0 *m_bd0;
-    int m_curTuneStep;
-    int m_BacWidgetIndex, m_BdaWidgetIndex, m_Bd0WidgetIndex;
+    Mip *m_mip;
     float IUefNat_filt_old[6]; // для сохранения значений по п. 7.3.2
 
     struct MidTuneStruct
@@ -32,10 +30,11 @@ private:
     };
 
     MidTuneStruct m_midTuneStruct;
-    MipDataStruct mipdata;
+    MipDataStruct m_mipdata;
 
     void setTuneFunctions() override;
 
+    Error::Msg precheckBac();
     Error::Msg setDefBac();
     Error::Msg getAnalogData();
     Error::Msg saveUeff();
@@ -46,5 +45,5 @@ private:
     Error::Msg showPreWarning();
     Error::Msg saveNewBac();
     Error::Msg checkTune();
-    void getBd1();
+    bool getOneMip();
 };

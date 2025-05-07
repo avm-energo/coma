@@ -1,20 +1,20 @@
 #include "tune/tunesequencefile.h"
 
-#include <QDebug>
+#include <gen/settings.h>
 #include <gen/stdfunc.h>
+
+#include <QDebug>
 
 std::map<QString, std::unique_ptr<float>> TuneSequenceFile::s_tuneDescrMap;
 std::unique_ptr<QSettings> TuneSequenceFile::s_tsSettings;
 QString TuneSequenceFile::s_cpuSerialNum;
 bool TuneSequenceFile::s_tsfInitialized = false;
 
-TuneSequenceFile::TuneSequenceFile()
-{
-}
+TuneSequenceFile::TuneSequenceFile() { }
 
 void TuneSequenceFile::init(const QString &UID)
 {
-    const QString tsFilename = StdFunc::GetSystemHomeDir() + TS_FILENAME;
+    const QString tsFilename = Settings::dataDir() + TS_FILENAME;
     s_tsSettings = std::unique_ptr<QSettings>(new QSettings(tsFilename, QSettings::IniFormat));
     s_cpuSerialNum = UID;
     s_tsfInitialized = true;
@@ -77,13 +77,13 @@ void TuneSequenceFile::addItemToTuneDescrVector(const QString &descr, float &val
 void TuneSequenceFile::loadItemsFromFile()
 {
     for (std::map<QString, std::unique_ptr<float>>::iterator it = s_tuneDescrMap.begin(); it != s_tuneDescrMap.end();
-         ++it)
+        ++it)
         *it->second = StdFunc::ToFloat(TuneSequenceFile::value(it->first, 0.0).toString());
 }
 
 void TuneSequenceFile::saveItemsToFile()
 {
     for (std::map<QString, std::unique_ptr<float>>::iterator it = s_tuneDescrMap.begin(); it != s_tuneDescrMap.end();
-         ++it)
+        ++it)
         TuneSequenceFile::setValue(it->first, *it->second);
 }

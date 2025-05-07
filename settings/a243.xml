@@ -2,16 +2,20 @@
 <module mtypeb="A2" mtypem="43">
     <name>AVM-KOT</name>
     <version>0.0-0005</version>
+    <features>
+        <isBoxModule>1</isBoxModule>
+        <isRTCExist>1</isRTCExist>
+    </features>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные">
                 <item>
                     <addr>1100</addr>
-                    <string>Обобщённый сигнал «неисправность датчика»</string>
+                    <string>Неисправность подключенных датчиков</string>
                 </item>
                 <item>
                     <addr>1102</addr>
-                    <string>Обобщённый сигнал аварийная сигнализация</string>
+                    <string>Аварийная сигнализация по температуре масла или обмотки</string>
                 </item>
                 <item>
                     <addr>1103</addr>
@@ -22,77 +26,87 @@
                 </item>
                 <item>
                     <addr>1104</addr>
-                    <string>Неисправность датчика тока 1-ая обмотка</string>
+                    <string>Неисправность датчика тока обмотки №1</string>
                     <highlights>
                         <item>1001</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>1105</addr>
-                    <string>Неисправность датчика тока 2-ая обмотка</string>
+                    <string>Неисправность датчика тока обмотки №2</string>
                     <highlights>
                         <item>1002</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>1106</addr>
-                    <string>Неисправность датчика окр. среды</string>
+                    <string>Неисправность датчика температуры окружающей среды</string>
                     <highlights>
                         <item>1007</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>1111</addr>
-                    <string>Аварийная сигнализация температуры ВСМ</string>
+                    <string>Температура ВСМ превысила аварийную уставку</string>
                     <highlights>
                         <item>1000</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>1112</addr>
-                    <string>Аварийная сигнализация температуры 1-ая обмотка</string>
+                    <string>Температура наиболее нагретой точки (ННТ) обмотки №1 превысила аварийную уставку</string>
                     <highlights>
-                        <item>1001</item>
+                        <item>1008</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>1113</addr>
-                    <string>Аварийная сигнализация температуры 2-ая обмотка</string>
+                    <string>Температура наиболее нагретой точки (ННТ) обмотки №2 превысила аварийную уставку</string>
                     <highlights>
-                        <item>1002</item>
+                        <item>1009</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>1114</addr>
-                    <string>Аварийная сигнализация температуры 3-ая обмотка</string>
+                    <string>Температура наиболее нагретой точки (ННТ) обмотки №3 превысила аварийную уставку</string>
+                    <highlights>
+                        <item>1010</item>
+                    </highlights>
                 </item>
             </critical>
             <info desc="Информационные"/>
             <warning desc="Предупреждения">
                 <item>
+                    <addr>1101</addr>
+                    <string>Предупредительная сигнализация по температуре масла или обмотки</string>
+                </item>
+                <item>
                     <addr>1107</addr>
-                    <string>Предупредительная сигнализация температуры ВСМ</string>
+                    <string>Температура ВСМ превысила предупредительную уставку</string>
                     <highlights>
                         <item>1000</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>1108</addr>
-                    <string>Предупредительная сигнализация температуры 1-ая обмотка</string>
+                    <string>Температура наиболее нагретой точки (ННТ) обмотки №1 превысила предупредительную уставку</string>
                     <highlights>
-                        <item>1001</item>
+                        <item>1008</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>1109</addr>
-                    <string>Предупредительная сигнализация температуры 2-ая обмотка</string>
+                    <string>Температура наиболее нагретой точки (ННТ) обмотки №2 превысила предупредительную уставку</string>
                     <highlights>
-                        <item>1002</item>
+                        <item>1009</item>
                     </highlights>
                 </item>
                 <item>
                     <addr>1110</addr>
-                    <string>Предупредительная сигнализация температуры 3-ая обмотка</string>
+                    <string>Температура наиболее нагретой точки (ННТ) обмотки №3 превысила предупредительную уставку</string>
+                    <highlights>
+                        <item>1010</item>
+                    </highlights>
                 </item>
             </warning>
         </alarms>
@@ -440,6 +454,12 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1283</id>
+                <defaultValue>0,0,0</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1284</id>
                 <defaultValue>0,0,0</defaultValue>
                 <count>0</count>
@@ -458,6 +478,18 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1287</id>
+                <defaultValue>5</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1288</id>
+                <defaultValue>5</defaultValue>
+                <count>0</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1292</id>
                 <defaultValue>150</defaultValue>
                 <count>0</count>
@@ -465,7 +497,7 @@
             </record>
             <record>
                 <id>1293</id>
-                <defaultValue>15,15,15</defaultValue>
+                <defaultValue>150,150,150</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
@@ -505,6 +537,7 @@
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
+
         </config>
         <hidden desc="Секретные операции">
             <hidden-tab background="" desc="Базовая плата" flag="1" prefix="base">
@@ -664,42 +697,60 @@
                 </item>
                 <item>
                     <index>7</index>
-                    <header>Температура окружающей среды</header>
+                    <header>Токовая нагрузка в 1-й обмотке</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
                     <index>8</index>
-                    <header>Температура ННТ в 1-ой обмотке</header>
+                    <header>Токовая нагрузка в 2-й обмотке</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
                     <index>9</index>
-                    <header>Температура ННТ в 2-ой обмотке</header>
+                    <header>Токовая нагрузка в 3-й обмотке</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
                     <index>10</index>
-                    <header>Температура ННТ в 3-й обмотке</header>
+                    <header>Температура окружающей среды</header>
                     <type>float32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
                     <index>11</index>
+                    <header>Температура ННТ в 1-ой обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>12</index>
+                    <header>Температура ННТ в 2-ой обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>13</index>
+                    <header>Температура ННТ в 3-й обмотке</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
+                </item>
+                <item>
+                    <index>14</index>
                     <header>Дискретные сигналы</header>
                     <type>uint32</type>
                     <visibility>true</visibility>
                 </item>
                 <item>
-                    <index>12</index>
+                    <index>15</index>
                     <header>Резерв 1</header>
                     <type>float32</type>
                     <visibility>false</visibility>
                 </item>
                 <item>
-                    <index>13</index>
+                    <index>16</index>
                     <header>Резерв 2</header>
                     <type>float32</type>
                     <visibility>false</visibility>
@@ -824,7 +875,14 @@
                 </item>
             </work>
         </journals>
-        <modbus desc="Протокол Modbus"/>
+        <modbus desc="Протокол Modbus">
+            <group>
+                <signal-id>1</signal-id>
+                <reg-type>4</reg-type>
+                <type>uint32</type>
+                <desc>bsi</desc>
+            </group>
+        </modbus>
         <protocom desc="Протокол Protocom">
             <group>
                 <block>0</block>
@@ -854,11 +912,11 @@
         <section-tabs desc="Вкладки">
             <tab>
                 <id>1</id>
-                <name>Основные</name>
+                <name>Аналоговые</name>
             </tab>
             <tab>
                 <id>2</id>
-                <name>Дискретные</name>
+                <name>Дискретные входы и выходы</name>
             </tab>
             <tab>
                 <id>3</id>
@@ -867,6 +925,12 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные">
+                <sgroup header="Команды" tab="3">
+                    <mwidget desc="Сброс значений" view="command">
+                        <start-addr>814</start-addr>
+                        <toolTip>Сброс всех значений максимумов и минимумов</toolTip>
+                    </mwidget>
+                </sgroup>
                 <sgroup header="Общие" tab="3">
                     <mwidget desc="Температура микроконтроллера, °С" view="float">
                         <start-addr>101</start-addr>
@@ -915,60 +979,94 @@
                         <toolTip>Минимальное значение температуры ВСМ за последний год</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Режим" tab="2">
-                    <mwidget desc="Ручной режим" view="bitset">
+                <sgroup header="Состояние входных сигналов" tab="2">
+                    <mwidget desc="Включен режим ручного управления (автоматическое управление отключено)" view="SinglePoint">
                         <start-addr>1200</start-addr>
                         <toolTip>Ручной режим</toolTip>
                     </mwidget>
-                    <mwidget desc="D1_%1" view="bitset">
+                    <mwidget desc="Превышение токовой нагрузки для ступени Д1" view="SinglePoint">
+                        <start-addr>1300</start-addr>
+                        <toolTip>Превышение токовой нагрузки для ступени Д1</toolTip>
+                    </mwidget>
+                    <mwidget desc="Превышение токовой нагрузки для ступени Д2" view="SinglePoint">
+                        <start-addr>1301</start-addr>
+                        <toolTip>Превышение токовой нагрузки для ступени Д2</toolTip>
+                    </mwidget>
+                    <mwidget desc="Превышение токовой нагрузки для ступени ДЦ" view="SinglePoint">
+                        <start-addr>1302</start-addr>
+                        <toolTip>Превышение токовой нагрузки для ступени ДЦ</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Состояние выходных сигналов" tab="2">
+                    <mwidget desc="Включить ступень Д1. Выход %1" view="SinglePoint">
                         <start-addr>1201</start-addr>
                         <count>2</count>
                     </mwidget>
-                    <mwidget desc="D2_%1" view="bitset">
+                    <mwidget desc="Включить ступень Д2. Выход %1" view="SinglePoint">
                         <start-addr>1203</start-addr>
                         <count>2</count>
                     </mwidget>
-                    <mwidget desc="DC_%1" view="bitset">
+                    <mwidget desc="Включить ступень ДЦ. Выход %1" view="SinglePoint">
                         <start-addr>1205</start-addr>
                         <count>4</count>
                     </mwidget>
-                    <mwidget desc="Блокировка маслонасосов" view="bitset">
+                    <mwidget desc="Работа маслонасосов заблокирована алгоритмом" view="SinglePoint">
                         <start-addr>1209</start-addr>
-                        <toolTip>Блокировка маслонасосов</toolTip>
+                        <toolTip>Работа маслонасосов заблокирована алгоритмом</toolTip>
                     </mwidget>
-                    <mwidget desc="Блокировка вентиляторов" view="bitset">
+                    <mwidget desc="Работа вентиляторов заблокирована алгоритмом" view="SinglePoint">
                         <start-addr>1210</start-addr>
-                        <toolTip>Блокировка вентиляторов</toolTip>
-                    </mwidget>
-                    <mwidget desc="Din_%1" view="bitset">
-                        <start-addr>1300</start-addr>
-                        <count>3</count>
-                        <toolTip>Вход %1 замкнут</toolTip>
+                        <toolTip>Работа вентиляторов заблокирована алгоритмом</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Текущие" tab="1">
-                    <mwidget desc="Температура ВСМ, °С" view="float">
+                    <mwidget desc="Температура верхних слоев масла (ВСМ), °C" view="float">
                         <start-addr>1000</start-addr>
-                        <toolTip>Температура ВСМ, °С</toolTip>
+                        <toolTip>Температура верхних слоев масла (ВСМ), °C</toolTip>
                     </mwidget>
-                    <mwidget desc="Ток в %1-ой обмотке, А" view="float">
+                    <mwidget desc="Ток нагрузки обмотки №1, А" view="float">
                         <start-addr>1001</start-addr>
-                        <count>3</count>
-                        <toolTip>Ток в %1-ой обмотке, А</toolTip>
+                        <toolTip>Ток нагрузки обмотки №1, А</toolTip>
                     </mwidget>
-                    <mwidget desc="Коэффициент нагрузки в %1-ой обмотке, А" view="float">
+                    <mwidget desc="Ток нагрузки обмотки №2, А" view="float">
+                        <start-addr>1002</start-addr>
+                        <toolTip>Ток нагрузки обмотки №2, А</toolTip>
+                    </mwidget>
+                    <mwidget desc="Ток нагрузки обмотки №3, А" view="float">
+                        <start-addr>1003</start-addr>
+                        <toolTip>Ток нагрузки обмотки №3, А</toolTip>
+                    </mwidget>
+                    <mwidget desc="Коэффициент нагрузки обмотки №1, %" view="float">
                         <start-addr>1004</start-addr>
-                        <count>3</count>
-                        <toolTip>Коэффициент нагрузки в %1-ой обмотке, А</toolTip>
+                        <toolTip>Коэффициент нагрузки обмотки №1, %</toolTip>
+                    </mwidget>
+                    <mwidget desc="Коэффициент нагрузки обмотки №2, %" view="float">
+                        <start-addr>1005</start-addr>
+                        <toolTip>Коэффициент нагрузки обмотки №2, %</toolTip>
+                    </mwidget>
+                    <mwidget desc="Коэффициент нагрузки обмотки №3, %" view="float">
+                        <start-addr>1006</start-addr>
+                        <toolTip>Коэффициент нагрузки обмотки №3, %</toolTip>
                     </mwidget>
                     <mwidget desc="Температура окружающей среды, °С" view="float">
                         <start-addr>1007</start-addr>
                         <toolTip>Температура окружающей среды, °С</toolTip>
                     </mwidget>
-                    <mwidget desc="Температура ННТ в %1-ой обмотке, °С" view="float">
+                    <mwidget desc="Температура наиболее нагретой точки (ННТ) обмотки №1, °C" view="float">
                         <start-addr>1008</start-addr>
-                        <count>3</count>
-                        <toolTip>Температура ННТ в %1-ой обмотке, °С</toolTip>
+                        <toolTip>Температура наиболее нагретой точки (ННТ) обмотки №1, °C</toolTip>
+                    </mwidget>
+                    <mwidget desc="Температура наиболее нагретой точки (ННТ) обмотки №2, °C" view="float">
+                        <start-addr>1009</start-addr>
+                        <toolTip>Температура наиболее нагретой точки (ННТ) обмотки №2, °C</toolTip>
+                    </mwidget>
+                    <mwidget desc="Температура наиболее нагретой точки (ННТ) обмотки №3, °C" view="float">
+                        <start-addr>1010</start-addr>
+                        <toolTip>Температура наиболее нагретой точки (ННТ) обмотки №3, °C</toolTip>
+                    </mwidget>
+                    <mwidget desc="Неисправность подключенных датчиков" view="SinglePoint">
+                        <start-addr>1100</start-addr>
+                        <toolTip>Блокировка вентиляторов</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
@@ -997,6 +1095,12 @@
                 <count>1</count>
                 <id>4</id>
                 <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>814</start-addr>
+                <count>1</count>
+                <id>10</id>
+                <type>Command</type>
             </signal>
             <signal>
                 <start-addr>1000</start-addr>

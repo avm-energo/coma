@@ -73,7 +73,6 @@ private:
 
     void initInterfaceConnection();
     void loadSettings();
-    void saveSettings();
     void setProgressBarSize(int prbnum, int size);
     void setProgressBarCount(int prbnum, int count);
     void setupUI();

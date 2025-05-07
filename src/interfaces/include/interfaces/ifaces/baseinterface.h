@@ -1,14 +1,15 @@
 #pragma once
 
+#include <gen/error.h>
+#include <gen/logger.h>
+#include <gen/stdfunc.h>
+#include <interfaces/types/base_settings.h>
+#include <interfaces/types/common_types.h>
+
 #include <QMutex>
 #include <QObject>
 #include <QTimer>
 #include <atomic>
-#include <gen/error.h>
-#include <gen/logclass.h>
-#include <gen/stdfunc.h>
-#include <interfaces/types/base_settings.h>
-#include <interfaces/types/common_types.h>
 
 enum class InterfaceError : quint16
 {
@@ -38,7 +39,7 @@ protected:
     std::atomic<Interface::State> m_state;
     quint16 m_reconnectInterval;
     bool m_isLoggingEnabled;
-    LogClass m_log;
+    Logger m_log;
     QMutex m_dataGuard;
 
     void setState(const Interface::State state) noexcept;

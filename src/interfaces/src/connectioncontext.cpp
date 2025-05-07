@@ -6,9 +6,7 @@
 namespace Interface
 {
 
-ConnectionContext::ConnectionContext() noexcept : m_iface(nullptr), m_executor(nullptr), m_strategy(Strategy::None)
-{
-}
+ConnectionContext::ConnectionContext() noexcept : m_iface(nullptr), m_executor(nullptr), m_strategy(Strategy::None) { }
 
 bool ConnectionContext::isValid() const noexcept
 {
@@ -25,11 +23,11 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
     if (isValid() && m_strategy != Strategy::None)
     {
         // Обмен данными
-        QObject::connect(m_iface, &BaseInterface::dataReceived, //
+        QObject::connect(m_iface, &BaseInterface::dataReceived,                  //
             m_executor, &DefaultQueryExecutor::receiveDataFromInterface, Qt::QueuedConnection);
         QObject::connect(m_executor, &DefaultQueryExecutor::sendDataToInterface, //
             m_iface, &BaseInterface::writeData, connPolicy);
-        QObject::connect(m_iface, &BaseInterface::executorWakeUp, //
+        QObject::connect(m_iface, &BaseInterface::executorWakeUp,                //
             m_executor, &DefaultQueryExecutor::wakeUp, Qt::DirectConnection);
         // Отмена команды
         QObject::connect(m_iface, &BaseInterface::clearQueries, //
@@ -53,14 +51,16 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
             QObject::connect(ifaceThread, &QThread::finished, &QObject::deleteLater);
             QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
             // Если интерфейс успешно запустился
-            QObject::connect(iface, &BaseInterface::started, m_iface, [=] {
-                qInfo() << m_iface->metaObject()->className() << " connected";
-                executor->moveToThread(parserThread);
-                iface->moveToThread(ifaceThread);
-                parserThread->start();
-                ifaceThread->start();
-                executor->run();
-            });
+            QObject::connect(iface, &BaseInterface::started, m_iface,
+                [=]
+                {
+                    qInfo() << m_iface->metaObject()->className() << " connected";
+                    executor->moveToThread(parserThread);
+                    iface->moveToThread(ifaceThread);
+                    parserThread->start();
+                    ifaceThread->start();
+                    executor->run();
+                });
             m_syncThreads.first = ifaceThread;
             m_syncThreads.second = parserThread;
         }
@@ -80,10 +80,12 @@ bool ConnectionContext::run(AsyncConnection *connection)
         return false;
 
     // Обмен данными для соединения
-    QObject::connect(connection, &AsyncConnection::executorWakeUp, //
+    QObject::connect(connection, &AsyncConnection::executorWakeUp,      //
         m_executor, &DefaultQueryExecutor::wakeUp, Qt::DirectConnection);
-    QObject::connect(m_executor, &DefaultQueryExecutor::responseSend, //
+    QObject::connect(m_executor, &DefaultQueryExecutor::responseSend,   //
         connection, &AsyncConnection::responseHandle, Qt::DirectConnection);
+    QObject::connect(m_executor, &DefaultQueryExecutor::responseError,  //
+        connection, &AsyncConnection::responseError, Qt::DirectConnection);
     QObject::connect(m_iface, &BaseInterface::stateChanged, connection, //
         &AsyncConnection::setState, Qt::QueuedConnection);
     // Обновление описания протокола

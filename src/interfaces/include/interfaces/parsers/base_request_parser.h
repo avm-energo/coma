@@ -1,8 +1,9 @@
 #pragma once
 
-#include <deque>
-#include <gen/logclass.h>
+#include <gen/logger.h>
 #include <interfaces/types/protocol_settings.h>
+
+#include <deque>
 
 namespace Interface
 {
@@ -73,7 +74,7 @@ signals:
     void progressBytes(const quint64 progress);
 
     /// \brief Сигнал, который используется для отправки сообщения в лог исполнителя запросов.
-    void needToLog(const QString &message, const LogLevel level);
+    void needToLog(const QString &message, const Logger::MessageTypes level);
 };
 
 template <typename GroupType> //

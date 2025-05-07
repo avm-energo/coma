@@ -1,7 +1,7 @@
 #include <QTimeZone>
 #include <settings/user_settings.h>
 
-namespace Settings
+namespace CSettings
 {
 
 // Системный часовой пояс

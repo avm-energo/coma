@@ -137,6 +137,9 @@ void AsyncConnection::writeCommand(Commands cmd, const QVariantList &list)
 
 void AsyncConnection::responseHandle(const Interface::DeviceResponse &resp)
 {
+    if (std::holds_alternative<DataTypes::GeneralResponseStruct>(resp))
+        emit responseSend(std::get<DataTypes::GeneralResponseStruct>(
+            resp)); // to distinguish end of operation or error from long requests
     std::visit([this](auto &&var) { emit response(var); }, resp);
     emit queueSizeChanged(m_queue.size());
 }

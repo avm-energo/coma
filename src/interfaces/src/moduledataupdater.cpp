@@ -1,7 +1,9 @@
 #include "interfaces/moduledataupdater.h"
 
 ModuleDataUpdater::ModuleDataUpdater(AsyncConnection *connection, QObject *parent)
-    : QObject(parent), m_conn(connection), m_updatesEnabled(true)
+    : QObject(parent)
+    , m_conn(connection)
+    , m_updatesEnabled(true)
 {
     Q_ASSERT(connection != nullptr);
     enableFloatDataUpdates();
@@ -93,6 +95,11 @@ void ModuleDataUpdater::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     if (m_updatesEnabled)
         emit itsTimeToUpdateFloatSignal(fl);
+}
+
+void ModuleDataUpdater::sendCommand(const DataTypes::SingleCommand &cmd)
+{
+    m_conn->writeCommand(Commands::C_WriteSingleCommand, QVariant::fromValue(cmd));
 }
 
 void ModuleDataUpdater::updateSinglePointData(const DataTypes::SinglePointWithTimeStruct &sp)

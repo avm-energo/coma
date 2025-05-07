@@ -17,4 +17,5 @@ public:
         QWidget *parent, const QString &mask, const QString &ext, const QString &filename);
     [[nodiscard]] static QString ChooseFileForSave(UDialog *parent, const QString &mask, const QString &ext);
     [[nodiscard]] static QString ChooseDirectoryForOpen(QWidget *parent);
+    static void saveWorkDir(const QString &filename);
 };

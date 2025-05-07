@@ -2,6 +2,7 @@
 
 #include <device/current_device.h>
 #include <gen/files.h>
+#include <gen/settings.h>
 #include <gen/timefunc.h>
 #include <models/etablemodel.h>
 #include <oscillograms/swjmanager.h>
@@ -236,7 +237,7 @@ bool SwitchJournalDialog::loadIfExist(quint32 size)
 QString SwitchJournalDialog::filename(quint64 time) const
 {
     // const auto &board = Board::GetInstance();
-    QString filename = StdFunc::GetSystemHomeDir();
+    QString filename = Settings::dataDir();
     filename.push_back(m_device->getUID());
     // filename.push_back(board.UID());
     filename.push_back("-");

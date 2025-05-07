@@ -81,6 +81,8 @@ Xml::SignalType Xml::ModuleParser::parseSignalType(const QDomNode &signalNode)
             return Xml::SignalType::BitString;
         else if (typeStr.contains("SinglePoint", Qt::CaseInsensitive))
             return Xml::SignalType::SinglePointWithTime;
+        else if (typeStr.contains("Command", Qt::CaseInsensitive))
+            return Xml::SignalType::Command;
     }
     return Xml::SignalType::Float;
 }
@@ -93,8 +95,12 @@ Xml::ViewType Xml::ModuleParser::parseViewType(const QString &viewString)
         return Xml::ViewType::LineEdit;
     else if (viewString.contains("Version", Qt::CaseInsensitive))
         return Xml::ViewType::Version;
-    else if (viewString.contains("bitstring", Qt::CaseInsensitive))
-        return Xml::ViewType::Bitstring;
+    else if (viewString.contains("SinglePoint", Qt::CaseInsensitive))
+        return Xml::ViewType::SinglePoint;
+    else if (viewString.contains("command", Qt::CaseInsensitive))
+        return Xml::ViewType::Command;
+    else if (viewString.contains("commandvalue", Qt::CaseInsensitive))
+        return Xml::ViewType::CommandWValue;
     else
         return Xml::ViewType::Float;
 }

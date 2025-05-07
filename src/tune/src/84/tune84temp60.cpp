@@ -156,7 +156,7 @@ Error::Msg Tune84Temp60::showSignalsDialog()
 
 Error::Msg Tune84Temp60::analogMeasurement()
 {
-    emit setProgressSize(StdFunc::TuneRequestCount());
+    emit setProgressSize(m_tuneRequestCount);
     //    startWait();
     int i;
     for (i = 0; i < 6; ++i)
@@ -167,7 +167,7 @@ Error::Msg Tune84Temp60::analogMeasurement()
     }
     m_midTuneStruct.tmk = 0.0;
     i = 0;
-    while ((!StdFunc::IsCancelled()) && (i < StdFunc::TuneRequestCount()))
+    while ((!StdFunc::IsCancelled()) && (i < m_tuneRequestCount))
     {
         m_bd0->readAndUpdate();
         m_bdain->readAndUpdate();
@@ -184,11 +184,11 @@ Error::Msg Tune84Temp60::analogMeasurement()
     }
     for (i = 0; i < 6; ++i)
     {
-        m_midTuneStruct.u[i] /= StdFunc::TuneRequestCount();
+        m_midTuneStruct.u[i] /= m_tuneRequestCount;
         if (i < 3)
-            m_midTuneStruct.y[i] /= StdFunc::TuneRequestCount();
+            m_midTuneStruct.y[i] /= m_tuneRequestCount;
     }
-    m_midTuneStruct.tmk /= StdFunc::TuneRequestCount();
+    m_midTuneStruct.tmk /= m_tuneRequestCount;
     if (StdFunc::IsCancelled())
         return Error::Msg::Cancelled;
     return Error::Msg::NoError;

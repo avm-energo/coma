@@ -4,10 +4,12 @@
 #include <QNetworkProxy>
 
 Ethernet::Ethernet(const IEC104Settings &settings, QObject *parent)
-    : BaseInterface("Ethernet", settings, parent), m_settings(settings), m_socket(new QTcpSocket(this))
+    : BaseInterface("Ethernet", settings, parent)
+    , m_settings(settings)
+    , m_socket(new QTcpSocket(this))
 {
     m_socket->setProxy(QNetworkProxy::NoProxy);
-    QObject::connect(m_socket, &QAbstractSocket::stateChanged, //
+    QObject::connect(m_socket, &QAbstractSocket::stateChanged,  //
         this, &Ethernet::handleSocketState, Qt::DirectConnection);
     QObject::connect(m_socket, &QAbstractSocket::errorOccurred, //
         this, &Ethernet::handleSocketError, Qt::DirectConnection);
@@ -35,9 +37,9 @@ void Ethernet::disconnect()
         m_socket->disconnectFromHost();
         /// TODO: сделать настраиваемым значение 5 секунд на отключение
         if (m_socket->state() == QAbstractSocket::UnconnectedState || m_socket->waitForDisconnected(5000))
-            m_log.info("Socket disconnected");
+            m_log.writeLog(Logger::Info, "Socket disconnected");
         else
-            m_log.warning("Disconnect from host timeout!");
+            m_log.writeLog(Logger::Warning, "Disconnect from host timeout!");
         m_socket->close();
     }
 }
@@ -49,7 +51,7 @@ QByteArray Ethernet::read(bool &status)
     if (!m_socket->isOpen() || !m_socket->isReadable())
     {
         status = false;
-        m_log.error("Ethernet reading data from the closed socket");
+        m_log.writeLog(Logger::Critical, "Ethernet reading data from the closed socket");
         return data;
     }
     if (m_socket->bytesAvailable())
@@ -68,7 +70,7 @@ bool Ethernet::write(const QByteArray &data)
 {
     if (!m_socket->isOpen() || !m_socket->isWritable())
     {
-        m_log.error("Ethernet write data to the closed socket");
+        m_log.writeLog(Logger::Critical, "Ethernet write data to the closed socket");
         return false;
     }
     m_dataGuard.lock();                 // lock ethernet iface
@@ -88,28 +90,28 @@ void Ethernet::handleSocketState(const QAbstractSocket::SocketState state)
     switch (state)
     {
     case QAbstractSocket::SocketState::UnconnectedState:
-        m_log.info("Socket unconnected");
+        m_log.writeLog(Logger::Info, "Socket unconnected");
         break;
     case QAbstractSocket::SocketState::HostLookupState:
-        m_log.info("Socket enters host lookup state");
+        m_log.writeLog(Logger::Info, "Socket enters host lookup state");
         break;
     case QAbstractSocket::SocketState::ConnectingState:
-        m_log.info("Socket enters connecting state");
+        m_log.writeLog(Logger::Info, "Socket enters connecting state");
         break;
     case QAbstractSocket::SocketState::ConnectedState:
-        m_log.info("Socket connected!");
+        m_log.writeLog(Logger::Info, "Socket connected!");
         break;
     case QAbstractSocket::SocketState::BoundState:
-        m_log.info("Socket is bound to address and port");
+        m_log.writeLog(Logger::Info, "Socket is bound to address and port");
         break;
     case QAbstractSocket::SocketState::ClosingState:
-        m_log.info("Socket is in closing state");
+        m_log.writeLog(Logger::Info, "Socket is in closing state");
         break;
     case QAbstractSocket::SocketState::ListeningState:
-        m_log.info("Socket is in listening state");
+        m_log.writeLog(Logger::Info, "Socket is in listening state");
         break;
     default:
-        m_log.warning("Unprocessed state");
+        m_log.writeLog(Logger::Warning, "Unprocessed state");
         break;
     }
 }
@@ -122,7 +124,7 @@ void Ethernet::handleSocketError(const QAbstractSocket::SocketError err)
         // ignore
         break;
     default:
-        m_log.error(m_socket->errorString());
+        m_log.writeLog(Logger::Critical, m_socket->errorString());
         emit error(InterfaceError::OpenError);
         break;
     }

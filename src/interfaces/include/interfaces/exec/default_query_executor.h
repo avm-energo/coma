@@ -1,10 +1,12 @@
 #pragma once
 
-#include <QTimer>
-#include <gen/logclass.h>
+#include <gen/error.h>
+#include <gen/logger.h>
 #include <interfaces/types/base_settings.h>
 #include <interfaces/types/protocol_settings.h>
 #include <interfaces/utils/request_queue.h>
+
+#include <QTimer>
 
 namespace Interface
 {
@@ -34,7 +36,7 @@ protected:
     std::atomic<ExecutorState> m_state;
     std::atomic<Commands> m_lastRequestedCommand;
     std::reference_wrapper<RequestQueue> m_queue;
-    LogClass m_log;
+    Logger m_log;
     QTimer m_timeoutTimer;
     std::mutex m_waitMutex;
     std::condition_variable m_waiter;
@@ -79,7 +81,7 @@ protected:
 
 private slots:
     /// \brief Приватный слот для записи информации в лог от парсера запросов и ответов.
-    void logFromParser(const QString &message, const LogLevel level);
+    void logFromParser(const QString &message, const Logger::MessageTypes level);
 
 public:
     /// \brief Удалённый конструктор по умолчанию.
@@ -129,6 +131,8 @@ signals:
     void responseSend(const Interface::DeviceResponse &resp);
     /// \brief Сигнал для отправки запроса устройству в бинарном представлении.
     void sendDataToInterface(const QByteArray &data);
+    /// \brief Сигнал об ошибке, чтобы не зависать в ожидании ответа
+    void responseError(Error::Msg);
 };
 
 } // namespace Interface

@@ -1,21 +1,20 @@
 #include "xml/xmleditor/datacontroller.h"
 
-#include <QDir>
-#include <QFile>
-#include <QTextStream>
-#include <gen/stdfunc.h>
+#include <gen/settings.h>
 #include <widgets/epopup.h>
 #include <xml/xmleditor/models/mastermodel.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 #include <xml/xmltags.h>
 
-DataController::DataController(QObject *parent) : QObject(parent), isModuleChanged(false), changedRow(-1)
-{
-}
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+
+DataController::DataController(QObject *parent) : QObject(parent), isModuleChanged(false), changedRow(-1) { }
 
 QString DataController::getFilePath(const QString &filename)
 {
-    auto dir = QDir(StdFunc::GetSystemHomeDir());
+    auto dir = QDir(Settings::configDir());
     return dir.filePath(filename);
 }
 
@@ -45,11 +44,11 @@ void DataController::replaceAttrs(
         {
             if (vals[i].isValid() && vals[i].canConvert<QString>())
             {
-                node.removeAttribute(attrs[i]);          // Удалить старый атрибут
-                auto attrVal = vals[i].value<QString>(); // Получить новое значение атрибута
+                node.removeAttribute(attrs[i]);               // Удалить старый атрибут
+                auto attrVal = vals[i].value<QString>();      // Получить новое значение атрибута
                 auto newAttr = doc.createAttribute(attrs[i]); // Создать новый атрибут
-                newAttr.setValue(attrVal);      // Установить значение новому атрибуту
-                node.setAttributeNode(newAttr); // Установить узлу новый
+                newAttr.setValue(attrVal);                    // Установить значение новому атрибуту
+                node.setAttributeNode(newAttr);               // Установить узлу новый
             }
             else
                 qWarning() << "Invalid QVariant data received!";

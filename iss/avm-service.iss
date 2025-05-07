@@ -4,18 +4,14 @@
 #define GroupName "АВМ-Сервис"
 #define EngName "AVM-Service"
 #define Publisher "AVM-Energo"
-#define URL "http://www.avmenergo.ru"
+#define URL "https://www.avmenergo.ru"
 #define ExeName "AVM-Service.exe"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #define ARCH "win64"
 #define BUILD_TYPE "Release"
 #define Redist_DIR "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143"
 #define OUTPUT_DIR  "..\output"
-#define ApplicationVersion() \
-   GetVersionComponents('..\output\bin\AVM-Service.exe', \
-       Local[0], Local[1], Local[2], Local[3]), \
-   Str(Local[0]) + "." + Str(Local[1]) + "." + Str(Local[2])
-; #define ApplicationVersion GetFileVersion('..\output\bin\AVM-Service.exe')
+#define ApplicationVersion() GetVersionNumbersString('..\output\bin\AVM-Service.exe')
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -27,7 +23,7 @@ AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-DefaultDirName={commonpf64}\{#EngName}
+DefaultDirName={userappdata}\{#EngName}
 DefaultGroupName="{#EngName}"
 UsedUserAreasWarning=no
 SetupIconFile=..\coma.ico
@@ -35,7 +31,7 @@ Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 OutputBaseFilename={#EngName}-{#ApplicationVersion}
-OutputDir=..\output
+OutputDir={#OUTPUT_DIR}
 VersionInfoVersion={#ApplicationVersion}
 LicenseFile="..\license.txt"
 InfoAfterFile="..\AVM-Service.NOTES"
@@ -46,15 +42,11 @@ Name: {userappdata}\{#EngName}
 [Languages]
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
-[Tasks]
-Name: "desktopicon";     Description: "{cm:CreateDesktopIcon}";     GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
-
 [Files]
 Source: "{#OUTPUT_DIR}\bin\*"; DestDir: "{app}"; Excludes: "*.xml"; Flags: ignoreversion recursesubdirs 
 Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
-Source: "{#OUTPUT_DIR}\settings\*.xml"; DestDir: "{localappdata}\{#EngName}"
-Source: "{#OUTPUT_DIR}\reports\*.lrxml"; DestDir: "{localappdata}\{#EngName}\reports"
+Source: "{#OUTPUT_DIR}\settings\*.xml"; DestDir: "{userappdata}\{#Publisher}\{#EngName}"
+Source: "{#OUTPUT_DIR}\reports\*.lrxml"; DestDir: "{userappdata}\{#Publisher}\{#EngName}\reports"
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
@@ -65,4 +57,4 @@ Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2022 Redistributable...
 
 [UninstallDelete]
-Type: filesandordirs; Name: "{localappdata}\{#EngName}"
+Type: filesandordirs; Name: "{userappdata}\{#Publisher}\{#EngName}"

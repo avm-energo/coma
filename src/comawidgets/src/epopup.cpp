@@ -91,9 +91,9 @@ bool EMessageBox::m_result = false;
 
 bool EMessageBox::password(QWidget *parent)
 {
-    auto &settings = Settings::UserSettings::GetInstance();
-    Settings::ScopedSettingsGroup _ { settings, "settings" };
-    return EMessageBox::password(parent, settings.get<Settings::PasswordHash>());
+    auto &settings = CSettings::UserSettings::GetInstance();
+    CSettings::ScopedSettingsGroup _ { settings, "settings" };
+    return EMessageBox::password(parent, settings.get<CSettings::PasswordHash>());
 }
 
 bool EMessageBox::password(QWidget *parent, const QString &hash)

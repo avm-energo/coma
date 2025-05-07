@@ -12,7 +12,6 @@
 #include <QIcon>
 #include <QPainter>
 #include <QPushButton>
-#include <QSettings>
 #include <QSvgRenderer>
 
 GeneralTuneDialog::GeneralTuneDialog(Device::CurrentDevice *device, QWidget *parent)
@@ -22,6 +21,7 @@ GeneralTuneDialog::GeneralTuneDialog(Device::CurrentDevice *device, QWidget *par
     m_tuneTabWidget = new TuneTabWidget;
     TuneSequenceFile::init(m_device->getUID());
     m_tuneStepCount = 0;
+    m_tuneStartStep = 1;
 }
 
 void GeneralTuneDialog::SetupUI(bool noReport)
@@ -30,12 +30,12 @@ void GeneralTuneDialog::SetupUI(bool noReport)
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addStretch(100);
     u8 count = 1;
-    u8 startStep = m_tuneStartStep;
+    // u8 startStep = m_tuneStartStep;
     for (auto &d : m_dialogList)
     {
         QString tns = "tn" + QString::number(count++);
         lyout->addWidget(HexPBFunc::NewHexagonPB(
-            this, "tn" + QString::number(startStep++), [&d]() { d.dialog->show(); }, ":/tunes/" + tns + ".svg",
+            this, "tn" + QString::number(m_tuneStartStep++), [&d]() { d.dialog->show(); }, ":/tunes/" + tns + ".svg",
             d.caption));
     }
     if (!noReport)
@@ -60,7 +60,7 @@ int GeneralTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
     return m_tuneTabWidget->addTabWidget(w, caption);
 }
 
-void GeneralTuneDialog::addTuneDialog(TuneDialogStruct &dlgStruct)
+void GeneralTuneDialog::addTuneDialog(const TuneDialogStruct &dlgStruct)
 {
     ++m_tuneStepCount;
     dlgStruct.dialog->setTuneStep(m_tuneStepCount);

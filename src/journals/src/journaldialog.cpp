@@ -1,13 +1,14 @@
 #include "journals/journaldialog.h"
 
-#include <QTabWidget>
-#include <QVBoxLayout>
 #include <device/current_device.h>
 #include <journals/journaltabwidget.h>
 #include <journals/measjournal.h>
 #include <journals/sysjournal.h>
 #include <journals/workjournal.h>
 #include <s2/s2datatypes.h>
+
+#include <QTabWidget>
+#include <QVBoxLayout>
 
 namespace journals
 {
@@ -51,6 +52,10 @@ void JournalDialog::setupUI()
     {
         auto journalTab = journal.second;
         tabWidget->addTab(journalTab, journalTab->getTabName());
+        connect(
+            m_device->async(), &AsyncConnection::responseError, journalTab, &JournalTabWidget::stopProgressIndicator);
+        connect(m_device->async(), &AsyncConnection::responseSend, journalTab,
+            &JournalTabWidget::stopProgressIndicatorResp);
     }
     layout->addWidget(tabWidget);
     setLayout(layout);

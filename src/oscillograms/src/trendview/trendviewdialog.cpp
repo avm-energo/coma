@@ -27,25 +27,30 @@
 
 #include "oscillograms/trendview/trendviewdialog.h"
 
+#include <gen/error.h>
+#include <gen/files.h>
+#include <gen/pch.h>
+#include <gen/settings.h>
+#include <gen/stdfunc.h>
+#include <oscillograms/osc_ids.h>
+#include <widgets/epopup.h>
+#include <widgets/filefunc.h>
+#include <widgets/signalchoosewidget.h>
+#include <widgets/wdfunc.h>
+
 #include <QAction>
 #include <QPen>
 #include <QToolBar>
 #include <algorithm>
-#include <gen/comaexception.h>
-#include <gen/error.h>
-#include <gen/files.h>
-#include <gen/pch.h>
-#include <gen/stdfunc.h>
-#include <oscillograms/osc_ids.h>
-#include <widgets/epopup.h>
-#include <widgets/signalchoosewidget.h>
-#include <widgets/wdfunc.h>
 
 constexpr int VOLTAGE_AXIS_INDEX = 0;
 constexpr int CURRENT_AXIS_INDEX = 1;
 
 TrendViewDialog::TrendViewDialog(QWidget *parent)
-    : QDialog(parent, Qt::Window), rangeChangeInProgress(false), starting(true), rangeAxisInProgress(false)
+    : QDialog(parent, Qt::Window)
+    , rangeChangeInProgress(false)
+    , starting(true)
+    , rangeAxisInProgress(false)
 {
     analog.rescaleActivated = false;
     digital.rescaleActivated = false;
@@ -93,7 +98,8 @@ void TrendViewDialog::addSig(QString signame)
     if (!scw)
         return;
 
-    auto helper = [](const Signals &sig, int counter, QCPGraph *graph, QString name) {
+    auto helper = [](const Signals &sig, int counter, QCPGraph *graph, QString name)
+    {
         QPen pen;
         sig.legend->addItem(new QCPPlottableLegendItem(sig.legend, graph));
         if (!sig.description.colors.value(name).isEmpty())
@@ -463,14 +469,12 @@ void TrendViewDialog::mouseWheel()
 
 void TrendViewDialog::exportToExcel()
 {
-    QFileDialog *dlg = new QFileDialog;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getSaveFileName(this, "Сохранить файл", StdFunc::GetHomeDir(), "Excel files (*.xlsx)",
-        nullptr, QFileDialog::DontUseNativeDialog);
-    QFileInfo info(filename);
-    StdFunc::SetHomeDir(info.absolutePath());
-    dlg->close();
+    auto filename = FileFunc::ChooseFileForSave(this, "Excel files (*.xlsx)", "xlsx", "trendview.xlsx");
+    if (!filename.isEmpty())
+    {
+        QFileInfo info(filename);
+        Settings::setWorkDir(info.absolutePath());
+    }
     m_trendModel->setFilename(filename);
     m_trendModel->toExcel();
     EMessageBox::information(this, "Файл создан успешно");

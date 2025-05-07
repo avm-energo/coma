@@ -34,15 +34,15 @@ endif()
 # Getting appdata directory path
 if(SYSTEM_NAME STREQUAL "windows")
     # On windows
-    set(APPDATA_STR "$ENV{LOCALAPPDATA}/${PROJECT_NAME}")
+    set(APPDATA_STR "$ENV{APPDATA}/AVM-Energo/${PROJECT_NAME}")
     string(REPLACE "\\" "/" APPDATA ${APPDATA_STR})
 else()
     # On linux
-    set(APPDATA $ENV{HOME}/.local/share/${PROJECT_NAME})
+    set(APPDATA $ENV{HOME}/.config/AVM-Energo/${PROJECT_NAME})
 endif()
 
 # Copy settings one time at first build
-set(DBG_CHECK_PATH "${CMAKE_CURRENT_BINARY_DIR}/check.txt")
+set(DBG_CHECK_PATH "${CMAKE_BINARY_DIR}/check.txt")
 if(NOT EXISTS ${DBG_CHECK_PATH})
   file(TOUCH ${DBG_CHECK_PATH})
   # Copying XML settings to appdata directory after building

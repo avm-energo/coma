@@ -1,12 +1,13 @@
 #include "interfaces/parsers/iec104parser.h"
 
+#include <gen/pch.h>
+#include <interfaces/types/iec104_types.h>
+#include <s2/s2util.h>
+
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QThread>
 #include <QTimer>
-#include <gen/pch.h>
-#include <interfaces/types/iec104_types.h>
-#include <s2/s2util.h>
 
 #define I104_START 0x68
 
@@ -102,7 +103,7 @@ IEC104Parser::IEC104Parser(RequestQueue &queue, QObject *parent) : QObject(paren
     m_APDUFormat = I104_WRONG;
     m_isFileSending = false;
     m_noAnswer = 0;
-    m_log.init("ethernetThread.log");
+    m_log.writeStart("iec104.log");
 }
 
 void IEC104Parser::setBaseAdr(quint16 adr)
@@ -207,7 +208,7 @@ void IEC104Parser::run()
         }
         QCoreApplication::processEvents();
     }
-    m_log.info("Finish thread");
+    m_log.writeLog(Logger::Info, "Finish thread");
     emit finished();
 }
 
@@ -228,7 +229,7 @@ void IEC104Parser::checkStartBytes(QByteArray ba)
             if (message.size() == size)
             {
                 m_parseData.append(message);
-                m_log.info("<-- " + message.toHex());
+                m_log.writeLog(Logger::Info, "<-- " + message.toHex());
             }
             else
                 m_tempBuffer = message;
@@ -236,8 +237,9 @@ void IEC104Parser::checkStartBytes(QByteArray ba)
         }
         else
         {
-            m_log.warning(QString("Wrong start byte received: %1").arg(int(startByte), 2, 16, QChar('0')));
-            m_log.warning(QString("Invalid data: %1").arg(QString(ba.toHex())));
+            m_log.writeLog(
+                Logger::Warning, QString("Wrong start byte received: %1").arg(int(startByte), 2, 16, QChar('0')));
+            m_log.writeLog(Logger::Warning, QString("Invalid data: %1").arg(QString(ba.toHex())));
             break;
         }
     }
@@ -273,7 +275,7 @@ Error::Msg IEC104Parser::isIncomeDataValid(QByteArray &ba)
             V_Rrcv >>= 1;
             if (V_Rrcv != m_V_R)
             {
-                m_log.error("V_Rrcv != V_R");
+                m_log.writeLog(Logger::Critical, "V_Rrcv != V_R");
                 return Error::Msg::GeneralError;
             }
             m_V_R++;
@@ -326,7 +328,8 @@ Error::Msg IEC104Parser::isIncomeDataValid(QByteArray &ba)
         }
         // return I104_RCVWRONG;
         return Error::Msg::GeneralError;
-    } catch (...)
+    }
+    catch (...)
     {
         ERMSG("Fatal exception");
         return Error::Msg::GeneralError;
@@ -491,7 +494,7 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
             {
                 if (basize >= 11)
                 {
-                    m_log.info("Section ready");
+                    m_log.writeLog(Logger::Info, "Section ready");
                     unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
                     getSection(filenum);
                 }
@@ -502,7 +505,7 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
             {
                 if (basize >= 14)
                 {
-                    m_log.info("File ready");
+                    m_log.writeLog(Logger::Info, "File ready");
                     unsigned char filenum = ba.at(9) | (ba.at(10) << 8);
                     m_readData.clear();
                     m_readSize = 0;
@@ -519,8 +522,9 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
             {
                 if (basize >= quint32(m_readSize + 14))
                 {
-                    m_log.info("Segment ready: RDSize=" + QString::number(ba.at(12), 16)
-                        + ", num=" + QString::number(ba.at(13)));
+                    m_log.writeLog(Logger::Info,
+                        "Segment ready: RDSize=" + QString::number(ba.at(12), 16)
+                            + ", num=" + QString::number(ba.at(13)));
                     m_readSize = static_cast<quint8>(ba.at(12));
                     m_readSize &= 0xFF;
                     if (m_readSize) //>= RDLength)
@@ -537,7 +541,7 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
             {
                 if (basize >= 13)
                 {
-                    m_log.info("Last section, ba[12] = " + QString::number(ba.at(12)));
+                    m_log.writeLog(Logger::Info, "Last section, ba[12] = " + QString::number(ba.at(12)));
                     switch (ba.at(12))
                     {
                     case 1:
@@ -546,10 +550,10 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
                         confirmFile(filenum);
                         m_sendTestTimer->start();
                         m_isFileSending = false;
-                        m_log.info("FileSending clear");
+                        m_log.writeLog(Logger::Info, "FileSending clear");
                         auto filetype = S2::FilesEnum(ba.at(9));
                         if (!handleFile(m_readData, filetype, m_fileIsConfigFile))
-                            m_log.error("Error while income file S2 parsing");
+                            m_log.writeLog(Logger::Critical, "Error while income file S2 parsing");
                         m_readPos = 0;
                         m_readSize = 0;
                         break;
@@ -569,14 +573,14 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
             {
                 if (basize >= 13)
                 {
-                    if (ba.at(12) == 0x02) //запрос файла
+                    if (ba.at(12) == 0x02) // запрос файла
                     {
-                        m_log.info("File query");
+                        m_log.writeLog(Logger::Info, "File query");
                         sectionReady();
                     }
                     if (ba.at(12) == 0x06)
                     {
-                        m_log.info("Segment query");
+                        m_log.writeLog(Logger::Info, "Segment query");
                         sendSegments();
                     }
                 }
@@ -587,12 +591,12 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
             {
                 if (basize >= 13)
                 {
-                    m_log.info("Last section of file " + QString::number(ba[12]) + " confirm");
+                    m_log.writeLog(Logger::Info, "Last section of file " + QString::number(ba[12]) + " confirm");
                     if (ba.at(12) == 0x03) // подтверждение секции
                         lastSection();
                     if (ba.at(12) == 0x01) // подтверждение файла
                     {
-                        m_log.info("FileSending clear");
+                        m_log.writeLog(Logger::Info, "FileSending clear");
                         m_isFileSending = false;
                         emit sendMessagefromParse();
                     }
@@ -621,7 +625,7 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
                     setGeneralResponse(DataTypes::GeneralResponseTypes::DataCount, m_signalCounter);
                     quint32 adr = ba.at(6) + (ba.at(7) + 1) * 256; //+ (ba[8]<<16);
 
-                    if ((adr == 920) && (DUI.cause.cause == 10)) // если адрес последнего параметра коррекции
+                    if ((adr == 920) && (DUI.cause.cause == 10))   // если адрес последнего параметра коррекции
                     {
                         if (ba.at(13) == 0)
                         {
@@ -639,16 +643,17 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
                 qDebug() << DUI.typeIdent;
             }
         }
-    } catch (...)
+    }
+    catch (...)
     {
-        m_log.error("Catch exception");
+        m_log.writeLog(Logger::Critical, "Catch exception");
     }
 }
 
 void IEC104Parser::startDT()
 {
     // qDebug() << QDateTime::currentMSecsSinceEpoch() << __PRETTY_FUNCTION__;
-    m_log.info("Start()");
+    m_log.writeLog(Logger::Info, "Start()");
     QByteArray StartDT;
     StartDT.append(I104_START);
     StartDT.append(0x04);
@@ -661,7 +666,7 @@ void IEC104Parser::startDT()
 
 void IEC104Parser::stopDT()
 {
-    m_log.info("Stop()");
+    m_log.writeLog(Logger::Info, "Stop()");
     QByteArray StopDT;
     StopDT.append(I104_START);
     StopDT.append(0x04);
@@ -676,7 +681,7 @@ void IEC104Parser::send(int inc, QByteArray apci, QByteArray asdu)
 {
     QByteArray ba = apci;
     ba.append(asdu);
-    m_log.info("--> " + ba.toHex());
+    m_log.writeLog(Logger::Info, "--> " + ba.toHex());
     emit writeData(ba);
 
     if (inc)
@@ -803,9 +808,9 @@ void IEC104Parser::selectFile(char numfile)
 {
     m_sectionNum = 1;
     m_isFileSending = true;
-    m_log.info("FileSending set");
+    m_log.writeLog(Logger::Info, "FileSending set");
     m_sendTestTimer->stop();
-    m_log.info("SelectFile(" + QString::number(numfile) + ")");
+    m_log.writeLog(Logger::Info, "SelectFile(" + QString::number(numfile) + ")");
     QByteArray cmd = ASDUFilePrefix(MessageDataType::F_SC_NA_1, numfile, 0x00);
     cmd.append('\x01');
     QByteArray GI = createGI(0x11);
@@ -848,7 +853,7 @@ void IEC104Parser::confirmFile(unsigned char numFile)
 void IEC104Parser::fileReady(quint16 numfile)
 {
     m_isFileSending = true;
-    m_log.info("FileSending set");
+    m_log.writeLog(Logger::Info, "FileSending set");
     m_sectionNum = 1;
     QByteArray cmd = ASDUFilePrefix(MessageDataType::F_FR_NA_1, numfile, 0x00);
     cmd.chop(1);
@@ -953,7 +958,7 @@ void IEC104Parser::reqGroup(int groupNum)
     QByteArray req = ASDU6Prefix(MessageDataType::C_IC_NA_1, 0);
     req.append(groupNum + 20); // group 0 (GI) -> 20, group 1 -> 21 etc
     QByteArray GI = createGI(0x0e);
-    send(1, GI, req); // ASDU = QByteArray()
+    send(1, GI, req);          // ASDU = QByteArray()
     m_ackVR = m_V_R;
 }
 

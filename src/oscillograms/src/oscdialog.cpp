@@ -3,6 +3,7 @@
 #include <device/current_device.h>
 #include <gen/datatypes.h>
 #include <gen/files.h>
+#include <gen/settings.h>
 #include <gen/timefunc.h>
 #include <models/etablemodel.h>
 #include <s2/s2util.h>
@@ -82,7 +83,7 @@ void OscDialog::eraseOsc()
 
 QString OscDialog::filename(quint64 time, quint32 oscNum) const
 {
-    QString filename = StdFunc::GetSystemHomeDir();
+    QString filename = Settings::workDir();
     filename.push_back(m_device->getUID());
     filename.push_back("-");
     filename.push_back(QString::number(m_device->getDeviceType(), 16));

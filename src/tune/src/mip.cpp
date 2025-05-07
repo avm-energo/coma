@@ -14,7 +14,6 @@
 
 #include <QEventLoop>
 #include <QGroupBox>
-#include <QSettings>
 #include <QThread>
 #include <QVBoxLayout>
 
@@ -132,7 +131,7 @@ void Mip::setupWidget()
 
 bool Mip::start()
 {
-    using namespace Settings;
+    using namespace CSettings;
     auto &settings = UserSettings::GetInstance();
     IEC104Settings conn_settings;
     conn_settings.ip = QString(settings.get<MipIp>());
@@ -234,14 +233,14 @@ Error::Msg Mip::check()
     case MType::MTM_81:
         u = 60.0;
         uthr = 0.05;
-        iNom = 0;
+        m_iNom = 0;
         ithr = MAXFLOAT;
         break;
     case MType::MTM_82:
         u = 60.0;
         uthr = u * 0.005;
-        iNom = 1;
-        ithr = iNom * 0.005;
+        m_iNom = 1;
+        ithr = m_iNom * 0.005;
         break;
     case MType::MTM_83:
         u = 0;
@@ -253,7 +252,7 @@ Error::Msg Mip::check()
     }
 
     constexpr auto arraySize = 9;
-    double valuesToCheck[arraySize] = { 50.0, 50.0, 50.0, u, u, u, iNom, iNom, iNom };
+    double valuesToCheck[arraySize] = { 50.0, 50.0, 50.0, u, u, u, m_iNom, m_iNom, m_iNom };
     double thresholds[arraySize] = { 0.05, 0.05, 0.05, uthr, uthr, uthr, ithr, ithr, ithr };
     auto mipDataPtr = reinterpret_cast<float *>(&m_mipData);
     for (int i = 0; i < arraySize; i++)
@@ -283,7 +282,7 @@ void Mip::setModuleType(MType type)
 
 void Mip::setNominalCurrent(float inom)
 {
-    iNom = inom;
+    m_iNom = inom;
 }
 
 QWidget *Mip::widget()
@@ -291,9 +290,10 @@ QWidget *Mip::widget()
     return m_widget;
 }
 
-MipDataStruct Mip::takeOneMeasurement(float i2nom)
+// MipDataStruct Mip::takeOneMeasurement(float i2nom, bool &ok)
+MipDataStruct Mip::takeOneMeasurement(bool &ok)
 {
-    setNominalCurrent(i2nom);
+    // setNominalCurrent(i2nom);
     if (start())
     {
         QTimer timeoutTimer;
@@ -304,6 +304,12 @@ MipDataStruct Mip::takeOneMeasurement(float i2nom)
         connect(&timeoutTimer, &QTimer::timeout, &el, &QEventLoop::quit);
         el.exec();
         stop();
+        ok = true;
+    }
+    else
+    {
+        EMessageBox::warning(m_parent, "Нет связи с МИП");
+        ok = false;
     }
     return m_mipData;
 }

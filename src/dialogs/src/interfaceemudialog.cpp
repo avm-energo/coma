@@ -1,6 +1,7 @@
 #include "dialogs/interfaceemudialog.h"
 
 #include <gen/error.h>
+#include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <widgets/lblfunc.h>
 #include <widgets/lefunc.h>
@@ -9,7 +10,6 @@
 
 #include <QCoreApplication>
 #include <QMessageBox>
-#include <QSettings>
 #include <QStandardItemModel>
 
 InterfaceEmuDialog::InterfaceEmuDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
@@ -50,9 +50,8 @@ bool InterfaceEmuDialog::updateModel()
     QStringList rslist;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
-        UniquePointer<QSettings> sets(new QSettings);
         QString rsname = "EMU-" + QString::number(i);
-        rslist << sets->value(rsname, "").toString();
+        rslist << Settings::value(rsname, "").toString();
     }
     QStringList sl { "Имя", "typeB", "typeM" };
     QStandardItemModel *mdl = static_cast<QStandardItemModel *>(m_tableView->model());
@@ -65,11 +64,10 @@ bool InterfaceEmuDialog::updateModel()
     {
         QString key = QCoreApplication::applicationName();
         key += "\\" + item;
-        UniquePointer<QSettings> sets(new QSettings(QCoreApplication::organizationName(), key));
         QList<QStandardItem *> items {
-            new QStandardItem(item),                                //
-            new QStandardItem(sets->value("typeb", "").toString()), //
-            new QStandardItem(sets->value("typem", "").toString()), //
+            new QStandardItem(item),                                           //
+            new QStandardItem(Settings::value(key + "/typeb", "").toString()), //
+            new QStandardItem(Settings::value(key + "/typem", "").toString()), //
         };
         mdl->appendRow(items);
     }

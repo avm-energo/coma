@@ -6,12 +6,36 @@
             <name>Пустая группа</name>
         </tab>
         <tab>
+            <id>1</id>
+            <name>Алгоритм управления</name>
+        </tab>
+        <tab>
+            <id>2</id>
+            <name>Расчет температуры ННТ</name>
+        </tab>
+        <tab>
+            <id>3</id>
+            <name>Дополнительные алгоритмы</name>
+        </tab>
+        <tab>
+            <id>4</id>
+            <name>Аналоговые входы</name>
+        </tab>
+        <tab>
             <id>5</id>
             <name>Гистерезис сигнализации</name>
         </tab>
         <tab>
+            <id>6</id>
+            <name>Дискретные входы</name>
+        </tab>
+        <tab>
             <id>7</id>
             <name>Газовая смесь</name>
+        </tab>
+        <tab>
+            <id>8</id>
+            <name>Сигнализация</name>
         </tab>
         <tab>
             <id>9</id>
@@ -32,6 +56,10 @@
         <tab>
             <id>100</id>
             <name>Аналоговые параметры</name>
+        </tab>
+        <tab>
+            <id>101</id>
+            <name>Диапазоны</name>
         </tab>
         <tab>
             <id>102</id>
@@ -76,10 +104,6 @@
         <tab>
             <id>300</id>
             <name>Остальные</name>
-        </tab>
-        <tab>
-            <id>101</id>
-            <name>Диапазоны</name>
         </tab>
     </config-tabs>
     <records desc="S2 записи">
@@ -355,7 +379,7 @@
             <type>BYTE[8]</type>
             <widget>
                 <type>QComboBoxGroup</type>
-                <group>100</group>
+                <group>4</group>
                 <string>Тип входа</string>
                 <count>8</count>
                 <string-array>
@@ -620,7 +644,7 @@
             <type>BYTE[8]</type>
             <widget>
                 <type>QComboBoxGroup</type>
-                <group>100</group>
+                <group>4</group>
                 <string>Тип входа</string>
                 <count>8</count>
                 <string-array>
@@ -885,7 +909,7 @@
             <type>BYTE[3]</type>
             <widget>
                 <type>QComboBoxGroup</type>
-                <group>100</group>
+                <group>4</group>
                 <string>Тип аналоговых входов</string>
                 <toolTip>Тип аналоговых входов</toolTip>
                 <count>3</count>
@@ -901,17 +925,17 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>101</group>
-                <string>Минимальные значения сигналов в инженерных единицах для аналоговых входов</string>
-                <toolTip>Минимальные значения сигналов в инженерных единицах для аналоговых входов</toolTip>
+                <group>4</group>
+                <string>Минимальные значения сигналов в инженерных единицах</string>
+                <toolTip>Минимальные значения сигналов в инженерных единицах</toolTip>
                 <count>3</count>
                 <min>-10000</min>
                 <max>10000</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
+                    <item>Ток обмотки ВН</item>
+                    <item>Ток обмотки №2</item>
+                    <item>Ток обмотки №3</item>
                 </string-array>
             </widget>
         </record>
@@ -921,17 +945,17 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>101</group>
-                <string>Максимальные значения сигналов в инженерных единицах аналоговых входов</string>
-                <toolTip>Максимальные значения сигналов в инженерных единицах аналоговых входов</toolTip>
+                <group>4</group>
+                <string>Максимальные значения сигналов в инженерных единицах</string>
+                <toolTip>Максимальные значения сигналов в инженерных единицах</toolTip>
                 <count>3</count>
                 <min>-10000</min>
                 <max>10000</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
+                    <item>Ток обмотки ВН</item>
+                    <item>Ток обмотки №2</item>
+                    <item>Ток обмотки №3</item>
                 </string-array>
             </widget>
         </record>
@@ -941,10 +965,9 @@
             <type>WORD</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>250</group>
-                <string>Время фильтрации для трех входов, сек</string>
-                <toolTip>Время фильтрации для трех входов, сек</toolTip>
-                <count>3</count>
+                <group>4</group>
+                <string>Время фильтрации для трех аналоговых входов, сек</string>
+                <toolTip>Время фильтрации для трех аналоговых входов, сек</toolTip>
                 <min>1</min>
                 <max>20</max>
                 <decimals>0</decimals>
@@ -1308,14 +1331,14 @@
             <type>BYTE[3]</type>
             <widget>
                 <type>CheckBoxGroup</type>
-                <group>51</group>
-                <string>Использовать дискретные входы на мезонинной плате</string>
-                <toolTip>«Превышение 0,75 номинального тока трансформатора (Д1)»; «Превышение 0,85 номинального тока трансформатора (Д2)»; «Превышение 1,05 номинального тока трансформатора (ДЦ)»</toolTip>
+                <group>6</group>
+                <string>Разрешение использования дискретных входов</string>
+                <toolTip>Разрешение использования дискретных входов (0 - не разрешено, 1 - разрешено)</toolTip>
                 <count>3</count>
                 <string-array>
-                    <item>Превышение 0.75 номинального тока трансформатора (Д1)</item>
-                    <item>Превышение 0.85 номинального тока трансформатора (Д2)</item>
-                    <item>Превышение 1.05 номинального тока трансформатора (ДЦ)</item>
+                    <item>Превышение токовой нагрузки ступень (Д1)</item>
+                    <item>Превышение токовой нагрузки ступень (Д2)</item>
+                    <item>Превышение токовой нагрузки ступень (ДЦ)</item>
                 </string-array>
             </widget>
         </record>
@@ -1325,9 +1348,9 @@
             <type>WORD</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>250</group>
-                <string>Время фильтрации дискретных входов на мезонинной плате</string>
-                <toolTip>Время фильтрации дискретных входов на мезонинной плате</toolTip>
+                <group>6</group>
+                <string>Время фильтрации дискретных входов на мезонинной плате, сек</string>
+                <toolTip>Время фильтрации дискретных входов на мезонинной плате «Превышение токовой нагрузки ступень (Д1)»; «Превышение токовой нагрузки ступень (Д2)»; «Превышение токовой нагрузки ступень (ДЦ)», сек</toolTip>
                 <min>0</min>
                 <max>10000</max>
                 <decimals>0</decimals>
@@ -2158,8 +2181,8 @@
             <type>FLOAT</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>300</group>
-                <string>Номинальное сопротивление термометра при 0 град.С</string>
+                <group>4</group>
+                <string>Номинальное сопротивление термометра сопротивления ВСМ при 0°С, Ом</string>
                 <min>0</min>
                 <max>10000</max>
                 <decimals>0</decimals>
@@ -2171,8 +2194,8 @@
             <type>FLOAT</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>300</group>
-                <string>Температурный коэффициент термометра</string>
+                <group>4</group>
+                <string>Температурный коэффициент термометра сопротивления ВСМ</string>
                 <min>0</min>
                 <max>100</max>
                 <decimals>3</decimals>
@@ -2240,10 +2263,10 @@
             <type>DWORD</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>200</group>
-                <string>Задержка на формирование предупредительных событий, сек</string>
+                <group>8</group>
+                <string>Задержка на формирование предупредительной сигнализации, сек</string>
                 <min>0</min>
-                <max>10000</max>
+                <max>240</max>
                 <decimals>0</decimals>
             </widget>
         </record>
@@ -2253,10 +2276,10 @@
             <type>DWORD</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>200</group>
-                <string>Задержка на формирование аварийных событий, сек</string>
+                <group>8</group>
+                <string>Задержка на формирование аварийной сигнализации, сек</string>
                 <min>0</min>
-                <max>10000</max>
+                <max>240</max>
                 <decimals>0</decimals>
             </widget>
         </record>
@@ -2364,8 +2387,8 @@
             <type>WORD</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>250</group>
-                <string>Период фильтрации дискретного входа DI24 (мс)</string>
+                <group>6</group>
+                <string>Период фильтрации дискретного входа DI1, сек</string>
                 <min>0</min>
                 <max>10000</max>
                 <decimals>0</decimals>
@@ -2659,7 +2682,7 @@
             <type>DWORD</type>
             <widget>
                 <type>QComboBox</type>
-                <group>51</group>
+                <group>2</group>
                 <string>Тип контролируемого оборудования</string>
                 <toolTip>Тип контролируемого оборудования</toolTip>
                 <string-array>
@@ -2678,7 +2701,7 @@
             <type>DWORD</type>
             <widget>
                 <type>QComboBox</type>
-                <group>51</group>
+                <group>2</group>
                 <string>Тип системы охлаждения</string>
                 <toolTip>Тип системы охлаждения</toolTip>
                 <string-array>
@@ -4764,7 +4787,7 @@
             <type>WORD</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>250</group>
+                <group>4</group>
                 <string>Время фильтрации для температуры ВСМ, сек</string>
                 <toolTip>Время фильтрации для температуры ВСМ, сек</toolTip>
                 <min>1</min>
@@ -4778,17 +4801,17 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>201</group>
-                <string>Предупредительная уставка по температуре ННТ для обмоток, °С</string>
-                <toolTip>Предупредительная уставка по температуре ННТ для обмоток, °С</toolTip>
+                <group>8</group>
+                <string>Предупредительная уставка по температуре ННТ, °С</string>
+                <toolTip>Предупредительная уставка по температуре ННТ, °С</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
+                    <item>Обмотка ВН</item>
+                    <item>Обмотка №2</item>
+                    <item>Обмотка №3</item>
                 </string-array>
             </widget>
         </record>
@@ -4798,17 +4821,17 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>202</group>
-                <string>Аварийная уставка по температуре ННТ для обмоток, °С</string>
-                <toolTip>Аварийная уставка по температуре ННТ для обмоток, °С</toolTip>
+                <group>8</group>
+                <string>Аварийная уставка по температуре ННТ, °С</string>
+                <toolTip>Аварийная уставка по температуре ННТ, °С</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
+                    <item>Обмотка ВН</item>
+                    <item>Обмотка №2</item>
+                    <item>Обмотка №3</item>
                 </string-array>
             </widget>
         </record>
@@ -4818,7 +4841,7 @@
             <type>FLOAT</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>201</group>
+                <group>8</group>
                 <string>Гистерезис для предупредительных уставок по температуре ННТ, °С</string>
                 <toolTip>Гистерезис для предупредительных уставок по температуре ННТ, °С</toolTip>
                 <min>0</min>
@@ -4832,7 +4855,7 @@
             <type>FLOAT</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>202</group>
+                <group>8</group>
                 <string>Гистерезис для аварийных уставок по температуре ННТ, °С</string>
                 <toolTip>Гистерезис для аварийных уставок по температуре ННТ, °С</toolTip>
                 <min>0</min>
@@ -4846,7 +4869,7 @@
             <type>FLOAT</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>201</group>
+                <group>8</group>
                 <string>Предупредительная уставка по температуре ВСМ, °С</string>
                 <toolTip>Предупредительная уставка по температуре ВСМ, °С</toolTip>
                 <min>0</min>
@@ -4860,7 +4883,7 @@
             <type>FLOAT</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>202</group>
+                <group>8</group>
                 <string>Аварийная уставка по температуре ВСМ, °С</string>
                 <toolTip>Аварийная уставка по температуре ВСМ, °С</toolTip>
                 <min>0</min>
@@ -4874,7 +4897,7 @@
             <type>FLOAT</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>201</group>
+                <group>8</group>
                 <string>Гистерезис для предупредительной уставки по температуре ВСМ, °С</string>
                 <toolTip>Гистерезис для предупредительной уставки по температуре ВСМ, °С</toolTip>
                 <min>0</min>
@@ -4888,7 +4911,7 @@
             <type>FLOAT</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>202</group>
+                <group>8</group>
                 <string>Гистерезис для аварийной уставки по температуре ВСМ, °С</string>
                 <toolTip>Гистерезис для аварийной уставки по температуре ВСМ, °С</toolTip>
                 <min>0</min>
@@ -4902,9 +4925,9 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Уставка температуры ВСМ по ступеням, °С</string>
-                <toolTip>Уставка температуры ВСМ по ступеням, °С</toolTip>
+                <group>1</group>
+                <string>Уставка температуры ВСМ, °С</string>
+                <toolTip>Уставка температуры ВСМ, °С</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
@@ -4922,9 +4945,9 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Гистерезис температуры ВСМ по ступеням, °С</string>
-                <toolTip>Гистерезис температуры ВСМ по ступеням, °С</toolTip>
+                <group>1</group>
+                <string>Гистерезис температуры ВСМ, °С</string>
+                <toolTip>Гистерезис температуры ВСМ, °С</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
@@ -4942,9 +4965,9 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Уставка температуры ННТ по ступеням, °С</string>
-                <toolTip>Уставка температуры ННТ по ступеням, °С</toolTip>
+                <group>1</group>
+                <string>Уставка температуры ННТ, °С</string>
+                <toolTip>Уставка температуры ННТ, °С</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
@@ -4962,9 +4985,9 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Гистерезис температуры ННТ по ступеням, °С</string>
-                <toolTip>Гистерезис температуры ННТ по ступеням, °С</toolTip>
+                <group>1</group>
+                <string>Гистерезис температуры ННТ, °С</string>
+                <toolTip>Гистерезис температуры ННТ, °С</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
@@ -4982,9 +5005,9 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Уставка токовой нагрузки по ступеням, %</string>
-                <toolTip>Уставка токовой нагрузки по ступеням, %</toolTip>
+                <group>1</group>
+                <string>Уставка токовой нагрузки, %</string>
+                <toolTip>Уставка токовой нагрузки, %</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>1000</max>
@@ -5002,9 +5025,9 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Гистерезис токовой нагрузки по ступеням, %</string>
-                <toolTip>Гистерезис токовой нагрузки по ступеням, %</toolTip>
+                <group>1</group>
+                <string>Гистерезис токовой нагрузки, %</string>
+                <toolTip>Гистерезис токовой нагрузки, %</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>1000</max>
@@ -5022,9 +5045,9 @@
             <type>WORD[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Время отключения по ступеням, сек</string>
-                <toolTip>Время отключения по ступеням, сек</toolTip>
+                <group>1</group>
+                <string>Время отключения, сек</string>
+                <toolTip>Время отключения, сек</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
@@ -5042,9 +5065,9 @@
             <type>WORD[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Время паузы между включением выходов по ступеням, сек</string>
-                <toolTip>Время паузы между включением выходов по ступеням, сек</toolTip>
+                <group>1</group>
+                <string>Время паузы между включением выходов, сек</string>
+                <toolTip>Время паузы между включением выходов, сек</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
@@ -5062,9 +5085,9 @@
             <type>WORD[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Время паузы между отключением выходов по ступеням, сек</string>
-                <toolTip>Время паузы между отключением выходов по ступеням, сек</toolTip>
+                <group>1</group>
+                <string>Время паузы между отключением выходов, сек</string>
+                <toolTip>Время паузы между отключением выходов, сек</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
@@ -5082,9 +5105,9 @@
             <type>BYTE</type>
             <widget>
                 <type>QCheckBox</type>
-                <group>51</group>
-                <string>Ввод в работу алгоритма блокировки маслонасосов</string>
-                <toolTip>Ввод в работу алгоритма блокировки маслонасосов</toolTip>
+                <group>3</group>
+                <string>Ввод/вывод из работы алгоритма блокировки маслонасосов</string>
+                <toolTip>Ввод/вывод из работы алгоритма блокировки маслонасосов</toolTip>
             </widget>
         </record>
         <record>
@@ -5093,9 +5116,9 @@
             <type>FLOAT</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>51</group>
-                <string>Уставка  температуры ВСМ для блокировки  включения маслонасосов, °С</string>
-                <toolTip>Уставка  температуры ВСМ для блокировки  включения маслонасосов, °С</toolTip>
+                <group>3</group>
+                <string>Уставка температуры ВСМ для блокировки включения маслонасосов, °С</string>
+                <toolTip>Уставка температуры ВСМ для блокировки включения маслонасосов, °С</toolTip>
                 <min>-10000</min>
                 <max>10000</max>
                 <decimals>0</decimals>
@@ -5107,7 +5130,7 @@
             <type>BYTE</type>
             <widget>
                 <type>QCheckBox</type>
-                <group>51</group>
+                <group>3</group>
                 <string>Ввод в работу алгоритма блокировки вентиляторов</string>
                 <toolTip>Ввод в работу алгоритма блокировки вентиляторов</toolTip>
             </widget>
@@ -5118,9 +5141,9 @@
             <type>FLOAT</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>51</group>
-                <string>Уставка  температуры ВСМ для блокировки  включения вентиляторов, °С</string>
-                <toolTip>Уставка  температуры ВСМ для блокировки  включения вентиляторов, °С</toolTip>
+                <group>3</group>
+                <string>Уставка температуры ВСМ для блокировки включения вентиляторов, °С</string>
+                <toolTip>Уставка температуры ВСМ для блокировки включения вентиляторов, °С</toolTip>
                 <min>-10000</min>
                 <max>10000</max>
                 <decimals>0</decimals>
@@ -5132,7 +5155,7 @@
             <type>BYTE[3]</type>
             <widget>
                 <type>CheckBoxGroup</type>
-                <group>51</group>
+                <group>1</group>
                 <string>Разрешение ступеней управления охлаждением</string>
                 <toolTip>Разрешение ступеней управления охлаждением</toolTip>
                 <count>3</count>
@@ -5149,17 +5172,17 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>100</group>
-                <string>Номинальный ток для обмоток, А</string>
-                <toolTip>Номинальный ток для обмоток, А</toolTip>
+                <group>1</group>
+                <string>Номинальный ток, А</string>
+                <toolTip>Номинальный ток, А</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
+                    <item>Обмотка ВН</item>
+                    <item>Обмотка №2</item>
+                    <item>Обмотка №3</item>
                 </string-array>
             </widget>
         </record>
@@ -5169,9 +5192,9 @@
             <type>WORD</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>200</group>
-                <string>Задержка на формирование сигнала неисправности внешнего датчиков, сек:</string>
-                <toolTip>Задержка на формирование сигнала неисправности внешнего датчиков, сек:</toolTip>
+                <group>8</group>
+                <string>Задержка на формирование сигнала неисправности внешних датчиков, сек</string>
+                <toolTip>Задержка на формирование сигнала неисправности внешних датчиков, сек</toolTip>
                 <min>0</min>
                 <max>240</max>
                 <decimals>0</decimals>
@@ -5183,11 +5206,39 @@
             <type>WORD</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>200</group>
+                <group>1</group>
                 <string>Задержка на формирование управляющих сигналов, сек</string>
-                <toolTip>Задержка на формирование управляющих сигналов, сек</toolTip>
+                <toolTip>Задержка на формирование управляющих сигналов, сек (от 0 до 240)</toolTip>
                 <min>0</min>
                 <max>240</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1287</id>
+            <name>GisBlkPump</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>3</group>
+                <string>Гистерезис для уставки температуры ВСМ для блокировки маслонасосов, °С</string>
+                <toolTip>Гистерезис для уставки температуры ВСМ для блокировки маслонасосов, °С</toolTip>
+                <min>0</min>
+                <max>100</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1288</id>
+            <name>GisBlkFun</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>3</group>
+                <string>Гистерезис для уставки температуры ВСМ для блокировки вентиляторов, °С</string>
+                <toolTip>Гистерезис для уставки температуры ВСМ для блокировки вентиляторов, °С</toolTip>
+                <min>0</min>
+                <max>100</max>
                 <decimals>0</decimals>
             </widget>
         </record>
@@ -5197,7 +5248,7 @@
             <type>FLOAT</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>51</group>
+                <group>2</group>
                 <string>Постоянная времени температуры ВСМ, мин</string>
                 <toolTip>Постоянная времени температуры ВСМ, мин</toolTip>
                 <min>0</min>
@@ -5211,17 +5262,17 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Постоянная времени температуры ННТ для обмоток, мин</string>
-                <toolTip>Постоянная времени температуры ННТ для обмоток, мин</toolTip>
+                <group>2</group>
+                <string>Постоянная времени температуры ННТ, мин</string>
+                <toolTip>Постоянная времени температуры ННТ, мин</toolTip>
                 <count>3</count>
                 <min>1</min>
                 <max>10000</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
+                    <item>Обмотка ВН</item>
+                    <item>Обмотка №2</item>
+                    <item>Обмотка №3</item>
                 </string-array>
             </widget>
         </record>
@@ -5231,17 +5282,17 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Превышение ННТ над ВСМ при номинальном токе для обмоток, °С</string>
-                <toolTip>Превышение температуры ННТ над температурой ВСМ при номинальном токе для обмоток, °С</toolTip>
+                <group>2</group>
+                <string>Превышение температуры ННТ над температурой ВСМ при номинальном токе, °С</string>
+                <toolTip>Превышение температуры ННТ над температурой ВСМ при номинальном токе, °С</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
+                    <item>Обмотка ВН</item>
+                    <item>Обмотка №2</item>
+                    <item>Обмотка №3</item>
                 </string-array>
             </widget>
         </record>
@@ -5251,17 +5302,17 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Константа теплового уравнения для обмоток</string>
-                <toolTip>Константа теплового уравнения для обмоток</toolTip>
+                <group>2</group>
+                <string>Константа теплового уравнения для обмоток k21</string>
+                <toolTip>Константа теплового уравнения для обмоток k21 0 – по умолчанию: для М – 2.0; для Д – 2.0; для ДЦ – 1.0; для НДЦ – 1.0</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
                 <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
+                    <item>Обмотка ВН</item>
+                    <item>Обмотка №2</item>
+                    <item>Обмотка №3</item>
                 </string-array>
             </widget>
         </record>
@@ -5271,17 +5322,17 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>51</group>
-                <string>Константа теплового уравнения для обмоток</string>
-                <toolTip>Константа теплового уравнения для обмоток</toolTip>
+                <group>2</group>
+                <string>Константа теплового уравнения для обмоток k22</string>
+                <toolTip>Константа теплового уравнения для обмоток k22 0 – по умолчанию: для М – 2.0; для Д – 2.0; для ДЦ – 1.0; для НДЦ – 1.0</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
                 <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
+                    <item>Обмотка ВН</item>
+                    <item>Обмотка №2</item>
+                    <item>Обмотка №3</item>
                 </string-array>
             </widget>
         </record>
@@ -5291,17 +5342,17 @@
             <type>FLOAT[3]</type>
             <widget>
                 <type>DoubleSpinBoxGroup</type>
-                <group>100</group>
-                <string>Номинальное напряжение для обмоток, кВ</string>
-                <toolTip>Номинальное напряжение для обмоток, кВ</toolTip>
+                <group>3</group>
+                <string>Номинальное напряжение, кВ</string>
+                <toolTip>Номинальное напряжение, кВ</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
+                    <item>Обмотка ВН</item>
+                    <item>Обмотка №2</item>
+                    <item>Обмотка №3</item>
                 </string-array>
             </widget>
         </record>
@@ -5311,9 +5362,9 @@
             <type>BYTE</type>
             <widget>
                 <type>QCheckBox</type>
-                <group>51</group>
-                <string>Считать токовую нагрузку для третьей обмотки</string>
-                <toolTip>Считать токовую нагрузку для третьей обмотки</toolTip>
+                <group>3</group>
+                <string>Расчет токовой нагрузки для Обмотки №3</string>
+                <toolTip>Расчет токовой нагрузки для Обмотки №3 (0 - не считать, 1 - считать)</toolTip>
             </widget>
         </record>
         <record>
@@ -5322,14 +5373,14 @@
             <type>BYTE[3]</type>
             <widget>
                 <type>CheckBoxGroup</type>
-                <group>51</group>
-                <string>Считать температуры ННТ для обмоток</string>
-                <toolTip>Считать температуры ННТ для обмоток</toolTip>
+                <group>2</group>
+                <string>Расчет температуры ННТ</string>
+                <toolTip>0 - не считать, 1 - считать</toolTip>
                 <count>3</count>
                 <string-array>
-                    <item>1</item>
-                    <item>2</item>
-                    <item>3</item>
+                    <item>Обмотка ВН</item>
+                    <item>Обмотка №2</item>
+                    <item>Обмотка №3</item>
                 </string-array>
             </widget>
         </record>
@@ -5816,6 +5867,23 @@
             <id>10057</id>
             <name>Spect87_7</name>
             <type>DataPoint_Spect87</type>
+        </record>
+        <record>
+            <id>1283</id>
+            <name>EnContrNNT</name>
+            <type>BYTE[3]</type>
+            <widget>
+                <type>CheckBoxGroup</type>
+                <group>1</group>
+                <string>Разрешение  управления охлаждением по ННТ</string>
+                <toolTip>0 – не управлять, 1 – управлять</toolTip>
+                <count>3</count>
+                <string-array>
+                    <item>Обмотка ВН</item>
+                    <item>Обмотка №2</item>
+                    <item>Обмотка №3</item>
+                </string-array>
+            </widget>
         </record>
     </records>
 </s2files>
