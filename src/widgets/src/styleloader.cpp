@@ -1,22 +1,18 @@
 #include "widgets/styleloader.h"
 
+#include <settings/user_settings.h>
+
 #include <QApplication>
 #include <QDebug>
 #include <QFile>
 #include <QKeyEvent>
 #include <QMetaEnum>
-#include <QSettings>
-#include <settings/user_settings.h>
 
 const QMetaEnum StyleLoader::s_themeEnum = QMetaEnum::fromType<Style::Name>();
 
-StyleLoader::StyleLoader(Singleton::token)
-{
-}
+StyleLoader::StyleLoader(Singleton::token) { }
 
-StyleLoader::StyleLoader(Singleton::token, QObject *parent) : QObject(parent)
-{
-}
+StyleLoader::StyleLoader(Singleton::token, QObject *parent) : QObject(parent) { }
 
 QStringList StyleLoader::availableStyles()
 {
@@ -62,7 +58,7 @@ void StyleLoader::setAppStyleSheet()
 
 QString StyleLoader::load()
 {
-    const QString styleName = Settings::UserSettings::GetInstance().get<Settings::Theme>();
+    const QString styleName = CSettings::UserSettings::GetInstance().get<CSettings::Theme>();
     if (styleName.isEmpty())
         return defaultStyleFile;
     const int key = s_themeEnum.keyToValue(styleName.toStdString().c_str());
@@ -71,7 +67,7 @@ QString StyleLoader::load()
 
 void StyleLoader::save()
 {
-    Settings::UserSettings::GetInstance().set<Settings::Theme>(styleName());
+    CSettings::UserSettings::GetInstance().set<CSettings::Theme>(styleName());
 }
 
 void StyleLoader::setStyle(const QString &styleName)

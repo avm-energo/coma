@@ -38,6 +38,7 @@
 #include <gen/errorqueue.h>
 #include <gen/files.h>
 #include <gen/logger.h>
+#include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 #include <interfaces/types/settingstypes.h>
@@ -125,7 +126,6 @@ QToolBar *Coma::createToolBar()
             connect(dialog, &SettingsDialog::alarmOperationUpdate, AlarmW, &AlarmWidget::updateAlarmOperation);
             connect(dialog, &SettingsDialog::alarmIntervalUpdate, AlarmW, &AlarmWidget::updateAlarmInterval);
             dialog->exec();
-            saveSettings();
         });
 
     const QIcon jourIcon(":/icons/tnfrosya.svg");
@@ -332,7 +332,7 @@ void Coma::go()
     auto splash = new SplashScreen();
     splash->show();
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
-    QDir dir(StdFunc::dataDir());
+    QDir dir(Settings::dataDir());
     if (!dir.exists())
         dir.mkpath(".");
     qInfo("=== Log started ===\n");
@@ -347,17 +347,7 @@ void Coma::go()
 
 void Coma::loadSettings()
 {
-    auto homeDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"
-        + QCoreApplication::applicationName() + "/";
-    QSettings settings;
     StyleLoader::GetInstance().attach();
-    // StdFunc::SetHomeDir(settings.value("Homedir", homeDirectory).toString());
-}
-
-void Coma::saveSettings()
-{
-    QSettings settings;
-    settings.setValue("Homedir", StdFunc::dataDir());
 }
 
 void Coma::setProgressBarSize(int prbnum, int size)
@@ -413,7 +403,6 @@ void Coma::connectDialog()
 void Coma::initConnection(const ConnectStruct &st)
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    saveSettings();
     auto connection = m_connectionManager->createConnection(st);
     if (connection && (connection->getConnectionState() != Interface::State::Disconnect))
         initDevice(connection);
@@ -572,7 +561,7 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setApplicationVersion(version);
     initResources();
     StdFunc::Init();
-    Logger::writeStart(StdFunc::dataDir() + "coma.log");
+    Logger::writeStart(Settings::logDir() + "coma.log");
     qInstallMessageHandler(Logger::messageHandlerWithErrorQueue);
 }
 

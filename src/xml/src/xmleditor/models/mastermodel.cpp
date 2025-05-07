@@ -1,6 +1,6 @@
 #include "xml/xmleditor/models/mastermodel.h"
 
-#include <gen/stdfunc.h>
+#include <gen/settings.h>
 #include <xml/xmltags.h>
 
 MasterModel::MasterModel(QObject *parent) : BaseEditorModel(1, 1, ModelType::Master, parent)
@@ -31,7 +31,7 @@ QDomElement MasterModel::toNode(QDomDocument &doc, const int &row)
 void MasterModel::undoChanges(const int &row, const bool &openState)
 {
     auto fileName = data(index(row, 0), FilenameDataRole).value<QString>();
-    auto dir = QDir(StdFunc::configDir());
+    auto dir = QDir(Settings::configDir());
     // Заново парсим файл в модель
     auto file = new QFile(dir.filePath(fileName));
     if (file->open(QIODevice::ReadOnly))
@@ -53,7 +53,7 @@ void MasterModel::undoChanges(const int &row, const bool &openState)
 void MasterModel::readModulesToModel()
 {
     // Создание и настройка модели для Master View
-    auto dir = QDir(StdFunc::configDir());
+    auto dir = QDir(Settings::configDir());
     auto modules = dir.entryList(QDir::Files).filter(".xml");
     setRowCount(0);
     setColumnCount(5);
@@ -71,9 +71,8 @@ void MasterModel::readModulesToModel()
         if (moduleFile->open(QIODevice::ReadOnly))
         {
             QDomDocument domDoc;
-            QString errMsg = "";
-            auto line = 0, column = 0;
-            if (domDoc.setContent(moduleFile, &errMsg, &line, &column))
+            QDomDocument::ParseResult result = domDoc.setContent(moduleFile);
+            if (result.errorMessage.isEmpty())
             {
                 auto domElement = domDoc.documentElement();
                 parseXmlNode(domElement, name, row);
@@ -81,7 +80,8 @@ void MasterModel::readModulesToModel()
             }
             // Если QtXml парсер не смог корректно считать xml файл
             else
-                qWarning() << errMsg << " File: " << name << " Line: " << line << " Column: " << column;
+                qWarning() << result.errorMessage << " File: " << name << " Line: " << result.errorLine
+                           << " Column: " << result.errorColumn;
             moduleFile->close();
         }
         moduleFile->deleteLater();
@@ -135,22 +135,22 @@ void MasterModel::masterItemSelected(const QModelIndex &itemIndex)
     auto dataFilename = data(index(row, 0), FilenameDataRole);
     if (dataFilename.canConvert<QString>())
     {
-        QDir homeDir(StdFunc::configDir());
+        QDir homeDir(Settings::configDir());
         auto filename = qvariant_cast<QString>(dataFilename);
         auto moduleFile = new QFile(homeDir.filePath(filename), this);
         if (moduleFile->open(QIODevice::ReadOnly))
         {
             QDomDocument domDoc;
-            QString errMsg = "";
-            auto line = 0, column = 0;
-            if (domDoc.setContent(moduleFile, &errMsg, &line, &column))
+            QDomDocument::ParseResult result = domDoc.setContent(moduleFile);
+            if (result.errorMessage.isEmpty())
             {
                 auto domElement = domDoc.documentElement();
                 emit itemSelected(domElement);
             }
             // Если QtXml парсер не смог корректно считать xml файл
             else
-                qWarning() << errMsg << " File: " << filename << " Line: " << line << " Column: " << column;
+                qWarning() << result.errorMessage << " File: " << filename << " Line: " << result.errorLine
+                           << " Column: " << result.errorColumn;
             moduleFile->close();
         }
         moduleFile->deleteLater();

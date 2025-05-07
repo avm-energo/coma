@@ -22,7 +22,7 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 
-using namespace Settings;
+using namespace CSettings;
 
 SettingsDialog::SettingsDialog(QWidget *parent)
     : QDialog(parent)
@@ -370,6 +370,6 @@ void SettingsDialog::themeChanged(const QString &newTheme)
         auto &styleLoader = StyleLoader::GetInstance();
         styleLoader.setStyle(newTheme);
         styleLoader.setAppStyleSheet();
-        Settings::UserSettings::GetInstance().set<Settings::Theme>(newTheme);
+        CSettings::UserSettings::GetInstance().set<CSettings::Theme>(newTheme);
     }
 }

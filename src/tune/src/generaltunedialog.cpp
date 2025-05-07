@@ -12,7 +12,6 @@
 #include <QIcon>
 #include <QPainter>
 #include <QPushButton>
-#include <QSettings>
 #include <QSvgRenderer>
 
 GeneralTuneDialog::GeneralTuneDialog(Device::CurrentDevice *device, QWidget *parent)

@@ -3,7 +3,7 @@
 #include <QString>
 #include <QVariant>
 
-namespace Settings
+namespace CSettings
 {
 
 /// \brief Структура, хранящая имя настройки и её значение по умолчанию.

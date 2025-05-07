@@ -3,7 +3,7 @@
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/files.h>
-#include <gen/stdfunc.h>
+#include <gen/settings.h>
 #include <tune/82/tune82adc.h>
 #include <tune/82/tune82check.h>
 #include <tune/82/tune82iowidget.h>
@@ -47,5 +47,5 @@ Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
 
 void Tune82Dialog::prepareReport()
 {
-    m_reporter->setTemplatePath(StdFunc::configDir() + "reports/82report.lrxml");
+    m_reporter->setTemplatePath(Settings::configDir() + "reports/82report.lrxml");
 }

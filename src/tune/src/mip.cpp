@@ -14,7 +14,6 @@
 
 #include <QEventLoop>
 #include <QGroupBox>
-#include <QSettings>
 #include <QThread>
 #include <QVBoxLayout>
 
@@ -132,7 +131,7 @@ void Mip::setupWidget()
 
 bool Mip::start()
 {
-    using namespace Settings;
+    using namespace CSettings;
     auto &settings = UserSettings::GetInstance();
     IEC104Settings conn_settings;
     conn_settings.ip = QString(settings.get<MipIp>());

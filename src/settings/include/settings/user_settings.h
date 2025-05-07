@@ -5,7 +5,7 @@
 #include <gen/utils/convertable.h>
 #include <settings/types.h>
 
-namespace Settings
+namespace CSettings
 {
 
 /// \brief Класс, предоставляющий возможность обрабатывать и хранить пользовательские настройки.

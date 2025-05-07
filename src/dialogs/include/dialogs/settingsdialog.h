@@ -13,7 +13,7 @@ class SettingsDialog final : public QDialog
 {
     Q_OBJECT
 private:
-    Settings::UserSettings &m_settings;
+    CSettings::UserSettings &m_settings;
     QStackedWidget *m_workspace;
     QListWidget *m_sidebar;
 

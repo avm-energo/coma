@@ -89,8 +89,8 @@ void InterfaceSerialDialog::setInterface(QModelIndex index)
     portSettings.stop = stopStr == "1" ? QSerialPort::OneStop : QSerialPort::TwoStop;
     portSettings.address = model->data(model->index(row, 5)).toUInt();
     m_settings.switchTo("settings");
-    portSettings.m_timeout = m_settings.get<Settings::ModbusTimeout>();
-    portSettings.m_reconnectInterval = m_settings.get<Settings::ModbusReconnect>();
+    portSettings.m_timeout = m_settings.get<CSettings::ModbusTimeout>();
+    portSettings.m_reconnectInterval = m_settings.get<CSettings::ModbusReconnect>();
     fill(portSettings);
     m_settings.switchTo("RS485");
 
@@ -167,12 +167,12 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
             }
             m_settings.remove(name);
 
-            Settings::ScopedSettingsGroup _ { m_settings, newName };
-            m_settings.set<Settings::SerialPort>(portcb->currentText());
-            m_settings.set<Settings::SerialSpeed>(speedcb->currentText());
-            m_settings.set<Settings::SerialParity>(paritycb->currentText());
-            m_settings.set<Settings::SerialStop>(stopbitcb->currentText());
-            m_settings.set<Settings::ModbusAddress>(static_cast<int>(addressspb->value()));
+            CSettings::ScopedSettingsGroup _ { m_settings, newName };
+            m_settings.set<CSettings::SerialPort>(portcb->currentText());
+            m_settings.set<CSettings::SerialSpeed>(speedcb->currentText());
+            m_settings.set<CSettings::SerialParity>(paritycb->currentText());
+            m_settings.set<CSettings::SerialStop>(stopbitcb->currentText());
+            m_settings.set<CSettings::ModbusAddress>(static_cast<int>(addressspb->value()));
             if (!updateModel())
                 qCritical() << Error::GeneralError;
             dialog->close();
@@ -238,15 +238,15 @@ bool InterfaceSerialDialog::updateModel()
     auto rslist = m_settings.native().childGroups();
     for (const auto &item : std::as_const(rslist))
     {
-        Settings::ScopedSettingsGroup _ { m_settings, item };
+        CSettings::ScopedSettingsGroup _ { m_settings, item };
         // m_settings.beginGroup(item);
         QList<QStandardItem *> items {
             new QStandardItem(item),                                               //
-            new QStandardItem(QString(m_settings.get<Settings::SerialPort>())),    //
-            new QStandardItem(QString(m_settings.get<Settings::SerialSpeed>())),   //
-            new QStandardItem(QString(m_settings.get<Settings::SerialParity>())),  //
-            new QStandardItem(QString(m_settings.get<Settings::SerialStop>())),    //
-            new QStandardItem(QString(m_settings.get<Settings::ModbusAddress>())), //
+            new QStandardItem(QString(m_settings.get<CSettings::SerialPort>())),    //
+            new QStandardItem(QString(m_settings.get<CSettings::SerialSpeed>())),   //
+            new QStandardItem(QString(m_settings.get<CSettings::SerialParity>())),  //
+            new QStandardItem(QString(m_settings.get<CSettings::SerialStop>())),    //
+            new QStandardItem(QString(m_settings.get<CSettings::ModbusAddress>())), //
         };
         tableViewModel->appendRow(items);
         // m_settings.endGroup();
@@ -270,13 +270,13 @@ void InterfaceSerialDialog::acceptedInterface()
     }
     {
         int spbdata;
-        Settings::ScopedSettingsGroup _ { m_settings, name };
-        m_settings.set<Settings::SerialPort>(CBFunc::CBData(dialog, "portcb"));
-        m_settings.set<Settings::SerialSpeed>(CBFunc::CBData(dialog, "speedcb"));
-        m_settings.set<Settings::SerialParity>(CBFunc::CBData(dialog, "paritycb"));
-        m_settings.set<Settings::SerialStop>(CBFunc::CBData(dialog, "stopbitcb"));
+        CSettings::ScopedSettingsGroup _ { m_settings, name };
+        m_settings.set<CSettings::SerialPort>(CBFunc::CBData(dialog, "portcb"));
+        m_settings.set<CSettings::SerialSpeed>(CBFunc::CBData(dialog, "speedcb"));
+        m_settings.set<CSettings::SerialParity>(CBFunc::CBData(dialog, "paritycb"));
+        m_settings.set<CSettings::SerialStop>(CBFunc::CBData(dialog, "stopbitcb"));
         if (SPBFunc::SPBData(dialog, "addressspb", spbdata))
-            m_settings.set<Settings::ModbusAddress>(spbdata);
+            m_settings.set<CSettings::ModbusAddress>(spbdata);
     }
     if (!updateModel())
         qCritical() << Error::GeneralError;

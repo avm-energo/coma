@@ -26,6 +26,7 @@
 #include "datablocks/datablock.h"
 
 #include <gen/files.h>
+#include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 #include <widgets/epopup.h>
@@ -335,13 +336,13 @@ Error::Msg DataBlock::loadFromFileAndWriteToModule(const QString &filename)
 
 Error::Msg DataBlock::readFromFile()
 {
-    return loadFromFileAndWriteToModule(StdFunc::dataDir() + cpuIDFilenameStr());
+    return loadFromFileAndWriteToModule(Settings::dataDir() + cpuIDFilenameStr());
 }
 
 Error::Msg DataBlock::saveToFile()
 {
     QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
-    QString filestr = StdFunc::dataDir() + cpuIDFilenameStr();
+    QString filestr = Settings::dataDir() + cpuIDFilenameStr();
     return Files::SaveToFile(filestr, ba);
 }
 

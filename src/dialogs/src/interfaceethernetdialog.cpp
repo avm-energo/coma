@@ -17,7 +17,6 @@
 #include <QFutureWatcher>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <QSettings>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
 
@@ -64,8 +63,8 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
     settings.port = mdl->data(mdl->index(row, 2)).toUInt();
     settings.bsAddress = mdl->data(mdl->index(row, 3)).toUInt();
     m_settings.switchTo("settings");
-    settings.m_timeout = m_settings.get<Settings::Iec104Timeout>();
-    settings.m_reconnectInterval = m_settings.get<Settings::Iec104Reconnect>();
+    settings.m_timeout = m_settings.get<CSettings::Iec104Timeout>();
+    settings.m_reconnectInterval = m_settings.get<CSettings::Iec104Reconnect>();
     fill(settings);
     m_settings.switchTo("Ethernet");
 
@@ -193,10 +192,10 @@ void InterfaceEthernetDialog::acceptedInterface()
         return;
     }
     {
-        Settings::ScopedSettingsGroup _ { m_settings, name };
-        m_settings.set<Settings::IpAddress>(ipstr);
-        m_settings.set<Settings::IpPort>(port);
-        m_settings.set<Settings::Iec104BsAddress>(port);
+        CSettings::ScopedSettingsGroup _ { m_settings, name };
+        m_settings.set<CSettings::IpAddress>(ipstr);
+        m_settings.set<CSettings::IpPort>(port);
+        m_settings.set<CSettings::Iec104BsAddress>(port);
     }
     if (!updateModel())
         qCritical() << Error::GeneralError;
@@ -287,12 +286,12 @@ bool InterfaceEthernetDialog::updateModel()
     QStringList ethList = m_settings.native().childGroups();
     for (const auto &item : std::as_const(ethList))
     {
-        Settings::ScopedSettingsGroup _ { m_settings, item };
+        CSettings::ScopedSettingsGroup _ { m_settings, item };
         QList<QStandardItem *> items {
-            new QStandardItem(item),                                                //
-            new QStandardItem(QString(m_settings.get<Settings::IpAddress>())),      //
-            new QStandardItem(QString(m_settings.get<Settings::IpPort>())),         //
-            new QStandardItem(QString(m_settings.get<Settings::Iec104BsAddress>())) //
+            new QStandardItem(item),                                                 //
+            new QStandardItem(QString(m_settings.get<CSettings::IpAddress>())),      //
+            new QStandardItem(QString(m_settings.get<CSettings::IpPort>())),         //
+            new QStandardItem(QString(m_settings.get<CSettings::Iec104BsAddress>())) //
         };
         model->appendRow(items);
     }
