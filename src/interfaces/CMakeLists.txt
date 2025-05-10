@@ -112,20 +112,13 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 if(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
 elseif(WIN32)
-    find_package(hidapi QUIET)
-    if (${hidapi_FOUND})
-        message(STATUS "Using installed hidapi")
-        target_link_libraries(${PROJECT_NAME} PUBLIC
-            hidapi::hidapi)
-    else()
-        message(STATUS "Using external hidapi")
-        include(hidapi)
-        message(STATUS "HidAPI source dir: ${hidapi_SOURCE_DIR}")
-        message(STATUS "HidAPI lib dir: ${hidapi_BINARY_DIR}")
-        target_include_directories(${PROJECT_NAME} PRIVATE ${hidapi_SOURCE_DIR})
-        target_link_libraries(${PROJECT_NAME} PUBLIC
-            hidapi)
-    endif()
+  message(STATUS "Using external hidapi")
+  include(hidapi)
+  message(STATUS "HidAPI source dir: ${hidapi_SOURCE_DIR}")
+  message(STATUS "HidAPI lib dir: ${hidapi_BINARY_DIR}")
+  target_include_directories(${PROJECT_NAME} PRIVATE ${hidapi_SOURCE_DIR})
+  target_link_libraries(${PROJECT_NAME} PUBLIC
+      hidapi)
 endif()
 
 # Adding test target

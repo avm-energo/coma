@@ -14,13 +14,10 @@ Tune21Dialog::Tune21Dialog(
     m_tuneStartStep = firstStepNumber;
     setAttribute(Qt::WA_DeleteOnClose);
     m_tuneStepCount
-        = firstStepNumber - 1; // set step number to external variable (if there's more than one board in module)
-    for (int i = 0; i < 8; ++i)
-    {
-        auto Tune21OneDialog = new Tune21One(bt, i, device, this);
-        TuneDialogStruct dlgStruct = { "Регулировка канала " + QString::number(i), Tune21OneDialog };
-        addTuneDialog(dlgStruct);
-    }
+        = firstStepNumber - 1; // set step number to external variable -1 (if there's more than one board in module)
+    QString tmps = "Регулировка ";
+    tmps += ((bt == Device::BoardTypes::BASEBOARD) ? "базы" : "мезонина");
+    addTuneDialog({ tmps, new Tune21One(bt, device, this) });
     u8 blockNum = (bt == Device::BoardTypes::BASEBOARD) ? 1 : 2;
     Bac21 *bac = new Bac21(blockNum, this);
     bac->setup(m_device->getUID(), m_device->sync());

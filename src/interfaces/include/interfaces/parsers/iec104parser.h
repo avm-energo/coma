@@ -1,17 +1,18 @@
 #ifndef IEC104PARSER_H
 #define IEC104PARSER_H
 
-#include <QQueue>
-#include <QTimer>
-#include <QVariant>
-#include <QWaitCondition>
 #include <gen/datatypes.h>
 #include <gen/error.h>
-#include <gen/logclass.h>
+#include <gen/logger.h>
 #include <interfaces/types/iec104/asdu.h>
 #include <interfaces/utils/request_queue.h>
 #include <s2/filestruct.h>
 #include <s2/s2datatypes.h>
+
+#include <QQueue>
+#include <QTimer>
+#include <QVariant>
+#include <QWaitCondition>
 
 namespace Interface
 {
@@ -67,7 +68,7 @@ private:
     QByteArray m_tempBuffer;
     bool m_isFirstParse;
     bool m_writingToPortBlocked;
-    LogClass m_log;
+    Logger m_log;
 
     void parseIFormat(QByteArray &ba);
     Error::Msg isIncomeDataValid(QByteArray &);

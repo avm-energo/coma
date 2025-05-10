@@ -8,7 +8,9 @@ namespace Interface
 using namespace Iec104;
 
 Iec104ResponseParser::Iec104ResponseParser(QObject *parent)
-    : BaseResponseParser(parent), m_currentCommand(Command::None), m_unpacker(this)
+    : BaseResponseParser(parent)
+    , m_currentCommand(Command::None)
+    , m_unpacker(this)
 {
     connect(&m_unpacker, &ASDUUnpacker::unpacked,   //
         this, &BaseResponseParser::responseParsed); //
@@ -110,7 +112,7 @@ void Iec104ResponseParser::parse()
     splitBuffer();
     for (const auto &response : m_responses)
     {
-        emit needToLog(QString("<- %1").arg(QString(response.toHex())), LogLevel::Debug);
+        emit needToLog(QString("<- %1").arg(QString(response.toHex())), Logger::Debug);
         auto validationResult = validate(response);
         if (validationResult == Error::Msg::NoError)
         {
@@ -130,7 +132,7 @@ void Iec104ResponseParser::parse()
         else
         {
             auto errStr = "Message validation fault, reason: " + QVariant::fromValue(validationResult).toString();
-            emit needToLog(errStr, LogLevel::Error);
+            emit needToLog(errStr, Logger::Critical);
         }
     }
     m_responses.clear();

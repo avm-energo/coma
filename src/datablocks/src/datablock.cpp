@@ -84,8 +84,8 @@ QWidget *DataBlock::widget(bool showButtons)
 
 void DataBlock::createWidget()
 {
-    auto mainWidget = new QWidget;
-    auto scrollWidget = new QWidget(mainWidget);
+    m_widget = new QWidget;
+    auto scrollWidget = new QWidget(m_widget);
     auto mainLayout = new QVBoxLayout;
     int count = 0;
     for (auto &group : m_valuesDesc)
@@ -111,7 +111,7 @@ void DataBlock::createWidget()
         mainLayout->addWidget(gb);
     }
     scrollWidget->setLayout(mainLayout);
-    auto scrollArea = new QScrollArea;
+    auto scrollArea = new QScrollArea(m_widget);
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(scrollWidget);
@@ -119,8 +119,7 @@ void DataBlock::createWidget()
     mainLayout->addWidget(scrollArea);
     if (m_block.bottomButtonsVisible)
         mainLayout->addWidget(blockButtonsUI());
-    mainWidget->setLayout(mainLayout);
-    m_widget = mainWidget;
+    m_widget->setLayout(mainLayout);
     m_widgetIsSet = true;
 }
 
@@ -336,13 +335,13 @@ Error::Msg DataBlock::loadFromFileAndWriteToModule(const QString &filename)
 
 Error::Msg DataBlock::readFromFile()
 {
-    return loadFromFileAndWriteToModule(StdFunc::GetSystemHomeDir() + cpuIDFilenameStr());
+    return loadFromFileAndWriteToModule(StdFunc::dataDir() + cpuIDFilenameStr());
 }
 
 Error::Msg DataBlock::saveToFile()
 {
     QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
-    QString filestr = StdFunc::GetSystemHomeDir() + cpuIDFilenameStr();
+    QString filestr = StdFunc::dataDir() + cpuIDFilenameStr();
     return Files::SaveToFile(filestr, ba);
 }
 

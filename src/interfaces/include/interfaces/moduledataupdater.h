@@ -52,6 +52,9 @@ private slots:
     void updateSinglePointData(const DataTypes::SinglePointWithTimeStruct &sp);
     void updateBitStringData(const DataTypes::BitStringStruct &bs);
     void updateFloatData(const DataTypes::FloatStruct &fl);
+
+public slots:
+    void sendCommand(const DataTypes::SingleCommand &cmd);
 };
 
 #endif // MODULEDATAUPDATER_H

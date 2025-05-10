@@ -236,7 +236,7 @@ bool SwitchJournalDialog::loadIfExist(quint32 size)
 QString SwitchJournalDialog::filename(quint64 time) const
 {
     // const auto &board = Board::GetInstance();
-    QString filename = StdFunc::GetSystemHomeDir();
+    QString filename = StdFunc::dataDir();
     filename.push_back(m_device->getUID());
     // filename.push_back(board.UID());
     filename.push_back("-");

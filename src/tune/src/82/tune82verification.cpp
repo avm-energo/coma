@@ -45,7 +45,6 @@ Tune82Verification::Tune82Verification(Device::CurrentDevice *device, QWidget *p
 
 void Tune82Verification::setTuneFunctions()
 {
-    addTuneFunc("Ввод пароля...", &AbstractTuneDialog::CheckPassword);
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Уменьшение интервала усреднения данных...", &Tune82Verification::setupNFiltrValue);
     addTuneFunc("Поверка...", &Tune82Verification::verification);
@@ -56,14 +55,7 @@ Error::Msg Tune82Verification::setupNFiltrValue()
 {
     config.setRecord("NFiltr_ID", S2::DWORD(10));
     auto result = m_sync->writeConfigurationSync(config.toByteArray());
-    StdFunc::Wait(12000);
-    // StdFunc::Wait(5000);
-    // waitNSeconds(10);
-    //    if (!EMessageBox::next(this, "Убедитесь в корректности подключения с устройством"))
-    //    {
-    //        CancelTune();
-    //        return Error::GeneralError;
-    //    }
+    StdFunc::Wait(1000);
     return result;
 }
 
@@ -167,6 +159,7 @@ void Tune82Verification::init()
 
 Error::Msg Tune82Verification::verification()
 {
+    bool ok;
     float i2nom = 0.0;
     init();
 
@@ -197,7 +190,10 @@ Error::Msg Tune82Verification::verification()
 
         StdFunc::Wait(1000);
         // waitNSeconds(1);
-        mipData = m_mip->takeOneMeasurement(i2nom);
+        // mipData = m_mip->takeOneMeasurement(i2nom, ok);
+        mipData = m_mip->takeOneMeasurement(ok);
+        if (!ok)
+            return Error::Msg::GeneralError;
         m_bd1->readBlockFromModule();
         deviceData = *(m_bd1->data());
         QCoreApplication::processEvents();

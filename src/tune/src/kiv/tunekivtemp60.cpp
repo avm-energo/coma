@@ -162,7 +162,7 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
 
 Error::Msg TuneKIVTemp60::analogMeasurement()
 {
-    emit setProgressSize(StdFunc::TuneRequestCount());
+    emit setProgressSize(m_tuneRequestCount);
     for (int i = 0; i < 6; ++i)
     {
         m_midTuneStruct.u[i] = 0.0;
@@ -171,7 +171,7 @@ Error::Msg TuneKIVTemp60::analogMeasurement()
     }
     m_midTuneStruct.tmk = 0.0;
     int reqCount = 0;
-    while ((!StdFunc::IsCancelled()) && (reqCount < StdFunc::TuneRequestCount()))
+    while ((!StdFunc::IsCancelled()) && (reqCount < m_tuneRequestCount))
     {
         m_bd0->readAndUpdate();
         m_bdain->readAndUpdate();
@@ -188,11 +188,11 @@ Error::Msg TuneKIVTemp60::analogMeasurement()
     }
     for (int i = 0; i < 6; ++i)
     {
-        m_midTuneStruct.u[i] /= StdFunc::TuneRequestCount();
+        m_midTuneStruct.u[i] /= m_tuneRequestCount;
         if (i < 3)
-            m_midTuneStruct.y[i] /= StdFunc::TuneRequestCount();
+            m_midTuneStruct.y[i] /= m_tuneRequestCount;
     }
-    m_midTuneStruct.tmk /= StdFunc::TuneRequestCount();
+    m_midTuneStruct.tmk /= m_tuneRequestCount;
     if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;

@@ -10,6 +10,7 @@
 #include <tune/82/tune82verification.h>
 #include <tune/tunereporter.h>
 #include <tune/tunetypes.h>
+#include <widgets/epopup.h>
 #include <widgets/wdfunc.h>
 
 Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
@@ -29,24 +30,22 @@ Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
         step2Caption = step2Caption.arg("напряжения");
         break;
     default:
-        assert(false && "Undefined mezzanine board");
-        break;
+        EMessageBox::warning(this, "Undefined mezzanine board");
+        return;
     }
-    m_dialogList = {
-        { "Проверка правильности измерения входных сигналов", new Tune82Check(device, this) }, //
-        { step2Caption, new Tune82ADC(device, this) },                                         //
-        { "Поверка", new Tune82Verification(device, this) }                                    //
-    };
+    addTuneDialog({ "Проверка правильности измерения входных сигналов", new Tune82Check(device, this) });
+    addTuneDialog({ step2Caption, new Tune82ADC(device, this) });
+    addTuneDialog({ "Поверка", new Tune82Verification(device, this) });
 
     Bac82 *bac = new Bac82(this);
     bac->setup(m_device->getUID(), m_device->sync());
     auto io = new Tune82IoWidget(m_device, this);
     addWidgetToTabWidget(bac->widget(), "Регулировка");
     addWidgetToTabWidget(io, "Данные");
-    SetupUI(true);
+    SetupUI(false);
 }
 
 void Tune82Dialog::prepareReport()
 {
-    m_reporter->setTemplatePath(StdFunc::GetSystemHomeDir() + "reports/82report.lrxml");
+    m_reporter->setTemplatePath(StdFunc::configDir() + "reports/82report.lrxml");
 }

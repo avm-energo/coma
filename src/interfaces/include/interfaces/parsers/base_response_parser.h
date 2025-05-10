@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gen/error.h>
-#include <gen/logclass.h>
+#include <gen/logger.h>
 #include <interfaces/types/common_types.h>
 #include <s2/s2util.h>
 
@@ -80,7 +80,7 @@ signals:
     void responseParsed(const Interface::DeviceResponse &response);
 
     /// \brief Сигнал, который используется для отправки сообщения в лог исполнителя запросов.
-    void needToLog(const QString &message, const LogLevel level);
+    void needToLog(const QString &message, Logger::MessageTypes level);
     /// \brief Сигнал для отмены текущей команды.
     /// \details Может использоваться для прекращения отработки текущей команды в
     /// случае возникновения ошибок связи с устройствомю

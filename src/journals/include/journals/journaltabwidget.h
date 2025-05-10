@@ -28,6 +28,7 @@ private:
     QProgressDialog *m_saveProgressDialog;
     Interface::AsyncConnection *m_async;
     JournalType m_type;
+    bool isJournalOperationActive; // переменная, определяющая, какой из диалогов сейчас запрашивает файл
 
     /// \brief Метод для создания виджетов, сигнализирующих
     /// пользователю состояние обмена данными и сохранения данных в файл.
@@ -61,6 +62,11 @@ public:
 
     /// \brief Функция, возвращающая имя вкладки.
     QString getTabName() const;
+
+public slots:
+    void stopProgressIndicator(Error::Msg msg);
+    void stopProgressIndicatorResp(const DataTypes::GeneralResponseStruct &resp);
+    void stopAndHideIndicator();
 
 signals:
     /// \brief Сигнал для уведомления UI о том, что журнал загружен успешно.

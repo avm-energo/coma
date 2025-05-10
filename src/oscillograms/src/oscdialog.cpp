@@ -82,7 +82,7 @@ void OscDialog::eraseOsc()
 
 QString OscDialog::filename(quint64 time, quint32 oscNum) const
 {
-    QString filename = StdFunc::GetSystemHomeDir();
+    QString filename = StdFunc::dataDir();
     filename.push_back(m_device->getUID());
     filename.push_back("-");
     filename.push_back(QString::number(m_device->getDeviceType(), 16));

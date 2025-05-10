@@ -117,7 +117,7 @@ Error::Msg Tune85ADC::ADCCoef(int coef)
     if (StdFunc::IsCancelled())
         return Error::Msg::Cancelled;
     showTWTab(m_BdainWidgetIndex);
-    emit setProgressSize(StdFunc::TuneRequestCount());
+    emit setProgressSize(m_tuneRequestCount);
     for (int i = 0; i < 6; ++i)
     {
         m_bdainBlockData.IUefNat_filt[i] = 0.0;
@@ -125,7 +125,7 @@ Error::Msg Tune85ADC::ADCCoef(int coef)
     }
     m_bdainBlockData.Frequency = 0.0;
     int count = 0;
-    while ((!StdFunc::IsCancelled()) && (count < StdFunc::TuneRequestCount()))
+    while ((!StdFunc::IsCancelled()) && (count < m_tuneRequestCount))
     {
         m_bdain->readAndUpdate();
         if (checkBdaIn(currentMap[coef]))
@@ -145,10 +145,10 @@ Error::Msg Tune85ADC::ADCCoef(int coef)
     }
     for (int i = 0; i < 6; ++i)
     {
-        m_bdainBlockData.IUefNat_filt[i] /= StdFunc::TuneRequestCount();
-        m_bdainBlockData.phi_next_f[i] /= StdFunc::TuneRequestCount();
+        m_bdainBlockData.IUefNat_filt[i] /= m_tuneRequestCount;
+        m_bdainBlockData.phi_next_f[i] /= m_tuneRequestCount;
     }
-    m_bdainBlockData.Frequency /= StdFunc::TuneRequestCount();
+    m_bdainBlockData.Frequency /= m_tuneRequestCount;
     if (StdFunc::IsCancelled())
         return Error::Msg::Cancelled;
     return Error::Msg::NoError;

@@ -4,7 +4,8 @@
 #include <QThread>
 
 SerialPort::SerialPort(const SerialPortSettings &settings, QObject *parent)
-    : BaseInterface("ModbusPort", settings, parent), m_port(new QSerialPort(settings.name, this))
+    : BaseInterface("ModbusPort", settings, parent)
+    , m_port(new QSerialPort(settings.name, this))
 {
     m_port->setBaudRate(settings.baud);
     m_port->setDataBits(QSerialPort::Data8);
@@ -27,7 +28,7 @@ bool SerialPort::connect()
         }
     }
     else
-        m_log.error("Can't open " + m_port->portName());
+        m_log.writeLog(Logger::Critical, "Can't open " + m_port->portName());
     return false;
 }
 
@@ -46,13 +47,13 @@ QByteArray SerialPort::read(bool &status)
         readyRead = m_port->waitForReadyRead(10); // wait data (timeout 10 ms)
     if (readyRead)
     {
-        m_dataGuard.lock(); // lock port
+        m_dataGuard.lock();                       // lock port
         while (m_port->bytesAvailable())
         {
-            data += m_port->readAll(); // read data
+            data += m_port->readAll();            // read data
             QThread::msleep(2);
         }
-        m_dataGuard.unlock(); // unlock port
+        m_dataGuard.unlock();                     // unlock port
     }
     if (data.isEmpty())
         QCoreApplication::processEvents();

@@ -31,7 +31,7 @@ QDomElement MasterModel::toNode(QDomDocument &doc, const int &row)
 void MasterModel::undoChanges(const int &row, const bool &openState)
 {
     auto fileName = data(index(row, 0), FilenameDataRole).value<QString>();
-    auto dir = QDir(StdFunc::GetSystemHomeDir());
+    auto dir = QDir(StdFunc::configDir());
     // Заново парсим файл в модель
     auto file = new QFile(dir.filePath(fileName));
     if (file->open(QIODevice::ReadOnly))
@@ -53,7 +53,7 @@ void MasterModel::undoChanges(const int &row, const bool &openState)
 void MasterModel::readModulesToModel()
 {
     // Создание и настройка модели для Master View
-    auto dir = QDir(StdFunc::GetSystemHomeDir());
+    auto dir = QDir(StdFunc::configDir());
     auto modules = dir.entryList(QDir::Files).filter(".xml");
     setRowCount(0);
     setColumnCount(5);
@@ -135,7 +135,7 @@ void MasterModel::masterItemSelected(const QModelIndex &itemIndex)
     auto dataFilename = data(index(row, 0), FilenameDataRole);
     if (dataFilename.canConvert<QString>())
     {
-        QDir homeDir(StdFunc::GetSystemHomeDir());
+        QDir homeDir(StdFunc::configDir());
         auto filename = qvariant_cast<QString>(dataFilename);
         auto moduleFile = new QFile(homeDir.filePath(filename), this);
         if (moduleFile->open(QIODevice::ReadOnly))

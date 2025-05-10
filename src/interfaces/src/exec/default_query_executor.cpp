@@ -18,17 +18,20 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, const BaseSettin
 {
     m_timeoutTimer.setSingleShot(true);
     m_timeoutTimer.setInterval(settings.m_timeout);
-    connect(&m_timeoutTimer, &QTimer::timeout, this, [this] {
-        qCritical() << "Timeout, command: " << m_lastRequestedCommand.load();
-        m_log.error("Timeout");
-        cancelQuery();
-        emit this->timeout();
-    });
+    connect(&m_timeoutTimer, &QTimer::timeout, this,
+        [this]
+        {
+            qCritical() << "Timeout, command: " << m_lastRequestedCommand.load();
+            m_log.writeLog(Logger::Critical, "Timeout");
+            cancelQuery();
+            emit this->timeout();
+            emit responseError(Error::Msg::Timeout);
+        });
 }
 
 void DefaultQueryExecutor::initLogger(const QString &protocolName) noexcept
 {
-    m_log.init(protocolName + "Executor." + logExt);
+    m_log.writeStart(protocolName + "Executor.log");
 }
 
 void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept
@@ -52,16 +55,20 @@ void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponse
         connect(m_responseParser, &BaseResponseParser::cancelRequest,     //
             this, &DefaultQueryExecutor::cancelQuery);                    //
 
-        m_requestParser->basicProtocolSetup(); // basic protocol setup
-        connect(m_requestParser, &BaseRequestParser::writingLongData, this, [this] {
-            setState(ExecutorState::WritingLongData);
-            m_timeoutTimer.setInterval(m_timeoutTimer.interval() * 5);
-            m_queue.get().deactivate();
-        });
-        connect(m_responseParser, &BaseResponseParser::readingLongData, this, [this] {
-            setState(ExecutorState::ReadingLongData);
-            m_queue.get().deactivate();
-        });
+        m_requestParser->basicProtocolSetup();                            // basic protocol setup
+        connect(m_requestParser, &BaseRequestParser::writingLongData, this,
+            [this]
+            {
+                setState(ExecutorState::WritingLongData);
+                m_timeoutTimer.setInterval(m_timeoutTimer.interval() * 5);
+                m_queue.get().deactivate();
+            });
+        connect(m_responseParser, &BaseResponseParser::readingLongData, this,
+            [this]
+            {
+                setState(ExecutorState::ReadingLongData);
+                m_queue.get().deactivate();
+            });
     }
 }
 
@@ -143,12 +150,12 @@ void DefaultQueryExecutor::writeToLog(const QByteArray &ba, const Direction dir)
         break;
     }
     msg += ba.toHex();
-    m_log.debug(msg);
+    m_log.writeLog(Logger::Debug, msg);
 }
 
-void DefaultQueryExecutor::logFromParser(const QString &message, const LogLevel level)
+void DefaultQueryExecutor::logFromParser(const QString &message, const Logger::MessageTypes level)
 {
-    m_log.logging("DeviceQueryExecutor: " + message, level);
+    m_log.writeLog(level, "DeviceQueryExecutor: " + message);
 }
 
 void DefaultQueryExecutor::exec()
@@ -170,7 +177,7 @@ void DefaultQueryExecutor::exec()
         QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         currentState = getState();
     }
-    m_log.info("DeviceQueryExecutor is finished\n");
+    m_log.writeLog(Logger::Info, "DeviceQueryExecutor is finished\n");
     emit finished();
 }
 
@@ -268,7 +275,7 @@ void DefaultQueryExecutor::receiveProtocolDescription(const ProtocolDescription 
 
 void DefaultQueryExecutor::cancelQuery()
 {
-    m_log.warning("Command canceled");
+    m_log.writeLog(Logger::Warning, "Command canceled");
     m_responseParser->clearResponseBuffer();
     m_requestParser->clearLongDataSections();
     m_queue.get().activate();
@@ -281,7 +288,7 @@ void DefaultQueryExecutor::cancelQuery()
 
 void DefaultQueryExecutor::reconnectEvent()
 {
-    m_log.warning("Reconnect");
+    m_log.writeLog(Logger::Warning, "Reconnect");
     cancelQuery();
     pause();
     m_queue.get().clear();

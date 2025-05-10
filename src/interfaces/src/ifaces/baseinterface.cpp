@@ -10,7 +10,7 @@ BaseInterface::BaseInterface(const QString &logFilename, const BaseSettings &set
     , m_isLoggingEnabled(settings.m_isLoggingEnabled)
 {
     qRegisterMetaType<InterfaceError>();
-    m_log.init(logFilename + "." + ::logExt);
+    m_log.writeStart(logFilename + ".log");
 }
 
 void BaseInterface::setState(const Interface::State state) noexcept
@@ -42,14 +42,14 @@ void BaseInterface::writeLog(const QByteArray &ba, Interface::Direction dir)
             break;
         }
         msg += ba.toHex();
-        m_log.debug(msg);
+        m_log.writeLog(Logger::MessageTypes::Debug, msg);
     }
 }
 
 void BaseInterface::writeLog(const Error::Msg msg)
 {
     if (m_isLoggingEnabled)
-        m_log.error(QVariant::fromValue(msg).toString());
+        m_log.writeLog(Logger::MessageTypes::Critical, QVariant::fromValue(msg).toString());
 }
 
 void BaseInterface::poll()
@@ -81,7 +81,7 @@ void BaseInterface::poll()
 
     // Finish thread
     disconnect();
-    m_log.info(QString(metaObject()->className()) + " is finished\n");
+    m_log.writeLog(Logger::MessageTypes::Info, QString(metaObject()->className()) + " is finished\n");
     emit finished();
     QCoreApplication::processEvents();
 }
@@ -126,7 +126,7 @@ void BaseInterface::reconnect()
         {
             disconnect();                       // Закрываем текущее соединение
             StdFunc::Wait(m_reconnectInterval); // Интервал между закрытием подключения и попыткой переподключиться
-            if (connect()) // Пытаемся подключиться к интерфейсу заново
+            if (connect())                      // Пытаемся подключиться к интерфейсу заново
                 break;
             QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
         }

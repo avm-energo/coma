@@ -14,13 +14,10 @@
 TuneKIVDialog::TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    auto TKIVADCUDialog = new TuneKIVADC(ADCU, device, this);
-    auto TKIVADCIDialog = new TuneKIVADC(ADCI, device, this);
-    auto TKIVCheckDialog = new TuneKIVCheck(device, this);
-    auto TKIVRDialog = new TuneKIVR(device, this);
-    m_dialogList = { { "Проверка правильности измерения входных сигналов", TKIVCheckDialog },
-        { "Регулировка канала Pt100", TKIVRDialog }, { "Регулировка каналов напряжения", TKIVADCUDialog },
-        { "Регулировка каналов тока", TKIVADCIDialog } };
+    addTuneDialog({ "Проверка правильности измерения входных сигналов", new TuneKIVCheck(device, this) });
+    addTuneDialog({ "Регулировка канала Pt100", new TuneKIVR(device, this) });
+    addTuneDialog({ "Регулировка каналов напряжения", new TuneKIVADC(ADCU, device, this) });
+    addTuneDialog({ "Регулировка каналов тока", new TuneKIVADC(ADCI, device, this) });
     BacA284 *bac = new BacA284(this);
     Bac2A284 *bac2 = new Bac2A284(this);
     bac->setup(m_device->getUID(), m_device->sync());
