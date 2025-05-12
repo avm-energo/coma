@@ -1,8 +1,7 @@
-#include "widgets/udialog.h"
-
+#include <comawidgets/udialog.h>
 #include <device/current_device.h>
 #include <gen/error.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 
 UDialog::UDialog(Device::CurrentDevice *device, QWidget *parent) : UWidget(device, parent)
 {

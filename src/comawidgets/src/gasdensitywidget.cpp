@@ -1,4 +1,5 @@
-#include "widgets/gasdensitywidget.h"
+#include <comawidgets/gasdensitywidget.h>
+#include <gen/std_ext.h>
 
 #include <QComboBox>
 #include <QDebug>
@@ -8,7 +9,6 @@
 #include <QLineEdit>
 #include <QRadioButton>
 #include <cmath>
-#include <gen/std_ext.h>
 
 bool GasWidgetRow::isActive() const noexcept
 {

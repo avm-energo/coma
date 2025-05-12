@@ -1,7 +1,7 @@
 #include "xml/xmleditor/datacontroller.h"
 
-#include <gen/stdfunc.h>
-#include <widgets/epopup.h>
+#include <gen/settings.h>
+#include <widgets/emessagebox.h>
 #include <xml/xmleditor/models/mastermodel.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 #include <xml/xmltags.h>
@@ -14,7 +14,7 @@ DataController::DataController(QObject *parent) : QObject(parent), isModuleChang
 
 QString DataController::getFilePath(const QString &filename)
 {
-    auto dir = QDir(StdFunc::configDir());
+    auto dir = QDir(Settings::configDir());
     return dir.filePath(filename);
 }
 

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <QModelIndex>
+#include <comawidgets/udialog.h>
 #include <models/etablemodel.h>
 #include <oscillograms/oscmanager.h>
-#include <widgets/udialog.h>
+
+#include <QModelIndex>
 
 class ETableView;
 

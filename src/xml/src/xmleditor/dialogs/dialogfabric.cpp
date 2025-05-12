@@ -1,7 +1,6 @@
 #include "xml/xmleditor/dialogs/dialogfabric.h"
 
-#include <QMessageBox>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <xml/xmleditor/dialogs/moduledialog.h>
 #include <xml/xmleditor/dialogs/xml104dialog.h>
 #include <xml/xmleditor/dialogs/xmlalarmdialog.h>
@@ -21,6 +20,8 @@
 #include <xml/xmleditor/dialogs/xmlsignaldialog.h>
 #include <xml/xmleditor/dialogs/xmlstabdialog.h>
 #include <xml/xmleditor/dialogs/xmlworkjourdialog.h>
+
+#include <QMessageBox>
 
 namespace Helper
 {

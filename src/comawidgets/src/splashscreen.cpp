@@ -1,4 +1,4 @@
-#include "widgets/splashscreen.h"
+#include <comawidgets/splashscreen.h>
 
 #include <QCoreApplication>
 #include <QIcon>

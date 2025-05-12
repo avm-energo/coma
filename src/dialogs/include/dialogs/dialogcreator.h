@@ -1,8 +1,9 @@
 #pragma once
 
-#include <QObject>
+#include <comawidgets/udialog.h>
 #include <device/device_list.h>
-#include <widgets/udialog.h>
+
+#include <QObject>
 
 /// \brief Class for creating and managing dialogs.
 class DialogCreator final : public QObject

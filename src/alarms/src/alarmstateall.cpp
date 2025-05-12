@@ -56,11 +56,11 @@ void AlarmStateAll::setupUI()
     {
         Q_ASSERT(m_config[i].index < 32);
         auto hLayout = new QHBoxLayout;
-        auto label = LBLFunc::NewLBL(this, "", QString::number(m_config[i].index));
+        auto label = LBLFunc::New(this, "", QString::number(m_config[i].index));
         auto pixmap = GraphFunc::NewCircle(m_normalColor, circleRadius);
         label->setPixmap(pixmap);
         hLayout->addWidget(label, 1);
-        hLayout->addWidget(LBLFunc::NewLBL(this, m_config[i].desc), 100);
+        hLayout->addWidget(LBLFunc::New(this, m_config[i].desc), 100);
         lyout->addLayout(hLayout);
     }
 
@@ -111,7 +111,7 @@ void AlarmStateAll::update(const quint32 health)
             color = getColorByType(record.type);
         updateStrongestColor(color);
         auto circle = GraphFunc::NewCircle(color, circleRadius);
-        LBLFunc::SetLBLImage(this, QString::number(record.index), &circle);
+        LBLFunc::SetImage(this, QString::number(record.index), &circle);
     }
     emit updateColor(m_strongestColor);
 }

@@ -1,9 +1,8 @@
 #pragma once
 
 #include <models/etablemodel.h>
-#include <optional>
 #include <oscillograms/oscmanager.h>
-#include <widgets/udialog.h>
+#include <comawidgets/udialog.h>
 
 class OscDialog : public UDialog
 {

@@ -19,7 +19,6 @@ public:
     virtual bool updateModel() = 0;
 
 protected:
-    Settings::UserSettings &m_settings;
     QTableView *m_tableView;
 
     virtual void acceptedInterface() {};

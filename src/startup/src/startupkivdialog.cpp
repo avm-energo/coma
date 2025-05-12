@@ -2,7 +2,7 @@
 
 #include <gen/error.h>
 #include <gen/files.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/filefunc.h>
 #include <widgets/lblfunc.h>
 #include <widgets/spbfunc.h>
@@ -73,35 +73,35 @@ QWidget *StartupKIVDialog::uiValuesTab(QWidget *parent)
     auto glyout = new QGridLayout;
     int row = 0;
 
-    glyout->addWidget(LBLFunc::NewLBL(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
+    glyout->addWidget(LBLFunc::New(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        auto spinBox = SPBFunc::NewSPB(this, QString::number(KIVSTARTUPINITREGR + i), 0, 10000, 1);
+        auto spinBox = SPBFunc::New(this, QString::number(KIVSTARTUPINITREGR + i), 0, 10000, 1);
         glyout->addWidget(spinBox, row, 2 + i, 1, 1);
     }
     row++;
 
-    glyout->addWidget(LBLFunc::NewLBL(this, "Начальные значения tg δ вводов, %:"), row, 1, 1, 1);
+    glyout->addWidget(LBLFunc::New(this, "Начальные значения tg δ вводов, %:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        auto spinBox = SPBFunc::NewSPB(this, QString::number(KIVSTARTUPINITREGR + 3 + i), -10, 10, 2);
+        auto spinBox = SPBFunc::New(this, QString::number(KIVSTARTUPINITREGR + 3 + i), -10, 10, 2);
         glyout->addWidget(spinBox, row, 2 + i, 1, 1);
     }
     row++;
 
-    glyout->addWidget(LBLFunc::NewLBL(this, "Коррекция  tg δ вводов,%:"), row, 1, 1, 1);
+    glyout->addWidget(LBLFunc::New(this, "Коррекция  tg δ вводов,%:"), row, 1, 1, 1);
     for (int i = 0; i < 3; i++)
     {
-        auto spinBox = SPBFunc::NewSPB(this, QString::number(KIVSTARTUPINITREGR + 6 + i), -10, 10, 2);
+        auto spinBox = SPBFunc::New(this, QString::number(KIVSTARTUPINITREGR + 6 + i), -10, 10, 2);
         glyout->addWidget(spinBox, row, 2 + i, 1, 1);
     }
     row++;
 
-    glyout->addWidget(LBLFunc::NewLBL(this, "Начальное значение небаланса токов, %:"), row, 1, 1, 1);
-    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(KIVSTARTUPINITREGR + 9), 0, 10000, 1), row, 2, 1, 3);
+    glyout->addWidget(LBLFunc::New(this, "Начальное значение небаланса токов, %:"), row, 1, 1, 1);
+    glyout->addWidget(SPBFunc::New(this, QString::number(KIVSTARTUPINITREGR + 9), 0, 10000, 1), row, 2, 1, 3);
     row++;
-    glyout->addWidget(LBLFunc::NewLBL(this, "Начальное значение угла тока небаланса, град.:"), row, 1, 1, 1);
-    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(KIVSTARTUPINITREGR + 10), 0, 10000, 1), row, 2, 1, 3);
+    glyout->addWidget(LBLFunc::New(this, "Начальное значение угла тока небаланса, град.:"), row, 1, 1, 1);
+    glyout->addWidget(SPBFunc::New(this, QString::number(KIVSTARTUPINITREGR + 10), 0, 10000, 1), row, 2, 1, 3);
 
     layout->addLayout(glyout, Qt::AlignTop);
     layout->addWidget(buttonWidget());

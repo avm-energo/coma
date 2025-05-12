@@ -1,11 +1,12 @@
 #pragma once
 
+#include <comawidgets/udialog.h>
+#include <comawidgets/widgetfactory.h>
 #include <dialogs/dialogcreator.h>
 #include <dialogs/errconfstate.h>
 #include <s2/s2datamanager.h>
+
 #include <set>
-#include <widgets/udialog.h>
-#include <widgets/widgetfactory.h>
 
 class QTabWidget;
 

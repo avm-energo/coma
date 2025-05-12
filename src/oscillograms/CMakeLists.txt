@@ -19,7 +19,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${qcustomplot_SOURCE_DIR} ${q
 
 # Linking library dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC
-    widgets
+    comawidgets
+    models
     qcustomplot
+    avm-widgets
     QXlsx
 )

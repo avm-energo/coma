@@ -6,7 +6,7 @@
 #include <gen/timefunc.h>
 #include <oscillograms/osc_ids.h>
 #include <widgets/cbfunc.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/filefunc.h>
 #include <widgets/lblfunc.h>
 #include <widgets/pbfunc.h>
@@ -42,17 +42,17 @@ OscKivDialog::OscKivDialog(Device::CurrentDevice *device, QWidget *parent)
 void OscKivDialog::setupUI()
 {
     auto mainLayout = new QVBoxLayout;
-    m_oscFilenumLbl = LBLFunc::NewLBL(this, QString(oscFilenumLblFmt.data()).arg(' '), "oscFilenumLabel");
+    m_oscFilenumLbl = LBLFunc::New(this, QString(oscFilenumLblFmt.data()).arg(' '), "oscFilenumLabel");
     mainLayout->addWidget(m_oscFilenumLbl);
-    auto pointsSpinbox = SPBFunc::NewSPB(this, "n_point", 1, 8, 0);
+    auto pointsSpinbox = SPBFunc::New(this, "n_point", 1, 8, 0);
     mainLayout->addWidget(pointsSpinbox);
-    auto phaseCombobox = CBFunc::NewCB(this, "phase", { "Все фазы", "Фаза A", "Фаза B", "Фаза C" });
+    auto phaseCombobox = CBFunc::New(this, "phase", { "Все фазы", "Фаза A", "Фаза B", "Фаза C" });
     phaseCombobox->setCurrentIndex(0);
     mainLayout->addWidget(phaseCombobox);
     auto controlLayout = new QHBoxLayout;
-    m_commandBtn = PBFunc::NewPB(this, "commandBtn", "Запуск осциллограмм", this, &OscKivDialog::writeTypeOsc);
+    m_commandBtn = PBFunc::New(this, "commandBtn", "Запуск осциллограмм", this, &OscKivDialog::writeTypeOsc);
     controlLayout->addWidget(m_commandBtn);
-    m_readBtn = PBFunc::NewPB(this, "readBtn", "Прочитать осциллограмму", this, &OscKivDialog::reqOscFile);
+    m_readBtn = PBFunc::New(this, "readBtn", "Прочитать осциллограмму", this, &OscKivDialog::reqOscFile);
     controlLayout->addWidget(m_readBtn);
     mainLayout->addLayout(controlLayout);
     setLayout(mainLayout);
@@ -190,8 +190,8 @@ void OscKivDialog::writeTypeOsc()
 {
     enableButtons(false);
     TypeOsc command { 0, 0, 0 };
-    command.n_point = SPBFunc::SPBData<u8>(this, "n_point");
-    command.phase = CBFunc::CBIndex(this, "phase");
+    command.n_point = SPBFunc::Data<u8>(this, "n_point");
+    command.phase = CBFunc::Index(this, "phase");
     DataTypes::BlockStruct block { oscBlockReqNum, StdFunc::toByteArray(std::move(command)) };
     m_device->async()->writeCommand(Commands::C_WriteTypeOsc, QVariant::fromValue(block));
     m_state = State::WritingTypeOsc;

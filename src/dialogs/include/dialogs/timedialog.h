@@ -1,6 +1,6 @@
 #pragma once
 
-#include <widgets/udialog.h>
+#include <comawidgets/udialog.h>
 
 class TimeDialog final : public UDialog
 {

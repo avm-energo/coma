@@ -3,7 +3,7 @@
 #include <QtSvg/QSvgRenderer>
 #include <device/current_device.h>
 #include <widgets/chbfunc.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/lefunc.h>
 #include <widgets/pbfunc.h>
 #include <widgets/wdfunc.h>
@@ -93,7 +93,7 @@ void HiddenDialog::setupUI()
     auto mainLayout = new QVBoxLayout;
     auto tabWidget = new QTabWidget(this);
     tabWidget->setStyleSheet("background-color: transparent;"); // tabWidget прозрачный
-    mainLayout->addWidget(LEFunc::NewLBLAndLE(this, "Имя модуля:", "modulename"));
+    mainLayout->addWidget(LEFunc::NewLBL(this, "Имя модуля:", "modulename"));
 
     for (auto &&tabSettings : m_settings)
     {
@@ -158,7 +158,7 @@ QGroupBox *HiddenDialog::setupGroupBox(const HiddenTab &hiddenTab)
     auto gbLayout = new QVBoxLayout;
     if (hiddenTab.flag != 1)
     {
-        auto enableCheckBox = ChBFunc::NewChB(this, hiddenTab.prefix + "enable", "Установлена");
+        auto enableCheckBox = ChBFunc::New(this, hiddenTab.prefix + "enable", "Установлена");
         enableCheckBox->setChecked(true);
 #if (QT_VERSION < QT_VERSION_CHECK(6, 8, 2))
         connect(enableCheckBox, &QCheckBox::stateChanged, this, [this](int) { updateUI(); });
@@ -175,13 +175,13 @@ QGroupBox *HiddenDialog::setupGroupBox(const HiddenTab &hiddenTab)
             if (widget.view == ViewType::Version)
             {
                 auto hlyout = new QHBoxLayout;
-                hlyout->addWidget(LEFunc::NewLBLAndLE(this, title, widget.name + 'm', false));
-                hlyout->addWidget(LEFunc::NewLBLAndLE(this, ".", widget.name + 'l', false));
-                hlyout->addWidget(LEFunc::NewLBLAndLE(this, ".", widget.name + 's', false));
+                hlyout->addWidget(LEFunc::NewLBL(this, title, widget.name + 'm', false));
+                hlyout->addWidget(LEFunc::NewLBL(this, ".", widget.name + 'l', false));
+                hlyout->addWidget(LEFunc::NewLBL(this, ".", widget.name + 's', false));
                 gbLayout->addLayout(hlyout);
             }
             else
-                gbLayout->addWidget(LEFunc::NewLBLAndLE(this, title, widget.name, false));
+                gbLayout->addWidget(LEFunc::NewLBL(this, title, widget.name, false));
         }
     }
     tabGroupBox->setLayout(gbLayout);
@@ -221,7 +221,7 @@ bool HiddenDialog::isTabEnabled(const HiddenTab &tabSettings) const noexcept
 {
     bool enabled = false;
     if (tabSettings.flag != 1)
-        ChBFunc::ChBData(this, tabSettings.prefix + "enable", enabled);
+        ChBFunc::Data(this, tabSettings.prefix + "enable", enabled);
     else
         enabled = true;
     return enabled;
@@ -298,14 +298,14 @@ void HiddenDialog::fillWidget(const quint32 value, const HiddenWidget &widgetDat
     if (widgetData.view == ViewType::Version)
     {
         QString tmps = QString::number(static_cast<quint8>((value & 0xFF000000) >> 24), 16);
-        LEFunc::SetLEData(this, widgetData.name + 'm', tmps, "^[a-fA-F0-9]$");
+        LEFunc::SetData(this, widgetData.name + 'm', tmps, "^[a-fA-F0-9]$");
         tmps = QString::number(static_cast<quint8>((value & 0x00FF0000) >> 16), 16);
-        LEFunc::SetLEData(this, widgetData.name + 'l', tmps, "^[a-fA-F0-9]$");
+        LEFunc::SetData(this, widgetData.name + 'l', tmps, "^[a-fA-F0-9]$");
         tmps = QString::number(static_cast<quint16>(value & 0x0000FFFF), 16);
-        LEFunc::SetLEData(this, widgetData.name + 's', tmps, "^[a-fA-F0-9]{0,2}$");
+        LEFunc::SetData(this, widgetData.name + 's', tmps, "^[a-fA-F0-9]{0,2}$");
     }
     else
-        LEFunc::SetLEData(this, widgetData.name, QString::number(value, 16), "^[a-fA-F0-9]{1,8}$");
+        LEFunc::SetData(this, widgetData.name, QString::number(value, 16), "^[a-fA-F0-9]{1,8}$");
 }
 
 quint32 HiddenDialog::getDataFrom(const HiddenWidget &widgetData)
@@ -317,18 +317,18 @@ quint32 HiddenDialog::getDataFrom(const HiddenWidget &widgetData)
         // Version fill back
         if (widgetData.view == ViewType::Version)
         {
-            LEFunc::LEData(this, widgetData.name + 'm', tmps);
+            LEFunc::Data(this, widgetData.name + 'm', tmps);
             quint32 number = static_cast<quint32>(tmps.toInt()) << 24;
-            LEFunc::LEData(this, widgetData.name + 'l', tmps);
+            LEFunc::Data(this, widgetData.name + 'l', tmps);
             number |= static_cast<quint32>(tmps.toInt()) << 16;
-            LEFunc::LEData(this, widgetData.name + 's', tmps);
+            LEFunc::Data(this, widgetData.name + 's', tmps);
             number |= static_cast<quint32>(tmps.toInt());
             return number;
         }
         // Line edit fill back
         else
         {
-            LEFunc::LEData(this, widgetData.name, tmps);
+            LEFunc::Data(this, widgetData.name, tmps);
             quint32 number = static_cast<quint32>(tmps.toUInt(nullptr, 16));
             return number;
         }
@@ -364,7 +364,7 @@ void HiddenDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct 
 
 void HiddenDialog::setModuleName(const QString &moduleName)
 {
-    LEFunc::SetLEData(this, "modulename", moduleName);
+    LEFunc::SetData(this, "modulename", moduleName);
 }
 
 void HiddenDialog::fill()

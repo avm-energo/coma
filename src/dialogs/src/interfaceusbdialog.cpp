@@ -39,11 +39,9 @@ void InterfaceUSBDialog::setInterface(QModelIndex index)
 #ifdef QT_DEBUG
     settings.path = mdl->data(mdl->index(row, 3)).toString();
 #endif
-    m_settings.native().beginGroup("settings");
-    settings.m_timeout = m_settings.get<Settings::ProtocomTimeout>();
-    settings.m_reconnectInterval = m_settings.get<Settings::ProtocomReconnect>();
+    settings.m_timeout = m_settings.get(UserSettings::ProtocomTimeout);
+    settings.m_reconnectInterval = m_settings.get(UserSettings::ProtocomReconnect);
     fill(settings);
-    m_settings.native().endGroup();
 
     ConnectStruct st { QString(), settings };
     emit accepted(st);

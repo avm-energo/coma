@@ -3,7 +3,7 @@
 #include <gen/error.h>
 #include <gen/files.h>
 #include <s2/s2util.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/filefunc.h>
 #include <widgets/pbfunc.h>
 
@@ -24,7 +24,7 @@ FWUploadDialog::FWUploadDialog(Device::CurrentDevice *device, QWidget *parent)
 void FWUploadDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    QPushButton *pb = PBFunc::NewPB(this, "", "Записать ПО в память модуля", this, &FWUploadDialog::loadFirmware);
+    QPushButton *pb = PBFunc::New(this, "", "Записать ПО в память модуля", this, &FWUploadDialog::loadFirmware);
     lyout->addWidget(pb);
     setLayout(lyout);
 }

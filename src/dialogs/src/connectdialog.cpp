@@ -24,8 +24,8 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent), m_idialog(nullp
     settings.beginGroup("settings");
 
     auto layout = new QVBoxLayout;
-    layout->addWidget(LBLFunc::NewLBL(this, "Выберите интерфейс связи"));
-    auto intercb = CBFunc::NewCB(this, "intercb", intersl);
+    layout->addWidget(LBLFunc::New(this, "Выберите интерфейс связи"));
+    auto intercb = CBFunc::New(this, "intercb", intersl);
     if (settings.contains("LastConnectionType"))
     {
         auto lastConnectionType = settings.value("LastConnectionType").toString();

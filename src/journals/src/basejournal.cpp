@@ -48,7 +48,7 @@ void BaseJournal::setUserTimezone(QStringList &data)
 
 QTableView *BaseJournal::createModelView(QWidget *parent) const
 {
-    auto modelView = TVFunc::NewQTV(parent, m_viewName, m_proxyModel.get());
+    auto modelView = TVFunc::New(parent, m_viewName, m_proxyModel.get());
     return modelView;
 }
 

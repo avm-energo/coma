@@ -27,13 +27,12 @@
 
 #include "oscillograms/trendview/trendviewdialog.h"
 
-#include <gen/comaexception.h>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <gen/pch.h>
-#include <gen/stdfunc.h>
+#include <gen/settings.h>
 #include <oscillograms/osc_ids.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/signalchoosewidget.h>
 #include <widgets/wdfunc.h>
 
@@ -472,7 +471,7 @@ void TrendViewDialog::exportToExcel()
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
     QString filename = dlg->getSaveFileName(
-        this, "Сохранить файл", StdFunc::dataDir(), "Excel files (*.xlsx)", nullptr, QFileDialog::DontUseNativeDialog);
+        this, "Сохранить файл", Settings::workDir(), "Excel files (*.xlsx)", nullptr, QFileDialog::DontUseNativeDialog);
     // QFileInfo info(filename);
     // StdFunc::SetHomeDir(info.absolutePath());
     dlg->close();

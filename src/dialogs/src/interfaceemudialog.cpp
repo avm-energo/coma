@@ -14,30 +14,21 @@
 
 InterfaceEmuDialog::InterfaceEmuDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
-    m_settings.native().beginGroup("Emulator");
 }
 
 InterfaceEmuDialog::~InterfaceEmuDialog() noexcept
 {
-    m_settings.native().endGroup();
 }
 
 void InterfaceEmuDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    m_tableView = TVFunc::NewQTV(this, "", nullptr);
+    m_tableView = TVFunc::New(this, "", nullptr);
     lyout->addWidget(m_tableView);
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addStretch(10);
-    hlyout->addWidget(PBFunc::NewPB(this, "newrspb", "Добавить", this, &InterfaceEmuDialog::addInterface));
-    hlyout->addWidget(PBFunc::NewPB(this, "", tr("Удалить"), this,
-        [this]
-        {
-            auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
-            m_settings.remove(name);
-            updateModel();
-        }));
+    hlyout->addWidget(PBFunc::New(this, "newrspb", "Добавить", this, &InterfaceEmuDialog::addInterface));
     hlyout->addStretch(10);
     lyout->addLayout(hlyout);
     setLayout(lyout);
@@ -102,20 +93,20 @@ void InterfaceEmuDialog::addInterface()
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QGridLayout *lyout = new QGridLayout;
     int count = 0;
-    lyout->addWidget(LBLFunc::NewLBL(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(LEFunc::NewLE(dlg, "namele"), count++, 1, 1, 1);
-    lyout->addWidget(LBLFunc::NewLBL(dlg, "typeB:"), count, 0, 1, 1, Qt::AlignLeft);
-    auto lineEdit = LEFunc::NewLE(dlg, "typeble");
+    lyout->addWidget(LBLFunc::New(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(LEFunc::New(dlg, "namele"), count++, 1, 1, 1);
+    lyout->addWidget(LBLFunc::New(dlg, "typeB:"), count, 0, 1, 1, Qt::AlignLeft);
+    auto lineEdit = LEFunc::New(dlg, "typeble");
     lineEdit->setInputMask("HH;");
     lyout->addWidget(lineEdit, count++, 1, 1, 1, Qt::AlignLeft);
 
-    lyout->addWidget(LBLFunc::NewLBL(dlg, "typeM:"), count, 0, 1, 1, Qt::AlignLeft);
-    lineEdit = LEFunc::NewLE(dlg, "typemle");
+    lyout->addWidget(LBLFunc::New(dlg, "typeM:"), count, 0, 1, 1, Qt::AlignLeft);
+    lineEdit = LEFunc::New(dlg, "typemle");
     lineEdit->setInputMask("HH;");
     lyout->addWidget(lineEdit, count++, 1, 1, 1);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(PBFunc::NewPB(dlg, "acceptpb", "Сохранить", this, &InterfaceEmuDialog::acceptedInterface));
-    hlyout->addWidget(PBFunc::NewPB(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
+    hlyout->addWidget(PBFunc::New(dlg, "acceptpb", "Сохранить", this, &InterfaceEmuDialog::acceptedInterface));
+    hlyout->addWidget(PBFunc::New(dlg, "cancelpb", "Отмена", [dlg] { dlg->close(); }));
 
     lyout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
     dlg->setLayout(lyout);
@@ -128,19 +119,12 @@ void InterfaceEmuDialog::acceptedInterface()
     QDialog *dlg = this->findChild<QDialog *>("emudlg");
     if (dlg == nullptr)
         return;
-    QString name = LEFunc::LEData(dlg, "namele");
-    // check if there's such name in registry
-    if (m_settings.isExist(name))
-    {
-        QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
-        return;
-    }
+    QString name = LEFunc::Data(dlg, "namele");
     // rotateSettings("EMU-", name);
     QString key = QCoreApplication::applicationName();
     key += "\\" + name;
-    UniquePointer<QSettings> settings(new QSettings(QCoreApplication::organizationName(), key));
-    settings->setValue("typeb", LEFunc::LEData(dlg, "typeble"));
-    settings->setValue("typem", LEFunc::LEData(dlg, "typemle"));
+    Settings::setValue("typeb", LEFunc::Data(dlg, "typeble"));
+    Settings::setValue("typem", LEFunc::Data(dlg, "typemle"));
 
     if (!updateModel())
         qCritical() << Error::GeneralError;

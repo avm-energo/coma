@@ -2,7 +2,7 @@
 
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/graphfunc.h>
 #include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
@@ -41,12 +41,12 @@ Error::Msg TuneKIVR::showPreWarning()
     auto layout = new QVBoxLayout;
 
     layout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tunekiv1.png"), 0);
-    layout->addWidget(LBLFunc::NewLBL(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
-    layout->addWidget(LBLFunc::NewLBL(this,
+    layout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
+    layout->addWidget(LBLFunc::New(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока "
         "и напряжения в однофазной сети переменного тока, установите предел измерения "
         "по напряжению 60 В, по току - 2,5 А;"));
-    layout->addWidget(LBLFunc::NewLBL(this,
+    layout->addWidget(LBLFunc::New(this,
         "3. Данный этап регулировки должен выполняться при температуре "
         "окружающего воздуха +20±7 °С. Если температура окружающего воздуха отличается от указанной, "
         "разместите модуль в термокамеру с диапазоном регулирования температуры "

@@ -1,5 +1,4 @@
-#include "widgets/widgetfactory.h"
-
+#include <comawidgets/widgetfactory.h>
 #include <ctti/type_id.hpp>
 #include <interfaces/types/modbus_types.h>
 #include <models/comboboxdelegate.h>
@@ -152,11 +151,11 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 {
                     assert(static_cast<uint32_t>(arg.items.count()) == arg.count);
                     spbGroup
-                        = SPBFunc::NewSPBG(parent, QString::number(key), arg.items, arg.min, arg.max, arg.decimals);
+                        = SPBFunc::NewGroup(parent, QString::number(key), arg.items, arg.min, arg.max, arg.decimals);
                 }
                 else
                     spbGroup
-                        = SPBFunc::NewSPBG(parent, QString::number(key), arg.count, arg.min, arg.max, arg.decimals);
+                        = SPBFunc::NewGroup(parent, QString::number(key), arg.count, arg.min, arg.max, arg.decimals);
 
                 addVerticalLine(lyout, parent);
                 lyout->addWidget(spbGroup, 100);
@@ -169,7 +168,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 auto label = new QLabel(arg.desc, parent);
                 label->setToolTip(arg.toolTip);
                 lyout->addWidget(label);
-                lyout->addWidget(SPBFunc::NewSPB(parent, QString::number(key), arg.min, arg.max, arg.decimals));
+                lyout->addWidget(SPBFunc::New(parent, QString::number(key), arg.min, arg.max, arg.decimals));
                 widget->setLayout(lyout);
             },
             [&](const delegate::CheckBoxGroup &arg)
@@ -198,7 +197,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 auto label = new QLabel(arg.desc, parent);
                 label->setToolTip(arg.toolTip);
                 lyout->addWidget(label);
-                lyout->addWidget(CBFunc::NewCB(parent, QString::number(key), arg.model));
+                lyout->addWidget(CBFunc::New(parent, QString::number(key), arg.model));
                 widget->setLayout(lyout);
             },
             [&](const delegate::ComboBoxGroup &arg)
@@ -218,7 +217,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                     QWidget *w = new QWidget;
                     QHBoxLayout *layout = new QHBoxLayout;
                     layout->addWidget(new QLabel(QString::number(i + 1), parent));
-                    layout->addWidget(CBFunc::NewCB(parent, widgetName(key, i), arg.model));
+                    layout->addWidget(CBFunc::New(parent, widgetName(key, i), arg.model));
                     w->setLayout(layout);
                     flowLayout->addWidget(w);
                 }
@@ -599,7 +598,7 @@ bool WidgetFactory::fillBackSPBG(quint32 id, const QWidget *parent) const
                 // !std::is_same_v<container_type, S2::GasDensity_3t>)
                 {
                     internalType buffer {};
-                    status = SPBFunc::SPBGData(parent, QString::number(id), buffer);
+                    status = SPBFunc::GroupData(parent, QString::number(id), buffer);
                     if (status)
                         record.setData(buffer);
                 }
@@ -620,7 +619,7 @@ bool WidgetFactory::fillBackSPB(quint32 id, const QWidget *parent) const
             if constexpr (!std_ext::is_container<internalType>()
                 && !std::is_same_v<internalType, S2::CONFMAST> && !std::is_same_v<internalType, S2::GasDensity_3t>)
             {
-                auto buffer = SPBFunc::SPBData<internalType>(parent, QString::number(id));
+                auto buffer = SPBFunc::Data<internalType>(parent, QString::number(id));
                 record.setData(buffer);
                 status = true;
             }
@@ -642,7 +641,7 @@ bool WidgetFactory::fillBackChBG(quint32 id, const QWidget *parent) const
                 if constexpr (std::is_unsigned_v<internalType>)
                 {
                     internalType buffer = 0;
-                    status = ChBFunc::ChBGData(parent, QString::number(id), buffer);
+                    status = ChBFunc::GroupData(parent, QString::number(id), buffer);
                     if (status)
                         record.setData(buffer);
                 }
@@ -655,7 +654,7 @@ bool WidgetFactory::fillBackChBG(quint32 id, const QWidget *parent) const
                 if constexpr (std::is_integral<iType>::value)
                 {
                     Container buffer;
-                    status = ChBFunc::ChBGData(parent, QString::number(id), buffer);
+                    status = ChBFunc::GroupData(parent, QString::number(id), buffer);
                     if (status)
                         record.setData(buffer);
                 }
@@ -679,7 +678,7 @@ bool WidgetFactory::fillBackComboBox(quint32 id, const QWidget *parent, delegate
                 {
                 case delegate::ComboBox::data:
                 {
-                    auto buffer = CBFunc::CBData<internalType>(parent, QString::number(id));
+                    auto buffer = CBFunc::Data<internalType>(parent, QString::number(id));
                     record.setData(buffer);
                     break;
                 }
@@ -691,7 +690,7 @@ bool WidgetFactory::fillBackComboBox(quint32 id, const QWidget *parent, delegate
                 {
                     if constexpr (std::is_integral_v<internalType>)
                     {
-                        int status_code = CBFunc::CBIndex(parent, QString::number(id));
+                        int status_code = CBFunc::Index(parent, QString::number(id));
                         if (status_code == -1)
                             return;
                         record.setData(static_cast<internalType>(status_code));
@@ -721,7 +720,7 @@ bool WidgetFactory::fillBackComboBoxGroup(quint32 id, const QWidget *parent, int
                 status = true;
                 for (int i = 0; i != count; ++i)
                 {
-                    int status_code = CBFunc::CBIndex(parent, widgetName(id, i));
+                    int status_code = CBFunc::Index(parent, widgetName(id, i));
                     if (status_code == -1)
                     {
                         status = false;
@@ -742,7 +741,7 @@ bool WidgetFactory::fillBackComboBoxGroup(quint32 id, const QWidget *parent, int
                     status = true;
                     for (int i = 0; i != count; ++i)
                     {
-                        int status_code = CBFunc::CBIndex(parent, widgetName(id, i));
+                        int status_code = CBFunc::Index(parent, widgetName(id, i));
                         if (status_code == -1)
                         {
                             status = false;

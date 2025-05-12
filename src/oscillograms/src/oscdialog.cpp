@@ -3,6 +3,7 @@
 #include <device/current_device.h>
 #include <gen/datatypes.h>
 #include <gen/files.h>
+#include <gen/settings.h>
 #include <gen/timefunc.h>
 #include <models/etablemodel.h>
 #include <s2/s2util.h>
@@ -29,7 +30,7 @@ void OscDialog::setupUI()
     connect(dg, &PushButtonDelegate::clicked, this, &OscDialog::getOsc);
     tv->setItemDelegateForColumn(Column::download, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
 
-    auto *getButton = PBFunc::NewPB(this, "", "Получить данные по осциллограммам ", this,
+    auto *getButton = PBFunc::New(this, "", "Получить данные по осциллограммам ", this,
         [&, tv]
         {
             oscMap.clear();
@@ -41,7 +42,7 @@ void OscDialog::setupUI()
         });
 
     hlyout->addWidget(getButton);
-    auto *eraseButton = PBFunc::NewPB(this, "", "Стереть все осциллограммы в памяти", this, &OscDialog::eraseOsc);
+    auto *eraseButton = PBFunc::New(this, "", "Стереть все осциллограммы в памяти", this, &OscDialog::eraseOsc);
     hlyout->addWidget(eraseButton);
 
     hlyout->addWidget(eraseButton);
@@ -82,7 +83,7 @@ void OscDialog::eraseOsc()
 
 QString OscDialog::filename(quint64 time, quint32 oscNum) const
 {
-    QString filename = StdFunc::dataDir();
+    QString filename = Settings::workDir();
     filename.push_back(m_device->getUID());
     filename.push_back("-");
     filename.push_back(QString::number(m_device->getDeviceType(), 16));

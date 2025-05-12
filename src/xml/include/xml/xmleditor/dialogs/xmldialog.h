@@ -12,7 +12,6 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSpinBox>
-#include <variant>
 
 constexpr auto createId = -1;
 constexpr auto idMin = 0;

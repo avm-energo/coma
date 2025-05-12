@@ -7,7 +7,6 @@ set(SRC_PATH     "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 set(files_h
     "${INCLUDE_PATH}/user_settings.h"
-    "${INCLUDE_PATH}/types.h"
 )
 
 set(files_cpp

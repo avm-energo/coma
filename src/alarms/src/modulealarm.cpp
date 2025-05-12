@@ -48,9 +48,9 @@ void ModuleAlarm::setupUI(const QStringList &events)
     {
         auto hLayout = new QHBoxLayout;
         auto pixmap = GraphFunc::NewCircle(m_normalColor, circleRadius);
-        auto label = LBLFunc::NewLBL(this, "", QString::number(index), &pixmap);
+        auto label = LBLFunc::New(this, "", QString::number(index), &pixmap);
         hLayout->addWidget(label, 1);
-        hLayout->addWidget(LBLFunc::NewLBL(this, desc), 100);
+        hLayout->addWidget(LBLFunc::New(this, desc), 100);
         vLayout->addLayout(hLayout);
         m_labelStateStorage.append({ label, false });
         index++;

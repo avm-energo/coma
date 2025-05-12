@@ -26,9 +26,10 @@
 #include "datablocks/datablock.h"
 
 #include <gen/files.h>
+#include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/filefunc.h>
 #include <widgets/hexpbfunc.h>
 #include <widgets/lefunc.h>
@@ -159,7 +160,7 @@ QWidget *DataBlock::blockButtonsUI()
         for (auto &i : funcs)
         {
             const QString &toolTip = i.first.first;
-            group->addButton(HexPBFunc::NewHexagonPB(m_bottomButtonsWidget, "", i.second, i.first.second, toolTip),
+            group->addButton(HexPBFunc::New(m_bottomButtonsWidget, "", i.second, i.first.second, toolTip),
                 QDialogButtonBox::ActionRole);
         }
         group->setCenterButtons(true);
@@ -199,12 +200,12 @@ void DataBlock::updateWidget()
                 overloaded {                                                                       //
                     [&](float *arg)                                                                //
                     {                                                                              //
-                        LEFunc::SetLEData(                                                         //
+                        LEFunc::SetData(                                                           //
                             m_widget, valueDesc.valueId, WDFunc::StringFloatValueWithCheck(*arg)); //
                     },                                                                             //
                     [&](quint32 *arg)                                                              //
                     {                                                                              //
-                        LEFunc::SetLEData(m_widget, valueDesc.valueId, QString::number(*arg));     //
+                        LEFunc::SetData(m_widget, valueDesc.valueId, QString::number(*arg));       //
                     } },                                                                           //
                 valueDesc.value);
         }
@@ -229,12 +230,12 @@ void DataBlock::updateFromWidget()
                     using T = std::remove_pointer_t<decltype(arg)>;
                     if constexpr (std::is_same_v<T, float>)
                     {
-                        float tmpf = StdFunc::ToFloat(LEFunc::LEData(m_widget, valueDesc.valueId));
+                        float tmpf = StdFunc::ToFloat(LEFunc::Data(m_widget, valueDesc.valueId));
                         *arg = tmpf;
                     }
                     else if constexpr (std::is_same_v<T, quint32>)
                     {
-                        quint32 tmpi = LEFunc::LEData(m_widget, valueDesc.valueId).toUInt();
+                        quint32 tmpi = LEFunc::Data(m_widget, valueDesc.valueId).toUInt();
                         *arg = tmpi;
                     }
                     else
@@ -335,13 +336,13 @@ Error::Msg DataBlock::loadFromFileAndWriteToModule(const QString &filename)
 
 Error::Msg DataBlock::readFromFile()
 {
-    return loadFromFileAndWriteToModule(StdFunc::dataDir() + cpuIDFilenameStr());
+    return loadFromFileAndWriteToModule(Settings::workDir() + cpuIDFilenameStr());
 }
 
 Error::Msg DataBlock::saveToFile()
 {
     QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
-    QString filestr = StdFunc::dataDir() + cpuIDFilenameStr();
+    QString filestr = Settings::workDir() + cpuIDFilenameStr();
     return Files::SaveToFile(filestr, ba);
 }
 

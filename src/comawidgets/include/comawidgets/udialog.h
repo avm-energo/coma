@@ -1,6 +1,6 @@
 #pragma once
 
-#include <widgets/uwidget.h>
+#include <comawidgets/uwidget.h>
 
 // simple dialog class to populate from
 class UDialog : public UWidget

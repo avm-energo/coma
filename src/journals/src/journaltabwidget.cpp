@@ -1,7 +1,7 @@
 #include "journals/journaltabwidget.h"
 
 #include <gen/files.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/filefunc.h>
 
 #include <QPushButton>

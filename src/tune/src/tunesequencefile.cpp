@@ -1,5 +1,6 @@
 #include "tune/tunesequencefile.h"
 
+#include <gen/settings.h>
 #include <gen/stdfunc.h>
 
 #include <QDebug>
@@ -13,7 +14,7 @@ TuneSequenceFile::TuneSequenceFile() { }
 
 void TuneSequenceFile::init(const QString &UID)
 {
-    const QString tsFilename = StdFunc::dataDir() + TS_FILENAME;
+    const QString tsFilename = Settings::dataDir() + TS_FILENAME;
     s_tsSettings = std::unique_ptr<QSettings>(new QSettings(tsFilename, QSettings::IniFormat));
     s_cpuSerialNum = UID;
     s_tsfInitialized = true;

@@ -1,7 +1,7 @@
 #include "models/report.h"
 
 #include <gen/error.h>
-#include <gen/stdfunc.h>
+#include <gen/settings.h>
 #include <limereport/lrreportengine.h>
 
 #include <QStandardItem>
@@ -57,7 +57,7 @@ void ReportModel::SetModel(int rowcount, int columncount)
 Report::Report(const QString &templatepath, QWidget *parent)
 {
     Rep = new LimeReport::ReportEngine(parent);
-    QString path = StdFunc::configDir() + templatepath + ".lrxml";
+    QString path = Settings::configDir() + templatepath + ".lrxml";
     Rep->loadFromFile(path);
 }
 

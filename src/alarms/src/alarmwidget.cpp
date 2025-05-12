@@ -48,10 +48,8 @@ void AlarmWidget::configure(Device::CurrentDevice *device)
         }
     }
 
-    auto &userSettings = Settings::UserSettings::GetInstance();
-    Settings::ScopedSettingsGroup _ { userSettings, "settings" };
-    updateAlarmInterval(userSettings.get<Settings::AlarmsInterval>());
-    updateAlarmOperation(userSettings.get<Settings::AlarmsEnabled>());
+    updateAlarmInterval(UserSettings::get(UserSettings::AlarmsInterval));
+    updateAlarmOperation(UserSettings::get(UserSettings::AlarmsEnabled));
 }
 
 /// \brief Adding a received alarm in list and creating a button for a received alarm.

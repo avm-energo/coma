@@ -3,13 +3,12 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <tune/tunetypes.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/graphfunc.h>
 #include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
 #include <widgets/wdfunc.h>
 
-#include <QMessageBox>
 #include <QVBoxLayout>
 
 Tune21One::Tune21One(Device::BoardTypes boardType, Device::CurrentDevice *device, QWidget *parent)
@@ -161,7 +160,7 @@ Error::Msg Tune21One::showScheme()
 
     QWidget *w = new QWidget(this);
     lyout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tune21.png"));
-    lyout->addWidget(LBLFunc::NewLBL(this, "Соберите схему подключения по вышеприведённой картинке"));
+    lyout->addWidget(LBLFunc::New(this, "Соберите схему подключения по вышеприведённой картинке"));
     w->setLayout(lyout);
 
     if (!EMessageBox::next(this, w))

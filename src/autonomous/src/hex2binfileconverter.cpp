@@ -1,7 +1,7 @@
 #include <autonomous/hex2binfileconverter.h>
 #include <gen/files.h>
 #include <s2/s2util.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/filefunc.h>
 
 #include <QDir>

@@ -306,7 +306,7 @@ void CheckDialog::updatePixmap(const MWidget &mwidget, const DataTypes::BitStrin
         {
             auto isSet = bitSet.test(i);
             auto pixmap = GraphFunc::NewCircle((isSet) ? c_activeColor : c_normalColor, c_circleRadius);
-            LBLFunc::SetLBLImage(uwidget, stringAddr + "_" + QString::number(i), &pixmap);
+            LBLFunc::SetImage(uwidget, stringAddr + "_" + QString::number(i), &pixmap);
         }
     }
 }
@@ -320,7 +320,7 @@ void CheckDialog::updatePixmap(
         if (sp.sigAdr == 1300)
             qDebug() << "1";
         auto pixmap = GraphFunc::NewCircle((sp.sigVal != 0) ? c_activeColor : c_normalColor, c_circleRadius);
-        LBLFunc::SetLBLImage(uwidget, QString::number(sp.sigAdr), &pixmap);
+        LBLFunc::SetImage(uwidget, QString::number(sp.sigAdr), &pixmap);
     }
 }
 
@@ -427,19 +427,19 @@ QGridLayout *CheckDialog::setupCommandWidget(const Device::XmlDataTypes::MWidget
         layout->addWidget(textLabel);
         if (!type)
         {
-            QCheckBox *cb = ChBFunc::NewChB(this, QString::number(realAddr), "");
+            QCheckBox *cb = ChBFunc::New(this, QString::number(realAddr), "");
             if (!mwidget.tooltip.isEmpty())
                 cb->setToolTip(getFormatted(mwidget, mwidget.tooltip, i));
             layout->addWidget(cb);
         }
-        layout->addWidget(PBFunc::NewPB(this, "", "Послать",
+        layout->addWidget(PBFunc::New(this, "", "Послать",
             [&, realAddr, type]()
             {
                 bool cbdata = false;
                 DataTypes::SingleCommand cmd;
                 cmd.addr = realAddr;
                 if (!type)
-                    cbdata = ChBFunc::ChBData(this, QString::number(realAddr));
+                    cbdata = ChBFunc::Data(this, QString::number(realAddr));
                 cmd.value = cbdata;
                 writeCommand(cmd);
             }));

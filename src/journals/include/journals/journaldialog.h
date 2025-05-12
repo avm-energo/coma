@@ -2,7 +2,7 @@
 
 #include <journals/journaltabwidget.h>
 #include <map>
-#include <widgets/udialog.h>
+#include <comawidgets/udialog.h>
 
 namespace journals
 {

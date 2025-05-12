@@ -3,7 +3,7 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <tune/82/verification_offset.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/graphfunc.h>
 #include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
@@ -210,8 +210,8 @@ Error::Msg Tune82ADC::showPreWarning()
 
     QWidget *w = new QWidget(this);
     lyout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tune82.png"));
-    lyout->addWidget(LBLFunc::NewLBL(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
-    lyout->addWidget(LBLFunc::NewLBL(this,
+    lyout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
+    lyout->addWidget(LBLFunc::New(this,
         "2. Задайте на РЕТОМ трехфазный режим токов и напряжений с углами сдвига"
         "в фазах А токов и напряжений 0 градусов, в фазах В - 240, в фазах С - 120 градусов,"
         "НЕ МЕНЯЯ ЗНАЧЕНИЙ НАПРЯЖЕНИЙ И ТОКОВ!"));

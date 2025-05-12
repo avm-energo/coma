@@ -1,4 +1,5 @@
-#include <gen/stdfunc.h>
+#include <gen/integers.h>
+#include <gen/settings.h>
 #include <gen/xml/xmlparse.h>
 #include <widgets/wdfunc.h>
 #include <xml/xmleditor/dialogs/xmls2recorddialog.h>
@@ -307,7 +308,7 @@ void XmlS2RecordDialog::loadModelData(const QStringList &response)
 
 bool XmlS2RecordDialog::loadS2TabsData()
 {
-    QDir homeDir(StdFunc::configDir());
+    QDir homeDir(Settings::configDir());
     auto filename = qvariant_cast<QString>("s2files.xml");
     auto moduleFile = new QFile(homeDir.filePath(filename), this);
     if (moduleFile->open(QIODevice::ReadOnly))

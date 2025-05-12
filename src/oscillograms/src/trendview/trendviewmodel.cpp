@@ -1,7 +1,6 @@
 #include "oscillograms/trendview/trendviewmodel.h"
 
 #include <QDebug>
-#include <gen/comaexception.h>
 #include <widgets/epopup.h>
 #include <xlsxdocument.h>
 
