@@ -45,6 +45,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
+    comawidgets
+    models
     xml
     QXlsx
 )

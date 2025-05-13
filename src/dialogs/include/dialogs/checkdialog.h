@@ -1,7 +1,7 @@
 #pragma once
 
 #include <device/xml_settings.h>
-#include <widgets/udialog.h>
+#include <comawidgets/udialog.h>
 
 #include <QHBoxLayout>
 #include <QLabel>

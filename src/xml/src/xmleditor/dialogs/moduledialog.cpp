@@ -26,8 +26,8 @@ void ModuleDialog::setupUI(QVBoxLayout *mainLayout)
     {
         auto labelText = itemSettings.first;
         auto itemName = itemSettings.second;
-        auto labelItem = LBLFunc::NewLBL(this, labelText, itemName + "Label");
-        auto inputItem = LEFunc::NewLE(this, itemName);
+        auto labelItem = LBLFunc::New(this, labelText, itemName + "Label");
+        auto inputItem = LEFunc::New(this, itemName);
         QObject::connect(
             inputItem, &QLineEdit::textEdited, this, qOverload<const QString &>(&ModuleDialog::dataChanged));
 

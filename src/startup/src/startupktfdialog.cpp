@@ -5,7 +5,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/etableview.h>
 #include <widgets/filefunc.h>
 #include <widgets/lblfunc.h>
@@ -37,8 +37,8 @@ void StartupKTFDialog::SetupUI()
     tv->setObjectName("cor");
     int row = 0;
 
-    glyout->addWidget(LBLFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
-    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(907), 0, 1000000, 5), row, 2, 1, 2);
+    glyout->addWidget(LBLFunc::New(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
+    glyout->addWidget(SPBFunc::New(this, QString::number(907), 0, 1000000, 5), row, 2, 1, 2);
     row++;
 
     QPushButton *pb = new QPushButton("Прочитать из модуля");
@@ -234,7 +234,7 @@ void StartupKTFDialog::ReadFromFile()
     //    memcpy(Bd9Block, &(ba.data()[0]), sizeof(*Bd9Block));
     memcpy(&Bd9Block->Age, &(ba.data()[0]), sizeof(float));
     FillCor();
-    QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
+    EMessageBox::information(this, "Загрузка прошла успешно!");
 }
 
 bool StartupKTFDialog::checkStartupValues()

@@ -1,11 +1,11 @@
 #pragma once
 
+#include <comawidgets/gasdensitywidget.h>
 #include <device/current_device.h>
 #include <gen/std_ext.h>
 #include <s2/delegate_common.h>
 #include <widgets/cbfunc.h>
 #include <widgets/chbfunc.h>
-#include <widgets/gasdensitywidget.h>
 #include <widgets/ipctrl.h>
 #include <widgets/spbfunc.h>
 
@@ -32,7 +32,7 @@ public:
     quint16 getRealCount(const quint16 key);
 
 private:
-    template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::ip_container>::value, bool> = true>
+    template <typename T, std::enable_if_t<std::is_same<T, NetIP>::value, bool> = true>
     bool fillIpCtrl(const QWidget *parent, quint16 key, const T &value);
     template <typename T, std::enable_if_t<!std_ext::is_container<T>::value && std::is_arithmetic_v<T>, bool> = true>
     bool fillLineEdit(const QWidget *parent, quint16 key, const T &value);
@@ -65,7 +65,7 @@ private:
 
 // Template definition
 
-template <typename T, std::enable_if_t<std::is_same<T, IPCtrl::ip_container>::value, bool>>
+template <typename T, std::enable_if_t<std::is_same<T, NetIP>::value, bool>>
 bool WidgetFactory::fillIpCtrl(const QWidget *parent, quint16 key, const T &value)
 {
     auto widget = parent->findChild<IPCtrl *>(QString::number(key));
@@ -144,7 +144,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
             [&](const auto &arg)
             {
                 using namespace delegate;
-                if constexpr (std::is_same<T, IPCtrl::ip_container>::value)
+                if constexpr (std::is_same<T, NetIP>::value)
                 {
                     if (arg.type == ctti::unnamed_type_id<IPCtrl>())
                     {
@@ -186,7 +186,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                     if constexpr (std::is_integral_v<container_type> || //
                         std::is_floating_point_v<container_type>)
                     {
-                        status = SPBFunc::SetSPBGData(parent, QString::number(key), value);
+                        status = SPBFunc::SetGroupData(parent, QString::number(key), value);
                     }
                 }
             },
@@ -195,21 +195,21 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
             {
                 if constexpr (std::is_integral_v<T> || std::is_floating_point_v<T>)
                 {
-                    status = SPBFunc::SetSPBData(parent, QString::number(key), value);
+                    status = SPBFunc::SetData(parent, QString::number(key), value);
                 }
             },
             [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg)
             {
                 if constexpr (std::is_unsigned_v<T>)
                 {
-                    status = ChBFunc::SetChBGData(parent, QString::number(key), value);
+                    status = ChBFunc::SetGroupData(parent, QString::number(key), value);
                 }
                 else if constexpr (std_ext::is_container<T>())
                 {
                     typedef std::remove_reference_t<typename T::value_type> internalType;
                     if constexpr (std::is_unsigned_v<internalType>)
                     {
-                        status = ChBFunc::SetChBGData(parent, QString::number(key), value);
+                        status = ChBFunc::SetGroupData(parent, QString::number(key), value);
                     }
                 }
             },
@@ -233,13 +233,13 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                         }
                         auto index = arg.model.indexOf(strValue);
                         if (index != -1)
-                            status = CBFunc::SetCBIndex(parent, QString::number(key), index);
+                            status = CBFunc::SetIndex(parent, QString::number(key), index);
                         break;
                     }
                     default:
                     {
                         if constexpr (std::is_integral_v<T>)
-                            status = CBFunc::SetCBIndex(parent, QString::number(key), value);
+                            status = CBFunc::SetIndex(parent, QString::number(key), value);
                         break;
                     }
                     }
@@ -254,7 +254,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                     bool flag = false;
                     for (auto i = 0; i != count; ++i)
                     {
-                        status = CBFunc::SetCBIndex(parent, widgetName(key, i), bitset.test(i));
+                        status = CBFunc::SetIndex(parent, widgetName(key, i), bitset.test(i));
                         // Q_ASSERT(status && "Couldn't fill QComboBox");
                         if (!status && !flag)
                         {
@@ -275,7 +275,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                         bool flag = false;
                         for (auto i = 0; i != count; ++i)
                         {
-                            status = CBFunc::SetCBIndex(parent, widgetName(key, i), value.at(i));
+                            status = CBFunc::SetIndex(parent, widgetName(key, i), value.at(i));
                             Q_ASSERT(status && "Couldn't fill QComboBox");
                             if (!status && !flag)
                             {

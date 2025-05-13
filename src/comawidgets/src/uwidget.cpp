@@ -1,8 +1,9 @@
-#include "widgets/uwidget.h"
+#include "comawidgets/uwidget.h"
 
 #include <device/current_device.h>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
+#include <widgets/emessagebox.h>
 #include <widgets/epopup.h>
 #include <widgets/lblfunc.h>
 #include <widgets/wdfunc.h>
@@ -38,9 +39,9 @@ void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     bool result;
     if (fl.sigQuality != DataTypes::Quality::Good)
-        result = LBLFunc::SetLBLText(this, QString::number(fl.sigAdr), "***");
+        result = LBLFunc::SetText(this, QString::number(fl.sigAdr), "***");
     else
-        result = LBLFunc::SetLBLText(this, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));
+        result = LBLFunc::SetText(this, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));
 #ifdef UWIDGET_DEBUG
     if (!result)
         qDebug() << Error::DescError << QString::number(fl.sigAdr) << WDFunc::StringValueWithCheck(fl.sigVal, 3);

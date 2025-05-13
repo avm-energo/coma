@@ -3,7 +3,7 @@
 #include <device/xml_settings.h>
 #include <map>
 #include <set>
-#include <widgets/udialog.h>
+#include <comawidgets/udialog.h>
 
 class QBoxLayout;
 class QGroupBox;

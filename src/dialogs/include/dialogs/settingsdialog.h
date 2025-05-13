@@ -2,7 +2,6 @@
 
 #include <QDialog>
 #include <QMap>
-#include <settings/user_settings.h>
 
 class QStackedWidget;
 class QListWidget;
@@ -13,7 +12,6 @@ class SettingsDialog final : public QDialog
 {
     Q_OBJECT
 private:
-    CSettings::UserSettings &m_settings;
     QStackedWidget *m_workspace;
     QListWidget *m_sidebar;
 

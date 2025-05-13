@@ -2,7 +2,7 @@
 
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/graphfunc.h>
 #include <widgets/lblfunc.h>
 #include <widgets/waitwidget.h>
@@ -74,12 +74,12 @@ Error::Msg TuneKIVADC::showPreWarning()
     w->setFixedSize(800, 600);
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
-    lyout->addWidget(LBLFunc::NewLBL(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
-    lyout->addWidget(LBLFunc::NewLBL(this,
+    lyout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
+    lyout->addWidget(LBLFunc::New(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
         "по напряжению 60 В, по току - 500 мА;"));
-    lyout->addWidget(LBLFunc::NewLBL(this,
+    lyout->addWidget(LBLFunc::New(this,
         "3. Данный этап регулировки должен выполняться при температуре"
         "окружающего воздуха +20±7 °С. Если температура окружающего воздуха отличается от указанной,"
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
@@ -254,14 +254,14 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
     QWidget *w = new QWidget(this);
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
-    vlyout->addWidget(LBLFunc::NewLBL(this, "РЕТОМ"));
+    vlyout->addWidget(LBLFunc::New(this, "РЕТОМ"));
     vlyout->addWidget(GraphFunc::newHLine(this));
     IULayout(RegType::RETOM, coef, vlyout);
     hlyout->addLayout(vlyout);
     hlyout->addWidget(GraphFunc::newVLine(this));
 
     vlyout = new QVBoxLayout;
-    vlyout->addWidget(LBLFunc::NewLBL(this, "ИМИТАТОР"));
+    vlyout->addWidget(LBLFunc::New(this, "ИМИТАТОР"));
     vlyout->addWidget(GraphFunc::newHLine(this));
     IULayout(RegType::IMITATOR, coef, vlyout);
     hlyout->addLayout(vlyout);
@@ -308,11 +308,11 @@ void TuneKIVADC::IULayout(RegType type, int coef, QVBoxLayout *lyout)
                "Значение напряжения ф. А: 57.75 В";
     if (m_tuneType == ADCI)
         tmps += ", тока: " + map[type][coef].I;
-    lyout->addWidget(LBLFunc::NewLBL(this, tmps));
+    lyout->addWidget(LBLFunc::New(this, tmps));
     lyout->addWidget(
-        LBLFunc::NewLBL(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
+        LBLFunc::New(this, "Значения тока и напряжения контролируются по показаниям прибора Энергомонитор.\n"));
     if (m_tuneType == ADCI)
-        lyout->addWidget(LBLFunc::NewLBL(this,
+        lyout->addWidget(LBLFunc::New(this,
             "Предел измерения тока в Энергомониторе: " + map[type][coef].EMRange
                 + "\nКоэффициент передачи РЕТ-10: " + map[type][coef].Ret10Coef));
     lyout->addStretch(100);

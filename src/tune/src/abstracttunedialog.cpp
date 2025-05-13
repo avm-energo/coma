@@ -8,7 +8,7 @@
 #include <gen/timefunc.h>
 #include <tune/generaltunedialog.h>
 #include <tune/tunesequencefile.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/hexpbfunc.h>
 #include <widgets/lblfunc.h>
 #include <widgets/pbfunc.h>
@@ -43,7 +43,8 @@ AbstractTuneDialog::AbstractTuneDialog(Device::CurrentDevice *device, QWidget *p
     GeneralTuneDialog *dlg = qobject_cast<GeneralTuneDialog *>(parent);
     if (dlg)
         connect(this, &AbstractTuneDialog::Finished, dlg, &GeneralTuneDialog::setCalibrButtons);
-    m_tuneRequestCount = Settings::value("TuneRequestCount", "60").toInt();
+    QSettings settings;
+    m_tuneRequestCount = settings.value("TuneRequestCount", "60").toInt();
 }
 
 void AbstractTuneDialog::setupUI()
@@ -68,12 +69,12 @@ QWidget *AbstractTuneDialog::tuneUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
 
-    auto pushbutton = PBFunc::NewPB(
+    auto pushbutton = PBFunc::New(
         this, "starttune", "", this, &AbstractTuneDialog::startTune, ":/icons/tnstart.svg", "Начать настройку");
     pushbutton->setMinimumSize(50, 50);
     pushbutton->setIconSize(QSize(40, 40));
     hlyout->addWidget(pushbutton);
-    pushbutton = PBFunc::NewPB(
+    pushbutton = PBFunc::New(
         this, "stoptune", "", this, &AbstractTuneDialog::CancelTune, ":/icons/tnstop.svg", "Прервать настройку");
     pushbutton->setMinimumSize(50, 50);
     pushbutton->setIconSize(QSize(40, 40));
@@ -87,12 +88,12 @@ QWidget *AbstractTuneDialog::tuneUI()
     area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     QWidget *w2 = new QWidget;
     QVBoxLayout *w2lyout = new QVBoxLayout;
-    w2lyout->addWidget(LBLFunc::NewLBL(this, "Для запуска регулировки нажмите кнопку \"Начать настройку\""));
+    w2lyout->addWidget(LBLFunc::New(this, "Для запуска регулировки нажмите кнопку \"Начать настройку\""));
     for (i = 0; i < m_tuneFunctions.size(); ++i)
     {
         hlyout = new QHBoxLayout;
-        hlyout->addWidget(LBLFunc::NewLBL(w2, m_tuneFunctions.at(i).message, "tunemsg" + QString::number(i)));
-        hlyout->addWidget(LBLFunc::NewLBL(w2, "", "tunemsgres" + QString::number(i)));
+        hlyout->addWidget(LBLFunc::New(w2, m_tuneFunctions.at(i).message, "tunemsg" + QString::number(i)));
+        hlyout->addWidget(LBLFunc::New(w2, "", "tunemsgres" + QString::number(i)));
         hlyout->addStretch(1);
         w2lyout->addLayout(hlyout);
     }
@@ -101,7 +102,7 @@ QWidget *AbstractTuneDialog::tuneUI()
     area->setWidgetResizable(true);
     area->setWidget(w2);
     lyout->addWidget(area);
-    lyout->addWidget(LBLFunc::NewLBL(w2, "Настройка завершена!", "tunemsg" + QString::number(i)));
+    lyout->addWidget(LBLFunc::New(w2, "Настройка завершена!", "tunemsg" + QString::number(i)));
     for (i = 0; i < m_tuneFunctions.size(); ++i)
     {
         WDFunc::SetVisible(w2, "tunemsg" + QString::number(i), false);
@@ -110,7 +111,7 @@ QWidget *AbstractTuneDialog::tuneUI()
     WDFunc::SetVisible(w2, "tunemsg" + QString::number(i), false);
     hlyout = new QHBoxLayout;
     hlyout->addStretch(300);
-    hlyout->addWidget(HexPBFunc::NewHexagonPB(
+    hlyout->addWidget(HexPBFunc::New(
         this, "finishpb",
         [this]()
         {
@@ -140,7 +141,7 @@ QWidget *AbstractTuneDialog::bottomUI()
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(LBLFunc::NewLBL(this, "Регулировка"), 0);
+    hlyout->addWidget(LBLFunc::New(this, "Регулировка"), 0);
     QProgressBar *prb = new QProgressBar;
     prb->setObjectName("prb");
     prb->setOrientation(Qt::Horizontal);
@@ -224,7 +225,7 @@ void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int ms
         return;
     }
     WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), visible);
-    LBLFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), &pm);
+    LBLFunc::SetImage(this, "tunemsgres" + QString::number(msg), &pm);
 }
 
 void AbstractTuneDialog::MsgClear()
@@ -448,8 +449,8 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs(bool isUserChoosingRequired)
             it.value()->updateWidget();
         }
         lyout->addWidget(tw);
-        hlyout->addWidget(PBFunc::NewPB(this, "", "Записать", this, &AbstractTuneDialog::writeTuneCoefsSlot));
-        hlyout->addWidget(PBFunc::NewPB(this, "", "Отмена",
+        hlyout->addWidget(PBFunc::New(this, "", "Записать", this, &AbstractTuneDialog::writeTuneCoefsSlot));
+        hlyout->addWidget(PBFunc::New(this, "", "Отмена",
             [this]()
             {
                 CancelTune();
@@ -508,13 +509,13 @@ Error::Msg AbstractTuneDialog::saveWorkConfig()
     auto status = m_sync->readFileSync(S2::FilesEnum::Config, ba);
     if (status != Error::Msg::NoError)
         return Error::Msg::ReadError;
-    return Files::SaveToFile(Settings::dataDir() + m_device->getUID() + ".cf", ba);
+    return Files::SaveToFile(Settings::workDir() + m_device->getUID() + ".cf", ba);
 }
 
 Error::Msg AbstractTuneDialog::loadWorkConfig()
 {
     QByteArray ba;
-    auto res = Files::LoadFromFile(Settings::dataDir() + m_device->getUID() + ".cf", ba);
+    auto res = Files::LoadFromFile(Settings::workDir() + m_device->getUID() + ".cf", ba);
     if (res != Error::Msg::NoError)
         return res;
     else

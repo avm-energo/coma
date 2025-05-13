@@ -109,9 +109,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 )
 
 # Linking hidapi library
-if(UNIX)
-  target_link_libraries(${PROJECT_NAME} PRIVATE hidapi-hidraw)
-elseif(WIN32)
   message(STATUS "Using external hidapi")
   include(hidapi)
   message(STATUS "HidAPI source dir: ${hidapi_SOURCE_DIR}")
@@ -119,7 +116,6 @@ elseif(WIN32)
   target_include_directories(${PROJECT_NAME} PRIVATE ${hidapi_SOURCE_DIR})
   target_link_libraries(${PROJECT_NAME} PUBLIC
       hidapi)
-endif()
 
 # Adding test target
 if(BUILD_TESTING)

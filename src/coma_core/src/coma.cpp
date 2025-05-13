@@ -27,6 +27,8 @@
 #include <autonomous/hex2binfileconverter.h>
 #include <comaresources/manage.h>
 #include <comaversion/comaversion.h>
+#include <comawidgets/gasdensitywidget.h>
+#include <comawidgets/splashscreen.h>
 #include <device/current_device.h>
 #include <dialogs/aboutdialog.h>
 #include <dialogs/connectdialog.h>
@@ -38,7 +40,6 @@
 #include <gen/errorqueue.h>
 #include <gen/files.h>
 #include <gen/logger.h>
-#include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 #include <interfaces/types/settingstypes.h>
@@ -48,12 +49,11 @@
 #include <s2/s2configstorage.h>
 #include <s2/s2datafactory.h>
 #include <s2/s2util.h>
+#include <widgets/emessagebox.h>
 #include <widgets/epopup.h>
 #include <widgets/filefunc.h>
-#include <widgets/gasdensitywidget.h>
 #include <widgets/graphfunc.h>
 #include <widgets/lblfunc.h>
-#include <widgets/splashscreen.h>
 #include <widgets/styleloader.h>
 #include <widgets/waitwidget.h>
 #include <widgets/wdfunc.h>
@@ -86,6 +86,7 @@ Coma::Coma(QWidget *parent)
     connect(m_connectionManager, &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
     connect(m_connectionManager, &ConnectionManager::connectFailed, this, //
         [this](const QString &errMsg) { EMessageBox::error(this, errMsg); });
+    EMessageBox::setHash(UserSettings::get(UserSettings::PasswordHash));
 }
 
 Coma::~Coma()
@@ -167,6 +168,7 @@ void Coma::setupUI()
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
     setupMenubar();
+    StyleLoader::setStyle(UserSettings::get(UserSettings::SettingName::Theme));
 }
 
 QWidget *Coma::least()
@@ -182,8 +184,8 @@ QWidget *Coma::least()
     auto line = new QFrame;
     lyout->addWidget(line);
     inlyout = new QHBoxLayout;
-    inlyout->addWidget(LBLFunc::NewLBL(this, "Обмен"));
-    inlyout->addWidget(LBLFunc::NewLBL(this, "", "prb1lbl"));
+    inlyout->addWidget(LBLFunc::New(this, "Обмен"));
+    inlyout->addWidget(LBLFunc::New(this, "", "prb1lbl"));
     QProgressBar *prb = new QProgressBar;
     prb->setObjectName("prb1prb");
     prb->setOrientation(Qt::Horizontal);
@@ -331,23 +333,14 @@ void Coma::go()
     // Load settings before anything
     auto splash = new SplashScreen();
     splash->show();
-    // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
-    QDir dir(Settings::dataDir());
-    if (!dir.exists())
-        dir.mkpath(".");
+    QDir dir(Settings::logDir());
     qInfo("=== Log started ===\n");
-    loadSettings();
     m_bar = new EStatusBar(this);
     setStatusBar(m_bar);
     setupUI();
     splash->finish(this);
     splash->deleteLater();
     show();
-}
-
-void Coma::loadSettings()
-{
-    StyleLoader::GetInstance().attach();
 }
 
 void Coma::setProgressBarSize(int prbnum, int size)
@@ -360,7 +353,7 @@ void Coma::setProgressBarSize(int prbnum, int size)
         qDebug("Пустой prb");
         return;
     }
-    LBLFunc::SetLBLText(this, lblname, QString::number(size), false);
+    LBLFunc::SetText(this, lblname, QString::number(size), false);
     prb->setMinimum(0);
     prb->setMaximum(size);
 }
@@ -403,6 +396,7 @@ void Coma::connectDialog()
 void Coma::initConnection(const ConnectStruct &st)
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
+    saveSettings();
     auto connection = m_connectionManager->createConnection(st);
     if (connection && (connection->getConnectionState() != Interface::State::Disconnect))
         initDevice(connection);
@@ -561,7 +555,7 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setApplicationVersion(version);
     initResources();
     StdFunc::Init();
-    Logger::writeStart(Settings::logDir() + "coma.log");
+    Logger::writeStart(StdFunc::GetSystemHomeDir() + "coma.log");
     qInstallMessageHandler(Logger::messageHandlerWithErrorQueue);
 }
 

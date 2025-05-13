@@ -17,4 +17,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 # Linking library dependencies
-target_link_libraries(${PROJECT_NAME} PUBLIC widgets)
+target_link_libraries(${PROJECT_NAME} PUBLIC comawidgets avm-widgets)

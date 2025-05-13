@@ -1,10 +1,10 @@
 #pragma once
 
+#include <comawidgets/tunetabwidget.h>
 #include <datablocks/datablock.h>
 #include <device/current_device.h>
 #include <device/device_list.h>
 #include <s2/s2configuration.h>
-#include <widgets/tunetabwidget.h>
 
 #include <QByteArray>
 #include <QCloseEvent>

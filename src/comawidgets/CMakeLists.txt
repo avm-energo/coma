@@ -15,6 +15,7 @@ add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+target_include_directories(${PROJECT_NAME} PRIVATE ${avm-widgets_SOURCE_DIR}/include)
 
 # Linking library dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC

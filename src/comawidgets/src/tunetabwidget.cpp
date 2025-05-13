@@ -1,4 +1,4 @@
-#include "widgets/tunetabwidget.h"
+#include <comawidgets/tunetabwidget.h>
 
 TuneTabWidget::TuneTabWidget()
 {

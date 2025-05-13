@@ -1,15 +1,16 @@
 #include "xml/xmleditor/xmleditor.h"
 
-#include <QFont>
-#include <QHeaderView>
-#include <QLabel>
-#include <QToolBar>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <xml/xmleditor/datacontroller.h>
 #include <xml/xmleditor/dialogs/dialogfabric.h>
 #include <xml/xmleditor/models/mastermodel.h>
 #include <xml/xmleditor/models/modelfabric.h>
 #include <xml/xmleditor/models/modelmanager.h>
+
+#include <QFont>
+#include <QHeaderView>
+#include <QLabel>
+#include <QToolBar>
 
 constexpr auto iconSize = 40;
 constexpr auto contentMargin = 5;

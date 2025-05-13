@@ -21,6 +21,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 # Linking library dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Svg
+  avm-widgets
+  comawidgets
   datablocks
   ${limereport_IMPORTED_LOCATION_${CMAKE_BUILD_TYPE}}
 )

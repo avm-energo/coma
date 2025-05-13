@@ -72,7 +72,6 @@ private:
     File::Vector fileVector;
 
     void initInterfaceConnection();
-    void loadSettings();
     void setProgressBarSize(int prbnum, int size);
     void setProgressBarCount(int prbnum, int count);
     void setupUI();

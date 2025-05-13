@@ -1,11 +1,12 @@
 #include "oscillograms/trendview/trendviewmodel.h"
 
-#include <widgets/epopup.h>
-
 #include <QDebug>
+#include <widgets/epopup.h>
 #include <xlsxdocument.h>
 
-TrendViewModel::TrendViewModel(int pointsnum, QObject *parent) : pointsNum(pointsnum), QObject(parent) { }
+TrendViewModel::TrendViewModel(int pointsnum, QObject *parent) : pointsNum(pointsnum), QObject(parent)
+{
+}
 
 bool TrendViewModel::addAnalogPoint(const QString &graphNum, double pointValue)
 {

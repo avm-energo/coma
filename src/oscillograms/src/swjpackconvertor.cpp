@@ -2,7 +2,7 @@
 
 #include <gen/timefunc.h>
 #include <oscillograms/swjmanager.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/filefunc.h>
 
 #include <QDir>

@@ -4,7 +4,7 @@
 #include <gen/error.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/settingstypes.h>
-#include <widgets/udialog.h>
+#include <comawidgets/udialog.h>
 
 class BaseInterface;
 

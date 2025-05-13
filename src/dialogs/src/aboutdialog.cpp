@@ -19,7 +19,7 @@ void AboutDialog::setupUI()
     hlyout->addWidget(GraphFunc::NewIcon(this, ":icons/avm-energo.svg"), 0);
     for (const auto &str : std::as_const(m_lines))
     {
-        auto label = LBLFunc::NewLBL(this, str);
+        auto label = LBLFunc::New(this, str);
         label->setTextInteractionFlags(Qt::TextSelectableByMouse);
         lyout->addWidget(label);
     }
@@ -28,7 +28,7 @@ void AboutDialog::setupUI()
     lyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addStretch(100);
-    hlyout->addWidget(HexPBFunc::NewHexagonPB(this, "", [this]() { this->close(); }, ":/icons/tnyes.svg", "Закрыть"));
+    hlyout->addWidget(HexPBFunc::New(this, "", [this]() { this->close(); }, ":/icons/tnyes.svg", "Закрыть"));
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);

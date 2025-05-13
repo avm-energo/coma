@@ -11,12 +11,9 @@ find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS Core REQUIRED)
 
 # Collecting qrc files
-set(QDARKSTYLESHEET_PATH ${CMAKE_CURRENT_SOURCE_DIR}/styles/QDarkStyleSheet/qdarkstyle)
 set(files_qrc
   "${CMAKE_CURRENT_SOURCE_DIR}/../../images/images.qrc"
-  "${QDARKSTYLESHEET_PATH}/light/lightstyle.qrc"
-  "${QDARKSTYLESHEET_PATH}/dark/darkstyle.qrc"
-  "${CMAKE_CURRENT_SOURCE_DIR}/styles/styles.qrc")
+)
 
 # Collecting sources
 set(COMARES_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}")
@@ -45,15 +42,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 # Linking libraries for current target
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core)
-
-# # Cross-platform installing commands
-# if(SYSTEM_NAME STREQUAL "windows")
-#   # set(COMARES_BINDIR "${CMAKE_CURRENT_BINARY_DIR}")
-#   # message(STATUS "Coma resources binary dir: ${COMARES_BINDIR}")
-#   # install(CODE "set(COMARES_BINDIR \"${COMARES_BINDIR}\")")
-# elseif(SYSTEM_NAME STREQUAL "linux")
-#   install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION "/usr/local/lib" COMPONENT "AVMRESOURCES")
-# endif()
 
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

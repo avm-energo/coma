@@ -1,8 +1,8 @@
 #pragma once
 
+#include <comawidgets/tunetabwidget.h>
+#include <comawidgets/udialog.h>
 #include <tune/abstracttunedialog.h>
-#include <widgets/tunetabwidget.h>
-#include <widgets/udialog.h>
 
 #include <QDomDocument>
 

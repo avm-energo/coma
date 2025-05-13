@@ -30,7 +30,7 @@ void OscDialog::setupUI()
     connect(dg, &PushButtonDelegate::clicked, this, &OscDialog::getOsc);
     tv->setItemDelegateForColumn(Column::download, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
 
-    auto *getButton = PBFunc::NewPB(this, "", "Получить данные по осциллограммам ", this,
+    auto *getButton = PBFunc::New(this, "", "Получить данные по осциллограммам ", this,
         [&, tv]
         {
             oscMap.clear();
@@ -42,7 +42,7 @@ void OscDialog::setupUI()
         });
 
     hlyout->addWidget(getButton);
-    auto *eraseButton = PBFunc::NewPB(this, "", "Стереть все осциллограммы в памяти", this, &OscDialog::eraseOsc);
+    auto *eraseButton = PBFunc::New(this, "", "Стереть все осциллограммы в памяти", this, &OscDialog::eraseOsc);
     hlyout->addWidget(eraseButton);
 
     hlyout->addWidget(eraseButton);

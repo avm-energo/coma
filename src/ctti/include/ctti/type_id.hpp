@@ -70,7 +70,7 @@ namespace ctti
             _hash{id.hash()}
         {}
 
-        unnamed_type_id_t& operator=(const unnamed_type_id_t&) = default;
+        // unnamed_type_id_t& operator=(const unnamed_type_id_t&) = default;
 
         constexpr detail::hash_t hash() const
         {

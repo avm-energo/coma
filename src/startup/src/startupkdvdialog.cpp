@@ -5,7 +5,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/etableview.h>
 #include <widgets/filefunc.h>
 #include <widgets/lblfunc.h>
@@ -39,14 +39,14 @@ void StartupKDVDialog::SetupUI()
     tv->setObjectName("cor");
     int row = 0;
 
-    glyout->addWidget(LBLFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
-    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(907), 0, 1000000, 5), row, 2, 1, 2);
+    glyout->addWidget(LBLFunc::New(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
+    glyout->addWidget(SPBFunc::New(this, QString::number(907), 0, 1000000, 5), row, 2, 1, 2);
     row++;
-    glyout->addWidget(LBLFunc::NewLBL(this, "Текущея наработка при нормальной нагрузке, час:"), row, 1, 1, 1);
-    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(908), 0, 1000000, 5), row, 2, 1, 2);
+    glyout->addWidget(LBLFunc::New(this, "Текущея наработка при нормальной нагрузке, час:"), row, 1, 1, 1);
+    glyout->addWidget(SPBFunc::New(this, QString::number(908), 0, 1000000, 5), row, 2, 1, 2);
     row++;
-    glyout->addWidget(LBLFunc::NewLBL(this, "Текущея наработка в режиме перегрузки, час:"), row, 1, 1, 1);
-    glyout->addWidget(SPBFunc::NewSPB(this, QString::number(909), 0, 1000000, 5), row, 2, 1, 2);
+    glyout->addWidget(LBLFunc::New(this, "Текущея наработка в режиме перегрузки, час:"), row, 1, 1, 1);
+    glyout->addWidget(SPBFunc::New(this, QString::number(909), 0, 1000000, 5), row, 2, 1, 2);
     row++;
 
     QPushButton *pb = new QPushButton("Прочитать из модуля");

@@ -4,7 +4,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <tune/mip.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/graphfunc.h>
 #include <widgets/lblfunc.h>
 
@@ -47,16 +47,16 @@ Error::Msg Tune82Check::showScheme()
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(GraphFunc::NewIcon(this, pmpfile));
-    lyout->addWidget(LBLFunc::NewLBL(this, "1. Отключите выходы РЕТОМ;"));
-    lyout->addWidget(LBLFunc::NewLBL(w, "2. Соберите схему подключения по вышеприведённой картинке;"));
-    lyout->addWidget(LBLFunc::NewLBL(w,
+    lyout->addWidget(LBLFunc::New(this, "1. Отключите выходы РЕТОМ;"));
+    lyout->addWidget(LBLFunc::New(w, "2. Соберите схему подключения по вышеприведённой картинке;"));
+    lyout->addWidget(LBLFunc::New(w,
         "3. Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "
         "сдвига по всем фазам 0 град.;"));
-    lyout->addWidget(LBLFunc::NewLBL(w, "4. Задайте на РЕТОМ значения напряжений по фазам 60 В;"));
+    lyout->addWidget(LBLFunc::New(w, "4. Задайте на РЕТОМ значения напряжений по фазам 60 В;"));
     if (m_typeM != Device::MezzanineBoard::MTM_83)
-        lyout->addWidget(LBLFunc::NewLBL(w, "    значения токов по фазам 1 А;"));
-    lyout->addWidget(LBLFunc::NewLBL(w, "    частоту 50 Гц."));
-    lyout->addWidget(LBLFunc::NewLBL(w, "5. Включите выходы РЕТОМ"));
+        lyout->addWidget(LBLFunc::New(w, "    значения токов по фазам 1 А;"));
+    lyout->addWidget(LBLFunc::New(w, "    частоту 50 Гц."));
+    lyout->addWidget(LBLFunc::New(w, "5. Включите выходы РЕТОМ"));
     w->setLayout(lyout);
     if (!EMessageBox::next(this, w))
         CancelTune();

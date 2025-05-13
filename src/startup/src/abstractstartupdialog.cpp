@@ -148,7 +148,7 @@ void AbstractStartupDialog::FillBd(const QString &name, const QString &value)
     double d = value.toDouble(&ok);
     if (ok)
     {
-        if (!SPBFunc::SetSPBData(this, name, d))
+        if (!SPBFunc::SetData(this, name, d))
             qDebug() << "Failed to find SpinBox";
     }
     else
@@ -157,7 +157,7 @@ void AbstractStartupDialog::FillBd(const QString &name, const QString &value)
 
 void AbstractStartupDialog::FillBd(const QString &name, const float value)
 {
-    if (!SPBFunc::SetSPBData(this, name, value))
+    if (!SPBFunc::SetData(this, name, value))
     {
         qDebug() << "Failed to find SpinBox with name: " << name << " to setup value: " << value;
     }
@@ -182,14 +182,14 @@ bool AbstractStartupDialog::addReg(quint16 regW, quint16 regR, float *ptr)
 void AbstractStartupDialog::FillCor()
 {
     for (auto it = m_regMapR.cbegin(); it != m_regMapR.cend(); ++it)
-        if (!SPBFunc::SetSPBData(this, QString::number(it.key()), *it.value()))
+        if (!SPBFunc::SetData(this, QString::number(it.key()), *it.value()))
             qDebug() << "Not found";
 }
 
 void AbstractStartupDialog::FillBackCor()
 {
     for (auto it = m_regMapR.begin(); it != m_regMapR.end(); ++it)
-        if (!SPBFunc::SPBData(this, QString::number(it.key()), *it.value()))
+        if (!SPBFunc::Data(this, QString::number(it.key()), *it.value()))
             qDebug() << "Not found";
 }
 
