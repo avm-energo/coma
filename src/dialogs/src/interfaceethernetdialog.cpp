@@ -5,6 +5,7 @@
 #include <QtNetwork/QHostAddress>
 #include <gen/error.h>
 #include <gen/settings.h>
+#include <gen/stdfunc.h>
 #include <widgets/emessagebox.h>
 #include <widgets/lefunc.h>
 #include <widgets/pbfunc.h>
@@ -23,14 +24,10 @@
 
 InterfaceEthernetDialog::InterfaceEthernetDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
-    Settings::pushGroup("Ethernet");
     setWindowTitle("Ethernet соединения");
 }
 
-InterfaceEthernetDialog::~InterfaceEthernetDialog() noexcept
-{
-    Settings::popGroup();
-}
+InterfaceEthernetDialog::~InterfaceEthernetDialog() noexcept { }
 
 void InterfaceEthernetDialog::setupUI()
 {
@@ -63,11 +60,9 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
     settings.ip = mdl->data(mdl->index(row, 1)).toString();
     settings.port = mdl->data(mdl->index(row, 2)).toUInt();
     settings.bsAddress = mdl->data(mdl->index(row, 3)).toUInt();
-    Settings::popGroup();
     settings.m_timeout = UserSettings::get(UserSettings::Iec104Timeout);
     settings.m_reconnectInterval = UserSettings::get(UserSettings::Iec104Reconnect);
     fill(settings);
-    Settings::pushGroup("Ethernet");
 
     if (!settings.isValid())
         return;
@@ -174,9 +169,11 @@ void InterfaceEthernetDialog::acceptedInterface()
         return;
     QString name = LEFunc::Data(dialog, "namele");
     // check if there's such name in registry
-    if (m_settings.isExist(name))
+    Settings::pushGroup("Ethernet");
+    if (Settings::groupExist(name))
     {
         EMessageBox::error(this, "Такое имя уже имеется");
+        Settings::popGroup();
         return;
     }
 
@@ -190,14 +187,17 @@ void InterfaceEthernetDialog::acceptedInterface()
     if (bsAddress == 0)
     {
         EMessageBox::error(this, "Адрес базовой станции не может быть равен нулю");
+        Settings::popGroup();
         return;
     }
     {
-        Settings::ScopedSettingsGroup _ { m_settings, name };
-        m_settings.set<Settings::IpAddress>(ipstr);
-        m_settings.set<Settings::IpPort>(port);
-        m_settings.set<Settings::Iec104BsAddress>(port);
+        Settings::pushGroup(name);
+        UserSettings::set(UserSettings::IpAddress, ipstr);
+        UserSettings::set(UserSettings::IpPort, port);
+        UserSettings::set(UserSettings::Iec104BsAddress, port);
+        Settings::popGroup();
     }
+    Settings::popGroup();
     if (!updateModel())
         qCritical() << Error::GeneralError;
     dialog->close();
@@ -284,18 +284,21 @@ bool InterfaceEthernetDialog::updateModel()
         model->clear();
     model->setHorizontalHeaderLabels(headers);
 
-    QStringList ethList = m_settings.native().childGroups();
+    Settings::pushGroup("Ethernet");
+    QStringList ethList = Settings::groups();
     for (const auto &item : std::as_const(ethList))
     {
-        Settings::ScopedSettingsGroup _ { m_settings, item };
+        Settings::pushGroup(item);
         QList<QStandardItem *> items {
-            new QStandardItem(item),                                                //
-            new QStandardItem(QString(m_settings.get<Settings::IpAddress>())),      //
-            new QStandardItem(QString(m_settings.get<Settings::IpPort>())),         //
-            new QStandardItem(QString(m_settings.get<Settings::Iec104BsAddress>())) //
+            new QStandardItem(item),                                                     //
+            new QStandardItem(QString(UserSettings::get(UserSettings::IpAddress))),      //
+            new QStandardItem(QString(UserSettings::get(UserSettings::IpPort))),         //
+            new QStandardItem(QString(UserSettings::get(UserSettings::Iec104BsAddress))) //
         };
         model->appendRow(items);
+        Settings::popGroup();
     }
+    Settings::popGroup();
 
     m_tableView->setModel(model);
     m_tableView->resizeColumnsToContents();

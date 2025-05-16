@@ -1,6 +1,6 @@
 #include "dialogs/reconnectdialog.h"
 
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/eprogressindicator.h>
 #include <widgets/hexpbfunc.h>
 
@@ -97,7 +97,6 @@ void ReconnectDialog::reconnectSuccess()
     mainLayout->removeWidget(m_cancelButton);
     m_progressIndicator->stopAnimation();
     m_messageLabel->setText(QString(successMsg).arg(m_seconds));
-    mainLayout->addWidget(
-        HexPBFunc::NewHexagonPB(this, "", [this]() { this->reject(); }, ":/icons/tnyes.svg", "Закрыть"));
+    mainLayout->addWidget(HexPBFunc::New(this, "", [this]() { this->reject(); }, ":/icons/tnyes.svg", "Закрыть"));
     m_closeTimer->start();
 }

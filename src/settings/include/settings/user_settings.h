@@ -61,8 +61,7 @@ private:
         QVariant defValue;
     };
     static QMap<const SettingName, SettingStruct> s_settingsMap;
-    static QMap<const SettingGroupTypes, const QString> s_groupTypesMap;
-    static Settings s_settings;
+    static QMap<const SettingGroupTypes, QString> s_groupTypesMap;
 
 public:
     UserSettings();
@@ -70,20 +69,22 @@ public:
     /// \brief Get user setting value by enum
     inline static utils::Convertable get(SettingName name)
     {
-        return utils::Convertable { s_settings.value(s_settingsMap[name].name, s_settingsMap[name].defValue) };
+        return Settings::get(s_settingsMap[name].name, s_settingsMap[name].defValue);
     }
 
     /// \brief Set user setting value by enum
     inline static void set(SettingName name, const QVariant &value)
     {
-        s_settings.setValue(s_settingsMap[name].name, value);
+        Settings::set(s_settingsMap[name].name, value);
     }
 
-    /// \brief Get user settung name by enum
-    inline static QString getName(const SettingName &name)
+    inline static void setDefValue(SettingName name)
     {
-        return s_settingsMap[name].name;
+        Settings::set(s_settingsMap[name].name, s_settingsMap[name].defValue);
     }
 
-    static QStringList getGroupsOfType(SettingGroupTypes type);
+    inline static utils::Convertable getDefValue(SettingName name)
+    {
+        return utils::Convertable { s_settingsMap[name].defValue };
+    }
 };

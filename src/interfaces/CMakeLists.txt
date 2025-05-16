@@ -100,24 +100,23 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Cl
   target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-# Linking dependencies
-target_link_libraries(${PROJECT_NAME} PUBLIC
-  Qt${QT_VERSION_MAJOR}::Network
-  Qt${QT_VERSION_MAJOR}::SerialPort
-  s2
-  expected
-)
-
 # Linking hidapi library
   message(STATUS "Using external hidapi")
   include(hidapi)
   message(STATUS "HidAPI source dir: ${hidapi_SOURCE_DIR}")
   message(STATUS "HidAPI lib dir: ${hidapi_BINARY_DIR}")
   target_include_directories(${PROJECT_NAME} PRIVATE ${hidapi_SOURCE_DIR})
-  target_link_libraries(${PROJECT_NAME} PUBLIC
-      hidapi)
 
-# Adding test target
+  # Linking dependencies
+  target_link_libraries(${PROJECT_NAME} PUBLIC
+    Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::SerialPort
+    s2
+    expected
+    hidapi
+  )
+
+  # Adding test target
 if(BUILD_TESTING)
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
   set(INTERFACES_TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")

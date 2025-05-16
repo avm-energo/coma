@@ -1,5 +1,6 @@
-#include <QTimeZone>
 #include <settings/user_settings.h>
+
+#include <QTimeZone>
 
 // Системный часовой пояс
 const auto systemTimezone = QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName);
@@ -41,19 +42,9 @@ QMap<const UserSettings::SettingName, UserSettings::SettingStruct> UserSettings:
     { SettingName::ModbusAddress, { "address", 1 } }                  //
 };
 
-Settings UserSettings::s_settings = Settings();
-QMap<const UserSettings::SettingGroupTypes, const QString> UserSettings::s_groupTypesMap
+QMap<const UserSettings::SettingGroupTypes, QString> UserSettings::s_groupTypesMap
     = { { UserSettings::Ethernet, "Ethernet" }, { UserSettings::Serial, "Serial" } };
 
 UserSettings::UserSettings() { }
 
 UserSettings::~UserSettings() { }
-
-QStringList UserSettings::getGroupsOfType(SettingGroupTypes type)
-{
-    QStringList groups = s_settings.childGroups();
-    s_settings.pushGroup(s_groupTypesMap[type]);
-    groups = s_settings.childGroups();
-    s_settings.popGroup();
-    return groups;
-}

@@ -28,7 +28,7 @@ QWidget *RelayDialog::RelayWidget(int relayCount, QWidget *parent)
         QHBoxLayout *hlayout = new QHBoxLayout;
         QPushButton *button = new QPushButton("Переключить реле №" + QString::number(i + 1));
         hlayout->addWidget(button);
-        QLabel *label = LBLFunc::NewLBL(parent, "Разомкнуто", "lbl" + QString::number(i + startRelayReg));
+        QLabel *label = LBLFunc::New(parent, "Разомкнуто", "lbl" + QString::number(i + startRelayReg));
         hlayout->addWidget(label);
         connect(button, &QPushButton::clicked, this, [=] { changeRelay(i + startRelayReg); });
         vlyout->addLayout(hlayout);
@@ -72,7 +72,7 @@ void RelayDialog::changeRelay(int number, bool state)
     QString text = "Разомкнуто";
     if (state)
         text = "Замкнуто";
-    LBLFunc::SetLBLText(this, "lbl" + QString::number(number), text);
+    LBLFunc::SetText(this, "lbl" + QString::number(number), text);
 }
 
 void RelayDialog::resetRelays(int count)

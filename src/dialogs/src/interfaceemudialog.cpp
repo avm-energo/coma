@@ -12,13 +12,9 @@
 #include <QMessageBox>
 #include <QStandardItemModel>
 
-InterfaceEmuDialog::InterfaceEmuDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
-{
-}
+InterfaceEmuDialog::InterfaceEmuDialog(QWidget *parent) : AbstractInterfaceDialog(parent) { }
 
-InterfaceEmuDialog::~InterfaceEmuDialog() noexcept
-{
-}
+InterfaceEmuDialog::~InterfaceEmuDialog() noexcept { }
 
 void InterfaceEmuDialog::setupUI()
 {
@@ -42,7 +38,7 @@ bool InterfaceEmuDialog::updateModel()
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
         QString rsname = "EMU-" + QString::number(i);
-        rslist << Settings::value(rsname, "").toString();
+        rslist << QString(Settings::get(rsname, ""));
     }
     QStringList sl { "Имя", "typeB", "typeM" };
     QStandardItemModel *mdl = static_cast<QStandardItemModel *>(m_tableView->model());
@@ -56,9 +52,9 @@ bool InterfaceEmuDialog::updateModel()
         QString key = QCoreApplication::applicationName();
         key += "\\" + item;
         QList<QStandardItem *> items {
-            new QStandardItem(item),                                           //
-            new QStandardItem(Settings::value(key + "/typeb", "").toString()), //
-            new QStandardItem(Settings::value(key + "/typem", "").toString()), //
+            new QStandardItem(item),                                       //
+            new QStandardItem(QString(Settings::get(key + "/typeb", ""))), //
+            new QStandardItem(QString(Settings::get(key + "/typem", ""))), //
         };
         mdl->appendRow(items);
     }
@@ -121,8 +117,8 @@ void InterfaceEmuDialog::acceptedInterface()
     // rotateSettings("EMU-", name);
     QString key = QCoreApplication::applicationName();
     key += "\\" + name;
-    Settings::setValue("typeb", LEFunc::Data(dlg, "typeble"));
-    Settings::setValue("typem", LEFunc::Data(dlg, "typemle"));
+    Settings::set("typeb", LEFunc::Data(dlg, "typeble"));
+    Settings::set("typem", LEFunc::Data(dlg, "typemle"));
 
     if (!updateModel())
         qCritical() << Error::GeneralError;

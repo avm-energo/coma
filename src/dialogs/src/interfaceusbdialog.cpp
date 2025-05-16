@@ -17,7 +17,7 @@ InterfaceUSBDialog::InterfaceUSBDialog(QWidget *parent) : AbstractInterfaceDialo
 void InterfaceUSBDialog::setupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    m_tableView = TVFunc::NewQTV(this, "usbtv", nullptr);
+    m_tableView = TVFunc::New(this, "usbtv", nullptr);
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers); // no editable view
     lyout->addWidget(m_tableView);
     connect(m_tableView, &QTableView::doubleClicked, this, &InterfaceUSBDialog::setInterface);
@@ -39,8 +39,8 @@ void InterfaceUSBDialog::setInterface(QModelIndex index)
 #ifdef QT_DEBUG
     settings.path = mdl->data(mdl->index(row, 3)).toString();
 #endif
-    settings.m_timeout = m_settings.get(UserSettings::ProtocomTimeout);
-    settings.m_reconnectInterval = m_settings.get(UserSettings::ProtocomReconnect);
+    settings.m_timeout = UserSettings::get(UserSettings::ProtocomTimeout);
+    settings.m_reconnectInterval = UserSettings::get(UserSettings::ProtocomReconnect);
     fill(settings);
 
     ConnectStruct st { QString(), settings };

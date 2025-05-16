@@ -2,7 +2,7 @@
 
 #include <gen/stdfunc.h>
 #include <gen/utils/crc16.h>
-#include <widgets/epopup.h>
+#include <widgets/emessagebox.h>
 #include <widgets/tvfunc.h>
 
 #include <QCoreApplication>
@@ -45,7 +45,7 @@ void SearchProccessDialog::setupUI()
     auto tableViewModel = new QStandardItemModel(this);
     QStringList headers { "Порт", "Адрес", "Скорость", "Чётность", "Стоп бит", "Статус" };
     tableViewModel->setHorizontalHeaderLabels(headers);
-    tableView = TVFunc::NewQTV(this, "devicesTable", tableViewModel);
+    tableView = TVFunc::New(this, "devicesTable", tableViewModel);
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     mainLayout->addWidget(tableView);
     progressBar = new QProgressBar(this);

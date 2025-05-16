@@ -366,12 +366,12 @@ void Coma::setProgressBarCount(int prbnum, int count)
     if (prb != nullptr)
     {
         prb->setValue(count);
-        LBLFunc::SetLBLText(this, lblname, QString::number(count) + " из " + QString::number(prb->maximum()));
+        LBLFunc::SetText(this, lblname, QString::number(count) + " из " + QString::number(prb->maximum()));
         // Сброс прогресс-бара после окончания операции чтения/записи
         if (prb->value() >= prb->maximum())
         {
             prb->setValue(0);
-            LBLFunc::SetLBLText(this, lblname, " ");
+            LBLFunc::SetText(this, lblname, " ");
         }
     }
 }
@@ -396,7 +396,6 @@ void Coma::connectDialog()
 void Coma::initConnection(const ConnectStruct &st)
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    saveSettings();
     auto connection = m_connectionManager->createConnection(st);
     if (connection && (connection->getConnectionState() != Interface::State::Disconnect))
         initDevice(connection);
@@ -554,8 +553,7 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setOrganizationName(orgName);
     QCoreApplication::setApplicationVersion(version);
     initResources();
-    StdFunc::Init();
-    Logger::writeStart(StdFunc::GetSystemHomeDir() + "coma.log");
+    Logger::writeStart(Settings::logDir() + "coma.log");
     qInstallMessageHandler(Logger::messageHandlerWithErrorQueue);
 }
 

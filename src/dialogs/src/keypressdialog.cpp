@@ -48,7 +48,7 @@ void KeyPressDialog::SetupUI()
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(
         LBLFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
-    vlyout->addWidget(LEFunc::NewPswLE(this, "pswle", QLineEdit::Password));
+    vlyout->addWidget(LEFunc::NewPsw(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
     setMinimumSize(200, 120);
 }
@@ -63,7 +63,7 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
 
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {
-        const QString password = LEFunc::LEData(this, "pswle");
+        const QString password = LEFunc::Data(this, "pswle");
         if (!password.isEmpty())
             m_password = password;
         emit finished();
