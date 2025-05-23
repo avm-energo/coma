@@ -1,0 +1,7 @@
+Source: avm-reserver
+Maintainer: AVM-Energo <support@avmenergo.ru>
+
+Package: avm-reserver
+Description: Backuper for AVTUK
+Architecture: amd64
+Depends: ${shlibs:Depends}, libavm-widgets (>= 2.0)

@@ -14,7 +14,7 @@ file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
 add_executable(${PROJECT_NAME}
-  ${files_cpp} ${files_h} ../coma.rc
+  ${files_cpp} ${files_h} ../coma.rc ../../images/images.qrc
   ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
@@ -66,5 +66,5 @@ if(SYSTEM_NAME STREQUAL "windows")
   include(WinDeploy)
 elseif(SYSTEM_NAME STREQUAL "linux")
   set(COMPONENT_NAME "AVMSERVICE")
-  include(LinuxDeploy)
+#  include(LinuxDeploy)
 endif()

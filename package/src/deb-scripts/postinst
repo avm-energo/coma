@@ -1,0 +1,4 @@
+if [ -f "/usr/share/coma/ru.avmenergo.coma.desktop" ];
+then
+    cp /usr/share/coma/ru.avmenergo.coma.desktop /usr/share/applications/ru.avmenergo.avm-debug.desktop
+fi

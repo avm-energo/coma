@@ -113,7 +113,7 @@ endif()
     Qt${QT_VERSION_MAJOR}::SerialPort
     s2
     expected
-    hidapi
+    hidapi_hidraw
   )
 
   # Adding test target
@@ -136,7 +136,7 @@ if(BUILD_TESTING)
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Test
     avm-gen
-    hidapi
+    hidapi_hidraw
 )
 
   # Adding target as test

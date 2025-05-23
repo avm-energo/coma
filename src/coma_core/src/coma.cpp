@@ -25,7 +25,6 @@
 #include <alarms/alarmwidget.h>
 #include <appconfig/appconfig.h>
 #include <autonomous/hex2binfileconverter.h>
-#include <comaresources/manage.h>
 #include <comaversion/comaversion.h>
 #include <comawidgets/gasdensitywidget.h>
 #include <comawidgets/splashscreen.h>
@@ -89,13 +88,12 @@ Coma::Coma(QWidget *parent)
     EMessageBox::setHash(UserSettings::get(UserSettings::PasswordHash));
 }
 
-Coma::~Coma()
-{
-    freeResources();
-}
+Coma::~Coma() { }
 
 void convertPixmap(size_t size, QAction *jourAct)
 {
+    if (!QFile::exists(":/icons/tnfrosya.svg"))
+        return;
     const QIcon jourIcon(":/icons/tnfrosya.svg");
     QPixmap pix = jourIcon.pixmap(QSize(40, 40), QIcon::Disabled);
     QPainter painter(&pix);
@@ -338,6 +336,7 @@ void Coma::go()
     m_bar = new EStatusBar(this);
     setStatusBar(m_bar);
     setupUI();
+    StdFunc::Wait(10000);
     splash->finish(this);
     splash->deleteLater();
     show();
@@ -552,7 +551,6 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setApplicationName(appName);
     QCoreApplication::setOrganizationName(orgName);
     QCoreApplication::setApplicationVersion(version);
-    initResources();
     Logger::writeStart(Settings::logDir() + "coma.log");
     qInstallMessageHandler(Logger::messageHandlerWithErrorQueue);
 }

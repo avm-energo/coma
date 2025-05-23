@@ -5,15 +5,13 @@
 #include <QPainter>
 #include <QString>
 
-SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f) : QSplashScreen(pixmap, f)
-{
-}
+SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f) : QSplashScreen(pixmap, f) { }
 
 void SplashScreen::drawContents(QPainter *painter)
 {
     const QIcon jourIcon(":/icons/coma.svg");
     const int margin = 20;
-    QPixmap pix = jourIcon.pixmap(QSize(200, 200));
+    QPixmap pix = jourIcon.pixmap(QSize(32, 32));
 
     painter->drawPixmap(QRect(margin, margin, pix.width(), pix.height()), pix);
 
