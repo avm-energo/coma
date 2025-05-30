@@ -83,7 +83,8 @@ public slots:
     /// \brief Слот, при вызове которого создаётся новая конфигурация для другого типа платы.
     void startNewConfig();
     /// \brief Слот, который сохраняет данные от XML парсера о конфигурации по умолчанию для текущей платы.
-    void configDataReceive(const quint16 id, const QString &defVal, const bool visib, const quint16 count);
+    void configDataReceive(
+        const quint16 id, const QString &defVal, const bool visib, const quint16 count, const quint16 order);
     /// \brief aboba
     void configNameReceive(const QString &tabName);
 

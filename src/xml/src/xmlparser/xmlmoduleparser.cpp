@@ -161,6 +161,7 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
             SGroup sgroup;
             auto sgroupElem = sgroupNode.toElement();
             auto sgroupHeader = sgroupElem.attribute(tags::header, "");
+            auto sgroupOrder = sgroupElem.attribute(tags::order, "");
             auto sgroupTab = sgroupElem.attribute(tags::tab, "").toUInt();
             auto sgroupDType = sgroupElem.attribute(tags::dtype, "");
             XmlParse::callForEachChild(sgroupNode,
@@ -176,6 +177,7 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
                     auto view = parseViewType(viewString);
                     auto itemList = XmlParse::parseArray(mwidgetNode, tags::str_array);
                     sgroup.name = sgroupHeader;
+                    sgroup.order = sgroupOrder.toInt();
                     sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, view, itemList });
                 });
             sgmap.insert(sgroupTab, sgroup);
@@ -304,7 +306,8 @@ void Xml::ModuleParser::parseConfig(const QDomNode &configNode)
     if (XmlParse::parseString(configNode, tags::visibility) == "false")
         visibility = false;
     auto count = XmlParse::parseNumFromNode<u16>(configNode, tags::count);
-    emit configDataSending(id, defVal, visibility, count);
+    u16 order = XmlParse::parseNumFromNode<u16>(configNode, tags::order);
+    emit configDataSending(id, defVal, visibility, count, order);
 }
 
 void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)

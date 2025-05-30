@@ -291,13 +291,7 @@
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
-            <record>
-                <id>1043</id>
-                <defaultValue>1</defaultValue>
-                <count>0</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
+           <record>
                 <id>1044</id>
                 <defaultValue>5</defaultValue>
                 <count>0</count>
@@ -940,10 +934,6 @@
                         <start-addr>102</start-addr>
                         <toolTip>Напряжение батареи, В</toolTip>
                     </mwidget>
-                    <mwidget desc="Текущее время в модуле Unixtime" view="float">
-                        <start-addr>120</start-addr>
-                        <toolTip>Текущее время в модуле Unixtime</toolTip>
-                    </mwidget>
                 </sgroup>
                 <sgroup header="Предельные" tab="3">
                     <mwidget desc="Максимальное значение температуры ВСМ за последние сутки" view="float">
@@ -979,7 +969,7 @@
                         <toolTip>Минимальное значение температуры ВСМ за последний год</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Состояние входных сигналов" tab="2">
+                <sgroup header="Состояние входных сигналов" order="1" tab="2">
                     <mwidget desc="Включен режим ручного управления (автоматическое управление отключено)" view="SinglePoint">
                         <start-addr>1200</start-addr>
                         <toolTip>Ручной режим</toolTip>
@@ -997,18 +987,21 @@
                         <toolTip>Превышение токовой нагрузки для ступени ДЦ</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Состояние выходных сигналов" tab="2">
+                <sgroup header="Состояние выходных сигналов" order="2" tab="2">
                     <mwidget desc="Включить ступень Д1. Выход %1" view="SinglePoint">
                         <start-addr>1201</start-addr>
                         <count>2</count>
+                        <toolTip>Включить ступень Д1. Выход %1</toolTip>
                     </mwidget>
                     <mwidget desc="Включить ступень Д2. Выход %1" view="SinglePoint">
                         <start-addr>1203</start-addr>
                         <count>2</count>
+                        <toolTip>Включить ступень Д2. Выход %1</toolTip>
                     </mwidget>
                     <mwidget desc="Включить ступень ДЦ. Выход %1" view="SinglePoint">
                         <start-addr>1205</start-addr>
                         <count>4</count>
+                        <toolTip>Включить ступень ДЦ. Выход %1</toolTip>
                     </mwidget>
                     <mwidget desc="Работа маслонасосов заблокирована алгоритмом" view="SinglePoint">
                         <start-addr>1209</start-addr>
@@ -1066,7 +1059,7 @@
                     </mwidget>
                     <mwidget desc="Неисправность подключенных датчиков" view="SinglePoint">
                         <start-addr>1100</start-addr>
-                        <toolTip>Блокировка вентиляторов</toolTip>
+                        <toolTip>Неисправность подключенных датчиков</toolTip>
                     </mwidget>
                 </sgroup>
             </section>

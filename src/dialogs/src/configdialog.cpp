@@ -64,7 +64,7 @@ bool ConfigDialog::isVisible(const quint16 id) const
     const auto &detailMap = m_datamanager.getStorage().getWidgetDetailMap();
     auto search = detailMap.find(id);
     if (search != detailMap.cend())
-        return search->second.first;
+        return search->second.isVisible;
     else
         return false;
 }

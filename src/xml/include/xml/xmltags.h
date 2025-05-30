@@ -55,6 +55,7 @@ constexpr auto addr = "addr";
 constexpr auto start_addr = "start-addr";
 constexpr auto count = "count";
 constexpr auto header = "header";
+constexpr auto order = "order";
 constexpr auto tooltip = "toolTip";
 constexpr auto str_array = "string-array";
 constexpr auto string = "string";

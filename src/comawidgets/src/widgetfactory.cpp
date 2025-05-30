@@ -50,7 +50,7 @@ template <typename T> QWidget *helper(const T &arg, QWidget *parent, quint16 key
     {
         auto control = new IPCtrl(parent);
         control->setObjectName(QString::number(key));
-        lyout->addWidget(control, 100);
+        lyout->addWidget(control, 1);
         break;
     }
     case ctti::unnamed_type_id<GasDensityWidget>().hash():
@@ -167,6 +167,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
                 label->setToolTip(arg.toolTip);
+                label->setWordWrap(true);
                 lyout->addWidget(label);
                 lyout->addWidget(SPBFunc::New(parent, QString::number(key), arg.min, arg.max, arg.decimals));
                 widget->setLayout(lyout);

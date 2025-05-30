@@ -1,7 +1,7 @@
 #pragma once
 
-#include <device/xml_settings.h>
 #include <comawidgets/udialog.h>
+#include <device/xml_settings.h>
 
 #include <QHBoxLayout>
 #include <QLabel>
@@ -72,7 +72,8 @@ private:
     QVBoxLayout *setupGroup(const Device::XmlDataTypes::SGroup &arg, UWidget *uwidget);
     QGridLayout *setupFloatWidget(const Device::XmlDataTypes::MWidget &mwidget, const int wCount);
     QVBoxLayout *setupBitsetWidget(const Device::XmlDataTypes::MWidget &mwidget, UWidget *widget);
-    QVBoxLayout *setupSinglePointWidget(const Device::XmlDataTypes::MWidget &mwidget, UWidget *widget);
+    QGridLayout *setupSinglePointWidget(
+        const Device::XmlDataTypes::MWidget &mwidget, UWidget *widget, const int wCount = 1);
 
     /// \brief Prepares command widget with button
     /// \param mwidget - MWidget info from corresponding XML tag

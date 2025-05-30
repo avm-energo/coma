@@ -3,9 +3,7 @@
 namespace S2
 {
 
-DataManager::DataManager(QObject *parent) : QObject(parent), m_storage(this)
-{
-}
+DataManager::DataManager(QObject *parent) : QObject(parent), m_storage(this) { }
 
 S2ConfigStorage &DataManager::getStorage() noexcept
 {
@@ -111,12 +109,13 @@ void DataManager::startNewConfig()
     }
 }
 
-void DataManager::configDataReceive(const quint16 id, const QString &defVal, const bool visib, const quint16 count)
+void DataManager::configDataReceive(
+    const quint16 id, const QString &defVal, const bool visib, const quint16 count, const quint16 order)
 {
     // Перед вызовом configDataReceive гарантированно будет вызван startNewConfig,
     // поэтому currentParseTarget будет гарантированно инициализирован значением.
     m_data.at(m_currentParseTarget).m_defaultConfig.append(id, defVal);
-    m_storage.widgetDetailsReceive(id, visib, count);
+    m_storage.widgetDetailsReceive(id, visib, count, order);
 }
 
 void DataManager::configNameReceive(const QString &tabName)

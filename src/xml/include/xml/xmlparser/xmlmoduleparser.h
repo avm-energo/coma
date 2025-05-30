@@ -1,8 +1,9 @@
 #pragma once
 
-#include <QDomElement>
 #include <device/xml_settings.h>
 #include <interfaces/types/common_types.h>
+
+#include <QDomElement>
 
 namespace Device
 {
@@ -41,7 +42,7 @@ signals:
     void workJourDataSending(const u32 id, const QString &desc);
     void measJourDataSending(const u32 idx, const QString &header, const Xml::BinaryType type, bool visib);
     void protocolGroupSending(const Protocol::AbstractGroup &group);
-    void configDataSending(const u16 id, const QString &defVal, const bool visib, const u16 count);
+    void configDataSending(const u16 id, const QString &defVal, const bool visib, const u16 count, const u16 order);
     void configNameSending(const QString &tabName);
     void hiddenTabDataSending(const Xml::HiddenTab &hiddenTab);
     void bsiExtItemDataSending(const u32 addr, const Xml::BinaryType type, const bool visib, const QString &desc);

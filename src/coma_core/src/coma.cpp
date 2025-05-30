@@ -336,7 +336,7 @@ void Coma::go()
     m_bar = new EStatusBar(this);
     setStatusBar(m_bar);
     setupUI();
-    StdFunc::Wait(10000);
+    // StdFunc::Wait(10000);
     splash->finish(this);
     splash->deleteLater();
     show();

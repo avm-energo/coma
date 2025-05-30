@@ -137,7 +137,19 @@ void CheckDialog::setupUI()
         {
             auto widget = new UWidget(m_device, this);
             auto layout = new QVBoxLayout;
-            const auto groups = mSection.sgMap.values(tabId);
+            auto groups = mSection.sgMap.values(tabId);
+            if (groups.size() > 1)
+            {
+                // sort groups by order field
+                for (int i = 0; i < groups.size() - 1; i++)
+                {
+                    for (int j = i + 1; j < groups.size(); ++j)
+                    {
+                        if (groups.at(i).order > groups.at(j).order)
+                            groups.swapItemsAt(i, j);
+                    }
+                }
+            }
             for (auto &&group : groups)
             {
                 auto groupBox = new QGroupBox(widget);
@@ -296,6 +308,31 @@ QGridLayout *CheckDialog::setupFloatWidget(const MWidget &mwidget, const int wCo
     return gridLayout;
 }
 
+QGridLayout *CheckDialog::setupSinglePointWidget(const MWidget &mwidget, UWidget *widget, const int wCount)
+{
+    auto gridLayout = new QGridLayout;
+    auto count = mwidget.count;
+    auto itemsOneLine = StdFunc::goldenRatio(count);
+    for (auto i = 0; i < count; ++i)
+    {
+        QHBoxLayout *layout = new QHBoxLayout;
+
+        auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i + 1, 0), this);
+        layout->addWidget(textLabel);
+        auto indicator = createPixmapIndicator(mwidget, QString::number(mwidget.startAddr + i));
+        indicator->setToolTip(getFormatted(mwidget, mwidget.tooltip, i + 1, 0));
+        layout->addWidget(indicator);
+
+        gridLayout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
+    }
+
+    auto dataUpdater = widget->engine();
+    connect(dataUpdater, &ModuleDataUpdater::itsTimeToUpdateSinglePointSignal, this,
+        [mwidget, widget, this](const DataTypes::SinglePointWithTimeStruct &sp) -> void //
+        { updatePixmap(mwidget, sp, widget); });
+    return gridLayout;
+}
+
 void CheckDialog::updatePixmap(const MWidget &mwidget, const DataTypes::BitStringStruct &bs, UWidget *uwidget)
 {
     if (bs.sigAdr == mwidget.startAddr && bs.sigQuality == DataTypes::Quality::Good)
@@ -375,38 +412,6 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const MWidget &mwidget, UWidget *wid
 
     bitsetWidget->setLayout(gridLayout);
     widgetLayout->addWidget(bitsetWidget);
-    return widgetLayout;
-}
-
-QVBoxLayout *CheckDialog::setupSinglePointWidget(const MWidget &mwidget, UWidget *widget)
-{
-    auto widgetLayout = new QVBoxLayout;
-    auto spWidget = new QWidget(this);
-    auto vlyout = new QVBoxLayout;
-
-    for (auto i = 0; i < mwidget.count; i++)
-    {
-        auto hlyout = new QHBoxLayout;
-        const auto limit = i + c_maxIndicatorCountInRow;
-        for (; (i < mwidget.count) && (i < limit); i++)
-        {
-            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i + 1, 0), this);
-            hlyout->addWidget(textLabel);
-            auto indicator = createPixmapIndicator(mwidget, QString::number(mwidget.startAddr + i));
-            indicator->setToolTip(getFormatted(mwidget, mwidget.tooltip, i + 1, 0));
-            hlyout->addWidget(indicator);
-        }
-        hlyout->addStretch(100);
-        vlyout->addLayout(hlyout);
-    }
-
-    auto dataUpdater = widget->engine();
-    connect(dataUpdater, &ModuleDataUpdater::itsTimeToUpdateSinglePointSignal, this,
-        [mwidget, widget, this](const DataTypes::SinglePointWithTimeStruct &sp) -> void //
-        { updatePixmap(mwidget, sp, widget); });
-
-    spWidget->setLayout(vlyout);
-    widgetLayout->addWidget(spWidget);
     return widgetLayout;
 }
 

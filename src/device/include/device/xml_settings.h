@@ -46,6 +46,7 @@ struct MWidget final
 struct SGroup final
 {
     QString name;                     ///< атрибут "header"
+    int order;                        ///< атрибут "order"
     std::vector<MWidget> widgets;     ///< узлы <mwidget>
 };
 

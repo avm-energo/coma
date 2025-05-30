@@ -5,9 +5,7 @@
 namespace S2
 {
 
-ConfigStorage::ConfigStorage(QObject *parent) : QObject(parent), m_status(ParseStatus::NotYetParsed)
-{
-}
+ConfigStorage::ConfigStorage(QObject *parent) : QObject(parent), m_status(ParseStatus::NotYetParsed) { }
 
 ParseStatus ConfigStorage::getParseStatus() const
 {
@@ -47,7 +45,7 @@ const std::map<quint32, QString> &ConfigStorage::getConfigTabs() const
     return m_configTabs;
 }
 
-const std::map<quint32, WidgetDetail> &ConfigStorage::getWidgetDetailMap() const
+const std::map<quint32, ConfigStorage::WidgetDetail> &ConfigStorage::getWidgetDetailMap() const
 {
     return m_widgetDetailMap;
 }
@@ -109,9 +107,9 @@ void ConfigStorage::configTabDataReceive(const quint32 id, const QString &tabNam
         m_configTabs.insert({ id, tabName });
 }
 
-void ConfigStorage::widgetDetailsReceive(const quint32 id, const bool visib, const quint16 count)
+void ConfigStorage::widgetDetailsReceive(const quint32 id, const bool visib, const quint16 count, const quint16 order)
 {
-    m_widgetDetailMap.insert({ id, { visib, count } });
+    m_widgetDetailMap.insert({ id, { visib, count, order } });
 }
 
 } // namespace S2

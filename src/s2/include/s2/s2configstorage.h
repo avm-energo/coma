@@ -1,8 +1,9 @@
 #pragma once
 
-#include <QObject>
 #include <gen/singleton.h>
 #include <s2/delegate_common.h>
+
+#include <QObject>
 
 namespace S2
 {
@@ -14,23 +15,19 @@ enum class ParseStatus : bool
     AlreadyParsed = true  ///< Уже спарсили :)
 };
 
-/// TODO: отдельная структура для детализированной информации о виджете?
-using WidgetDetail = std::pair<bool, quint32>;
-
 /// \brief Класс для хранения XML конфигурации, необходимой для работы с данными в формате S2.
 class ConfigStorage : public QObject
 {
     Q_OBJECT
-private:
-    std::map<QString, quint32> m_idByName;
-    std::map<quint32, ctti::unnamed_type_id_t> m_typeById;
-    std::map<quint32, bool> m_dtypes;
-    config::widgetMap m_widgetMap;
-    std::map<quint32, QString> m_configTabs;
-    std::map<quint32, WidgetDetail> m_widgetDetailMap;
-    ParseStatus m_status;
-
 public:
+    /// \brief Детализированная информация о виджете
+    struct WidgetDetail
+    {
+        bool isVisible;
+        quint16 count;
+        quint16 order;
+    };
+
     explicit ConfigStorage(QObject *parent = nullptr);
 
     /// \brief Возвращает статус парсинга s2files.xml.
@@ -63,6 +60,15 @@ public:
     /// \details В случае, если данной записи не существует, функция вернёт ID равный 0.
     quint32 getIdFor(const QString &name) const noexcept;
 
+private:
+    std::map<QString, quint32> m_idByName;
+    std::map<quint32, ctti::unnamed_type_id_t> m_typeById;
+    std::map<quint32, bool> m_dtypes;
+    config::widgetMap m_widgetMap;
+    std::map<quint32, QString> m_configTabs;
+    std::map<quint32, WidgetDetail> m_widgetDetailMap;
+    ParseStatus m_status;
+
 public slots:
     /// \brief Слот для сохранения S2 ID по его имени.
     /// \see getIdByNameMap.
@@ -81,7 +87,7 @@ public slots:
     void configTabDataReceive(const quint32 id, const QString &tabName);
     /// \brief Слот для сохранения уточнённой информации о виджете по его S2 ID.
     /// \see getWidgetDetailMap.
-    void widgetDetailsReceive(const quint32 id, const bool visib, const quint16 count);
+    void widgetDetailsReceive(const quint32 id, const bool visib, const quint16 count, const quint16 order);
 };
 
 } // namespace S2
