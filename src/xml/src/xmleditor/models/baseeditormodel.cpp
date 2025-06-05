@@ -1,7 +1,8 @@
 #include "xml/xmleditor/models/baseeditormodel.h"
 
 BaseEditorModel::BaseEditorModel(int rows, int cols, ModelType type, QObject *parent)
-    : QStandardItemModel(rows, cols, parent), m_type(type)
+    : QStandardItemModel(rows, cols, parent)
+    , m_type(type)
 {
 }
 
@@ -34,18 +35,22 @@ QDomElement BaseEditorModel::makeElement(QDomDocument &doc, const QString &elemN
     return doc.createElement(elemName);
 }
 
-void BaseEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QString &data)
+QDomElement BaseEditorModel::makeGroup(QDomDocument &doc, QDomElement &parentElem, const QString &groupName)
 {
-    auto elem = makeElement(doc, elemName);
-    auto filler = doc.createTextNode(data);
-    elem.appendChild(filler);
-    parent.appendChild(elem);
+    auto groupElem = makeElement(doc, groupName);
+    if (!parentElem.isNull())
+        parentElem.appendChild(groupElem);
+    return groupElem;
 }
 
 void BaseEditorModel::makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QVariant &data)
 {
     auto str = (data.isValid() && data.canConvert<QString>()) ? data.value<QString>() : "";
-    makeElement(doc, parent, elemName, str);
+    auto elem = makeElement(doc, elemName);
+    auto filler = doc.createTextNode(str);
+    elem.appendChild(filler);
+    parent.appendChild(elem);
+    // makeElement(doc, parent, elemName, str);
 }
 
 QStringList BaseEditorModel::getRowData(const int row)

@@ -177,6 +177,12 @@ void XmlDialog::dataChanged(int index)
     dataChanged();
 }
 
+void XmlDialog::dataChanged(Qt::CheckState state)
+{
+    Q_UNUSED(state);
+    dataChanged();
+}
+
 void XmlDialog::resetChangeState()
 {
     // Сброс изменённого состояния окна

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QtXml>
 #include <xml/xmleditor/models/baseeditormodel.h>
+
+#include <QtXml>
 
 constexpr int FilenameDataRole = 0x0107; ///< Роль для хранения имени файла
 

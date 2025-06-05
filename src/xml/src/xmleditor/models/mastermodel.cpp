@@ -24,6 +24,9 @@ QDomElement MasterModel::toNode(QDomDocument &doc, const int &row)
         // Для мезонинных плат не сохраняем ноду <version>
         if (typeB.value<QString>() != "00")
             makeElement(doc, moduleNode, tags::version, data(index(row, 3)));
+        auto featuresElem = makeGroup(doc, moduleNode, tags::features); // create group "Features"
+        makeElement(doc, featuresElem, tags::isrtcexist, data(index(row, 5)));
+        makeElement(doc, featuresElem, tags::isboxmodule, data(index(row, 6)));
         return moduleNode;
     }
 }
@@ -56,7 +59,7 @@ void MasterModel::readModulesToModel()
     auto dir = QDir(Settings::configDir());
     auto modules = dir.entryList(QDir::Files).filter(".xml");
     setRowCount(0);
-    setColumnCount(5);
+    setColumnCount(7);
     // Каждый xml-файл считывается в модель
     for (const auto &name : modules)
     {
@@ -117,6 +120,28 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, co
                 setData(index(row, 3), "No version");
             else
                 setData(index(row, 3), domElVersion.text());
+            auto featuresNode = domElModule.firstChildElement(tags::features);
+            if (!featuresNode.isNull())
+            {
+                auto child = featuresNode.firstChild();
+                while (!child.isNull())
+                {
+                    if (!child.isComment() && child.isElement())
+                    {
+                        auto featuresNodeElement = child.toElement();
+                        if (!featuresNodeElement.isNull())
+                        {
+                            const QString key = featuresNodeElement.tagName();
+                            const QString value = featuresNodeElement.text();
+                            if (key == tags::isboxmodule)
+                                setData(index(row, 5), value);
+                            if (key == tags::isrtcexist)
+                                setData(index(row, 6), value);
+                        }
+                    }
+                    child = child.nextSibling();
+                }
+            }
         }
     }
 }

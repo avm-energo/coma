@@ -39,6 +39,8 @@ constexpr auto item = "item";
 constexpr auto group = "group";
 constexpr auto record = "record";
 constexpr auto highlights = "highlights";
+constexpr auto isrtcexist = "isRTCExist";
+constexpr auto isboxmodule = "isBoxModule";
 
 // Common tags
 constexpr auto mtypeb = "mtypeb";

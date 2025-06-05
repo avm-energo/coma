@@ -1,5 +1,6 @@
 #include "xml/xmleditor/dialogs/moduledialog.h"
 
+#include <widgets/chbfunc.h>
 #include <widgets/lblfunc.h>
 #include <widgets/lefunc.h>
 
@@ -15,27 +16,52 @@ void ModuleDialog::setupUI(QVBoxLayout *mainLayout)
 {
     // Настройки окна (размер, положение)
     setupSizePos(380, 220);
-    m_dlgSettings = {
-        { "Название", "nameInput" },   //
-        { "База: ", "bTypeInput" },    //
-        { "Мезонин: ", "mTypeInput" }, //
-        { "Версия", "verInput" }       //
-    };
+    m_elements = { { "Название", "nameInput", WidgetTypes::LineEdit }, //
+        { "База: ", "bTypeInput", WidgetTypes::LineEdit },             //
+        { "Мезонин: ", "mTypeInput", WidgetTypes::LineEdit },          //
+        { "Версия", "verInput", WidgetTypes::LineEdit },               //
+        { "Файл XML", "XMLFile", WidgetTypes::NoWidget },
+        { "Отдельный модуль в коробке", "isBoxModule", WidgetTypes::CheckBox },
+        { "Часы RTC есть", "isRTCExist", WidgetTypes::CheckBox } };
     m_title += "модуля";
-    for (const auto &itemSettings : std::as_const(m_dlgSettings))
+    for (const auto &item : std::as_const(m_elements))
     {
-        auto labelText = itemSettings.first;
-        auto itemName = itemSettings.second;
-        auto labelItem = LBLFunc::New(this, labelText, itemName + "Label");
-        auto inputItem = LEFunc::New(this, itemName);
-        QObject::connect(
-            inputItem, &QLineEdit::textEdited, this, qOverload<const QString &>(&ModuleDialog::dataChanged));
-
-        auto itemLayout = new QHBoxLayout;
-        itemLayout->addWidget(labelItem);
-        itemLayout->addWidget(inputItem);
-        mainLayout->addLayout(itemLayout);
-        m_dlgItems.append(inputItem);
+        auto labelText = item.title;
+        auto itemName = item.name;
+        switch (item.type)
+        {
+        case WidgetTypes::LineEdit:
+        {
+            auto labelItem = LBLFunc::New(this, labelText, itemName + "Label");
+            auto itemLayout = new QHBoxLayout;
+            itemLayout->addWidget(labelItem);
+            auto inputItem = LEFunc::New(this, itemName);
+            QObject::connect(
+                inputItem, &QLineEdit::textEdited, this, qOverload<const QString &>(&ModuleDialog::dataChanged));
+            itemLayout->addWidget(inputItem);
+            mainLayout->addLayout(itemLayout);
+            m_dlgItems.append(inputItem);
+            break;
+        }
+        case WidgetTypes::CheckBox:
+        {
+            auto labelItem = LBLFunc::New(this, labelText, itemName + "Label");
+            auto itemLayout = new QHBoxLayout;
+            itemLayout->addWidget(labelItem, 10);
+            auto inputItem = ChBFunc::New(this, itemName, "");
+            QObject::connect(
+                inputItem, &QCheckBox::checkStateChanged, this, qOverload<Qt::CheckState>(&ModuleDialog::dataChanged));
+            itemLayout->addWidget(inputItem, 1);
+            mainLayout->addLayout(itemLayout);
+            m_dlgItems.append(inputItem);
+            break;
+        }
+        default: // NoWidget
+            auto inputItem = LEFunc::New(this, itemName, "");
+            inputItem->setVisible(false);
+            m_dlgItems.append(inputItem);
+            break;
+        }
     }
 }
 

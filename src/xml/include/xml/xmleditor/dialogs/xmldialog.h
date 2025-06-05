@@ -87,6 +87,8 @@ public slots:
     /// \see dataChanged.
     void dataChanged(int data);
 
+    void dataChanged(Qt::CheckState state);
+
     /// \brief Вызывается, когда приходящие от модели данные изменили состояние
     /// диалогового окна, однако нам не нужно при создании окна изменения состояния change.
     /// \see dataChanged.

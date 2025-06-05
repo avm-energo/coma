@@ -7,7 +7,21 @@ class ModuleDialog final : public XmlDialog
 {
     Q_OBJECT
 private:
-    QList<QPair<QString, QString>> m_dlgSettings;
+    enum WidgetTypes
+    {
+        CheckBox,
+        LineEdit,
+        NoWidget
+    };
+
+    struct DialogElements
+    {
+        QString title;
+        QString name;
+        WidgetTypes type;
+    };
+
+    QList<DialogElements> m_elements;
 
 public:
     explicit ModuleDialog(QWidget *parent = nullptr);

@@ -21,7 +21,8 @@ XmlEditor::XmlEditor(QWidget *parent) : QDialog(parent, Qt::Window), dc(nullptr)
     {
         dc = new DataController(this);
         QObject::connect(dc, &DataController::highlightModified, this, //
-            [this]() {
+            [this]()
+            {
                 auto row = masterView->selectionModel()->selectedRows().at(0).row();
                 dc->setRow(row);
                 setFontBolding(row, true);
@@ -94,6 +95,8 @@ QVBoxLayout *XmlEditor::getMasterWorkspace()
     QObject::connect(masterModel, &MasterModel::error, this,
         [this](const QString &errorMsg) { EMessageBox::error(this, errorMsg); });
     masterView->setModel(masterModel);
+    masterView->setColumnHidden(5, true);
+    masterView->setColumnHidden(6, true);
     return workspace;
 }
 
@@ -132,7 +135,8 @@ QVBoxLayout *XmlEditor::getSlaveWorkspace()
 
     QObject::connect(tableSlaveView, &QTableView::doubleClicked, manager, &ModelManager::viewModelItemClicked);
     QObject::connect(manager, &ModelManager::modelChanged, this, //
-        [this](XmlModel *model) {
+        [this](XmlModel *model)
+        {
             tableSlaveView->setModel(model);
             tableSlaveView->sortByColumn(0, Qt::SortOrder::AscendingOrder);
             QObject::connect(model, &XmlModel::modelChanged, dc, &DataController::configChanged);

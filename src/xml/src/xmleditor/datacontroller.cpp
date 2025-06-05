@@ -217,6 +217,14 @@ void DataController::saveFile(MasterModel *masterModel)
                 replaceAttrs(doc, moduleNode, { tags::mtypeb, tags::mtypem }, data);
                 replaceChild(doc, moduleNode, tags::name, masterModel->data(masterModel->index(changedRow, 0)));
                 replaceChild(doc, moduleNode, tags::version, masterModel->data(masterModel->index(changedRow, 3)));
+                auto featuresNode = moduleNode.firstChildElement(tags::features);
+                if (!featuresNode.isNull())
+                {
+                    replaceChild(
+                        doc, featuresNode, tags::isboxmodule, masterModel->data(masterModel->index(changedRow, 5)));
+                    replaceChild(
+                        doc, featuresNode, tags::isrtcexist, masterModel->data(masterModel->index(changedRow, 6)));
+                }
             }
         }
         file->close();

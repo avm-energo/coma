@@ -51,12 +51,11 @@ protected:
     /// \brief Creates QDomNode at base of input QDomDocument.
     QDomElement makeElement(QDomDocument &doc, const QString &elemName);
 
-    /// \brief Creates a QDomNode at base of input data.
+    /// \brief Creates QDomNode at parentElem of input QDomDocument.
     /// \param doc - XML document in that creates data.
-    /// \param parent - XML DOM node, parent of creating node.
-    /// \param elemName - name of creating node.
-    /// \param data - string data for the new node.
-    void makeElement(QDomDocument &doc, QDomElement &parent, const QString &elemName, const QString &data);
+    /// \param parentElem - XML DOM node, parent of creating node.
+    /// \param groupName - name of the group to create
+    QDomElement makeGroup(QDomDocument &doc, QDomElement &parentElem, const QString &groupName);
 
     /// \brief Creates a QDomNode at base of input data.
     /// \param doc - XML document in that creates data.
