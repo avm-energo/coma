@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <!-- Common icons start -->
         <file>icons/tnapprove.svg</file>
         <file>icons/tnemul.svg</file>
         <file>icons/tnfrosya.svg</file>
@@ -16,35 +15,24 @@
         <file>icons/tnwrite.svg</file>
         <file>icons/tnyes.svg</file>
         <file>icons/pswshow.png</file>
-        <!--  Common icons end  -->
-        <!-- XML Editor icons start -->
         <file>icons/createModule.svg</file>
         <file>icons/deleteModule.svg</file>
         <file>icons/editModule.svg</file>
-        <!--  XML Editor icons end  -->
-        <!-- Interfaces icons start -->
         <file>icons/ethernet.svg</file>
         <file>icons/rs485.svg</file>
         <file>icons/usb.svg</file>
-        <!--  Interfaces icons end  -->
-        <!-- MessageBox icons start -->
         <file>icons/err-hex.svg</file>
         <file>icons/info-hex.svg</file>
         <file>icons/next-hex.svg</file>
         <file>icons/ordinary-hex.svg</file>
         <file>icons/psw-hex.svg</file>
         <file>icons/question-hex.svg</file>
-        <!--  MessageBox icons end  -->
-        <!-- Other icons start -->
         <file>icons/avm-energo.svg</file>
         <file>icons/coma.ico</file>
         <file>icons/coma.svg</file>
         <file>icons/excel.svg</file>
         <file>icons/osc.svg</file>
         <file>icons/resize.svg</file>
-        <!-- Other icons end -->
-    </qresource>
-    <qresource prefix="/">
         <file>tunes/cross.png</file>
         <file>tunes/hr.png</file>
         <file>tunes/ok.png</file>
@@ -66,17 +54,6 @@
         <file>tunes/tunea1.png</file>
         <file>tunes/tunekiv.png</file>
         <file>tunes/tunekiv1.png</file>
-    </qresource>
-    <qresource prefix="/images">
-        <file>BM.svg</file>
-        <file>BMn.svg</file>
-        <file>BnM.svg</file>
-        <file>BnMn.svg</file>
-        <file>pkdn.svg</file>
-        <file>surgery.png</file>
-        <file>Koma.png</file>
-    </qresource>
-    <qresource prefix="/">
         <file>emulator/00.png</file>
         <file>emulator/2x.png</file>
         <file>emulator/3x.png</file>
@@ -91,5 +68,16 @@
         <file>emulator/84.png</file>
         <file>emulator/85.png</file>
         <file>emulator/a1.png</file>
+        <file>2.1.x.png</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>BM.svg</file>
+        <file>BMn.svg</file>
+        <file>BnM.svg</file>
+        <file>BnMn.svg</file>
+        <file>pkdn.svg</file>
+        <file>surgery.png</file>
+        <file>Koma.png</file>
+        <file>avtuk.png</file>
     </qresource>
 </RCC>

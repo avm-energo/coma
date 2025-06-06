@@ -1366,8 +1366,8 @@
                 <string>Температурный коэффициент</string>
                 <count>8</count>
                 <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <max>100</max>
+                <decimals>3</decimals>
             </widget>
         </record>
         <record>
@@ -1519,8 +1519,8 @@
                 <string>Температурный коэффициент</string>
                 <count>8</count>
                 <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <max>100</max>
+                <decimals>3</decimals>
             </widget>
         </record>
         <record>
@@ -2320,7 +2320,7 @@
                 <count>3</count>
                 <min>0</min>
                 <max>10</max>
-                <decimals>0</decimals>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -2334,7 +2334,7 @@
                 <count>3</count>
                 <min>0</min>
                 <max>20000</max>
-                <decimals>0</decimals>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>

@@ -35,11 +35,14 @@ void SplashScreen::drawContents(QPainter *painter)
     painter->setFont(font);
     rect.setHeight(painter->font().pixelSize() * 1.2);
 
-    rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
+    rect.moveBottom(rect.bottom() + 4 * painter->font().pixelSize());
     painter->drawText(rect, Qt::AlignLeft, Prog::modules);
 
     rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
-    painter->drawText(rect, Qt::AlignLeft, Prog::liblzma);
+    painter->drawText(rect, Qt::AlignLeft, Prog::libavmgen);
+
+    rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
+    painter->drawText(rect, Qt::AlignLeft, Prog::libavmwidgets);
 
     rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
     painter->drawText(rect, Qt::AlignLeft, Prog::hidapi);
@@ -63,7 +66,7 @@ void SplashScreen::drawContents(QPainter *painter)
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::RoundJoin);
     pen.setColor(Qt::black);
-    rect = QRect(0, 320, painter->window().width(), int(painter->font().pixelSize()) * 6);
+    rect = QRect(0, 225, painter->window().width(), int(painter->font().pixelSize()) * 6);
     pen.setColor(Qt::white);
     painter->setPen(pen);
 
