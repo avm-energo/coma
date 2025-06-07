@@ -1,7 +1,7 @@
-Source: avm-reserver
+Source: avm-service
 Maintainer: AVM-Energo <support@avmenergo.ru>
 
-Package: avm-reserver
-Description: Backuper for AVTUK
+Package: avm-service
+Description: Service software for various AV-TUK & AVM modules
 Architecture: amd64
 Depends: ${shlibs:Depends}, libavm-widgets (>= 2.0)

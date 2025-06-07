@@ -86,3 +86,7 @@ endif()
 # Step 3: Build executable targets
 add_subdirectory(src/AVM-Debug)
 add_subdirectory(src/AVM-Service)
+
+set(VERSION_IN ${CMAKE_CURRENT_SOURCE_DIR}/VERSION.in)
+set(VERSION_OUT ${CMAKE_CURRENT_SOURCE_DIR}/package/src/VERSION)
+configure_file(${VERSION_IN} ${VERSION_OUT} @ONLY)

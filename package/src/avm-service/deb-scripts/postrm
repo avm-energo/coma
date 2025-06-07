@@ -1,0 +1,4 @@
+if [ -f "/usr/share/applications/ru.avmenergo.avm-service.desktop" ];
+then
+    rm /usr/share/applications/ru.avmenergo.avm-service.desktop
+fi
