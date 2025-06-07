@@ -113,8 +113,17 @@ endif()
     Qt${QT_VERSION_MAJOR}::SerialPort
     s2
     expected
-    hidapi_hidraw
   )
+
+if(SYSTEM_NAME STREQUAL "windows")
+    target_link_libraries(${PROJECT_NAME} PUBLIC
+      hidapi
+    )
+elseif(SYSTEM_NAME STREQUAL "linux")
+    target_link_libraries(${PROJECT_NAME} PUBLIC
+      hidapi-hidraw
+    )
+endif()
 
   # Adding test target
 if(BUILD_TESTING)
@@ -136,8 +145,18 @@ if(BUILD_TESTING)
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Test
     avm-gen
-    hidapi_hidraw
 )
+
+if(SYSTEM_NAME STREQUAL "windows")
+    target_link_libraries(${PROJECT_NAME}_tests PUBLIC
+      hidapi
+    )
+elseif(SYSTEM_NAME STREQUAL "linux")
+    target_link_libraries(${PROJECT_NAME}_tests PUBLIC
+      hidapi-hidraw
+    )
+endif()
+
 
   # Adding target as test
   add_test(NAME ${PROJECT_NAME}_tests COMMAND ${PROJECT_NAME}_tests)
