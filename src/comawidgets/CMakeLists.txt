@@ -19,5 +19,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${avm-widgets_SOURCE_DIR}/inc
 
 # Linking library dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  device settings models
+  device settings models avm-widgets
 )

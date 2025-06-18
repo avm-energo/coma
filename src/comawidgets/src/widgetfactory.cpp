@@ -596,7 +596,6 @@ bool WidgetFactory::fillBackSPBG(quint32 id, const QWidget *parent) const
                 using container_type = typename internalType::value_type;
                 if constexpr (sizeof(container_type) != 1 &&  //
                     !std_ext::is_container<container_type>()) //&&
-                // !std::is_same_v<container_type, S2::GasDensity_3t>)
                 {
                     internalType buffer {};
                     status = SPBFunc::GroupData(parent, QString::number(id), buffer);
@@ -634,31 +633,28 @@ bool WidgetFactory::fillBackChBG(quint32 id, const QWidget *parent) const
     bool status = false;
     auto &record = m_config[id];
     std::visit(
-        [&](auto &&arg)
-        {
+        [&](auto &&arg) {
             typedef std::remove_reference_t<decltype(arg)> internalType;
-            if constexpr (!std_ext::is_container<internalType>())
-            {
-                if constexpr (std::is_unsigned_v<internalType>)
-                {
-                    internalType buffer = 0;
-                    status = ChBFunc::GroupData(parent, QString::number(id), buffer);
+
+            if constexpr (std_ext::is_container<internalType>()) {
+                typedef internalType Container;
+                using container_type = typename internalType::value_type;
+                if constexpr (std::is_unsigned_v<container_type>) {
+                    internalType buffer;
+                    status = ChBFunc::aGroupData(parent, QString::number(id), buffer);
                     if (status)
                         record.setData(buffer);
                 }
             }
 
-            else if constexpr (std_ext::is_container<internalType>())
-            {
-                typedef internalType Container;
-                typedef std::remove_reference_t<typename internalType::value_type> iType;
-                if constexpr (std::is_integral<iType>::value)
-                {
-                    Container buffer;
-                    status = ChBFunc::GroupData(parent, QString::number(id), buffer);
-                    if (status)
-                        record.setData(buffer);
-                }
+            else if constexpr (!std_ext::is_container<internalType>()
+                               && !std::is_same_v<internalType, S2::CONFMAST>
+                               && !std::is_same_v<internalType, S2::GasDensity_3t>
+                               && std::is_unsigned_v<internalType>) {
+                internalType buffer;
+                status = ChBFunc::uGroupData(parent, QString::number(id), buffer);
+                if (status)
+                    record.setData(buffer);
             }
         },
         record.getData());

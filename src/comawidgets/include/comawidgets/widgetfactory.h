@@ -202,14 +202,14 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
             {
                 if constexpr (std::is_unsigned_v<T>)
                 {
-                    status = ChBFunc::SetGroupData(parent, QString::number(key), value);
+                    status = ChBFunc::SetUGroupData(parent, QString::number(key), value);
                 }
                 else if constexpr (std_ext::is_container<T>())
                 {
                     typedef std::remove_reference_t<typename T::value_type> internalType;
                     if constexpr (std::is_unsigned_v<internalType>)
                     {
-                        status = ChBFunc::SetGroupData(parent, QString::number(key), value);
+                        status = ChBFunc::SetAGroupData(parent, QString::number(key), value);
                     }
                 }
             },

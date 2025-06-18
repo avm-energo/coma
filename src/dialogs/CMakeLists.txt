@@ -20,6 +20,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 # Linking library dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC
+    avm-widgets
     appconfig
     alarms
     journals
