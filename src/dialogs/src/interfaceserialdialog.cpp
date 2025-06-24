@@ -152,7 +152,7 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
     // Logic of working
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(PBFunc::New(dialog, "acceptpb", "Сохранить", dialog,
-        [=]
+        [&]
         {
             auto newName = namele->text();
             Settings::pushGroup("RS485");
@@ -172,9 +172,9 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
             UserSettings::set(UserSettings::SerialStop, stopbitcb->currentText());
             UserSettings::set(UserSettings::ModbusAddress, static_cast<int>(addressspb->value()));
             Settings::popGroup();
+            Settings::popGroup(); // exit from RS-485
             if (!updateModel())
                 qCritical() << Error::GeneralError;
-            Settings::popGroup();
             dialog->close();
         }));
     hlyout->addWidget(PBFunc::New(dialog, "cancelpb", "Отмена", dialog, [dialog] { dialog->close(); }));
@@ -272,19 +272,17 @@ void InterfaceSerialDialog::acceptedInterface()
         EMessageBox::error(this, "Такое имя уже имеется");
         return;
     }
-    {
-        int spbdata;
-        Settings::pushGroup(name);
-        UserSettings::set(UserSettings::SerialPort, CBFunc::Data(dialog, "portcb"));
-        UserSettings::set(UserSettings::SerialSpeed, CBFunc::Data(dialog, "speedcb"));
-        UserSettings::set(UserSettings::SerialParity, CBFunc::Data(dialog, "paritycb"));
-        UserSettings::set(UserSettings::SerialStop, CBFunc::Data(dialog, "stopbitcb"));
-        if (SPBFunc::Data(dialog, "addressspb", spbdata))
-            UserSettings::set(UserSettings::ModbusAddress, spbdata);
-        Settings::popGroup();
-    }
+    int spbdata;
+    Settings::pushGroup(name);
+    UserSettings::set(UserSettings::SerialPort, CBFunc::Data(dialog, "portcb"));
+    UserSettings::set(UserSettings::SerialSpeed, CBFunc::Data(dialog, "speedcb"));
+    UserSettings::set(UserSettings::SerialParity, CBFunc::Data(dialog, "paritycb"));
+    UserSettings::set(UserSettings::SerialStop, CBFunc::Data(dialog, "stopbitcb"));
+    if (SPBFunc::Data(dialog, "addressspb", spbdata))
+        UserSettings::set(UserSettings::ModbusAddress, spbdata);
+    Settings::popGroup();
+    Settings::popGroup(); // exit from RS-485
     if (!updateModel())
         qCritical() << Error::GeneralError;
-    Settings::popGroup();
     dialog->close();
 }
