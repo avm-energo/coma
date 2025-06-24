@@ -1,8 +1,6 @@
 #include "xml/xmleditor/dialogs/xmlhiddentabdialog.h"
 
-XmlHiddenTabDialog::XmlHiddenTabDialog(QWidget *parent) : XmlDialog(parent)
-{
-}
+XmlHiddenTabDialog::XmlHiddenTabDialog(QWidget *parent) : XmlDialog(parent) { }
 
 void XmlHiddenTabDialog::setupUI(QVBoxLayout *mainLayout)
 {
@@ -40,7 +38,7 @@ void XmlHiddenTabDialog::setupUI(QVBoxLayout *mainLayout)
     flagInput->setMinimum(1);
     flagInput->setMaximum(8);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(flagInput, &QSpinBox::textChanged, this, //
+    QObject::connect(flagInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlHiddenTabDialog::dataChanged));
 #endif
     QObject::connect(flagInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -48,15 +46,6 @@ void XmlHiddenTabDialog::setupUI(QVBoxLayout *mainLayout)
     flagLayout->addWidget(flagLabel);
     flagLayout->addWidget(flagInput);
     m_dlgItems.append(flagInput);
-
-    // Виджеты для заднего фона
-    auto backgroundLabel = new QLabel("Задний фон вкладки: ", this);
-    auto backgroundInput = new QLineEdit("", this);
-    QObject::connect(backgroundInput, &QLineEdit::textEdited, this, //
-        qOverload<const QString &>(&XmlHiddenTabDialog::dataChanged));
-    backgroundLayout->addWidget(backgroundLabel);
-    backgroundLayout->addWidget(backgroundInput);
-    m_dlgItems.append(backgroundInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(tabNameLayout);

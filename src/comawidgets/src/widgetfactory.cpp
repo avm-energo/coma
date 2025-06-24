@@ -142,7 +142,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 widget = new QWidget(parent);
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
-                label->setWordWrap(true);
+                label->setWordWrap(false);
                 label->setToolTip(arg.toolTip);
                 lyout->addWidget(label, 0);
 
@@ -167,7 +167,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
                 label->setToolTip(arg.toolTip);
-                label->setWordWrap(true);
+                label->setWordWrap(false);
                 lyout->addWidget(label);
                 lyout->addWidget(SPBFunc::New(parent, QString::number(key), arg.min, arg.max, arg.decimals));
                 widget->setLayout(lyout);
@@ -177,9 +177,9 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 widget = new QWidget(parent);
                 QHBoxLayout *lyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
-                label->setWordWrap(true);
+                label->setWordWrap(false);
                 label->setToolTip(arg.toolTip);
-                lyout->addWidget(label, 0);
+                lyout->addWidget(label);
 
                 addVerticalLine(lyout, parent);
                 auto count = getRealCount(key);
@@ -207,7 +207,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 QHBoxLayout *mainLyout = new QHBoxLayout;
                 auto label = new QLabel(arg.desc, parent);
                 label->setToolTip(arg.toolTip);
-                label->setWordWrap(true);
+                label->setWordWrap(false);
                 mainLyout->addWidget(label, 0);
                 addVerticalLine(mainLyout, parent);
                 auto count = getRealCount(key);
@@ -633,13 +633,16 @@ bool WidgetFactory::fillBackChBG(quint32 id, const QWidget *parent) const
     bool status = false;
     auto &record = m_config[id];
     std::visit(
-        [&](auto &&arg) {
+        [&](auto &&arg)
+        {
             typedef std::remove_reference_t<decltype(arg)> internalType;
 
-            if constexpr (std_ext::is_container<internalType>()) {
+            if constexpr (std_ext::is_container<internalType>())
+            {
                 typedef internalType Container;
                 using container_type = typename internalType::value_type;
-                if constexpr (std::is_unsigned_v<container_type>) {
+                if constexpr (std::is_unsigned_v<container_type>)
+                {
                     internalType buffer;
                     status = ChBFunc::aGroupData(parent, QString::number(id), buffer);
                     if (status)
@@ -647,10 +650,9 @@ bool WidgetFactory::fillBackChBG(quint32 id, const QWidget *parent) const
                 }
             }
 
-            else if constexpr (!std_ext::is_container<internalType>()
-                               && !std::is_same_v<internalType, S2::CONFMAST>
-                               && !std::is_same_v<internalType, S2::GasDensity_3t>
-                               && std::is_unsigned_v<internalType>) {
+            else if constexpr (!std_ext::is_container<internalType>() && !std::is_same_v<internalType, S2::CONFMAST>
+                && !std::is_same_v<internalType, S2::GasDensity_3t> && std::is_unsigned_v<internalType>)
+            {
                 internalType buffer;
                 status = ChBFunc::uGroupData(parent, QString::number(id), buffer);
                 if (status)

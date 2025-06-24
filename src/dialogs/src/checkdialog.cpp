@@ -19,7 +19,7 @@ using namespace Device::XmlDataTypes;
 constexpr auto c_maxIndicatorCountInRow = 10;
 constexpr auto c_circleRadius = 12;
 constexpr auto c_normalColor = Qt::gray;
-constexpr auto c_activeColor = Qt::yellow;
+const QMap<int, Qt::GlobalColor> c_activeColor = { { 0, Qt::green }, { 1, Qt::yellow }, { 2, Qt::red } };
 constexpr auto c_defaultStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
 constexpr auto c_errStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
                             "background-color: %1; color: black;}";
@@ -342,7 +342,7 @@ void CheckDialog::updatePixmap(const MWidget &mwidget, const DataTypes::BitStrin
         for (auto i = 0; i < mwidget.count; ++i)
         {
             auto isSet = bitSet.test(i);
-            auto pixmap = GraphFunc::NewCircle((isSet) ? c_activeColor : c_normalColor, c_circleRadius);
+            auto pixmap = GraphFunc::NewCircle((isSet) ? c_activeColor[mwidget.type] : c_normalColor, c_circleRadius);
             LBLFunc::SetImage(uwidget, stringAddr + "_" + QString::number(i), &pixmap);
         }
     }
@@ -354,9 +354,8 @@ void CheckDialog::updatePixmap(
     if ((sp.sigAdr >= mwidget.startAddr) && (sp.sigAdr < (mwidget.startAddr + mwidget.count))
         && sp.sigQuality == DataTypes::Quality::Good)
     {
-        if (sp.sigAdr == 1300)
-            qDebug() << "1";
-        auto pixmap = GraphFunc::NewCircle((sp.sigVal != 0) ? c_activeColor : c_normalColor, c_circleRadius);
+        auto pixmap
+            = GraphFunc::NewCircle((sp.sigVal != 0) ? c_activeColor[mwidget.type] : c_normalColor, c_circleRadius);
         LBLFunc::SetImage(uwidget, QString::number(sp.sigAdr), &pixmap);
     }
 }
@@ -428,16 +427,16 @@ QGridLayout *CheckDialog::setupCommandWidget(const Device::XmlDataTypes::MWidget
             layout = new QVBoxLayout;
         else
             layout = new QHBoxLayout;
-        auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i), this);
-        layout->addWidget(textLabel);
-        if (!type)
+        auto buttonText = mwidget.desc;
+        if (!type) // button with value
         {
             QCheckBox *cb = ChBFunc::New(this, QString::number(realAddr), "");
             if (!mwidget.tooltip.isEmpty())
                 cb->setToolTip(getFormatted(mwidget, mwidget.tooltip, i));
             layout->addWidget(cb);
+            buttonText = "Отправить";
         }
-        layout->addWidget(PBFunc::New(this, "", "Послать",
+        layout->addWidget(PBFunc::New(this, "", buttonText,
             [&, realAddr, type]()
             {
                 bool cbdata = false;

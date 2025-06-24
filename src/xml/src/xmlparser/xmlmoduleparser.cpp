@@ -174,11 +174,12 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
                     auto count = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::count);
                     count = (count == 0) ? 1 : count;
                     auto tooltip = XmlParse::parseString(mwidgetNode, tags::tooltip);
+                    auto type = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::type);
                     auto view = parseViewType(viewString);
                     auto itemList = XmlParse::parseArray(mwidgetNode, tags::str_array);
                     sgroup.name = sgroupHeader;
                     sgroup.order = sgroupOrder.toInt();
-                    sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, view, itemList });
+                    sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, view, itemList, type });
                 });
             sgmap.insert(sgroupTab, sgroup);
         });
@@ -314,7 +315,6 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
 {
     auto hiddenTabElem = hiddenTabNode.toElement();
     auto tabTitle = hiddenTabElem.attribute(tags::desc);
-    auto tabBackground = hiddenTabElem.attribute(tags::background);
     auto tabPrefix = hiddenTabElem.attribute(tags::prefix);
     auto tabFlag = (hiddenTabElem.attribute(tags::flag)).toUShort();
     std::vector<Xml::HiddenWidget> widgets;
@@ -335,7 +335,7 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
                 visibility = false;
             widgets.push_back(Xml::HiddenWidget { name, title, address, index, type, view, visibility });
         });
-    emit hiddenTabDataSending(Xml::HiddenTab { tabTitle, tabBackground, tabPrefix, tabFlag, widgets });
+    emit hiddenTabDataSending(Xml::HiddenTab { tabTitle, tabPrefix, tabFlag, widgets });
 }
 
 void Xml::ModuleParser::parseBsiExtItem(const QDomNode &bsiExtItemNode)

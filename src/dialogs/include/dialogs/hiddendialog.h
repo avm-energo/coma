@@ -1,9 +1,9 @@
 #pragma once
 
-#include <device/xml_settings.h>
-#include <map>
-#include <set>
 #include <comawidgets/udialog.h>
+#include <device/xml_settings.h>
+
+#include <map>
 
 class QBoxLayout;
 class QGroupBox;
@@ -17,7 +17,6 @@ class HiddenDialog final : public UDialog
 private:
     Device::XmlDataTypes::HiddenSettings m_settings;
     std::map<quint32, bool> m_srcAddrStates;
-    QString m_currentBackground;
     DataTypes::HardwareStruct m_hardwareInfo;
     bool m_isGodMode, m_isAlreadyFilled;
     bool m_isSendedEnableCmd, m_isSendedWritingCmd;

@@ -42,7 +42,6 @@ void XmlContainerModel::parseNode(QDomNode &node, int &row)
         parseAttribute(node, tags::desc, row, 0);
         parseAttribute(node, tags::prefix, row, 1);
         parseAttribute(node, tags::flag, row, 2, "0");
-        parseAttribute(node, tags::background, row, 3);
     }
     // Для узлов <resources>, <alarms> и <journals>
     else
@@ -124,7 +123,6 @@ QDomElement XmlContainerModel::toNode(QDomDocument &doc)
                     setAttribute(doc, childNode, tags::desc, data(index(row, 0)));
                     setAttribute(doc, childNode, tags::prefix, data(index(row, 1)));
                     setAttribute(doc, childNode, tags::flag, data(index(row, 2)));
-                    setAttribute(doc, childNode, tags::background, data(index(row, 3)));
                 }
                 // Для узлов <resources>, <alarms> и <journals>
                 else

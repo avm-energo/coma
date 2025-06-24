@@ -27,6 +27,7 @@ void SplashScreen::drawContents(QPainter *painter)
         .append(") ")
         .append(QCoreApplication::applicationVersion());
 
+    painter->setPen(Qt::black);
     painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, name);
     rect.moveBottom(rect.bottom() + 2 * painter->font().pixelSize());
     painter->drawText(rect, Qt::AlignRight | Qt::AlignVCenter, Prog::department);
@@ -67,11 +68,11 @@ void SplashScreen::drawContents(QPainter *painter)
     pen.setJoinStyle(Qt::RoundJoin);
     pen.setColor(Qt::black);
     rect = QRect(0, 225, painter->window().width(), int(painter->font().pixelSize()) * 6);
-    pen.setColor(Qt::white);
+    // pen.setColor(Qt::white);
     painter->setPen(pen);
 
     painter->drawText(rect.adjusted(0, 4, 4, 0), Qt::AlignHCenter, Prog::prepare);
-    pen.setColor(Qt::gray);
+    pen.setColor(Qt::darkGray);
     painter->setPen(pen);
     painter->drawText(rect.adjusted(0, 2, 2, 0), Qt::AlignHCenter, Prog::prepare);
     pen.setColor(Qt::black);

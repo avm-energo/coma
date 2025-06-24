@@ -199,7 +199,7 @@ std::set<delegate::WidgetGroup> ConfigDialog::createTabs(QTabWidget *tabWidget)
         auto subLayout = new QVBoxLayout;
         subLayout->setAlignment(Qt::AlignTop);
         subLayout->setSpacing(0);
-        subLayout->setContentsMargins(0, 0, 0, 0);
+        subLayout->setContentsMargins(0, 10, 0, 0);
         subBox->setLayout(subLayout);
         scrollArea->setWidget(subBox);
         tabWidget->addTab(scrollArea, tabName);

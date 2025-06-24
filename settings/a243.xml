@@ -443,7 +443,7 @@
             </record>
             <record>
                 <id>1282</id>
-                <defaultValue>0,1,1</defaultValue>
+                <defaultValue>1,0,0</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
@@ -1060,6 +1060,7 @@
                     <mwidget desc="Неисправность подключенных датчиков" view="SinglePoint">
                         <start-addr>1100</start-addr>
                         <toolTip>Неисправность подключенных датчиков</toolTip>
+                        <type>2</type>
                     </mwidget>
                 </sgroup>
             </section>

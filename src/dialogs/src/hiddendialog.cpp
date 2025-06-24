@@ -13,6 +13,7 @@
 #include <QPaintEvent>
 #include <QPainter>
 #include <QTabWidget>
+#include <set>
 
 using namespace Device::XmlDataTypes;
 
@@ -34,7 +35,7 @@ HiddenDialog::HiddenDialog(Device::CurrentDevice *device, QWidget *parent)
 void HiddenDialog::generateDefaultSettings()
 {
     m_settings = {
-        HiddenTab { "Базовая плата", ":/images/BMn.svg", "base", 1,            //
+        HiddenTab { "Базовая плата", "base", 1,                                //
             {
                 HiddenWidget { "basetype", "Тип платы", 1, 1,                  //
                     BinaryType::uint32, ViewType::LineEdit, true },
@@ -45,7 +46,7 @@ void HiddenDialog::generateDefaultSettings()
                 HiddenWidget { "moduleserial", "Серийный номер модуля", 13, 4, //
                     BinaryType::uint32, ViewType::LineEdit, true }             //
             } },                                                               //
-        HiddenTab { "Мезонинная плата", ":/images/BnM.svg", "mezz", 2,         //
+        HiddenTab { "Мезонинная плата", "mezz", 2,                             //
             {
                 HiddenWidget { "mezztype", "Тип платы", 2, 5,                  //
                     BinaryType::uint32, ViewType::LineEdit, true },
@@ -92,7 +93,6 @@ void HiddenDialog::setupUI()
 {
     auto mainLayout = new QVBoxLayout;
     auto tabWidget = new QTabWidget(this);
-    tabWidget->setStyleSheet("background-color: transparent;"); // tabWidget прозрачный
     mainLayout->addWidget(LEFunc::NewLBL(this, "Имя модуля:", "modulename"));
 
     for (auto &&tabSettings : m_settings)
@@ -108,14 +108,6 @@ void HiddenDialog::setupUI()
         tabWidget->addTab(tab, tabSettings.title);
     }
 
-    m_currentBackground = m_settings[0].background;
-    connect(tabWidget, &QTabWidget::currentChanged, this, //
-        [this](int newIndex)
-        {
-            if (newIndex >= 0 && newIndex < m_settings.size())
-                m_currentBackground = m_settings[newIndex].background;
-            update();
-        });
     mainLayout->addWidget(tabWidget);
     auto btnLayout = new QHBoxLayout;
     btnLayout->setAlignment(Qt::AlignRight);
@@ -153,7 +145,6 @@ void HiddenDialog::setupUI()
 QGroupBox *HiddenDialog::setupGroupBox(const HiddenTab &hiddenTab)
 {
     auto tabGroupBox = new QGroupBox(hiddenTab.title, this);
-    tabGroupBox->setStyleSheet("background-color: white;"); // tabGroupBox непрозрачный
     tabGroupBox->setObjectName(hiddenTab.prefix + "tab");
     auto gbLayout = new QVBoxLayout;
     if (hiddenTab.flag != 1)
@@ -190,15 +181,6 @@ QGroupBox *HiddenDialog::setupGroupBox(const HiddenTab &hiddenTab)
 
 void HiddenDialog::paintEvent(QPaintEvent *e)
 {
-    if (!m_currentBackground.isEmpty())
-    {
-        QPainter painter;
-        painter.begin(this);
-        painter.setRenderHint(QPainter::Antialiasing);
-        QSvgRenderer svg(m_currentBackground);
-        svg.render(&painter);
-        painter.end();
-    }
     e->accept();
 }
 

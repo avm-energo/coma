@@ -49,7 +49,7 @@ const std::map<ModelType, QStringList> XmlModel::s_headers {
     { ModelType::Protocom, { "Блок", "ID сигнала" } },                                                   //
     { ModelType::IEC60870, { "ID сигнала", "Тип сигнала", "Тип передачи", "Группа" } },                  //
     { ModelType::Config, { "ID виджета", "Значение по умолчанию", "Изм. количество", "Видимость" } },    //
-    { ModelType::Hidden, { "Название", "Префикс", "Флаг", "Задний фон" } },                              //
+    { ModelType::Hidden, { "Название", "Префикс", "Флаг" } },                                            //
     { ModelType::HiddenTab, { "Индекс", "Название", "Виджет", "Тип", "Данные", "Адрес", "Видимость" } }, //
     { ModelType::BsiExt, { "Адрес", "Описание", "Тип", "Видимость" } },                                  //
     { ModelType::S2Files, { "XML", "Описание" } },                                                       //

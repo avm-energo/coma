@@ -40,6 +40,7 @@ struct MWidget final
     QString tooltip = "";            ///< узел <toolTip>
     ViewType view = ViewType::Float; ///< атрибут "view"
     QStringList subItemList = {};    ///< узел <string-array>
+    u32 type;                        ///< узел <type> - тип отображения виджета (alarm = red | yellow)
 };
 
 /// \brief Структура для хранения информации узла <sgroup> из XML.
@@ -95,7 +96,6 @@ struct HiddenWidget final
 struct HiddenTab final
 {
     QString title;                     ///< атрибут "desc"
-    QString background;                ///< атрибут "background"
     QString prefix;                    ///< атрибут "prefix"
     u16 flag;                          ///< атрибут "flag", возможные значения:
                                        ///< - 0x01 - базовая;
