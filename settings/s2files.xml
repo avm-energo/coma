@@ -5539,7 +5539,7 @@
                 <count>3</count>
                 <min>0</min>
                 <max>5000</max>
-                <decimals>0</decimals>
+                <decimals>2</decimals>
                 <string-array>
                     <item>Номинальное (давление заполнения), МПа</item>
                     <item>Давление предупредительной уставки, МПа</item>
@@ -5623,7 +5623,7 @@
                 <string>Диапазон скорости изменения средней температуры</string>
                 <min>0</min>
                 <max>10</max>
-                <decimals>0</decimals>
+                <decimals>4</decimals>
             </widget>
         </record>
         <record>

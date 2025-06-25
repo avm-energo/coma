@@ -307,7 +307,7 @@ void Xml::ModuleParser::parseConfig(const QDomNode &configNode)
     if (XmlParse::parseString(configNode, tags::visibility) == "false")
         visibility = false;
     auto count = XmlParse::parseNumFromNode<u16>(configNode, tags::count);
-    u16 order = XmlParse::parseNumFromNode<u16>(configNode, tags::order);
+    u16 order = XmlParse::parseNumFromNode<u16>(configNode, tags::order, U16MAX);
     emit configDataSending(id, defVal, visibility, count, order);
 }
 

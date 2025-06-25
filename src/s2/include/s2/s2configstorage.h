@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gen/integers.h>
 #include <gen/singleton.h>
 #include <s2/delegate_common.h>
 
@@ -51,7 +52,7 @@ public:
     /// описывающая виджет для представления данных указанной записи S2.
     const config::widgetMap &getWidgetMap() const;
     /// \brief Возвращает std::map, где key - ID вкладки, value - строка с именем вкладки.
-    const std::map<quint32, QString> &getConfigTabs() const;
+    const std::map<u16, QString> &getConfigTabs() const;
     /// \brief Возвращает std::map, где key - ID записи S2,
     /// value - уточнённые данные для отображения виджета с указанным S2 ID.
     const std::map<quint32, WidgetDetail> &getWidgetDetailMap() const;
@@ -65,7 +66,7 @@ private:
     std::map<quint32, ctti::unnamed_type_id_t> m_typeById;
     std::map<quint32, bool> m_dtypes;
     config::widgetMap m_widgetMap;
-    std::map<quint32, QString> m_configTabs;
+    std::map<u16, QString> m_configTabs;
     std::map<quint32, WidgetDetail> m_widgetDetailMap;
     ParseStatus m_status;
 

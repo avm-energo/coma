@@ -40,7 +40,7 @@ bool ConfigStorage::getDType(quint16 id)
     return search->second;
 }
 
-const std::map<quint32, QString> &ConfigStorage::getConfigTabs() const
+const std::map<u16, QString> &ConfigStorage::getConfigTabs() const
 {
     return m_configTabs;
 }

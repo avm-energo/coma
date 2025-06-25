@@ -40,6 +40,7 @@ void JournalDialog::createJournalTabs()
     {
         journalType = JournalType::Meas;
         auto measJourTab = new JournalTabWidget(journalType, m_device->async(), this);
+        connect(measJourTab, &JournalTabWidget::showOnceSuccessMsg, this, &JournalDialog::enableOnceSuccessMsg);
         m_journals.insert({ journalType, measJourTab });
     }
 }

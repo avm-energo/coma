@@ -22,9 +22,15 @@ private slots:
     void fillBack();
 
 private:
+    struct OrderedWidget
+    {
+        QWidget *widget;
+        u16 order;
+    };
+    using WidgetList = QList<OrderedWidget>;
     QWidget *ConfButtons();
-    quint32 tabForId(quint16 id);
-    std::set<delegate::WidgetGroup> createTabs(QTabWidget *tabWidget);
+    u16 tabForId(u16 id);
+    std::set<u16> createTabs(QTabWidget *tabWidget);
     void setupUI();
 
     void fill();
@@ -39,6 +45,7 @@ private:
     bool isVisible(const quint16 id) const;
     bool isDebugWidget(const quint16 id) const;
     void showConfigErrState();
+    void insertWidgetIntoListByItsOrder(const u16 id, QWidget *w, WidgetList &wlist);
 
     S2DataManager &m_datamanager;
     S2BoardConfig &m_boardConfig;

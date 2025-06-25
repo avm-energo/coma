@@ -159,7 +159,7 @@ QWidget *ConfigDialog::ConfButtons()
     return wdgt;
 }
 
-quint32 ConfigDialog::tabForId(quint16 id)
+u16 ConfigDialog::tabForId(u16 id)
 {
     auto &widgetMap = m_datamanager.getStorage().getWidgetMap();
     auto search = widgetMap.find(id);
@@ -169,14 +169,14 @@ quint32 ConfigDialog::tabForId(quint16 id)
         return 0;
     }
     const auto var = search->second;
-    delegate::WidgetGroup tab = 0;
+    u16 tab = 0;
     std::visit([&](const auto &arg) { tab = arg.group; }, var);
     return tab;
 }
 
-std::set<delegate::WidgetGroup> ConfigDialog::createTabs(QTabWidget *tabWidget)
+std::set<u16> ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
-    std::set<delegate::WidgetGroup> uniqueTabs;
+    std::set<u16> uniqueTabs;
     auto &tabs = m_datamanager.getStorage().getConfigTabs();
     for (const auto &record : m_boardConfig.m_defaultConfig)
     {
@@ -219,9 +219,9 @@ void ConfigDialog::setupUI()
 {
     auto vlyout = new QVBoxLayout;
     auto ConfTW = new QTabWidget(this);
-    std::set<delegate::WidgetGroup> tabs = createTabs(ConfTW);
+    std::set<u16> tabs = createTabs(ConfTW);
     std::map<quint32, bool> tabUseMap;
-
+    QMap<u16, WidgetList> sortedWidgetMap; // id : WidgetList
     for (const auto &record : m_boardConfig.m_defaultConfig)
     {
         const auto id = record.first;
@@ -233,22 +233,34 @@ void ConfigDialog::setupUI()
                 if (widget)
                 {
                     const auto tab = tabForId(id);
-                    auto child = widgetAt(ConfTW, tab);
-                    if (child)
-                    {
-                        auto subBox = child->findChild<QGroupBox *>();
-                        if (!subBox)
-                            widget->deleteLater();
-                        else
-                        {
-                            auto subLayout = subBox->layout();
-                            subLayout->addWidget(widget);
-                            tabUseMap[tab] = true;
-                        }
-                    }
+                    auto widgetList = sortedWidgetMap[tab];
+                    insertWidgetIntoListByItsOrder(id, widget, widgetList);
+                    sortedWidgetMap[tab] = widgetList;
+                    tabUseMap[tab] = true;
                 }
                 else
                     qWarning() << "Bad config widget for item: " << id;
+            }
+        }
+    }
+    for (auto tab = tabUseMap.begin(); tab != tabUseMap.end(); ++tab)
+    {
+        if (tab->second)
+        {
+            auto child = widgetAt(ConfTW, tab->first);
+            if (child)
+            {
+                auto subBox = child->findChild<QGroupBox *>();
+                for (auto &widgetList : sortedWidgetMap[tab->first])
+                {
+                    if (!subBox)
+                        widgetList.widget->deleteLater();
+                    else
+                    {
+                        auto subLayout = subBox->layout();
+                        subLayout->addWidget(widgetList.widget);
+                    }
+                }
             }
         }
     }
@@ -326,6 +338,25 @@ void ConfigDialog::setDefaultConfig()
 void ConfigDialog::showConfigErrState()
 {
     m_errConfState->show();
+}
+
+void ConfigDialog::insertWidgetIntoListByItsOrder(const u16 id, QWidget *w, WidgetList &wlist)
+{
+    const auto &detailMap = m_datamanager.getStorage().getWidgetDetailMap();
+    auto search = detailMap.find(id);
+    if (search != detailMap.cend())
+    {
+        u16 order = search->second.order;
+        for (int i = 0; i < wlist.size(); ++i)
+        {
+            if (wlist.at(i).order >= order)
+            {
+                wlist.insert(i, { w, order });
+                return;
+            }
+        }
+        wlist.append({ w, order });
+    }
 }
 
 bool ConfigDialog::prepareConfigToWrite()

@@ -1,15 +1,15 @@
 #ifndef DELEGATE_COMMON_H
 #define DELEGATE_COMMON_H
 
+#include <ctti/type_id.hpp>
+#include <gen/integers.h>
+
 #include <QMap>
 #include <QString>
-#include <ctti/type_id.hpp>
 #include <variant>
 
 namespace delegate
 {
-using WidgetGroup = int;
-
 // TODO: так и должно быть?
 enum class ItemType : int
 {
@@ -18,30 +18,28 @@ enum class ItemType : int
 
 struct Widget
 {
-    Widget(const ctti::unnamed_type_id_t type_) : type(type_)
-    {
-    }
+    Widget(const ctti::unnamed_type_id_t type_) : type(type_) { }
 
-    Widget(const ctti::unnamed_type_id_t type_, const WidgetGroup group_) : type(type_), group(group_)
-    {
-    }
+    Widget(const ctti::unnamed_type_id_t type_, const u16 group_) : type(type_), group(group_) { }
 
-    Widget(
-        const ctti::unnamed_type_id_t type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
-        : type(type_), desc(desc_), group(group_), toolTip(toolTip_)
+    Widget(const ctti::unnamed_type_id_t type_, const QString &desc_, const u16 &group_, const QString &toolTip_)
+        : type(type_)
+        , desc(desc_)
+        , group(group_)
+        , toolTip(toolTip_)
     {
     }
 
     ctti::unnamed_type_id_t type;
     QString desc;
-    WidgetGroup group;
+    u16 group;
     QString toolTip;
 };
 
 struct DoubleSpinBoxWidget : Widget
 {
     DoubleSpinBoxWidget(const ctti::unnamed_type_id_t &type_, const QString &desc_, //
-        const WidgetGroup &group_, const QString &toolTip_)                         //
+        const u16 &group_, const QString &toolTip_)                                 //
         : Widget(type_, desc_, group_, toolTip_)                                    //
     {
     }
@@ -60,7 +58,7 @@ struct Group
 struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
 {
     DoubleSpinBoxGroup(
-        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
+        const ctti::unnamed_type_id_t &type_, const QString &desc_, const u16 &group_, const QString &toolTip_)
         : DoubleSpinBoxWidget(type_, desc_, group_, toolTip_)
     {
     }
@@ -69,7 +67,7 @@ struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
 struct CheckBoxGroup : Widget, Group
 {
     CheckBoxGroup(
-        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
+        const ctti::unnamed_type_id_t &type_, const QString &desc_, const u16 &group_, const QString &toolTip_)
         : Widget(type_, desc_, group_, toolTip_)
     {
     }
@@ -84,8 +82,7 @@ struct ComboBox : Widget
         bitfield = 2
     };
 
-    ComboBox(
-        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
+    ComboBox(const ctti::unnamed_type_id_t &type_, const QString &desc_, const u16 &group_, const QString &toolTip_)
         : Widget(type_, desc_, group_, toolTip_)
     {
     }
@@ -97,7 +94,7 @@ struct ComboBox : Widget
 struct ComboBoxGroup : ComboBox, Group
 {
     ComboBoxGroup(
-        const ctti::unnamed_type_id_t &type_, const QString &desc_, const WidgetGroup &group_, const QString &toolTip_)
+        const ctti::unnamed_type_id_t &type_, const QString &desc_, const u16 &group_, const QString &toolTip_)
         : ComboBox(type_, desc_, group_, toolTip_)
     {
     }
@@ -124,13 +121,13 @@ struct Item : delegate::Widget
         Count
     };
 
-    Item(const ctti::unnamed_type_id_t type_) : Widget(type_)
-    {
-    }
+    Item(const ctti::unnamed_type_id_t type_) : Widget(type_) { }
 
     Item(const ctti::unnamed_type_id_t &type_, const delegate::ItemType &itype_, //
-        const quint16 &parent_, const delegate::WidgetGroup &group_)
-        : Widget(type_, group_), itemType(itype_), parent(parent_)
+        const quint16 &parent_, const u16 &group_)
+        : Widget(type_, group_)
+        , itemType(itype_)
+        , parent(parent_)
     {
     }
 
@@ -140,11 +137,11 @@ struct Item : delegate::Widget
 
 using itemVariant = std::variant<  //
     delegate::Widget,              //
-    delegate::ComboBox,           //
+    delegate::ComboBox,            //
     delegate::DoubleSpinBoxGroup,  //
     delegate::DoubleSpinBoxWidget, //
     delegate::CheckBoxGroup,       //
-    delegate::ComboBoxGroup,      //
+    delegate::ComboBoxGroup,       //
     Item                           //
     >;
 
