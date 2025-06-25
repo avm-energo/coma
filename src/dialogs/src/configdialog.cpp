@@ -349,7 +349,7 @@ void ConfigDialog::insertWidgetIntoListByItsOrder(const u16 id, QWidget *w, Widg
         u16 order = search->second.order;
         for (int i = 0; i < wlist.size(); ++i)
         {
-            if (wlist.at(i).order >= order)
+            if (wlist.at(i).order > order)
             {
                 wlist.insert(i, { w, order });
                 return;
