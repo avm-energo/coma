@@ -337,17 +337,17 @@
                         <start-addr>100</start-addr>
                         <toolTip>Давление, приведённое к 20 °С, бар</toolTip>
                     </mwidget>
-                    <mwidget desc="Температура элегаза, °С" view="float">
+                    <mwidget desc="Температура газа, °С" view="float">
                         <start-addr>101</start-addr>
-                        <toolTip>Температура элегаза, °С</toolTip>
+                        <toolTip>Температура газа, °С</toolTip>
                     </mwidget>
                     <mwidget desc="Абсолютное давление, бар" view="float">
                         <start-addr>102</start-addr>
                         <toolTip>Абсолютное давление, бар</toolTip>
                     </mwidget>
-                    <mwidget desc="Плотность элегаза, кг/м3" view="float">
+                    <mwidget desc="Плотность газа, кг/м3" view="float">
                         <start-addr>103</start-addr>
-                        <toolTip>Расчётная плотность чистого элегаза при текущем измеренном давлении, kg/m3</toolTip>
+                        <toolTip>Расчётная плотность чистого газа при текущем измеренном давлении, kg/m3</toolTip>
                     </mwidget>
                     <mwidget desc="Относительная влажность, %" view="float">
                         <start-addr>104</start-addr>

@@ -239,7 +239,7 @@
             </record>
             <record>
                 <id>142</id>
-                <defaultValue>2000,1000,150</defaultValue>
+                <defaultValue>5,5,150</defaultValue>
                 <count>0</count>
                 <visibility>true</visibility>
             </record>
