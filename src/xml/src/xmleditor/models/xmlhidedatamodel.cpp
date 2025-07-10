@@ -11,6 +11,7 @@ struct SGroupHideData
     int count = 1;
     QString tooltip = "", view = "float";
     QStringList array = {};
+    int type = 0;
 };
 Q_DECLARE_METATYPE(SGroupHideData);
 
@@ -65,11 +66,11 @@ void XmlHideDataModel::create(const QStringList &saved, int *row)
     switch (m_type)
     {
     case ModelType::SGroup:
-        Q_ASSERT(saved.count() == 6);
+        Q_ASSERT(saved.count() == 7);
         BaseEditorModel::create(saved.mid(0, 2), row);
         if (*row >= 0 && *row < rowCount())
         {
-            auto value = convertToSGroupData(saved.mid(2, 4));
+            auto value = convertToSGroupData(saved.mid(2, 5));
             setData(index(*row, 0), QVariant::fromValue(value), SGroupDataRole);
         }
         emit modelChanged();
@@ -94,11 +95,11 @@ void XmlHideDataModel::update(const QStringList &saved, const int row)
     switch (m_type)
     {
     case ModelType::SGroup:
-        Q_ASSERT(saved.count() == 6);
+        Q_ASSERT(saved.count() == 7);
         BaseEditorModel::update(saved.mid(0, 2), row);
         if (row >= 0 && row < rowCount())
         {
-            auto newHide = convertToSGroupData(saved.mid(2, 4));
+            auto newHide = convertToSGroupData(saved.mid(2, 5));
             setData(index(row, 0), QVariant::fromValue(newHide), SGroupDataRole);
         }
         emit modelChanged();
@@ -194,6 +195,7 @@ SGroupHideData XmlHideDataModel::parseSGroupData(QDomNode &node)
 {
     SGroupHideData retVal;
     parseInteger(node, tags::count, retVal.count);                 // Парсим тег count
+    parseInteger(node, tags::type, retVal.type);                   // Парсим тег type
     parseText(node, tags::tooltip, retVal.tooltip);                // Парсим тег toolTip
     retVal.view = node.toElement().attribute(tags::view, "float"); // Парсим аттрибут view
     parseStringArray(node, retVal.array);                          // Парсим тег string-array
@@ -202,7 +204,7 @@ SGroupHideData XmlHideDataModel::parseSGroupData(QDomNode &node)
 
 SGroupHideData XmlHideDataModel::convertToSGroupData(const QStringList &input)
 {
-    Q_ASSERT(input.count() == 4);
+    Q_ASSERT(input.count() == 5);
     SGroupHideData hiding;
     auto state = false;
     auto count = input[0].toInt(&state);
@@ -212,6 +214,9 @@ SGroupHideData XmlHideDataModel::convertToSGroupData(const QStringList &input)
     if (!input[2].isEmpty())
         hiding.array = input[2].split(',');
     hiding.view = input[3];
+    auto type = input[4].toInt(&state);
+    if (state)
+        hiding.type = type;
     return hiding;
 }
 
@@ -222,6 +227,7 @@ QStringList XmlHideDataModel::convertFromSGroupData(const SGroupHideData &input)
     retList.append(input.tooltip);
     retList.append(input.array.join(','));
     retList.append(input.view);
+    retList.append(QString::number(input.type));
     return retList;
 }
 
@@ -245,6 +251,8 @@ QDomElement XmlHideDataModel::makeSGroupNode(QDomDocument &doc)
             auto hideData = hideDataVar.value<SGroupHideData>();
             if (hideData.count != 1)
                 makeElement(doc, mwidget, tags::count, QString::number(hideData.count));
+            if (hideData.type != 0)
+                makeElement(doc, mwidget, tags::type, hideData.type);
             if (!hideData.tooltip.isEmpty())
                 makeElement(doc, mwidget, tags::tooltip, hideData.tooltip);
             if (!hideData.view.isEmpty())
@@ -269,18 +277,19 @@ S2RecordHideData XmlHideDataModel::parseS2RecordData(QDomNode &node)
     if (!widgetNode.isNull())
     {
         retVal.isEnabled = true;
-        retVal.classname                                          // Парсим аттрибут class
-            = widgetNode.toElement().attribute(tags::class_, ""); //
-        parseInteger(widgetNode, tags::group, retVal.group);      // Парсим тег group
-        parseInteger(widgetNode, tags::count, retVal.count);      // Парсим тег count
-        parseInteger(widgetNode, tags::min, retVal.min);          // Парсим тег min
-        parseInteger(widgetNode, tags::max, retVal.max);          // Парсим тег max
-        parseInteger(widgetNode, tags::parent, retVal.parent);    // Парсим тег parent
-        parseText(widgetNode, tags::type, retVal.type);           // Парсим тег type
-        parseText(widgetNode, tags::string, retVal.string);       // Парсим тег string
-        parseText(widgetNode, tags::tooltip, retVal.tooltip);     // Парсим тег tooltip
-        parseText(widgetNode, tags::field, retVal.field);         // Парсим тег field
-        parseStringArray(widgetNode, retVal.array);               // Парсим тег string-array
+        retVal.classname                                           // Парсим аттрибут class
+            = widgetNode.toElement().attribute(tags::class_, "");  //
+        parseInteger(widgetNode, tags::group, retVal.group);       // Парсим тег group
+        parseInteger(widgetNode, tags::count, retVal.count);       // Парсим тег count
+        parseInteger(widgetNode, tags::min, retVal.min);           // Парсим тег min
+        parseInteger(widgetNode, tags::max, retVal.max);           // Парсим тег max
+        parseInteger(widgetNode, tags::parent, retVal.parent);     // Парсим тег parent
+        parseText(widgetNode, tags::type, retVal.type);            // Парсим тег type
+        parseText(widgetNode, tags::string, retVal.string);        // Парсим тег string
+        parseText(widgetNode, tags::tooltip, retVal.tooltip);      // Парсим тег tooltip
+        parseText(widgetNode, tags::field, retVal.field);          // Парсим тег field
+        parseStringArray(widgetNode, retVal.array);                // Парсим тег string-array
+        parseInteger(widgetNode, tags::decimals, retVal.decimals); // Парсим тег decimals
     }
     return retVal;
 }

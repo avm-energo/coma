@@ -32,9 +32,12 @@ void XmlContainerModel::parseNode(QDomNode &node, int &row)
     // Для узлов <sections> и <section>
     if (m_type == ModelType::Sections || m_type == ModelType::Section)
     {
-        parseAttribute(node, tags::header, row, 0);  // Заголовок
-        if (m_type == ModelType::Section)            //
-            parseAttribute(node, tags::tab, row, 1); // ID вкладки
+        parseAttribute(node, tags::header, row, 0);    // Заголовок
+        if (m_type == ModelType::Section)              //
+        {
+            parseAttribute(node, tags::tab, row, 1);   // ID вкладки
+            parseAttribute(node, tags::order, row, 2); // Приоритет внутри вкладки
+        }
     }
     // Для узлов <hidden>
     else if (m_type == ModelType::Hidden)
@@ -113,19 +116,27 @@ QDomElement XmlContainerModel::toNode(QDomDocument &doc)
                 {
                     // Добавляем описание (атрибут header)
                     setAttribute(doc, childNode, tags::header, data(index(row, 0)));
-                    // Добавляем номер вкладки (атрибут tab)
-                    if (m_type == ModelType::Section)
+                    // Добавляем номер вкладки (атрибут tab) и приоритет (атрибут order)
+                    if ((m_type == ModelType::Section) && (columnCount() > 1))
+                    {
                         setAttribute(doc, childNode, tags::tab, data(index(row, 1)));
+                        if (columnCount() > 2)
+                        {
+                            auto order = data(index(row, 2)).value<QString>();
+                            if ((!order.isEmpty()) && (order != "0"))
+                                setAttribute(doc, childNode, tags::order, order);
+                        }
+                    }
                 }
                 // Для узлов <hidden>
-                else if (m_type == ModelType::Hidden)
+                else if ((m_type == ModelType::Hidden) && (columnCount() > 2))
                 {
                     setAttribute(doc, childNode, tags::desc, data(index(row, 0)));
                     setAttribute(doc, childNode, tags::prefix, data(index(row, 1)));
                     setAttribute(doc, childNode, tags::flag, data(index(row, 2)));
                 }
                 // Для узлов <resources>, <alarms> и <journals>
-                else
+                else if (columnCount() > 1)
                 {
                     // Добавляем описание (атрибут desc)
                     setAttribute(doc, childNode, tags::desc, data(index(row, 1)));

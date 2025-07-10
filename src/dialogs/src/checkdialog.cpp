@@ -19,7 +19,7 @@ using namespace Device::XmlDataTypes;
 constexpr auto c_maxIndicatorCountInRow = 10;
 constexpr auto c_circleRadius = 12;
 constexpr auto c_normalColor = Qt::gray;
-const QMap<int, Qt::GlobalColor> c_activeColor = { { 0, Qt::green }, { 1, Qt::yellow }, { 2, Qt::red } };
+const QMap<int, Qt::GlobalColor> c_activeColor = { { 1, Qt::green }, { 2, Qt::yellow }, { 3, Qt::red } };
 constexpr auto c_defaultStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
 constexpr auto c_errStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; "
                             "background-color: %1; color: black;}";

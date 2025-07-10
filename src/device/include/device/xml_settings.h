@@ -40,7 +40,7 @@ struct MWidget final
     QString tooltip = "";            ///< узел <toolTip>
     ViewType view = ViewType::Float; ///< атрибут "view"
     QStringList subItemList = {};    ///< узел <string-array>
-    u32 type;                        ///< узел <type> - тип отображения виджета (alarm = red | yellow)
+    u32 type;                        ///< узел <type> - тип отображения виджета (alarm = red | yellow | green)
 };
 
 /// \brief Структура для хранения информации узла <sgroup> из XML.

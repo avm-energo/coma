@@ -1,8 +1,6 @@
 #include "xml/xmleditor/dialogs/xmlmwidgetdialog.h"
 
-XmlMWidgetDialog::XmlMWidgetDialog(QWidget *parent) : XmlDialog(parent)
-{
-}
+XmlMWidgetDialog::XmlMWidgetDialog(QWidget *parent) : XmlDialog(parent) { }
 
 void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
 {
@@ -15,6 +13,7 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     auto tooltipLayout = new QHBoxLayout;
     auto viewLayout = new QHBoxLayout;
     auto strArrLayout = new QHBoxLayout;
+    auto typeLayout = new QHBoxLayout;
     m_title += "описания мульти-виджета";
 
     // Виджеты для начального адреса
@@ -23,7 +22,7 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     addrInput->setMinimum(addrMin);
     addrInput->setMaximum(addrMax);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(addrInput, &QSpinBox::textChanged, this, //
+    QObject::connect(addrInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
 #endif
     QObject::connect(addrInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -46,7 +45,7 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     countInput->setMinimum(countMin);
     countInput->setMaximum(countMax);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(countInput, &QSpinBox::textChanged, this, //
+    QObject::connect(countInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
 #endif
     QObject::connect(countInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -75,7 +74,7 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     // Виджеты для типа отображения
     auto viewLabel = new QLabel("Тип отображения: ", this);
     auto viewInput = new QComboBox(this);
-    viewInput->addItems({ "float", "bitset" });
+    viewInput->addItems({ "float", "bitset", "SinglePoint" });
     viewInput->setCurrentIndex(0);
     viewLayout->addWidget(viewLabel);
     viewLayout->addWidget(viewInput);
@@ -84,11 +83,28 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlMWidgetDialog::dataChanged));      //
     m_dlgItems.append(viewInput);
 
+    // Виджеты для количества адресов
+    auto typeLabel = new QLabel("Тип (для SP: 1-green,2-yellow,3-red): ", this);
+    auto typeInput = new QSpinBox(this);
+    typeInput->setValue(0);
+    typeInput->setMinimum(countMin);
+    typeInput->setMaximum(countMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    QObject::connect(typeInput, &QSpinBox::textChanged, this,            //
+        qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
+#endif
+    QObject::connect(typeInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlMWidgetDialog::dataChanged));
+    typeLayout->addWidget(typeLabel);
+    typeLayout->addWidget(typeInput);
+    m_dlgItems.append(typeInput);
+
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);
     mainLayout->addLayout(descLayout);
     mainLayout->addLayout(countLayout);
     mainLayout->addLayout(tooltipLayout);
     mainLayout->addLayout(viewLayout);
+    mainLayout->addLayout(typeLayout);
     mainLayout->addLayout(strArrLayout);
 }

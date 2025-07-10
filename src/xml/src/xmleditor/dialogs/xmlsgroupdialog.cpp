@@ -1,8 +1,6 @@
 #include "xml/xmleditor/dialogs/xmlsgroupdialog.h"
 
-XmlSGroupDialog::XmlSGroupDialog(QWidget *parent) : XmlDialog(parent)
-{
-}
+XmlSGroupDialog::XmlSGroupDialog(QWidget *parent) : XmlDialog(parent) { }
 
 void XmlSGroupDialog::setupUI(QVBoxLayout *mainLayout)
 {
@@ -11,6 +9,7 @@ void XmlSGroupDialog::setupUI(QVBoxLayout *mainLayout)
     // Создание слоёв окна
     auto nameLayout = new QHBoxLayout;
     auto idLayout = new QHBoxLayout;
+    auto orderLayout = new QHBoxLayout;
     m_title += "группы";
 
     // Виджеты для имени группы
@@ -28,7 +27,7 @@ void XmlSGroupDialog::setupUI(QVBoxLayout *mainLayout)
     idInput->setMinimum(idMin);
     idInput->setMaximum(idMax);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(idInput, &QSpinBox::textChanged, this, //
+    QObject::connect(idInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlSGroupDialog::dataChanged));
 #endif
     QObject::connect(idInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -37,7 +36,23 @@ void XmlSGroupDialog::setupUI(QVBoxLayout *mainLayout)
     idLayout->addWidget(idInput);
     m_dlgItems.append(idInput);
 
+    // Приоритет
+    auto orderLabel = new QLabel("Приоритет (0-без приоритета): ", this);
+    auto orderInput = new QSpinBox(this);
+    orderInput->setMinimum(configCountMin);
+    orderInput->setMaximum(configCountMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    QObject::connect(orderInput, &QSpinBox::textChanged,                  //
+        this, qOverload<const QString &>(&XmlSGroupDialog::dataChanged));
+#endif
+    QObject::connect(orderInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlSGroupDialog::dataChanged));
+    orderLayout->addWidget(orderLabel);
+    orderLayout->addWidget(orderInput);
+    m_dlgItems.append(orderInput);
+
     // Добавляем слои на главный слой
     mainLayout->addLayout(nameLayout);
     mainLayout->addLayout(idLayout);
+    mainLayout->addLayout(orderLayout);
 }

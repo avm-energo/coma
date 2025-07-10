@@ -2198,7 +2198,7 @@
                 <string>Температурный коэффициент термометра сопротивления ВСМ</string>
                 <min>0</min>
                 <max>100</max>
-                <decimals>3</decimals>
+                <decimals>4</decimals>
             </widget>
         </record>
         <record>
@@ -5167,6 +5167,23 @@
             </widget>
         </record>
         <record>
+            <id>1283</id>
+            <name>EnContrNNT</name>
+            <type>BYTE[3]</type>
+            <widget>
+                <type>CheckBoxGroup</type>
+                <group>1</group>
+                <string>Разрешение  управления охлаждением по ННТ</string>
+                <toolTip>0 – не управлять, 1 – управлять</toolTip>
+                <count>3</count>
+                <string-array>
+                    <item>Обмотка ВН</item>
+                    <item>Обмотка №2</item>
+                    <item>Обмотка №3</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
             <id>1284</id>
             <name>Inom</name>
             <type>FLOAT[3]</type>
@@ -5867,23 +5884,6 @@
             <id>10057</id>
             <name>Spect87_7</name>
             <type>DataPoint_Spect87</type>
-        </record>
-        <record>
-            <id>1283</id>
-            <name>EnContrNNT</name>
-            <type>BYTE[3]</type>
-            <widget>
-                <type>CheckBoxGroup</type>
-                <group>1</group>
-                <string>Разрешение  управления охлаждением по ННТ</string>
-                <toolTip>0 – не управлять, 1 – управлять</toolTip>
-                <count>3</count>
-                <string-array>
-                    <item>Обмотка ВН</item>
-                    <item>Обмотка №2</item>
-                    <item>Обмотка №3</item>
-                </string-array>
-            </widget>
         </record>
     </records>
 </s2files>

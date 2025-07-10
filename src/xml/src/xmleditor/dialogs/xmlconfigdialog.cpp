@@ -1,8 +1,6 @@
 #include "xml/xmleditor/dialogs/xmlconfigdialog.h"
 
-XmlConfigDialog::XmlConfigDialog(QWidget *parent) : XmlDialog(parent)
-{
-}
+XmlConfigDialog::XmlConfigDialog(QWidget *parent) : XmlDialog(parent) { }
 
 void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
 {
@@ -12,6 +10,7 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
     auto idLayout = new QHBoxLayout;
     auto defLayout = new QHBoxLayout;
     auto countLayout = new QHBoxLayout;
+    auto orderLayout = new QHBoxLayout;
     auto visibLayout = new QHBoxLayout;
     m_title += "конфига";
 
@@ -44,7 +43,7 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
     countInput->setMinimum(configCountMin);
     countInput->setMaximum(configCountMax);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(countInput, &QSpinBox::textChanged, //
+    QObject::connect(countInput, &QSpinBox::textChanged,                  //
         this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
 #endif
     QObject::connect(countInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -52,6 +51,20 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
     countLayout->addWidget(countLabel);
     countLayout->addWidget(countInput);
     m_dlgItems.append(countInput);
+
+    auto orderLabel = new QLabel("Приоритет (0-без приоритета): ", this);
+    auto orderInput = new QSpinBox(this);
+    orderInput->setMinimum(configCountMin);
+    orderInput->setMaximum(configCountMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    QObject::connect(orderInput, &QSpinBox::textChanged,                  //
+        this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
+#endif
+    QObject::connect(orderInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlConfigDialog::dataChanged));
+    orderLayout->addWidget(orderLabel);
+    orderLayout->addWidget(orderInput);
+    m_dlgItems.append(orderInput);
 
     // Виджеты для видимости конфигурационного параметра
     auto visibLabel = new QLabel("Видимость: ", this);
@@ -69,5 +82,6 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
     mainLayout->addLayout(idLayout);
     mainLayout->addLayout(defLayout);
     mainLayout->addLayout(countLayout);
+    mainLayout->addLayout(orderLayout);
     mainLayout->addLayout(visibLayout);
 }

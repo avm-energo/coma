@@ -3,6 +3,7 @@
 #include <xml/xmleditor/models/xmlcontainermodel.h>
 #include <xml/xmleditor/models/xmldatamodel.h>
 #include <xml/xmleditor/models/xmlhidedatamodel.h>
+#include <xml/xmltags.h>
 
 void ModelFabric::createChildModel(ChildModelNode &mNode, QDomNode &root, QObject *parent)
 {
@@ -58,16 +59,16 @@ XmlModel *ModelFabric::createRootModel(QDomNode &root, QObject *parent)
     {
         ModelType type = ModelType::None;
         auto rootName = root.nodeName();
-        if (rootName == "module")
+        if (rootName == tags::module)
         {
-            auto res = root.firstChildElement("resources");
+            auto res = root.firstChildElement(tags::res);
             if (!res.isNull())
             {
                 type = ModelType::Resources;
                 root = res;
             }
         }
-        else if (rootName == "s2files")
+        else if (rootName == tags::s2files)
         {
             type = ModelType::S2Files;
         }

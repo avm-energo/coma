@@ -2,13 +2,12 @@
 
 #include <xml/xmltags.h>
 
-XmlDataModel::XmlDataModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent)
-{
-}
+XmlDataModel::XmlDataModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent) { }
 
 std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, int &)>> XmlDataModel::getModelSettings()
 {
-    auto alarmHelper = [this](auto &doc, auto &item, auto &row) {
+    auto alarmHelper = [this](auto &doc, auto &item, auto &row)
+    {
         makeElement(doc, item, tags::addr, data(index(row, 0)));
         makeElement(doc, item, tags::string, data(index(row, 1)));
         if (rowCount() > 2)
@@ -28,7 +27,8 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
     {
     case ModelType::Signals:
         return { tags::sigs, tags::sig, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::start_addr, data(index(row, 0)));
                 makeElement(doc, item, tags::count, data(index(row, 1)));
                 makeElement(doc, item, tags::id, data(index(row, 2)));
@@ -36,13 +36,15 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             } };
     case ModelType::SectionTabs:
         return { tags::tabs, tags::tab, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::name, data(index(row, 1)));
             } };
     case ModelType::AlarmStateAll:
         return { tags::state_all, tags::item, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::addr, data(index(row, 0)));
                 makeElement(doc, item, tags::string, data(index(row, 1)));
                 makeElement(doc, item, tags::type, data(index(row, 2)));
@@ -56,13 +58,15 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
         return { tags::info, tags::item, alarmHelper };
     case ModelType::WorkJours:
         return { tags::work, tags::item, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::addr, data(index(row, 0)));
                 makeElement(doc, item, tags::desc, data(index(row, 1)));
             } };
     case ModelType::MeasJours:
         return { tags::meas, tags::item, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::index, data(index(row, 0)));
                 makeElement(doc, item, tags::header, data(index(row, 1)));
                 makeElement(doc, item, tags::type, data(index(row, 2)));
@@ -70,7 +74,8 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             } };
     case ModelType::Modbus:
         return { tags::modbus, tags::group, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::sig_id, data(index(row, 0)));
                 makeElement(doc, item, tags::reg_type, data(index(row, 1)));
                 makeElement(doc, item, tags::type, data(index(row, 2)));
@@ -78,13 +83,15 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             } };
     case ModelType::Protocom:
         return { tags::protocom, tags::group, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::block, data(index(row, 0)));
                 makeElement(doc, item, tags::sig_id, data(index(row, 1)));
             } };
     case ModelType::IEC60870:
         return { tags::iec, tags::group, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::sig_id, data(index(row, 0)));
                 makeElement(doc, item, tags::sig_type, data(index(row, 1)));
                 makeElement(doc, item, tags::trans_type, data(index(row, 2)));
@@ -92,17 +99,22 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             } };
     case ModelType::Config:
         return { tags::config, tags::record, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::def_val, data(index(row, 1)));
                 QVariant countData(data(index(row, 2)));
                 if (!countData.value<QString>().isEmpty())
                     makeElement(doc, item, tags::count, countData);
-                makeElement(doc, item, tags::visibility, data(index(row, 3)));
+                QVariant orderData(data(index(row, 3)));
+                if ((!orderData.value<QString>().isEmpty()) && (orderData.value<int>() != 0))
+                    makeElement(doc, item, tags::order, orderData);
+                makeElement(doc, item, tags::visibility, data(index(row, 4)));
             } };
     case ModelType::HiddenTab:
         return { tags::hidden_tab, tags::mwidget, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::index, data(index(row, 0)));
                 setAttribute(doc, item, tags::title, data(index(row, 1)));
                 makeElement(doc, item, tags::name, data(index(row, 2)));
@@ -113,7 +125,8 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             } };
     case ModelType::BsiExt:
         return { tags::bsi_ext, tags::item, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::addr, data(index(row, 0)));
                 makeElement(doc, item, tags::desc, data(index(row, 1)));
                 makeElement(doc, item, tags::type, data(index(row, 2)));
@@ -121,14 +134,16 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             } };
     case ModelType::S2Tabs:
         return { tags::conf_tabs, tags::tab, //
-            [this](auto &doc, auto &item, auto &row) {
+            [this](auto &doc, auto &item, auto &row)
+            {
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::name, data(index(row, 1)));
             } };
     default:
         qWarning() << "Model settings not found!";
         return { "undefined", "undefined", //
-            [](auto &doc, auto &item, auto &row) {
+            [](auto &doc, auto &item, auto &row)
+            {
                 Q_UNUSED(doc);
                 Q_UNUSED(item);
                 Q_UNUSED(row);
@@ -193,7 +208,8 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
         parseTag(node, tags::id, row, 0, "", true);           // ID
         parseTag(node, tags::def_val, row, 1);                // Значение по умолчанию
         parseTag(node, tags::count, row, 2, "");              // new count
-        parseTag(node, tags::visibility, row, 3, "true");     // Видимость
+        parseTag(node, tags::order, row, 3, "");              // Приоритет
+        parseTag(node, tags::visibility, row, 4, "true");     // Видимость
         break;                                                //
     case ModelType::HiddenTab:                                //
         parseTag(node, tags::index, row, 0, "1", true);       // Индекс данных в структуре
