@@ -1,5 +1,6 @@
 #include "xml/xmleditor/models/xmldatamodel.h"
 
+#include <gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
 XmlDataModel::XmlDataModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent) { }
@@ -38,8 +39,12 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
         return { tags::tabs, tags::tab, //
             [this](auto &doc, auto &item, auto &row)
             {
+                QString dtypeText;
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::name, data(index(row, 1)));
+                dtypeText = data(index(row, 2)).toString();
+                if (dtypeText != "0")
+                    makeElement(doc, item, tags::dtype, "Yes");
             } };
     case ModelType::AlarmStateAll:
         return { tags::state_all, tags::item, //
@@ -104,7 +109,7 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::def_val, data(index(row, 1)));
                 QVariant countData(data(index(row, 2)));
-                if (!countData.value<QString>().isEmpty())
+                if ((!countData.value<QString>().isEmpty()) && (countData.value<int>() > 1))
                     makeElement(doc, item, tags::count, countData);
                 QVariant orderData(data(index(row, 3)));
                 if ((!orderData.value<QString>().isEmpty()) && (orderData.value<int>() != 0))
@@ -153,83 +158,86 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
 
 void XmlDataModel::parseNode(QDomNode &node, int &row)
 {
+    QString dtypeText;
     switch (m_type)
     {
     case ModelType::Signals:
-        parseTag(node, tags::start_addr, row, 0, "", true);   // Стартовый адрес
-        parseTag(node, tags::count, row, 1);                  // Количество
-        parseTag(node, tags::id, row, 2);                     // ID сигнала
-        parseTag(node, tags::type, row, 3, "Float");          // Тип сигнала
-        break;                                                //
-    case ModelType::SectionTabs:                              //
-        parseTag(node, tags::id, row, 0, "", true);           // ID вкладки
-        parseTag(node, tags::name, row, 1);                   // Имя вкладки
-        break;                                                //
-    case ModelType::AlarmStateAll:                            //
-        parseTag(node, tags::addr, row, 0, "", true);         // Адрес
-        parseTag(node, tags::string, row, 1);                 // Строка с сообщением
-        parseTag(node, tags::type, row, 2);                   // Строка с сообщением
-        break;                                                //
-    case ModelType::AlarmsCrit:                               //
-    case ModelType::AlarmsWarn:                               //
-    case ModelType::AlarmsInfo:                               //
-        parseTag(node, tags::addr, row, 0, "", true);         // Адрес
-        parseTag(node, tags::string, row, 1);                 // Строка с сообщением
-        if (rowCount() > 2)                                   // Highlights
-            parseAlarmHighlights(node, row, 2);               //
-        break;                                                //
-    case ModelType::WorkJours:                                //
-        parseTag(node, tags::addr, row, 0, "", true);         // Адрес
-        parseTag(node, tags::desc, row, 1);                   // Строка с описанием
-        break;                                                //
-    case ModelType::MeasJours:                                //
-        parseTag(node, tags::index, row, 0, "0", true);       // Индекс
-        parseTag(node, tags::header, row, 1);                 // Заголовок столбца
-        parseTag(node, tags::type, row, 2, "float32");        // Тип данных
-        parseTag(node, tags::visibility, row, 3, "true");     // Видимость
-        break;                                                //
-    case ModelType::Modbus:                                   //
-        parseTag(node, tags::sig_id, row, 0, "", true);       // ID сигнала
-        parseTag(node, tags::reg_type, row, 1);               // Тип регистра
-        parseTag(node, tags::type, row, 2);                   // Возвращаемый тип
-        parseTag(node, tags::desc, row, 3);                   // Описание
-        break;                                                //
-    case ModelType::Protocom:                                 //
-        parseTag(node, tags::block, row, 0, "", true);        // Номер блока
-        parseTag(node, tags::sig_id, row, 1);                 // ID сигнала
-        break;                                                //
-    case ModelType::IEC60870:                                 //
-        parseTag(node, tags::sig_id, row, 0, "", true);       // ID сигнала
-        parseTag(node, tags::sig_type, row, 1);               // Тип передачи
-        parseTag(node, tags::trans_type, row, 2);             // Тип передачи
-        parseTag(node, tags::sig_group, row, 3);              // Группа
-        break;                                                //
-    case ModelType::Config:                                   //
-        parseTag(node, tags::id, row, 0, "", true);           // ID
-        parseTag(node, tags::def_val, row, 1);                // Значение по умолчанию
-        parseTag(node, tags::count, row, 2, "");              // new count
-        parseTag(node, tags::order, row, 3, "");              // Приоритет
-        parseTag(node, tags::visibility, row, 4, "true");     // Видимость
-        break;                                                //
-    case ModelType::HiddenTab:                                //
-        parseTag(node, tags::index, row, 0, "1", true);       // Индекс данных в структуре
-        parseAttribute(node, tags::title, row, 1, "");        // Отображаемое название
-        parseTag(node, tags::name, row, 2, "");               // Имя виджета в системе Qt
-        parseAttribute(node, tags::view, row, 3, "LineEdit"); // Тип виджета для отображения
-        parseTag(node, tags::type, row, 4, "uint32");         // Тип данных, хранимые в виджете
-        parseTag(node, tags::addr, row, 5, "1", true);        // Адрес в блоке устройства
-        parseTag(node, tags::visibility, row, 6, "true");     // Видимость
-        break;                                                //
-    case ModelType::BsiExt:                                   //
-        parseTag(node, tags::addr, row, 0, "40", true);       // Адрес сигнала
-        parseTag(node, tags::desc, row, 1, "");               // Описание сигнала
-        parseTag(node, tags::type, row, 2, "uint32");         // Тип данных сигнала
-        parseTag(node, tags::visibility, row, 3, "true");     // Видимость
-        break;                                                //
-    case ModelType::S2Tabs:                                   //
-        parseTag(node, tags::id, row, 0, "", true);           // ID
-        parseTag(node, tags::name, row, 1);                   // Наименование
-        break;                                                //
+        parseTag(node, tags::start_addr, row, 0, "", true);       // Стартовый адрес
+        parseTag(node, tags::count, row, 1);                      // Количество
+        parseTag(node, tags::id, row, 2);                         // ID сигнала
+        parseTag(node, tags::type, row, 3, "Float");              // Тип сигнала
+        break;                                                    //
+    case ModelType::SectionTabs:                                  //
+        parseTag(node, tags::id, row, 0, "", true);               // ID вкладки
+        parseTag(node, tags::name, row, 1);                       // Имя вкладки
+        dtypeText = XmlParse::parseString(node, tags::dtype);
+        setData(index(row, 2), (dtypeText == "Yes") ? "1" : "0"); // Признак дебажности
+        break;                                                    //
+    case ModelType::AlarmStateAll:                                //
+        parseTag(node, tags::addr, row, 0, "", true);             // Адрес
+        parseTag(node, tags::string, row, 1);                     // Строка с сообщением
+        parseTag(node, tags::type, row, 2);                       // Тип отображения
+        break;                                                    //
+    case ModelType::AlarmsCrit:                                   //
+    case ModelType::AlarmsWarn:                                   //
+    case ModelType::AlarmsInfo:                                   //
+        parseTag(node, tags::addr, row, 0, "", true);             // Адрес
+        parseTag(node, tags::string, row, 1);                     // Строка с сообщением
+        if (rowCount() > 2)                                       // Highlights
+            parseAlarmHighlights(node, row, 2);                   //
+        break;                                                    //
+    case ModelType::WorkJours:                                    //
+        parseTag(node, tags::addr, row, 0, "", true);             // Адрес
+        parseTag(node, tags::desc, row, 1);                       // Строка с описанием
+        break;                                                    //
+    case ModelType::MeasJours:                                    //
+        parseTag(node, tags::index, row, 0, "0", true);           // Индекс
+        parseTag(node, tags::header, row, 1);                     // Заголовок столбца
+        parseTag(node, tags::type, row, 2, "float32");            // Тип данных
+        parseTag(node, tags::visibility, row, 3, "true");         // Видимость
+        break;                                                    //
+    case ModelType::Modbus:                                       //
+        parseTag(node, tags::sig_id, row, 0, "", true);           // ID сигнала
+        parseTag(node, tags::reg_type, row, 1);                   // Тип регистра
+        parseTag(node, tags::type, row, 2);                       // Возвращаемый тип
+        parseTag(node, tags::desc, row, 3);                       // Описание
+        break;                                                    //
+    case ModelType::Protocom:                                     //
+        parseTag(node, tags::block, row, 0, "", true);            // Номер блока
+        parseTag(node, tags::sig_id, row, 1);                     // ID сигнала
+        break;                                                    //
+    case ModelType::IEC60870:                                     //
+        parseTag(node, tags::sig_id, row, 0, "", true);           // ID сигнала
+        parseTag(node, tags::sig_type, row, 1);                   // Тип передачи
+        parseTag(node, tags::trans_type, row, 2);                 // Тип передачи
+        parseTag(node, tags::sig_group, row, 3);                  // Группа
+        break;                                                    //
+    case ModelType::Config:                                       //
+        parseTag(node, tags::id, row, 0, "", true);               // ID
+        parseTag(node, tags::def_val, row, 1);                    // Значение по умолчанию
+        parseTag(node, tags::count, row, 2, "");                  // new count
+        parseTag(node, tags::order, row, 3, "");                  // Приоритет
+        parseTag(node, tags::visibility, row, 4, "true");         // Видимость
+        break;                                                    //
+    case ModelType::HiddenTab:                                    //
+        parseTag(node, tags::index, row, 0, "1", true);           // Индекс данных в структуре
+        parseAttribute(node, tags::title, row, 1, "");            // Отображаемое название
+        parseTag(node, tags::name, row, 2, "");                   // Имя виджета в системе Qt
+        parseAttribute(node, tags::view, row, 3, "LineEdit");     // Тип виджета для отображения
+        parseTag(node, tags::type, row, 4, "uint32");             // Тип данных, хранимые в виджете
+        parseTag(node, tags::addr, row, 5, "1", true);            // Адрес в блоке устройства
+        parseTag(node, tags::visibility, row, 6, "true");         // Видимость
+        break;                                                    //
+    case ModelType::BsiExt:                                       //
+        parseTag(node, tags::addr, row, 0, "40", true);           // Адрес сигнала
+        parseTag(node, tags::desc, row, 1, "");                   // Описание сигнала
+        parseTag(node, tags::type, row, 2, "uint32");             // Тип данных сигнала
+        parseTag(node, tags::visibility, row, 3, "true");         // Видимость
+        break;                                                    //
+    case ModelType::S2Tabs:                                       //
+        parseTag(node, tags::id, row, 0, "", true);               // ID
+        parseTag(node, tags::name, row, 1);                       // Наименование
+        break;                                                    //
     default:
         qWarning() << "Can't parse undefined tag of XML model!";
         break;

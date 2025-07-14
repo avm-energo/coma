@@ -25,8 +25,8 @@ QDomElement MasterModel::toNode(QDomDocument &doc, const int &row)
         if (typeB.value<QString>() != "00")
             makeElement(doc, moduleNode, tags::version, data(index(row, 3)));
         auto featuresElem = makeGroup(doc, moduleNode, tags::features); // create group "Features"
-        makeElement(doc, featuresElem, tags::isrtcexist, data(index(row, 5)));
-        makeElement(doc, featuresElem, tags::isboxmodule, data(index(row, 6)));
+        makeElement(doc, featuresElem, tags::isboxmodule, data(index(row, 5)));
+        makeElement(doc, featuresElem, tags::isrtcexist, data(index(row, 6)));
         return moduleNode;
     }
 }
@@ -57,7 +57,7 @@ void MasterModel::readModulesToModel()
 {
     // Создание и настройка модели для Master View
     auto dir = QDir(Settings::configDir());
-    auto modules = dir.entryList(QDir::Files).filter(".xml");
+    auto modules = dir.entryList({ "*.xml" }, QDir::Files);
     setRowCount(0);
     setColumnCount(7);
     // Каждый xml-файл считывается в модель

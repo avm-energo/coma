@@ -407,8 +407,6 @@ void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList
 {
     if (Files::isFileExist(filename))
     {
-        /*        auto document = getFileContent(filename);
-                auto moduleNode = document.firstChildElement(tags::module); */
         auto moduleNode = XmlBase::getXMLFirstElementFromFile(filename, tags::module);
         if (!moduleNode.isNull())
         {

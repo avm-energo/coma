@@ -33,7 +33,7 @@ const std::map<QString, ModelType> XmlModel::s_types {
 const std::map<ModelType, QStringList> XmlModel::s_headers {
     { ModelType::Resources, { "XML", "Описание" } },                                                               //
     { ModelType::Signals, { "Стартовый адрес", "Количество", "ID сигнала", "Тип" } },                              //
-    { ModelType::SectionTabs, { "ID вкладки", "Название" } },                                                      //
+    { ModelType::SectionTabs, { "ID вкладки", "Название", "Для наладки" } },                                       //
     { ModelType::Sections, { "Название" } },                                                                       //
     { ModelType::Section, { "Название", "ID вкладки", "Приоритет" } },                                             //
     { ModelType::SGroup, { "Адрес", "Имя" } },                                                                     //
@@ -54,7 +54,7 @@ const std::map<ModelType, QStringList> XmlModel::s_headers {
     { ModelType::BsiExt, { "Адрес", "Описание", "Тип", "Видимость" } },                                            //
     { ModelType::S2Files, { "XML", "Описание" } },                                                                 //
     { ModelType::S2Tabs, { "ID вкладки", "Название" } },                                                           //
-    { ModelType::S2Records, { "ID элемента", "Название", "Тип", "Описание" } },                                    //
+    { ModelType::S2Records, { "ID элемента", "Название", "Тип", "Для наладки" } },                                 //
 };
 
 XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : BaseEditorModel(rows, cols, type, parent) { }

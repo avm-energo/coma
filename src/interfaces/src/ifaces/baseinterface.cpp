@@ -1,5 +1,7 @@
 #include "interfaces/ifaces/baseinterface.h"
 
+#include <gen/settings.h>
+
 #include <QCoreApplication>
 #include <QElapsedTimer>
 

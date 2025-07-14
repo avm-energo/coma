@@ -1,8 +1,6 @@
 #include "xml/xmleditor/dialogs/xmlstabdialog.h"
 
-XmlSectionTabDialog::XmlSectionTabDialog(QWidget *parent) : XmlDialog(parent)
-{
-}
+XmlSectionTabDialog::XmlSectionTabDialog(QWidget *parent) : XmlDialog(parent) { }
 
 void XmlSectionTabDialog::setupUI(QVBoxLayout *mainLayout)
 {
@@ -11,6 +9,7 @@ void XmlSectionTabDialog::setupUI(QVBoxLayout *mainLayout)
     // Создание слоёв окна
     auto idLayout = new QHBoxLayout;
     auto nameLayout = new QHBoxLayout;
+    auto dtypeLayout = new QHBoxLayout;
     m_title += "вкладки";
 
     // Виджеты для ID вкладки
@@ -19,7 +18,7 @@ void XmlSectionTabDialog::setupUI(QVBoxLayout *mainLayout)
     idTabInput->setMinimum(0);
     idTabInput->setMaximum(idMax);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(idTabInput, &QSpinBox::textChanged, this, //
+    QObject::connect(idTabInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlSectionTabDialog::dataChanged));
 #endif
     QObject::connect(idTabInput, qOverload<int>(&QSpinBox::valueChanged), //
@@ -37,7 +36,16 @@ void XmlSectionTabDialog::setupUI(QVBoxLayout *mainLayout)
     nameLayout->addWidget(nameInput);
     m_dlgItems.append(nameInput);
 
+    auto dtypeLabel = new QLabel("Используется только для наладки: ");
+    auto dtypeCheckBox = new QCheckBox("", this);
+    QObject::connect(dtypeCheckBox, &QCheckBox::checkStateChanged, this,
+        qOverload<const Qt::CheckState>(&XmlSectionTabDialog::dataChanged));
+    dtypeLayout->addWidget(dtypeLabel);
+    dtypeLayout->addWidget(dtypeCheckBox);
+    m_dlgItems.append(dtypeCheckBox);
+
     // Добавляем слои на главный слой
     mainLayout->addLayout(idLayout);
     mainLayout->addLayout(nameLayout);
+    mainLayout->addLayout(dtypeLayout);
 }

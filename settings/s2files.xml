@@ -2406,6 +2406,24 @@
             </widget>
         </record>
         <record>
+            <id>1046</id>
+            <name>UI_fclk</name>
+            <type>BYTE</type>
+            <widget>
+                <type>QComboBox</type>
+                <group>51</group>
+                <string>По какому сигналу измерять частоту</string>
+                <toolTip>По какому сигналу измерять частоту:
+0 - Измерять частоту по напряжению, если нет напряжения, то измерять по току.
+1 - Измерять частоту по току</toolTip>
+                <count>2</count>
+                <string-array>
+                    <item>По напряжению или току</item>
+                    <item>По току</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
             <id>1050</id>
             <name>U2nom</name>
             <type>FLOAT</type>
@@ -2673,6 +2691,41 @@
                 <string>Количество датчиков температуры обмоток, подключенных по Modbus Master</string>
                 <min>0</min>
                 <max>10000</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1085</id>
+            <name>SourseTW</name>
+            <type>BYTE</type>
+            <widget>
+                <type>CheckBoxGroup</type>
+                <group>4</group>
+                <toolTip>Источник температуры обмотки: 0-Pt100,1-первый датчик RS485_1,2-второй, ...</toolTip>
+                <count>9</count>
+                <string-array>
+                    <item>Pt100</item>
+                    <item>RS485-1-1</item>
+                    <item>RS485-1-2</item>
+                    <item>RS485-2-3</item>
+                    <item>RS485-1-4</item>
+                    <item>RS485-2-1</item>
+                    <item>RS485-2-2</item>
+                    <item>RS485-2-3</item>
+                    <item>RS485-2-4</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1086</id>
+            <name>Mpointosc</name>
+            <type>BYTE</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>300</group>
+                <toolTip>В осциллограмму записывается каждая ... точка</toolTip>
+                <min>1</min>
+                <max>512</max>
                 <decimals>0</decimals>
             </widget>
         </record>
@@ -5668,6 +5721,19 @@
                 <min>0</min>
                 <max>10000</max>
                 <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1400</id>
+            <name>deltaiv_mst</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>51</group>
+                <toolTip>Задержка 10 сек при изменении температуры MST более, чем на ... град</toolTip>
+                <min>0</min>
+                <max>100</max>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>

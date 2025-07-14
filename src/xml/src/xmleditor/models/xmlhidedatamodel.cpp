@@ -1,5 +1,6 @@
 #include "xml/xmleditor/models/xmlhidedatamodel.h"
 
+#include <gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
 constexpr int SGroupDataRole = 0x0106;   ///< Role for hiding data SGroupHideData.
@@ -121,6 +122,7 @@ void XmlHideDataModel::update(const QStringList &saved, const int row)
 
 void XmlHideDataModel::parseNode(QDomNode &node, int &row)
 {
+    QString dtypeText;
     switch (m_type)
     {
     case ModelType::SGroup:
@@ -132,7 +134,8 @@ void XmlHideDataModel::parseNode(QDomNode &node, int &row)
         parseTag(node, tags::id, row, 0, "", true);  // ID
         parseTag(node, tags::name, row, 1);          // Имя записи
         parseTag(node, tags::type, row, 2, "DWORD"); // Тип данных записи
-        // parseTag(node, tags::description, row, 3);   // Описание
+        dtypeText = XmlParse::parseString(node, tags::dtype);
+        setData(index(row, 3), (dtypeText == "Yes") ? "1" : "0");
         setData(index(row, 0), QVariant::fromValue(parseS2RecordData(node)), S2RecordDataRole);
         break;
     default:
@@ -249,7 +252,7 @@ QDomElement XmlHideDataModel::makeSGroupNode(QDomDocument &doc)
         if (hideDataVar.isValid() && hideDataVar.canConvert<SGroupHideData>())
         {
             auto hideData = hideDataVar.value<SGroupHideData>();
-            if (hideData.count != 1)
+            if (hideData.count > 1)
                 makeElement(doc, mwidget, tags::count, QString::number(hideData.count));
             if (hideData.type != 0)
                 makeElement(doc, mwidget, tags::type, hideData.type);
@@ -308,7 +311,8 @@ QDomElement XmlHideDataModel::makeS2RecordsNode(QDomDocument &doc)
         makeElement(doc, record, tags::id, data(index(row, 0)));
         makeElement(doc, record, tags::name, data(index(row, 1)));
         makeElement(doc, record, tags::type, data(index(row, 2)));
-        // makeElement(doc, record, tags::description, data(index(row, 3)));
+        if (data(index(row, 3)).toString() != "0")
+            makeElement(doc, record, tags::dtype, "Yes");
         // Скрытые данные
         auto hideData = data(index(row, 0), S2RecordDataRole);
         if (hideData.isValid() && hideData.canConvert<S2RecordHideData>())
@@ -327,7 +331,7 @@ QDomElement XmlHideDataModel::makeS2RecordsNode(QDomDocument &doc)
                     makeElement(doc, widget, tags::tooltip, s2recordData.tooltip);
                 if (s2recordData.classname.contains("ModbusItem", Qt::CaseInsensitive) && s2recordData.parent > 0)
                     makeElement(doc, widget, tags::parent, QString::number(s2recordData.parent));
-                if (s2recordData.count != 1)
+                if (s2recordData.count > 1)
                     makeElement(doc, widget, tags::count, QString::number(s2recordData.count));
                 if (s2recordData.type.contains("DoubleSpinBoxGroup", Qt::CaseInsensitive) || //
                     s2recordData.type.contains("QDoubleSpinBox", Qt::CaseInsensitive))

@@ -60,12 +60,10 @@ void UsbHidPort::disconnect()
 
 QByteArray UsbHidPort::read(bool &status)
 {
-    constexpr auto maxLength = MaxSegmenthLength + 1; // +1 for ID
+    constexpr auto maxLength = MaxSegmenthLength + 1;                        // +1 for ID
     QByteArray data(maxLength, 0);
     auto dataPtr = reinterpret_cast<unsigned char *>(data.data());
-    // m_dataGuard.lock();                                                      // lock iface
     auto readBytes = hid_read_timeout(m_hidDevice, dataPtr, maxLength, 100); // read
-    // m_dataGuard.unlock();                                                    // unlock iface
     if (readBytes == hidApiErrorCode)
     {
         // -1 is the only error value according to hidapi documentation.
@@ -114,9 +112,7 @@ bool UsbHidPort::writeDataToPort(QByteArray &command)
     command.prepend(static_cast<char>(0x00)); // Добавляем поле ID для HID protocol
 
     auto tmpt = static_cast<size_t>(command.size());
-    // m_dataGuard.lock();
     auto writtenBytes = hid_write(m_hidDevice, reinterpret_cast<unsigned char *>(command.data()), tmpt);
-    // m_dataGuard.unlock();
     if (writtenBytes == hidApiErrorCode)
     {
         writeLog(Error::Msg::WriteError);

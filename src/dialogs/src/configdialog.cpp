@@ -180,12 +180,16 @@ std::set<u16> ConfigDialog::createTabs(QTabWidget *tabWidget)
     auto &tabs = m_datamanager.getStorage().getConfigTabs();
     for (const auto &record : m_boardConfig.m_defaultConfig)
     {
-        auto tab = tabForId(record.first);
-        auto search = tabs.find(tab);
-        if (search != tabs.cend())
-            uniqueTabs.insert(tab);
-        else
-            qDebug() << "Undefined tab ID" << tab;
+        const auto id = record.first;
+        if (isVisible(id))
+        {
+            auto tab = tabForId(id);
+            auto search = tabs.find(tab);
+            if (search != tabs.cend())
+                uniqueTabs.insert(tab);
+            else
+                qDebug() << "Undefined tab ID" << tab;
+        }
     }
 
     for (const auto &tab : uniqueTabs)

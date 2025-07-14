@@ -1,5 +1,6 @@
 #include "interfaces/exec/default_query_executor.h"
 
+#include <gen/settings.h>
 #include <interfaces/parsers/base_request_parser.h>
 #include <interfaces/parsers/base_response_parser.h>
 
@@ -31,7 +32,7 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, const BaseSettin
 
 void DefaultQueryExecutor::initLogger(const QString &protocolName) noexcept
 {
-    m_log.writeStart(protocolName + "Executor.log");
+    m_log.writeStart(protocolName + "Channel.log");
 }
 
 void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponseParser *respParser) noexcept

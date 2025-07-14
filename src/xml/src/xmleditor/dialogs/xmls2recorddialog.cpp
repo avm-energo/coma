@@ -38,7 +38,7 @@ void XmlS2RecordDialog::setupUI(QVBoxLayout *mainLayout)
     auto idLayout = new QHBoxLayout;
     auto nameLayout = new QHBoxLayout;
     auto datatypeLayout = new QHBoxLayout;
-    auto descLayout = new QHBoxLayout;
+    auto dtypeLayout = new QHBoxLayout;
     m_title += "описания S2 записи";
 
     // Виджеты для ID записи
@@ -80,15 +80,14 @@ void XmlS2RecordDialog::setupUI(QVBoxLayout *mainLayout)
     mainLayout->addLayout(datatypeLayout);
     m_dlgItems.append(datatypeInput);
 
-    // Виджеты для описания записи
-    auto descLabel = new QLabel("Описание: ", this);
-    auto descInput = new QLineEdit("", this);
-    QObject::connect(descInput, &QLineEdit::textEdited, this, //
-        qOverload<const QString &>(&XmlS2RecordDialog::dataChanged));
-    descLayout->addWidget(descLabel);
-    descLayout->addWidget(descInput);
-    mainLayout->addLayout(descLayout);
-    m_dlgItems.append(descInput);
+    auto dtypeLabel = new QLabel("Используется только для наладки: ");
+    auto dtypeCheckBox = new QCheckBox("", this);
+    QObject::connect(dtypeCheckBox, &QCheckBox::checkStateChanged, this,
+        qOverload<const Qt::CheckState>(&XmlS2RecordDialog::dataChanged));
+    dtypeLayout->addWidget(dtypeLabel);
+    dtypeLayout->addWidget(dtypeCheckBox);
+    mainLayout->addLayout(dtypeLayout);
+    m_dlgItems.append(dtypeCheckBox);
 
     // Включение/отключение добавления узла <widget> в запись
     auto widgetFlag = new QCheckBox("Имеет виджет для отображения: ", this);

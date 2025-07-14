@@ -551,7 +551,7 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setApplicationName(appName);
     QCoreApplication::setOrganizationName(orgName);
     QCoreApplication::setApplicationVersion(version);
-    Logger::writeStart(Settings::logDir() + "coma.log");
+    Logger::writeStart("coma.log");
     qInstallMessageHandler(Logger::messageHandlerWithErrorQueue);
 }
 
