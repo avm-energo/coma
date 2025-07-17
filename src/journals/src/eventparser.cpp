@@ -1,13 +1,12 @@
 #include "journals/eventparser.h"
 
+#include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 
 namespace journals
 {
 
-EventParser::EventParser(QObject *parent) : QObject(parent)
-{
-}
+EventParser::EventParser(QObject *parent) : QObject(parent) { }
 
 QString EventParser::eventTypeToString(const EventType type)
 {
@@ -83,8 +82,8 @@ void EventParser::sortBinaryFile()
             range = { m_eventFile.end() - rangeSize, m_eventFile.end() };
 
 #ifdef DEBUG_JOURNALS
-            indexStart = range.begin - m_eventFile.begin(); //
-            indexEnd = range.end - m_eventFile.begin();     //
+            indexStart = range.begin - m_eventFile.begin();               //
+            indexEnd = range.end - m_eventFile.begin();                   //
             rangeSize = indexEnd - indexStart;
             fileSize = m_eventFile.end() - m_eventFile.begin();           //
             qDebug() << "indexStart, indexEnd, rangeSize, fileSize: "     //
@@ -98,8 +97,8 @@ void EventParser::sortBinaryFile()
 #ifdef DEBUG_JOURNALS
             lastRecord = m_eventFile.last();
             range = m_eventFile.findRange(unaryPredicate);
-            indexStart = range.begin - m_eventFile.begin(); //
-            indexEnd = range.end - m_eventFile.begin();     //
+            indexStart = range.begin - m_eventFile.begin();               //
+            indexEnd = range.end - m_eventFile.begin();                   //
             rangeSize = indexEnd - indexStart;
             fileSize = m_eventFile.end() - m_eventFile.begin();           //
             qDebug() << "indexStart, indexEnd, rangeSize, fileSize: "     //
@@ -142,10 +141,16 @@ JournalData EventParser::parse(const Descriptions &desc, const QTimeZone timeZon
         index = (index & 0x00FFFFFF);
         auto eventDesc = desc.value(index, "Некорректный номер события: " + QString::number(index));
         auto eventType = eventTypeToString(record.type);
-        m_records.push_back(EventView { count, record.time, eventDesc, eventType, QString::number(record.reserv, 16) });
+        if (index == 3) // SW change - we must translate reserve field as SW string
+            m_records.push_back(
+                EventView { count, record.time, eventDesc, eventType, StdFunc::VerToStr(record.reserv) });
+        else
+            m_records.push_back(
+                EventView { count, record.time, eventDesc, eventType, QString::number(record.reserv, 16) });
     }
-    std::transform(
-        m_records.cbegin(), m_records.cend(), std::back_inserter(retVal), [timeZone](const EventView &event) {
+    std::transform(m_records.cbegin(), m_records.cend(), std::front_inserter(retVal),
+        [timeZone](const EventView &event)
+        {
             return QVector<QVariant> { event.counter, TimeFunc::UnixTime64ToInvStringFractional(event.time, timeZone),
                 event.desc, event.direction, event.hexField };
         });
