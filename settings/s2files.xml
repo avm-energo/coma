@@ -5951,5 +5951,17 @@
             <name>Spect87_7</name>
             <type>DataPoint_Spect87</type>
         </record>
+        <record>
+            <id>1047</id>
+            <name>FiltrClk</name>
+            <type>BYTE</type>
+            <dtype>Yes</dtype>
+            <widget>
+                <type>QCheckBox</type>
+                <group>51</group>
+                <string>Фильтр для измерения частоты</string>
+                <toolTip>Фильтр для измерения частоты</toolTip>
+            </widget>
+        </record>
     </records>
 </s2files>
