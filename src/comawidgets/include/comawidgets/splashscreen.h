@@ -8,9 +8,9 @@ namespace Prog
 constexpr char name_ru[] = "АВМ-Сервис";
 constexpr char department[] = "ООО \"АВМ-Энерго\", 2016-2025";
 constexpr char modules[] = "Modules used:";
-constexpr auto libavmgen = "AVM-Gen library, version 1.9.15 (https://git.avmenergo.ru/avm-energo/avm-gen.git)";
+constexpr auto libavmgen = "AVM-Gen library, version 1.10.0 (https://git.avmenergo.ru/avm-energo/avm-gen.git)";
 constexpr auto libavmwidgets
-    = "AVM-Widgets library, version 2.2.1 (https://git.avmenergo.ru/avm-energo/avm-widgets.git)";
+    = "AVM-Widgets library, version 2.2.3 (https://git.avmenergo.ru/avm-energo/avm-widgets.git)";
 constexpr auto hidapi = "HIDAPI library, version 0.15.1 (https://github.com/libusb/hidapi)";
 constexpr auto qxlsx = "QXlsx library, version 1.4.9 (https://qtexcel.github.io/QXlsx/)";
 constexpr auto limereport = "LimeReport library, version 1.7.14 (https://limereport.ru/)";

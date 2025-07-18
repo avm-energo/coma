@@ -4,9 +4,10 @@
 
 namespace AboutText
 {
-constexpr auto department = "ООО \"АВМ-Энерго\", 2016-2024";
+constexpr auto department = "ООО \"АВМ-Энерго\", 2016-2025";
 constexpr auto modules = "Modules used:";
-constexpr auto liblzma = "LZMA library from XZ Utils, version 5.2.5 (https://tukaani.org/xz/)";
+constexpr auto libzlib = "ZLib, version 1.4.1.1 (https://github.com/madler/zlib)";
+constexpr auto libzip = "LibZIP, version 1.11.4 (https://github.com/nih-at/libzip/)";
 constexpr auto hidapi = "HIDAPI library, version 0.10.1 (https://github.com/libusb/hidapi)";
 constexpr auto qxlsx = "QXlsx library, version 1.4.4 (https://qtexcel.github.io/QXlsx/)";
 constexpr auto limereport = "LimeReport library, version 1.6.8 (https://limereport.ru/)";
@@ -26,7 +27,7 @@ public:
 
 private:
     QStringList m_lines { //
-        AboutText::department, AboutText::modules, AboutText::liblzma, AboutText::hidapi, AboutText::qxlsx,
-        AboutText::limereport, AboutText::qcustomplot, AboutText::icons, AboutText::fonts
+        AboutText::department, AboutText::modules, AboutText::libzlib, AboutText::libzip, AboutText::hidapi,
+        AboutText::qxlsx, AboutText::limereport, AboutText::qcustomplot, AboutText::icons, AboutText::fonts
     };
 };

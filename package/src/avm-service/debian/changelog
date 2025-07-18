@@ -1,3 +1,12 @@
+avm-service (3.3.5) unstable; urgency=low
+
+  [*] XML Editor many fixes
+  [+] SinglePoint MWidget
+  [*] System journal Excel export fixes
+  [*] XZ -> LibZIP
+
+ -- AVM-Energo <support@avmenergo.ru>  Fri, 18 Jul 2025 14:09:13 +0300
+
 avm-service (3.3.4) unstable; urgency=low
 
   + success message after measure journal erasing complete
