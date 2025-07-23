@@ -24,7 +24,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC coma_core)
+target_link_libraries(${PROJECT_NAME} PUBLIC coma)
 
 if(ENABLE_EMULATOR)
   target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_EMULATOR)

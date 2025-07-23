@@ -1,12 +1,12 @@
 #include "dialogs/configdialog.h"
 
-#include <appconfig/appconfig.h>
 #include <device/current_device.h>
 #include <dialogs/keypressdialog.h>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
+#include <helpers/appconfig.h>
 #include <widgets/emessagebox.h>
 #include <widgets/filefunc.h>
 #include <widgets/wdfunc.h>

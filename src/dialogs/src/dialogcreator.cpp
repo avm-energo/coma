@@ -1,6 +1,5 @@
 #include "dialogs/dialogcreator.h"
 
-#include <appconfig/appconfig.h>
 #include <device/current_device.h>
 #include <dialogs/checkdialog.h>
 #include <dialogs/configdialog.h>
@@ -11,6 +10,7 @@
 #include <dialogs/relaydialog.h>
 #include <dialogs/switchjournaldialog.h>
 #include <dialogs/timedialog.h>
+#include <helpers/appconfig.h>
 #include <journals/journaldialog.h>
 #include <oscillograms/oscdialog.h>
 #include <oscillograms/osckivdialog.h>
@@ -24,13 +24,14 @@
 
 using namespace Device;
 
-DialogCreator::DialogCreator(Device::CurrentDevice *device, QWidget *parent)
+DialogCreator::DialogCreator(ComaHelper *helper, Device::CurrentDevice *device, QWidget *parent)
     : QObject(parent)
     , m_device(device)
     , m_parent(parent)
     , m_boxModel(static_cast<Model>(m_device->getDeviceType()))
     , m_typeB(static_cast<BaseBoard>(m_device->getBaseType()))
     , m_typeM(static_cast<MezzanineBoard>(m_device->getMezzType()))
+    , m_helper(helper)
 {
     m_isBoxModule = (m_device->getConfigStorage()->getDeviceSettings().getFeatures()["isBoxModule"] == "1");
     Q_ASSERT(m_device != nullptr);

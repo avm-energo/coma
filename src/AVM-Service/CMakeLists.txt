@@ -24,7 +24,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC coma_core)
+target_link_libraries(${PROJECT_NAME} PUBLIC coma)
 
 # Getting appdata directory path
 if(SYSTEM_NAME STREQUAL "windows")
@@ -66,5 +66,4 @@ if(SYSTEM_NAME STREQUAL "windows")
   include(WinDeploy)
 elseif(SYSTEM_NAME STREQUAL "linux")
   set(COMPONENT_NAME "AVMSERVICE")
-#  include(LinuxDeploy)
 endif()

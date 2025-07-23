@@ -1,9 +1,10 @@
 #pragma once
 
-#include <QTimer>
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/connectioncontext.h>
 #include <interfaces/types/settingstypes.h>
+
+#include <QTimer>
 
 namespace Interface
 {

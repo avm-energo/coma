@@ -1,12 +1,13 @@
 #include "dialogs/dialogmanager.h"
 
-DialogManager::DialogManager(QWidget *parent)
+DialogManager::DialogManager(ComaHelper *helper, QWidget *parent)
     : QWidget(parent)
     , m_currentDialogIndex(0)
     , m_dlgCreator { nullptr }
     , m_workspace(new QStackedWidget(this))
     , m_sidebar(new QListWidget(this))
     , m_reqTimer(new QTimer(this))
+    , m_helper(helper)
 {
     // Init settings for sidebar and main workspace.
     auto sizePoliсy = m_workspace->sizePolicy();
@@ -41,7 +42,7 @@ QPair<QListWidget *, QStackedWidget *> DialogManager::getUI()
 
 void DialogManager::dialogChanged(int newIndex)
 {
-    Q_ASSERT(m_dlgCreator.get() != nullptr);
+    Q_ASSERT(m_dlgCreator != nullptr);
     auto &dialogs = m_dlgCreator->getDialogs();
     // Индекс -1 норма, когда удаляются диалоги
     if (newIndex >= 0 && newIndex < dialogs.size())
@@ -57,7 +58,7 @@ void DialogManager::dialogChanged(int newIndex)
 
 void DialogManager::reqUpdate()
 {
-    Q_ASSERT(m_dlgCreator.get() != nullptr);
+    Q_ASSERT(m_dlgCreator != nullptr);
     auto currentDialog = m_dlgCreator->getDialogs()[m_currentDialogIndex];
     currentDialog->reqUpdate();
 }
@@ -65,7 +66,7 @@ void DialogManager::reqUpdate()
 void DialogManager::setupUI(Device::CurrentDevice *device, const QSize size)
 {
     Q_ASSERT(m_workspace->count() == 0);
-    m_dlgCreator.reset(new DialogCreator(device, this));
+    m_dlgCreator = new DialogCreator(m_helper, device, this);
     m_dlgCreator->createDialogs();
     for (auto &dialog : m_dlgCreator->getDialogs())
     {

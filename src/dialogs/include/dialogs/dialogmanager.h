@@ -1,19 +1,22 @@
 #pragma once
 
+#include <dialogs/dialogcreator.h>
+#include <gen/stdfunc.h>
+#include <helpers/comahelper.h>
+
 #include <QListWidget>
 #include <QPair>
 #include <QStackedWidget>
 #include <QTimer>
-#include <dialogs/dialogcreator.h>
-#include <gen/stdfunc.h>
 
 /// \brief Class for managing dialogs.
 class DialogManager final : public QWidget
 {
     Q_OBJECT
 private:
+    ComaHelper *m_helper;
     int m_currentDialogIndex;
-    UniquePointer<DialogCreator> m_dlgCreator;
+    DialogCreator *m_dlgCreator;
     UniquePointer<QStackedWidget> m_workspace;
     UniquePointer<QListWidget> m_sidebar;
     UniquePointer<QTimer> m_reqTimer;
@@ -24,7 +27,7 @@ private:
     void showUI();
 
 public:
-    explicit DialogManager(QWidget *parent = nullptr);
+    explicit DialogManager(ComaHelper *helper, QWidget *parent = nullptr);
 
     /// \brief Returns pointers to UI elements (sidebar and main workspace) in QPair struct.
     QPair<QListWidget *, QStackedWidget *> getUI();

@@ -23,6 +23,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     avm-widgets
     appconfig
     alarms
+    coma
     journals
     oscillograms
     startup

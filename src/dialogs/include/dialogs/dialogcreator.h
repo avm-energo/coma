@@ -2,6 +2,7 @@
 
 #include <comawidgets/udialog.h>
 #include <device/device_list.h>
+#include <helpers/comahelper.h>
 
 #include <QObject>
 
@@ -19,7 +20,7 @@ private:
     QList<UDialog *> m_dialogs;
 
 public:
-    explicit DialogCreator(Device::CurrentDevice *device, QWidget *parent = nullptr);
+    explicit DialogCreator(ComaHelper *helper, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
     /// \brief Creating the list with dialogs based on module settings for the current connected device.
     void createDialogs();
@@ -29,6 +30,7 @@ public:
     QList<UDialog *> &getDialogs();
 
 private:
+    ComaHelper *m_helper;
     /// \brief Adding the created dialog to the list for saving.
     void addDialogToList(UDialog *dlg, const QString &caption, const QString &name);
     /// \brief Creating config dialogs.

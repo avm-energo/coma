@@ -1,11 +1,11 @@
 #include "xml/xmlparser/xmlmoduleparser.h"
 
-#include <appconfig/appconfig.h>
 #include <device/current_device.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/xml/xmlbase.h>
 #include <gen/xml/xmlparse.h>
+#include <helpers/appconfig.h>
 #include <xml/xmltags.h>
 
 Xml::ModuleParser::ModuleParser(QObject *parent) : m_ifaceType(Interface::IfaceType::Unknown) { }

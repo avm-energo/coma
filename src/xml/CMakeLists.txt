@@ -21,4 +21,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 # Linking library dependencies
-target_link_libraries(${PROJECT_NAME} PUBLIC avm-widgets appconfig device Qt${QT_VERSION_MAJOR}::Xml)
+target_link_libraries(${PROJECT_NAME} PUBLIC avm-widgets coma device Qt${QT_VERSION_MAJOR}::Xml)
