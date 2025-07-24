@@ -1,12 +1,13 @@
 #include "oscillograms/swjmanager.h"
 
-#include <QDebug>
-#include <QStandardItem>
-#include <QStandardItemModel>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <oscillograms/oscmanager.h>
 #include <s2/s2util.h>
+
+#include <QDebug>
+#include <QStandardItem>
+#include <QStandardItemModel>
 
 namespace helper
 {
@@ -70,9 +71,9 @@ SwjModel SwjManager::load(const FileStruct &fs) const
     // Support only avtuk-85 swj
     assert((fs.ID) == AVTUK_85::SWJ_ID);
     auto record = loadCommon(fs);
-    SwjModel model { std::make_unique<QStandardItemModel>(), std::make_unique<QStandardItemModel>() };
-    auto commonModel = qobject_cast<QStandardItemModel *>(model.commonModel.get());
-    auto detailModel = qobject_cast<QStandardItemModel *>(model.detailModel.get());
+    SwjModel model { new QStandardItemModel(), new QStandardItemModel() };
+    auto commonModel = qobject_cast<QStandardItemModel *>(model.commonModel);
+    auto detailModel = qobject_cast<QStandardItemModel *>(model.detailModel);
 
     commonModel->appendRow({ new QStandardItem("Номер"), new QStandardItem(QString::number(record.num)) });
     commonModel->appendRow({ new QStandardItem("Дата, время"),
@@ -93,28 +94,28 @@ SwjModel SwjManager::load(const FileStruct &fs) const
         { new QStandardItem("Температура окружающей среды, Град"), new QStandardItem(floatToString(record.tOutside)) });
 
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(0)), //
-        new QStandardItem("A"),              //
-        new QStandardItem("B"),              //
-        new QStandardItem("C")               //
+        new QStandardItem(detailDesc.at(0)),                               //
+        new QStandardItem("A"),                                            //
+        new QStandardItem("B"),                                            //
+        new QStandardItem("C")                                             //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(1)),                    //
-        new QStandardItem(QString::number(record.amperage[0])), //
-        new QStandardItem(QString::number(record.amperage[1])), //
-        new QStandardItem(QString::number(record.amperage[2]))  //
+        new QStandardItem(detailDesc.at(1)),                               //
+        new QStandardItem(QString::number(record.amperage[0])),            //
+        new QStandardItem(QString::number(record.amperage[1])),            //
+        new QStandardItem(QString::number(record.amperage[2]))             //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(2)),                   //
-        new QStandardItem(QString::number(record.voltage[0])), //
-        new QStandardItem(QString::number(record.voltage[1])), //
-        new QStandardItem(QString::number(record.voltage[2]))  //
+        new QStandardItem(detailDesc.at(2)),                               //
+        new QStandardItem(QString::number(record.voltage[0])),             //
+        new QStandardItem(QString::number(record.voltage[1])),             //
+        new QStandardItem(QString::number(record.voltage[2]))              //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(3)),                              //
-        new QStandardItem(helper::timeToDoubleString(record.ownTime[0])), //
-        new QStandardItem(helper::timeToDoubleString(record.ownTime[1])), //
-        new QStandardItem(helper::timeToDoubleString(record.ownTime[2]))  //
+        new QStandardItem(detailDesc.at(3)),                               //
+        new QStandardItem(helper::timeToDoubleString(record.ownTime[0])),  //
+        new QStandardItem(helper::timeToDoubleString(record.ownTime[1])),  //
+        new QStandardItem(helper::timeToDoubleString(record.ownTime[2]))   //
     });
     detailModel->appendRow({
         new QStandardItem(detailDesc.at(4)),                               //
@@ -123,10 +124,10 @@ SwjModel SwjManager::load(const FileStruct &fs) const
         new QStandardItem(helper::timeToDoubleString(record.fullTime[2]))  //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(5)),                              //
-        new QStandardItem(helper::timeToDoubleString(record.movTime[0])), //
-        new QStandardItem(helper::timeToDoubleString(record.movTime[1])), //
-        new QStandardItem(helper::timeToDoubleString(record.movTime[2]))  //
+        new QStandardItem(detailDesc.at(5)),                               //
+        new QStandardItem(helper::timeToDoubleString(record.movTime[0])),  //
+        new QStandardItem(helper::timeToDoubleString(record.movTime[1])),  //
+        new QStandardItem(helper::timeToDoubleString(record.movTime[2]))   //
     });
     detailModel->appendRow({
         new QStandardItem(detailDesc.at(6)),                               //
@@ -135,10 +136,10 @@ SwjModel SwjManager::load(const FileStruct &fs) const
         new QStandardItem(helper::timeToDoubleString(record.archTime[2]))  //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(7)),                  //
-        new QStandardItem(floatToString(record.idleTime[0])), //
-        new QStandardItem(floatToString(record.idleTime[1])), //
-        new QStandardItem(floatToString(record.idleTime[2]))  //
+        new QStandardItem(detailDesc.at(7)),                               //
+        new QStandardItem(floatToString(record.idleTime[0])),              //
+        new QStandardItem(floatToString(record.idleTime[1])),              //
+        new QStandardItem(floatToString(record.idleTime[2]))               //
     });
     // Не отображаем погрешность синхронной коммутации
     // detailModel->appendRow({
@@ -154,16 +155,16 @@ SwjModel SwjManager::load(const FileStruct &fs) const
         new QStandardItem(floatToString(record.tInside[2]))  //
     });
     detailModel->appendRow({
-        new QStandardItem(detailDesc.at(10)),             //
-        new QStandardItem(floatToString(record.phyd[0])), //
-        new QStandardItem(floatToString(record.phyd[1])), //
-        new QStandardItem(floatToString(record.phyd[2]))  //
+        new QStandardItem(detailDesc.at(10)),                //
+        new QStandardItem(floatToString(record.phyd[0])),    //
+        new QStandardItem(floatToString(record.phyd[1])),    //
+        new QStandardItem(floatToString(record.phyd[2]))     //
     });
 
     return model;
 }
 
-inline QString SwjManager::commutationType(quint8 value) const
+QString SwjManager::commutationType(quint8 value) const
 {
     std::bitset<8> bitset = value;
     if (!bitset.test(2))
@@ -184,12 +185,12 @@ inline QString SwjManager::commutationType(quint8 value) const
     }
 }
 
-inline const QString SwjManager::result(quint16 value) const
+const QString SwjManager::result(quint16 value) const
 {
     return value ? "УСПЕШНО" : "НЕУСПЕШНО";
 }
 
-inline QString SwjManager::commutationPhases(quint8 value) const
+QString SwjManager::commutationPhases(quint8 value) const
 {
     std::bitset<8> bitset = value;
     if (!bitset.test(3) && !bitset.test(4))
@@ -203,7 +204,7 @@ inline QString SwjManager::commutationPhases(quint8 value) const
     return "-";
 }
 
-inline QString SwjManager::floatToString(float value) const
+QString SwjManager::floatToString(float value) const
 {
     if (value == std::numeric_limits<float>::max())
         return "-";

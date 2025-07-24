@@ -8,12 +8,12 @@
 #include <dialogs/infodialog.h>
 #include <dialogs/plotdialog.h>
 #include <dialogs/relaydialog.h>
-#include <dialogs/switchjournaldialog.h>
 #include <dialogs/timedialog.h>
 #include <helpers/appconfig.h>
 #include <journals/journaldialog.h>
 #include <oscillograms/dialogs/oscdialog.h>
 #include <oscillograms/dialogs/osckivdialog.h>
+#include <oscillograms/dialogs/switchjournaldialog.h>
 #include <startup/startupkdvdialog.h>
 #include <startup/startupkivdialog.h>
 #include <startup/startupktfdialog.h>

@@ -11,6 +11,7 @@ QMap<const UserSettings::SettingName, UserSettings::SettingStruct> UserSettings:
     { SettingName::Timezone, { "Timezone", systemTimezone } },        //
     { SettingName::PasswordHash, { "PasswordHash", defaultHash } },   //
     { SettingName::LoggingEnabled, { "LoggingEnabled", true } },      //
+    { SettingName::LogLevel, { "LogLevel", "Warn" } },                //
     { SettingName::AlarmsInterval, { "AlarmsInterval", 10000 } },     //
     { SettingName::AlarmsEnabled, { "AlarmsEnabled", true } },        //
     { SettingName::SilentInterval, { "SilentInterval", 10000 } },     //

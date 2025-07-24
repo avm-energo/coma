@@ -1,9 +1,9 @@
-#include "oscillograms/osckivdialog.h"
-
 #include <device/current_device.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
+#include <oscillograms/dialogs/osckivdialog.h>
+#include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/osc_ids.h>
 #include <widgets/cbfunc.h>
 #include <widgets/emessagebox.h>
@@ -156,14 +156,13 @@ void OscKivDialog::receiveOscFile(const S2::FileStruct &file)
     }
     else
     {
-        m_oscModel = m_manager.load(file);
-        if (!m_oscModel)
+        TrendViewDialog *dlg = new TrendViewDialog;
+        if (!dlg->loadOsc(file))
         {
             EMessageBox::error(this, "Ошибка чтения\nфайла осциллограммы");
             resetState();
             return;
         }
-        m_manager.loadOsc(m_oscModel.get());
     }
 
     m_fileBuffer.push_back(file);

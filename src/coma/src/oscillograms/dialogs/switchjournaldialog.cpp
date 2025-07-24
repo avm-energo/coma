@@ -1,4 +1,4 @@
-#include "dialogs/switchjournaldialog.h"
+#include "oscillograms/dialogs/switchjournaldialog.h"
 
 #include <device/current_device.h>
 #include <gen/files.h>
@@ -319,7 +319,7 @@ void SwitchJournalViewDialog::setupUI(SwjModel &swjModel, TrendViewModel *oscMod
     vlyout->addLayout(hlyout);
 
     tableView = new QTableView(this);
-    tableView->setModel(swjModel.detailModel.get());
+    tableView->setModel(swjModel.detailModel);
     prepareView(tableView);
 
     vlyout->addWidget(tableView);

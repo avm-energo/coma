@@ -22,7 +22,7 @@ void SwjPackConvertor::readFile(const QString &swjfilepath)
             {
                 [this](SwjModel &model) { m_data.push_back(std::move(model)); }, //
                 [](S2::OscHeader &header) { Q_UNUSED(header); },                 //
-                [](std::unique_ptr<TrendViewModel> &model) { Q_UNUSED(model); }  //
+                [](TrendViewModel *model) { Q_UNUSED(model); }                   //
             },
             item);
     }
@@ -33,8 +33,8 @@ void SwjPackConvertor::sortData()
     std::sort(m_data.begin(), m_data.end(),
         [](SwjModel &lhs, SwjModel &rhs) -> bool
         {
-            auto commonLhs = lhs.commonModel.get();
-            auto commonRhs = rhs.commonModel.get();
+            auto commonLhs = lhs.commonModel;
+            auto commonRhs = rhs.commonModel;
             auto dateLhsStr = commonLhs->data(commonLhs->index(1, 1)).toString();
             auto dateRhsStr = commonRhs->data(commonRhs->index(1, 1)).toString();
             auto lhsDateTime = QDateTime::fromString(dateLhsStr, "yyyy/MM/dd hh:mm:ss.zzz");
@@ -101,8 +101,8 @@ void SwjPackConvertor::writeData(QXlsx::Worksheet *sheet)
     {
         bool ok = false;
         int column = 1;
-        auto common = item.commonModel.get();
-        auto detail = item.detailModel.get();
+        auto common = item.commonModel;
+        auto detail = item.detailModel;
 
         auto dateStrList = common->data(common->index(1, 1)).toString().split(" ");
         dateStrList[0].replace("/", "-");

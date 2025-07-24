@@ -29,7 +29,7 @@ protected:
 
     bool checkSize();
 
-    void fill(BaseSettings &connection);
+    void apply(BaseSettings &connection);
 
 signals:
     void accepted(const ConnectStruct &st);

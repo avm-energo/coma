@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 
 project(coma LANGUAGES CXX)
 
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Concurrent REQUIRED)
 
 include(githash)
 
@@ -36,6 +36,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   settings
   startup
   tune
+  Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
 )
 
 

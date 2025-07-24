@@ -41,7 +41,7 @@ void InterfaceUSBDialog::setInterface(QModelIndex index)
 #endif
     settings.m_timeout = UserSettings::get(UserSettings::ProtocomTimeout);
     settings.m_reconnectInterval = UserSettings::get(UserSettings::ProtocomReconnect);
-    fill(settings);
+    apply(settings);
 
     ConnectStruct st { QString(), settings };
     emit accepted(st);

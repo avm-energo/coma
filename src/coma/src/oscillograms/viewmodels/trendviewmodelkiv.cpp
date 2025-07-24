@@ -1,11 +1,9 @@
-#include "oscillograms/trendview/trendviewmodelkiv.h"
+#include "oscillograms/viewmodels/trendviewmodelkiv.h"
 
 #include <gen/colors.h>
 #include <oscillograms/osc_ids.h>
 
-TrendViewModelKIV::TrendViewModelKIV(int pointsum) : TrendViewModel(pointsum)
-{
-}
+TrendViewModelKIV::TrendViewModelKIV(int pointsum) : TrendViewModel(pointsum) { }
 
 QStringList TrendViewModelKIV::analogColors() const
 {
@@ -38,9 +36,7 @@ QStringList TrendViewModelKIV::analogValues() const
 
 //////////////////////////////////////////////////////////
 
-TrendViewModelKIVOne::TrendViewModelKIVOne(const u32 id, int pointsum) : TrendViewModel(pointsum), m_id(id)
-{
-}
+TrendViewModelKIVOne::TrendViewModelKIVOne(const u32 id, int pointsum) : TrendViewModel(pointsum), m_id(id) { }
 
 QStringList TrendViewModelKIVOne::analogColors() const
 {

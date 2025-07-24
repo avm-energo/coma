@@ -1,8 +1,6 @@
-#include "oscillograms/parseid10020.h"
+#include "oscillograms/parsers/parseid10020.h"
 
-ParseID10020::ParseID10020(const QByteArray &BA) : ParseModule(BA)
-{
-}
+ParseID10020::ParseID10020(const QByteArray &BA) : ParseModule(BA) { }
 
 bool ParseID10020::Parse(quint32 id, const S2::OscHeader &header, TrendViewModel *model)
 {

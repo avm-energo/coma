@@ -37,12 +37,12 @@ public:
     void setRange(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax);
     void setupPlots();
     void setupUI();
-    void run();
+    bool run();
 
     // loaders
-    void loadOsc(const QString &filename);
-    void loadOsc();
-    void loadOsc(const S2::FileStruct &fs);
+    bool loadOsc(const QString &filename);
+    bool loadOsc();
+    bool loadOsc(const S2::FileStruct &fs);
 
 private:
     struct DescriptionStruct

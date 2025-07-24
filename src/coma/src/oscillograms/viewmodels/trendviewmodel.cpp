@@ -146,6 +146,14 @@ void TrendViewModel::toExcel()
     doc->deleteLater();
 }
 
+void TrendViewModel::setRanges(float xmin, float xmax, float ymin, float ymax)
+{
+    m_xmin = xmin;
+    m_xmax = xmax;
+    m_ymin = ymin;
+    m_ymax = ymax;
+}
+
 quint32 TrendViewModel::length() const
 {
     return m_length;

@@ -1,4 +1,3 @@
-#include <gen/logger.h>
 #include <helpers/comahelper.h>
 #include <helpers/constants.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
@@ -17,8 +16,8 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setApplicationName(appName);
     QCoreApplication::setOrganizationName(orgName);
     QCoreApplication::setApplicationVersion(version);
-    Logger::writeStart("coma.log");
-    qInstallMessageHandler(Logger::messageHandlerWithErrorQueue);
+    MessageHandler::setMessageHandlerFilename("coma.log");
+    qInstallMessageHandler(&MessageHandler::messageHandlerWithErrorQueue);
 }
 
 void ComaHelper::parseCommandLine()

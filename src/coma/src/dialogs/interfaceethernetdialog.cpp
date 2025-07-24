@@ -62,7 +62,7 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
     settings.bsAddress = mdl->data(mdl->index(row, 3)).toUInt();
     settings.m_timeout = UserSettings::get(UserSettings::Iec104Timeout);
     settings.m_reconnectInterval = UserSettings::get(UserSettings::Iec104Reconnect);
-    fill(settings);
+    apply(settings);
 
     if (!settings.isValid())
         return;

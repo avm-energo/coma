@@ -1,12 +1,8 @@
-#include "oscillograms/parsemodule.h"
+#include "oscillograms/parsers/parsemodule.h"
 
-ParseModule::ParseModule(const QByteArray &BA) : BArray(BA)
-{
-}
+ParseModule::ParseModule(const QByteArray &BA) : BArray(BA) { }
 
-ParseModule::~ParseModule()
-{
-}
+ParseModule::~ParseModule() { }
 
 bool ParseModule::PosPlusPlus(void *dst, int &count, int size)
 {

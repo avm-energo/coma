@@ -13,6 +13,7 @@ public:
         PasswordHash,
 
         LoggingEnabled,
+        LogLevel,
         AlarmsInterval,
         AlarmsEnabled,
         SilentInterval,

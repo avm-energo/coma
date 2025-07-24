@@ -1,10 +1,8 @@
-#include "oscillograms/parseid10050.h"
+#include "oscillograms/parsers/parseid10050.h"
 
-#include <oscillograms/trendview/trendviewmodelkdv.h>
+#include <oscillograms/viewmodels/trendviewmodelkdv.h>
 
-ParseID10050::ParseID10050(const QByteArray &BA) : ParseModule(BA)
-{
-}
+ParseID10050::ParseID10050(const QByteArray &BA) : ParseModule(BA) { }
 
 bool ParseID10050::Parse(quint32 id, const S2::OscHeader &header, TrendViewModel *model)
 {

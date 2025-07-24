@@ -1,10 +1,8 @@
-#include "oscillograms/trendview/trendviewmodelkdv.h"
+#include "oscillograms/viewmodels/trendviewmodelkdv.h"
 
 #include <gen/colors.h>
 
-TrendViewModelKDV::TrendViewModelKDV(int pointsnum) : TrendViewModel(pointsnum)
-{
-}
+TrendViewModelKDV::TrendViewModelKDV(int pointsnum) : TrendViewModel(pointsnum) { }
 
 QStringList TrendViewModelKDV::analogColors() const
 {
@@ -41,9 +39,7 @@ void TrendViewModelKDV::setAnalogData(const QString &name, QVector<double> &data
     m_analogMainData.insert(name, data);
 }
 
-TrendViewModelKDVV::TrendViewModelKDVV(int pointsnum) : TrendViewModelKDV(pointsnum)
-{
-}
+TrendViewModelKDVV::TrendViewModelKDVV(int pointsnum) : TrendViewModelKDV(pointsnum) { }
 
 QStringList TrendViewModelKDVV::analogDescriptions() const
 {
@@ -60,9 +56,7 @@ QStringList TrendViewModelKDVV::analogValues() const
     return { "V1", "V2", "V3", "V4", "V5", "V6" };
 }
 
-TrendViewModelKDVSpec::TrendViewModelKDVSpec(int pointsnum) : TrendViewModel(pointsnum)
-{
-}
+TrendViewModelKDVSpec::TrendViewModelKDVSpec(int pointsnum) : TrendViewModel(pointsnum) { }
 
 QStringList TrendViewModelKDVSpec::analogColors() const
 {
@@ -101,9 +95,7 @@ void TrendViewModelKDVSpec::setAnalogData(const QString &name, QVector<double> &
     m_analogMainData.insert(name, data);
 }
 
-TrendViewModelKDVVSpec::TrendViewModelKDVVSpec(int pointsnum) : TrendViewModelKDVSpec(pointsnum)
-{
-}
+TrendViewModelKDVVSpec::TrendViewModelKDVVSpec(int pointsnum) : TrendViewModelKDVSpec(pointsnum) { }
 
 QStringList TrendViewModelKDVVSpec::analogDescriptions() const
 {

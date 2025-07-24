@@ -30,7 +30,6 @@
 #include <dialogs/keypressdialog.h>
 #include <dialogs/reconnectdialog.h>
 #include <dialogs/settingsdialog.h>
-#include <dialogs/switchjournaldialog.h>
 #include <engines/slices.h>
 #include <gen/errorqueue.h>
 #include <gen/files.h>
@@ -42,6 +41,7 @@
 #include <helpers/hex2binfileconverter.h>
 #include <interfaces/types/settingstypes.h>
 #include <journals/journalviewer.h>
+#include <oscillograms/dialogs/switchjournaldialog.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/swjmanager.h>
 #include <oscillograms/swjpackconvertor.h>

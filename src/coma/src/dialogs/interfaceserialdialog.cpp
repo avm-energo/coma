@@ -88,7 +88,7 @@ void InterfaceSerialDialog::setInterface(QModelIndex index)
     portSettings.address = model->data(model->index(row, 5)).toUInt();
     portSettings.m_timeout = UserSettings::get(UserSettings::ModbusTimeout);
     portSettings.m_reconnectInterval = UserSettings::get(UserSettings::ModbusReconnect);
-    fill(portSettings);
+    apply(portSettings);
 
     if (!portSettings.isValid())
         return;

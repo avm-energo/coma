@@ -1,10 +1,8 @@
-#include "oscillograms/trendview/trendviewmodel21.h"
+#include "oscillograms/viewmodels/trendviewmodel21.h"
 
 #include <gen/colors.h>
 
-TrendViewModel21::TrendViewModel21(int pointsnum) : TrendViewModel(pointsnum)
-{
-}
+TrendViewModel21::TrendViewModel21(int pointsnum) : TrendViewModel(pointsnum) { }
 
 QStringList TrendViewModel21::analogColors() const
 {

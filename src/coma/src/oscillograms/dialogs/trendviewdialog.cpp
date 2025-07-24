@@ -790,36 +790,38 @@ void TrendViewDialog::setupPlots()
 
 // ---------------------------------- loaders ------------------------------------
 
-void TrendViewDialog::loadOsc(const QString &filename)
+bool TrendViewDialog::loadOsc(const QString &filename)
 {
     OscManager manager;
     setModel(manager.load(filename));
-    run();
+    return run();
 }
 
-void TrendViewDialog::loadOsc()
+bool TrendViewDialog::loadOsc()
 {
     auto filepath = FileFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
     if (filepath.isEmpty())
-        return;
-    loadOsc(filepath);
+        return false;
+    return loadOsc(filepath);
 }
 
-void TrendViewDialog::loadOsc(const S2::FileStruct &fs)
+bool TrendViewDialog::loadOsc(const S2::FileStruct &fs)
 {
     OscManager manager;
     setModel(manager.load(fs));
-    run();
+    return run();
 }
 
-void TrendViewDialog::run()
+bool TrendViewDialog::run()
 {
     if (m_trendModel == nullptr)
     {
         qDebug() << "Model is null";
+        return false;
     }
     setupPlots();
     setupUI();
     showPlot();
     show();
+    return true;
 }
