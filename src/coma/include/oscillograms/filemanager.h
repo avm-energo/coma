@@ -1,24 +1,25 @@
 #pragma once
 
+#include <gen/datatypes.h>
+#include <gen/timefunc.h>
+#include <oscillograms/osc_ids.h>
+#include <oscillograms/viewmodels/trendviewmodels.h>
+#include <s2/s2datatypes.h>
+
 #include <QAbstractItemModel>
 #include <QByteArray>
 #include <QVariant>
-#include <gen/datatypes.h>
-#include <gen/timefunc.h>
 #include <memory>
-#include <oscillograms/osc_ids.h>
-#include <oscillograms/trendview/trendviewmodels.h>
-#include <s2/s2datatypes.h>
 
 struct SwjModel
 {
-    std::unique_ptr<QAbstractItemModel> commonModel;
-    std::unique_ptr<QAbstractItemModel> detailModel;
+    QAbstractItemModel *commonModel;
+    QAbstractItemModel *detailModel;
 };
 
 namespace File
 {
-using Variant = std::variant<S2::OscHeader, std::unique_ptr<TrendViewModel>, SwjModel>;
+using Variant = std::variant<S2::OscHeader, TrendViewModel *, SwjModel>;
 using Vector = std::vector<Variant>;
 }
 

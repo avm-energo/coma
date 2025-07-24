@@ -2,19 +2,18 @@
 
 #include <gen/files.h>
 #include <gen/timefunc.h>
-#include <oscillograms/parseid10001.h>
-#include <oscillograms/parseid10020.h>
-#include <oscillograms/parseid10022.h>
-#include <oscillograms/parseid10023.h>
-#include <oscillograms/parseid10030.h>
-#include <oscillograms/parseid10040.h>
-#include <oscillograms/parseid10050.h>
+#include <oscillograms/parsers/parseid10001.h>
+#include <oscillograms/parsers/parseid10020.h>
+#include <oscillograms/parsers/parseid10022.h>
+#include <oscillograms/parsers/parseid10023.h>
+#include <oscillograms/parsers/parseid10030.h>
+#include <oscillograms/parsers/parseid10040.h>
+#include <oscillograms/parsers/parseid10050.h>
 #include <s2/s2util.h>
-#include <widgets/wdfunc.h>
 
 OscManager::~OscManager() { }
 
-bool OscManager::loadOsc(const QString &filename, OscReturnType &out)
+TrendViewModel *OscManager::load(const QString &filename)
 {
     File::Vector fileVector = loadFromFile(filename);
     TrendViewModel *oscModel = nullptr;
@@ -28,20 +27,14 @@ bool OscManager::loadOsc(const QString &filename, OscReturnType &out)
             },
             item);
     }
-    return loadOsc(oscModel, out);
+    setRangesById(oscModel);
+    return oscModel;
 }
 
-bool OscManager::loadOsc(TrendViewModel *model, OscReturnType &out)
+void OscManager::setRangesById(TrendViewModel *model)
 {
     if (!model)
-        return false;
-
-    out.osc = model;
-
-    // trendDialog = new TrendViewDialog;
-    // oscModel->setXmax((static_cast<float>(oscModel->length() / 2)));
-    // oscModel->setXmin(-oscModel->xmax());
-    // trendDialog->setModel(oscModel);
+        return;
 
     switch (model->idOsc())
     {
@@ -55,35 +48,20 @@ bool OscManager::loadOsc(TrendViewModel *model, OscReturnType &out)
     case AVTUK_KIV::OSC_C_ID:
     case AVTUK_KIV::OSC_VIBR_ID:
     {
-        out.xmax = (static_cast<float>(model->length() / 2));
-        out.xmin = -out.xmax;
-        out.ymin = -200.0;
-        out.ymax = +200.0;
+        float xmax = (static_cast<float>(model->length() / 2));
+        model->setRanges(-xmax, xmax, -200.0, +200.0);
         break;
-        // trendDialog->setRange(oscModel->xmin(), oscModel->xmax(), -200, 200);
-        // break;
     }
     case AVTUK_21::OSC_ID_MIN:
     {
         // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
-        out.xmin = 0;
-        out.xmax = 10000;
-        out.ymin = -20.0;
-        out.ymax = +20.0;
+        model->setRanges(0, 10000, -20.0, +20.0);
         break;
-        // trendDialog->setRange(0, 10000, -20, 20);
-        // break;
     }
     }
-
-    // trendDialog->setupPlots();
-    // trendDialog->setupUI();
-    // trendDialog->showPlot();
-    // trendDialog->show();
-    return true;
 }
 
-std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs) const
+TrendViewModel *OscManager::load(const FileStruct &fs) const
 {
     if (!oscHeader)
     {
@@ -93,7 +71,7 @@ std::unique_ptr<TrendViewModel> OscManager::load(const FileStruct &fs) const
     return load(oscHeader.value(), fs);
 }
 
-std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const FileStruct &fs) const
+TrendViewModel *OscManager::load(const Record &record, const FileStruct &fs) const
 {
     auto curFileNum = fs.ID;
     constexpr auto minSize = sizeof(S2::OscHeader) + sizeof(S2::DataRecHeader);
@@ -102,45 +80,45 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
         qCritical() << Error::SizeError;
         return {};
     }
-    std::unique_ptr<TrendViewModel> trendViewModel;
-    std::unique_ptr<ParseModule> parseModule;
+    TrendViewModel *trendViewModel;
+    ParseModule *parseModule;
 
     switch (curFileNum)
     {
     case AVTUK_85::OSC_ID:
     {
-        parseModule = std::make_unique<ParseID10030>(fs.data);
-        trendViewModel = std::make_unique<TrendViewModel85>((record.len));
+        parseModule = new ParseID10030(fs.data);
+        trendViewModel = new TrendViewModel85(record.len);
         break;
     }
     case AVTUK_8X::OSC_ID:
     {
-        parseModule = std::make_unique<ParseID10020>(fs.data);
-        trendViewModel = std::make_unique<TrendViewModel80>((record.len));
+        parseModule = new ParseID10020(fs.data);
+        trendViewModel = new TrendViewModel80(record.len);
         break;
     }
     case AVTUK_KDV::OSC_ID:
     {
-        parseModule = std::make_unique<ParseID10040>(fs.data);
-        trendViewModel = std::make_unique<TrendViewModelKDV>(record.len);
+        parseModule = new ParseID10040(fs.data);
+        trendViewModel = new TrendViewModelKDV(record.len);
         break;
     }
     case AVTUK_KDV::OSCV_ID:
     {
-        parseModule = std::make_unique<ParseID10040>(fs.data);
-        trendViewModel = std::make_unique<TrendViewModelKDVV>(record.len);
+        parseModule = new ParseID10040(fs.data);
+        trendViewModel = new TrendViewModelKDVV(record.len);
         break;
     }
     case AVTUK_KDV::SPEC_ID:
     {
-        parseModule = std::make_unique<ParseID10050>(fs.data);
-        trendViewModel = std::make_unique<TrendViewModelKDVSpec>(record.len);
+        parseModule = new ParseID10050(fs.data);
+        trendViewModel = new TrendViewModelKDVSpec(record.len);
         break;
     }
     case AVTUK_KDV::SPECV_ID:
     {
-        parseModule = std::make_unique<ParseID10050>(fs.data);
-        trendViewModel = std::make_unique<TrendViewModelKDVVSpec>(record.len);
+        parseModule = new ParseID10050(fs.data);
+        trendViewModel = new TrendViewModelKDVVSpec(record.len);
         break;
     }
     case AVTUK_21::OSC_ID_MIN:
@@ -160,14 +138,14 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
     case 10015:
     case AVTUK_21::OSC_ID_MAX:
     {
-        parseModule = std::make_unique<ParseID10001>(fs.data);
-        trendViewModel = std::make_unique<TrendViewModel21>((record.len));
+        parseModule = new ParseID10001(fs.data);
+        trendViewModel = new TrendViewModel21(record.len);
         break;
     }
     case AVTUK_KIV::OSC_ALL_ID:
     {
-        parseModule = std::make_unique<ParseID10022>(fs.data);
-        trendViewModel = std::make_unique<TrendViewModelKIV>(record.len);
+        parseModule = new ParseID10022(fs.data);
+        trendViewModel = new TrendViewModelKIV(record.len);
         break;
     }
     case AVTUK_KIV::OSC_A_ID:
@@ -175,8 +153,8 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
     case AVTUK_KIV::OSC_C_ID:
     case AVTUK_KIV::OSC_VIBR_ID:
     {
-        parseModule = std::make_unique<ParseID10023>(fs.data);
-        trendViewModel = std::make_unique<TrendViewModelKIVOne>(curFileNum, record.len);
+        parseModule = new ParseID10023(fs.data);
+        trendViewModel = new TrendViewModelKIVOne(curFileNum, record.len);
         break;
     }
     default:
@@ -185,7 +163,7 @@ std::unique_ptr<TrendViewModel> OscManager::load(const Record &record, const Fil
     trendViewModel->setIdOsc(curFileNum);
     trendViewModel->setLength(record.len);
 
-    bool result = parseModule->Parse(curFileNum, record, trendViewModel.get());
+    bool result = parseModule->Parse(curFileNum, record, trendViewModel);
     if (!result)
     {
         qCritical() << Error::GeneralError;
@@ -244,6 +222,6 @@ bool OscManager::loadRecords(const DataTypes::S2FilePack &input, File::Vector &o
         qWarning() << Error::ReadError;
         return false;
     }
-    output.push_back(std::move(model));
+    output.push_back(model);
     return true;
 }

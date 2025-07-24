@@ -25,14 +25,17 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
+  alarms
   avm-gen
   avm-widgets
-  comawidgets
   device
-  dialogs
+  journals
   models
   qcustomplot
   QXlsx
+  settings
+  startup
+  tune
 )
 
 

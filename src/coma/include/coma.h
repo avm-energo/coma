@@ -35,7 +35,6 @@ public:
     void setupMenubar();
     QWidget *least();
     static QPoint ComaCenter();
-    ComaHelper *Helper();
 
 public slots:
     void disconnectAndClear();
@@ -71,7 +70,6 @@ private:
     OscManager oscManager;
     XmlEditor *editor;
     File::Vector fileVector;
-    ComaHelper *m_helper;
 
     void initInterfaceConnection();
     void setProgressBarSize(int prbnum, int size);

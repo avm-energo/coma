@@ -1,8 +1,7 @@
 #include <gen/logger.h>
 #include <helpers/comahelper.h>
 #include <helpers/constants.h>
-#include <oscillograms/oscmanager.h>
-#include <oscillograms/trendview/trendviewdialog.h>
+#include <oscillograms/dialogs/trendviewdialog.h>
 #include <widgets/filefunc.h>
 #include <widgets/graphfunc.h>
 
@@ -11,7 +10,7 @@
 #include <QPainter>
 #include <iostream>
 
-ComaHelper::ComaHelper(QWidget *parent) : QObject(), m_parent(parent) { }
+ComaHelper::ComaHelper() : QObject() { }
 
 void ComaHelper::initAppSettings(const QString &appName, const QString &orgName, const QString &version)
 {
@@ -37,7 +36,10 @@ void ComaHelper::parseCommandLine()
         QFileInfo fileInfo(filepath);
         auto ext = fileInfo.suffix();
         if (ext == "osc")
-            loadOsc(filepath);
+        {
+            TrendViewDialog *dlg = new TrendViewDialog;
+            dlg->loadOsc(filepath);
+        }
         else if (ext == "swj")
             loadSwj(filepath);
         else if (ext.contains("jn"))
@@ -71,41 +73,9 @@ void ComaHelper::convertPixmap(size_t size, QAction *jourAct)
     jourAct->setIcon(pix);
 }
 
-void ComaHelper::loadOsc()
-{
-    auto filepath = FileFunc::ChooseFileForOpen(m_parent, "Oscillogram files (*.osc)");
-    if (filepath.isEmpty())
-        return;
-    loadOsc(filepath);
-}
-
 void ComaHelper::loadSwj() { }
 
 void ComaHelper::loadJournal() { }
-
-void ComaHelper::loadOsc(const QString &filename)
-{
-    OscManager manager;
-    OscManager::OscReturnType oscRet;
-    if (!manager.loadOsc(filename, oscRet))
-        return;
-
-    TrendViewDialog *trendDialog = new TrendViewDialog(m_parent);
-    trendDialog->setModel(oscRet.osc);
-    trendDialog->setRange(oscRet.xmin, oscRet.xmax, oscRet.ymin, oscRet.ymax);
-    trendDialog->setupPlots();
-    trendDialog->setupUI();
-    trendDialog->showPlot();
-    trendDialog->show();
-}
-
-void ComaHelper::loadOsc(TrendViewModel *model)
-{
-    OscManager manager;
-    OscManager::OscReturnType oscRet;
-    if (!manager.loadOsc(model, oscRet))
-        return;
-}
 
 void ComaHelper::loadSwj(const QString &filename) { }
 

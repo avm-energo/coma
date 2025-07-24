@@ -3,7 +3,6 @@
 #include <gen/std_ext.h>
 #include <gen/stdfunc.h>
 #include <oscillograms/filemanager.h>
-#include <oscillograms/trendview/trendviewdialog.h>
 
 #include <optional>
 
@@ -27,10 +26,11 @@ public:
         quint32 len;
     };
 
-    bool loadOsc(const QString &filename, OscReturnType &out);
-    bool loadOsc(TrendViewModel *model, OscReturnType &out);
-    std::unique_ptr<TrendViewModel> load(const FileStruct &fs) const;
-    std::unique_ptr<TrendViewModel> load(const Record &record, const FileStruct &fs) const;
+    TrendViewModel *load(const QString &filename);
+    TrendViewModel *load(const FileStruct &fs) const;
+    TrendViewModel *load(const Record &record, const FileStruct &fs) const;
+
+    void setRangesById(TrendViewModel *model);
 
     File::Vector loadFromFile(const QString &filename) const override;
     bool loadRecords(const DataTypes::S2FilePack &input, File::Vector &output) const override;
@@ -83,7 +83,6 @@ protected:
 
 private:
     std::unique_ptr<TrendViewModel> m_model;
-    TrendViewDialog *trendDialog;
     std::optional<Record> oscHeader;
     const QStringList phases { "фазы А, В, С", "фаза А", "фаза В", "фаза С" };
 };

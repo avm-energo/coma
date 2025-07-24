@@ -42,6 +42,7 @@
 #include <helpers/hex2binfileconverter.h>
 #include <interfaces/types/settingstypes.h>
 #include <journals/journalviewer.h>
+#include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/swjmanager.h>
 #include <oscillograms/swjpackconvertor.h>
 #include <s2/s2configstorage.h>
@@ -75,7 +76,6 @@ Coma::Coma(QWidget *parent)
     , m_dlgManager(new DialogManager(this))
     , m_reconnectDialog(nullptr)
     , editor(nullptr)
-    , m_helper(new ComaHelper(this))
 {
     connect(m_connectionManager, &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
     connect(m_connectionManager, &ConnectionManager::connectFailed, this, //
@@ -170,11 +170,6 @@ QWidget *Coma::least()
     return w;
 }
 
-ComaHelper *Coma::Helper()
-{
-    return m_helper;
-}
-
 void Coma::setupMenubar()
 {
     auto menubar = new QMenuBar(this);
@@ -194,7 +189,7 @@ void Coma::setupMenubar()
 
     menu = new QMenu(menubar);
     menu->setTitle("Автономная работа");
-    menu->addAction("Загрузка осциллограммы", m_helper, qOverload<>(&ComaHelper::loadOsc));
+    menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
     menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
     menu->addAction("Конвертация файлов переключений", this, &Coma::loadSwjPackConvertor);
     menu->addAction("Конвертация файлов HEX -> BIN", this, &Coma::hex2BinConverter);
@@ -213,21 +208,21 @@ void Coma::loadSwj(const QString &filename)
     auto oscVector = swjManager.loadFromFile(filename);
     std::move(oscVector.begin(), oscVector.end(), std::back_inserter(fileVector));
     SwjModel *swjModel = nullptr;
-    std::unique_ptr<TrendViewModel> *oscModel = nullptr;
+    TrendViewModel *oscModel = nullptr;
     for (auto &item : fileVector)
     {
         std::visit(
             overloaded {
-                [&](S2::OscHeader &header) { oscManager.setHeader(header); },      //
-                [&](SwjModel &model) { swjModel = &model; },                       //
-                [&](std::unique_ptr<TrendViewModel> &model) { oscModel = &model; } //
+                [&](S2::OscHeader &header) { oscManager.setHeader(header); }, //
+                [&](SwjModel &model) { swjModel = &model; },                  //
+                [&](TrendViewModel *model) { oscModel = model; }              //
             },
             item);
     }
     if (!swjModel || !oscModel)
         return;
 
-    auto dialog = new SwitchJournalViewDialog(*swjModel, *oscModel, oscManager);
+    auto dialog = new SwitchJournalViewDialog(*swjModel, oscModel, oscManager);
     dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
@@ -236,7 +231,11 @@ void Coma::loadSwj(const QString &filename)
     dialog->adjustSize();
 }
 
-void Coma::loadOsc() { }
+void Coma::loadOsc()
+{
+    TrendViewDialog *dlg = new TrendViewDialog;
+    dlg->loadOsc();
+}
 
 void Coma::loadSwj()
 {
