@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QString>
 #include <cstdint>
 
 /// \brief Базовая структура настроек соединения, предоставляющая характеристики, которыми обладают все соединения.
@@ -12,6 +13,7 @@ public:
     std::uint16_t m_maxErrors;         ///< Requirement for ConnectionManager.
     std::uint16_t m_maxTimeouts;       ///< Requirement for ConnectionManager.
     bool m_isLoggingEnabled;           ///< Requirement for BaseInterface and QueryExecutor.
+    QString m_logLevel;                ///< For interface & executor
 
     explicit BaseSettings() noexcept
         : m_timeout(0)
@@ -20,6 +22,7 @@ public:
         , m_maxErrors(0)
         , m_maxTimeouts(0)
         , m_isLoggingEnabled(true)
+        , m_logLevel("Warn")
     {
     }
 
@@ -31,6 +34,7 @@ public:
         , m_maxErrors(maxErrors)
         , m_maxTimeouts(maxTimeouts)
         , m_isLoggingEnabled(loggingEnabled)
+        , m_logLevel("Warn")
     {
     }
 };

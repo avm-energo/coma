@@ -1,4 +1,5 @@
 #include <dialogs/settingsdialog.h>
+#include <gen/logger.h>
 #include <settings/user_settings.h>
 #include <widgets/cbfunc.h>
 #include <widgets/chbfunc.h>
@@ -136,6 +137,7 @@ void SettingsDialog::setupConnectionTab() noexcept
     // Вкладка "Общие"
     auto generalLayout = createTabLayout(setupTabs, "Общие");
     generalLayout->addWidget(ChBFunc::New(m_workspace, "loggingEnabled", "Запись обмена данными в файл"));
+    generalLayout->addWidget(CBFunc::NewLBL(m_workspace, "Уровень логировки", "loglevel", Logger::logLevelsList()));
     generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
     generalLayout->addWidget(LEFunc::NewLBL(m_workspace, "Интервал запроса сигнализации, мс", "alarmsInterval", true));
     generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
@@ -232,6 +234,7 @@ void SettingsDialog::fill()
 {
     CBFunc::SetData(this, "timezone", UserSettings::get(UserSettings::SettingName::Timezone));
     ChBFunc::SetData(this, "loggingEnabled", UserSettings::get(UserSettings::SettingName::LoggingEnabled));
+    CBFunc::SetData(this, "loglevel", UserSettings::get(UserSettings::SettingName::LogLevel));
     LEFunc::SetData(this, "alarmsInterval", UserSettings::get(UserSettings::SettingName::AlarmsInterval));
     ChBFunc::SetData(this, "alarmsEnabled", UserSettings::get(UserSettings::SettingName::AlarmsEnabled));
     LEFunc::SetData(this, "silentInterval", UserSettings::get(UserSettings::SettingName::SilentInterval));
@@ -283,6 +286,7 @@ void SettingsDialog::acceptSettings()
 
     if (ChBFunc::Data(this, "loggingEnabled", tmpb))
         UserSettings::set(UserSettings::LoggingEnabled, tmpb);
+    UserSettings::set(UserSettings::LogLevel, CBFunc::Data(this, "loglevel"));
     auto alarmsInterval = LEFunc::Data(this, "alarmsInterval").toInt(&tmpb);
     if (tmpb)
     {

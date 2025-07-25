@@ -12,6 +12,7 @@ BaseInterface::BaseInterface(const QString &logFilename, const BaseSettings &set
     , m_isLoggingEnabled(settings.m_isLoggingEnabled)
 {
     qRegisterMetaType<InterfaceError>();
+    m_log.setLogLevel(settings.m_logLevel);
     m_log.writeStart(logFilename + ".log");
 }
 

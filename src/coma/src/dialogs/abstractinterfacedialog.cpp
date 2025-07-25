@@ -30,5 +30,5 @@ void AbstractInterfaceDialog::apply(BaseSettings &connection)
     connection.m_maxErrors = UserSettings::get(UserSettings::SettingName::ErrorCount);
     connection.m_maxTimeouts = UserSettings::get(UserSettings::SettingName::TimeoutCount);
     connection.m_isLoggingEnabled = UserSettings::get(UserSettings::SettingName::LoggingEnabled);
-    connection.m_logLevel = UserSettings::get(UserSettings::SettingName::LogLevel);
+    connection.m_logLevel = QString(UserSettings::get(UserSettings::SettingName::LogLevel));
 }

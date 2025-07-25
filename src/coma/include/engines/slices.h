@@ -13,9 +13,26 @@ class Slices : public QObject
 {
     Q_OBJECT
 public:
+    enum Stages
+    {
+        ConfigLoad,
+        BsiLoad,
+        TuneLoad,
+        MeasJourLoad,
+        SysJourLoad,
+        WorkJourLoad,
+        StartupLoad,
+        GetCurrentState,
+        Save
+    };
+
     Slices(Device::CurrentDevice *dev, QObject *parent = nullptr);
 
     Error::Msg CreateSlice();
+
+signals:
+    void setProgressRange(Stages stage, qint64 max);
+    void setProgressValue(Stages stage, qint64 value);
 
 private:
     Device::CurrentDevice *m_curDev;

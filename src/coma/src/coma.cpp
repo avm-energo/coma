@@ -38,6 +38,7 @@
 #include <gen/timefunc.h>
 #include <helpers/appconfig.h>
 #include <helpers/comaversion.h>
+#include <helpers/constants.h>
 #include <helpers/hex2binfileconverter.h>
 #include <interfaces/types/settingstypes.h>
 #include <journals/journalviewer.h>
@@ -110,10 +111,11 @@ QToolBar *Coma::createToolBar()
     auto toolbar = new QToolBar(this);
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     toolbar->setIconSize(QSize(40, 40));
-    toolbar->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::connectDialog);
-    toolbar->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::disconnectAndClear);
+    toolbar->addAction(QIcon(Constants::Resources[Constants::STARTICON]), "Соединение", this, &Coma::connectDialog);
+    toolbar->addAction(
+        QIcon(Constants::Resources[Constants::STOPICON]), "Разрыв соединения", this, &Coma::disconnectAndClear);
     toolbar->addSeparator();
-    toolbar->addAction(QIcon(":/icons/tnsettings.svg"), "Настройки",
+    toolbar->addAction(QIcon(Constants::Resources[Constants::SETTINGSICON]), "Настройки",
         [this]()
         {
             auto dialog = new SettingsDialog(this);
@@ -123,7 +125,7 @@ QToolBar *Coma::createToolBar()
             dialog->exec();
         });
 
-    const QIcon jourIcon(":/icons/tnfrosya.svg");
+    const QIcon jourIcon(Constants::Resources[Constants::FROSYA]);
     auto jourAct = new QAction(jourIcon, tr("&Журнал..."), this);
     jourAct->setShortcuts(QKeySequence::Open);
     jourAct->setStatusTip(tr("Открыть протокол работы"));
@@ -176,8 +178,9 @@ void Coma::setupMenubar()
     auto menu = new QMenu(menubar);
     menu->setTitle("Главное");
     menu->addAction("Выход", this, &Coma::close);
-    menu->addAction(QIcon(":/icons/tnstart.svg"), "Соединение", this, &Coma::connectDialog);
-    menu->addAction(QIcon(":/icons/tnstop.svg"), "Разрыв соединения", this, &Coma::disconnectAndClear);
+    menu->addAction(QIcon(Constants::Resources[Constants::STARTICON]), "Соединение", this, &Coma::connectDialog);
+    menu->addAction(
+        QIcon(Constants::Resources[Constants::STOPICON]), "Разрыв соединения", this, &Coma::disconnectAndClear);
     menubar->addMenu(menu);
     menu = new QMenu(menubar);
     menu->setTitle("Снимки");
@@ -405,10 +408,10 @@ void Coma::initInterfaceConnection()
 void Coma::connectStatusBar()
 {
     static const QMap<Interface::IfaceType, QString> images {
-        { IfaceType::USB, ":/icons/usb.svg" },           //
-        { IfaceType::RS485, ":/icons/rs485.svg" },       //
-        { IfaceType::Ethernet, ":/icons/ethernet.svg" }, //
-        { IfaceType::Unknown, ":/icons/stop.svg" }       //
+        { IfaceType::USB, Constants::Resources[Constants::USBICON] },           //
+        { IfaceType::RS485, Constants::Resources[Constants::RS485ICON] },       //
+        { IfaceType::Ethernet, Constants::Resources[Constants::ETHERNETICON] }, //
+        { IfaceType::Unknown, Constants::Resources[Constants::STOPICON] }       //
     };
     auto currentConnection = m_currentDevice->async();
 
