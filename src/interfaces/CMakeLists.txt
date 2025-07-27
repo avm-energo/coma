@@ -111,8 +111,9 @@ endif()
   target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Network
     Qt${QT_VERSION_MAJOR}::SerialPort
+    avm-gen
+    coma
     expected
-    s2
   )
 
 if(SYSTEM_NAME STREQUAL "windows")

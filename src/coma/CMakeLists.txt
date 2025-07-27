@@ -22,20 +22,17 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${limereport_SOURCE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
-  alarms
   avm-gen
   avm-widgets
-  device
-  journals
-  models
+  ctti::ctti
+  interfaces
+  limereport
   qcustomplot
   QXlsx
-  settings
-  startup
-  tune
   Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
 )
 
