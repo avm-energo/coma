@@ -23,7 +23,8 @@ public:
         WorkJourLoad,
         StartupLoad,
         GetCurrentState,
-        Save
+        Save,
+        GetOsc
     };
 
     Slices(Device::CurrentDevice *dev, QObject *parent = nullptr);

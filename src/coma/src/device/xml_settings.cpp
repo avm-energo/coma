@@ -17,6 +17,7 @@ void Settings::clear() noexcept
     m_critHighlight.clear();
     m_warnHighlight.clear();
     m_hiddenSettings.clear();
+    m_haveBsiExt = false;
 }
 
 void Settings::appendFeature(const QString &key, const QString &value)
@@ -80,6 +81,7 @@ void Settings::appendHiddenTab(const HiddenTab &hiddenTab)
 
 void Settings::appendBsiExtItem(const u32 addr, const BinaryType type, bool visib, const QString &desc)
 {
+    m_haveBsiExt = true;
     m_bsiExtSettings.push_back(BsiExtItem { addr, type, visib, std::move(desc) });
 }
 
@@ -144,6 +146,11 @@ const HiddenSettings &Settings::getHiddenSettings() const
 const BsiExtItemList &Settings::getBsiExtSettings() const
 {
     return m_bsiExtSettings;
+}
+
+const bool Settings::HaveBSIExt() const
+{
+    return m_haveBsiExt;
 }
 
 } // namespace Device::XmlDataTypes

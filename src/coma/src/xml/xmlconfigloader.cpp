@@ -8,7 +8,9 @@ namespace Xml
 {
 
 ConfigLoader::ConfigLoader(Device::CurrentDevice *device) noexcept
-    : QObject(device), m_device(device), m_parseStatus(true)
+    : QObject(device)
+    , m_device(device)
+    , m_parseStatus(true)
 {
 }
 
@@ -28,13 +30,13 @@ bool ConfigLoader::loadS2Data() noexcept
     if (s2storage.getParseStatus() == S2::ParseStatus::NotYetParsed)
     {
         auto mS2Parser = new Xml::S2Parser(this);
-        QObject::connect(mS2Parser, &Xml::S2Parser::nameDataSending, //
+        QObject::connect(mS2Parser, &Xml::S2Parser::nameDataSending,      //
             &s2storage, &S2::ConfigStorage::nameDataReceive);
-        QObject::connect(mS2Parser, &Xml::S2Parser::typeDataSending, //
+        QObject::connect(mS2Parser, &Xml::S2Parser::typeDataSending,      //
             &s2storage, &S2::ConfigStorage::typeDataReceive);
-        QObject::connect(mS2Parser, &Xml::S2Parser::dtypeDataSending, //
+        QObject::connect(mS2Parser, &Xml::S2Parser::dtypeDataSending,     //
             &s2storage, &S2::ConfigStorage::dtypeDataReceive);
-        QObject::connect(mS2Parser, &Xml::S2Parser::widgetDataSending, //
+        QObject::connect(mS2Parser, &Xml::S2Parser::widgetDataSending,    //
             &s2storage, &S2::ConfigStorage::widgetDataReceive);
         QObject::connect(mS2Parser, &Xml::S2Parser::configTabDataSending, //
             &s2storage, &S2::ConfigStorage::configTabDataReceive);
@@ -83,6 +85,7 @@ bool ConfigLoader::loadDeviceData() noexcept
     QObject::connect(moduleParser, &Xml::ModuleParser::parseError,               //
         this, &Xml::ConfigLoader::parseErrorHandle);                             //
     moduleParser->parse(m_device);
+    m_device->configFileLoadFinished();
     moduleParser->deleteLater();
     return m_parseStatus;
 }

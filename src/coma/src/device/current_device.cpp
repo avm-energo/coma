@@ -151,6 +151,14 @@ void CurrentDevice::updateBSI(const DataTypes::BitStringStruct &value)
         m_bsiExt.updateData(value);
 }
 
+void CurrentDevice::configFileLoadFinished()
+{
+    if (getConfigStorage()->getDeviceSettings().HaveBSIExt())
+    {
+        bsiExt()->updateStructure(getConfigStorage()->getDeviceSettings().getBsiExtSettings());
+    }
+}
+
 void CurrentDevice::compareAndUpdate() noexcept
 {
     if (m_bsi.Hth != m_previous.Hth)

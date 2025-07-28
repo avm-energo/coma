@@ -77,5 +77,6 @@ private:
     void setupUI();
     QToolBar *createToolBar();
     void keyPressEvent(QKeyEvent *event) override;
+    void LoadXML();
     void prepareDialogs();
 };

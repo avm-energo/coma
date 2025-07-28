@@ -402,6 +402,7 @@ void Coma::initInterfaceConnection()
 {
     m_currentDevice->async()->connection(this, &Coma::update);
     connectStatusBar();
+    LoadXML();
     prepareDialogs();
 }
 
@@ -443,20 +444,10 @@ void Coma::connectStatusBar()
 void Coma::prepareDialogs()
 {
     EMessageBox::information(this, "Установлена связь с " + m_currentDevice->getDeviceName());
-    auto cfgLoader = new Xml::ConfigLoader(m_currentDevice);
-    if (!cfgLoader->loadSettings())
-    {
-        EMessageBox::error(this,
-            "Не удалось найти конфигурацию для модуля.\n"
-            "Проверьте журнал сообщений.\n"
-            "Доступны минимальные функции.");
-    }
-    cfgLoader->deleteLater();
 
     AlarmW->configure(m_currentDevice);
     m_dlgManager->setupUI(m_currentDevice, size());
     // Запрашиваем s2 конфигурацию от модуля
-    // s2requestService->request(S2::FilesEnum::Config, true);
     m_currentDevice->getFileProvider()->request(S2::FilesEnum::Config, true);
     // нет конфигурации
     if (m_currentDevice->health().isNoConfig())
@@ -482,6 +473,19 @@ void Coma::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_Escape)
         StdFunc::Cancel();
     QMainWindow::keyPressEvent(event);
+}
+
+void Coma::LoadXML()
+{
+    auto cfgLoader = new Xml::ConfigLoader(m_currentDevice);
+    if (!cfgLoader->loadSettings())
+    {
+        EMessageBox::error(this,
+            "Не удалось найти конфигурацию для модуля.\n"
+            "Проверьте журнал сообщений.\n"
+            "Доступны минимальные функции.");
+    }
+    cfgLoader->deleteLater();
 }
 
 void Coma::update(const DataTypes::GeneralResponseStruct &rsp)

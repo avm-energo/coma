@@ -89,6 +89,8 @@ public:
     void initBSI() noexcept;
     /// \brief Обновление внутренних данных протокола для работы с текущим устройством.
     void internalProtocolUpdate() noexcept;
+    /// \brief Загрузка XML-файла с описанием модуля завершена
+    void configFileLoadFinished();
 
 private slots:
     /// \brief Слот для обновления блока BSI.
