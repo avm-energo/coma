@@ -18,6 +18,7 @@ void Settings::clear() noexcept
     m_warnHighlight.clear();
     m_hiddenSettings.clear();
     m_haveBsiExt = false;
+    m_haveMeasJournal = false;
 }
 
 void Settings::appendFeature(const QString &key, const QString &value)
@@ -66,11 +67,13 @@ void Settings::appendHighlight(const AlarmType type, const u32 key, const QList<
 
 void Settings::appendWorkJournal(const u32 id, const QString &desc)
 {
+    m_haveWorkJournal = true;
     m_workJournals.insert(id, desc);
 }
 
 void Settings::appendMeasJournal(const u32 index, const QString &header, const BinaryType type, bool visib)
 {
+    m_haveMeasJournal = true;
     m_measJournals.push_back(MeasJournal { index, type, visib, std::move(header) });
 }
 
@@ -151,6 +154,21 @@ const BsiExtItemList &Settings::getBsiExtSettings() const
 const bool Settings::HaveBSIExt() const
 {
     return m_haveBsiExt;
+}
+
+const bool Settings::HaveMeasJournal() const
+{
+    return m_haveMeasJournal;
+}
+
+const bool Settings::HaveWorkJournal() const
+{
+    return m_haveWorkJournal;
+}
+
+const bool Settings::HaveTrue() const
+{
+    return true;
 }
 
 } // namespace Device::XmlDataTypes

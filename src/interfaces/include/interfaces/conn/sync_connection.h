@@ -1,8 +1,9 @@
 #pragma once
 
-#include <QTimer>
 #include <gen/error.h>
 #include <interfaces/types/common_types.h>
+
+#include <QTimer>
 
 namespace Interface
 {
@@ -26,7 +27,6 @@ public:
     explicit SyncConnection(AsyncConnection *connection) noexcept;
 
     Error::Msg reqBSI();
-    bool supportBSIExt();
     Error::Msg reqBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeFileSync(S2::FilesEnum filenum, const QByteArray &ba);

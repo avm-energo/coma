@@ -9,7 +9,6 @@ public:
     explicit InfoDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
-    void setupData();
     void setupUI();
     void uponInterfaceSetting() override;
     void reqUpdate() override;

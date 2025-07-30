@@ -39,7 +39,7 @@ private:
 
 private slots:
     /// \brief Слот для получения журнала от устройства по нажатию на кнопку.
-    void gettingJournal();
+    void getJournal();
     /// \brief Слот для очистки журнала по нажатию на кнопку.
     void eraseJournal();
 

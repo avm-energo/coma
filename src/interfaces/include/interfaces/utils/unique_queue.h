@@ -1,9 +1,10 @@
 #pragma once
 
+#include <unordered_set>
+
 #include <QDebug>
 #include <functional>
 #include <queue>
-#include <unordered_set>
 
 namespace Utils
 {
@@ -23,12 +24,11 @@ public:
 
     explicit UniqueQueue() noexcept = default;
 
-    explicit UniqueQueue(const UniqueQueue<T> &other) noexcept : m_data(other.m_data), m_unique(other.m_unique)
-    {
-    }
+    explicit UniqueQueue(const UniqueQueue<T> &other) noexcept : m_data(other.m_data), m_unique(other.m_unique) { }
 
     explicit UniqueQueue(UniqueQueue<T> &&other) noexcept
-        : m_data(std::move(other.m_data)), m_unique(std::move(other.m_unique))
+        : m_data(std::move(other.m_data))
+        , m_unique(std::move(other.m_unique))
     {
     }
 
@@ -95,7 +95,8 @@ public:
     void pop()
     {
         [[maybe_unused]] auto result = m_unique.erase(std::ref(m_data.front()));
-        qDebug() << "Value is not found in the uniQueue";
+        if (!result)
+            qDebug() << "Value is not found in the uniQueue";
         m_data.pop();
     }
 

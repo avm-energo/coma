@@ -91,36 +91,6 @@ Error::Msg SyncConnection::reqBSI()
         return Error::Msg::NoError;
 }
 
-bool SyncConnection::supportBSIExt()
-{
-    reset();
-    bool status = false;
-    auto connBitString = m_connection->connection(this,
-        [&, &busy = m_busy](const DataTypes::BitStringStruct &bs)
-        {
-            if (bs.sigAdr != addr::bsiExtStartReg)
-                return;
-            busy = false;
-            status = true;
-        });
-
-    auto connError = m_connection->connection(this,
-        [&, &busy = m_busy](const DataTypes::GeneralResponseStruct &resp)
-        {
-            if (resp.type == DataTypes::Error)
-            {
-                busy = false;
-                status = false;
-            }
-        });
-
-    m_connection->reqBSIExt();
-    eventloop();
-    QObject::disconnect(connBitString);
-    QObject::disconnect(connError);
-    return status;
-}
-
 Error::Msg SyncConnection::reqBlockSync(
     quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize)
 {

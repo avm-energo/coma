@@ -385,7 +385,7 @@ void Xml::ModuleParser::parseResources(const QDomElement &resourcesNode, const Q
     if (!resourcesNode.isNull())
     {
         auto parseAction = [this](const QDomNode &node) { parseDetector(node); };
-        // Парсим весь файл, если узлы не указаны требуемые узлы
+        // Парсим весь файл, если не указаны требуемые узлы
         if (nodes.empty())
         {
             emit startNewConfig();

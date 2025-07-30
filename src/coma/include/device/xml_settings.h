@@ -204,8 +204,17 @@ public:
     [[nodiscard]] const HiddenSettings &getHiddenSettings() const;
     /// \brief Constant getter for BSI Ext settings.
     [[nodiscard]] const BsiExtItemList &getBsiExtSettings() const;
+
+    /// Havings
+
     /// \brief Constant getter for having BSI Ext settings
     [[nodiscard]] const bool HaveBSIExt() const;
+    /// \brief Constant getter for having measure journal
+    [[nodiscard]] const bool HaveMeasJournal() const;
+    /// \brief Constant getter for having work journal
+    [[nodiscard]] const bool HaveWorkJournal() const;
+    /// \brief Constant getter for having those it must have
+    [[nodiscard]] const bool HaveTrue() const;
 
 private:
     FeaturesMap m_featuresMap;
@@ -220,7 +229,7 @@ private:
     MeasJourList m_measJournals;
     HiddenSettings m_hiddenSettings;
     BsiExtItemList m_bsiExtSettings;
-    bool m_haveBsiExt;
+    bool m_haveBsiExt, m_haveMeasJournal, m_haveWorkJournal;
 };
 
 } // namespace Device::XmlDataTypes

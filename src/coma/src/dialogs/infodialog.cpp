@@ -4,6 +4,7 @@
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
+#include <widgets/etabwidget.h>
 #include <widgets/lblfunc.h>
 
 #include <QMessageBox>
@@ -13,34 +14,11 @@ InfoDialog::InfoDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog
 {
     auto conn = m_device->async();
     auto bsiExt = m_device->bsiExt();
-    setupData();
     connect(bsiExt, &Device::BlockStartupInfoExtended::wasUpdated, this, &InfoDialog::syncExt);
     connect(m_device, &Device::CurrentDevice::bsiReceived, this, &InfoDialog::sync);
     connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSI);
-    if (m_device->sync()->supportBSIExt())
+    if (m_device->getConfigStorage()->getDeviceSettings().HaveBSIExt())
         connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSIExt);
-    else
-        qWarning() << "BsiExt не поддерживается";
-}
-
-/// TODO: загрузка настроек по умолчанию должна осуществляться внутри CurrentDevice
-/// Настройки должны браться из default.xml
-void InfoDialog::setupData()
-{
-    if (m_device->getConfigStorage()->getDeviceSettings().getBsiExtSettings().empty())
-    {
-        using namespace Device::XmlDataTypes;
-        static const BsiExtItemList defaultBsiExt {
-            { 40, BinaryType::string32, true, "Наименование ПО" },                //
-            { 41, BinaryType::version32, true, "Версия загрузчика" },             //
-            { 42, BinaryType::time32, true, "Время последней поверки модуля" },   //
-            { 43, BinaryType::uint32, true, "CRC рег. коэфф. базовой платы" },    //
-            { 44, BinaryType::uint32, true, "CRC рег. коэфф. мезонинной платы" }, //
-        };
-        m_device->bsiExt()->updateStructure(defaultBsiExt);
-    }
-    else
-        m_device->bsiExt()->updateStructure(m_device->getConfigStorage()->getDeviceSettings().getBsiExtSettings());
 }
 
 void InfoDialog::setupUI()

@@ -1,4 +1,10 @@
 #include <engines/slices.h>
+#include <gen/files.h>
+#include <gen/stdfunc.h>
+#include <interfaces/types/common_types.h>
+#include <settings/user_settings.h>
+
+#include <QTemporaryDir>
 
 namespace Engines
 {
@@ -14,51 +20,120 @@ Slices::Slices(Device::CurrentDevice *dev, QObject *parent) : QObject(parent), m
 
 Error::Msg Slices::CreateSlice()
 {
+    QTemporaryDir dir;
+    QByteArray ba;
+    if (dir.isValid())
+    {
+        m_tempDir.setPath(dir.path()); // set temp path for the files generated in appropriate methods
+        // get Bsi
+        writeFile("bsi", getBsi());
+        // get BsiExt
+        if (m_curDev->getConfigStorage()->getDeviceSettings().HaveBSIExt())
+            writeFile("bsiext", getBsiExt());
+        // get system journal
+        writeFile("sysjour", getSysJournal());
+        if (m_curDev->getConfigStorage()->getDeviceSettings().HaveWorkJournal())
+            writeFile("workjour", getWorkJournal());
+        if (m_curDev->getConfigStorage()->getDeviceSettings().HaveMeasJournal())
+            writeFile("measjour", getMeasJournal());
+        writeFile("oscs", getOscs());
+    }
     return Error::Msg::NoError;
 }
 
-bool Slices::getWorkJournal()
+QByteArray Slices::getWorkJournal()
 {
-    return true;
+    QByteArray ba;
+    m_curDev->sync()->readFileSync(S2::FilesEnum::JourWork, ba);
+    return ba;
 }
 
-bool Slices::getSysJournal()
+QByteArray Slices::getSysJournal()
 {
-    return true;
+    QByteArray ba;
+    m_curDev->sync()->readFileSync(S2::FilesEnum::JourSys, ba);
+    return ba;
 }
 
-bool Slices::getMeasJournal()
+QByteArray Slices::getMeasJournal()
 {
-    return true;
+    QByteArray ba;
+    m_curDev->sync()->readFileSync(S2::FilesEnum::JourMeas, ba);
+    return ba;
 }
 
-bool Slices::getCurrentState()
+QByteArray Slices::getCurrentState()
 {
-    return true;
+    return QByteArray();
 }
 
-bool Slices::getConfig()
+QByteArray Slices::getConfig()
 {
-    return true;
+    return QByteArray();
 }
 
-bool Slices::getStartup()
+QByteArray Slices::getStartup()
 {
-    return true;
+    return QByteArray();
 }
 
-bool Slices::getBsi()
+QByteArray Slices::getBsi()
 {
-    return true;
+    return StdFunc::toByteArray(m_curDev->bsi());
 }
 
-bool Slices::getOscs()
+QByteArray Slices::getBsiExt()
 {
-    return true;
+    return m_curDev->bsiExt()->toByteArray();
 }
 
-bool Slices::getTune()
+QByteArray Slices::getOscs()
 {
-    return true;
+    QByteArray ba;
+    m_tempBA.clear();
+    QMetaObject::Connection conn
+        = QObject::connect(&m_timeoutTimer, &QTimer::timeout, this, &Slices::oscTechBlockReceivingFinished);
+    m_curDev->async()->connection(this, &Slices::oscTechBlockReceived);    // set callback when got S2::OscInfo datatype
+    m_curDev->async()->writeCommand(Interface::Commands::C_ReqOscInfo, 1); // initiate osc tech block receiving
+    m_timeoutTimer.start(UserSettings::get(UserSettings::ProtocomTimeout));
+    m_locker.lock();
+    m_somethingHappened.wait(&m_locker);
+    m_locker.unlock();
+    QObject::disconnect(conn);
+    ba.append(m_tempBA);
+    //
+    while (!oscIds.isEmpty())
+    {
+        OscInfo info = oscIds.takeFirst();
+    }
+    /*    if (!loadIfExist(size))
+            engine()->currentConnection()->reqFile(
+                reqOscNum, DataTypes::FileFormat::CustomS2, size + sizeof(S2::DataRecHeader)); */
+    return QByteArray();
+}
+
+QByteArray Slices::getTune()
+{
+    return QByteArray();
+}
+
+void Slices::writeFile(const QString &filename, const QByteArray &ba)
+{
+    if (!ba.isEmpty())
+        Files::SaveToFile(m_tempDir.path() + "/" + filename, ba);
+}
+
+void Slices::oscTechBlockReceived(const S2::OscInfo &resp)
+{
+    QByteArray ba(sizeof(S2::OscInfo), Qt::Uninitialized);
+    memcpy(ba.data(), &resp, sizeof(S2::OscInfo));
+    m_tempBA.append(ba);
+    oscIds.append({ resp.typeHeader.id, resp.typeHeader.numByte });
+    m_timeoutTimer.start(UserSettings::get(UserSettings::ProtocomTimeout));
+}
+
+void Slices::oscTechBlockReceivingFinished()
+{
+    m_somethingHappened.wakeAll();
 }
 }

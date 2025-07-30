@@ -3,7 +3,7 @@
 namespace journals
 {
 
-const QMap<quint32, QString> SysJournal::s_desriptions = {
+const QMap<quint32, QString> SysJournal::s_descriptions = {
     { 1, "Рестарт модуля" },                                                         //
     { 2, "Произошла запись и переход на новую конфигурацию" },                       //
     { 3, "Произошла запись и переход на новую версию ВПО" },                         //
@@ -59,7 +59,7 @@ SysJournal::SysJournal(QObject *parent) : BaseJournal(parent), m_parser(new Even
 void SysJournal::fillModel(const QByteArray &ba)
 {
     m_parser->update(ba);
-    const auto data = m_parser->parse(s_desriptions, m_timezone);
+    const auto data = m_parser->parse(s_descriptions, m_timezone);
     m_dataModel->fillModel(data);
 }
 

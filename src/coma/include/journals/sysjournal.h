@@ -10,7 +10,7 @@ namespace journals
 class SysJournal : public BaseJournal
 {
 private:
-    static const QMap<quint32, QString> s_desriptions;
+    static const QMap<quint32, QString> s_descriptions;
     UniquePointer<EventParser> m_parser;
 
     /// \brief Перегрузка виртуального метода для заполнения модели.

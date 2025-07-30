@@ -45,7 +45,7 @@ void JournalTabWidget::setupUI()
     auto str = getTabName().toLower();
 
     auto getButton = new QPushButton("Получить " + str, this);
-    connect(getButton, &QPushButton::clicked, this, &JournalTabWidget::gettingJournal);
+    connect(getButton, &QPushButton::clicked, this, &JournalTabWidget::getJournal);
     hLayout1->addWidget(getButton);
 
     auto eraseButton = new QPushButton("Стереть " + str, this);
@@ -77,7 +77,7 @@ void JournalTabWidget::setupUI()
     setLayout(m_mainLayout);
 }
 
-void JournalTabWidget::gettingJournal()
+void JournalTabWidget::getJournal()
 {
     if (m_modelView != nullptr)
         m_modelView->deleteLater();

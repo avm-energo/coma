@@ -36,10 +36,16 @@ public:
     /// \details Константный итератор используется для того, чтобы
     /// клиентский код мог только читать информацию из блока, но не менять её.
     [[nodiscard]] Iter end() const noexcept;
-    /// \brief Возвращает хранимой значение по указанному адресу.
+    /// \brief Возвращает хранимое значение по указанному адресу.
     /// \details Если указанный адрес выходит за диапазоны хранимых
     /// данных, то будет возвращено значение по умолчанию.
     [[nodiscard]] u32 operator[](const u32 address) const;
+    /// \brief Возвращает размер хранимых данных
+    [[nodiscard]] u32 size() const;
+    /// \brief Возвращает ByteArray
+    [[nodiscard]] QByteArray toByteArray() const;
+    /// \brief Восстанавливает BsiExt из ByteArray
+    void fromByteArray(QByteArray &ba);
 
 signals:
     /// \brief Сигнал для уведомления о том, что хранимые данные были обновлены.

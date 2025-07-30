@@ -4,7 +4,11 @@
 #include <gen/error.h>
 #include <gen/files.h>
 
+#include <QDir>
+#include <QMutex>
 #include <QObject>
+#include <QTimer>
+#include <QWaitCondition>
 
 namespace Engines
 {
@@ -26,6 +30,11 @@ public:
         Save,
         GetOsc
     };
+    struct OscInfo
+    {
+        u32 oscNum;
+        u32 oscLength;
+    };
 
     Slices(Device::CurrentDevice *dev, QObject *parent = nullptr);
 
@@ -37,16 +46,28 @@ signals:
 
 private:
     Device::CurrentDevice *m_curDev;
+    QDir m_tempDir;
+    QWaitCondition m_somethingHappened;
+    QMutex m_locker;
+    QByteArray m_tempBA;
+    QTimer m_timeoutTimer;
+    QList<OscInfo> oscIds;
 
-    bool getWorkJournal();
-    bool getSysJournal();
-    bool getMeasJournal();
-    bool getCurrentState();
-    bool getConfig();
-    bool getStartup();
-    bool getBsi();
-    bool getOscs();
-    bool getTune();
+    QByteArray getWorkJournal();
+    QByteArray getSysJournal();
+    QByteArray getMeasJournal();
+    QByteArray getCurrentState();
+    QByteArray getConfig();
+    QByteArray getStartup();
+    QByteArray getBsi();
+    QByteArray getBsiExt();
+    QByteArray getOscs();
+    QByteArray getTune();
+    void writeFile(const QString &filename, const QByteArray &ba);
+
+private slots:
+    void oscTechBlockReceived(const S2::OscInfo &resp);
+    void oscTechBlockReceivingFinished();
 };
 
 }
