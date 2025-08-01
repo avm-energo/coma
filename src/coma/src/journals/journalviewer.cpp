@@ -24,6 +24,13 @@ JournalViewer::JournalViewer(const QString &filepath, QWidget *parent) : QDialog
     {
         S2::S2BFile s2bFile;
         S2Util util;
+
+        // TODOTODOTODOTODO
+        // auto result = Error::Msg::NoError;
+        // s2bFile.data = fileData;
+        // s2bFile.header = { 6, 0, static_cast<quint32>(fileData.size()), 0xA2, 0x84, 0 };
+        // s2bFile.tail = { 0, 0, 0, 0xEEEE1111 };
+
         auto result = util.parseS2B(fileData, s2bFile);
         switch (result)
         {

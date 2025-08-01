@@ -303,7 +303,6 @@ void Coma::go()
     // Load settings before anything
     auto splash = new SplashScreen();
     splash->show();
-    QDir dir(Settings::logDir());
     qInfo("=== Log started ===\n");
     m_bar = new EStatusBar(this);
     setStatusBar(m_bar);
@@ -311,6 +310,7 @@ void Coma::go()
     // StdFunc::Wait(10000);
     splash->finish(this);
     splash->deleteLater();
+    MessageHandler::setLogLevel(Logger::s_logLevelsMap[UserSettings::get(UserSettings::LogLevel)]);
     show();
 }
 
