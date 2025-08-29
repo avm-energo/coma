@@ -1,3 +1,13 @@
+avm-debug (3.3.5) unstable; urgency=low
+
+  + order field in SGroup & S2Record nodes
+  + SinglePoint view type of widget, type field in SGroup node
+  + dtype into XMLEditor
+  + backward sorting of event journals
+  * first linux automated build!
+
+ -- AVM-Energo <support@avmenergo.ru>  Thu, 28 Aug 2025 17:13:59 +0300
+
 avm-debug (3.3.4) unstable; urgency=low
 
   + config widgets order in module XML file

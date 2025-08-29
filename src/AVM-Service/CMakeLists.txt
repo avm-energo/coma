@@ -63,7 +63,7 @@ install(TARGETS ${PROJECT_NAME}
 
 # Cross-platform deploy target
 if(SYSTEM_NAME STREQUAL "windows")
-  include(WinDeploy)
+  include(windeploy)
 elseif(SYSTEM_NAME STREQUAL "linux")
   set(COMPONENT_NAME "AVMSERVICE")
 endif()

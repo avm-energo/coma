@@ -1,21 +1,14 @@
 # Setting installation project path for project deploying
-# set(INSTALL_PROJECT_PATH ${CMAKE_BUILD_TYPE}/${PROJECT_NAME})
-# install(CODE "set(INSTALL_PROJECT_PATH \"${INSTALL_PROJECT_PATH}\")")
 
 install(CODE "set(INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}\")")
 install(CODE "set(EXECUTABLES \"$<TARGET_FILE:${PROJECT_NAME}>\")")
 
-# # Targets installation
-# install(TARGETS ${PROJECT_NAME}
-#   LIBRARY DESTINATION ${INSTALL_PREFIX}/lib
-#   ARCHIVE DESTINATION ${INSTALL_PREFIX}/bin
-#   RUNTIME DESTINATION ${INSTALL_PREFIX}/bin)
-
 # Using windeployqt for installation Qt dependencies
 get_filename_component(QT_BIN_DIR ${QT_QMAKE_EXECUTABLE} DIRECTORY)
-set(COMA_DEPENDENCY_PATHS "${CMAKE_INSTALL_PREFIX}/bin" "${avm-gen_BINARY_DIR}" "${QT_BIN_DIR}")
+set(DEPENDENCY_PATHS "${CMAKE_INSTALL_PREFIX}/bin" "${avm-gen_BINARY_DIR}" "${avm-widgets_BINARY_DIR}" "${QT_BIN_DIR}")
+
 # Transfer the values into the install script
-install(CODE "set(COMA_DEPENDENCY_PATHS \"${COMA_DEPENDENCY_PATHS}\")")
+install(CODE "set(DEPENDENCY_PATHS \"${DEPENDENCY_PATHS}\")")
 install(CODE "set(QT_BIN_DIR \"${QT_BIN_DIR}\")")
 install(CODE "set(PROJECT_NAME \"${PROJECT_NAME}\")")
 
@@ -31,9 +24,9 @@ install(CODE "set(post_exclude_regexes \"${post_exclude_regexes}\")")
 
 # Runtime dependencies installation
 install(CODE [[
-  message("DEP_PATHS: ${COMA_DEPENDENCY_PATHS}")
+  message("DEP_PATHS: ${DEPENDENCY_PATHS}")
   file(GET_RUNTIME_DEPENDENCIES
-    DIRECTORIES ${COMA_DEPENDENCY_PATHS}
+    DIRECTORIES ${DEPENDENCY_PATHS}
     RESOLVED_DEPENDENCIES_VAR RES
     UNRESOLVED_DEPENDENCIES_VAR UNRES
     PRE_EXCLUDE_REGEXES ${pre_exclude_regexes}
@@ -61,4 +54,3 @@ install(CODE [[
       --skip-plugin-types generic,iconengines,networkinformation,styles,tls,translations
       ${INSTALL_PREFIX}/bin/${PROJECT_NAME}.exe)
 ]])
-

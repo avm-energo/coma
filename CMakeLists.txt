@@ -30,9 +30,6 @@ else()
     message(STATUS "Compiling for unknown")
 endif()
 
-# Including cmake scripts for some functions usage
-include(WinDeployQt)
-
 # Finding Qt libraries
 find_package(QT NAMES Qt6)
 message(STATUS "Qt major version: ${QT_VERSION_MAJOR}")
