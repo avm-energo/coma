@@ -21,6 +21,7 @@ public:
     {
         ConfigLoad,
         BsiLoad,
+        BsiLoadExt,
         TuneLoad,
         MeasJourLoad,
         SysJourLoad,
@@ -52,10 +53,12 @@ private:
     QByteArray m_tempBA;
     QTimer m_timeoutTimer;
     QList<OscInfo> oscIds;
+    Stages m_curPRB;
 
     QByteArray getWorkJournal();
     QByteArray getSysJournal();
     QByteArray getMeasJournal();
+    QByteArray getJournal(Stages stage, S2::FilesEnum fileNum);
     QByteArray getCurrentState();
     QByteArray getConfig();
     QByteArray getStartup();
@@ -68,6 +71,9 @@ private:
 private slots:
     void oscTechBlockReceived(const S2::OscInfo &resp);
     void oscTechBlockReceivingFinished();
+    void setRange(qint64 range);
+    void setValue(qint64 value);
+    void setDummyRangeAndValue(Stages stage, qint64 size);
 };
 
 }

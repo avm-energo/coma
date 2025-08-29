@@ -22,6 +22,8 @@ void SliceGetDialog::SetupUI()
     lyout->addWidget(
         PrbFunc::NewLBL(this, "Получение блока Bsi", c_ProgressMap.value(Engines::Slices::Stages::BsiLoad)));
     lyout->addWidget(
+        PrbFunc::NewLBL(this, "Получение блока BsiExt", c_ProgressMap.value(Engines::Slices::Stages::BsiLoadExt)));
+    lyout->addWidget(
         PrbFunc::NewLBL(this, "Получение конфигурации", c_ProgressMap.value(Engines::Slices::Stages::ConfigLoad)));
     lyout->addWidget(PrbFunc::NewLBL(
         this, "Скачивание журнала измерений", c_ProgressMap.value(Engines::Slices::Stages::MeasJourLoad)));

@@ -22,6 +22,7 @@ private:
     Engines::Slices *m_engine;
     const QMap<Engines::Slices::Stages, QString> c_ProgressMap = {
         { Engines::Slices::Stages::BsiLoad, "prbbsi" },         //
+        { Engines::Slices::Stages::BsiLoadExt, "prbbsx" },      //
         { Engines::Slices::Stages::ConfigLoad, "prbcfg" },      //
         { Engines::Slices::Stages::MeasJourLoad, "prbmjn" },    //
         { Engines::Slices::Stages::SysJourLoad, "prbsjn" },     //

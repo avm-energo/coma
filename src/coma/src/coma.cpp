@@ -30,7 +30,7 @@
 #include <dialogs/keypressdialog.h>
 #include <dialogs/reconnectdialog.h>
 #include <dialogs/settingsdialog.h>
-#include <engines/slices.h>
+#include <dialogs/slicegetdialog.h>
 #include <gen/errorqueue.h>
 #include <gen/files.h>
 #include <gen/logger.h>
@@ -265,7 +265,17 @@ void Coma::loadJournal(const QString &filename)
     jourViewer->exec();
 }
 
-void Coma::createSlice() { }
+void Coma::createSlice()
+{
+    if (!m_currentDevice)
+    {
+        EMessageBox::warning(this, "Нет соединения с устройством");
+        return;
+    }
+    SliceGetDialog *dlg = new SliceGetDialog(m_currentDevice, this);
+    dlg->SetupUI();
+    dlg->exec();
+}
 
 void Coma::restoreFromSlice() { }
 

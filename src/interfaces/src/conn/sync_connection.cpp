@@ -51,9 +51,16 @@ void SyncConnection::resultReady(const DataTypes::BlockStruct &result)
 
 void SyncConnection::responseReceived(const DataTypes::GeneralResponseStruct &response)
 {
-    if ((response.type == DataTypes::GeneralResponseTypes::DataSize)
-        || (response.type == DataTypes::GeneralResponseTypes::DataCount))
+    if (response.type == DataTypes::GeneralResponseTypes::DataSize)
+    {
+        emit setRange(response.data);
         return;
+    }
+    if (response.type == DataTypes::GeneralResponseTypes::DataCount)
+    {
+        emit setValue(response.data);
+        return;
+    }
     m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);
     m_busy = false;
 }
@@ -61,6 +68,12 @@ void SyncConnection::responseReceived(const DataTypes::GeneralResponseStruct &re
 void SyncConnection::fileReceived(const S2::FileStruct &file)
 {
     m_byteArrayResult = file.data;
+    m_busy = false;
+}
+
+void SyncConnection::s2bfileReceived(const S2::S2BFile &file)
+{
+    m_s2bFile = file;
     m_busy = false;
 }
 
@@ -178,6 +191,19 @@ Error::Msg SyncConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
     if (m_timeout)
         return Error::Msg::Timeout;
     ba = m_byteArrayResult;
+    return Error::Msg::NoError;
+}
+
+Error::Msg SyncConnection::readS2BFileSync(S2::FilesEnum filenum, S2::S2BFile &file)
+{
+    reset();
+    auto conn = m_connection->connection(this, &SyncConnection::s2bfileReceived);
+    m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::Binary);
+    longEventLoop(5);
+    QObject::disconnect(conn);
+    if (m_timeout)
+        return Error::Msg::Timeout;
+    file = m_s2bFile;
     return Error::Msg::NoError;
 }
 

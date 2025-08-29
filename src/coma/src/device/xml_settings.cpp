@@ -19,6 +19,7 @@ void Settings::clear() noexcept
     m_hiddenSettings.clear();
     m_haveBsiExt = false;
     m_haveMeasJournal = false;
+    m_haveWorkJournal = false;
 }
 
 void Settings::appendFeature(const QString &key, const QString &value)

@@ -4,19 +4,13 @@
 #include <interfaces/types/common_types.h>
 #include <settings/user_settings.h>
 
+#include <QEventLoop>
 #include <QTemporaryDir>
 
 namespace Engines
 {
 
-Slices::Slices(Device::CurrentDevice *dev, QObject *parent) : QObject(parent), m_curDev(dev)
-{
-    // auto conn = m_device->async();
-    // auto bsiExt = m_device->bsiExt();
-    // connect(bsiExt, &Device::BlockStartupInfoExtended::wasUpdated, this, &InfoDialog::syncExt);
-    // connect(m_device, &Device::CurrentDevice::bsiReceived, this, &InfoDialog::sync);
-    // connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSI);
-}
+Slices::Slices(Device::CurrentDevice *dev, QObject *parent) : QObject(parent), m_curDev(dev) { }
 
 Error::Msg Slices::CreateSlice()
 {
@@ -30,35 +24,47 @@ Error::Msg Slices::CreateSlice()
         // get BsiExt
         if (m_curDev->getConfigStorage()->getDeviceSettings().HaveBSIExt())
             writeFile("bsiext", getBsiExt());
-        // get system journal
+        // get journals
         writeFile("sysjour", getSysJournal());
         if (m_curDev->getConfigStorage()->getDeviceSettings().HaveWorkJournal())
             writeFile("workjour", getWorkJournal());
         if (m_curDev->getConfigStorage()->getDeviceSettings().HaveMeasJournal())
             writeFile("measjour", getMeasJournal());
-        writeFile("oscs", getOscs());
+        // get oscs
+        // writeFile("oscs", getOscs());
     }
     return Error::Msg::NoError;
 }
 
 QByteArray Slices::getWorkJournal()
 {
-    QByteArray ba;
-    m_curDev->sync()->readFileSync(S2::FilesEnum::JourWork, ba);
-    return ba;
+    return getJournal(Stages::WorkJourLoad, S2::FilesEnum::JourWork);
 }
 
 QByteArray Slices::getSysJournal()
 {
-    QByteArray ba;
-    m_curDev->sync()->readFileSync(S2::FilesEnum::JourSys, ba);
-    return ba;
+    return getJournal(Stages::SysJourLoad, S2::FilesEnum::JourSys);
 }
 
 QByteArray Slices::getMeasJournal()
 {
+    return getJournal(Stages::MeasJourLoad, S2::FilesEnum::JourMeas);
+}
+
+QByteArray Slices::getJournal(Stages stage, S2::FilesEnum fileNum)
+{
+    S2::S2BFile file;
     QByteArray ba;
-    m_curDev->sync()->readFileSync(S2::FilesEnum::JourMeas, ba);
+    m_curPRB = stage;
+    QMetaObject::Connection rangeConn
+        = QObject::connect(m_curDev->sync(), &Interface::SyncConnection::setRange, this, &Slices::setRange);
+    QMetaObject::Connection valueConn
+        = QObject::connect(m_curDev->sync(), &Interface::SyncConnection::setValue, this, &Slices::setValue);
+    m_curDev->sync()->readS2BFileSync(fileNum, file);
+    QObject::disconnect(rangeConn);
+    QObject::disconnect(valueConn);
+    ba.resize(sizeof(file));
+    memcpy(&ba.data()[0], &file, sizeof(file));
     return ba;
 }
 
@@ -79,11 +85,13 @@ QByteArray Slices::getStartup()
 
 QByteArray Slices::getBsi()
 {
+    setDummyRangeAndValue(BsiLoad, sizeof(m_curDev->bsi()));
     return StdFunc::toByteArray(m_curDev->bsi());
 }
 
 QByteArray Slices::getBsiExt()
 {
+    setDummyRangeAndValue(BsiLoadExt, sizeof(m_curDev->bsiExt()));
     return m_curDev->bsiExt()->toByteArray();
 }
 
@@ -135,5 +143,21 @@ void Slices::oscTechBlockReceived(const S2::OscInfo &resp)
 void Slices::oscTechBlockReceivingFinished()
 {
     m_somethingHappened.wakeAll();
+}
+
+void Slices::setRange(qint64 range)
+{
+    emit setProgressRange(m_curPRB, range);
+}
+
+void Slices::setValue(qint64 value)
+{
+    emit setProgressValue(m_curPRB, value);
+}
+
+void Slices::setDummyRangeAndValue(Stages stage, qint64 size)
+{
+    emit setProgressRange(stage, size);
+    emit setProgressValue(stage, size);
 }
 }
