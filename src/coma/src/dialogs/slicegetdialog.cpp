@@ -42,7 +42,7 @@ void SliceGetDialog::SetupUI()
     lyout->addWidget(
         PrbFunc::NewLBL(this, "Сохранение результатов", c_ProgressMap.value(Engines::Slices::Stages::Save)));
     hlyout->addStretch(100);
-    hlyout->addWidget(PBFunc::New(this, "", "Закрыть", this, qOverload<>(&SliceGetDialog::close)));
+    hlyout->addWidget(PBFunc::New(this, "", "Закрыть", [this]() { this->close(); }));
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);
