@@ -49,8 +49,12 @@ void ModuleDialog::setupUI(QVBoxLayout *mainLayout)
             auto itemLayout = new QHBoxLayout;
             itemLayout->addWidget(labelItem, 10);
             auto inputItem = ChBFunc::New(this, itemName, "");
+#if (QT_VERSION < QT_VERSION_CHECK(6, 8, 2))
+            QObject::connect(inputItem, &QCheckBox::stateChanged, this, &ModuleDialog::dataChanged);
+#else
             QObject::connect(
                 inputItem, &QCheckBox::checkStateChanged, this, qOverload<Qt::CheckState>(&ModuleDialog::dataChanged));
+#endif
             itemLayout->addWidget(inputItem, 1);
             mainLayout->addLayout(itemLayout);
             m_dlgItems.append(inputItem);
