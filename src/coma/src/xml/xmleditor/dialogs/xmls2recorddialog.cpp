@@ -82,8 +82,12 @@ void XmlS2RecordDialog::setupUI(QVBoxLayout *mainLayout)
 
     auto dtypeLabel = new QLabel("Используется только для наладки: ");
     auto dtypeCheckBox = new QCheckBox("", this);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 8, 2))
+    QObject::connect(dtypeCheckBox, &QCheckBox::stateChanged, this, qOverload<int>(&XMLS2RecordDialog::dataChanged));
+#else
     QObject::connect(dtypeCheckBox, &QCheckBox::checkStateChanged, this,
         qOverload<const Qt::CheckState>(&XmlS2RecordDialog::dataChanged));
+#endif
     dtypeLayout->addWidget(dtypeLabel);
     dtypeLayout->addWidget(dtypeCheckBox);
     mainLayout->addLayout(dtypeLayout);
@@ -95,8 +99,13 @@ void XmlS2RecordDialog::setupUI(QVBoxLayout *mainLayout)
     mainLayout->addWidget(widgetFlag);
     m_dlgItems.append(widgetFlag);
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 8, 2))
+    QObject::connect(widgetFlag, &QCheckBox::stateChanged, this, //
+        [this, mainLayout](int state)
+#else
     QObject::connect(widgetFlag, &QCheckBox::checkStateChanged, this, //
         [this, mainLayout](const Qt::CheckState state)
+#endif
         {
             if (state == Qt::Unchecked)
             {
@@ -313,8 +322,14 @@ bool XmlS2RecordDialog::loadS2TabsData()
     if (moduleFile->open(QIODevice::ReadOnly))
     {
         QDomDocument domDoc;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
+        QString errMsg = "";
+        auto line = 0, column = 0;
+        if (domDoc.setContent(moduleFile, &errMsg, &line, &column))
+#else
         QDomDocument::ParseResult result = domDoc.setContent(moduleFile);
         if (result.errorMessage.isEmpty())
+#endif
         {
             auto domElement = domDoc.documentElement();
             XmlParse::parseNode(domElement, tags::conf_tabs,
@@ -326,8 +341,12 @@ bool XmlS2RecordDialog::loadS2TabsData()
         // Если QtXml парсер не смог корректно считать xml файл
         else
         {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
+            qWarning() << errMsg << " File: " << filename << " Line: " << line << " Column: " << column;
+#else
             qWarning() << result.errorMessage << " File: " << filename << " Line: " << result.errorLine
                        << " Column: " << result.errorColumn;
+#endif
             return false;
         }
         moduleFile->close();
