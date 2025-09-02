@@ -74,8 +74,14 @@ void MasterModel::readModulesToModel()
         if (moduleFile->open(QIODevice::ReadOnly))
         {
             QDomDocument domDoc;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
+            QString errMsg = "";
+            auto line = 0, column = 0;
+            if (domDoc.setContent(moduleFile, &errMsg, &line, &column))
+#else
             QDomDocument::ParseResult result = domDoc.setContent(moduleFile);
             if (result.errorMessage.isEmpty())
+#endif
             {
                 auto domElement = domDoc.documentElement();
                 parseXmlNode(domElement, name, row);
@@ -83,8 +89,12 @@ void MasterModel::readModulesToModel()
             }
             // Если QtXml парсер не смог корректно считать xml файл
             else
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
+                qWarning() << errMsg << " File: " << filename << " Line: " << line << " Column: " << column;
+#else
                 qWarning() << result.errorMessage << " File: " << name << " Line: " << result.errorLine
                            << " Column: " << result.errorColumn;
+#endif
             moduleFile->close();
         }
         moduleFile->deleteLater();
@@ -166,16 +176,26 @@ void MasterModel::masterItemSelected(const QModelIndex &itemIndex)
         if (moduleFile->open(QIODevice::ReadOnly))
         {
             QDomDocument domDoc;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
+            QString errMsg = "";
+            auto line = 0, column = 0;
+            if (domDoc.setContent(moduleFile, &errMsg, &line, &column))
+#else
             QDomDocument::ParseResult result = domDoc.setContent(moduleFile);
             if (result.errorMessage.isEmpty())
+#endif
             {
                 auto domElement = domDoc.documentElement();
                 emit itemSelected(domElement);
             }
             // Если QtXml парсер не смог корректно считать xml файл
             else
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
+                qWarning() << errMsg << " File: " << filename << " Line: " << line << " Column: " << column;
+#else
                 qWarning() << result.errorMessage << " File: " << filename << " Line: " << result.errorLine
                            << " Column: " << result.errorColumn;
+#endif
             moduleFile->close();
         }
         moduleFile->deleteLater();
