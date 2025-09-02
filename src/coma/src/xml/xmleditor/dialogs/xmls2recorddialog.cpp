@@ -83,7 +83,7 @@ void XmlS2RecordDialog::setupUI(QVBoxLayout *mainLayout)
     auto dtypeLabel = new QLabel("Используется только для наладки: ");
     auto dtypeCheckBox = new QCheckBox("", this);
 #if (QT_VERSION < QT_VERSION_CHECK(6, 8, 2))
-    QObject::connect(dtypeCheckBox, &QCheckBox::stateChanged, this, qOverload<int>(&XMLS2RecordDialog::dataChanged));
+    QObject::connect(dtypeCheckBox, &QCheckBox::stateChanged, this, qOverload<int>(&XmlS2RecordDialog::dataChanged));
 #else
     QObject::connect(dtypeCheckBox, &QCheckBox::checkStateChanged, this,
         qOverload<const Qt::CheckState>(&XmlS2RecordDialog::dataChanged));
