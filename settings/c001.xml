@@ -76,104 +76,98 @@
         </alarms>
         <config desc="Конфигурация">
             <record>
+                <id>1</id>
+                <defaultValue>192</defaultValue>
+                <visibility>false</visibility>
+            </record>
+            <record>
+                <id>2</id>
+                <defaultValue>1</defaultValue>
+                <visibility>false</visibility>
+            </record>
+            <record>
                 <id>25</id>
                 <defaultValue>38400</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>26</id>
                 <defaultValue>1</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>28</id>
                 <defaultValue>1</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1003</id>
                 <defaultValue>20</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1388</id>
                 <defaultValue>60</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1389</id>
                 <defaultValue>10</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1390</id>
                 <defaultValue>1;146.06;1.0;100,0,0</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1391</id>
                 <defaultValue>0.0, 0.0, 0.0</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1392</id>
                 <defaultValue>-35</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1393</id>
                 <defaultValue>5</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1394</id>
                 <defaultValue>120</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1395</id>
                 <defaultValue>300</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1396</id>
                 <defaultValue>20</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1397</id>
                 <defaultValue>0.001</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1398</id>
                 <defaultValue>10</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>1399</id>
                 <defaultValue>5</defaultValue>
-                <count>0</count>
                 <visibility>true</visibility>
             </record>
         </config>
         <hidden desc="Секретные операции">
-            <hidden-tab background="" desc="Базовая плата" flag="1" prefix="base">
+            <hidden-tab desc="Базовая плата" flag="1" prefix="base">
                 <mwidget title="Тип базовой платы" view="LineEdit">
                     <index>1</index>
                     <name>basetype</name>
@@ -203,7 +197,7 @@
                     <visibility>true</visibility>
                 </mwidget>
             </hidden-tab>
-            <hidden-tab background="" desc="Плата датчиков" flag="2" prefix="mezz">
+            <hidden-tab desc="Плата датчиков" flag="2" prefix="mezz">
                 <mwidget title="Тип платы датчиков" view="LineEdit">
                     <index>5</index>
                     <name>mezztype</name>

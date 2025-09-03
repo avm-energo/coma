@@ -14,14 +14,9 @@
         </alarms>
         <config desc="Конфигурация базовая">
             <record>
-                <id>10</id>
-                <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>11</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
+                <id>1</id>
+                <defaultValue>52</defaultValue>
+                <visibility>false</visibility>
             </record>
             <record>
                 <id>3</id>
@@ -31,31 +26,6 @@
             <record>
                 <id>4</id>
                 <defaultValue>205</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>401</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>402</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>403</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>404</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>405</id>
-                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -81,6 +51,41 @@
             <record>
                 <id>9</id>
                 <defaultValue>12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>10</id>
+                <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>11</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>401</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>402</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>403</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>404</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>405</id>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
         </config>

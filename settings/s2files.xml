@@ -276,13 +276,15 @@
                 <type>DoubleSpinBoxGroup</type>
                 <group>220</group>
                 <string>Порты протоколов</string>
-                <count>2</count>
+                <count>4</count>
                 <min>1</min>
                 <max>65534</max>
                 <decimals>0</decimals>
                 <string-array>
                     <item>IEC-60870-5-104</item>
                     <item>Modbus TCP</item>
+                    <item>IEC-60870-5-104 (2)</item>
+                    <item>Modbus TCP (2)</item>
                 </string-array>
             </widget>
         </record>
@@ -2421,6 +2423,18 @@
                     <item>По напряжению или току</item>
                     <item>По току</item>
                 </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1047</id>
+            <name>FiltrClk</name>
+            <type>BYTE</type>
+            <dtype>Yes</dtype>
+            <widget>
+                <type>QCheckBox</type>
+                <group>51</group>
+                <string>Фильтр для измерения частоты</string>
+                <toolTip>Фильтр для измерения частоты</toolTip>
             </widget>
         </record>
         <record>
@@ -5950,18 +5964,6 @@
             <id>10057</id>
             <name>Spect87_7</name>
             <type>DataPoint_Spect87</type>
-        </record>
-        <record>
-            <id>1047</id>
-            <name>FiltrClk</name>
-            <type>BYTE</type>
-            <dtype>Yes</dtype>
-            <widget>
-                <type>QCheckBox</type>
-                <group>51</group>
-                <string>Фильтр для измерения частоты</string>
-                <toolTip>Фильтр для измерения частоты</toolTip>
-            </widget>
         </record>
     </records>
 </s2files>

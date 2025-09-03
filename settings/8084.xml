@@ -387,13 +387,13 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1050</id>
-                <defaultValue>100.0</defaultValue>
+                <id>1047</id>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1047</id>
-                <defaultValue>0</defaultValue>
+                <id>1050</id>
+                <defaultValue>100.0</defaultValue>
                 <visibility>true</visibility>
             </record>
         </config>

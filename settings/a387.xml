@@ -307,6 +307,16 @@
         </bsi-ext>
         <config desc="Конфигурация">
             <record>
+                <id>1</id>
+                <defaultValue>162</defaultValue>
+                <visibility>false</visibility>
+            </record>
+            <record>
+                <id>2</id>
+                <defaultValue>135</defaultValue>
+                <visibility>false</visibility>
+            </record>
+            <record>
                 <id>3</id>
                 <defaultValue>8</defaultValue>
                 <visibility>true</visibility>
@@ -368,7 +378,7 @@
             </record>
             <record>
                 <id>23</id>
-                <defaultValue>2404,2405,502,502</defaultValue>
+                <defaultValue>2404,502,2405,503</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -462,6 +472,21 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1041</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1043</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1044</id>
+                <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1050</id>
                 <defaultValue>100.0</defaultValue>
                 <visibility>true</visibility>
@@ -474,31 +499,6 @@
             <record>
                 <id>1053</id>
                 <defaultValue>5</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1300</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1301</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1302</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1303</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1304</id>
-                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -707,6 +707,31 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>1300</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1301</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1302</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1303</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1304</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>1320</id>
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
@@ -731,22 +756,99 @@
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
-            <record>
-                <id>1041</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1043</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>1044</id>
-                <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
-            </record>
         </config>
+        <hidden desc="Секретные операции">
+            <hidden-tab desc="Базовая плата" flag="1" prefix="base">
+                <mwidget title="Тип платы" view="LineEdit">
+                    <index>1</index>
+                    <name>basetype</name>
+                    <type>uint32</type>
+                    <addr>1</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Серийный номер платы" view="LineEdit">
+                    <index>2</index>
+                    <name>baseserial</name>
+                    <type>uint32</type>
+                    <addr>10</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Версия платы" view="Version">
+                    <index>3</index>
+                    <name>baseversion</name>
+                    <type>uint32</type>
+                    <addr>3</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Серийный номер модуля" view="LineEdit">
+                    <index>4</index>
+                    <name>moduleserial</name>
+                    <type>uint32</type>
+                    <addr>13</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+            </hidden-tab>
+            <hidden-tab desc="Мезонинная плата" flag="2" prefix="mezz">
+                <mwidget title="Тип платы" view="LineEdit">
+                    <index>5</index>
+                    <name>mezztype</name>
+                    <type>uint32</type>
+                    <addr>2</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Серийный номер платы" view="LineEdit">
+                    <index>6</index>
+                    <name>mezzserial</name>
+                    <type>uint32</type>
+                    <addr>11</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Версия платы" view="Version">
+                    <index>7</index>
+                    <name>mezzversion</name>
+                    <type>uint32</type>
+                    <addr>12</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Зарезервировано" view="LineEdit">
+                    <index>8</index>
+                    <name>reserved</name>
+                    <type>uint32</type>
+                    <addr>4</addr>
+                    <visibility>false</visibility>
+                </mwidget>
+            </hidden-tab>
+            <hidden-tab desc="Дополнительная плата" flag="4" prefix="addition">
+                <mwidget title="Тип платы" view="LineEdit">
+                    <index>9</index>
+                    <name>addtype</name>
+                    <type>uint32</type>
+                    <addr>46</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Серийный номер платы" view="LineEdit">
+                    <index>10</index>
+                    <name>addserial</name>
+                    <type>uint32</type>
+                    <addr>48</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Версия платы" view="Version">
+                    <index>11</index>
+                    <name>addversion</name>
+                    <type>uint32</type>
+                    <addr>47</addr>
+                    <visibility>true</visibility>
+                </mwidget>
+                <mwidget title="Зарезервировано" view="LineEdit">
+                    <index>12</index>
+                    <name>reserved</name>
+                    <type>uint32</type>
+                    <addr>45</addr>
+                    <visibility>false</visibility>
+                </mwidget>
+            </hidden-tab>
+        </hidden>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
             <group>
                 <signal-id>1</signal-id>
@@ -1385,7 +1487,7 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные">
-                <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
+                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
                     <mwidget desc="Vst" view="float">
                         <start-addr>4700</start-addr>
                         <toolTip>Относительная скорость старения изоляции</toolTip>
@@ -1411,7 +1513,7 @@
                         <toolTip>Общая наработка, час</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Оставшееся время работы">
+                <sgroup header="Оставшееся время работы" tab="1">
                     <mwidget desc="Tpred" view="float">
                         <start-addr>4010</start-addr>
                         <toolTip>Температура обмотки (расчетная), °С</toolTip>
@@ -1448,7 +1550,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Температура">
+                <sgroup header="Температура" tab="1">
                     <mwidget desc="ExtTempWin%1" view="float">
                         <start-addr>4503</start-addr>
                         <count>4</count>
@@ -1467,7 +1569,7 @@
                         <toolTip>Температура обмотки (расчетная), °С</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="10" header="Данные по частоте и углам сдвига сигналов">
+                <sgroup header="Данные по частоте и углам сдвига сигналов" tab="10">
                     <mwidget desc="Frequency" view="float">
                         <start-addr>2400</start-addr>
                         <toolTip>Частота в сети, Гц</toolTip>
@@ -1478,7 +1580,7 @@
                         <toolTip>Угол сдвига между каналами %1-0, градусов</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="10" header="Мощности">
+                <sgroup header="Мощности" tab="10">
                     <mwidget desc="P%1, кВт" view="float">
                         <start-addr>2420</start-addr>
                         <count>3</count>
@@ -1536,7 +1638,7 @@
                         <toolTip>Коэффициент мощности средний (по S и P)</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="10" header="Мощности по 1-й гармонике">
+                <sgroup header="Мощности по 1-й гармонике" tab="10">
                     <mwidget desc="P1%1, кВт" view="float">
                         <start-addr>2436</start-addr>
                         <count>3</count>
@@ -1596,7 +1698,7 @@
                 </sgroup>
             </section>
             <section header="Текущие данные. Первая тройка">
-                <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
+                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
                     <mwidget desc="U0, кВ" view="float">
                         <start-addr>1011</start-addr>
                         <toolTip>Напряжение нулевой последовательности гр.1, кВ</toolTip>
@@ -1628,7 +1730,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Действующие значения и крест-факторы сигналов">
+                <sgroup header="Действующие значения и крест-факторы сигналов" tab="1">
                     <mwidget desc="U ф.%1, В" view="float">
                         <start-addr>1000</start-addr>
                         <count>3</count>
@@ -1668,7 +1770,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Линейные напряжения">
+                <sgroup header="Линейные напряжения" tab="1">
                     <mwidget desc="U ф.%1, кВ" view="float">
                         <start-addr>1220</start-addr>
                         <count>3</count>
@@ -1698,19 +1800,19 @@
                         <toolTip>Действ. линейное напряжение по 1-й гармонике среднее, кВ</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="311" header="Данные по гармоническому составу сигналов фазы A">
+                <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3020</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="312" header="Данные по гармоническому составу сигналов фазы В">
+                <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3146</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="313" header="Данные по гармоническому составу сигналов фазы C">
+                <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3272</start-addr>
                         <count>61</count>
@@ -1718,7 +1820,7 @@
                 </sgroup>
             </section>
             <section header="Текущие данные. Вторая тройка">
-                <sgroup tab="1" header="Данные по несимметрии и искажениям сигналов">
+                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
                     <mwidget desc="I0, А" view="float">
                         <start-addr>1411</start-addr>
                         <toolTip>Ток нулевой последовательности гр.1, А</toolTip>
@@ -1750,7 +1852,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="1" header="Действующие значения и крест-факторы сигналов">
+                <sgroup header="Действующие значения и крест-факторы сигналов" tab="1">
                     <mwidget desc="I ф.%1, А" view="float">
                         <start-addr>1400</start-addr>
                         <count>3</count>
@@ -1790,19 +1892,19 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="311" header="Данные по гармоническому составу сигналов фазы A">
+                <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3420</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="312" header="Данные по гармоническому составу сигналов фазы В">
+                <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3546</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="313" header="Данные по гармоническому составу сигналов фазы C">
+                <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
                     <mwidget desc="Гм %1" view="float">
                         <start-addr>3672</start-addr>
                         <count>61</count>
@@ -1810,37 +1912,37 @@
                 </sgroup>
             </section>
             <section header="Вибрации">
-                <sgroup tab="210" header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час">
+                <sgroup header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час" tab="210">
                     <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6070</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="210" header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час">
+                <sgroup header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час" tab="210">
                     <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6064</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="210" header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час">
+                <sgroup header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час" tab="210">
                     <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6058</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="200" header="Среднеквадратичные значения виброперемещений, мкм">
+                <sgroup header="Среднеквадратичные значения виброперемещений, мкм" tab="200">
                     <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6052</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="200" header="Среднеквадратичные значения виброскоростей, мм/с">
+                <sgroup header="Среднеквадратичные значения виброскоростей, мм/с" tab="200">
                     <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6046</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
-                <sgroup tab="200" header="Среднеквадратичные значения виброускорений, м/с2">
+                <sgroup header="Среднеквадратичные значения виброускорений, м/с2" tab="200">
                     <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6040</start-addr>
                         <count>6</count>
@@ -2042,97 +2144,5 @@
                 <type>Float</type>
             </signal>
         </signals>
-        <hidden desc="Секретные операции">
-            <hidden-tab desc="Базовая плата" background=":/images/BMn.svg" prefix="base" flag="1">
-                <mwidget view="LineEdit" title="Тип платы">
-                    <name>basetype</name>
-                    <type>uint32</type>
-                    <addr>1</addr>
-                    <index>1</index>
-                    <visibility>true</visibility>
-                </mwidget>
-                <mwidget view="LineEdit" title="Серийный номер платы">
-                    <name>baseserial</name>
-                    <type>uint32</type>
-                    <addr>10</addr>
-                    <index>2</index>
-                    <visibility>true</visibility>
-                </mwidget>
-                <mwidget view="Version" title="Версия платы">
-                    <name>baseversion</name>
-                    <type>uint32</type>
-                    <addr>3</addr>
-                    <index>3</index>
-                    <visibility>true</visibility>
-                </mwidget>
-                <mwidget view="LineEdit" title="Серийный номер модуля">
-                    <name>moduleserial</name>
-                    <type>uint32</type>
-                    <addr>13</addr>
-                    <index>4</index>
-                    <visibility>true</visibility>
-                </mwidget>
-            </hidden-tab>
-            <hidden-tab desc="Мезонинная плата" background=":/images/BnM.svg" prefix="mezz" flag="2">
-                <mwidget view="LineEdit" title="Тип платы">
-                    <name>mezztype</name>
-                    <type>uint32</type>
-                    <addr>2</addr>
-                    <index>5</index>
-                    <visibility>true</visibility>
-                </mwidget>
-                <mwidget view="LineEdit" title="Серийный номер платы">
-                    <name>mezzserial</name>
-                    <type>uint32</type>
-                    <addr>11</addr>
-                    <index>6</index>
-                    <visibility>true</visibility>
-                </mwidget>
-                <mwidget view="Version" title="Версия платы">
-                    <name>mezzversion</name>
-                    <type>uint32</type>
-                    <addr>12</addr>
-                    <index>7</index>
-                    <visibility>true</visibility>
-                </mwidget>
-                <mwidget view="LineEdit" title="Зарезервировано">
-                    <name>reserved</name>
-                    <type>uint32</type>
-                    <addr>4</addr>
-                    <index>8</index>
-                    <visibility>false</visibility>
-                </mwidget>
-            </hidden-tab>
-            <hidden-tab desc="Дополнительная плата" background=":/images/BM.svg" prefix="addition" flag="4">
-                <mwidget view="LineEdit" title="Тип платы">
-                    <name>addtype</name>
-                    <type>uint32</type>
-                    <addr>46</addr>
-                    <index>9</index>
-                    <visibility>true</visibility>
-                </mwidget>
-                <mwidget view="LineEdit" title="Серийный номер платы">
-                    <name>addserial</name>
-                    <type>uint32</type>
-                    <addr>48</addr>
-                    <index>10</index>
-                    <visibility>true</visibility>
-                </mwidget>
-                <mwidget view="Version" title="Версия платы">
-                    <name>addversion</name>
-                    <type>uint32</type>
-                    <addr>47</addr>
-                    <index>11</index>
-                    <visibility>true</visibility>
-                </mwidget>
-                <mwidget view="LineEdit" title="Зарезервировано">
-                    <name>reserved</name>
-                    <type>uint32</type>
-                    <addr>45</addr>
-                    <index>12</index>
-                    <visibility>false</visibility>
-                </mwidget>
-            </hidden-tab>
-        </hidden>
     </resources>
 </module>

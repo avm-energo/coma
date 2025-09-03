@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypeb="00" mtypem="31">
     <name>AVTUK-0031</name>
+    <features>
+        <isBoxModule>0</isBoxModule>
+        <isRTCExist>0</isRTCExist>
+    </features>
     <resources>
         <alarms desc="Сигнализация">
             <critical desc="Критичные"/>
@@ -8,6 +12,11 @@
             <info desc="Информационные"/>
         </alarms>
         <config desc="Конфигурация мезонин">
+            <record>
+                <id>2</id>
+                <defaultValue>49</defaultValue>
+                <visibility>false</visibility>
+            </record>
             <record>
                 <id>231</id>
                 <defaultValue>0</defaultValue>

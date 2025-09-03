@@ -14,14 +14,9 @@
         </alarms>
         <config desc="Конфигурация базовая">
             <record>
-                <id>10</id>
-                <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>11</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
+                <id>1</id>
+                <defaultValue>53</defaultValue>
+                <visibility>false</visibility>
             </record>
             <record>
                 <id>3</id>
@@ -31,21 +26,6 @@
             <record>
                 <id>4</id>
                 <defaultValue>205</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>401</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>402</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>403</id>
-                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -71,6 +51,31 @@
             <record>
                 <id>9</id>
                 <defaultValue>12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>10</id>
+                <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>11</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>401</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>402</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>403</id>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
         </config>
@@ -150,15 +155,6 @@
                     <mwidget desc="Напряжение на батарейке, В" view="float">
                         <start-addr>102</start-addr>
                     </mwidget>
-                    <!--<mwidget desc="Состояние WatchDog" view="map">
-                        <start-addr>5002</start-addr>
-                        <map>
-                            <item key="0">Disabled</item>
-                            <item key="1">Stopped</item>
-                            <item key="3">Started</item>
-                            <item key="7">Latched</item>
-                        </map>
-                    </mwidget>-->
                     <mwidget desc="Состояние WatchDog" view="float">
                         <start-addr>5002</start-addr>
                     </mwidget>

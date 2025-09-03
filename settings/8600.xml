@@ -304,12 +304,97 @@
         </alarms>
         <config desc="Конфигурация">
             <record>
+                <id>1</id>
+                <defaultValue>134</defaultValue>
+                <visibility>false</visibility>
+            </record>
+            <record>
+                <id>3</id>
+                <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>4</id>
+                <defaultValue>205</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>5</id>
+                <defaultValue>5</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>6</id>
+                <defaultValue>15</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>7</id>
+                <defaultValue>10</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>8</id>
+                <defaultValue>20</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>9</id>
+                <defaultValue>12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>10</id>
                 <defaultValue>8</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
                 <id>11</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>20</id>
+                <defaultValue>172,16,29,12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>21</id>
+                <defaultValue>255,255,252,0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>22</id>
+                <defaultValue>172,16,29,1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>23</id>
+                <defaultValue>2404,502,2405,503</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>24</id>
+                <defaultValue>172,16,29,12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>25</id>
+                <defaultValue>9600</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>26</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>27</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>28</id>
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
@@ -463,86 +548,6 @@
                 <defaultValue>7.0</defaultValue>
                 <visibility>true</visibility>
             </record>
-            <record>
-                <id>20</id>
-                <defaultValue>172,16,29,12</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>21</id>
-                <defaultValue>255,255,252,0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>22</id>
-                <defaultValue>172,16,29,1</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>23</id>
-                <defaultValue>2404,2405,502,502</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>24</id>
-                <defaultValue>172,16,29,12</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>25</id>
-                <defaultValue>9600</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>26</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>27</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>28</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>3</id>
-                <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>4</id>
-                <defaultValue>205</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>5</id>
-                <defaultValue>5</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>6</id>
-                <defaultValue>15</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>7</id>
-                <defaultValue>10</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>8</id>
-                <defaultValue>20</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>9</id>
-                <defaultValue>12</defaultValue>
-                <visibility>true</visibility>
-            </record>
         </config>
         <iec60870 desc="Протокол ГОСТ Р МЭК 60870-5-104">
             <group>
@@ -567,106 +572,208 @@
         <journals desc="Журналы">
             <meas desc="Журнал измерений">
                 <item>
+                    <index>0</index>
                     <header> № </header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>CosPhi</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Frequency</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>I0</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>I1</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>I2</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Ieff фA</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Ieff фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Ieff фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Pf сумм.</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Qf сумм.</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Sf сумм.</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Tamb,°С</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Tmk,°С</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Twin,°С</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>U0</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>U1</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>U2</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Ueff фA</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Ueff фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Ueff фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_D фA</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_D фA</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_D фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_D фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_D фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_D фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_V фA</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_V фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_V фB</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_V фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_V фC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>VibrSCZ_V №1</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
                 <item>
+                    <index>0</index>
                     <header>Дата/Время UTC</header>
+                    <type>float32</type>
+                    <visibility>true</visibility>
                 </item>
             </meas>
             <work desc="Рабочий журнал">
@@ -720,37 +827,37 @@
         <sections desc="Разделы">
             <section header="Вибрации">
                 <sgroup header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час" tab="3">
-                    <mwidget view="float" desc="Датчик №%1">
+                    <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6070</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час" tab="3">
-                    <mwidget view="float" desc="Датчик №%1">
+                    <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6064</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час" tab="3">
-                    <mwidget view="float" desc="Датчик №%1">
+                    <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6058</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Среднеквадратичные значения виброперемещений, мкм" tab="2">
-                    <mwidget view="float" desc="Датчик №%1">
+                    <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6052</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Среднеквадратичные значения виброскоростей, мм/с" tab="2">
-                    <mwidget view="float" desc="Датчик №%1">
+                    <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6046</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Среднеквадратичные значения виброускорений, м/с2" tab="2">
-                    <mwidget view="float" desc="Датчик №%1">
+                    <mwidget desc="Датчик №%1" view="float">
                         <start-addr>6040</start-addr>
                         <count>6</count>
                     </mwidget>
@@ -758,11 +865,11 @@
             </section>
             <section header="Текущие данные">
                 <sgroup header="Основные" tab="1">
-                    <mwidget view="float" desc="Температура микроконтроллера, °С">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
                         <start-addr>101</start-addr>
                         <toolTip>Температура микроконтроллера, °С</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Напряжение батареи, В">
+                    <mwidget desc="Напряжение батареи, В" view="float">
                         <start-addr>102</start-addr>
                         <toolTip>Напряжение батареи, В</toolTip>
                     </mwidget>

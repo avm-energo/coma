@@ -466,14 +466,12 @@
         <config desc="Конфигурация">
             <record>
                 <id>1</id>
-                <defaultValue>85</defaultValue>
-                <count>0</count>
+                <defaultValue>133</defaultValue>
                 <visibility>false</visibility>
             </record>
             <record>
                 <id>2</id>
-                <defaultValue>85</defaultValue>
-                <count>0</count>
+                <defaultValue>133</defaultValue>
                 <visibility>false</visibility>
             </record>
             <record>
@@ -1056,17 +1054,17 @@
         <sections desc="Разделы">
             <section header="Текущие данные">
                 <sgroup header="Основные" tab="1">
-                    <mwidget view="float" desc="Температура микроконтроллера, °С">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
                         <start-addr>101</start-addr>
                         <toolTip>Температура микроконтроллера, °С</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Напряжение батареи, В">
+                    <mwidget desc="Напряжение батареи, В" view="float">
                         <start-addr>102</start-addr>
                         <toolTip>Напряжение батареи, В</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Параметры вводов" tab="1">
-                    <mwidget view="float" desc="U ф.%1">
+                    <mwidget desc="U ф.%1" view="float">
                         <start-addr>1000</start-addr>
                         <count>3</count>
                         <toolTip>Фазное среднеквадратичное напряжение источника ф.%1</toolTip>
@@ -1076,11 +1074,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="U ср.">
+                    <mwidget desc="U ср." view="float">
                         <start-addr>1003</start-addr>
                         <toolTip>Среднее по фазам действующее напряжение источника</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="I ф.%1">
+                    <mwidget desc="I ф.%1" view="float">
                         <start-addr>1004</start-addr>
                         <count>3</count>
                         <toolTip>Фазный среднеквадратичный ток ф.%1</toolTip>
@@ -1090,11 +1088,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="I ср.">
+                    <mwidget desc="I ср." view="float">
                         <start-addr>1007</start-addr>
                         <toolTip>Средний по фазам действующий ток</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Uи ф.%1">
+                    <mwidget desc="Uи ф.%1" view="float">
                         <start-addr>1008</start-addr>
                         <count>3</count>
                         <toolTip>Фазное среднеквадратичное напряжение нагрузки ф.%1</toolTip>
@@ -1104,11 +1102,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="Uи ср.">
+                    <mwidget desc="Uи ср." view="float">
                         <start-addr>1011</start-addr>
                         <toolTip>Среднее по фазам действующее напряжение нагрузки</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="P ф.%1">
+                    <mwidget desc="P ф.%1" view="float">
                         <start-addr>1012</start-addr>
                         <count>3</count>
                         <toolTip>Истинная активная мощность фазы %1</toolTip>
@@ -1118,11 +1116,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="P суммарная">
+                    <mwidget desc="P суммарная" view="float">
                         <start-addr>1015</start-addr>
                         <toolTip>Истинная активная мощность суммарная</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Q ф.%1">
+                    <mwidget desc="Q ф.%1" view="float">
                         <start-addr>1016</start-addr>
                         <count>3</count>
                         <toolTip>Реактивная мощность фазы %1</toolTip>
@@ -1132,11 +1130,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="Q суммарная">
+                    <mwidget desc="Q суммарная" view="float">
                         <start-addr>1019</start-addr>
                         <toolTip>Реактивная мощность суммарная</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="S ф.%1">
+                    <mwidget desc="S ф.%1" view="float">
                         <start-addr>1020</start-addr>
                         <count>3</count>
                         <toolTip>Полная (кажущаяся) мощность фазы %1</toolTip>
@@ -1146,11 +1144,11 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="S суммарная">
+                    <mwidget desc="S суммарная" view="float">
                         <start-addr>1023</start-addr>
                         <toolTip>Полная мощность суммарная</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="cos ф.%1">
+                    <mwidget desc="cos ф.%1" view="float">
                         <start-addr>1024</start-addr>
                         <count>3</count>
                         <toolTip>Коэффициент мощности фазы %1 (по S и P)</toolTip>
@@ -1160,16 +1158,16 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="cos ср.">
+                    <mwidget desc="cos ср." view="float">
                         <start-addr>1027</start-addr>
                         <toolTip>Коэффициент мощности средний (по S и P)</toolTip>
                     </mwidget>
-                    <mwidget view="float" desc="Частота в сети, Гц">
+                    <mwidget desc="Частота в сети, Гц" view="float">
                         <start-addr>1028</start-addr>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Параметры вводов" tab="2">
-                    <mwidget view="float" desc="Tbo ф.%1">
+                    <mwidget desc="Tbo ф.%1" view="float">
                         <start-addr>1040</start-addr>
                         <count>3</count>
                         <toolTip>Текущее время безоперационного простоя полюса ф.%1 выключателя</toolTip>
@@ -1179,7 +1177,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="Iznos ф.%1">
+                    <mwidget desc="Iznos ф.%1" view="float">
                         <start-addr>1043</start-addr>
                         <count>3</count>
                         <toolTip>Текущий электрический износ полюса ф.%1</toolTip>
@@ -1189,7 +1187,7 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget view="float" desc="Resurs ф.%1">
+                    <mwidget desc="Resurs ф.%1" view="float">
                         <start-addr>1046</start-addr>
                         <count>3</count>
                         <toolTip>Остаточный коммутационный ресурс ф.%1</toolTip>

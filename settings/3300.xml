@@ -14,6 +14,11 @@
         </alarms>
         <config desc="Конфигурация базовая">
             <record>
+                <id>1</id>
+                <defaultValue>51</defaultValue>
+                <visibility>false</visibility>
+            </record>
+            <record>
                 <id>3</id>
                 <defaultValue>4</defaultValue>
                 <visibility>true</visibility>

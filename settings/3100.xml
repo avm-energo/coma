@@ -14,41 +14,9 @@
         </alarms>
         <config desc="Конфигурация базовая">
             <record>
-                <id>10</id>
-                <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>11</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>201</id>
-                <defaultValue>0</defaultValue>
-                <count>11</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>202</id>
-                <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>204</id>
-                <defaultValue>2</defaultValue>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>205</id>
-                <defaultValue>0</defaultValue>
-                <count>11</count>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>206</id>
-                <defaultValue>0</defaultValue>
-                <visibility>true</visibility>
+                <id>1</id>
+                <defaultValue>49</defaultValue>
+                <visibility>false</visibility>
             </record>
             <record>
                 <id>3</id>
@@ -83,6 +51,43 @@
             <record>
                 <id>9</id>
                 <defaultValue>12</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>10</id>
+                <defaultValue>8</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>11</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>201</id>
+                <defaultValue>0</defaultValue>
+                <count>11</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>202</id>
+                <defaultValue>2</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>204</id>
+                <defaultValue>2</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>205</id>
+                <defaultValue>0</defaultValue>
+                <count>11</count>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>206</id>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
         </config>
