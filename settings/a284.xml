@@ -1207,6 +1207,9 @@
                         <start-addr>101</start-addr>
                         <toolTip>Температура микроконтроллера, °С</toolTip>
                     </mwidget>
+                    <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <start-addr>102</start-addr>
+                    </mwidget>
                     <mwidget desc="Частота, Гц" view="float">
                         <start-addr>2400</start-addr>
                         <toolTip>Частота, Гц</toolTip>

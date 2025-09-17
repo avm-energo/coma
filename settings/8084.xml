@@ -605,6 +605,16 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные">
+                <sgroup header="Общие" tab="1">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
+                        <start-addr>101</start-addr>
+                    </mwidget>
+                    <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <start-addr>102</start-addr>
+                    </mwidget>
+                </sgroup>
+            </section>
+            <section header="Текущие данные">
                 <sgroup header="Коэффициенты несимметрии" tab="2">
                     <mwidget desc="KuU1, %" view="float">
                         <start-addr>1014</start-addr>

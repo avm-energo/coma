@@ -288,6 +288,16 @@
             </tab>
         </section-tabs>
         <sections desc="Разделы">
+            <section header="Текущие данные">
+                <sgroup header="Общие" tab="1">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
+                        <start-addr>101</start-addr>
+                    </mwidget>
+                    <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <start-addr>102</start-addr>
+                    </mwidget>
+                </sgroup>
+            </section>
             <section header="Текущие данные 1ая тройка токи">
                 <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="301">
                     <mwidget desc="Гм %1" view="float">

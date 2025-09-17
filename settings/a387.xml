@@ -1487,6 +1487,15 @@
         </section-tabs>
         <sections desc="Разделы">
             <section header="Текущие данные">
+                <sgroup header="Общие" tab="1">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
+                        <start-addr>101</start-addr>
+                        <toolTip>Температура микроконтроллера, °С</toolTip>
+                    </mwidget>
+                    <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <start-addr>102</start-addr>
+                    </mwidget>
+                </sgroup>
                 <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
                     <mwidget desc="Vst" view="float">
                         <start-addr>4700</start-addr>
