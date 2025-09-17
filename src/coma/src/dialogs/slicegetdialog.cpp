@@ -26,11 +26,11 @@ void SliceGetDialog::SetupUI()
     lyout->addWidget(
         PrbFunc::NewLBL(this, "Получение конфигурации", c_ProgressMap.value(Engines::Slices::Stages::ConfigLoad)));
     lyout->addWidget(PrbFunc::NewLBL(
-        this, "Скачивание журнала измерений", c_ProgressMap.value(Engines::Slices::Stages::MeasJourLoad)));
-    lyout->addWidget(PrbFunc::NewLBL(
         this, "Скачивание системного журнала", c_ProgressMap.value(Engines::Slices::Stages::SysJourLoad)));
     lyout->addWidget(PrbFunc::NewLBL(
         this, "Скачивание журнала событий", c_ProgressMap.value(Engines::Slices::Stages::WorkJourLoad)));
+    lyout->addWidget(PrbFunc::NewLBL(
+        this, "Скачивание журнала измерений", c_ProgressMap.value(Engines::Slices::Stages::MeasJourLoad)));
     lyout->addWidget(PrbFunc::NewLBL(
         this, "Получение блока начальных значений", c_ProgressMap.value(Engines::Slices::Stages::StartupLoad)));
     lyout->addWidget(PrbFunc::NewLBL(

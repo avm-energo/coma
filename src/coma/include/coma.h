@@ -64,6 +64,7 @@ private:
     Device::CurrentDevice *m_currentDevice;
     UniquePointer<DialogManager> m_dlgManager;
     ReconnectDialog *m_reconnectDialog;
+    QMetaObject::Connection m_prbConnection;
     EStatusBar *m_bar;
 
     AlarmWidget *AlarmW;

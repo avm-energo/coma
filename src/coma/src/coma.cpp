@@ -272,9 +272,11 @@ void Coma::createSlice()
         EMessageBox::warning(this, "Нет соединения с устройством");
         return;
     }
+    QObject::disconnect(m_prbConnection);
     SliceGetDialog *dlg = new SliceGetDialog(m_currentDevice, this);
     dlg->SetupUI();
     dlg->exec();
+    m_prbConnection = m_currentDevice->async()->connection(this, &Coma::update);
 }
 
 void Coma::restoreFromSlice() { }
@@ -410,7 +412,7 @@ void Coma::initDevice(Interface::AsyncConnection *connection)
 
 void Coma::initInterfaceConnection()
 {
-    m_currentDevice->async()->connection(this, &Coma::update);
+    m_prbConnection = m_currentDevice->async()->connection(this, &Coma::update);
     connectStatusBar();
     LoadXML();
     prepareDialogs();

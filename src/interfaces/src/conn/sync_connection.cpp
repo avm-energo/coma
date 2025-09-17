@@ -198,9 +198,11 @@ Error::Msg SyncConnection::readS2BFileSync(S2::FilesEnum filenum, S2::S2BFile &f
 {
     reset();
     auto conn = m_connection->connection(this, &SyncConnection::s2bfileReceived);
+    auto conn2 = m_connection->connection(this, &SyncConnection::responseReceived);
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::Binary);
-    longEventLoop(5);
+    longEventLoop(50);
     QObject::disconnect(conn);
+    QObject::disconnect(conn2);
     if (m_timeout)
         return Error::Msg::Timeout;
     file = m_s2bFile;
