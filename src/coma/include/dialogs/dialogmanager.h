@@ -40,4 +40,10 @@ private slots:
     void reqUpdate();
     /// \brief Update a dialog in the sidebar.
     void dialogChanged(int newIndex);
+
+public slots:
+    /// \brief Disabling notification messages
+    void disableNotifications();
+    /// \brief Enabling notification messages
+    void enableNotifications();
 };

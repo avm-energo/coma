@@ -30,24 +30,26 @@ public:
     void fillJour(const S2::FileStruct &msg);
     void fillSwJInfo(const S2::SwitchJourInfo &swjInfo);
 
+    void disableResponseConnections() override;
+    void enableResponseConnections() override;
+
 private:
+    UniquePointer<ETableModel> m_tableModel;
+    ETableView *m_swjTableView;
+    QMap<quint32, S2::SwitchJourInfo> m_swjMap;
+    std::vector<S2::FileStruct> m_fileBuffer;
+    QMetaObject::Connection m_fillSwJConnection, m_fillJourConnection;
+    TrendViewModel *m_oscModel;
+    OscManager m_oscManager;
+    SwjModel m_swjModel;
+    quint32 m_reqSwJNum = 0;
+
     void setupUI();
     void getSwJ(const QModelIndex &idx);
-
     void exportSwJ(uint32_t swjNum);
     void eraseJournals();
     bool loadIfExist(quint32 size);
     QString filename(quint64 time) const;
-
-    UniquePointer<ETableModel> tableModel;
-    ETableView *swjTableView;
-    QMap<quint32, S2::SwitchJourInfo> swjMap;
-    std::vector<S2::FileStruct> fileBuffer;
-
-    TrendViewModel *m_oscModel;
-    OscManager oscManager;
-    SwjModel swjModel;
-    quint32 reqSwJNum = 0;
 };
 
 class SwitchJournalViewDialog final : public QDialog

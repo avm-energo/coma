@@ -15,13 +15,11 @@ class SyncConnection : public QObject
     Q_OBJECT
 private:
     AsyncConnection *m_connection;
-    QTimer *m_timeoutTimer;
     QByteArray m_byteArrayResult;
     S2::S2BFile m_s2bFile;
     bool m_busy, m_timeout, m_responseResult;
 
-    void eventloop() noexcept;
-    void longEventLoop(int scale) noexcept;
+    void eventLoop() noexcept;
     void reset() noexcept;
 
 public:
@@ -47,6 +45,7 @@ private slots:
     void fileReceived(const S2::FileStruct &file);
     void s2bfileReceived(const S2::S2BFile &file);
     void timeout();
+    void responseError(Error::Msg msg);
 };
 
 } // namespace Interface

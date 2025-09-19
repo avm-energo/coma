@@ -19,6 +19,8 @@ class OscDialog : public UDialog
 
 public:
     explicit OscDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
+    void disableResponseConnections() override;
+    void enableResponseConnections() override;
 
 public slots:
     void fillOscInfo(const S2::OscInfo &info);
@@ -31,10 +33,10 @@ private:
     QString filename(quint64 time, quint32 oscNum) const;
     bool loadIfExist(quint32 size);
 
-    OscManager manager;
-    std::unique_ptr<TrendViewModel> oscModel;
-    QMap<int, S2::OscInfo> oscMap;
-    std::vector<S2::FileStruct> fileBuffer;
-    UniquePointer<ETableModel> tableModel;
-    int reqOscNum;
+    OscManager m_manager;
+    QMap<int, S2::OscInfo> m_oscMap;
+    std::vector<S2::FileStruct> m_fileBuffer;
+    UniquePointer<ETableModel> m_tableModel;
+    int m_reqOscNum;
+    QMetaObject::Connection m_fillOscConnection, m_fillOscInfoConnection;
 };

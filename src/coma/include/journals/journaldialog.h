@@ -1,8 +1,9 @@
 #pragma once
 
-#include <journals/journaltabwidget.h>
-#include <map>
 #include <comawidgets/udialog.h>
+#include <journals/journaltabwidget.h>
+
+#include <map>
 
 namespace journals
 {
@@ -15,8 +16,12 @@ class JournalDialog : public UDialog
 public:
     explicit JournalDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
+    void disableResponseConnections() override;
+    void enableResponseConnections() override;
+
 private:
     std::map<JournalType, JournalTabWidget *> m_journals;
+    QMetaObject::Connection m_journalCreationConnection;
 
     /// \brief Метод для создания объектов журналов по полученным настройкам.
     /// \param settings[in] - настройки, полученные от DialogCreator.

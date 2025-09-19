@@ -9,7 +9,7 @@ UDialog::UDialog(Device::CurrentDevice *device, QWidget *parent) : UWidget(devic
     m_showOnceMessage = false;
     setSuccessMsg("Записано успешно");
     setErrorMsg("При записи произошла ошибка");
-    m_genRespConn = m_device->async()->connection(this, &UDialog::updateGeneralResponse);
+    enableMessages();
 }
 
 void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
@@ -43,30 +43,22 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
     m_showOnceMessage = false;
 }
 
-void UDialog::disableSuccessMessage()
-{
-    m_showSuccessMessageFlag = false;
-}
-
-void UDialog::enableSuccessMessage()
-{
-    m_showSuccessMessageFlag = true;
-}
-
 void UDialog::enableOnceMessage()
 {
     m_showOnceMessage = true;
 }
 
-bool UDialog::disableMessages()
+void UDialog::disableMessages()
 {
-    return QObject::disconnect(m_genRespConn);
+    QObject::disconnect(m_genRespConn);
+    disableUpdating();
 }
 
-bool UDialog::enableMessages()
+void UDialog::enableMessages()
 {
-    m_genRespConn = m_dataUpdater->currentConnection()->connection(this, &UDialog::updateGeneralResponse);
-    return m_genRespConn;
+    if (!m_genRespConn)
+        m_genRespConn = m_dataUpdater->currentConnection()->connection(this, &UDialog::updateGeneralResponse);
+    enableUpdating();
 }
 
 QString UDialog::successMsg() const

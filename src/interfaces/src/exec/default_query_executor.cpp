@@ -61,7 +61,7 @@ void DefaultQueryExecutor::setParsers(BaseRequestParser *reqParser, BaseResponse
             [this]
             {
                 setState(ExecutorState::WritingLongData);
-                m_timeoutTimer.setInterval(m_timeoutTimer.interval() * 5);
+                // m_timeoutTimer.setInterval(m_timeoutTimer.interval() * 5);
                 m_queue.get().deactivate();
             });
         connect(m_responseParser, &BaseResponseParser::readingLongData, this,
@@ -208,6 +208,7 @@ Commands DefaultQueryExecutor::getLastRequestedCommand() const noexcept
 
 void DefaultQueryExecutor::receiveDataFromInterface(const QByteArray &response)
 {
+    m_timeoutTimer.start(); // restart timeout timer each time the next packet is received
     // Валидация при фрагментировании ответа от устройства
     m_responseParser->accumulateToResponseBuffer(response);
     if (m_responseParser->isCompleteResponse())
@@ -245,7 +246,7 @@ void DefaultQueryExecutor::receiveDataFromInterface(const QByteArray &response)
             // Если чанк пустой, то отправили файл полностью
             else
             {
-                m_timeoutTimer.setInterval(m_timeoutTimer.interval() / 5);
+                // m_timeoutTimer.setInterval(m_timeoutTimer.interval() / 5);
                 run();
             }
             break;
@@ -280,11 +281,11 @@ void DefaultQueryExecutor::cancelQuery()
     m_responseParser->clearResponseBuffer();
     m_requestParser->clearLongDataSections();
     m_queue.get().activate();
-    if (m_timeoutTimer.isActive())
-        m_timeoutTimer.stop();
+    // if (m_timeoutTimer.isActive())
+    m_timeoutTimer.stop();
     if (getState() == ExecutorState::WritingLongData)
-        m_timeoutTimer.setInterval(m_timeoutTimer.interval() / 5);
-    setState(ExecutorState::RequestParsing);
+        // m_timeoutTimer.setInterval(m_timeoutTimer.interval() / 5);
+        setState(ExecutorState::RequestParsing);
 }
 
 void DefaultQueryExecutor::reconnectEvent()

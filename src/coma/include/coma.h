@@ -34,7 +34,7 @@ public:
     void connectStatusBar();
     void setupMenubar();
     QWidget *least();
-    static QPoint ComaCenter();
+    static QPoint comaCenter();
 
 public slots:
     void disconnectAndClear();
@@ -67,10 +67,10 @@ private:
     QMetaObject::Connection m_prbConnection;
     EStatusBar *m_bar;
 
-    AlarmWidget *AlarmW;
-    OscManager oscManager;
-    XmlEditor *editor;
-    File::Vector fileVector;
+    AlarmWidget *m_alarmW;
+    OscManager m_oscManager;
+    XmlEditor *m_xmlEditor;
+    File::Vector m_fileVector;
 
     void initInterfaceConnection();
     void setProgressBarSize(int prbnum, int size);
@@ -78,6 +78,6 @@ private:
     void setupUI();
     QToolBar *createToolBar();
     void keyPressEvent(QKeyEvent *event) override;
-    void LoadXML();
+    void loadXML();
     void prepareDialogs();
 };

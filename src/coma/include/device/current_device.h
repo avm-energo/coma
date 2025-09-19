@@ -29,7 +29,6 @@ private:
     ConfigStorage m_cfgStorage;
     S2DataManager m_s2manager;
     FileProvider m_fileProvider;
-    QTimer m_timeoutTimer;
     u32 m_bsiCounter;
     bool m_isInitStage;
 

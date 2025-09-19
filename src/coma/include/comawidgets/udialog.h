@@ -6,17 +6,19 @@
 class UDialog : public UWidget
 {
     Q_OBJECT
+
 public:
     explicit UDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
     virtual void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response);
-
-    void disableSuccessMessage();
-    void enableSuccessMessage();
+    virtual void disableResponseConnections() { };
+    virtual void enableResponseConnections() { };
     void enableOnceMessage();
-    bool disableMessages();
-    bool enableMessages();
 
     QString getFilenameForDevice() const;
+
+public slots:
+    void disableMessages();
+    void enableMessages();
 
 protected:
     QString successMsg() const;

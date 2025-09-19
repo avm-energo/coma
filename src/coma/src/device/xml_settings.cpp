@@ -172,4 +172,9 @@ const bool Settings::HaveTrue() const
     return true;
 }
 
+QJsonObject Settings::toJSON()
+{
+    return QJsonObject();
+}
+
 } // namespace Device::XmlDataTypes

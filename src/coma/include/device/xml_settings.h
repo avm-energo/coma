@@ -5,6 +5,7 @@
 #include <s2/dataitem.h>
 
 #include <QHash>
+#include <QJsonObject>
 
 namespace Device::XmlDataTypes
 {
@@ -215,6 +216,9 @@ public:
     [[nodiscard]] const bool HaveWorkJournal() const;
     /// \brief Constant getter for having those it must have
     [[nodiscard]] const bool HaveTrue() const;
+
+    /// \brief export to JSON object
+    QJsonObject toJSON();
 
 private:
     FeaturesMap m_featuresMap;

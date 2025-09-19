@@ -76,7 +76,7 @@ Coma::Coma(QWidget *parent)
     , m_currentDevice(nullptr)
     , m_dlgManager(new DialogManager(this))
     , m_reconnectDialog(nullptr)
-    , editor(nullptr)
+    , m_xmlEditor(nullptr)
 {
     connect(m_connectionManager, &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
     connect(m_connectionManager, &ConnectionManager::connectFailed, this, //
@@ -96,8 +96,8 @@ void Coma::setupUI()
     auto lyout = new QVBoxLayout(wdgt);
     auto hlyout = new QHBoxLayout;
     hlyout->addWidget(createToolBar(), Qt::AlignTop | Qt::AlignLeft);
-    AlarmW = new AlarmWidget(this);
-    hlyout->addWidget(AlarmW, Qt::AlignCenter);
+    m_alarmW = new AlarmWidget(this);
+    hlyout->addWidget(m_alarmW, Qt::AlignCenter);
     lyout->addLayout(hlyout);
     lyout->addWidget(least());
     wdgt->setLayout(lyout);
@@ -120,8 +120,8 @@ QToolBar *Coma::createToolBar()
         {
             auto dialog = new SettingsDialog(this);
             dialog->setMinimumSize(this->size() / 4);
-            connect(dialog, &SettingsDialog::alarmOperationUpdate, AlarmW, &AlarmWidget::updateAlarmOperation);
-            connect(dialog, &SettingsDialog::alarmIntervalUpdate, AlarmW, &AlarmWidget::updateAlarmInterval);
+            connect(dialog, &SettingsDialog::alarmOperationUpdate, m_alarmW, &AlarmWidget::updateAlarmOperation);
+            connect(dialog, &SettingsDialog::alarmIntervalUpdate, m_alarmW, &AlarmWidget::updateAlarmInterval);
             dialog->exec();
         });
 
@@ -207,16 +207,16 @@ void Coma::setupMenubar()
 void Coma::loadSwj(const QString &filename)
 {
     SwjManager swjManager;
-    fileVector = oscManager.loadFromFile(filename);
+    m_fileVector = m_oscManager.loadFromFile(filename);
     auto oscVector = swjManager.loadFromFile(filename);
-    std::move(oscVector.begin(), oscVector.end(), std::back_inserter(fileVector));
+    std::move(oscVector.begin(), oscVector.end(), std::back_inserter(m_fileVector));
     SwjModel *swjModel = nullptr;
     TrendViewModel *oscModel = nullptr;
-    for (auto &item : fileVector)
+    for (auto &item : m_fileVector)
     {
         std::visit(
             overloaded {
-                [&](S2::OscHeader &header) { oscManager.setHeader(header); }, //
+                [&](S2::OscHeader &header) { m_oscManager.setHeader(header); }, //
                 [&](SwjModel &model) { swjModel = &model; },                  //
                 [&](TrendViewModel *model) { oscModel = model; }              //
             },
@@ -225,7 +225,7 @@ void Coma::loadSwj(const QString &filename)
     if (!swjModel || !oscModel)
         return;
 
-    auto dialog = new SwitchJournalViewDialog(*swjModel, oscModel, oscManager);
+    auto dialog = new SwitchJournalViewDialog(*swjModel, oscModel, m_oscManager);
     dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
@@ -272,10 +272,12 @@ void Coma::createSlice()
         EMessageBox::warning(this, "Нет соединения с устройством");
         return;
     }
+    m_dlgManager.get()->disableNotifications(); // prevent messageboxes like "reading success" to appear
     QObject::disconnect(m_prbConnection);
     SliceGetDialog *dlg = new SliceGetDialog(m_currentDevice, this);
     dlg->SetupUI();
     dlg->exec();
+    m_dlgManager.get()->enableNotifications(); // enabling messageboxes
     m_prbConnection = m_currentDevice->async()->connection(this, &Coma::update);
 }
 
@@ -292,10 +294,10 @@ void Coma::openJournalViewer()
 
 void Coma::openXmlEditor()
 {
-    if (editor == nullptr)
-        editor = new XmlEditor(this);
+    if (m_xmlEditor == nullptr)
+        m_xmlEditor = new XmlEditor(this);
     else
-        editor->exec();
+        m_xmlEditor->exec();
 }
 
 void Coma::showAboutDialog()
@@ -414,7 +416,7 @@ void Coma::initInterfaceConnection()
 {
     m_prbConnection = m_currentDevice->async()->connection(this, &Coma::update);
     connectStatusBar();
-    LoadXML();
+    loadXML();
     prepareDialogs();
 }
 
@@ -457,7 +459,7 @@ void Coma::prepareDialogs()
 {
     EMessageBox::information(this, "Установлена связь с " + m_currentDevice->getDeviceName());
 
-    AlarmW->configure(m_currentDevice);
+    m_alarmW->configure(m_currentDevice);
     m_dlgManager->setupUI(m_currentDevice, size());
     // Запрашиваем s2 конфигурацию от модуля
     m_currentDevice->getFileProvider()->request(S2::FilesEnum::Config, true);
@@ -473,7 +475,7 @@ void Coma::disconnectAndClear()
 {
     if (m_currentDevice && (m_currentDevice->async()->getConnectionState() != Interface::State::Disconnect))
     {
-        AlarmW->clear();
+        m_alarmW->clear();
         m_dlgManager->clearDialogs();
         m_connectionManager->breakConnection();
         m_currentDevice = nullptr;
@@ -487,7 +489,7 @@ void Coma::keyPressEvent(QKeyEvent *event)
     QMainWindow::keyPressEvent(event);
 }
 
-void Coma::LoadXML()
+void Coma::loadXML()
 {
     auto cfgLoader = new Xml::ConfigLoader(m_currentDevice);
     if (!cfgLoader->loadSettings())

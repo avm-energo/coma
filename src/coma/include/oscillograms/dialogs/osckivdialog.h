@@ -1,7 +1,7 @@
 #pragma once
 
-#include <oscillograms/oscmanager.h>
 #include <comawidgets/udialog.h>
+#include <oscillograms/oscmanager.h>
 
 class QLabel;
 class QPushButton;
@@ -32,13 +32,12 @@ private:
     std::unique_ptr<TrendViewModel> m_oscModel;
     std::vector<S2::FileStruct> m_fileBuffer;
     quint64 m_timestamp;
-
     QPushButton *m_commandBtn, *m_readBtn;
     QLabel *m_oscFilenumLbl;
     QTimer *m_reqStateOscTimer;
     u32 m_oscFilenum, m_oldOscFilenum;
     State m_state;
-
+    QMetaObject::Connection m_updateBSDataConnection, m_receiveOscFileConnection;
     /// \brief Создаёт UI диалога.
     void setupUI();
     /// \brief Обновление текущего номера осциллограммы.
@@ -66,4 +65,7 @@ private:
 
 public:
     explicit OscKivDialog(Device::CurrentDevice *device, QWidget *parent = nullptr);
+
+    void disableResponseConnections() override;
+    void enableResponseConnections() override;
 };

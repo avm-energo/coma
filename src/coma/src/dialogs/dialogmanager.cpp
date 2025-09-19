@@ -103,3 +103,21 @@ void DialogManager::clearDialogs()
     if (m_dlgCreator != nullptr)
         m_dlgCreator->deleteDialogs();
 }
+
+void DialogManager::disableNotifications()
+{
+    for (auto &dialog : m_dlgCreator->getDialogs())
+    {
+        dialog->disableMessages();
+        dialog->disableResponseConnections();
+    }
+}
+
+void DialogManager::enableNotifications()
+{
+    for (auto &dialog : m_dlgCreator->getDialogs())
+    {
+        dialog->enableMessages();
+        dialog->enableResponseConnections();
+    }
+}

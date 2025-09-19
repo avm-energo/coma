@@ -69,6 +69,7 @@ void Iec104QueryExecutor::exec()
 
 void Iec104QueryExecutor::receiveDataFromInterface(const QByteArray &response)
 {
+    m_timeoutTimer.start(); // restart timeout timer each time the next packet is received
     m_responseParser->accumulateToResponseBuffer(response);
     m_responseParser->parse();
     switch (getState())

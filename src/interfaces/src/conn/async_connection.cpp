@@ -33,16 +33,6 @@ State AsyncConnection::getConnectionState() const noexcept
     return m_connectionState;
 }
 
-quint32 AsyncConnection::getTimeout() const noexcept
-{
-    return m_timeout;
-}
-
-void AsyncConnection::setTimeout(const quint32 timeout) noexcept
-{
-    m_timeout = timeout;
-}
-
 void AsyncConnection::reqAlarms(quint32 addr, quint32 count)
 {
     setToQueue(CommandStruct { Commands::C_ReqAlarms, addr, count });
@@ -160,6 +150,11 @@ void AsyncConnection::setToQueue(CommandStruct &&cmd)
     m_queue.addToQueue(std::move(cmd));
     emit executorWakeUp();
     emit queueSizeChanged(m_queue.size());
+}
+
+void AsyncConnection::cancelQuery()
+{
+    emit cancel();
 }
 
 } // namespace Interface

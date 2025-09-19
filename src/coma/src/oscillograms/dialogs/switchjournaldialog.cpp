@@ -24,8 +24,7 @@ constexpr unsigned char TECH_SWJ = 0x04;
 
 SwitchJournalDialog::SwitchJournalDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
-    m_dataUpdater->currentConnection()->connection(this, &SwitchJournalDialog::fillSwJInfo);
-    m_dataUpdater->currentConnection()->connection(this, &SwitchJournalDialog::fillJour);
+    enableResponseConnections();
     setupUI();
 }
 
@@ -36,25 +35,25 @@ void SwitchJournalDialog::setupUI()
     hlyout->addWidget(PBFunc::New(this, "", "Получить журналы переключений", this,
         [&]
         {
-            swjMap.clear();
-            tableModel = UniquePointer<ETableModel>(new ETableModel);
-            tableModel->setHorizontalHeaderLabels(
+            m_swjMap.clear();
+            m_tableModel = UniquePointer<ETableModel>(new ETableModel);
+            m_tableModel->setHorizontalHeaderLabels(
                 { "#", "Номер переключения", "Дата/Время", "Аппарат", "Переключение", "Скачать" });
-            swjTableView->setModel(tableModel.get());
+            m_swjTableView->setModel(m_tableModel.get());
 
             engine()->currentConnection()->writeCommand(Commands::C_ReqBlkDataTech, TECH_SWJ);
         }));
 
     hlyout->addWidget(PBFunc::New(this, "", "Стереть журнал переключений", this, &SwitchJournalDialog::eraseJournals));
     lyout->addLayout(hlyout);
-    swjTableView = new ETableView;
+    m_swjTableView = new ETableView;
 
     PushButtonDelegate *getDelegate = new PushButtonDelegate(this);
     connect(getDelegate, &PushButtonDelegate::clicked, this, &SwitchJournalDialog::getSwJ);
     // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
-    swjTableView->setItemDelegateForColumn(5, getDelegate);
+    m_swjTableView->setItemDelegateForColumn(5, getDelegate);
 
-    lyout->addWidget(swjTableView);
+    lyout->addWidget(m_swjTableView);
     setLayout(lyout);
 }
 
@@ -63,23 +62,23 @@ void SwitchJournalDialog::fillJour(const S2::FileStruct &fs)
     if (!updatesEnabled())
         return;
 
-    fileBuffer.push_back(fs);
+    m_fileBuffer.push_back(fs);
 
     switch (fs.ID)
     {
     case MT_HEAD_ID:
     {
-        auto header = oscManager.loadCommon(fs);
-        oscManager.setHeader(header);
+        auto header = m_oscManager.loadCommon(fs);
+        m_oscManager.setHeader(header);
         break;
     }
     case AVTUK_85::SWJ_ID:
     {
         SwjManager swjManager;
-        swjModel = swjManager.load(fs);
-        auto dialog = new SwitchJournalViewDialog(swjModel, m_oscModel, oscManager, this);
+        m_swjModel = swjManager.load(fs);
+        auto dialog = new SwitchJournalViewDialog(m_swjModel, m_oscModel, m_oscManager, this);
         dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        connect(dialog, &SwitchJournalViewDialog::exportJour, this, [&, swjNum = reqSwJNum] { exportSwJ(swjNum); });
+        connect(dialog, &SwitchJournalViewDialog::exportJour, this, [&, swjNum = m_reqSwJNum] { exportSwJ(swjNum); });
         dialog->show();
         dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
         dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
@@ -88,7 +87,7 @@ void SwitchJournalDialog::fillJour(const S2::FileStruct &fs)
     }
     default:
     {
-        m_oscModel = oscManager.load(fs);
+        m_oscModel = m_oscManager.load(fs);
 
         if (!m_oscModel)
         {
@@ -98,11 +97,11 @@ void SwitchJournalDialog::fillJour(const S2::FileStruct &fs)
     }
     }
     // header, swj, osc
-    if (fileBuffer.size() == 3)
+    if (m_fileBuffer.size() == 3)
     {
         QByteArray ba;
-        S2Util::StoreDataMem(ba, fileBuffer, reqSwJNum);
-        auto time = swjMap.value(reqSwJNum).time;
+        S2Util::StoreDataMem(ba, m_fileBuffer, m_reqSwJNum);
+        auto time = m_swjMap.value(m_reqSwJNum).time;
         QString file = filename(time);
         if (Files::SaveToFile(file, ba) == Error::Msg::NoError)
         {
@@ -119,10 +118,10 @@ void SwitchJournalDialog::fillSwJInfo(const S2::SwitchJourInfo &swjInfo)
 {
     if (swjInfo.num == 0)
         return;
-    if (swjMap.contains(swjInfo.num))
+    if (m_swjMap.contains(swjInfo.num))
         return;
 
-    swjMap.insert(swjInfo.num, swjInfo);
+    m_swjMap.insert(swjInfo.num, swjInfo);
 
     QVector<QVariant> lsl {
         QVariant(swjInfo.fileNum),                                            //
@@ -132,12 +131,26 @@ void SwitchJournalDialog::fillSwJInfo(const S2::SwitchJourInfo &swjInfo)
         SwjManager::switchType(swjInfo.options),                              //
         tr("Скачать"),                                                        //
     };
-    tableModel->addRowWithData(lsl);
+    m_tableModel->addRowWithData(lsl);
+}
+
+void SwitchJournalDialog::disableResponseConnections()
+{
+    QObject::disconnect(m_fillJourConnection);
+    QObject::disconnect(m_fillSwJConnection);
+}
+
+void SwitchJournalDialog::enableResponseConnections()
+{
+    if (!m_fillSwJConnection)
+        m_fillSwJConnection = m_dataUpdater->currentConnection()->connection(this, &SwitchJournalDialog::fillSwJInfo);
+    if (!m_fillJourConnection)
+        m_fillJourConnection = m_dataUpdater->currentConnection()->connection(this, &SwitchJournalDialog::fillJour);
 }
 
 void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
 {
-    fileBuffer.clear();
+    m_fileBuffer.clear();
 
     bool ok = false;
     auto model = idx.model();
@@ -147,18 +160,18 @@ void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
     // номер файла
     auto fileNum = model->data(idx.sibling(idx.row(), Column::number), Qt::DisplayRole).toUInt(&ok);
     // номер файла
-    reqSwJNum = model->data(idx.sibling(idx.row(), Column::switchNumber), Qt::DisplayRole).toUInt(&ok);
+    m_reqSwJNum = model->data(idx.sibling(idx.row(), Column::switchNumber), Qt::DisplayRole).toUInt(&ok);
     if (!ok)
     {
         qWarning("Cannot convert");
         return;
     }
-    if (!swjMap.contains(reqSwJNum))
+    if (!m_swjMap.contains(m_reqSwJNum))
     {
         qWarning("Cannot find");
         return;
     }
-    quint32 size = swjMap.value(reqSwJNum).fileLength;
+    quint32 size = m_swjMap.value(m_reqSwJNum).fileLength;
 
     if (!loadIfExist(size))
         engine()->currentConnection()->reqFile(
@@ -168,14 +181,14 @@ void SwitchJournalDialog::getSwJ(const QModelIndex &idx)
 void SwitchJournalDialog::exportSwJ(uint32_t swjNum)
 {
 
-    if (!swjMap.contains(swjNum))
+    if (!m_swjMap.contains(swjNum))
     {
         qWarning("Cannot find");
         return;
     }
-    quint32 size = swjMap.value(swjNum).fileLength;
+    quint32 size = m_swjMap.value(swjNum).fileLength;
 
-    auto time = swjMap.value(swjNum).time;
+    auto time = m_swjMap.value(swjNum).time;
     auto currentFile = filename(time);
 
     QFile swjFile(currentFile);
@@ -198,7 +211,7 @@ void SwitchJournalDialog::eraseJournals()
 
 bool SwitchJournalDialog::loadIfExist(quint32 size)
 {
-    auto time = swjMap.value(reqSwJNum).time;
+    auto time = m_swjMap.value(m_reqSwJNum).time;
     auto file = filename(time);
 
     QFile swjFile(file);
@@ -243,7 +256,7 @@ QString SwitchJournalDialog::filename(quint64 time) const
     filename.push_back(QString::number(m_device->getDeviceType(), 16));
     // filename.push_back(QString::number(board.type(), 16));
     filename.push_back("-");
-    filename.push_back(QString::number(reqSwJNum));
+    filename.push_back(QString::number(m_reqSwJNum));
     filename.push_back("-");
     filename.push_back(QString::number(time));
     filename.push_back(".swj");

@@ -40,6 +40,7 @@ public:
     Slices(Device::CurrentDevice *dev, QObject *parent = nullptr);
 
     Error::Msg CreateSlice();
+    void cancel();
 
 signals:
     void setProgressRange(Stages stage, qint64 max);

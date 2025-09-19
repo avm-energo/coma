@@ -25,7 +25,6 @@ private:
     RequestQueue m_queue;
     IfaceType m_ifaceType;
     State m_connectionState;
-    quint32 m_timeout;
 
 public:
     explicit AsyncConnection(QObject *parent = nullptr);
@@ -34,8 +33,6 @@ public:
 
     IfaceType getInterfaceType() const noexcept;
     State getConnectionState() const noexcept;
-    quint32 getTimeout() const noexcept;
-    void setTimeout(const quint32 timeout) noexcept;
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
@@ -56,6 +53,7 @@ public:
     void reqFloats(quint32 addr, quint32 count = 0);
     void reqBitStrings(quint32 addr, quint32 count = 0);
     void setToQueue(CommandStruct &&cmd);
+    void cancelQuery();
 
 public slots:
     void responseHandle(const Interface::DeviceResponse &response);
@@ -63,6 +61,7 @@ public slots:
     void setInterfaceType(const Interface::IfaceType ifaceType) noexcept;
 
 signals:
+    void cancel();
     void stateChanged(const Interface::State state);
     void silentReconnectMode();
     void protocolSettingsUpdated(const ProtocolDescription &desc);

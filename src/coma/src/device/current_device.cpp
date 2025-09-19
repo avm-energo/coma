@@ -15,13 +15,11 @@ CurrentDevice::CurrentDevice(AsyncConnection *conn)
     , m_cfgStorage(this)
     , m_s2manager(this)
     , m_fileProvider(this)
-    , m_timeoutTimer(this)
     , m_bsiCounter(0)
     , m_isInitStage(true)
 {
     m_async->connection(this, &CurrentDevice::updateBSI);
-    m_timeoutTimer.setInterval(m_async->getTimeout());
-    connect(&m_timeoutTimer, &QTimer::timeout, this, [this] { initBSIEvent(Error::Msg::Timeout); });
+    connect(m_async, &AsyncConnection::responseError, this, [this](Error::Msg) { initBSIEvent(Error::Msg::Timeout); });
 }
 
 CurrentDevice *DeviceFabric::create(AsyncConnection *connection)
@@ -122,7 +120,6 @@ void CurrentDevice::initBSI() noexcept
 {
     m_isInitStage = true;
     m_async->reqBSI();
-    m_timeoutTimer.start();
 }
 
 void CurrentDevice::internalProtocolUpdate() noexcept
@@ -176,7 +173,6 @@ void CurrentDevice::initBSIEvent(const Error::Msg status) noexcept
 {
     if (m_isInitStage)
     {
-        m_timeoutTimer.stop();
         m_isInitStage = false;
         emit initBSIFinished(status);
     }

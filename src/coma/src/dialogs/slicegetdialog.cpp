@@ -19,14 +19,14 @@ void SliceGetDialog::SetupUI()
     hlyout->addWidget(PBFunc::New(this, "", "Старт", this, &SliceGetDialog::startProcess));
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
-    lyout->addWidget(
-        PrbFunc::NewLBL(this, "Получение блока Bsi", c_ProgressMap.value(Engines::Slices::Stages::BsiLoad)));
+    lyout->addWidget(PrbFunc::NewLBL(
+        this, "Получение блока Bsi", c_ProgressMap.value(Engines::Slices::Stages::BsiLoad), "%v из %m"));
     lyout->addWidget(
         PrbFunc::NewLBL(this, "Получение блока BsiExt", c_ProgressMap.value(Engines::Slices::Stages::BsiLoadExt)));
     lyout->addWidget(
         PrbFunc::NewLBL(this, "Получение конфигурации", c_ProgressMap.value(Engines::Slices::Stages::ConfigLoad)));
     lyout->addWidget(PrbFunc::NewLBL(
-        this, "Скачивание системного журнала", c_ProgressMap.value(Engines::Slices::Stages::SysJourLoad)));
+        this, "Скачивание системного журнала", c_ProgressMap.value(Engines::Slices::Stages::SysJourLoad), "%v из %m"));
     lyout->addWidget(PrbFunc::NewLBL(
         this, "Скачивание журнала событий", c_ProgressMap.value(Engines::Slices::Stages::WorkJourLoad)));
     lyout->addWidget(PrbFunc::NewLBL(
@@ -42,7 +42,12 @@ void SliceGetDialog::SetupUI()
     lyout->addWidget(
         PrbFunc::NewLBL(this, "Сохранение результатов", c_ProgressMap.value(Engines::Slices::Stages::Save)));
     hlyout->addStretch(100);
-    hlyout->addWidget(PBFunc::New(this, "", "Закрыть", [this]() { this->close(); }));
+    hlyout->addWidget(PBFunc::New(this, "", "Закрыть",
+        [this]()
+        {
+            m_engine->cancel();
+            this->close();
+        }));
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
     setLayout(lyout);

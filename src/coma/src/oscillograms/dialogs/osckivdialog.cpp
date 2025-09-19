@@ -31,12 +31,24 @@ OscKivDialog::OscKivDialog(Device::CurrentDevice *device, QWidget *parent)
     , m_oldOscFilenum(0)
     , m_state(State::Init)
 {
-    m_reqStateOscTimer->setInterval(100);
+    m_reqStateOscTimer->setInterval(1000);
     QObject::connect(m_reqStateOscTimer, &QTimer::timeout, this, &OscKivDialog::reqOscState);
-    m_device->async()->connection(this, &OscKivDialog::updateBitStringData);
-    m_device->async()->connection(this, &OscKivDialog::receiveOscFile);
     setupUI();
     reqOscState();
+}
+
+void OscKivDialog::disableResponseConnections()
+{
+    QObject::disconnect(m_updateBSDataConnection);
+    QObject::disconnect(m_receiveOscFileConnection);
+}
+
+void OscKivDialog::enableResponseConnections()
+{
+    if (!m_updateBSDataConnection)
+        m_receiveOscFileConnection = m_device->async()->connection(this, &OscKivDialog::updateBitStringData);
+    if (!m_receiveOscFileConnection)
+        m_receiveOscFileConnection = m_device->async()->connection(this, &OscKivDialog::receiveOscFile);
 }
 
 void OscKivDialog::setupUI()

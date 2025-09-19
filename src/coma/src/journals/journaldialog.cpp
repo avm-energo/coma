@@ -15,8 +15,8 @@ namespace journals
 
 JournalDialog::JournalDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
-    disableSuccessMessage();
-    m_device->async()->connection(this, &JournalDialog::createJournalAndFillModel);
+    disableMessages();
+    enableResponseConnections();
     createJournalTabs();
     setupUI();
 }
@@ -105,4 +105,14 @@ void JournalDialog::enableOnceSuccessMsg(const QString &msg)
     enableOnceMessage();
 }
 
+void JournalDialog::disableResponseConnections()
+{
+    QObject::disconnect(m_journalCreationConnection);
+}
+
+void JournalDialog::enableResponseConnections()
+{
+    if (!m_journalCreationConnection)
+        m_journalCreationConnection = m_device->async()->connection(this, &JournalDialog::createJournalAndFillModel);
+}
 }

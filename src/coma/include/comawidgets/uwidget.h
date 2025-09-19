@@ -31,9 +31,14 @@ public:
     virtual void writeCommand(const DataTypes::SingleCommand &cmd);
     ModuleDataUpdater *engine();
     Device::CurrentDevice *device();
+    void disableUpdating();
+    void enableUpdating();
 
 protected:
     bool checkPassword();
     ModuleDataUpdater *m_dataUpdater;
     Device::CurrentDevice *m_device;
+
+private:
+    QMetaObject::Connection m_updateSPConnection, m_updateFlConnection, m_updateBSConnection;
 };

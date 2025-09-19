@@ -20,9 +20,7 @@ UWidget::UWidget(Device::CurrentDevice *device, QWidget *parent)
     Q_ASSERT(m_device != nullptr);
     // Отключим обновление виджета по умолчанию
     m_dataUpdater->setUpdatesEnabled(false);
-    connect(m_dataUpdater, &ModuleDataUpdater::itsTimeToUpdateSinglePointSignal, this, &UWidget::updateSPData);
-    connect(m_dataUpdater, &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &UWidget::updateFloatData);
-    connect(m_dataUpdater, &ModuleDataUpdater::itsTimeToUpdateBitStringSignal, this, &UWidget::updateBitStringData);
+    enableUpdating();
 }
 
 const QString UWidget::getCaption()
@@ -73,6 +71,26 @@ ModuleDataUpdater *UWidget::engine()
 Device::CurrentDevice *UWidget::device()
 {
     return m_device;
+}
+
+void UWidget::disableUpdating()
+{
+    QObject::disconnect(m_updateBSConnection);
+    QObject::disconnect(m_updateFlConnection);
+    QObject::disconnect(m_updateSPConnection);
+}
+
+void UWidget::enableUpdating()
+{
+    if (!m_updateSPConnection)
+        m_updateSPConnection = connect(
+            m_dataUpdater, &ModuleDataUpdater::itsTimeToUpdateSinglePointSignal, this, &UWidget::updateSPData);
+    if (!m_updateFlConnection)
+        m_updateFlConnection
+            = connect(m_dataUpdater, &ModuleDataUpdater::itsTimeToUpdateFloatSignal, this, &UWidget::updateFloatData);
+    if (!m_updateBSConnection)
+        m_updateBSConnection = connect(
+            m_dataUpdater, &ModuleDataUpdater::itsTimeToUpdateBitStringSignal, this, &UWidget::updateBitStringData);
 }
 
 bool UWidget::updatesEnabled()

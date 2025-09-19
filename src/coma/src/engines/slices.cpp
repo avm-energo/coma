@@ -24,6 +24,10 @@ Error::Msg Slices::CreateSlice()
         // get BsiExt
         if (m_curDev->getConfigStorage()->getDeviceSettings().HaveBSIExt())
             writeFile("bsiext", getBsiExt());
+        else
+            setDummyRangeAndValue(BsiLoadExt, sizeof(m_curDev->bsiExt()));
+        // get config
+        writeFile("config", getConfig());
         // get journals
         writeFile("sysjour", getSysJournal());
         if (m_curDev->getConfigStorage()->getDeviceSettings().HaveWorkJournal())
@@ -35,6 +39,8 @@ Error::Msg Slices::CreateSlice()
     }
     return Error::Msg::NoError;
 }
+
+void Slices::cancel() { }
 
 QByteArray Slices::getWorkJournal()
 {
@@ -63,8 +69,13 @@ QByteArray Slices::getJournal(Stages stage, S2::FilesEnum fileNum)
     m_curDev->sync()->readS2BFileSync(fileNum, file);
     QObject::disconnect(rangeConn);
     QObject::disconnect(valueConn);
-    ba.resize(sizeof(file));
-    memcpy(&ba.data()[0], &file, sizeof(file));
+    ba.resize(sizeof(S2::S2BFileHeader));
+    memcpy(&ba.data()[0], &file.header, sizeof(S2::S2BFileHeader));
+    ba.append(file.data);
+    QByteArray tmpba;
+    tmpba.resize(sizeof(S2::S2BFileTail));
+    memcpy(&tmpba.data()[0], &file.tail, sizeof(S2::S2BFileTail));
+    ba.append(tmpba);
     return ba;
 }
 
@@ -75,6 +86,7 @@ QByteArray Slices::getCurrentState()
 
 QByteArray Slices::getConfig()
 {
+
     return QByteArray();
 }
 

@@ -1,12 +1,13 @@
 #include "interfaces/connectionmanager.h"
 
-#include <QDebug>
 #include <gen/std_ext.h>
 #include <interfaces/conn/sync_connection.h>
 #include <interfaces/exec/query_executor_fabric.h>
 #include <interfaces/ifaces/ethernet.h>
 #include <interfaces/ifaces/serialport.h>
 #include <interfaces/ifaces/usbhidport.h>
+
+#include <QDebug>
 
 namespace Interface
 {
@@ -40,40 +41,47 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
     std::visit([this](const auto &settings) { setup(settings); }, connectionData.settings);
     std::visit( // Инициализация контекста для обмена данными
         overloaded {
-            [this](const UsbHidSettings &settings) {
+            [this](const UsbHidSettings &settings)
+            {
                 auto interface = new UsbHidPort(settings);
                 auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->getQueue(), settings);
                 m_currentConnection->setInterfaceType(IfaceType::USB);
+                connect(m_currentConnection, &AsyncConnection::cancel, executor, &DefaultQueryExecutor::cancelQuery);
                 m_context.init(interface, executor, Strategy::Sync, Qt::DirectConnection);
             },
-            [this](const SerialPortSettings &settings) {
+            [this](const SerialPortSettings &settings)
+            {
                 auto interface = new SerialPort(settings);
                 auto executor = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->getQueue(), settings);
                 m_currentConnection->setInterfaceType(IfaceType::RS485);
+                connect(m_currentConnection, &AsyncConnection::cancel, executor, &DefaultQueryExecutor::cancelQuery);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
-            [this](const IEC104Settings &settings) {
+            [this](const IEC104Settings &settings)
+            {
                 auto interface = new Ethernet(settings);
                 auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->getQueue(), settings);
                 m_currentConnection->setInterfaceType(IfaceType::Ethernet);
+                connect(m_currentConnection, &AsyncConnection::cancel, executor, &DefaultQueryExecutor::cancelQuery);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
-            [](const EmulatorSettings &settings) {
+            [](const EmulatorSettings &settings)
+            {
                 /// TODO: доделать
                 Q_UNUSED(settings);
             } //
         },
         connectionData.settings);
 
-    connect(m_context.m_iface, &BaseInterface::error, //
+    connect(m_context.m_iface, &BaseInterface::error,             //
         this, &ConnectionManager::handleInterfaceErrors, Qt::QueuedConnection);
     connect(m_context.m_executor, &DefaultQueryExecutor::timeout, //
         this, &ConnectionManager::handleQueryExecutorTimeout);
-    connect(this, &ConnectionManager::reconnectInterface, //
+    connect(this, &ConnectionManager::reconnectInterface,         //
         m_context.m_iface, &BaseInterface::reconnect, Qt::QueuedConnection);
-    connect(this, &ConnectionManager::reconnectInterface, //
+    connect(this, &ConnectionManager::reconnectInterface,         //
         m_context.m_executor, &DefaultQueryExecutor::reconnectEvent, Qt::QueuedConnection);
-    connect(m_context.m_iface, &BaseInterface::reconnected, //
+    connect(m_context.m_iface, &BaseInterface::reconnected,       //
         this, &ConnectionManager::interfaceReconnected, Qt::QueuedConnection);
 
     m_currentConnection->reqBSI();
@@ -89,7 +97,6 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
 
 void ConnectionManager::setup(const BaseSettings &settings) noexcept
 {
-    m_currentConnection->setTimeout(settings.m_timeout);
     m_silentTimer->setInterval(settings.m_silentInterval);
     m_errorMax = settings.m_maxErrors;
     m_timeoutMax = settings.m_maxTimeouts;

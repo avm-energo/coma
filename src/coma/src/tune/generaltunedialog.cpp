@@ -50,7 +50,7 @@ void GeneralTuneDialog::SetupUI(bool noReport)
     hlyout->addWidget(m_tuneTabWidget->set(), 100);
     setLayout(hlyout);
     setCalibrButtons();
-    disableSuccessMessage();
+    disableMessages();
 }
 
 void GeneralTuneDialog::prepareReport() { }

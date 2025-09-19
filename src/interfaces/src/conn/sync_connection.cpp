@@ -10,31 +10,18 @@
 namespace Interface
 {
 
-SyncConnection::SyncConnection(AsyncConnection *connection) noexcept
-    : QObject(connection)
-    , m_connection(connection)
-    , m_timeoutTimer(new QTimer(this))
+SyncConnection::SyncConnection(AsyncConnection *connection) noexcept : QObject(connection), m_connection(connection)
 {
-    m_timeoutTimer->setInterval(m_connection->getTimeout());
-    connect(m_timeoutTimer, &QTimer::timeout, this, &SyncConnection::timeout);
+    connect(m_connection, &AsyncConnection::responseError, this, &SyncConnection::responseError);
 }
 
-void SyncConnection::eventloop() noexcept
+void SyncConnection::eventLoop() noexcept
 {
-    m_timeoutTimer->start();
     while (m_busy)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
         StdFunc::Wait();
     }
-}
-
-void SyncConnection::longEventLoop(int scale) noexcept
-{
-    auto oldInterval = m_timeoutTimer->interval();
-    m_timeoutTimer->setInterval(oldInterval * scale);
-    eventloop();
-    m_timeoutTimer->setInterval(oldInterval);
 }
 
 void SyncConnection::reset() noexcept
@@ -83,6 +70,13 @@ void SyncConnection::timeout()
     m_timeout = true;
 }
 
+void SyncConnection::responseError(Error::Msg msg)
+{
+    Q_UNUSED(msg)
+    m_busy = false;
+    m_timeout = true;
+}
+
 Error::Msg SyncConnection::reqBSI()
 {
     reset();
@@ -96,7 +90,7 @@ Error::Msg SyncConnection::reqBSI()
                 busy = false;
         });
     m_connection->reqBSI();
-    eventloop();
+    eventLoop();
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;
@@ -116,7 +110,7 @@ Error::Msg SyncConnection::reqBlockSync(
 
     Q_ASSERT(blockmap.contains(blocktype));
     m_connection->writeCommand(blockmap.value(blocktype), blocknum);
-    eventloop();
+    eventLoop();
     QObject::disconnect(conn);
 
     quint32 resultsize = m_byteArrayResult.size();
@@ -138,7 +132,7 @@ Error::Msg SyncConnection::writeBlockSync(
     {
         auto conn = m_connection->connection(this, &SyncConnection::responseReceived);
         m_connection->writeCommand(Commands::C_WriteTuningCoef, QVariant::fromValue(bs));
-        eventloop();
+        eventLoop();
         QObject::disconnect(conn);
         if (m_timeout)
             return Error::Msg::Timeout;
@@ -156,7 +150,7 @@ Error::Msg SyncConnection::writeFileSync(S2::FilesEnum filenum, const QByteArray
     reset();
     auto conn = m_connection->connection(this, &SyncConnection::responseReceived);
     m_connection->writeFile(quint32(filenum), ba);
-    longEventLoop(5);
+    eventLoop();
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;
@@ -173,7 +167,7 @@ Error::Msg SyncConnection::readS2FileSync(S2::FilesEnum filenum)
     reset();
     auto conn = m_connection->connection(this, [=](const QList<S2::DataItem> &) { m_busy = false; });
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::DefaultS2);
-    eventloop();
+    eventLoop();
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;
@@ -186,7 +180,7 @@ Error::Msg SyncConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
     reset();
     auto conn = m_connection->connection(this, &SyncConnection::fileReceived);
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::Binary);
-    longEventLoop(5);
+    eventLoop();
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;
@@ -200,7 +194,7 @@ Error::Msg SyncConnection::readS2BFileSync(S2::FilesEnum filenum, S2::S2BFile &f
     auto conn = m_connection->connection(this, &SyncConnection::s2bfileReceived);
     auto conn2 = m_connection->connection(this, &SyncConnection::responseReceived);
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::Binary);
-    longEventLoop(50);
+    eventLoop();
     QObject::disconnect(conn);
     QObject::disconnect(conn2);
     if (m_timeout)
@@ -235,7 +229,7 @@ Error::Msg SyncConnection::reqTimeSync(void *block, quint32 blocksize)
     }
 #endif
     m_connection->reqTime();
-    eventloop();
+    eventLoop();
     QObject::disconnect(conn);
     if (m_timeout)
         return Error::Msg::Timeout;

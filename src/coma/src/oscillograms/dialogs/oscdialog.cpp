@@ -16,9 +16,21 @@
 
 OscDialog::OscDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
-    m_dataUpdater->currentConnection()->connection(this, &OscDialog::fillOscInfo);
-    m_dataUpdater->currentConnection()->connection(this, &OscDialog::fillOsc);
     setupUI();
+}
+
+void OscDialog::disableResponseConnections()
+{
+    QObject::disconnect(m_fillOscInfoConnection);
+    QObject::disconnect(m_fillOscConnection);
+}
+
+void OscDialog::enableResponseConnections()
+{
+    if (!m_fillOscInfoConnection)
+        m_fillOscInfoConnection = m_dataUpdater->currentConnection()->connection(this, &OscDialog::fillOscInfo);
+    if (!m_fillOscConnection)
+        m_fillOscConnection = m_dataUpdater->currentConnection()->connection(this, &OscDialog::fillOsc);
 }
 
 void OscDialog::setupUI()
@@ -36,11 +48,11 @@ void OscDialog::setupUI()
     auto *getButton = PBFunc::New(this, "", "Получить данные по осциллограммам ", this,
         [&, tv]
         {
-            oscMap.clear();
-            tableModel = UniquePointer<ETableModel>(new ETableModel);
-            tableModel->setHorizontalHeaderLabels({ "#", "Дата/Время", "ИД", "Длина", "Скачать" });
+            m_oscMap.clear();
+            m_tableModel = UniquePointer<ETableModel>(new ETableModel);
+            m_tableModel->setHorizontalHeaderLabels({ "#", "Дата/Время", "ИД", "Длина", "Скачать" });
 
-            tv->setModel(tableModel.get());
+            tv->setModel(m_tableModel.get());
             engine()->currentConnection()->writeCommand(Commands::C_ReqOscInfo, 1);
         });
 
@@ -56,7 +68,7 @@ void OscDialog::setupUI()
 
 void OscDialog::getOsc(const QModelIndex &idx)
 {
-    fileBuffer.clear();
+    m_fileBuffer.clear();
 
     auto model = idx.model();
     if (!model)
@@ -66,7 +78,7 @@ void OscDialog::getOsc(const QModelIndex &idx)
     }
     bool ok = false;
     // номер осциллограммы
-    reqOscNum = model->data(idx.sibling(idx.row(), Column::number), Qt::DisplayRole).toInt(&ok);
+    m_reqOscNum = model->data(idx.sibling(idx.row(), Column::number), Qt::DisplayRole).toInt(&ok);
     quint32 size = idx.model()->data(idx.sibling(idx.row(), Column::size), Qt::DisplayRole).toInt(&ok);
     if (!ok)
     {
@@ -75,7 +87,7 @@ void OscDialog::getOsc(const QModelIndex &idx)
     }
     if (!loadIfExist(size))
         engine()->currentConnection()->reqFile(
-            reqOscNum, DataTypes::FileFormat::CustomS2, size + sizeof(S2::DataRecHeader));
+            m_reqOscNum, DataTypes::FileFormat::CustomS2, size + sizeof(S2::DataRecHeader));
 }
 
 void OscDialog::eraseOsc()
@@ -100,8 +112,8 @@ QString OscDialog::filename(quint64 time, quint32 oscNum) const
 
 bool OscDialog::loadIfExist(quint32 size)
 {
-    auto time = oscMap.value(reqOscNum).unixtime;
-    auto file = filename(time, reqOscNum);
+    auto time = m_oscMap.value(m_reqOscNum).unixtime;
+    auto file = filename(time, m_reqOscNum);
     QByteArray ba;
 
     QFile swjFile(file);
@@ -134,7 +146,7 @@ bool OscDialog::loadIfExist(quint32 size)
 
 void OscDialog::fillOscInfo(const S2::OscInfo &info)
 {
-    oscMap.insert(info.typeHeader.id, info);
+    m_oscMap.insert(info.typeHeader.id, info);
     QVector<QVariant> lsl {
         QString::number(info.typeHeader.id),                      //
         TimeFunc::UnixTime64ToInvStringFractional(info.unixtime), //
@@ -142,7 +154,7 @@ void OscDialog::fillOscInfo(const S2::OscInfo &info)
         info.typeHeader.numByte,                                  //
         "Скачать",
     };
-    tableModel->addRowWithData(lsl);
+    m_tableModel->addRowWithData(lsl);
 }
 
 void OscDialog::fillOsc(const S2::FileStruct &file)
@@ -154,8 +166,8 @@ void OscDialog::fillOsc(const S2::FileStruct &file)
     {
     case MT_HEAD_ID:
     {
-        auto header = manager.loadCommon(file);
-        manager.setHeader(header);
+        auto header = m_manager.loadCommon(file);
+        m_manager.setHeader(header);
         break;
     }
     // ignore swj here
@@ -169,14 +181,14 @@ void OscDialog::fillOsc(const S2::FileStruct &file)
         dlg->loadOsc(file);
     }
     }
-    fileBuffer.push_back(file);
+    m_fileBuffer.push_back(file);
     // header, osc
-    if (fileBuffer.size() == 2)
+    if (m_fileBuffer.size() == 2)
     {
         QByteArray ba;
-        S2Util::StoreDataMem(ba, fileBuffer, reqOscNum);
-        auto time = oscMap.value(reqOscNum).unixtime;
-        QString sfile = filename(time, reqOscNum);
+        S2Util::StoreDataMem(ba, m_fileBuffer, m_reqOscNum);
+        auto time = m_oscMap.value(m_reqOscNum).unixtime;
+        QString sfile = filename(time, m_reqOscNum);
         if (Files::SaveToFile(sfile, ba) == Error::Msg::NoError)
             qInfo() << "Swj saved: " << sfile;
         else
