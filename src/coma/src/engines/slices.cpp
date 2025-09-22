@@ -24,6 +24,7 @@ Error::Msg Slices::CreateSlice()
         // get BsiExt
         if (m_curDev->getConfigStorage()->getDeviceSettings().HaveBSIExt())
             writeFile("bsiext", getBsiExt());
+        writeFile("config", getConfig());
         // get journals
         writeFile("sysjour", getSysJournal());
         if (m_curDev->getConfigStorage()->getDeviceSettings().HaveWorkJournal())

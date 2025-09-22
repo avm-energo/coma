@@ -1,5 +1,7 @@
 #include "interfaces/conn/async_connection.h"
 
+#include "device/bsi.h"
+#include "device/bsi_ext.h"
 #include <gen/std_ext.h>
 #include <s2/s2util.h>
 
@@ -55,9 +57,9 @@ void AsyncConnection::reqFloats(quint32 addr, quint32 count)
 
 void AsyncConnection::reqBitStrings(quint32 addr, quint32 count)
 {
-    if (addr == addr::bsiStartReg)
+    if (addr == Device::bsiStartReg)
         reqBSI();
-    else if (addr == addr::bsiExtStartReg)
+    else if (addr == Device::bsiExtStartReg)
         reqBSIExt();
     else
         setToQueue(CommandStruct { Commands::C_ReqBitStrings, addr, count });
@@ -70,12 +72,12 @@ void AsyncConnection::reqStartup(quint32 sigAdr, quint32 sigCount)
 
 void AsyncConnection::reqBSI()
 {
-    setToQueue(CommandStruct { Commands::C_ReqBSI, addr::bsiStartReg, addr::bsiCountRegs });
+    setToQueue(CommandStruct { Commands::C_ReqBSI, Device::bsiStartReg, Device::bsiCountRegs });
 }
 
 void AsyncConnection::reqBSIExt()
 {
-    setToQueue(CommandStruct { Commands::C_ReqBSIExt, addr::bsiExtStartReg, addr::bsiExtCountRegs });
+    setToQueue(CommandStruct { Commands::C_ReqBSIExt, Device::bsiExtStartReg, Device::bsiExtCountRegs });
 }
 
 void AsyncConnection::reqFile(quint32 id, FileFormat format, quint32 expectedSize)

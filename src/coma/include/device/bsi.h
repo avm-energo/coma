@@ -25,4 +25,7 @@ struct BlockStartupInfo final
     u32 Hth;        ///< Состояние устройства.
 };
 
+constexpr quint16 bsiStartReg = 1;
+constexpr quint16 bsiCountRegs = 15;
+
 } // namespace Device

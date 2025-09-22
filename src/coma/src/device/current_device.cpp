@@ -135,9 +135,9 @@ void CurrentDevice::updateBSI(const DataTypes::BitStringStruct &value)
 {
     using namespace Interface;
     constexpr auto bsiMembers = sizeof(BlockStartupInfo) / sizeof(u32);
-    if (value.sigAdr >= addr::bsiStartReg && value.sigAdr <= addr::bsiCountRegs)
+    if (value.sigAdr >= Device::bsiStartReg && value.sigAdr <= Device::bsiCountRegs)
     {
-        u32 &item = *(reinterpret_cast<u32 *>(&m_bsi) + (value.sigAdr - addr::bsiStartReg));
+        u32 &item = *(reinterpret_cast<u32 *>(&m_bsi) + (value.sigAdr - Device::bsiStartReg));
         item = value.sigVal;
         ++m_bsiCounter;
         if (m_bsiCounter == bsiMembers)

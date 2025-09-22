@@ -5,6 +5,9 @@
 namespace Device
 {
 
+constexpr quint16 bsiExtStartReg = 40;
+constexpr quint16 bsiExtCountRegs = 5;
+
 /// \brief Структура, описывающая расширенный блок базовой информации
 ///  (BSI Extended) для подключенного устройства.
 class BlockStartupInfoExtended final : public QObject

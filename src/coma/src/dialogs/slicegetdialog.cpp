@@ -1,4 +1,6 @@
 #include <dialogs/slicegetdialog.h>
+#include <engines/engines.h>
+#include <gen/threadpool.h>
 #include <widgets/pbfunc.h>
 #include <widgets/prbfunc.h>
 
@@ -60,5 +62,5 @@ void SliceGetDialog::setPrbValue(Engines::Slices::Stages stage, qint64 value)
 
 void SliceGetDialog::startProcess()
 {
-    m_engine->CreateSlice();
+    Engines::Engines::GetInstance() m_engine->CreateSlice();
 }

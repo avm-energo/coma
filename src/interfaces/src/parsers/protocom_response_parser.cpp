@@ -1,5 +1,7 @@
 #include "interfaces/parsers/protocom_response_parser.h"
 
+#include "device/bsi.h"
+
 namespace Interface
 {
 
@@ -72,7 +74,8 @@ void ProtocomResponseParser::parse()
     case Proto::Commands::ReadBlkStartInfo:
     {
         // Update data
-        Q_ASSERT(m_responseBuffer.size() == sizeof(quint32) * 15); // check bsi size
+        Q_ASSERT(
+            m_responseBuffer.size() >= static_cast<long>(sizeof(quint32) * Device::bsiCountRegs)); // check bsi size
         auto bsiPtr = reinterpret_cast<quint32 *>(m_responseBuffer.data());
         m_deviceData.m_typeB = bsiPtr[0];
         m_deviceData.m_typeM = bsiPtr[1];
