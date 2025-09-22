@@ -1,5 +1,6 @@
 #include "interfaces/connectionmanager.h"
 
+#include "device/bsi.h"
 #include <gen/std_ext.h>
 #include <interfaces/conn/sync_connection.h>
 #include <interfaces/exec/query_executor_fabric.h>
@@ -46,7 +47,6 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
                 auto interface = new UsbHidPort(settings);
                 auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->getQueue(), settings);
                 m_currentConnection->setInterfaceType(IfaceType::USB);
-                connect(m_currentConnection, &AsyncConnection::cancel, executor, &DefaultQueryExecutor::cancelQuery);
                 m_context.init(interface, executor, Strategy::Sync, Qt::DirectConnection);
             },
             [this](const SerialPortSettings &settings)
@@ -54,7 +54,6 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
                 auto interface = new SerialPort(settings);
                 auto executor = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->getQueue(), settings);
                 m_currentConnection->setInterfaceType(IfaceType::RS485);
-                connect(m_currentConnection, &AsyncConnection::cancel, executor, &DefaultQueryExecutor::cancelQuery);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](const IEC104Settings &settings)
@@ -62,7 +61,6 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
                 auto interface = new Ethernet(settings);
                 auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->getQueue(), settings);
                 m_currentConnection->setInterfaceType(IfaceType::Ethernet);
-                connect(m_currentConnection, &AsyncConnection::cancel, executor, &DefaultQueryExecutor::cancelQuery);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [](const EmulatorSettings &settings)
@@ -97,6 +95,7 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
 
 void ConnectionManager::setup(const BaseSettings &settings) noexcept
 {
+    m_currentConnection->setTimeout(settings.m_timeout);
     m_silentTimer->setInterval(settings.m_silentInterval);
     m_errorMax = settings.m_maxErrors;
     m_timeoutMax = settings.m_maxTimeouts;
@@ -162,7 +161,7 @@ void ConnectionManager::handleQueryExecutorTimeout()
 void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
 {
     // fast checking
-    if (data.sigAdr == addr::bsiStartReg)
+    if (data.sigAdr == Device::bsiStartReg)
     {
         if (m_isInitial)
             m_isInitial = false;

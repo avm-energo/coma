@@ -1,5 +1,6 @@
 #include "interfaces/conn/sync_connection.h"
 
+#include "device/bsi.h"
 #include <gen/std_ext.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/async_connection.h>
@@ -84,9 +85,9 @@ Error::Msg SyncConnection::reqBSI()
     auto conn = m_connection->connection(this,
         [&, &busy = m_busy](const DataTypes::BitStringStruct &bs)
         {
-            if (bs.sigAdr >= addr::bsiStartReg && bs.sigAdr < addr::bsiStartReg + addr::bsiCountRegs)
+            if (bs.sigAdr >= Device::bsiStartReg && bs.sigAdr < Device::bsiStartReg + Device::bsiCountRegs)
                 ++count;
-            if (count == addr::bsiCountRegs)
+            if (count == Device::bsiCountRegs)
                 busy = false;
         });
     m_connection->reqBSI();
