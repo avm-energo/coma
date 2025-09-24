@@ -209,13 +209,13 @@ public:
     /// Havings
 
     /// \brief Constant getter for having BSI Ext settings
-    [[nodiscard]] const bool HaveBSIExt() const;
+    [[nodiscard]] bool HaveBSIExt() const;
     /// \brief Constant getter for having measure journal
-    [[nodiscard]] const bool HaveMeasJournal() const;
+    [[nodiscard]] bool HaveMeasJournal() const;
     /// \brief Constant getter for having work journal
-    [[nodiscard]] const bool HaveWorkJournal() const;
+    [[nodiscard]] bool HaveWorkJournal() const;
     /// \brief Constant getter for having those it must have
-    [[nodiscard]] const bool HaveTrue() const;
+    [[nodiscard]] bool HaveTrue() const;
 
     /// \brief export to JSON object
     QJsonObject toJSON();

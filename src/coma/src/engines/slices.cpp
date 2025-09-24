@@ -12,8 +12,9 @@ namespace Engines
 
 Slices::Slices(Device::CurrentDevice *dev, QObject *parent) : QObject(parent), m_curDev(dev) { }
 
-Error::Msg Slices::CreateSlice()
+void Slices::createSlice()
 {
+    m_isCancelled = false;
     QTemporaryDir dir;
     QByteArray ba;
     if (dir.isValid())
@@ -27,20 +28,27 @@ Error::Msg Slices::CreateSlice()
         else
             setDummyRangeAndValue(BsiLoadExt, sizeof(m_curDev->bsiExt()));
         // get config
-        writeFile("config", getConfig());
+        if (!m_isCancelled)
+            writeFile("config", getConfig());
         // get journals
-        writeFile("sysjour", getSysJournal());
-        if (m_curDev->getConfigStorage()->getDeviceSettings().HaveWorkJournal())
+        if (!m_isCancelled)
+            writeFile("sysjour", getSysJournal());
+        if ((m_curDev->getConfigStorage()->getDeviceSettings().HaveWorkJournal()) && !m_isCancelled)
             writeFile("workjour", getWorkJournal());
-        if (m_curDev->getConfigStorage()->getDeviceSettings().HaveMeasJournal())
+        if ((m_curDev->getConfigStorage()->getDeviceSettings().HaveMeasJournal()) && !m_isCancelled)
             writeFile("measjour", getMeasJournal());
         // get oscs
         // writeFile("oscs", getOscs());
     }
-    return Error::Msg::NoError;
+    if (!m_isCancelled)
+        emit result(Error::Msg::NoError);
+    emit finished();
 }
 
-void Slices::cancel() { }
+void Slices::cancel()
+{
+    m_curDev->async()->cancelQuery();
+}
 
 QByteArray Slices::getWorkJournal()
 {
@@ -66,7 +74,8 @@ QByteArray Slices::getJournal(Stages stage, S2::FilesEnum fileNum)
         = QObject::connect(m_curDev->sync(), &Interface::SyncConnection::setRange, this, &Slices::setRange);
     QMetaObject::Connection valueConn
         = QObject::connect(m_curDev->sync(), &Interface::SyncConnection::setValue, this, &Slices::setValue);
-    m_curDev->sync()->readS2BFileSync(fileNum, file);
+    if (m_curDev->sync()->readS2BFileSync(fileNum, file) != Error::Msg::NoError)
+        cancelled();
     QObject::disconnect(rangeConn);
     QObject::disconnect(valueConn);
     ba.resize(sizeof(S2::S2BFileHeader));
@@ -122,9 +131,9 @@ QByteArray Slices::getOscs()
     QObject::disconnect(conn);
     ba.append(m_tempBA);
     //
-    while (!oscIds.isEmpty())
+    while (!m_oscIds.isEmpty())
     {
-        OscInfo info = oscIds.takeFirst();
+        OscInfo info = m_oscIds.takeFirst();
     }
     /*    if (!loadIfExist(size))
             engine()->currentConnection()->reqFile(
@@ -148,7 +157,7 @@ void Slices::oscTechBlockReceived(const S2::OscInfo &resp)
     QByteArray ba(sizeof(S2::OscInfo), Qt::Uninitialized);
     memcpy(ba.data(), &resp, sizeof(S2::OscInfo));
     m_tempBA.append(ba);
-    oscIds.append({ resp.typeHeader.id, resp.typeHeader.numByte });
+    m_oscIds.append({ resp.typeHeader.id, resp.typeHeader.numByte });
     m_timeoutTimer.start(UserSettings::get(UserSettings::ProtocomTimeout));
 }
 
@@ -171,5 +180,11 @@ void Slices::setDummyRangeAndValue(Stages stage, qint64 size)
 {
     emit setProgressRange(stage, size);
     emit setProgressValue(stage, size);
+}
+
+void Slices::cancelled()
+{
+    emit result(Error::Msg::Cancelled);
+    m_isCancelled = true;
 }
 }

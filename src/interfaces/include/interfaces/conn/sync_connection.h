@@ -17,7 +17,8 @@ private:
     AsyncConnection *m_connection;
     QByteArray m_byteArrayResult;
     S2::S2BFile m_s2bFile;
-    bool m_busy, m_timeout, m_responseResult;
+    bool m_busy;
+    Error::Msg m_responseResult;
 
     void eventLoop() noexcept;
     void reset() noexcept;

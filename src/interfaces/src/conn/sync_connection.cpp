@@ -28,7 +28,6 @@ void SyncConnection::eventLoop() noexcept
 void SyncConnection::reset() noexcept
 {
     m_busy = true;
-    m_timeout = false;
 }
 
 void SyncConnection::resultReady(const DataTypes::BlockStruct &result)
@@ -49,7 +48,8 @@ void SyncConnection::responseReceived(const DataTypes::GeneralResponseStruct &re
         emit setValue(response.data);
         return;
     }
-    m_responseResult = (response.type == DataTypes::GeneralResponseTypes::Ok);
+    m_responseResult
+        = (response.type == DataTypes::GeneralResponseTypes::Ok) ? Error::Msg::NoError : Error::Msg::GeneralError;
     m_busy = false;
 }
 
@@ -63,19 +63,19 @@ void SyncConnection::s2bfileReceived(const S2::S2BFile &file)
 {
     m_s2bFile = file;
     m_busy = false;
+    m_responseResult = Error::Msg::NoError;
 }
 
 void SyncConnection::timeout()
 {
     m_busy = false;
-    m_timeout = true;
+    m_responseResult = Error::Msg::Timeout;
 }
 
 void SyncConnection::responseError(Error::Msg msg)
 {
-    Q_UNUSED(msg)
+    m_responseResult = msg;
     m_busy = false;
-    m_timeout = true;
 }
 
 Error::Msg SyncConnection::reqBSI()
@@ -93,10 +93,7 @@ Error::Msg SyncConnection::reqBSI()
     m_connection->reqBSI();
     eventLoop();
     QObject::disconnect(conn);
-    if (m_timeout)
-        return Error::Msg::Timeout;
-    else
-        return Error::Msg::NoError;
+    return m_responseResult;
 }
 
 Error::Msg SyncConnection::reqBlockSync(
@@ -115,7 +112,9 @@ Error::Msg SyncConnection::reqBlockSync(
     QObject::disconnect(conn);
 
     quint32 resultsize = m_byteArrayResult.size();
-    if ((m_timeout) || (resultsize < blocksize))
+    if (resultsize < blocksize)
+        return Error::Msg::SizeError;
+    else if (m_responseResult == Error::Msg::Timeout)
         return Error::Msg::Timeout;
     memcpy(block, &m_byteArrayResult.data()[0], blocksize);
     return Error::Msg::NoError;
@@ -135,9 +134,10 @@ Error::Msg SyncConnection::writeBlockSync(
         m_connection->writeCommand(Commands::C_WriteTuningCoef, QVariant::fromValue(bs));
         eventLoop();
         QObject::disconnect(conn);
-        if (m_timeout)
-            return Error::Msg::Timeout;
-        return (m_responseResult) ? Error::Msg::NoError : Error::Msg::WriteError;
+        if (m_responseResult == Error::Msg::GeneralError)
+            return Error::Msg::WriteError;
+        else
+            return m_responseResult;
     }
     else
     {
@@ -153,9 +153,10 @@ Error::Msg SyncConnection::writeFileSync(S2::FilesEnum filenum, const QByteArray
     m_connection->writeFile(quint32(filenum), ba);
     eventLoop();
     QObject::disconnect(conn);
-    if (m_timeout)
-        return Error::Msg::Timeout;
-    return (m_responseResult) ? Error::Msg::NoError : Error::Msg::FileWriteError;
+    if (m_responseResult == Error::Msg::GeneralError)
+        return Error::Msg::FileWriteError;
+    else
+        return m_responseResult;
 }
 
 Error::Msg SyncConnection::writeConfigurationSync(const QByteArray &ba)
@@ -170,10 +171,10 @@ Error::Msg SyncConnection::readS2FileSync(S2::FilesEnum filenum)
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::DefaultS2);
     eventLoop();
     QObject::disconnect(conn);
-    if (m_timeout)
-        return Error::Msg::Timeout;
-
-    return (m_responseResult) ? Error::Msg::NoError : Error::Msg::ReadError;
+    if (m_responseResult == Error::Msg::GeneralError)
+        return Error::Msg::ReadError;
+    else
+        return m_responseResult;
 }
 
 Error::Msg SyncConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
@@ -183,8 +184,8 @@ Error::Msg SyncConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::Binary);
     eventLoop();
     QObject::disconnect(conn);
-    if (m_timeout)
-        return Error::Msg::Timeout;
+    if (m_responseResult != Error::Msg::NoError)
+        return Error::Msg::ReadError;
     ba = m_byteArrayResult;
     return Error::Msg::NoError;
 }
@@ -198,10 +199,10 @@ Error::Msg SyncConnection::readS2BFileSync(S2::FilesEnum filenum, S2::S2BFile &f
     eventLoop();
     QObject::disconnect(conn);
     QObject::disconnect(conn2);
-    if (m_timeout)
-        return Error::Msg::Timeout;
+    if (m_responseResult != Error::Msg::NoError)
+        return m_responseResult;
     file = m_s2bFile;
-    return Error::Msg::NoError;
+    return m_responseResult;
 }
 
 Error::Msg SyncConnection::reqTimeSync(void *block, quint32 blocksize)
@@ -232,8 +233,8 @@ Error::Msg SyncConnection::reqTimeSync(void *block, quint32 blocksize)
     m_connection->reqTime();
     eventLoop();
     QObject::disconnect(conn);
-    if (m_timeout)
-        return Error::Msg::Timeout;
+    if (m_responseResult != Error::Msg::NoError)
+        return m_responseResult;
     memcpy(block, &m_byteArrayResult.data()[0], blocksize);
     return Error::Msg::NoError;
 }

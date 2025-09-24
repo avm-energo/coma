@@ -13,13 +13,20 @@ public:
 
     void SetupUI();
 
+signals:
+    void cancel();
+
 private slots:
     void setRange(Engines::Slices::Stages stage, qint64 max);
     void setPrbValue(Engines::Slices::Stages stage, qint64 value);
     void startProcess();
+    void finished(int id);
+    void sliceResultReceived(Error::Msg result);
 
 private:
-    Engines::Slices *m_engine;
+    Device::CurrentDevice *m_device;
+    int m_proc_id;
+    bool isCancelled;
     const QMap<Engines::Slices::Stages, QString> c_ProgressMap = {
         { Engines::Slices::Stages::BsiLoad, "prbbsi" },         //
         { Engines::Slices::Stages::BsiLoadExt, "prbbsx" },      //
@@ -33,4 +40,6 @@ private:
         { Engines::Slices::Stages::GetCurrentState, "prbstt" }, //
         { Engines::Slices::Stages::Save, "prbsav" },            //
     };
+
+    void clearPrbs();
 };

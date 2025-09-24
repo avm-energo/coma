@@ -49,12 +49,12 @@ public:
     void reqFloats(quint32 addr, quint32 count = 0);
     void reqBitStrings(quint32 addr, quint32 count = 0);
     void setToQueue(CommandStruct &&cmd);
-    void cancelQuery();
 
 public slots:
     void responseHandle(const Interface::DeviceResponse &response);
     void setState(const Interface::State state) noexcept;
     void setInterfaceType(const Interface::IfaceType ifaceType) noexcept;
+    void cancelQuery();
 
 signals:
     void cancel();

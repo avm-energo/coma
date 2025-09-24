@@ -81,6 +81,7 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
         m_context.m_executor, &DefaultQueryExecutor::reconnectEvent, Qt::QueuedConnection);
     connect(m_context.m_iface, &BaseInterface::reconnected,       //
         this, &ConnectionManager::interfaceReconnected, Qt::QueuedConnection);
+    connect(m_currentConnection, &AsyncConnection::cancel, m_context.m_executor, &DefaultQueryExecutor::cancelQuery);
 
     m_currentConnection->reqBSI();
     if (!m_context.run(m_currentConnection))
@@ -95,7 +96,6 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
 
 void ConnectionManager::setup(const BaseSettings &settings) noexcept
 {
-    m_currentConnection->setTimeout(settings.m_timeout);
     m_silentTimer->setInterval(settings.m_silentInterval);
     m_errorMax = settings.m_maxErrors;
     m_timeoutMax = settings.m_maxTimeouts;

@@ -281,11 +281,10 @@ void DefaultQueryExecutor::cancelQuery()
     m_responseParser->clearResponseBuffer();
     m_requestParser->clearLongDataSections();
     m_queue.get().activate();
-    // if (m_timeoutTimer.isActive())
     m_timeoutTimer.stop();
-    if (getState() == ExecutorState::WritingLongData)
-        // m_timeoutTimer.setInterval(m_timeoutTimer.interval() / 5);
+    if ((getState() == ExecutorState::WritingLongData) || (getState() == ExecutorState::ReadingLongData))
         setState(ExecutorState::RequestParsing);
+    emit responseError(Error::Msg::Cancelled);
 }
 
 void DefaultQueryExecutor::reconnectEvent()

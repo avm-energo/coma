@@ -152,22 +152,22 @@ const BsiExtItemList &Settings::getBsiExtSettings() const
     return m_bsiExtSettings;
 }
 
-const bool Settings::HaveBSIExt() const
+bool Settings::HaveBSIExt() const
 {
     return m_haveBsiExt;
 }
 
-const bool Settings::HaveMeasJournal() const
+bool Settings::HaveMeasJournal() const
 {
     return m_haveMeasJournal;
 }
 
-const bool Settings::HaveWorkJournal() const
+bool Settings::HaveWorkJournal() const
 {
     return m_haveWorkJournal;
 }
 
-const bool Settings::HaveTrue() const
+bool Settings::HaveTrue() const
 {
     return true;
 }
