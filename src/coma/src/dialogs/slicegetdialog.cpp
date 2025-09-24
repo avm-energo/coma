@@ -2,6 +2,7 @@
 #include <engines/engines.h>
 #include <gen/threadpool.h>
 #include <widgets/emessagebox.h>
+#include <widgets/filefunc.h>
 #include <widgets/pbfunc.h>
 #include <widgets/prbfunc.h>
 #include <widgets/wdfunc.h>
@@ -36,8 +37,8 @@ void SliceGetDialog::SetupUI()
             WDFunc::SetEnabled(this, "cancelpb", false);
         }));
     lyout->addLayout(hlyout);
-    lyout->addWidget(PrbFunc::NewLBL(
-        this, "Получение блока Bsi", c_ProgressMap.value(Engines::Slices::Stages::BsiLoad), "%v из %m"));
+    lyout->addWidget(
+        PrbFunc::NewLBL(this, "Получение блока Bsi", c_ProgressMap.value(Engines::Slices::Stages::BsiLoad)));
     lyout->addWidget(
         PrbFunc::NewLBL(this, "Получение блока BsiExt", c_ProgressMap.value(Engines::Slices::Stages::BsiLoadExt)));
     lyout->addWidget(
@@ -45,15 +46,15 @@ void SliceGetDialog::SetupUI()
     lyout->addWidget(PrbFunc::NewLBL(
         this, "Скачивание системного журнала", c_ProgressMap.value(Engines::Slices::Stages::SysJourLoad), "%v из %m"));
     lyout->addWidget(PrbFunc::NewLBL(
-        this, "Скачивание журнала событий", c_ProgressMap.value(Engines::Slices::Stages::WorkJourLoad)));
+        this, "Скачивание журнала событий", c_ProgressMap.value(Engines::Slices::Stages::WorkJourLoad), "%v из %m"));
     lyout->addWidget(PrbFunc::NewLBL(
-        this, "Скачивание журнала измерений", c_ProgressMap.value(Engines::Slices::Stages::MeasJourLoad)));
+        this, "Скачивание журнала измерений", c_ProgressMap.value(Engines::Slices::Stages::MeasJourLoad), "%v из %m"));
     lyout->addWidget(PrbFunc::NewLBL(
         this, "Получение блока начальных значений", c_ProgressMap.value(Engines::Slices::Stages::StartupLoad)));
     lyout->addWidget(PrbFunc::NewLBL(
         this, "Получение блока настроечных параметров", c_ProgressMap.value(Engines::Slices::Stages::TuneLoad)));
-    lyout->addWidget(
-        PrbFunc::NewLBL(this, "Скачивание осциллограмм", c_ProgressMap.value(Engines::Slices::Stages::GetOsc)));
+    lyout->addWidget(PrbFunc::NewLBL(
+        this, "Скачивание осциллограмм", c_ProgressMap.value(Engines::Slices::Stages::GetOsc), "%v из %m"));
     lyout->addWidget(PrbFunc::NewLBL(
         this, "Получение текущих измерений", c_ProgressMap.value(Engines::Slices::Stages::GetCurrentState)));
     lyout->addWidget(
@@ -74,9 +75,11 @@ void SliceGetDialog::setPrbValue(Engines::Slices::Stages stage, qint64 value)
 
 void SliceGetDialog::startProcess()
 {
+    auto filename = FileFunc::ChooseFileForSave(this, "Zip files (*.zip)", "zip",
+        QString("slice_%1").arg(QDateTime::currentDateTime().toString("yyMMdd_hhmmss")));
     WDFunc::SetEnabled(this, "startpb", false);
     WDFunc::SetEnabled(this, "cancelpb", true);
-    auto engine = new Engines::Slices(m_device);
+    auto engine = new Engines::Slices(m_device, filename);
     connect(engine, &Engines::Slices::setProgressRange, this, &SliceGetDialog::setRange);
     connect(engine, &Engines::Slices::setProgressValue, this, &SliceGetDialog::setPrbValue);
     connect(engine, &Engines::Slices::result, this, &SliceGetDialog::sliceResultReceived);

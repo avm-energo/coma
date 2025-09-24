@@ -1,5 +1,6 @@
 #include <engines/slices.h>
 #include <gen/files.h>
+#include <gen/files/ziputil.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/common_types.h>
 #include <settings/user_settings.h>
@@ -10,7 +11,12 @@
 namespace Engines
 {
 
-Slices::Slices(Device::CurrentDevice *dev, QObject *parent) : QObject(parent), m_curDev(dev) { }
+Slices::Slices(Device::CurrentDevice *dev, const QString &zipName, QObject *parent)
+    : QObject(parent)
+    , m_curDev(dev)
+    , m_zipFileName(zipName)
+{
+}
 
 void Slices::createSlice()
 {
@@ -33,15 +39,18 @@ void Slices::createSlice()
         // get journals
         if (!m_isCancelled)
             writeFile("sysjour", getSysJournal());
-        if ((m_curDev->getConfigStorage()->getDeviceSettings().HaveWorkJournal()) && !m_isCancelled)
-            writeFile("workjour", getWorkJournal());
-        if ((m_curDev->getConfigStorage()->getDeviceSettings().HaveMeasJournal()) && !m_isCancelled)
-            writeFile("measjour", getMeasJournal());
+        // if ((m_curDev->getConfigStorage()->getDeviceSettings().HaveWorkJournal()) && !m_isCancelled)
+        //     writeFile("workjour", getWorkJournal());
+        // if ((m_curDev->getConfigStorage()->getDeviceSettings().HaveMeasJournal()) && !m_isCancelled)
+        //     writeFile("measjour", getMeasJournal());
         // get oscs
         // writeFile("oscs", getOscs());
+        ZipUtil::CompressDir(m_tempDir.path(), m_zipFileName);
     }
     if (!m_isCancelled)
+    {
         emit result(Error::Msg::NoError);
+    }
     emit finished();
 }
 
@@ -95,8 +104,8 @@ QByteArray Slices::getCurrentState()
 
 QByteArray Slices::getConfig()
 {
-
-    return QByteArray();
+    setDummyRangeAndValue(ConfigLoad, sizeof(m_curDev->bsi()));
+    return m_curDev->getS2Datamanager()->getBinaryConfiguration();
 }
 
 QByteArray Slices::getStartup()

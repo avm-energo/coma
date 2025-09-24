@@ -37,7 +37,7 @@ public:
         u32 oscLength;
     };
 
-    Slices(Device::CurrentDevice *dev, QObject *parent = nullptr);
+    Slices(Device::CurrentDevice *dev, const QString &zipName, QObject *parent = nullptr);
 
 public slots:
     void createSlice();
@@ -59,6 +59,7 @@ private:
     QList<OscInfo> m_oscIds;
     Stages m_curPRB;
     bool m_isCancelled;
+    QString m_zipFileName;
 
     QByteArray getWorkJournal();
     QByteArray getSysJournal();

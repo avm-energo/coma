@@ -217,9 +217,6 @@ public:
     /// \brief Constant getter for having those it must have
     [[nodiscard]] bool HaveTrue() const;
 
-    /// \brief export to JSON object
-    QJsonObject toJSON();
-
 private:
     FeaturesMap m_featuresMap;
     DetailCountMap m_countMap;
