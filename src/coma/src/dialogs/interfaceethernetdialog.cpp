@@ -42,7 +42,9 @@ void InterfaceEthernetDialog::setupUI()
         [this]
         {
             auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
+            Settings::pushGroup("Ethernet");
             Settings::remove(name);
+            Settings::popGroup();
             updateModel();
         }));
     lyout->addLayout(hlyout);
@@ -190,14 +192,12 @@ void InterfaceEthernetDialog::acceptedInterface()
         Settings::popGroup();
         return;
     }
-    {
-        Settings::pushGroup(name);
-        UserSettings::set(UserSettings::IpAddress, ipstr);
-        UserSettings::set(UserSettings::IpPort, port);
-        UserSettings::set(UserSettings::Iec104BsAddress, port);
-        Settings::popGroup();
-    }
+    Settings::pushGroup(name);
+    UserSettings::set(UserSettings::IpAddress, ipstr);
+    UserSettings::set(UserSettings::IpPort, port);
+    UserSettings::set(UserSettings::Iec104BsAddress, port);
     Settings::popGroup();
+    Settings::popGroup(); // exit from Ethernet
     if (!updateModel())
         qCritical() << Error::GeneralError;
     dialog->close();
