@@ -9,9 +9,7 @@ namespace Interface
 
 using namespace Iec104;
 
-Iec104RequestParser::Iec104RequestParser(QObject *parent) : BaseRequestParser(parent), m_baseStationAddress(0)
-{
-}
+Iec104RequestParser::Iec104RequestParser(QObject *parent) : BaseRequestParser(parent), m_baseStationAddress(0) { }
 
 void Iec104RequestParser::basicProtocolSetup() noexcept
 {
@@ -60,7 +58,7 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
                 break;
             case CauseOfTransmission::Periodic:
             case CauseOfTransmission::Spontaneous:
-                m_isExceptionalSituation = true;
+                m_isExceptionalSituation = true; // there's nothing to do about
                 break;
             default:
                 // ignore other causes

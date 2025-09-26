@@ -33,7 +33,7 @@ private:
     QMetaObject::Connection m_connBSI;
     ReconnectMode m_reconnectMode;
     bool m_isReconnectOccurred, m_isInitial;
-    quint16 m_timeoutCounter, m_timeoutMax;
+    // quint16 m_timeoutCounter, m_timeoutMax;
     quint16 m_errorCounter, m_errorMax;
 
     void reconnect();

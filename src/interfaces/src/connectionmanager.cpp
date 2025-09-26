@@ -20,8 +20,8 @@ ConnectionManager::ConnectionManager(QObject *parent)
     , m_reconnectMode(ReconnectMode::Loud)
     , m_isReconnectOccurred(false)
     , m_isInitial(true)
-    , m_timeoutCounter(0)
-    , m_timeoutMax(5)
+    // , m_timeoutCounter(0)
+    // , m_timeoutMax(5)
     , m_errorCounter(0)
     , m_errorMax(5)
 {
@@ -98,7 +98,7 @@ void ConnectionManager::setup(const BaseSettings &settings) noexcept
 {
     m_silentTimer->setInterval(settings.m_silentInterval);
     m_errorMax = settings.m_maxErrors;
-    m_timeoutMax = settings.m_maxTimeouts;
+    // m_timeoutMax = settings.m_maxTimeouts;
 }
 
 void ConnectionManager::setReconnectMode(const ReconnectMode newMode) noexcept
@@ -127,7 +127,7 @@ void ConnectionManager::breakConnection()
     m_isReconnectOccurred = false;
     m_reconnectMode = ReconnectMode::Loud;
     m_errorCounter = 0;
-    m_timeoutCounter = 0;
+    // m_timeoutCounter = 0;
 }
 
 void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
@@ -153,9 +153,9 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
 
 void ConnectionManager::handleQueryExecutorTimeout()
 {
-    ++m_timeoutCounter;
-    if (m_timeoutCounter > m_timeoutMax)
-        reconnect();
+    // ++m_timeoutCounter;
+    // if (m_timeoutCounter > m_timeoutMax)
+    reconnect();
 }
 
 void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
@@ -174,7 +174,7 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
                 m_silentTimer->stop();
             setReconnectMode(ReconnectMode::Loud);
             m_errorCounter = 0;
-            m_timeoutCounter = 0;
+            // m_timeoutCounter = 0;
             m_currentConnection->getQueue().activate();
             m_isReconnectOccurred = false;
             qCritical() << "Соединение восстановлено";
