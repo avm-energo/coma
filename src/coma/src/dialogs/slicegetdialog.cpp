@@ -77,6 +77,8 @@ void SliceGetDialog::startProcess()
 {
     auto filename = FileFunc::ChooseFileForSave(this, "Zip files (*.zip)", "zip",
         QString("slice_%1").arg(QDateTime::currentDateTime().toString("yyMMdd_hhmmss")));
+    if (filename.isEmpty())
+        return;
     WDFunc::SetEnabled(this, "startpb", false);
     WDFunc::SetEnabled(this, "cancelpb", true);
     auto engine = new Engines::Slices(m_device, filename);

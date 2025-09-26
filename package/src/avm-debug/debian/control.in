@@ -4,4 +4,4 @@ Maintainer: AVM-Energo <support@avmenergo.ru>
 Package: avm-debug
 Description: Service software for various AV-TUK & AVM modules (debug version)
 Architecture: amd64
-Depends: ${shlibs:Depends}, libavm-widgets (>= 2.0)
+Depends: ${shlibs:Depends}, libavm-widgets (>= 2.2.5), libavm-gen (>= 1.10.6)

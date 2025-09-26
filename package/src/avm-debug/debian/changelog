@@ -1,3 +1,11 @@
+avm-debug (3.3.6) unstable; urgency=low
+
+  [+] Slices functional, working only with Bsi, Config & Journals today
+  [+] Some missing parameters to XML files
+  [*] Bug when updating Ethernet interfaces start dialog model fixed
+
+ -- AVM-Energo <support@avmenergo.ru>  Fri, 26 Sep 2025 17:20:51 +0300
+
 avm-debug (3.3.5) unstable; urgency=low
 
   + order field in SGroup & S2Record nodes

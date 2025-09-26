@@ -39,10 +39,10 @@ void Slices::createSlice()
         // get journals
         if (!m_isCancelled)
             writeFile("sysjour", getSysJournal());
-        // if ((m_curDev->getConfigStorage()->getDeviceSettings().HaveWorkJournal()) && !m_isCancelled)
-        //     writeFile("workjour", getWorkJournal());
-        // if ((m_curDev->getConfigStorage()->getDeviceSettings().HaveMeasJournal()) && !m_isCancelled)
-        //     writeFile("measjour", getMeasJournal());
+        if ((m_curDev->getConfigStorage()->getDeviceSettings().HaveWorkJournal()) && !m_isCancelled)
+            writeFile("workjour", getWorkJournal());
+        if ((m_curDev->getConfigStorage()->getDeviceSettings().HaveMeasJournal()) && !m_isCancelled)
+            writeFile("measjour", getMeasJournal());
         // get oscs
         // writeFile("oscs", getOscs());
         ZipUtil::CompressDir(m_tempDir.path(), m_zipFileName);
