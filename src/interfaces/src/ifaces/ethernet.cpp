@@ -13,7 +13,10 @@ Ethernet::Ethernet(const IEC104Settings &settings, QObject *parent)
         this, &Ethernet::handleSocketState, Qt::DirectConnection);
     QObject::connect(m_socket, &QAbstractSocket::errorOccurred, //
         this, &Ethernet::handleSocketError, Qt::DirectConnection);
+    QObject::connect(m_socket, &QAbstractSocket::readyRead, this, &BaseInterface::bytesReady);
 }
+
+void Ethernet::bytesReady() { }
 
 bool Ethernet::connect()
 {

@@ -58,4 +58,5 @@ public slots:
     void writeData(const QByteArray &ba);
     void close();
     void reconnect();
+    virtual void bytesReady() = 0;
 };
