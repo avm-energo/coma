@@ -1,4 +1,4 @@
-project(AVM-Debug VERSION ${CMAKE_PROJECT_VERSION})
+project(avm-debug VERSION ${CMAKE_PROJECT_VERSION})
 
 configure_file(
   ${CMAKE_SOURCE_DIR}/cconfig.h.in
