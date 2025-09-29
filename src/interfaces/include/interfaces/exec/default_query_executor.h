@@ -92,6 +92,9 @@ public:
     /// \brief Функция, содержащая главный цикл исполнителя запросов.
     virtual void exec();
 
+    /// \brief Функция для реализации режима "Старт"
+    /// \details Для 104 протокола выполняет стартовые запросы и вызов GI
+    virtual void start();
     /// \brief Функция для продолжения работы исполнителя запросов.
     /// \details Переводит состояние исполнителя в ExecutorState::RequestParsing.
     void run() noexcept;

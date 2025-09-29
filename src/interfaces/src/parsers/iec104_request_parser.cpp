@@ -67,6 +67,11 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
         }
         break;
     }
+    case Commands::C_GI:
+    {
+        m_request = createGroupRequest(0x00);
+        break;
+    }
     case Commands::C_WriteTime:
     {
         // Commands104::CommandStruct inp { Commands104::CM104_COM51, time, 0, {} };

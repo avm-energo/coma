@@ -195,7 +195,7 @@ void InterfaceEthernetDialog::acceptedInterface()
     Settings::pushGroup(name);
     UserSettings::set(UserSettings::IpAddress, ipstr);
     UserSettings::set(UserSettings::IpPort, port);
-    UserSettings::set(UserSettings::Iec104BsAddress, port);
+    UserSettings::set(UserSettings::Iec104BsAddress, bsAddress);
     Settings::popGroup();
     Settings::popGroup(); // exit from Ethernet
     if (!updateModel())

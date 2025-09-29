@@ -59,7 +59,7 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
                     iface->moveToThread(ifaceThread);
                     parserThread->start();
                     ifaceThread->start();
-                    executor->run();
+                    executor->start();
                 });
             m_syncThreads.first = ifaceThread;
             m_syncThreads.second = parserThread;

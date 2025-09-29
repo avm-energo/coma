@@ -1,12 +1,13 @@
 #pragma once
 
-#include <QByteArray>
-#include <QMetaEnum>
-#include <QVariant>
 #include <gen/datatypes.h>
 #include <s2/dataitem.h>
 #include <s2/filestruct.h>
 #include <s2/s2datatypes.h>
+
+#include <QByteArray>
+#include <QMetaEnum>
+#include <QVariant>
 #include <variant>
 
 namespace Interface
@@ -83,7 +84,9 @@ enum class Commands
     C_ReqOscInfo,
     C_SetMode,
     C_GetMode,
-    C_WriteTypeOsc
+    C_WriteTypeOsc,
+
+    C_GI
 };
 Q_ENUM_NS(Commands)
 

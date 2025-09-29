@@ -189,7 +189,7 @@ void ConnectionManager::interfaceReconnected()
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
     m_currentConnection->getQueue().activate();
     m_currentConnection->reqBSI();
-    m_context.m_executor->run();
+    m_context.m_executor->start();
     m_currentConnection->getQueue().deactivate();
 }
 

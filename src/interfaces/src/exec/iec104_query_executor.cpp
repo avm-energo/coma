@@ -35,12 +35,7 @@ Iec104RequestParser *Iec104QueryExecutor::getRequestParser() noexcept
     return reinterpret_cast<Iec104RequestParser *>(m_requestParser);
 }
 
-void Iec104QueryExecutor::initConnection() noexcept
-{
-    auto startMessage { getRequestParser()->createStartMessage() };
-    writeToInterface(startMessage, false);
-    setState(ExecutorState::Pending);
-}
+// void Iec104QueryExecutor::initConnection() noexcept { }
 
 void Iec104QueryExecutor::closeConnection() noexcept
 {
@@ -62,9 +57,16 @@ void Iec104QueryExecutor::writeToInterface(const QByteArray &request, bool isCou
 
 void Iec104QueryExecutor::exec()
 {
-    initConnection();
+    // initConnection();
     DefaultQueryExecutor::exec();
     // closeConnection();
+}
+
+void Iec104QueryExecutor::start()
+{
+    auto startMessage { getRequestParser()->createStartMessage() };
+    writeToInterface(startMessage, false);
+    setState(ExecutorState::Pending);
 }
 
 void Iec104QueryExecutor::receiveDataFromInterface(const QByteArray &response)
@@ -114,8 +116,19 @@ void Iec104QueryExecutor::checkUnnumberedFormat(const ControlFunc func, const Co
     switch (func)
     {
     case ControlFunc::StartDataTransfer:
-        if (arg == ControlArg::Confirm)
-            run();
+        if (arg == ControlArg::Confirm) // send GI (0x00)
+        {
+            CommandStruct command = { Commands::C_GI, 0, 0 };
+            auto request = m_requestParser->parse(command);
+            if (request.isEmpty())
+                return;
+            else
+            {
+                m_lastRequestedCommand.store(command.command);
+                m_responseParser->setRequest(command);
+                writeToInterface(request);
+            }
+        }
         break;
     case ControlFunc::StopDataTransfer:
         if (arg == ControlArg::Confirm)

@@ -32,8 +32,8 @@ private:
     /// \brief Преобразование хранимого парсера ответов к primary типу.
     inline Iec104RequestParser *getRequestParser() noexcept;
 
-    /// \brief Отправка команды Start data transfer activation.
-    void initConnection() noexcept;
+    // /// \brief Отправка команды Start data transfer activation.
+    // void initConnection() noexcept;
     /// \brief Отправка команды Stop data transfer activation.
     void closeConnection() noexcept;
     /// \brief Функция для отправки запроса устройству с подсчётом отправляемых сообщений.
@@ -50,6 +50,8 @@ public:
     /// соединения с устройством вызывается метод initConnection. После выполнения
     /// главного цикла вызывается метод closeConnection.
     void exec() override;
+
+    void start() override;
 
 public slots:
     /// \brief Слот для принятия от устройства данных асинхронно.

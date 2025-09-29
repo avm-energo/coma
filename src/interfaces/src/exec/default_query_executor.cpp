@@ -182,6 +182,11 @@ void DefaultQueryExecutor::exec()
     emit finished();
 }
 
+void DefaultQueryExecutor::start()
+{
+    run();
+}
+
 void DefaultQueryExecutor::run() noexcept
 {
     setState(ExecutorState::RequestParsing);
