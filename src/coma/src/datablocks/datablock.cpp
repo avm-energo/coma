@@ -264,19 +264,19 @@ Error::Msg DataBlock::writeBlockToModule(const bool showMessage)
                 m_block.blocknum, DataTypes::DataBlockTypes::BacBlock, m_block.block, m_block.blocksize)
             != Error::Msg::NoError)
         {
-            qCritical("Не удалось записать блок");
+            qDebug("Не удалось записать блок");
             return Error::Msg::GeneralError;
         }
         break;
     }
     case DataTypes::DataBlockTypes::BdBlock:
     {
-        WARNMSG("Writing data block BD is prohibited");
+        qDebug() << "Writing data block BD is prohibited";
         break;
     }
     case DataTypes::DataBlockTypes::BdaBlock:
     {
-        WARNMSG("Writing data block BDA is prohibited");
+        qDebug() << "Writing data block BDA is prohibited";
         break;
     }
     default:
@@ -299,14 +299,14 @@ void DataBlock::readBlockFromModule()
     {
         const auto err = m_conn->reqBlockSync(m_block.blocknum, m_block.blocktype, m_block.block, m_block.blocksize);
         if (err != Error::Msg::NoError)
-            qCritical("Не удалось прочитать блок");
+            qDebug() << "Не удалось прочитать блок";
         break;
     }
     case DataTypes::DataBlockTypes::BciBlock:
     {
         const auto err = m_conn->readS2FileSync(S2::FilesEnum::Config);
         if (err != Error::Msg::NoError)
-            qCritical("Не удалось прочитать блок");
+            qDebug() << "Не удалось прочитать блок";
     }
     default:
         break;
@@ -330,7 +330,7 @@ Error::Msg DataBlock::loadFromFileAndWriteToModule(const QString &filename)
         if (writeBlockToModule() == Error::Msg::NoError)
             return Error::Msg::NoError;
     }
-    qCritical("Не удалось записать блок");
+    qDebug() << "Не удалось записать блок";
     return Error::Msg::GeneralError;
 }
 

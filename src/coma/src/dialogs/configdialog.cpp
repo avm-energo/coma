@@ -48,7 +48,7 @@ void ConfigDialog::writeConfig()
             engine()->currentConnection()->writeConfiguration(s2file);
         }
         else
-            qCritical("Ошибка чтения конфигурации");
+            qCritical("Ошибка записи конфигурации");
     }
 }
 
@@ -151,9 +151,12 @@ QWidget *ConfigDialog::ConfButtons()
     connect(button, &QPushButton::clicked, this, &ConfigDialog::setDefaultConfig);
     wdgtlyout->addWidget(button, 2, 0, 1, 2);
 
-    button = new QPushButton("Показать статус конфигурирования");
-    connect(button, &QPushButton::clicked, this, [this] { showConfigErrState(); });
-    wdgtlyout->addWidget(button, 3, 0, 1, 2);
+    if (AppConfiguration::app() != AppConfiguration::Service)
+    {
+        button = new QPushButton("Показать статус конфигурирования");
+        connect(button, &QPushButton::clicked, this, [this] { showConfigErrState(); });
+        wdgtlyout->addWidget(button, 3, 0, 1, 2);
+    }
 
     wdgt->setLayout(wdgtlyout);
     return wdgt;

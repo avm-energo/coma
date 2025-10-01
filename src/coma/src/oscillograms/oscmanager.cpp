@@ -65,7 +65,7 @@ TrendViewModel *OscManager::load(const FileStruct &fs) const
 {
     if (!oscHeader)
     {
-        qCritical() << Error::DescError;
+        qDebug() << Error::DescError;
         return {};
     }
     return load(oscHeader.value(), fs);
@@ -77,7 +77,7 @@ TrendViewModel *OscManager::load(const Record &record, const FileStruct &fs) con
     constexpr auto minSize = sizeof(S2::OscHeader) + sizeof(S2::DataRecHeader);
     if (fs.data.size() <= minSize)
     {
-        qCritical() << Error::SizeError;
+        qDebug() << Error::SizeError;
         return {};
     }
     TrendViewModel *trendViewModel;
@@ -166,7 +166,7 @@ TrendViewModel *OscManager::load(const Record &record, const FileStruct &fs) con
     bool result = parseModule->Parse(curFileNum, record, trendViewModel);
     if (!result)
     {
-        qCritical() << Error::GeneralError;
+        qDebug() << Error::GeneralError;
         return {};
     }
     return trendViewModel;

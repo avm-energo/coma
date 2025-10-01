@@ -214,7 +214,7 @@ QByteArray ProtocomRequestParser::parse(const CommandStruct &cmd)
         break;
     }
     default:
-        qCritical() << "Undefined command: " << cmd.command;
+        qDebug() << "Undefined command: " << cmd.command;
     }
     return m_request;
 }
@@ -286,26 +286,26 @@ void ProtocomRequestParser::processFileFromDisk(const S2::FilesEnum fileNum)
     drives = Files::Drives();
     if (drives.isEmpty())
     {
-        qCritical() << Error::NoDeviceError;
+        qDebug() << Error::NoDeviceError;
         return;
     }
     files = Files::SearchForFile(drives, fileToFind);
 #endif
     if (files.isEmpty())
     {
-        qCritical() << Error::FileNameError;
+        qDebug() << Error::FileNameError;
         return;
     }
     QString JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
     if (JourFile.isEmpty())
     {
-        qCritical() << Error::FileNameError;
+        qDebug() << Error::FileNameError;
         return;
     }
     QFile file(JourFile);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qCritical() << Error::FileOpenError;
+        qDebug() << Error::FileOpenError;
         return;
     }
     QByteArray ba = file.readAll();

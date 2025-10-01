@@ -1119,6 +1119,10 @@
                 <block>250</block>
                 <signal-id>16</signal-id>
             </group>
+            <group>
+                <block>48</block>
+                <signal-id>19</signal-id>
+            </group>
         </protocom>
         <section-tabs desc="Вкладки">
             <tab>
@@ -1168,6 +1172,16 @@
                     <mwidget desc="Частота, Гц" view="float">
                         <start-addr>2400</start-addr>
                         <toolTip>Частота, Гц</toolTip>
+                    </mwidget>
+                    <mwidget desc="Угол ф.%1, град." view="float">
+                        <start-addr>2480</start-addr>
+                        <count>3</count>
+                        <toolTip>Угол между током пина и напряжением ф.%1, град.</toolTip>
+                        <string-array>
+                            <item>A</item>
+                            <item>B</item>
+                            <item>C</item>
+                        </string-array>
                     </mwidget>
                     <mwidget desc="Температура, °C" view="float">
                         <start-addr>4501</start-addr>
@@ -1337,20 +1351,20 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Угловые значения" tab="2">
-                    <mwidget desc="Phy_I ф.%1, град." view="float">
-                        <start-addr>2404</start-addr>
+                    <mwidget desc="Phy_U ф.%1, град." view="float">
+                        <start-addr>2401</start-addr>
                         <count>3</count>
-                        <toolTip>Угол по току ф.%1</toolTip>
+                        <toolTip>Угол по напряжению ф.%1</toolTip>
                         <string-array>
                             <item>A</item>
                             <item>B</item>
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="Phy_U ф.%1, град." view="float">
-                        <start-addr>2401</start-addr>
+                    <mwidget desc="Phy_I ф.%1, град." view="float">
+                        <start-addr>2404</start-addr>
                         <count>3</count>
-                        <toolTip>Угол по напряжению ф.%1</toolTip>
+                        <toolTip>Угол по току ф.%1</toolTip>
                         <string-array>
                             <item>A</item>
                             <item>B</item>
@@ -1368,9 +1382,63 @@
                 <type>BitString</type>
             </signal>
             <signal>
-                <start-addr>40</start-addr>
+                <start-addr>4501</start-addr>
                 <count>5</count>
-                <id>20</id>
+                <id>10</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>7000</start-addr>
+                <count>7</count>
+                <id>11</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>201</start-addr>
+                <count>3</count>
+                <id>12</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>3011</start-addr>
+                <count>26</count>
+                <id>13</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>4600</start-addr>
+                <count>1</count>
+                <id>14</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>4520</start-addr>
+                <count>2</count>
+                <id>15</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>13000</start-addr>
+                <count>8</count>
+                <id>16</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>910</start-addr>
+                <count>11</count>
+                <id>17</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>13100</start-addr>
+                <count>1</count>
+                <id>18</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>2480</start-addr>
+                <count>3</count>
+                <id>19</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1380,9 +1448,15 @@
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>201</start-addr>
-                <count>3</count>
-                <id>12</id>
+                <start-addr>40</start-addr>
+                <count>5</count>
+                <id>20</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>3100</start-addr>
+                <count>1</count>
+                <id>21</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1395,12 +1469,6 @@
                 <start-addr>900</start-addr>
                 <count>8</count>
                 <id>4</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>910</start-addr>
-                <count>11</count>
-                <id>17</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1428,58 +1496,10 @@
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>3011</start-addr>
-                <count>26</count>
-                <id>13</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>3100</start-addr>
-                <count>1</count>
-                <id>21</id>
-                <type>Float</type>
-            </signal>
-            <signal>
                 <start-addr>4000</start-addr>
                 <count>11</count>
                 <id>9</id>
                 <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>4501</start-addr>
-                <count>5</count>
-                <id>10</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>4520</start-addr>
-                <count>2</count>
-                <id>15</id>
-                <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>4600</start-addr>
-                <count>1</count>
-                <id>14</id>
-                <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>7000</start-addr>
-                <count>7</count>
-                <id>11</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>13000</start-addr>
-                <count>8</count>
-                <id>16</id>
-                <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>13100</start-addr>
-                <count>1</count>
-                <id>18</id>
-                <type>BitString</type>
             </signal>
         </signals>
     </resources>

@@ -1,5 +1,6 @@
 #include <dialogs/settingsdialog.h>
 #include <gen/logger.h>
+#include <helpers/appconfig.h>
 #include <settings/user_settings.h>
 #include <widgets/cbfunc.h>
 #include <widgets/chbfunc.h>
@@ -49,7 +50,8 @@ void SettingsDialog::setupUI()
     connect(m_sidebar, &QListWidget::currentRowChanged, m_workspace, &QStackedWidget::setCurrentIndex);
     setupGeneralTab();
     setupConnectionTab();
-    setupTuneTab();
+    if (AppConfiguration::app() == AppConfiguration::Debug)
+        setupTuneTab();
     workspaceLayout->addWidget(m_sidebar, 1);
     workspaceLayout->addWidget(m_workspace, 3);
     mainLayout->addLayout(workspaceLayout);
@@ -116,16 +118,19 @@ void SettingsDialog::setupGeneralTab() noexcept
     workspaceLayout->addLayout(timezoneLayout);
     workspaceLayout->addWidget(GraphFunc::newHLine(m_workspace));
 
-    // Изменение пароля
-    auto passwordGB = new QGroupBox("Пароль", m_workspace);
-    auto passwordLayout = new QGridLayout;
-    passwordLayout->addWidget(LBLFunc::New(passwordGB, "Обновить пароль:"), 1, 1, 1, 1);
-    passwordLayout->addWidget(LEFunc::NewPsw(passwordGB, "password", QLineEdit::Password), 1, 2, 1, 1);
-    auto resetBtn = new QPushButton("Установить пароль по умолчанию", passwordGB);
-    connect(resetBtn, &QAbstractButton::clicked, this, &SettingsDialog::resetPassword);
-    passwordLayout->addWidget(resetBtn, 2, 1, 1, 2);
-    passwordGB->setLayout(passwordLayout);
-    workspaceLayout->addWidget(passwordGB);
+    if (AppConfiguration::app() == AppConfiguration::Debug)
+    {
+        // Изменение пароля
+        auto passwordGB = new QGroupBox("Пароль", m_workspace);
+        auto passwordLayout = new QGridLayout;
+        passwordLayout->addWidget(LBLFunc::New(passwordGB, "Обновить пароль:"), 1, 1, 1, 1);
+        passwordLayout->addWidget(LEFunc::NewPsw(passwordGB, "password", QLineEdit::Password), 1, 2, 1, 1);
+        auto resetBtn = new QPushButton("Установить пароль по умолчанию", passwordGB);
+        connect(resetBtn, &QAbstractButton::clicked, this, &SettingsDialog::resetPassword);
+        passwordLayout->addWidget(resetBtn, 2, 1, 1, 2);
+        passwordGB->setLayout(passwordLayout);
+        workspaceLayout->addWidget(passwordGB);
+    }
 }
 
 void SettingsDialog::setupConnectionTab() noexcept

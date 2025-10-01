@@ -35,7 +35,7 @@ void FWUploadDialog::loadFirmware()
     if (!checkPassword())
     {
         uploadStatus = FirmwareUploadStatus::Error;
-        qCritical() << Error::GeneralError;
+        qCritical() << "Пароль задан неверно";
         return;
     }
 
@@ -76,8 +76,8 @@ void FWUploadDialog::loadFirmware()
     S2Util::StoreDataMem(firmware, s2array, fileType);
     if (firmware.isEmpty())
     {
-        qCritical() << Error::SizeError;
-        EMessageBox::error(this, "Получен файл с некорректным размером.");
+        qCritical() << "Получен файл с некорректным размером";
+        EMessageBox::error(this, "Получен файл с некорректным размером");
         return;
     }
     engine()->currentConnection()->writeFirmware(firmware);

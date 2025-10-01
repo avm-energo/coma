@@ -93,7 +93,7 @@ bool ConfigLoader::loadDeviceData() noexcept
 void ConfigLoader::parseErrorHandle(const QString errMsg)
 {
     m_parseStatus = false;
-    qCritical() << errMsg;
+    qDebug() << errMsg;
 }
 
 } // namespace Xml

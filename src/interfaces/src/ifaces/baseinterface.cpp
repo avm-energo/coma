@@ -108,7 +108,7 @@ void BaseInterface::writeData(const QByteArray &ba)
     if (status != Error::Msg::NoError)
     {
         writeLog(status);
-        qCritical() << status;
+        qDebug() << status;
     }
 }
 

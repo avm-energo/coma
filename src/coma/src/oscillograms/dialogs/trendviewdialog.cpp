@@ -130,7 +130,7 @@ void TrendViewDialog::addSig(QString signame)
             auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
             if (!leftAxis || !bottomAxis)
             {
-                qCritical() << "Nullptr axis";
+                qDebug() << "Nullptr axis";
                 Q_CHECK_PTR(leftAxis);
                 Q_CHECK_PTR(bottomAxis);
                 return;
@@ -173,7 +173,7 @@ void TrendViewDialog::addSig(QString signame)
             auto bottomAxis = axisRect->axis(QCPAxis::atBottom);
             if (!leftAxis || !bottomAxis)
             {
-                qCritical() << "Nullptr axis";
+                qDebug() << "Nullptr axis";
                 Q_CHECK_PTR(leftAxis);
                 Q_CHECK_PTR(bottomAxis);
                 return;
@@ -670,7 +670,7 @@ void TrendViewDialog::analogAxisDefault(int graphNum, QCPAxisRect *axisRect)
             auto keyAxis = axisRect->axis(QCPAxis::atBottom);
             if (!valueAxis || !keyAxis)
             {
-                qCritical() << "Nullptr axis";
+                qDebug() << "Nullptr axis";
                 Q_CHECK_PTR(valueAxis);
                 Q_CHECK_PTR(keyAxis);
                 return;
@@ -730,7 +730,7 @@ void TrendViewDialog::digitalAxis(int &MainPlotLayoutRow)
             auto bottomAxis = DigitalAxisRect->axis(QCPAxis::atBottom);
             if (!leftAxis || !bottomAxis)
             {
-                qCritical() << "Nullptr axis";
+                qDebug() << "Nullptr axis";
                 Q_CHECK_PTR(leftAxis);
                 Q_CHECK_PTR(bottomAxis);
                 return;

@@ -260,7 +260,7 @@ void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
         break;
     default:
         Q_ASSERT(false);
-        qCritical() << "Undefined interface type";
+        qDebug() << "Undefined interface type";
         return;
     }
 }

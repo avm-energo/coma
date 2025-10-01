@@ -89,7 +89,7 @@ Error::Msg TuneKIVR::processR120()
 #ifndef NO_LIMITS
     if (StdFunc::FloatIsWithinLimits(pt100_120, m_pt100, 40))
     {
-        WARNMSG("Ошибка в полученных данных, значения сопротивлений равны");
+        qWarning() << "Ошибка в полученных данных, значения сопротивлений равны";
         StdFunc::Cancel();
         return Error::Msg::GeneralError;
     }

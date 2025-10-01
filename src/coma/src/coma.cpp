@@ -182,25 +182,30 @@ void Coma::setupMenubar()
     menu->addAction(
         QIcon(Constants::Resources[Constants::STOPICON]), "Разрыв соединения", this, &Coma::disconnectAndClear);
     menubar->addMenu(menu);
-    menu = new QMenu(menubar);
-    menu->setTitle("Снимки");
-    menu->addAction("Создать снимок", this, &Coma::createSlice);
-    menu->addAction("Восстановить из снимка", this, &Coma::restoreFromSlice);
+    if (AppConfiguration::app() != AppConfiguration::Service)
+    {
+        menu = new QMenu(menubar);
+        menu->setTitle("Снимки");
+        menu->addAction("Создать снимок", this, &Coma::createSlice);
+        menu->addAction("Восстановить из снимка", this, &Coma::restoreFromSlice);
+    }
     menubar->addMenu(menu);
     menubar->addAction("О программе", this, &Coma::showAboutDialog);
     menubar->addSeparator();
 
-    menu = new QMenu(menubar);
-    menu->setTitle("Автономная работа");
-    menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
-    menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
-    menu->addAction("Конвертация файлов переключений", this, &Coma::loadSwjPackConvertor);
-    menu->addAction("Конвертация файлов HEX -> BIN", this, &Coma::hex2BinConverter);
-    if (AppConfiguration::app() == AppConfiguration::Debug)
+    if (AppConfiguration::app() != AppConfiguration::Service)
+    {
+        menu = new QMenu(menubar);
+        menu->setTitle("Автономная работа");
+        menu->addAction("Загрузка осциллограммы", this, qOverload<>(&Coma::loadOsc));
+        menu->addAction("Загрузка файла переключений", this, qOverload<>(&Coma::loadSwj));
+        menu->addAction("Конвертация файлов переключений", this, &Coma::loadSwjPackConvertor);
+        menu->addAction("Конвертация файлов HEX -> BIN", this, &Coma::hex2BinConverter);
         menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
-    menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
-    menu->addAction("Просмотреть снимок", this, &Coma::openSlice);
-    menubar->addMenu(menu);
+        menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
+        menu->addAction("Просмотреть снимок", this, &Coma::openSlice);
+        menubar->addMenu(menu);
+    }
     setMenuBar(menubar);
 }
 
@@ -217,8 +222,8 @@ void Coma::loadSwj(const QString &filename)
         std::visit(
             overloaded {
                 [&](S2::OscHeader &header) { m_oscManager.setHeader(header); }, //
-                [&](SwjModel &model) { swjModel = &model; },                  //
-                [&](TrendViewModel *model) { oscModel = model; }              //
+                [&](SwjModel &model) { swjModel = &model; },                    //
+                [&](TrendViewModel *model) { oscModel = model; }                //
             },
             item);
     }
@@ -465,10 +470,10 @@ void Coma::prepareDialogs()
     m_currentDevice->getFileProvider()->request(S2::FilesEnum::Config, true);
     // нет конфигурации
     if (m_currentDevice->health().isNoConfig())
-        qCritical() << Error::Msg::NoConfError;
+        qCritical() << "В модуле отсутствует конфигурация";
     // нет коэффициентов
     if (m_currentDevice->health().isNoTuneCoef())
-        qCritical() << Error::Msg::NoTuneError;
+        qCritical() << "Модуль требует проведения регулировки";
 }
 
 void Coma::disconnectAndClear()

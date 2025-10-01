@@ -140,7 +140,7 @@ void DataController::createFile(const QStringList &creationData)
             newFile->deleteLater();
         }
         else
-            qCritical() << "Can't open file " << templateName;
+            qDebug() << "Can't open file " << templateName;
         tempFile->deleteLater();
     }
 }

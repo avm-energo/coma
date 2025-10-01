@@ -141,7 +141,7 @@ Error::Msg SyncConnection::writeBlockSync(
     }
     else
     {
-        WARNMSG("Некорректный номер блока");
+        qWarning() << "Некорректный номер блока";
         return Error::Msg::WriteError;
     }
 }

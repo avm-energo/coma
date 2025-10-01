@@ -41,7 +41,7 @@ else()
 endif()
 
 # Copy settings one time at first build
-set(DBG_CHECK_PATH "${CMAKE_BINARY_DIR}/check.txt")
+set(DBG_CHECK_PATH "${CMAKE_BINARY_DIR}/check-debug.txt")
 if(NOT EXISTS ${DBG_CHECK_PATH})
   file(TOUCH ${DBG_CHECK_PATH})
   # Copying XML settings to appdata directory after building

@@ -18,7 +18,7 @@ bool UsbHidPort::connect()
 {
     if ((m_settings.vendor_id == 0) || (m_settings.product_id == 0))
     {
-        qCritical() << Error::Msg::NoDeviceError;
+        qDebug() << Error::Msg::NoDeviceError;
         return false;
     }
     m_hidDevice = hid_open(m_settings.vendor_id, m_settings.product_id, //
@@ -31,7 +31,7 @@ bool UsbHidPort::connect()
         if (getState() == Interface::State::Connect)
         {
             hidErrorHandle();
-            qCritical() << Error::Msg::OpenError;
+            qDebug() << Error::Msg::OpenError;
         }
         return false;
     }
@@ -103,7 +103,7 @@ bool UsbHidPort::writeDataToPort(QByteArray &command)
     if (command.size() > MaxSegmenthLength)
     {
         writeLog(Error::Msg::SizeError);
-        qCritical() << Error::Msg::SizeError;
+        qDebug() << Error::Msg::SizeError;
         return false;
     }
 

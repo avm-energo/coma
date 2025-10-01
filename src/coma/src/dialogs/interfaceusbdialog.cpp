@@ -53,7 +53,7 @@ bool InterfaceUSBDialog::updateModel()
     if (usbDevices.isEmpty())
     {
         QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
-        qCritical() << Error::Msg::NoDeviceError;
+        qWarning() << "Устройства не найдены";
         return false;
     }
     QStringList sl { "VID", "PID", "Serial" };

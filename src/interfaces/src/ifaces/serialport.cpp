@@ -71,7 +71,7 @@ bool SerialPort::write(const QByteArray &ba)
     m_dataGuard.unlock();                             // unlock port
     if (bytes <= 0)
     {
-        qCritical() << "Error with data writing";
+        qCritical() << "Ошибка записи данных в порт";
         emit error(InterfaceError::WriteError);
         return false;
     }

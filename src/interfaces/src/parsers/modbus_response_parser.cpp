@@ -1,9 +1,10 @@
 #include "interfaces/parsers/modbus_response_parser.h"
 
-#include <QDebug>
-#include <bitset>
 #include <gen/utils/crc16.h>
 #include <interfaces/utils/modbus_convertations.h>
+
+#include <QDebug>
+#include <bitset>
 
 namespace Interface
 {
@@ -11,7 +12,9 @@ namespace Interface
 constexpr quint8 errorModbusConst = 0x80;
 
 ModbusResponseParser::ModbusResponseParser(QObject *parent)
-    : BaseResponseParser(parent), m_deviceAddress(0), m_expectedRespSize(0)
+    : BaseResponseParser(parent)
+    , m_deviceAddress(0)
+    , m_expectedRespSize(0)
 {
 }
 
@@ -26,7 +29,7 @@ bool ModbusResponseParser::validateCRC(const QByteArray &response) const noexcep
     utils::CRC16 calculatedCRC(response.mid(0, rSize - 2));
     bool result = (calculatedCRC == receivedCRC);
     if (!result)
-        qCritical() << Error::CrcError << metaObject()->className();
+        qDebug() << Error::CrcError << metaObject()->className();
     return result;
 }
 
@@ -35,7 +38,7 @@ bool ModbusResponseParser::validateDeviceAddress(const QByteArray &response) con
     auto responseAddress = static_cast<quint8>(response[0]);
     bool result = (responseAddress == m_deviceAddress);
     if (!result)
-        qCritical() << "Пришёл ответ от устройства с другим адресом: " << responseAddress;
+        qDebug() << "Пришёл ответ от устройства с другим адресом: " << responseAddress;
     return result;
 }
 
@@ -60,8 +63,8 @@ bool ModbusResponseParser::validateResponseSize(const quint8 functionCode, QByte
 
     if (!isValidSize)
     {
-        qCritical() << "Ошибка размера полученных данных, ожидали: " //
-                    << responseSize << ", получили: " << response.size();
+        qDebug() << "Ошибка размера полученных данных, ожидали: " //
+                 << responseSize << ", получили: " << response.size();
     }
     return isValidSize;
 }
@@ -165,7 +168,7 @@ void ModbusResponseParser::parse()
         }
         break;
     default:
-        qCritical() << "Parse: wrong function code, hex: " << m_responseBuffer.toHex();
+        qDebug() << "Parse: wrong function code, hex: " << m_responseBuffer.toHex();
         break;
     }
     clearResponseBuffer();
@@ -234,11 +237,11 @@ void ModbusResponseParser::processDataSection(const QByteArray &dataSection) noe
     bool ok = true;
     if ((data.size() != sectionSize) || data.size() < 16) // 16 - размер S2BHeader
     {
-        qCritical() << "Получен некорректный размер при разборке секции файла";
-        ok = false; // Not ok
+        qDebug() << "Получен некорректный размер при разборке секции файла";
+        ok = false;                                       // Not ok
     }
     m_longDataBuffer.append(data);
-    if (m_isFirstSectionReceived) // Если получили первую секцию
+    if (m_isFirstSectionReceived)                         // Если получили первую секцию
     {
         if (!m_isLastSectionReceived)
             emit readingLongData();

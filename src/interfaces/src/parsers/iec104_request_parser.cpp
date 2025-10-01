@@ -124,7 +124,7 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
         break;
     }
     default:
-        qCritical() << "Undefined command: " << cmd.command;
+        qDebug() << "Undefined command: " << cmd.command;
     }
 
     return m_request;

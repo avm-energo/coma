@@ -167,7 +167,7 @@ void IEC104Parser::run()
                 break;
             }
             default:
-                qCritical() << "Undefined command: " << command.command;
+                qDebug() << "Undefined command: " << command.command;
                 break;
             }
 
@@ -332,7 +332,7 @@ Error::Msg IEC104Parser::isIncomeDataValid(QByteArray &ba)
     }
     catch (...)
     {
-        ERMSG("Fatal exception");
+        qFatal() << "Fatal exception";
         return Error::Msg::GeneralError;
     }
 }
@@ -790,7 +790,7 @@ void IEC104Parser::SendTestAct()
     if (m_noAnswer)
     {
         emit reconnectSignal();
-        qCritical("No answer");
+        qDebug("No answer");
         return;
     }
     else

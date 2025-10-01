@@ -6,7 +6,10 @@ namespace Interface
 {
 
 BaseResponseParser::BaseResponseParser(QObject *parent)
-    : QObject(parent), m_isFirstSectionReceived(true), m_isLastSectionReceived(false), m_isLastSectionSent(false)
+    : QObject(parent)
+    , m_isFirstSectionReceived(true)
+    , m_isLastSectionReceived(false)
+    , m_isLastSectionSent(false)
 {
 }
 
@@ -60,7 +63,7 @@ void BaseResponseParser::processOk() noexcept
 
 void BaseResponseParser::processError(int errorCode) noexcept
 {
-    qCritical() << "Device error code: " << QString::number(errorCode, 16);
+    qDebug() << "Device error code: " << QString::number(errorCode, 16);
     emit cancelRequest();
     DataTypes::GeneralResponseStruct resp { DataTypes::GeneralResponseTypes::Error, static_cast<quint64>(errorCode) };
     emit responseParsed(resp);
@@ -92,7 +95,7 @@ void BaseResponseParser::fileReceived(const QByteArray &file, //
                 if (errCode == Error::Msg::NoError)
                     emit responseParsed(s2bFile);
                 else
-                    qCritical() << QVariant::fromValue(errCode).toString();
+                    qDebug() << QVariant::fromValue(errCode).toString();
             }
             break;
         }

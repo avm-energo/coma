@@ -124,7 +124,7 @@ void CheckDialog::tabChanged(int newIndex)
         currentTabIndex = newIndex;
     }
     else
-        qCritical("Undefined check tab selected");
+        qDebug() << "Undefined check tab selected";
 }
 
 void CheckDialog::setupUI()

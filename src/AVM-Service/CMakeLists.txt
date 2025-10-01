@@ -37,7 +37,7 @@ else()
 endif()
 
 # Copy settings one time at first build
-set(SVC_CHECK_PATH "${CMAKE_BINARY_DIR}/check.txt")
+set(SVC_CHECK_PATH "${CMAKE_BINARY_DIR}/check-service.txt")
 if(NOT EXISTS ${SVC_CHECK_PATH})
   file(TOUCH ${SVC_CHECK_PATH})
   # Copying XML settings to appdata directory after building

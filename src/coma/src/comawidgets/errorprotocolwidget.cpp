@@ -43,7 +43,6 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     tv->verticalHeader()->setDefaultSectionSize(tv->verticalHeader()->fontMetrics().height() + 2);
     tv->setGridStyle(Qt::SolidLine);
     tv->setShowGrid(true);
-    tv->setObjectName("ertv");
     QFrame *line = new QFrame;
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
@@ -60,11 +59,9 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     lyout->addLayout(upperLayout, 0);
     lyout->addWidget(tv, 5);
     w->setLayout(lyout);
-    QVBoxLayout *l = new QVBoxLayout;
-    l->addWidget(w);
-    setLayout(l);
+    lyout = new QVBoxLayout;
+    lyout->addWidget(w);
+    setLayout(lyout);
 }
 
-ErrorProtocolWidget::~ErrorProtocolWidget()
-{
-}
+ErrorProtocolWidget::~ErrorProtocolWidget() { }

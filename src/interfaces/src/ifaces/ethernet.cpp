@@ -78,7 +78,7 @@ bool Ethernet::write(const QByteArray &data)
     m_dataGuard.unlock();               // unlock ethernet iface
     if (bytes <= 0)
     {
-        qCritical() << "Error with data writing";
+        qDebug() << "Ошибка записи данных в сокет";
         emit error(InterfaceError::WriteError);
         return false;
     }

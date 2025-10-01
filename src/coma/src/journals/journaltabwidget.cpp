@@ -143,7 +143,7 @@ void JournalTabWidget::error(const QString &message)
     EMessageBox::error(this, message);
     isJournalOperationActive = false;
     stopAndHideIndicator();
-    qCritical() << message;
+    qDebug() << message;
 }
 
 void JournalTabWidget::stopProgressIndicator(Error::Msg msg)
@@ -176,7 +176,6 @@ void JournalTabWidget::update(BaseJournal *newJournal)
         return;
 
     connect(newJournal, &BaseJournal::done, this, &JournalTabWidget::done);
-    connect(newJournal, &BaseJournal::error, this, &JournalTabWidget::error);
     connect(newJournal, &BaseJournal::resendMaxResult, m_saveProgressDialog, &QProgressDialog::setMaximum);
     connect(newJournal, &BaseJournal::resendResult, m_saveProgressDialog, &QProgressDialog::setValue);
     m_modelView = newJournal->createModelView(this);

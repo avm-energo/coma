@@ -1,10 +1,11 @@
 #include "s2/s2util.h"
 
-#include <QDateTime>
-#include <QDebug>
 #include <gen/stdfunc.h>
 #include <gen/utils/crc32.h>
 #include <s2/s2configuration.h>
+
+#include <QDateTime>
+#include <QDebug>
 
 namespace S2
 {
@@ -141,7 +142,7 @@ bool Util::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
     utils::CRC32 crc32(bain);
     if (crc32 != fileHeader.crc32)
     {
-        qCritical() << "S2" << Error::Msg::CrcError; // выход за границу принятых байт
+        qDebug() << "S2" << Error::Msg::CrcError; // выход за границу принятых байт
         return false;
     }
     recordHeader.id = 0;
@@ -150,7 +151,7 @@ bool Util::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
         auto size = sizeof(S2::DataRecHeader);
         if (size > bain.size())
         {
-            qCritical() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
+            qDebug() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
             return false;
         }
         memcpy(&recordHeader, &bain.data()[0], size);
@@ -163,7 +164,7 @@ bool Util::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
             size = recordHeader.numByte;
             if (size > bain.size())
             {
-                qCritical() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
+                qDebug() << "S2" << Error::Msg::SizeError; // выход за границу принятых байт
                 return false;
             }
             cfp.data = bain.left(size);

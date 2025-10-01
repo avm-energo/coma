@@ -226,7 +226,7 @@ void StartupKTFDialog::ReadFromFile()
     if (res != Error::Msg::NoError)
     {
         EMessageBox::error(this, "Ошибка при загрузке файла");
-        ERMSG("Ошибка при загрузке файла");
+        qWarning() << "Ошибка при загрузке файла";
         return;
     }
 

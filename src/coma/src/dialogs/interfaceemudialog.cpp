@@ -121,6 +121,6 @@ void InterfaceEmuDialog::acceptedInterface()
     Settings::set("typem", LEFunc::Data(dlg, "typemle"));
 
     if (!updateModel())
-        qCritical() << Error::GeneralError;
+        qDebug() << Error::GeneralError;
     dlg->close();
 }

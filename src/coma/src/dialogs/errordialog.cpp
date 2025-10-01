@@ -19,7 +19,6 @@ void ErrorDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     auto ErrorWidget = new ErrorProtocolWidget;
-    ErrorWidget->setObjectName("errorwidget");
 
     ErrorWidget->setAutoFillBackground(true);
     lyout->addWidget(ErrorWidget);

@@ -17,6 +17,7 @@ void ComaHelper::initAppSettings(const QString &appName, const QString &orgName,
     QCoreApplication::setOrganizationName(orgName);
     QCoreApplication::setApplicationVersion(version);
     MessageHandler::setMessageHandlerFilename("coma.log");
+    MessageHandler::setQueueLevel(Logger::LOGLEVEL_WARN);
     qInstallMessageHandler(&MessageHandler::messageHandlerWithErrorQueue);
 }
 

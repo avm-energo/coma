@@ -77,8 +77,6 @@ public:
 signals:
     /// \brief Сигнал об успешном выполнении операции.
     void done(const QString &msg);
-    /// \brief Сигнал об ошибке во время выполнения операции.
-    void error(const QString &msg);
     /// \brief Состояние выполнения текущей операции.
     void resendResult(const int result);
     /// \brief Число шагов выполняющейся операции.

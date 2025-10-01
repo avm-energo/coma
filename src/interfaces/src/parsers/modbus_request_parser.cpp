@@ -6,9 +6,7 @@
 namespace Interface
 {
 
-ModbusRequestParser::ModbusRequestParser(QObject *parent) : BaseRequestParser(parent), m_deviceAddress(0)
-{
-}
+ModbusRequestParser::ModbusRequestParser(QObject *parent) : BaseRequestParser(parent), m_deviceAddress(0) { }
 
 void ModbusRequestParser::basicProtocolSetup() noexcept
 {
@@ -191,7 +189,7 @@ QByteArray ModbusRequestParser::parse(const CommandStruct &cmd)
         break;
     }
     default:
-        qCritical() << "Undefined command: " << cmd.command;
+        qDebug() << "Undefined command: " << cmd.command;
     }
     m_request = createADU(request);
     return m_request;
@@ -219,7 +217,7 @@ QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request) const 
     {
     case Modbus::FunctionCode::ReadCoils:
         temp = (request.quantity / 8) + ((request.quantity % 8) != 0);
-        bytesToReceive = temp + 5; // address (1), function code (1), bytes count (1), crc (2)
+        bytesToReceive = temp + 5;             // address (1), function code (1), bytes count (1), crc (2)
         break;
     case Modbus::FunctionCode::ReadDiscreteInputs:
         bytesToReceive = request.quantity + 5; // address (1), function code (1), bytes count (1), crc (2)
@@ -229,15 +227,15 @@ QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request) const 
         bytesToReceive = request.quantity * 2 + 5; // address (1), function code (1), bytes count (1), crc (2)
         break;
     case Modbus::FunctionCode::WriteMultipleRegisters:
-        bytesToReceive = 8; // address (1), function code (1), address (2), quantity (2), crc (2)
+        bytesToReceive = 8;                        // address (1), function code (1), address (2), quantity (2), crc (2)
         if (request.quantity * 2 != request.data.size())
         {
-            qCritical() << "Incorrect quantity";
+            qDebug() << "Incorrect quantity";
             return QByteArray {};
         }
         if (request.data.size() == 0)
         {
-            qCritical() << "Incorrect command data";
+            qDebug() << "Incorrect command data";
             return QByteArray {};
         }
         pdu.append(quint8(request.quantity * 2));
@@ -256,7 +254,7 @@ QByteArray ModbusRequestParser::createPDU(const Modbus::Request &request) const 
         pdu.append(request.data);
         break;
     default:
-        qCritical() << "Parse: wrong request function code";
+        qDebug() << "Parse: wrong request function code";
         break;
     }
 
@@ -319,8 +317,9 @@ QByteArray ModbusRequestParser::prepareFileForWriting(const quint16 fileNum, con
 
     // Преобразовываем элементы из буфера в готовые команды (формат QByteArray)
     std::transform(requestBuffer.cbegin(), requestBuffer.cend(), std::back_inserter(m_longDataSections), //
-        [this](const Modbus::Request &request) -> QByteArray {
-            return createADU(request); //
+        [this](const Modbus::Request &request) -> QByteArray
+        {
+            return createADU(request);                                                                   //
         });
     return getNextDataSection();
 }

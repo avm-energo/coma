@@ -174,7 +174,7 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
             Settings::popGroup();
             Settings::popGroup(); // exit from RS-485
             if (!updateModel())
-                qCritical() << Error::GeneralError;
+                qDebug() << Error::GeneralError;
             dialog->close();
         }));
     hlyout->addWidget(PBFunc::New(dialog, "cancelpb", "Отмена", dialog, [dialog] { dialog->close(); }));
@@ -283,6 +283,6 @@ void InterfaceSerialDialog::acceptedInterface()
     Settings::popGroup();
     Settings::popGroup(); // exit from RS-485
     if (!updateModel())
-        qCritical() << Error::GeneralError;
+        qDebug() << Error::GeneralError;
     dialog->close();
 }

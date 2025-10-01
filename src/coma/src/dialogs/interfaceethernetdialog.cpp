@@ -199,7 +199,7 @@ void InterfaceEthernetDialog::acceptedInterface()
     Settings::popGroup();
     Settings::popGroup(); // exit from Ethernet
     if (!updateModel())
-        qCritical() << Error::GeneralError;
+        qDebug() << Error::GeneralError;
     dialog->close();
 }
 

@@ -22,7 +22,7 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, const BaseSettin
     connect(&m_timeoutTimer, &QTimer::timeout, this,
         [this]
         {
-            qCritical() << "Timeout, command: " << m_lastRequestedCommand.load();
+            qDebug() << "Timeout, command: " << m_lastRequestedCommand.load();
             m_log.writeLog(Logger::Critical, "Timeout");
             cancelQuery();
             emit this->timeout();

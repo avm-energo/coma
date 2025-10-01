@@ -127,8 +127,7 @@ void ProtocomResponseParser::parse()
         processInt(m_responseBuffer.toInt());
         break;
     default:
-        qCritical("We shouldn't be here, something went wrong");
-        qCritical() << m_responseBuffer.toHex();
+        qDebug() << "We shouldn't be here, something went wrong" << m_responseBuffer.toHex();
         break;
     }
     clearResponseBuffer();
