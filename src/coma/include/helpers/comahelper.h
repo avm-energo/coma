@@ -10,7 +10,7 @@ class ComaHelper : public QObject
     Q_OBJECT
 public:
     explicit ComaHelper();
-    void initAppSettings(const QString &appName, const QString &orgName, const QString &version);
+    void initAppSettings();
     void parseCommandLine();
     void loadSwj(const QString &filename);
     void loadJournal(const QString &filename);

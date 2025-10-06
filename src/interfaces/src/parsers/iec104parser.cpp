@@ -332,7 +332,7 @@ Error::Msg IEC104Parser::isIncomeDataValid(QByteArray &ba)
     }
     catch (...)
     {
-        qFatal() << "Fatal exception";
+        qCritical() << "Fatal exception";
         return Error::Msg::GeneralError;
     }
 }

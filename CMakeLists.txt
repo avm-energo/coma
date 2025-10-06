@@ -64,8 +64,8 @@ if(BUILD_TESTING)
 endif()
 
 # Step 3: Build executable targets
-add_subdirectory(src/AVM-Debug)
-add_subdirectory(src/AVM-Service)
+add_subdirectory(src/avm-debug)
+add_subdirectory(src/avm-service)
 
 set(VERSION_IN ${CMAKE_CURRENT_SOURCE_DIR}/VERSION.in)
 set(VERSION_OUT ${CMAKE_CURRENT_SOURCE_DIR}/package/src/VERSION)

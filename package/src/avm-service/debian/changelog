@@ -1,3 +1,10 @@
+avm-service (3.4.0) unstable; urgency=low
+
+  [+] bugfix with not saving settings in Ethernet connections edit dialog
+  [-] some debug messages in Service mode
+
+ -- AVM-Energo <support@avmenergo.ru>  Mon, 06 Oct 2025 13:56:05 +0300
+
 avm-service (3.3.6) unstable; urgency=low
 
   [+] Slices functional, working only with Bsi, Config & Journals today

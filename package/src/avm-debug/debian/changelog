@@ -1,3 +1,11 @@
+avm-debug (3.4.0) unstable; urgency=low
+
+  [+] bugfix in 104 protocol
+  [+] bugfix when settings couldn't be saved in proper directory
+  [-] some debug messages in Service mode
+
+ -- AVM-Energo <support@avmenergo.ru>  Mon, 06 Oct 2025 13:56:05 +0300
+
 avm-debug (3.3.6) unstable; urgency=low
 
   [+] Slices functional, working only with Bsi, Config & Journals today

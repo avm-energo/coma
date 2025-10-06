@@ -2429,7 +2429,6 @@
             <id>1047</id>
             <name>FiltrClk</name>
             <type>BYTE</type>
-            <dtype>Yes</dtype>
             <widget>
                 <type>QCheckBox</type>
                 <group>51</group>
