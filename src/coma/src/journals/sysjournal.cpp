@@ -1,5 +1,7 @@
 #include "journals/sysjournal.h"
 
+#include <helpers/appconfig.h>
+
 namespace journals
 {
 
@@ -52,7 +54,8 @@ const QMap<quint32, QString> SysJournal::s_descriptions = {
 SysJournal::SysJournal(QObject *parent) : BaseJournal(parent), m_parser(new EventParser(this))
 {
     m_viewName = "system";
-    m_modelHeaders = BaseJournal::s_eventJourHeaders;
+    m_modelHeaders = (AppConfiguration::app() == AppConfiguration::Debug) ? BaseJournal::s_eventJourHeadersDebug
+                                                                          : s_eventJourHeadersService;
     setUserTimezone(m_modelHeaders);
 }
 

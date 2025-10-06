@@ -26,7 +26,7 @@ class BaseJournal : public QObject
 {
     Q_OBJECT
 protected:
-    static const QStringList s_eventJourHeaders;
+    static const QStringList s_eventJourHeadersDebug, s_eventJourHeadersService;
     static const std::map<JournalType, QString> s_nameByType;
     static const std::map<JournalType, QString> s_prefixByType;
 

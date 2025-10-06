@@ -17,7 +17,7 @@ QMap<const UserSettings::SettingName, UserSettings::SettingStruct> UserSettings:
     { SettingName::SilentInterval, { "SilentInterval", 10000 } },     //
     { SettingName::TimeoutCount, { "TimeoutCount", 5 } },             //
     { SettingName::ErrorCount, { "ErrorCount", 5 } },                 //
-    { SettingName::ProtocomTimeout, { "ProtocomTimeout", 1000 } },    //
+    { SettingName::ProtocomTimeout, { "ProtocomTimeout", 5000 } },    //
     { SettingName::ProtocomReconnect, { "ProtocomReconnect", 100 } }, //
     { SettingName::ModbusTimeout, { "ModbusTimeout", 3000 } },        //
     { SettingName::ModbusReconnect, { "ModbusReconnect", 1000 } },    //

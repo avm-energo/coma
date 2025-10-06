@@ -1,13 +1,18 @@
 #include "journals/workjournal.h"
 
+#include <helpers/appconfig.h>
+
 namespace journals
 {
 
 WorkJournal::WorkJournal(const QMap<quint32, QString> &desc, QObject *parent)
-    : BaseJournal(parent), m_desriptions(desc), m_parser(new EventParser(this))
+    : BaseJournal(parent)
+    , m_desriptions(desc)
+    , m_parser(new EventParser(this))
 {
     m_viewName = "work";
-    m_modelHeaders = BaseJournal::s_eventJourHeaders;
+    m_modelHeaders = (AppConfiguration::app() == AppConfiguration::Debug) ? BaseJournal::s_eventJourHeadersDebug
+                                                                          : s_eventJourHeadersService;
     setUserTimezone(m_modelHeaders);
 }
 

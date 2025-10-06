@@ -16,7 +16,6 @@ namespace journals
 JournalDialog::JournalDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
     disableMessages();
-    enableResponseConnections();
     createJournalTabs();
     setupUI();
 }

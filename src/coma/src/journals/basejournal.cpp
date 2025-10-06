@@ -11,7 +11,14 @@
 namespace journals
 {
 
-const QStringList BaseJournal::s_eventJourHeaders = {
+const QStringList BaseJournal::s_eventJourHeadersService = {
+    " № ",              //
+    "Дата/Время UTC",   //
+    "Описание события", //
+    "Тип события"       //
+};
+
+const QStringList BaseJournal::s_eventJourHeadersDebug = {
     " № ",              //
     "Дата/Время UTC",   //
     "Описание события", //

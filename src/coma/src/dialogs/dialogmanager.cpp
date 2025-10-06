@@ -70,6 +70,7 @@ void DialogManager::setupUI(Device::CurrentDevice *device, const QSize size)
     for (auto &dialog : m_dlgCreator->getDialogs())
     {
         dialog->engine()->setUpdatesEnabled(false);
+        dialog->enableResponseConnections();
         dialog->uponInterfaceSetting();
         // dialog->updateConnection(m_dataUpdater->currentConnection());
         auto item = new QListWidgetItem(dialog->getCaption(), m_sidebar.get());
