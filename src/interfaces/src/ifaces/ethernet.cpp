@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QNetworkProxy>
 
-Ethernet::Ethernet(const IEC104Settings &settings, QObject *parent)
+Ethernet::Ethernet(IEC104Settings *settings, QObject *parent)
     : BaseInterface("Ethernet", settings, parent)
     , m_settings(settings)
     , m_socket(new QTcpSocket(this))
@@ -17,12 +17,14 @@ Ethernet::Ethernet(const IEC104Settings &settings, QObject *parent)
 
 bool Ethernet::connect()
 {
-    m_socket->connectToHost(m_settings.ip, m_settings.port, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
-    if (m_socket->waitForConnected(m_settings.params.t0 * 1000))
+    m_socket->connectToHost(
+        m_settings->get("ip"), m_settings->get("port"), QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
+    if (m_socket->waitForConnected(m_settings->get<u16>("t0") * 1000))
     {
         if (getState() != Interface::State::Disconnect)
         {
             setState(Interface::State::Run);
+            qInfo("Связь с устройством установлена");
             emit started();
             return true;
         }

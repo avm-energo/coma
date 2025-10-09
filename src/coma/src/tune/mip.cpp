@@ -1,11 +1,11 @@
 #include "tune/mip.h"
 
+#include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/ifaces/ethernet.h>
 #include <interfaces/parsers/iec104parser.h>
-#include <interfaces/types/settingstypes.h>
-#include <settings/user_settings.h>
+#include <interfaces/types/serial_settings.h>
 #include <widgets/emessagebox.h>
 #include <widgets/lblfunc.h>
 #include <widgets/pbfunc.h>
@@ -127,10 +127,10 @@ void Mip::setupWidget()
 
 bool Mip::start()
 {
-    IEC104Settings conn_settings;
-    conn_settings.ip = QString(UserSettings::get(UserSettings::MipIp));
-    conn_settings.port = UserSettings::get(UserSettings::MipPort);
-    conn_settings.bsAddress = UserSettings::get(UserSettings::MipBsAddress);
+    IEC104Settings *conn_settings = new IEC104Settings;
+    conn_settings->set("ip", QString(Settings::get("mipIp", "172.16.31.178")));
+    conn_settings->set("port", Settings::get("mipPort", 2404));
+    conn_settings->set("bsAddress", Settings::get("mipBsAddress", 1));
     if (!initConnection(conn_settings))
         return false;
 
@@ -165,7 +165,7 @@ void Mip::stop()
     }
 }
 
-bool Mip::initConnection(const IEC104Settings &settings)
+bool Mip::initConnection(IEC104Settings *settings)
 {
     using namespace DataTypes;
     auto conn = new AsyncConnection(this);
@@ -176,7 +176,7 @@ bool Mip::initConnection(const IEC104Settings &settings)
     auto ifaceThread = new QThread;
     auto parserThread = new QThread;
     auto parser = new IEC104Parser(conn->getQueue());
-    parser->setBaseAdr(settings.bsAddress);
+    parser->setBaseAdr(settings->get("bsAddress"));
     // Обмен данными
     QObject::connect(m_iface, &BaseInterface::dataReceived, //
         parser, &IEC104Parser::checkStartBytes, Qt::QueuedConnection);
@@ -198,7 +198,7 @@ bool Mip::initConnection(const IEC104Settings &settings)
     QObject::connect(m_iface, &BaseInterface::started, m_iface,
         [=]
         {
-            qInfo() << m_iface->metaObject()->className() << " connected";
+            qDebug() << m_iface->metaObject()->className() << " connected";
             m_iface->moveToThread(ifaceThread);
             parser->moveToThread(parserThread);
             ifaceThread->start();

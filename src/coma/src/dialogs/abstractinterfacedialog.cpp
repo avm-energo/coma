@@ -1,5 +1,7 @@
 #include "dialogs/abstractinterfacedialog.h"
 
+#include <gen/settings.h>
+
 #include <QLayout>
 #include <QPushButton>
 
@@ -24,11 +26,11 @@ bool AbstractInterfaceDialog::checkSize()
     return false;
 }
 
-void AbstractInterfaceDialog::apply(BaseSettings &connection)
+void AbstractInterfaceDialog::apply(BaseSettings *connection)
 {
-    connection.m_silentInterval = UserSettings::get(UserSettings::SettingName::SilentInterval);
-    connection.m_maxErrors = UserSettings::get(UserSettings::SettingName::ErrorCount);
-    connection.m_maxTimeouts = UserSettings::get(UserSettings::SettingName::TimeoutCount);
-    connection.m_isLoggingEnabled = UserSettings::get(UserSettings::SettingName::LoggingEnabled);
-    connection.m_logLevel = QString(UserSettings::get(UserSettings::SettingName::LogLevel));
+    connection->set("silentInterval", Settings::get("silentInterval", 10000));
+    connection->set("maxErrors", Settings::get("errorCount", 5));
+    connection->set("maxTimeouts", Settings::get("timeoutCount", 5));
+    connection->set("isLoggingEnabled", Settings::get("loggingEnabled", true));
+    connection->set("logLevel", QString(Settings::get("logLevel", "Warn")));
 }

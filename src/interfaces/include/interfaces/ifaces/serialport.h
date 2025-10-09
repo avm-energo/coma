@@ -1,8 +1,9 @@
 #pragma once
 
-#include <QSerialPort>
 #include <interfaces/ifaces/baseinterface.h>
-#include <interfaces/types/settingstypes.h>
+#include <interfaces/types/serial_settings.h>
+
+#include <QSerialPort>
 
 class SerialPort final : public BaseInterface
 {
@@ -11,7 +12,7 @@ private:
     QSerialPort *m_port;
 
 public:
-    explicit SerialPort(const SerialPortSettings &settings, QObject *parent = nullptr);
+    explicit SerialPort(SerialSettings *settings, QObject *parent = nullptr);
 
 private:
     bool connect() override;

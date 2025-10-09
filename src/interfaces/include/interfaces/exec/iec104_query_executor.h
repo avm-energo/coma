@@ -17,7 +17,7 @@ private:
     friend class QueryExecutorFabric;
 
     SharedControlBlock m_ctrlBlock;
-    IEC104ConnectionParams m_params;
+    u16 m_w;
     QTimer *m_t2Timer;
     QTimer *m_t3Timer;
     std::uint16_t m_acknowledgeReceived;
@@ -25,7 +25,7 @@ private:
     /// \brief Приватный конструктор.
     /// \details Создание экземпляров класса доступно только через QueryExecutorFabric.
     /// \see QueryExecutorFabric.
-    explicit Iec104QueryExecutor(RequestQueue &queue, const IEC104Settings &settings, QObject *parent = nullptr);
+    explicit Iec104QueryExecutor(RequestQueue &queue, IEC104Settings *settings, QObject *parent = nullptr);
 
     /// \brief Преобразование хранимого парсера запросов к primary типу.
     inline Iec104ResponseParser *getResponseParser() noexcept;

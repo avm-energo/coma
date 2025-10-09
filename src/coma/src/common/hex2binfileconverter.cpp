@@ -1,5 +1,5 @@
 #include <gen/files.h>
-#include <helpers/hex2binfileconverter.h>
+#include <common/hex2binfileconverter.h>
 #include <s2/s2util.h>
 #include <widgets/emessagebox.h>
 #include <widgets/filefunc.h>

@@ -249,8 +249,8 @@ void XmlS2RecordDialog::createWidgetEditBox()
     // Виджеты для узла <max>
     auto maxLabel = new QLabel("Максимальное значение: ", this);
     auto maxInput = new QSpinBox(this);
-    maxInput->setMinimum(idMin);
-    maxInput->setMaximum(idMax);
+    maxInput->setMinimum(int_min);
+    maxInput->setMaximum(int_max);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QObject::connect(maxInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlS2RecordDialog::dataChanged));

@@ -9,7 +9,7 @@
 #include <dialogs/plotdialog.h>
 #include <dialogs/relaydialog.h>
 #include <dialogs/timedialog.h>
-#include <helpers/appconfig.h>
+#include <common/appconfig.h>
 #include <journals/journaldialog.h>
 #include <oscillograms/dialogs/oscdialog.h>
 #include <oscillograms/dialogs/osckivdialog.h>

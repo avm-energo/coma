@@ -1,6 +1,6 @@
 #include "journals/sysjournal.h"
 
-#include <helpers/appconfig.h>
+#include <common/appconfig.h>
 
 namespace journals
 {

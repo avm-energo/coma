@@ -23,6 +23,10 @@
 #include <alarms/alarmwidget.h>
 #include <comawidgets/gasdensitywidget.h>
 #include <comawidgets/splashscreen.h>
+#include <common/appconfig.h>
+#include <common/comaversion.h>
+#include <common/constants.h>
+#include <common/hex2binfileconverter.h>
 #include <device/current_device.h>
 #include <dialogs/aboutdialog.h>
 #include <dialogs/connectdialog.h>
@@ -34,13 +38,10 @@
 #include <gen/errorqueue.h>
 #include <gen/files.h>
 #include <gen/logger.h>
+#include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <helpers/appconfig.h>
-#include <helpers/comaversion.h>
-#include <helpers/constants.h>
-#include <helpers/hex2binfileconverter.h>
-#include <interfaces/types/settingstypes.h>
+#include <interfaces/types/serial_settings.h>
 #include <journals/journalviewer.h>
 #include <oscillograms/dialogs/switchjournaldialog.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
@@ -81,7 +82,9 @@ Coma::Coma(QWidget *parent)
     connect(m_connectionManager, &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
     connect(m_connectionManager, &ConnectionManager::connectFailed, this, //
         [this](const QString &errMsg) { EMessageBox::error(this, errMsg); });
-    EMessageBox::setHash(UserSettings::get(UserSettings::PasswordHash));
+    connect(this, &Coma::settingsChanged, m_connectionManager, &ConnectionManager::settingsChanged);
+    EMessageBox::setHash(
+        Settings::get("passwordHash", "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc"));
 }
 
 Coma::~Coma() { }
@@ -103,7 +106,7 @@ void Coma::setupUI()
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
     setupMenubar();
-    StyleLoader::setStyle(UserSettings::get(UserSettings::SettingName::Theme));
+    StyleLoader::setStyle(Settings::get("theme", "Light"));
 }
 
 QToolBar *Coma::createToolBar()
@@ -122,6 +125,7 @@ QToolBar *Coma::createToolBar()
             dialog->setMinimumSize(this->size() / 4);
             connect(dialog, &SettingsDialog::alarmOperationUpdate, m_alarmW, &AlarmWidget::updateAlarmOperation);
             connect(dialog, &SettingsDialog::alarmIntervalUpdate, m_alarmW, &AlarmWidget::updateAlarmInterval);
+            connect(dialog, &SettingsDialog::settingChanged, this, &Coma::settingsChanged);
             dialog->exec();
         });
 
@@ -322,14 +326,14 @@ void Coma::go()
     // Load settings before anything
     auto splash = new SplashScreen();
     splash->show();
-    qInfo("=== Log started ===\n");
+    qDebug() << "=== Log started ===";
     m_bar = new EStatusBar(this);
     setStatusBar(m_bar);
     setupUI();
     // StdFunc::Wait(10000);
     splash->finish(this);
     splash->deleteLater();
-    MessageHandler::setLogLevel(Logger::s_logLevelsMap[UserSettings::get(UserSettings::LogLevel)]);
+    MessageHandler::setLogLevel(Logger::s_logLevelsMap[Settings::get("logLevel", "Warn")]);
     show();
 }
 
@@ -383,7 +387,7 @@ void Coma::connectDialog()
     connDialog->exec();
 }
 
-void Coma::initConnection(const ConnectStruct &st)
+void Coma::initConnection(const ConnectionSettings &st)
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     auto connection = m_connectionManager->createConnection(st);

@@ -1,7 +1,8 @@
+#include <common/appconfig.h>
+#include <common/names.h>
 #include <dialogs/settingsdialog.h>
 #include <gen/logger.h>
-#include <helpers/appconfig.h>
-#include <settings/user_settings.h>
+#include <gen/settings.h>
 #include <widgets/cbfunc.h>
 #include <widgets/chbfunc.h>
 #include <widgets/emessagebox.h>
@@ -110,8 +111,9 @@ void SettingsDialog::setupGeneralTab() noexcept
     QStringList zonestrList;
     std::copy_if(zoneList.cbegin(), zoneList.cend(), std::back_inserter(zonestrList),
         [](const auto array) { return (array.contains("UTC+")); });
-    auto timezoneCB = CBFunc::New(m_workspace, "timezone", zonestrList);
-    timezoneCB->setCurrentText(UserSettings::get(UserSettings::SettingName::Timezone));
+    auto timezoneCB = CBFunc::New(m_workspace, SettingsKeys::timezone, zonestrList);
+    timezoneCB->setCurrentText(Settings::get(SettingsKeys::timezone,
+        QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName)));
     auto timezoneLayout = new QHBoxLayout;
     timezoneLayout->addWidget(new QLabel("Часовой пояс", m_workspace));
     timezoneLayout->addWidget(timezoneCB);
@@ -124,7 +126,7 @@ void SettingsDialog::setupGeneralTab() noexcept
         auto passwordGB = new QGroupBox("Пароль", m_workspace);
         auto passwordLayout = new QGridLayout;
         passwordLayout->addWidget(LBLFunc::New(passwordGB, "Обновить пароль:"), 1, 1, 1, 1);
-        passwordLayout->addWidget(LEFunc::NewPsw(passwordGB, "password", QLineEdit::Password), 1, 2, 1, 1);
+        passwordLayout->addWidget(LEFunc::NewPsw(passwordGB, SettingsKeys::psw, QLineEdit::Password), 1, 2, 1, 1);
         auto resetBtn = new QPushButton("Установить пароль по умолчанию", passwordGB);
         connect(resetBtn, &QAbstractButton::clicked, this, &SettingsDialog::resetPassword);
         passwordLayout->addWidget(resetBtn, 2, 1, 1, 2);
@@ -141,14 +143,17 @@ void SettingsDialog::setupConnectionTab() noexcept
 
     // Вкладка "Общие"
     auto generalLayout = createTabLayout(setupTabs, "Общие");
-    generalLayout->addWidget(ChBFunc::New(m_workspace, "loggingEnabled", "Запись обмена данными в файл"));
-    generalLayout->addWidget(CBFunc::NewLBL(m_workspace, "Уровень логировки", "loglevel", Logger::logLevelsList()));
+    generalLayout->addWidget(ChBFunc::New(m_workspace, SettingsKeys::loggingEnabled, "Запись обмена данными в файл"));
+    generalLayout->addWidget(
+        CBFunc::NewLBL(m_workspace, "Уровень логировки", SettingsKeys::logLevel, Logger::logLevelsList()));
     generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
-    generalLayout->addWidget(LEFunc::NewLBL(m_workspace, "Интервал запроса сигнализации, мс", "alarmsInterval", true));
+    generalLayout->addWidget(
+        LEFunc::NewLBL(m_workspace, "Интервал запроса сигнализации, мс", SettingsKeys::alarmsInterval, true));
     generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
-    generalLayout->addWidget(ChBFunc::New(m_workspace, "alarmsEnabled", "Обновление сигнализации"));
+    generalLayout->addWidget(ChBFunc::New(m_workspace, SettingsKeys::alarmsEnabled, "Обновление сигнализации"));
     generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
-    auto widget = LEFunc::NewLBL(m_workspace, "Время \"тихого\" переподключения, мс", "silentInterval", true);
+    auto widget
+        = LEFunc::NewLBL(m_workspace, "Время \"тихого\" переподключения, мс", SettingsKeys::silentInterval, true);
     widget->setToolTip("<p><font size=\"4\">Для выполнения некоторых операций (загрузка конфигурации или обновление "
                        "ВПО) требуется перезапуск устройства. Для таких операций предусмотрена возможность \"тихого\""
                        "переподключения, при котором не отображается диалог переподключения к устройству, а само "
@@ -156,65 +161,68 @@ void SettingsDialog::setupConnectionTab() noexcept
                        "переподключения, диалог о переподключении к устройству появится в любом случае.</font></p>");
     generalLayout->addWidget(widget);
     generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
-    widget = LEFunc::NewLBL(m_workspace, "Кол-во таймаутов для переподключения", "timeoutCount", true);
+    widget = LEFunc::NewLBL(m_workspace, "Кол-во таймаутов для переподключения", SettingsKeys::timeoutCount, true);
     widget->setToolTip("<p><font size=\"4\">Количество подряд полученных таймаутов на посылаемые устройству "
                        "запросы, после которых будет предпринята попытка переподключиться к устройству по "
                        "тем же настройкам и интерфейсу для восстановления связи.</font></p>");
     generalLayout->addWidget(widget);
     generalLayout->addWidget(GraphFunc::newHLine(m_workspace));
-    widget = LEFunc::NewLBL(m_workspace, "Кол-во ошибок для переподключения", "errorCount", true);
+    widget = LEFunc::NewLBL(m_workspace, "Кол-во ошибок для переподключения", SettingsKeys::errorCount, true);
     widget->setToolTip("<p><font size=\"4\">Количество подряд полученных ошибок от интерфейса связи с "
                        "устройством, после которых будет предпринята попытка переподключения к устройству.</font></p>");
     generalLayout->addWidget(widget);
 
     // Вкладка "USB HID"
     auto protocomLayout = createTabLayout(setupTabs, "USB HID");
-    protocomLayout->addWidget(LEFunc::NewLBL(m_workspace, "Таймаут отправки запроса, мс", "protocomTimeout", true));
+    protocomLayout->addWidget(
+        LEFunc::NewLBL(m_workspace, "Таймаут отправки запроса, мс", SettingsKeys::USB::protocomTimeout, true));
     protocomLayout->addWidget(GraphFunc::newHLine(m_workspace));
-    widget = LEFunc::NewLBL(m_workspace, "Интервал переподключения, мс", "protocomReconnect", true);
+    widget = LEFunc::NewLBL(m_workspace, "Интервал переподключения, мс", SettingsKeys::USB::protocomReconnect, true);
     widget->setToolTip(reconnectIntervalTooltip);
     protocomLayout->addWidget(widget);
 
     // Вкладка "Modbus"
     auto modbusLayout = createTabLayout(setupTabs, "Modbus");
-    modbusLayout->addWidget(LEFunc::NewLBL(m_workspace, "Таймаут отправки запроса, мс", "modbusTimeout", true));
+    modbusLayout->addWidget(
+        LEFunc::NewLBL(m_workspace, "Таймаут отправки запроса, мс", SettingsKeys::Serial::modbusTimeout, true));
     modbusLayout->addWidget(GraphFunc::newHLine(m_workspace));
-    widget = LEFunc::NewLBL(m_workspace, "Интервал переподключения, мс", "modbusReconnect", true);
+    widget = LEFunc::NewLBL(m_workspace, "Интервал переподключения, мс", SettingsKeys::Serial::modbusReconnect, true);
     widget->setToolTip(reconnectIntervalTooltip);
     modbusLayout->addWidget(widget);
 
     // Вкладка "МЭК 61850-104"
     auto iec104Layout = createTabLayout(setupTabs, "МЭК 61850-104");
-    iec104Layout->addWidget(LEFunc::NewLBL(m_workspace, "Таймаут отправки запроса, мс", "iec104Timeout", true));
+    iec104Layout->addWidget(
+        LEFunc::NewLBL(m_workspace, "Таймаут отправки запроса, мс", SettingsKeys::Iec104::iec104Timeout, true));
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
-    widget = LEFunc::NewLBL(m_workspace, "Интервал переподключения, мс", "iec104Reconnect", true);
+    widget = LEFunc::NewLBL(m_workspace, "Интервал переподключения, мс", SettingsKeys::Iec104::iec104Reconnect, true);
     widget->setToolTip(reconnectIntervalTooltip);
     iec104Layout->addWidget(widget);
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
-    widget = LEFunc::NewLBL(m_workspace, "t0, с", "iec104T0", true);
+    widget = LEFunc::NewLBL(m_workspace, "t0, с", SettingsKeys::Iec104::iec104T0, true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут при установке соединения.</font></p>");
     iec104Layout->addWidget(widget);
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
-    widget = LEFunc::NewLBL(m_workspace, "t1, с", "iec104T1", true);
+    widget = LEFunc::NewLBL(m_workspace, "t1, с", SettingsKeys::Iec104::iec104T1, true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут при посылке или тестировании APDU.</font></p>");
     iec104Layout->addWidget(widget);
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
-    widget = LEFunc::NewLBL(m_workspace, "t2, с", "iec104T2", true);
+    widget = LEFunc::NewLBL(m_workspace, "t2, с", SettingsKeys::Iec104::iec104T2, true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут для отправки подтверждения о принятых APDU "
                        "в случае отсутствия сообщения с данными.</font></p>");
     iec104Layout->addWidget(widget);
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
-    widget = LEFunc::NewLBL(m_workspace, "t3, с", "iec104T3", true);
+    widget = LEFunc::NewLBL(m_workspace, "t3, с", SettingsKeys::Iec104::iec104T3, true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут для посылки блоков тестирования "
                        "в случае долгого простоя соединения.</font></p>");
     iec104Layout->addWidget(widget);
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
-    widget = LEFunc::NewLBL(m_workspace, "k", "iec104K", true);
+    widget = LEFunc::NewLBL(m_workspace, "k", SettingsKeys::Iec104::iec104K, true);
     widget->setToolTip("<p><font size=\"4\">Максимальное число неподтверждённых "
                        "APDU, отправляемых станцией.</font></p>");
     iec104Layout->addWidget(widget);
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
-    widget = LEFunc::NewLBL(m_workspace, "w", "iec104W", true);
+    widget = LEFunc::NewLBL(m_workspace, "w", SettingsKeys::Iec104::iec104W, true);
     widget->setToolTip("<p><font size=\"4\">Количество APDU информационного формата (I-посылок), "
                        "после приёма которых требуется отправить подтверждение.</font></p>");
     iec104Layout->addWidget(widget);
@@ -225,107 +233,121 @@ void SettingsDialog::setupTuneTab() noexcept
     auto tuneTabs = createTabWidget(createWorkspaceLayout("Настройки регулировки"));
     // Вкладка "Общие"
     auto generalLayout = createTabLayout(tuneTabs, "Общие");
-    generalLayout->addWidget(LEFunc::NewLBL(m_workspace, "Степень усреднения для регулировки", "tuneCount", true));
+    generalLayout->addWidget(
+        LEFunc::NewLBL(m_workspace, "Степень усреднения для регулировки", SettingsKeys::tuneCount, true));
     // Вкладка "МИП-02"
     auto mipLayout = createTabLayout(tuneTabs, "МИП-02");
-    mipLayout->addWidget(LEFunc::NewLBL(m_workspace, "IP адрес устройства", "mipIp", true));
+    mipLayout->addWidget(LEFunc::NewLBL(m_workspace, "IP адрес устройства", SettingsKeys::Mip::mipIp, true));
     mipLayout->addWidget(GraphFunc::newHLine(m_workspace));
-    mipLayout->addWidget(LEFunc::NewLBL(m_workspace, "Порт устройства", "mipPort", true));
+    mipLayout->addWidget(LEFunc::NewLBL(m_workspace, "Порт устройства", SettingsKeys::Mip::mipPort, true));
     mipLayout->addWidget(GraphFunc::newHLine(m_workspace));
-    mipLayout->addWidget(LEFunc::NewLBL(m_workspace, "Адрес базовой станции", "mipBsAddress", true));
+    mipLayout->addWidget(LEFunc::NewLBL(m_workspace, "Адрес базовой станции", SettingsKeys::Mip::mipBsAddress, true));
 }
 
 void SettingsDialog::fill()
 {
-    CBFunc::SetData(this, "timezone", UserSettings::get(UserSettings::SettingName::Timezone));
-    ChBFunc::SetData(this, "loggingEnabled", UserSettings::get(UserSettings::SettingName::LoggingEnabled));
-    CBFunc::SetData(this, "loglevel", UserSettings::get(UserSettings::SettingName::LogLevel));
-    LEFunc::SetData(this, "alarmsInterval", UserSettings::get(UserSettings::SettingName::AlarmsInterval));
-    ChBFunc::SetData(this, "alarmsEnabled", UserSettings::get(UserSettings::SettingName::AlarmsEnabled));
-    LEFunc::SetData(this, "silentInterval", UserSettings::get(UserSettings::SettingName::SilentInterval));
-    LEFunc::SetData(this, "timeoutCount", UserSettings::get(UserSettings::SettingName::TimeoutCount));
-    LEFunc::SetData(this, "errorCount", UserSettings::get(UserSettings::SettingName::ErrorCount));
-    LEFunc::SetData(this, "tuneCount", UserSettings::get(UserSettings::SettingName::TuneCount));
-    LEFunc::SetData(this, "mipIp", UserSettings::get(UserSettings::SettingName::MipIp));
-    LEFunc::SetData(this, "mipPort", UserSettings::get(UserSettings::SettingName::MipPort));
-    LEFunc::SetData(this, "mipBsAddress", UserSettings::get(UserSettings::SettingName::MipBsAddress));
-    LEFunc::SetData(this, "protocomTimeout", UserSettings::get(UserSettings::SettingName::ProtocomTimeout));
-    LEFunc::SetData(this, "protocomReconnect", UserSettings::get(UserSettings::SettingName::ProtocomReconnect));
-    LEFunc::SetData(this, "modbusTimeout", UserSettings::get(UserSettings::SettingName::ModbusTimeout));
-    LEFunc::SetData(this, "modbusReconnect", UserSettings::get(UserSettings::SettingName::ModbusReconnect));
-    LEFunc::SetData(this, "iec104Timeout", UserSettings::get(UserSettings::SettingName::Iec104Timeout));
-    LEFunc::SetData(this, "iec104Reconnect", UserSettings::get(UserSettings::SettingName::Iec104Reconnect));
-    LEFunc::SetData(this, "iec104T0", UserSettings::get(UserSettings::SettingName::Iec104T0));
-    LEFunc::SetData(this, "iec104T1", UserSettings::get(UserSettings::SettingName::Iec104T1));
-    LEFunc::SetData(this, "iec104T2", UserSettings::get(UserSettings::SettingName::Iec104T2));
-    LEFunc::SetData(this, "iec104T3", UserSettings::get(UserSettings::SettingName::Iec104T3));
-    LEFunc::SetData(this, "iec104K", UserSettings::get(UserSettings::SettingName::Iec104K));
-    LEFunc::SetData(this, "iec104W", UserSettings::get(UserSettings::SettingName::Iec104W));
+    CBFunc::SetData(this, SettingsKeys::timezone,
+        Settings::get(SettingsKeys::timezone,
+            QTimeZone::systemTimeZone().displayName(QTimeZone::StandardTime, QTimeZone::OffsetName)));
+    ChBFunc::SetData(this, SettingsKeys::loggingEnabled, Settings::get(SettingsKeys::loggingEnabled, true));
+    CBFunc::SetData(this, SettingsKeys::logLevel, Settings::get(SettingsKeys::logLevel, "Warn"));
+    LEFunc::SetData(this, SettingsKeys::alarmsInterval, Settings::get(SettingsKeys::alarmsInterval, 10000));
+    ChBFunc::SetData(this, SettingsKeys::alarmsEnabled, Settings::get(SettingsKeys::alarmsEnabled, true));
+    LEFunc::SetData(this, SettingsKeys::silentInterval, Settings::get(SettingsKeys::silentInterval, 10000));
+    LEFunc::SetData(this, SettingsKeys::timeoutCount, Settings::get(SettingsKeys::timeoutCount, 5));
+    LEFunc::SetData(this, SettingsKeys::errorCount, Settings::get(SettingsKeys::errorCount, 5));
+    LEFunc::SetData(this, SettingsKeys::tuneCount, Settings::get(SettingsKeys::tuneCount, 20));
+    LEFunc::SetData(this, SettingsKeys::Mip::mipIp, Settings::get(SettingsKeys::Mip::mipIp, "172.16.31.178"));
+    LEFunc::SetData(this, SettingsKeys::Mip::mipPort, Settings::get(SettingsKeys::Mip::mipPort, 2404));
+    LEFunc::SetData(this, SettingsKeys::Mip::mipBsAddress, Settings::get(SettingsKeys::Mip::mipBsAddress, 1));
+    LEFunc::SetData(this, SettingsKeys::USB::protocomTimeout, Settings::get(SettingsKeys::USB::protocomTimeout, 5000));
+    LEFunc::SetData(
+        this, SettingsKeys::USB::protocomReconnect, Settings::get(SettingsKeys::USB::protocomReconnect, 100));
+    LEFunc::SetData(
+        this, SettingsKeys::Serial::modbusTimeout, Settings::get(SettingsKeys::Serial::modbusTimeout, 3000));
+    LEFunc::SetData(
+        this, SettingsKeys::Serial::modbusReconnect, Settings::get(SettingsKeys::Serial::modbusReconnect, 1000));
+    LEFunc::SetData(
+        this, SettingsKeys::Iec104::iec104Timeout, Settings::get(SettingsKeys::Iec104::iec104Timeout, 1000));
+    LEFunc::SetData(
+        this, SettingsKeys::Iec104::iec104Reconnect, Settings::get(SettingsKeys::Iec104::iec104Reconnect, 1000));
+    LEFunc::SetData(this, SettingsKeys::Iec104::iec104T0, Settings::get(SettingsKeys::Iec104::iec104T0, 30));
+    LEFunc::SetData(this, SettingsKeys::Iec104::iec104T1, Settings::get(SettingsKeys::Iec104::iec104T1, 15));
+    LEFunc::SetData(this, SettingsKeys::Iec104::iec104T2, Settings::get(SettingsKeys::Iec104::iec104T2, 10));
+    LEFunc::SetData(this, SettingsKeys::Iec104::iec104T3, Settings::get(SettingsKeys::Iec104::iec104T3, 20));
+    LEFunc::SetData(this, SettingsKeys::Iec104::iec104K, Settings::get(SettingsKeys::Iec104::iec104K, 12));
+    LEFunc::SetData(this, SettingsKeys::Iec104::iec104W, Settings::get(SettingsKeys::Iec104::iec104W, 8));
+}
+
+void SettingsDialog::set(const QString &name, const QVariant &value)
+{
+    Settings::set(name, value);
+    emit settingChanged(name, value);
 }
 
 void SettingsDialog::acceptSettings()
 {
     bool tmpb = false;
-    QString timezone = CBFunc::Data(this, "timezone");
+    QString timezone = CBFunc::Data(this, SettingsKeys::timezone);
     if (!timezone.isEmpty())
-        UserSettings::set(UserSettings::Timezone, timezone);
-    auto newPassword = LEFunc::Data(this, "pswle");
+        set(SettingsKeys::timezone, timezone);
+    auto newPassword = LEFunc::Data(this, SettingsKeys::psw);
     if (!newPassword.isEmpty())
         updatePassword(newPassword);
 
-    auto tuneCount = LEFunc::Data(this, "tuneCount").toInt(&tmpb);
+    auto tuneCount = LEFunc::Data(this, SettingsKeys::tuneCount).toInt(&tmpb);
     if (tmpb)
     {
         if ((tuneCount < 0) || (tuneCount > 100))
         {
-            tuneCount = UserSettings::getDefValue(UserSettings::TuneCount);
+            tuneCount = 20;
             qWarning() << QString("Неверное число степени усреднения, "
                                   "установлено значение по умолчанию %1")
                               .arg(tuneCount);
         }
-        UserSettings::set(UserSettings::TuneCount, tuneCount);
+        set("tuneCount", tuneCount);
     }
-    UserSettings::set(UserSettings::MipIp, LEFunc::Data(this, "mipIp"));
-    UserSettings::set(UserSettings::MipPort, LEFunc::Data(this, "mipPort"));
-    UserSettings::set(UserSettings::MipBsAddress, LEFunc::Data(this, "mipBsAddress"));
+    set(SettingsKeys::Mip::mipIp, LEFunc::Data(this, SettingsKeys::Mip::mipIp));
+    set(SettingsKeys::Mip::mipPort, LEFunc::Data(this, SettingsKeys::Mip::mipPort));
+    set(SettingsKeys::Mip::mipBsAddress, LEFunc::Data(this, SettingsKeys::Mip::mipBsAddress));
 
-    if (ChBFunc::Data(this, "loggingEnabled", tmpb))
-        UserSettings::set(UserSettings::LoggingEnabled, tmpb);
-    UserSettings::set(UserSettings::LogLevel, CBFunc::Data(this, "loglevel"));
-    auto alarmsInterval = LEFunc::Data(this, "alarmsInterval").toInt(&tmpb);
+    if (ChBFunc::Data(this, SettingsKeys::loggingEnabled, tmpb))
+        set(SettingsKeys::loggingEnabled, tmpb);
+    set(SettingsKeys::logLevel, CBFunc::Data(this, SettingsKeys::logLevel));
+    auto alarmsInterval = LEFunc::Data(this, SettingsKeys::alarmsInterval).toInt(&tmpb);
     if (tmpb)
     {
-        UserSettings::set(UserSettings::AlarmsInterval, alarmsInterval);
+        set(SettingsKeys::alarmsInterval, alarmsInterval);
         emit alarmIntervalUpdate(alarmsInterval);
     }
     if (ChBFunc::Data(this, "alarmsEnabled", tmpb))
     {
-        UserSettings::set(UserSettings::AlarmsEnabled, tmpb);
+        set(SettingsKeys::alarmsEnabled, tmpb);
         emit alarmOperationUpdate(tmpb);
     }
-    UserSettings::set(UserSettings::SilentInterval, LEFunc::Data(this, "silentInterval"));
-    UserSettings::set(UserSettings::TimeoutCount, LEFunc::Data(this, "timeoutCount"));
-    UserSettings::set(UserSettings::ErrorCount, LEFunc::Data(this, "errorCount"));
+    set(SettingsKeys::silentInterval, LEFunc::Data(this, SettingsKeys::silentInterval));
+    set(SettingsKeys::timeoutCount, LEFunc::Data(this, SettingsKeys::timeoutCount));
+    set(SettingsKeys::errorCount, LEFunc::Data(this, SettingsKeys::errorCount));
 
-    UserSettings::set(UserSettings::ProtocomTimeout, LEFunc::Data(this, "protocomTimeout"));
-    UserSettings::set(UserSettings::ProtocomReconnect, LEFunc::Data(this, "protocomReconnect"));
-    UserSettings::set(UserSettings::ModbusTimeout, LEFunc::Data(this, "modbusTimeout"));
-    UserSettings::set(UserSettings::ModbusReconnect, LEFunc::Data(this, "modbusReconnect"));
-    UserSettings::set(UserSettings::Iec104Timeout, LEFunc::Data(this, "iec104Timeout"));
-    UserSettings::set(UserSettings::Iec104Reconnect, LEFunc::Data(this, "iec104Reconnect"));
-    UserSettings::set(UserSettings::Iec104T0, LEFunc::Data(this, "iec104T0"));
-    UserSettings::set(UserSettings::Iec104T1, LEFunc::Data(this, "iec104T1"));
-    UserSettings::set(UserSettings::Iec104T2, LEFunc::Data(this, "iec104T2"));
-    UserSettings::set(UserSettings::Iec104T3, LEFunc::Data(this, "iec104T3"));
-    UserSettings::set(UserSettings::Iec104K, LEFunc::Data(this, "iec104K"));
-    UserSettings::set(UserSettings::Iec104W, LEFunc::Data(this, "iec104W"));
+    set(SettingsKeys::USB::protocomTimeout, LEFunc::Data(this, SettingsKeys::USB::protocomTimeout));
+    set(SettingsKeys::USB::protocomReconnect, LEFunc::Data(this, SettingsKeys::USB::protocomReconnect));
+    set(SettingsKeys::Serial::modbusTimeout, LEFunc::Data(this, SettingsKeys::Serial::modbusTimeout));
+    set(SettingsKeys::Serial::modbusReconnect, LEFunc::Data(this, SettingsKeys::Serial::modbusReconnect));
+    set(SettingsKeys::Iec104::iec104Timeout, LEFunc::Data(this, SettingsKeys::Iec104::iec104Timeout));
+    set(SettingsKeys::Iec104::iec104Reconnect, LEFunc::Data(this, SettingsKeys::Iec104::iec104Reconnect));
+    set(SettingsKeys::Iec104::iec104T0, LEFunc::Data(this, SettingsKeys::Iec104::iec104T0));
+    set(SettingsKeys::Iec104::iec104T1, LEFunc::Data(this, SettingsKeys::Iec104::iec104T1));
+    set(SettingsKeys::Iec104::iec104T2, LEFunc::Data(this, SettingsKeys::Iec104::iec104T2));
+    set(SettingsKeys::Iec104::iec104T3, LEFunc::Data(this, SettingsKeys::Iec104::iec104T3));
+    set(SettingsKeys::Iec104::iec104K, LEFunc::Data(this, SettingsKeys::Iec104::iec104K));
+    set(SettingsKeys::Iec104::iec104W, LEFunc::Data(this, SettingsKeys::Iec104::iec104W));
     close();
 }
 
 void SettingsDialog::resetPassword()
 {
     if (EMessageBox::question(this, "Установить пароль по умолчанию? Это действие невозможно отменить"))
-        UserSettings::setDefValue(UserSettings::PasswordHash);
+        set(SettingsKeys::passwordHash, "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc");
 }
 
 void SettingsDialog::updatePassword(const QString &newPassword)
@@ -334,7 +356,9 @@ void SettingsDialog::updatePassword(const QString &newPassword)
     if (!EMessageBox::question(this, "Обновить пароль? Это действие невозможно отменить"))
         return;
     // Просим ввести старый пароль перед изменением
-    if (!EMessageBox::password(this, UserSettings::get(UserSettings::SettingName::PasswordHash)))
+    if (!EMessageBox::password(this,
+            Settings::get(
+                SettingsKeys::passwordHash, "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc")))
     {
         EMessageBox::warning(this, "Пароль введён неверно!");
         return;
@@ -342,7 +366,7 @@ void SettingsDialog::updatePassword(const QString &newPassword)
     // Сохраняем новый хэш
     QCryptographicHash hasher(QCryptographicHash::Sha3_256);
     hasher.addData(newPassword.toUtf8());
-    UserSettings::set(UserSettings::PasswordHash, QString::fromUtf8(hasher.result().toHex()));
+    set(SettingsKeys::passwordHash, QString::fromUtf8(hasher.result().toHex()));
 }
 
 void SettingsDialog::themeChanged(const QString &newTheme)
@@ -352,6 +376,6 @@ void SettingsDialog::themeChanged(const QString &newTheme)
     if (answer == QMessageBox::Yes)
     {
         StyleLoader::setStyle(newTheme);
-        UserSettings::set(UserSettings::Theme, newTheme);
+        set(SettingsKeys::theme, newTheme);
     }
 }

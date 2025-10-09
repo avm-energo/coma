@@ -1,8 +1,9 @@
 #pragma once
 
+#include <dialogs/abstractinterfacedialog.h>
+
 #include <QDialog>
 #include <QSettings>
-#include <dialogs/abstractinterfacedialog.h>
 
 class ConnectDialog final : public QDialog
 {
@@ -11,7 +12,7 @@ public:
     explicit ConnectDialog(QWidget *parent = nullptr);
 
 signals:
-    void accepted(const ConnectStruct &st);
+    void accepted(const ConnectionSettings &st);
 
 private slots:
     void setInterface();

@@ -58,17 +58,17 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
     auto *mdl = index.model();
     int row = index.row();
     QString name = mdl->data(mdl->index(row, 0)).toString();
-    IEC104Settings settings;
-    settings.ip = mdl->data(mdl->index(row, 1)).toString();
-    settings.port = mdl->data(mdl->index(row, 2)).toUInt();
-    settings.bsAddress = mdl->data(mdl->index(row, 3)).toUInt();
-    settings.m_timeout = UserSettings::get(UserSettings::Iec104Timeout);
-    settings.m_reconnectInterval = UserSettings::get(UserSettings::Iec104Reconnect);
+    IEC104Settings *settings = new IEC104Settings;
+    settings->set("ip", mdl->data(mdl->index(row, 1)).toString());
+    settings->set("port", mdl->data(mdl->index(row, 2)).toUInt());
+    settings->set("bsAddress", mdl->data(mdl->index(row, 3)).toUInt());
+    settings->set("timeout", Settings::get("iec104Timeout", 1000));
+    settings->set("reconnectInterval", Settings::get("iec104Reconnect", 1000));
     apply(settings);
 
-    if (!settings.isValid())
+    if (!settings->isValid())
         return;
-    ConnectStruct st { name, settings };
+    ConnectionSettings st { name, settings };
     emit accepted(st);
 }
 
@@ -193,9 +193,9 @@ void InterfaceEthernetDialog::acceptedInterface()
         return;
     }
     Settings::pushGroup(name);
-    UserSettings::set(UserSettings::IpAddress, ipstr);
-    UserSettings::set(UserSettings::IpPort, port);
-    UserSettings::set(UserSettings::Iec104BsAddress, bsAddress);
+    Settings::set("ipAddress", ipstr);
+    Settings::set("ipPort", port);
+    Settings::set("iec104BsAddress", bsAddress);
     Settings::popGroup();
     Settings::popGroup(); // exit from Ethernet
     if (!updateModel())
@@ -290,10 +290,10 @@ bool InterfaceEthernetDialog::updateModel()
     {
         Settings::pushGroup(item);
         QList<QStandardItem *> items {
-            new QStandardItem(item),                                                     //
-            new QStandardItem(QString(UserSettings::get(UserSettings::IpAddress))),      //
-            new QStandardItem(QString(UserSettings::get(UserSettings::IpPort))),         //
-            new QStandardItem(QString(UserSettings::get(UserSettings::Iec104BsAddress))) //
+            new QStandardItem(item),                                             //
+            new QStandardItem(QString(Settings::get("ipAddress", "127.0.0.1"))), //
+            new QStandardItem(QString(Settings::get("ipPort", 2404))),           //
+            new QStandardItem(QString(Settings::get("iec104BsAddress", 205)))    //
         };
         model->appendRow(items);
         Settings::popGroup();

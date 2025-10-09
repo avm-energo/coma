@@ -1,6 +1,6 @@
 #pragma once
 
-#include <interfaces/types/settingstypes.h>
+#include <interfaces/types/serial_settings.h>
 
 namespace HID
 {
@@ -13,5 +13,5 @@ class UsbHidPortInfo
 public:
     UsbHidPortInfo() = delete;
 
-    static QList<UsbHidSettings> devicesFound(quint16 vid = HID::VID);
+    static QList<UsbHidSettings *> devicesFound(quint16 vid = HID::VID);
 };

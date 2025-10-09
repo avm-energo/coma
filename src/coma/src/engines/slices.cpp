@@ -1,9 +1,9 @@
 #include <engines/slices.h>
 #include <gen/files.h>
 #include <gen/files/ziputil.h>
+#include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/common_types.h>
-#include <settings/user_settings.h>
 
 #include <QEventLoop>
 #include <QTemporaryDir>
@@ -133,7 +133,7 @@ QByteArray Slices::getOscs()
         = QObject::connect(&m_timeoutTimer, &QTimer::timeout, this, &Slices::oscTechBlockReceivingFinished);
     m_curDev->async()->connection(this, &Slices::oscTechBlockReceived);    // set callback when got S2::OscInfo datatype
     m_curDev->async()->writeCommand(Interface::Commands::C_ReqOscInfo, 1); // initiate osc tech block receiving
-    m_timeoutTimer.start(UserSettings::get(UserSettings::ProtocomTimeout));
+    m_timeoutTimer.start(Settings::get("protocomTimeout", 5000));
     m_locker.lock();
     m_somethingHappened.wait(&m_locker);
     m_locker.unlock();
@@ -167,7 +167,7 @@ void Slices::oscTechBlockReceived(const S2::OscInfo &resp)
     memcpy(ba.data(), &resp, sizeof(S2::OscInfo));
     m_tempBA.append(ba);
     m_oscIds.append({ resp.typeHeader.id, resp.typeHeader.numByte });
-    m_timeoutTimer.start(UserSettings::get(UserSettings::ProtocomTimeout));
+    m_timeoutTimer.start(Settings::get("protocomTimeout", 5000));
 }
 
 void Slices::oscTechBlockReceivingFinished()

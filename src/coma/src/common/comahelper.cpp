@@ -1,5 +1,6 @@
-#include <helpers/comahelper.h>
-#include <helpers/constants.h>
+#include <common/appconfig.h>
+#include <common/comahelper.h>
+#include <common/constants.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <widgets/filefunc.h>
 #include <widgets/graphfunc.h>
@@ -14,7 +15,8 @@ ComaHelper::ComaHelper() : QObject() { }
 void ComaHelper::initAppSettings()
 {
     MessageHandler::setMessageHandlerFilename("coma.log");
-    MessageHandler::setQueueLevel(Logger::LOGLEVEL_WARN);
+    MessageHandler::setQueueLevel(
+        (AppConfiguration::app() == AppConfiguration::Service) ? Logger::LOGLEVEL_INFO : Logger::LOGLEVEL_DEBUG);
     qInstallMessageHandler(&MessageHandler::messageHandlerWithErrorQueue);
 }
 

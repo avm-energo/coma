@@ -2,8 +2,9 @@
 
 #include <dialogs/searchmodbusdevicesdialog.h>
 #include <gen/error.h>
+#include <gen/settings.h>
 #include <gen/stdfunc.h>
-#include <interfaces/types/settingstypes.h>
+#include <interfaces/types/serial_settings.h>
 #include <widgets/cbfunc.h>
 #include <widgets/emessagebox.h>
 #include <widgets/lblfunc.h>
@@ -73,26 +74,26 @@ void InterfaceSerialDialog::setInterface(QModelIndex index)
     auto model = index.model();
     int row = index.row();
     QString name = model->data(model->index(row, 0)).toString();
-    SerialPortSettings portSettings;
-    portSettings.name = model->data(model->index(row, 1)).toString();
-    portSettings.baud = model->data(model->index(row, 2)).toUInt();
+    SerialSettings *settings = new SerialSettings;
+    settings->set("name", model->data(model->index(row, 1)).toString());
+    settings->set("baud", model->data(model->index(row, 2)).toUInt());
     auto parityStr = model->data(model->index(row, 3)).toString();
     if (parityStr == "Нет")
-        portSettings.parity = QSerialPort::NoParity;
+        settings->set("parity", QSerialPort::NoParity);
     else if (parityStr == "Чет")
-        portSettings.parity = QSerialPort::EvenParity;
+        settings->set("parity", QSerialPort::EvenParity);
     else
-        portSettings.parity = QSerialPort::OddParity;
+        settings->set("parity", QSerialPort::OddParity);
     auto stopStr = model->data(model->index(row, 4)).toString();
-    portSettings.stop = stopStr == "1" ? QSerialPort::OneStop : QSerialPort::TwoStop;
-    portSettings.address = model->data(model->index(row, 5)).toUInt();
-    portSettings.m_timeout = UserSettings::get(UserSettings::ModbusTimeout);
-    portSettings.m_reconnectInterval = UserSettings::get(UserSettings::ModbusReconnect);
-    apply(portSettings);
+    settings->set("stop", (stopStr == "1") ? QSerialPort::OneStop : QSerialPort::TwoStop);
+    settings->set("address", model->data(model->index(row, 5)).toUInt());
+    settings->set("timeout", Settings::get("modbusTimeout", 3000));
+    settings->set("reconnectInterval", Settings::get("modbusReconnect", 1000));
+    apply(settings);
 
-    if (!portSettings.isValid())
+    if (!settings->isValid())
         return;
-    ConnectStruct st { name, portSettings };
+    ConnectionSettings st { name, settings };
     emit accepted(st);
 }
 
@@ -166,11 +167,11 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
             Settings::remove(name);
 
             Settings::pushGroup(newName);
-            UserSettings::set(UserSettings::SerialPort, portcb->currentText());
-            UserSettings::set(UserSettings::SerialSpeed, speedcb->currentText());
-            UserSettings::set(UserSettings::SerialParity, paritycb->currentText());
-            UserSettings::set(UserSettings::SerialStop, stopbitcb->currentText());
-            UserSettings::set(UserSettings::ModbusAddress, static_cast<int>(addressspb->value()));
+            Settings::set("serialPort", portcb->currentText());
+            Settings::set("serialSpeed", speedcb->currentText());
+            Settings::set("serialParity", paritycb->currentText());
+            Settings::set("serialStop", stopbitcb->currentText());
+            Settings::set("modbusAddress", static_cast<int>(addressspb->value()));
             Settings::popGroup();
             Settings::popGroup(); // exit from RS-485
             if (!updateModel())
@@ -241,12 +242,12 @@ bool InterfaceSerialDialog::updateModel()
     {
         Settings::pushGroup(item);
         QList<QStandardItem *> items {
-            new QStandardItem(item),                                                    //
-            new QStandardItem(QString(UserSettings::get(UserSettings::SerialPort))),    //
-            new QStandardItem(QString(UserSettings::get(UserSettings::SerialSpeed))),   //
-            new QStandardItem(QString(UserSettings::get(UserSettings::SerialParity))),  //
-            new QStandardItem(QString(UserSettings::get(UserSettings::SerialStop))),    //
-            new QStandardItem(QString(UserSettings::get(UserSettings::ModbusAddress))), //
+            new QStandardItem(item),                                                 //
+            new QStandardItem(QString(Settings::get("serialPort", "/dev/ttyUSB0"))), //
+            new QStandardItem(QString(Settings::get("serialSpeed", 115200))),        //
+            new QStandardItem(QString(Settings::get("serialParity", "Нет"))),        //
+            new QStandardItem(QString(Settings::get("serialStop", 1))),              //
+            new QStandardItem(QString(Settings::get("modbusAddress", 1))),           //
         };
         Settings::popGroup();
         tableViewModel->appendRow(items);
@@ -274,12 +275,12 @@ void InterfaceSerialDialog::acceptedInterface()
     }
     int spbdata;
     Settings::pushGroup(name);
-    UserSettings::set(UserSettings::SerialPort, CBFunc::Data(dialog, "portcb"));
-    UserSettings::set(UserSettings::SerialSpeed, CBFunc::Data(dialog, "speedcb"));
-    UserSettings::set(UserSettings::SerialParity, CBFunc::Data(dialog, "paritycb"));
-    UserSettings::set(UserSettings::SerialStop, CBFunc::Data(dialog, "stopbitcb"));
+    Settings::set("serialPort", CBFunc::Data(dialog, "portcb"));
+    Settings::set("serialSpeed", CBFunc::Data(dialog, "speedcb"));
+    Settings::set("serialParity", CBFunc::Data(dialog, "paritycb"));
+    Settings::set("serialStop", CBFunc::Data(dialog, "stopbitcb"));
     if (SPBFunc::Data(dialog, "addressspb", spbdata))
-        UserSettings::set(UserSettings::ModbusAddress, spbdata);
+        Settings::set("modbusAddress", spbdata);
     Settings::popGroup();
     Settings::popGroup(); // exit from RS-485
     if (!updateModel())

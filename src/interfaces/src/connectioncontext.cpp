@@ -54,7 +54,7 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
             QObject::connect(iface, &BaseInterface::started, m_iface,
                 [=]
                 {
-                    qInfo() << m_iface->metaObject()->className() << " connected";
+                    qDebug() << m_iface->metaObject()->className() << " connected";
                     executor->moveToThread(parserThread);
                     iface->moveToThread(ifaceThread);
                     parserThread->start();

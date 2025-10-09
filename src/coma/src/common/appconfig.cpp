@@ -1,4 +1,4 @@
-#include <helpers/appconfig.h>
+#include <common/appconfig.h>
 
 AppConfiguration::Config AppConfiguration::m_appConfig = AppConfiguration::Service;
 

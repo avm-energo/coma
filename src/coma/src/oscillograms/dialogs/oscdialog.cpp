@@ -128,7 +128,7 @@ bool OscDialog::loadIfExist(quint32 size)
     {
         if (Files::LoadFromFile(file, ba) == Error::Msg::NoError)
         {
-            qInfo() << "Swj loaded from file: " << file;
+            qInfo() << "Файл swj загружен: " << file;
             DataTypes::S2FilePack outlist;
             S2Util::RestoreData(ba, outlist);
             for (auto &&s2file : outlist)
@@ -190,8 +190,8 @@ void OscDialog::fillOsc(const S2::FileStruct &file)
         auto time = m_oscMap.value(m_reqOscNum).unixtime;
         QString sfile = filename(time, m_reqOscNum);
         if (Files::SaveToFile(sfile, ba) == Error::Msg::NoError)
-            qInfo() << "Swj saved: " << sfile;
+            qInfo() << "Файл swj сохранён: " << sfile;
         else
-            qWarning() << "Fail to save swj: " << sfile;
+            qWarning() << "Ошибка при сохранении swj-файла: " << sfile;
     }
 }

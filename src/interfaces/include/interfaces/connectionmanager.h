@@ -2,7 +2,7 @@
 
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/connectioncontext.h>
-#include <interfaces/types/settingstypes.h>
+#include <interfaces/types/connection_settings.h>
 
 #include <QTimer>
 
@@ -37,11 +37,11 @@ private:
     quint16 m_errorCounter, m_errorMax;
 
     void reconnect();
-    void setup(const BaseSettings &settings) noexcept;
+    void setup(const BaseSettings *settings) noexcept;
 
 public:
     explicit ConnectionManager(QObject *parent = nullptr);
-    AsyncConnection *createConnection(const ConnectStruct &connectionData);
+    AsyncConnection *createConnection(const ConnectionSettings &connectionData);
     void setReconnectMode(const ReconnectMode newMode) noexcept;
 
 signals:
@@ -56,10 +56,18 @@ signals:
     /// \see BasePort.
     void reconnectInterface();
     void reconnectSuccess();
+    /// \brief Settings changed signal for USB interface
+    void usbSettingsChanged(const QString &key, const QVariant &value);
+    /// \brief Settings changed signal for USB interface
+    void modbusSettingsChanged(const QString &key, const QVariant &value);
+    /// \brief Settings changed signal for USB interface
+    void iec104SettingsChanged(const QString &key, const QVariant &value);
 
 public slots:
     /// \brief Слот для разрыва текущего соединения с устройством.
     void breakConnection();
+    /// \brief slot for settings changes
+    void settingsChanged(const QString &key, const QVariant &value);
 
 private slots:
     /// \brief Слот для принятия ошибок от интерфейса.

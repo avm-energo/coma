@@ -2,7 +2,7 @@
 
 #include <comawidgets/udialog.h>
 #include <device/device_list.h>
-#include <helpers/comahelper.h>
+#include <common/comahelper.h>
 
 #include <QObject>
 

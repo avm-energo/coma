@@ -1,18 +1,19 @@
 #pragma once
 
-#include <QTcpSocket>
 #include <interfaces/ifaces/baseinterface.h>
-#include <interfaces/types/settingstypes.h>
+#include <interfaces/types/serial_settings.h>
+
+#include <QTcpSocket>
 
 class Ethernet final : public BaseInterface
 {
     Q_OBJECT
 private:
-    IEC104Settings m_settings;
+    IEC104Settings *m_settings;
     QTcpSocket *m_socket;
 
 public:
-    explicit Ethernet(const IEC104Settings &settings, QObject *parent = nullptr);
+    explicit Ethernet(IEC104Settings *settings, QObject *parent = nullptr);
 
 private:
     bool connect() override;

@@ -105,11 +105,11 @@ void SwitchJournalDialog::fillJour(const S2::FileStruct &fs)
         QString file = filename(time);
         if (Files::SaveToFile(file, ba) == Error::Msg::NoError)
         {
-            qInfo() << "Swj saved: " << file;
+            qInfo() << "Файл swj сохранён: " << file;
         }
         else
         {
-            qWarning() << "Fail to save swj: " << file;
+            qWarning() << "Ошибка при сохранении swj-файла: " << file;
         }
     }
 }
@@ -228,7 +228,7 @@ bool SwitchJournalDialog::loadIfExist(quint32 size)
         QByteArray ba;
         if (Files::LoadFromFile(file, ba) == Error::Msg::NoError)
         {
-            qInfo() << "Swj loaded from file: " << file;
+            qInfo() << "Файл swj загружен: " << file;
             DataTypes::S2FilePack outlist;
             S2Util::RestoreData(ba, outlist);
             for (auto &&swjFileIn : outlist)

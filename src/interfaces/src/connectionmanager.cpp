@@ -1,8 +1,8 @@
-#include "interfaces/connectionmanager.h"
-
-#include "device/bsi.h"
+#include <common/names.h>
+#include <device/bsi.h>
 #include <gen/std_ext.h>
 #include <interfaces/conn/sync_connection.h>
+#include <interfaces/connectionmanager.h>
 #include <interfaces/exec/query_executor_fabric.h>
 #include <interfaces/ifaces/ethernet.h>
 #include <interfaces/ifaces/serialport.h>
@@ -20,8 +20,6 @@ ConnectionManager::ConnectionManager(QObject *parent)
     , m_reconnectMode(ReconnectMode::Loud)
     , m_isReconnectOccurred(false)
     , m_isInitial(true)
-    // , m_timeoutCounter(0)
-    // , m_timeoutMax(5)
     , m_errorCounter(0)
     , m_errorMax(5)
 {
@@ -29,7 +27,7 @@ ConnectionManager::ConnectionManager(QObject *parent)
     connect(m_silentTimer, &QTimer::timeout, this, [this] { emit reconnectUI(); });
 }
 
-AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connectionData)
+AsyncConnection *ConnectionManager::createConnection(const ConnectionSettings &connectionData)
 {
     if (m_currentConnection != nullptr)
         breakConnection();
@@ -39,31 +37,41 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
         [this] { setReconnectMode(ReconnectMode::Silent); }, Qt::DirectConnection);
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
 
-    std::visit([this](const auto &settings) { setup(settings); }, connectionData.settings);
+    std::visit([this](auto &settings) { setup(settings); }, connectionData.settings);
     std::visit( // Инициализация контекста для обмена данными
         overloaded {
-            [this](const UsbHidSettings &settings)
+            [this](BaseSettings *settings)
             {
-                auto interface = new UsbHidPort(settings);
-                auto executor = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->getQueue(), settings);
+                UsbHidSettings *concSettings = qobject_cast<UsbHidSettings *>(settings);
+                auto interface = new UsbHidPort(concSettings);
+                auto executor
+                    = QueryExecutorFabric::makeProtocomExecutor(m_currentConnection->getQueue(), concSettings);
+                connect(this, &ConnectionManager::usbSettingsChanged, executor, &DefaultQueryExecutor::settingsChanged,
+                    Qt::QueuedConnection);
                 m_currentConnection->setInterfaceType(IfaceType::USB);
                 m_context.init(interface, executor, Strategy::Sync, Qt::DirectConnection);
             },
-            [this](const SerialPortSettings &settings)
+            [this](SerialSettings *settings)
             {
-                auto interface = new SerialPort(settings);
-                auto executor = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->getQueue(), settings);
+                SerialSettings *concSettings = qobject_cast<SerialSettings *>(settings);
+                auto interface = new SerialPort(concSettings);
+                auto executor = QueryExecutorFabric::makeModbusExecutor(m_currentConnection->getQueue(), concSettings);
+                connect(this, &ConnectionManager::modbusSettingsChanged, executor,
+                    &DefaultQueryExecutor::settingsChanged, Qt::QueuedConnection);
                 m_currentConnection->setInterfaceType(IfaceType::RS485);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
-            [this](const IEC104Settings &settings)
+            [this](IEC104Settings *settings)
             {
-                auto interface = new Ethernet(settings);
-                auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->getQueue(), settings);
+                IEC104Settings *concSettings = qobject_cast<IEC104Settings *>(settings);
+                auto interface = new Ethernet(concSettings);
+                auto executor = QueryExecutorFabric::makeIec104Executor(m_currentConnection->getQueue(), concSettings);
+                connect(this, &ConnectionManager::iec104SettingsChanged, executor,
+                    &DefaultQueryExecutor::settingsChanged, Qt::QueuedConnection);
                 m_currentConnection->setInterfaceType(IfaceType::Ethernet);
                 m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
-            [](const EmulatorSettings &settings)
+            [](EmulatorSettings *settings)
             {
                 /// TODO: доделать
                 Q_UNUSED(settings);
@@ -81,7 +89,8 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
         m_context.m_executor, &DefaultQueryExecutor::reconnectEvent, Qt::QueuedConnection);
     connect(m_context.m_iface, &BaseInterface::reconnected,       //
         this, &ConnectionManager::interfaceReconnected, Qt::QueuedConnection);
-    connect(m_currentConnection, &AsyncConnection::cancel, m_context.m_executor, &DefaultQueryExecutor::cancelQuery);
+    connect(m_currentConnection, &AsyncConnection::cancel, m_context.m_executor, &DefaultQueryExecutor::cancelQuery,
+        Qt::QueuedConnection);
 
     m_currentConnection->reqBSI();
     if (!m_context.run(m_currentConnection))
@@ -94,10 +103,10 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectStruct &connec
     return m_currentConnection;
 }
 
-void ConnectionManager::setup(const BaseSettings &settings) noexcept
+void ConnectionManager::setup(const BaseSettings *settings) noexcept
 {
-    m_silentTimer->setInterval(settings.m_silentInterval);
-    m_errorMax = settings.m_maxErrors;
+    m_silentTimer->setInterval(settings->get(MemKeys::silentInterval));
+    m_errorMax = settings->get(MemKeys::maxErrors);
     // m_timeoutMax = settings.m_maxTimeouts;
 }
 
@@ -177,7 +186,7 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
             // m_timeoutCounter = 0;
             m_currentConnection->getQueue().activate();
             m_isReconnectOccurred = false;
-            qCritical() << "Соединение восстановлено";
+            qInfo() << "Соединение восстановлено";
             emit reconnectSuccess(); // Сообщаем, что переподключение прошло успешно
         }
         disconnect(m_connBSI);
@@ -191,6 +200,16 @@ void ConnectionManager::interfaceReconnected()
     m_currentConnection->reqBSI();
     m_context.m_executor->start();
     m_currentConnection->getQueue().deactivate();
+}
+
+void ConnectionManager::settingsChanged(const QString &key, const QVariant &value)
+{
+    if (key.startsWith(SettingsKeys::USB::prefix))
+        emit usbSettingsChanged(key, value);
+    else if (key.startsWith(SettingsKeys::Iec104::prefix))
+        emit iec104SettingsChanged(key, value);
+    else if (key.startsWith(SettingsKeys::Serial::prefix))
+        emit modbusSettingsChanged(key, value);
 }
 
 } // namespace Interface

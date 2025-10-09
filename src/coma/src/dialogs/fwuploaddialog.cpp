@@ -106,6 +106,7 @@ void FWUploadDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruc
     {
         uploadStatus = FirmwareUploadStatus::Error;
         EMessageBox::error(this, Error::MsgStr[Error::Msg(response.data)]);
+        qCritical() << Error::MsgStr[Error::Msg(response.data)];
     }
 }
 

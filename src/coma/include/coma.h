@@ -1,9 +1,9 @@
 #pragma once
 
 #include <dialogs/dialogmanager.h>
-#include <helpers/comahelper.h>
+#include <common/comahelper.h>
 #include <interfaces/connectionmanager.h>
-#include <interfaces/types/settingstypes.h>
+#include <interfaces/types/connection_settings.h>
 #include <oscillograms/oscmanager.h>
 #include <widgets/estatusbar.h>
 
@@ -46,7 +46,7 @@ private slots:
     void restoreFromSlice();
     void openSlice();
     void connectDialog();
-    void initConnection(const ConnectStruct &st);
+    void initConnection(const ConnectionSettings &st);
     void initDevice(Interface::AsyncConnection *connection);
     void loadOsc();
     void loadSwj();
@@ -80,4 +80,7 @@ private:
     void keyPressEvent(QKeyEvent *event) override;
     void loadXML();
     void prepareDialogs();
+
+signals:
+    void settingsChanged(const QString &name, const QVariant &value);
 };

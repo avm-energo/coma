@@ -42,6 +42,7 @@ protected:
     std::condition_variable m_waiter;
     BaseRequestParser *m_requestParser;
     BaseResponseParser *m_responseParser;
+    QMetaObject::Connection m_timeoutConnection;
 
     /// \brief Приватный конструктор.
     /// \details Создание экземпляров класса доступно только через QueryExecutorFabric.
@@ -50,7 +51,7 @@ protected:
     /// таймаут, текущая отправленная команда сбрасывается, о таймауте уведомляется
     /// ConnectionManager с помощью сигнала timeout, из очереди запросов берётся следующий запрос.
     /// \see QueryExecutorFabric.
-    explicit DefaultQueryExecutor(RequestQueue &queue, const BaseSettings &settings, QObject *parent = nullptr);
+    explicit DefaultQueryExecutor(RequestQueue &queue, BaseSettings *settings, QObject *parent = nullptr);
 
     /// \brief Инициализация логгера исполнителя запросов.
     /// \details Вызывается при создании исполнителя запросов.
@@ -105,8 +106,11 @@ public:
     /// \details Переводит состояние исполнителя в ExecutorState::Stopping.
     void stop() noexcept;
 
-    /// \brief Функция, возвраващающая последнюю запрошенную команду.
+    /// \brief Функция, возвращающая последнюю запрошенную команду.
     Commands getLastRequestedCommand() const noexcept;
+
+    /// \brief Устанавливает таймаут на ходу
+    void setTimeout(u32 timeout);
 
 public slots:
     /// \brief Слот для принятия от устройства ответа на посланный ему ранее запрос.
@@ -119,6 +123,8 @@ public slots:
     void reconnectEvent();
     /// \brief Слот, вызываемый внешним потоком для пробуждения потока исполнителя.
     void wakeUp();
+    /// \brief Слот, вызываемый при изменениях настроек
+    void settingsChanged(const QString &key, const QVariant &value);
 
 signals:
     /// \brief Сигнал для уведомления об изменении состояния исполнителя запросов.

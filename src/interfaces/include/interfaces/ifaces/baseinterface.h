@@ -23,7 +23,7 @@ class BaseInterface : public QObject
 {
     Q_OBJECT
 public:
-    explicit BaseInterface(const QString &logFilename, const BaseSettings &settings, QObject *parent = nullptr);
+    explicit BaseInterface(const QString &logFilename, BaseSettings *settings, QObject *parent = nullptr);
 
 signals:
     void dataReceived(const QByteArray &ba);
@@ -37,7 +37,7 @@ signals:
 
 protected:
     std::atomic<Interface::State> m_state;
-    quint16 m_reconnectInterval;
+    u16 m_reconnectInterval;
     bool m_isLoggingEnabled;
     Logger m_log;
     QMutex m_dataGuard;

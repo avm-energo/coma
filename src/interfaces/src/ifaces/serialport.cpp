@@ -3,14 +3,16 @@
 #include <QDebug>
 #include <QThread>
 
-SerialPort::SerialPort(const SerialPortSettings &settings, QObject *parent)
+SerialPort::SerialPort(SerialSettings *settings, QObject *parent)
     : BaseInterface("ModbusPort", settings, parent)
-    , m_port(new QSerialPort(settings.name, this))
+    , m_port(new QSerialPort(settings->get("name"), this))
 {
-    m_port->setBaudRate(settings.baud);
+    int parity = settings->get("parity");
+    int stop = settings->get("stop");
+    m_port->setBaudRate(settings->get("baud"));
     m_port->setDataBits(QSerialPort::Data8);
-    m_port->setParity(settings.parity);
-    m_port->setStopBits(settings.stop);
+    m_port->setParity(static_cast<QSerialPort::Parity>(parity));
+    m_port->setStopBits(static_cast<QSerialPort::StopBits>(stop));
     m_port->setFlowControl(QSerialPort::NoFlowControl);
     m_port->setReadBufferSize(1024);
     QObject::connect(m_port, &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
@@ -23,6 +25,7 @@ bool SerialPort::connect()
         if (getState() != Interface::State::Disconnect)
         {
             setState(Interface::State::Run);
+            qInfo("Связь с устройством установлена");
             emit started();
             return true;
         }

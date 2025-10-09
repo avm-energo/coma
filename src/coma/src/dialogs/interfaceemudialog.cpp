@@ -69,14 +69,14 @@ void InterfaceEmuDialog::setInterface(QModelIndex index)
     int row = index.row();
 
     QString name = mdl->data(mdl->index(row, 0)).toString();
-    EmulatorSettings settings;
+    EmulatorSettings *settings = new EmulatorSettings;
 
     QString str = mdl->data(mdl->index(row, 1)).toString();
-    settings.typeB = str.toUInt(nullptr, 16);
+    settings->set("typeB", str.toUInt(nullptr, 16));
     str = mdl->data(mdl->index(row, 2)).toString();
-    settings.typeM = str.toUInt(nullptr, 16);
+    settings->set("typeM", str.toUInt(nullptr, 16));
 
-    ConnectStruct st { name, settings };
+    ConnectionSettings st { name, settings };
     emit accepted(st);
 }
 

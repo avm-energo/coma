@@ -29,6 +29,7 @@ private:
     void setupConnectionTab() noexcept;
     void setupTuneTab() noexcept;
     void fill();
+    void set(const QString &name, const QVariant &value);
 
 private slots:
     void acceptSettings();
@@ -39,4 +40,5 @@ private slots:
 signals:
     void alarmOperationUpdate(const bool status);
     void alarmIntervalUpdate(const int interval);
+    void settingChanged(const QString &name, const QVariant &value);
 };

@@ -2,7 +2,7 @@
 
 #include <alarms/alarmbutton.h>
 #include <device/current_device.h>
-#include <settings/user_settings.h>
+#include <gen/settings.h>
 #include <widgets/graphfunc.h>
 
 #include <QDialogButtonBox>
@@ -48,8 +48,8 @@ void AlarmWidget::configure(Device::CurrentDevice *device)
         }
     }
 
-    updateAlarmInterval(UserSettings::get(UserSettings::AlarmsInterval));
-    updateAlarmOperation(UserSettings::get(UserSettings::AlarmsEnabled));
+    updateAlarmInterval(Settings::get("alarmsInterval", 10000));
+    updateAlarmOperation(Settings::get("alarmsEnabled", true));
 }
 
 /// \brief Adding a received alarm in list and creating a button for a received alarm.

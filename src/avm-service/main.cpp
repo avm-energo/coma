@@ -1,5 +1,5 @@
+#include <common/appconfig.h>
 #include <gen/settings.h>
-#include <helpers/appconfig.h>
 
 #include <QApplication>
 #include <coma.h>
@@ -9,10 +9,10 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     ComaHelper *helper = new ComaHelper;
+    AppConfiguration::setApp(AppConfiguration::Service);
     helper->initAppSettings();
     Settings::initialize(PROGNAME, SOFTDEVELOPER, COMAVERSION);
     app.setWindowIcon(QIcon(":/icons/coma.ico"));
-    AppConfiguration::setApp(AppConfiguration::Service);
     Coma coma;
     // Если есть аргументы запуска
     if (argc > 1)

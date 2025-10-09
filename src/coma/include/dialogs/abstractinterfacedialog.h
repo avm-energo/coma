@@ -1,10 +1,10 @@
 #pragma once
 
+#include <interfaces/types/connection_settings.h>
+
 #include <QDialog>
 #include <QSettings>
 #include <QTableView>
-#include <interfaces/types/settingstypes.h>
-#include <settings/user_settings.h>
 
 // how much entries can we have for interfaces of each type in registry
 constexpr int MAXREGISTRYINTERFACECOUNT = 5;
@@ -21,16 +21,14 @@ public:
 protected:
     QTableView *m_tableView;
 
-    virtual void acceptedInterface() {};
+    virtual void acceptedInterface() { };
     virtual void setInterface(QModelIndex index) = 0;
-    virtual void addInterface()
-    {
-    }
+    virtual void addInterface() { }
 
     bool checkSize();
 
-    void apply(BaseSettings &connection);
+    void apply(BaseSettings *connection);
 
 signals:
-    void accepted(const ConnectStruct &st);
+    void accepted(const ConnectionSettings &st);
 };

@@ -6,7 +6,7 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <helpers/appconfig.h>
+#include <common/appconfig.h>
 #include <widgets/emessagebox.h>
 #include <widgets/filefunc.h>
 #include <widgets/wdfunc.h>

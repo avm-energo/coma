@@ -1,3 +1,11 @@
+avm-debug (3.4.1) unstable; urgency=low
+
+  [*] Messages in Frosya are now visible by app type - Debug or Service
+  [*] Timeout for USB is now set to 5000 ms by default
+  [*] Timeout settings for protocom is now applied on-the-fly
+
+ -- AVM-Energo <support@avmenergo.ru>  Thu, 09 Oct 2025 12:28:46 +0300
+
 avm-debug (3.4.0) unstable; urgency=low
 
   [+] bugfix in 104 protocol

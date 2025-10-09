@@ -1,5 +1,6 @@
 #include "interfaces/exec/default_query_executor.h"
 
+#include <common/names.h>
 #include <gen/settings.h>
 #include <interfaces/parsers/base_request_parser.h>
 #include <interfaces/parsers/base_response_parser.h>
@@ -7,7 +8,7 @@
 namespace Interface
 {
 
-DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, const BaseSettings &settings, QObject *parent)
+DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, BaseSettings *settings, QObject *parent)
     : QObject(parent)
     , m_state(ExecutorState::Starting)
     , m_queue(std::ref(queue))
@@ -17,17 +18,8 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, const BaseSettin
     , m_requestParser(nullptr)
     , m_responseParser(nullptr)
 {
-    m_timeoutTimer.setSingleShot(true);
-    m_timeoutTimer.setInterval(settings.m_timeout);
-    connect(&m_timeoutTimer, &QTimer::timeout, this,
-        [this]
-        {
-            qDebug() << "Timeout, command: " << m_lastRequestedCommand.load();
-            m_log.writeLog(Logger::Critical, "Timeout");
-            cancelQuery();
-            emit this->timeout();
-            emit responseError(Error::Msg::Timeout);
-        });
+    setTimeout(settings->get(MemKeys::timeout));
+    connect(settings, &BaseSettings::settingHasBeenChanged, this, &DefaultQueryExecutor::settingsChanged);
 }
 
 void DefaultQueryExecutor::initLogger(const QString &protocolName) noexcept
@@ -159,6 +151,12 @@ void DefaultQueryExecutor::logFromParser(const QString &message, const Logger::M
     m_log.writeLog(level, "DeviceQueryExecutor: " + message);
 }
 
+void DefaultQueryExecutor::settingsChanged(const QString &key, const QVariant &value)
+{
+    if (key == KeysMap.key(MemKeys::timeout))
+        setTimeout(value.toInt());
+}
+
 void DefaultQueryExecutor::exec()
 {
     auto currentState = getState();
@@ -209,6 +207,22 @@ void DefaultQueryExecutor::stop() noexcept
 Commands DefaultQueryExecutor::getLastRequestedCommand() const noexcept
 {
     return m_lastRequestedCommand.load();
+}
+
+void DefaultQueryExecutor::setTimeout(u32 timeout)
+{
+    QObject::disconnect(m_timeoutConnection);
+    m_timeoutTimer.setSingleShot(true);
+    m_timeoutTimer.setInterval(timeout);
+    m_timeoutConnection = connect(&m_timeoutTimer, &QTimer::timeout, this,
+        [this]
+        {
+            qDebug() << "Timeout, command: " << m_lastRequestedCommand.load();
+            m_log.writeLog(Logger::Critical, "Timeout");
+            cancelQuery();
+            emit this->timeout();
+            emit responseError(Error::Msg::Timeout);
+        });
 }
 
 void DefaultQueryExecutor::receiveDataFromInterface(const QByteArray &response)

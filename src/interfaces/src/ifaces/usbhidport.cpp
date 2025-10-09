@@ -7,7 +7,7 @@
 constexpr int MaxSegmenthLength = 64; ///< Максимальная длина одного сегмента (0x40)
 constexpr int hidApiErrorCode = -1;   ///< Код ошибки от HID API
 
-UsbHidPort::UsbHidPort(const UsbHidSettings &settings, QObject *parent)
+UsbHidPort::UsbHidPort(UsbHidSettings *settings, QObject *parent)
     : BaseInterface("UsbHidPort", settings, parent)
     , m_hidDevice(nullptr)
     , m_settings(settings)
@@ -16,13 +16,13 @@ UsbHidPort::UsbHidPort(const UsbHidSettings &settings, QObject *parent)
 
 bool UsbHidPort::connect()
 {
-    if ((m_settings.vendor_id == 0) || (m_settings.product_id == 0))
+    if ((static_cast<u16>(m_settings->get("vendor_id")) == 0) || (static_cast<u16>(m_settings->get("product_id")) == 0))
     {
         qDebug() << Error::Msg::NoDeviceError;
         return false;
     }
-    m_hidDevice = hid_open(m_settings.vendor_id, m_settings.product_id, //
-        m_settings.serial.toStdWString().c_str());
+    m_hidDevice = hid_open(m_settings->get("vendor_id"), m_settings->get("product_id"), //
+        QString(m_settings->get("serial")).toStdWString().c_str());
     if (!m_hidDevice)
     {
         emit error(InterfaceError::OpenError);
@@ -42,7 +42,7 @@ bool UsbHidPort::connect()
             if (hid_set_nonblocking(m_hidDevice, 1) == hidApiErrorCode)
                 hidErrorHandle();
             setState(Interface::State::Run);
-            qInfo("HID opened successfully");
+            qInfo("Связь с устройством установлена");
             emit started();
             return true;
         }
@@ -130,9 +130,4 @@ void UsbHidPort::hidErrorHandle()
         auto errString = "HID API Error: " + QString::fromStdWString(hid_error(m_hidDevice));
         m_log.writeLog(Logger::Critical, errString);
     }
-}
-
-const UsbHidSettings &UsbHidPort::deviceInfo() const
-{
-    return m_settings;
 }

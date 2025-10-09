@@ -71,7 +71,7 @@ void ConnectDialog::setInterface()
     connect(m_idialog, &AbstractInterfaceDialog::accepted, this, &ConnectDialog::accepted);
     // closing dialogs after selecting device
     connect(m_idialog, &AbstractInterfaceDialog::accepted, this, //
-        [this](const ConnectStruct &)
+        [this](const ConnectionSettings &)
         {
             m_idialog->close();
             close();

@@ -3,7 +3,7 @@
 #include <device/device_list.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <interfaces/types/settingstypes.h>
+#include <interfaces/types/serial_settings.h>
 #include <comawidgets/udialog.h>
 
 class BaseInterface;
@@ -65,7 +65,7 @@ private:
     ModuleDataUpdater *m_updater;
     QTimer *m_updateTimer;
 
-    bool initConnection(const IEC104Settings &settings);
+    bool initConnection(IEC104Settings *settings);
     void setupWidget();
 
 signals:

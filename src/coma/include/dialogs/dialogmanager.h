@@ -2,7 +2,7 @@
 
 #include <dialogs/dialogcreator.h>
 #include <gen/stdfunc.h>
-#include <helpers/comahelper.h>
+#include <common/comahelper.h>
 
 #include <QListWidget>
 #include <QPair>

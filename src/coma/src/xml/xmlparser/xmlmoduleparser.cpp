@@ -5,7 +5,7 @@
 #include <gen/stdfunc.h>
 #include <gen/xml/xmlbase.h>
 #include <gen/xml/xmlparse.h>
-#include <helpers/appconfig.h>
+#include <common/appconfig.h>
 #include <xml/xmltags.h>
 
 Xml::ModuleParser::ModuleParser(QObject *parent) : m_ifaceType(Interface::IfaceType::Unknown) { }

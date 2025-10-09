@@ -129,7 +129,7 @@ void Util::StoreDataMem(QByteArray &mem, const std::vector<FileStruct> &dr, int 
 bool Util::RestoreData(QByteArray bain, QList<DataTypes::S2Record> &outlist)
 {
     Q_ASSERT(bain.size() >= sizeof(S2::S2FileHeader));
-    qInfo() << "S2 File size:" << bain.size();
+    qDebug() << "S2 File size:" << bain.size();
     S2::DataRecHeader recordHeader;
 
     // копируем FileHeader

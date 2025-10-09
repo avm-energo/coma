@@ -1,5 +1,6 @@
 #include "comawidgets/errorprotocolwidget.h"
 
+#include <common/appconfig.h>
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <models/errorprotocolmodel.h>
@@ -32,10 +33,11 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     Model->setHeaderData(3, Qt::Horizontal, "Сообщение", Qt::EditRole);
     tv->setModel(Model);
 
-#ifndef QT_DEBUG
-    tv->setColumnHidden(1, true);
-    tv->setColumnHidden(2, true);
-#endif
+    if (AppConfiguration::app() == AppConfiguration::Service)
+    {
+        tv->setColumnHidden(1, true);
+        tv->setColumnHidden(2, true);
+    }
     tv->resizeColumnsToContents();
     connect(Model, &QAbstractItemModel::dataChanged, tv, &QTableView::resizeColumnsToContents);
     tv->horizontalHeader()->setStretchLastSection(true);

@@ -35,6 +35,7 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
         else
             msg = Error::MsgStr.value(errorCode, "Неизвестная ошибка");
         EMessageBox::error(this, errorMsg() + " : " + msg);
+        qCritical() << errorMsg() << " : " << msg;
         break;
     }
     default:

@@ -5,14 +5,14 @@
 #include <QCoreApplication>
 #include <QElapsedTimer>
 
-BaseInterface::BaseInterface(const QString &logFilename, const BaseSettings &settings, QObject *parent)
+BaseInterface::BaseInterface(const QString &logFilename, BaseSettings *settings, QObject *parent)
     : QObject(parent)
     , m_state(Interface::State::Connect)
-    , m_reconnectInterval(settings.m_reconnectInterval)
-    , m_isLoggingEnabled(settings.m_isLoggingEnabled)
 {
+    m_reconnectInterval = settings->get("reconnectInterval");
     qRegisterMetaType<InterfaceError>();
-    m_log.setLogLevel(settings.m_logLevel);
+    m_isLoggingEnabled = settings->get("isLoggingEnabled");
+    m_log.setLogLevel(settings->get("logLevel"));
     m_log.writeStart(logFilename + ".log");
 }
 

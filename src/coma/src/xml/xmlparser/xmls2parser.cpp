@@ -3,7 +3,7 @@
 #include <gen/datatypes.h>
 #include <gen/xml/xmlbase.h>
 #include <gen/xml/xmlparse.h>
-#include <helpers/appconfig.h>
+#include <common/appconfig.h>
 #include <s2/s2datatypes.h>
 #include <xml/xmltags.h>
 

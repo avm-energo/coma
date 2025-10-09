@@ -2,25 +2,25 @@
 
 #include <interfaces/parsers/iec104_request_parser.h>
 #include <interfaces/parsers/iec104_response_parser.h>
-#include <interfaces/types/settingstypes.h>
+#include <interfaces/types/serial_settings.h>
 
 namespace Interface
 {
 
 using namespace Iec104;
 
-Iec104QueryExecutor::Iec104QueryExecutor(RequestQueue &queue, const IEC104Settings &settings, QObject *parent)
+Iec104QueryExecutor::Iec104QueryExecutor(RequestQueue &queue, IEC104Settings *settings, QObject *parent)
     : DefaultQueryExecutor(queue, settings, parent)
     , m_ctrlBlock(std::make_shared<ControlBlock>())
-    , m_params(settings.params)
     , m_t2Timer(new QTimer(this))
     , m_t3Timer(new QTimer(this))
     , m_acknowledgeReceived(0)
 {
+    m_w = settings->get("w");
     m_t2Timer->setSingleShot(true);
-    m_t2Timer->setInterval(m_params.t2 * 1000);
+    m_t2Timer->setInterval(settings->get<u16>("t2") * 1000);
     m_t3Timer->setSingleShot(true);
-    m_t3Timer->setInterval(m_params.t3 * 1000);
+    m_t3Timer->setInterval(settings->get<u16>("t3") * 1000);
     connect(m_t2Timer, &QTimer::timeout, this, &Iec104QueryExecutor::sendSupervisoryMessage);
     connect(m_t3Timer, &QTimer::timeout, this, [this]() { testConnection(ControlArg::Activate); });
 }
@@ -102,7 +102,7 @@ void Iec104QueryExecutor::sendSupervisoryMessage() noexcept
 
 void Iec104QueryExecutor::checkControlBlock() noexcept
 {
-    auto triggerThresholdValue = m_acknowledgeReceived + m_params.w;
+    auto triggerThresholdValue = m_acknowledgeReceived + m_w;
     if (m_ctrlBlock->m_received >= triggerThresholdValue || m_ctrlBlock->m_received == controlMax)
         sendSupervisoryMessage();
     if (m_ctrlBlock->m_received == controlMax)
