@@ -13,8 +13,9 @@ QList<UsbHidSettings *> UsbHidPortInfo::devicesFound(quint16 vid)
     {
         UsbHidSettings *buffer = new UsbHidSettings(cur_dev->vendor_id, // Vendor ID
             cur_dev->product_id,                                        // Product ID
-            QString::fromWCharArray(cur_dev->serial_number),            // Serial number
+            QString::fromWCharArray(cur_dev->serial_number)             // Serial number
 #ifdef QT_DEBUG
+            ,
             QString(cur_dev->path)                                      // Path
 #endif
         );
