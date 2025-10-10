@@ -20,4 +20,5 @@ int main(int argc, char *argv[])
     else
         coma.go();
     return app.exec();
+    qInstallMessageHandler(nullptr);
 }
