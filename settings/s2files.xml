@@ -402,9 +402,9 @@
                 <group>101</group>
                 <string>Мин. значение диапазона изменения сигнала (мА, В)</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-100</min>
+                <max>100</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -416,9 +416,9 @@
                 <group>101</group>
                 <string>Макс. значение диапазона изменения сигнала (мА, В)</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-100</min>
+                <max>100</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -430,9 +430,9 @@
                 <group>101</group>
                 <string>Мин. значение сигнала в инженерных единицах</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -444,9 +444,9 @@
                 <group>101</group>
                 <string>Макс. значение сигнала в инженерных единицах</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -458,9 +458,9 @@
                 <group>202</group>
                 <string>Значение аварийной уставки по мин. значению</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -472,9 +472,9 @@
                 <group>201</group>
                 <string>Значение предупредительной уставки по мин. значению</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -486,9 +486,9 @@
                 <group>201</group>
                 <string>Значение предупредительной уставки по макс. значению</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -500,9 +500,9 @@
                 <group>202</group>
                 <string>Значение аварийной уставки по макс. значению</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -667,9 +667,9 @@
                 <group>101</group>
                 <string>Мин. значение диапазона изменения сигнала (мА, В)</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-100</min>
+                <max>100</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -681,9 +681,9 @@
                 <group>101</group>
                 <string>Макс. значение диапазона изменения сигнала (мА, В)</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-100</min>
+                <max>100</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -695,9 +695,9 @@
                 <group>101</group>
                 <string>Мин. значение сигнала в инженерных единицах</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -709,9 +709,9 @@
                 <group>101</group>
                 <string>Макс. значение сигнала в инженерных единицах</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -723,9 +723,9 @@
                 <group>202</group>
                 <string>Значение аварийной уставки по мин. значению</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -737,9 +737,9 @@
                 <group>201</group>
                 <string>Значение предупредительной уставки по мин. значению</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -751,9 +751,9 @@
                 <group>201</group>
                 <string>Значение предупредительной уставки по макс. значению</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -765,9 +765,9 @@
                 <group>202</group>
                 <string>Значение аварийной уставки по макс. значению</string>
                 <count>8</count>
-                <min>0</min>
-                <max>65534</max>
-                <decimals>0</decimals>
+                <min>-999999</min>
+                <max>999999</max>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>

@@ -1,5 +1,6 @@
 #include "dialogs/dialogcreator.h"
 
+#include <common/appconfig.h>
 #include <device/current_device.h>
 #include <dialogs/checkdialog.h>
 #include <dialogs/configdialog.h>
@@ -9,7 +10,6 @@
 #include <dialogs/plotdialog.h>
 #include <dialogs/relaydialog.h>
 #include <dialogs/timedialog.h>
-#include <common/appconfig.h>
 #include <journals/journaldialog.h>
 #include <oscillograms/dialogs/oscdialog.h>
 #include <oscillograms/dialogs/osckivdialog.h>
@@ -48,8 +48,8 @@ void DialogCreator::createDialogs()
     if (AppConfiguration::app() == AppConfiguration::Debug && ifaceType == Interface::IfaceType::USB)
         createTuneDialogs();
     // TODO: Временно выключено для модбаса
-    if (ifaceType == Interface::IfaceType::USB)
-        createStartupValuesDialog();
+    // if (ifaceType == Interface::IfaceType::USB)
+    createStartupValuesDialog();
 
     createOscAndSwJourDialogs();
     createPlotDialog();
