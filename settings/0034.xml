@@ -96,14 +96,14 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Ожидаемое состояние дискретных выходов" tab="101">
-                    <mwidget desc="" view="bitset">
+                    <mwidget desc="Выход%1" view="bitset">
                         <start-addr>5003</start-addr>
                         <count>28</count>
                         <toolTip>Дискретный выход (DIO_%1)</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Реальное состояние дискретных выходов" tab="101">
-                    <mwidget desc="" view="bitset">
+                    <mwidget desc="Выход%1" view="bitset">
                         <start-addr>5011</start-addr>
                         <count>28</count>
                         <toolTip>Дискретный выход (DIO_%1)</toolTip>

@@ -26,9 +26,7 @@ private:
     {
         CLEAN,
         YELLOW,
-        YELLOWQ,
-        RED,
-        REDQ
+        RED
     };
 
     struct BdBlocks
@@ -81,10 +79,10 @@ private:
     /// \param type - true if widget is button only, false - with checkbox widget
     QGridLayout *setupCommandWidget(const Device::XmlDataTypes::MWidget &mwidget, const int wCount, bool type);
 
-    void setYellow(quint32 reg);
-    void clearYellow(quint32 reg);
-    void setRed(quint32 reg);
-    void clearRed(quint32 reg);
+    bool setYellow(quint32 reg);
+    bool clearYellow(quint32 reg);
+    bool setRed(quint32 reg);
+    bool clearRed(quint32 reg);
     void setHighlights();
 
 private slots:

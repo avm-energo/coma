@@ -160,7 +160,7 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Ожидаемое состояние выходов" tab="1">
-                    <mwidget desc="" view="bitset">
+                    <mwidget desc="Выход%1" view="bitset">
                         <start-addr>5001</start-addr>
                         <count>4</count>
                         <toolTip>Дискретный выход (DIO_%1)</toolTip>

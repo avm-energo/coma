@@ -326,7 +326,6 @@ void Coma::go()
     // Load settings before anything
     auto splash = new SplashScreen();
     splash->show();
-    qDebug() << "=== Log started ===";
     m_bar = new EStatusBar(this);
     setStatusBar(m_bar);
     setupUI();

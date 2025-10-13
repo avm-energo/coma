@@ -73,7 +73,7 @@
         <sections desc="Разделы">
             <section header="Текущие данные мезонин">
                 <sgroup header="Текущее состояние входов" tab="101">
-                    <mwidget desc="" view="bitset">
+                    <mwidget desc="Вход%1" view="bitset">
                         <start-addr>3002</start-addr>
                         <count>30</count>
                         <toolTip>Дискретный вход (DIO_%1)</toolTip>

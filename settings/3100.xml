@@ -159,7 +159,7 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Текущее состояние входов" tab="1">
-                    <mwidget desc="" view="bitset">
+                    <mwidget desc="Вход%1" view="bitset">
                         <start-addr>3001</start-addr>
                         <count>11</count>
                         <toolTip>Дискретный вход (DIO_%1)</toolTip>

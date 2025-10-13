@@ -1338,7 +1338,7 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Состояние дискретных выходов" tab="3">
-                    <mwidget desc="DO%1" view="bitset">
+                    <mwidget desc="Выход%1" view="bitset">
                         <start-addr>4520</start-addr>
                         <count>3</count>
                         <toolTip>Дискретный выход DO%1</toolTip>
