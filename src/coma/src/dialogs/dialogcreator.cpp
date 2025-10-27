@@ -48,7 +48,6 @@ void DialogCreator::createDialogs()
     if (AppConfiguration::app() == AppConfiguration::Debug && ifaceType == Interface::IfaceType::USB)
         createTuneDialogs();
     // TODO: Временно выключено для модбаса
-    // if (ifaceType == Interface::IfaceType::USB)
     createStartupValuesDialog();
 
     createOscAndSwJourDialogs();

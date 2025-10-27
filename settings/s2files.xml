@@ -931,13 +931,16 @@
                 <string>Минимальные значения сигналов в инженерных единицах</string>
                 <toolTip>Минимальные значения сигналов в инженерных единицах</toolTip>
                 <count>3</count>
-                <min>-10000</min>
-                <max>10000</max>
+                <min>-99999</min>
+                <max>99999</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>Ток обмотки ВН (вторичный), А</item>
-                    <item>Ток обмотки №2 (вторичный), А</item>
-                    <item>Температура окружающей среды, °С</item>
+                    <item>Ток обмотки ВН (первичный)</item>
+                    <item> А</item>
+                    <item>Ток обмотки №2 (первичный)</item>
+                    <item> А</item>
+                    <item>Температура окружающей среды</item>
+                    <item> °С</item>
                 </string-array>
             </widget>
         </record>
@@ -951,13 +954,16 @@
                 <string>Максимальные значения сигналов в инженерных единицах</string>
                 <toolTip>Максимальные значения сигналов в инженерных единицах</toolTip>
                 <count>3</count>
-                <min>-1000</min>
-                <max>1000</max>
+                <min>-99999</min>
+                <max>99999</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>Ток обмотки ВН (вторичный), А</item>
-                    <item>Ток обмотки №2 (вторичный), А</item>
-                    <item>Температура окружающей среды, °С</item>
+                    <item>Ток обмотки ВН (первичный)</item>
+                    <item> А</item>
+                    <item>Ток обмотки №2 (первичный)</item>
+                    <item> А</item>
+                    <item>Температура окружающей среды</item>
+                    <item> °С</item>
                 </string-array>
             </widget>
         </record>
