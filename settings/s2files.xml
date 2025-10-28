@@ -376,6 +376,20 @@
             <type>BYTE</type>
         </record>
         <record>
+            <id>32</id>
+            <name>TDispOff</name>
+            <type>DWORD</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>8</group>
+                <string>Время подсветки экрана, сек</string>
+                <toolTip>Время подсветки экрана, сек</toolTip>
+                <min>30</min>
+                <max>300</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
             <id>101</id>
             <name>in_typeA_IDB</name>
             <type>BYTE[8]</type>
@@ -935,12 +949,9 @@
                 <max>99999</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>Ток обмотки ВН (первичный)</item>
-                    <item> А</item>
-                    <item>Ток обмотки №2 (первичный)</item>
-                    <item> А</item>
-                    <item>Температура окружающей среды</item>
-                    <item> °С</item>
+                    <item>Ток обмотки ВН (первичный) А</item>
+                    <item>Ток обмотки №2 (первичный) А</item>
+                    <item>Температура окружающей среды °С</item>
                 </string-array>
             </widget>
         </record>
@@ -958,12 +969,9 @@
                 <max>99999</max>
                 <decimals>0</decimals>
                 <string-array>
-                    <item>Ток обмотки ВН (первичный)</item>
-                    <item> А</item>
-                    <item>Ток обмотки №2 (первичный)</item>
-                    <item> А</item>
-                    <item>Температура окружающей среды</item>
-                    <item> °С</item>
+                    <item>Ток обмотки ВН (первичный) А</item>
+                    <item>Ток обмотки №2 (первичный) А</item>
+                    <item>Температура окружающей среды °С</item>
                 </string-array>
             </widget>
         </record>

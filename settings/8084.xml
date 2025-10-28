@@ -569,16 +569,12 @@
                 <signal-id>3</signal-id>
             </group>
             <group>
-                <block>100</block>
-                <signal-id>8</signal-id>
-            </group>
-            <group>
                 <block>2</block>
                 <signal-id>4</signal-id>
             </group>
             <group>
-                <block>200</block>
-                <signal-id>9</signal-id>
+                <block>250</block>
+                <signal-id>12</signal-id>
             </group>
             <group>
                 <block>3</block>
@@ -591,6 +587,30 @@
             <group>
                 <block>5</block>
                 <signal-id>6</signal-id>
+            </group>
+            <group>
+                <block>7</block>
+                <signal-id>10</signal-id>
+            </group>
+            <group>
+                <block>7</block>
+                <signal-id>11</signal-id>
+            </group>
+            <group>
+                <block>13</block>
+                <signal-id>14</signal-id>
+            </group>
+            <group>
+                <block>100</block>
+                <signal-id>8</signal-id>
+            </group>
+            <group>
+                <block>200</block>
+                <signal-id>9</signal-id>
+            </group>
+            <group>
+                <block>48</block>
+                <signal-id>13</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -773,15 +793,51 @@
                 <type>BitString</type>
             </signal>
             <signal>
-                <start-addr>1000</start-addr>
-                <count>16</count>
-                <id>4</id>
+                <start-addr>910</start-addr>
+                <count>11</count>
+                <id>10</id>
                 <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>4000</start-addr>
+                <count>11</count>
+                <id>11</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>13000</start-addr>
+                <count>8</count>
+                <id>12</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>2480</start-addr>
+                <count>3</count>
+                <id>13</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>13100</start-addr>
+                <count>1</count>
+                <id>14</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>40</start-addr>
+                <count>5</count>
+                <id>2</id>
+                <type>BitString</type>
             </signal>
             <signal>
                 <start-addr>101</start-addr>
                 <count>2</count>
                 <id>3</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>1000</start-addr>
+                <count>16</count>
+                <id>4</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -813,12 +869,6 @@
                 <count>1</count>
                 <id>9</id>
                 <type>SinglePoint</type>
-            </signal>
-            <signal>
-                <start-addr>40</start-addr>
-                <count>5</count>
-                <id>2</id>
-                <type>BitString</type>
             </signal>
         </signals>
     </resources>
