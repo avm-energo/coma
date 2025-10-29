@@ -112,6 +112,16 @@
         </alarms>
         <config desc="Конфигурация">
             <record>
+                <id>1</id>
+                <defaultValue>162</defaultValue>
+                <visibility>false</visibility>
+            </record>
+            <record>
+                <id>2</id>
+                <defaultValue>67</defaultValue>
+                <visibility>false</visibility>
+            </record>
+            <record>
                 <id>3</id>
                 <defaultValue>8</defaultValue>
                 <visibility>true</visibility>
@@ -512,14 +522,9 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1</id>
-                <defaultValue>162</defaultValue>
-                <visibility>false</visibility>
-            </record>
-            <record>
-                <id>2</id>
-                <defaultValue>67</defaultValue>
-                <visibility>false</visibility>
+                <id>32</id>
+                <defaultValue>30</defaultValue>
+                <visibility>true</visibility>
             </record>
         </config>
         <hidden desc="Секретные операции">
@@ -977,20 +982,20 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Состояние выходных сигналов" order="2" tab="2">
-                    <mwidget desc="Включить ступень Д1. Выход %1" view="SinglePoint">
+                    <mwidget desc="Включить ступень Д1. Выход %1, D1/%1" view="SinglePoint">
                         <start-addr>1201</start-addr>
                         <count>2</count>
-                        <toolTip>Включить ступень Д1. Выход %1</toolTip>
+                        <toolTip>Включить ступень Д1. Выход %1, D1/%1</toolTip>
                     </mwidget>
-                    <mwidget desc="Включить ступень Д2. Выход %1" view="SinglePoint">
+                    <mwidget desc="Включить ступень Д2. Выход %1, D2/%1" view="SinglePoint">
                         <start-addr>1203</start-addr>
                         <count>2</count>
-                        <toolTip>Включить ступень Д2. Выход %1</toolTip>
+                        <toolTip>Включить ступень Д2. Выход %1, D2/%1</toolTip>
                     </mwidget>
-                    <mwidget desc="Включить ступень ДЦ. Выход %1" view="SinglePoint">
+                    <mwidget desc="Включить ступень ДЦ. Выход %1, DC/%1" view="SinglePoint">
                         <start-addr>1205</start-addr>
                         <count>4</count>
-                        <toolTip>Включить ступень ДЦ. Выход %1</toolTip>
+                        <toolTip>Включить ступень ДЦ. Выход %1, DC/%1</toolTip>
                     </mwidget>
                     <mwidget desc="Работа маслонасосов заблокирована алгоритмом" view="SinglePoint">
                         <start-addr>1209</start-addr>
