@@ -12,14 +12,17 @@
                 <item>
                     <addr>1100</addr>
                     <string>Неисправность датчиков 4…20 мА</string>
+                    <order>1</order>
                 </item>
                 <item>
                     <addr>1102</addr>
                     <string>Аварийная сигнализация по температуре масла или обмотки</string>
+                    <order></order>
                 </item>
                 <item>
                     <addr>1103</addr>
                     <string>Неисправность датчика температуры ВСМ</string>
+                    <order>2</order>
                     <highlights>
                         <item>1000</item>
                     </highlights>
@@ -27,6 +30,7 @@
                 <item>
                     <addr>1104</addr>
                     <string>Неисправность датчика тока обмотки №1</string>
+                    <order>3</order>
                     <highlights>
                         <item>1001</item>
                     </highlights>
@@ -34,6 +38,7 @@
                 <item>
                     <addr>1105</addr>
                     <string>Неисправность датчика тока обмотки №2</string>
+                    <order>4</order>
                     <highlights>
                         <item>1002</item>
                     </highlights>
@@ -41,6 +46,7 @@
                 <item>
                     <addr>1106</addr>
                     <string>Неисправность датчика температуры окружающей среды</string>
+                    <order>5</order>
                     <highlights>
                         <item>1007</item>
                     </highlights>
@@ -48,6 +54,7 @@
                 <item>
                     <addr>1111</addr>
                     <string>Температура ВСМ превысила аварийную уставку</string>
+                    <order></order>
                     <highlights>
                         <item>1000</item>
                     </highlights>
@@ -55,6 +62,7 @@
                 <item>
                     <addr>1112</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №1 превысила аварийную уставку</string>
+                    <order></order>
                     <highlights>
                         <item>1008</item>
                     </highlights>
@@ -62,6 +70,7 @@
                 <item>
                     <addr>1113</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №2 превысила аварийную уставку</string>
+                    <order></order>
                     <highlights>
                         <item>1009</item>
                     </highlights>
@@ -69,6 +78,7 @@
                 <item>
                     <addr>1114</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №3 превысила аварийную уставку</string>
+                    <order></order>
                     <highlights>
                         <item>1010</item>
                     </highlights>
@@ -79,10 +89,12 @@
                 <item>
                     <addr>1101</addr>
                     <string>Предупредительная сигнализация по температуре масла или обмотки</string>
+                    <order></order>
                 </item>
                 <item>
                     <addr>1107</addr>
                     <string>Температура ВСМ превысила предупредительную уставку</string>
+                    <order></order>
                     <highlights>
                         <item>1000</item>
                     </highlights>
@@ -90,6 +102,7 @@
                 <item>
                     <addr>1108</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №1 превысила предупредительную уставку</string>
+                    <order></order>
                     <highlights>
                         <item>1008</item>
                     </highlights>
@@ -97,6 +110,7 @@
                 <item>
                     <addr>1109</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №2 превысила предупредительную уставку</string>
+                    <order></order>
                     <highlights>
                         <item>1009</item>
                     </highlights>
@@ -104,6 +118,7 @@
                 <item>
                     <addr>1110</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №3 превысила предупредительную уставку</string>
+                    <order></order>
                     <highlights>
                         <item>1010</item>
                     </highlights>
@@ -217,6 +232,11 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>32</id>
+                <defaultValue>60</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
                 <id>140</id>
                 <defaultValue>0,0,0</defaultValue>
                 <order>4</order>
@@ -230,7 +250,7 @@
             </record>
             <record>
                 <id>142</id>
-                <defaultValue>5,5,150</defaultValue>
+                <defaultValue>300,3000,150</defaultValue>
                 <order>6</order>
                 <visibility>true</visibility>
             </record>
@@ -446,7 +466,7 @@
             </record>
             <record>
                 <id>1284</id>
-                <defaultValue>0,0,0</defaultValue>
+                <defaultValue>210,2200,2200</defaultValue>
                 <order>9</order>
                 <visibility>true</visibility>
             </record>
@@ -519,11 +539,6 @@
                 <id>1299</id>
                 <defaultValue>0,0,0</defaultValue>
                 <order>3</order>
-                <visibility>true</visibility>
-            </record>
-            <record>
-                <id>32</id>
-                <defaultValue>30</defaultValue>
                 <visibility>true</visibility>
             </record>
         </config>
@@ -982,20 +997,20 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Состояние выходных сигналов" order="2" tab="2">
-                    <mwidget desc="Включить ступень Д1. Выход %1, D1/%1" view="SinglePoint">
+                    <mwidget desc="Включить Д1. Выход %1, D1/%1" view="SinglePoint">
                         <start-addr>1201</start-addr>
                         <count>2</count>
-                        <toolTip>Включить ступень Д1. Выход %1, D1/%1</toolTip>
+                        <toolTip>Включить Д1. Выход %1, D1/%1</toolTip>
                     </mwidget>
-                    <mwidget desc="Включить ступень Д2. Выход %1, D2/%1" view="SinglePoint">
+                    <mwidget desc="Включить Д2. Выход %1, D2/%1" view="SinglePoint">
                         <start-addr>1203</start-addr>
                         <count>2</count>
-                        <toolTip>Включить ступень Д2. Выход %1, D2/%1</toolTip>
+                        <toolTip>Включить Д2. Выход %1, D2/%1</toolTip>
                     </mwidget>
-                    <mwidget desc="Включить ступень ДЦ. Выход %1, DC/%1" view="SinglePoint">
+                    <mwidget desc="Включить ДЦ. Выход %1, DC/%1" view="SinglePoint">
                         <start-addr>1205</start-addr>
                         <count>4</count>
-                        <toolTip>Включить ступень ДЦ. Выход %1, DC/%1</toolTip>
+                        <toolTip>Включить ДЦ. Выход %1, DC/%1</toolTip>
                     </mwidget>
                     <mwidget desc="Работа маслонасосов заблокирована алгоритмом" view="SinglePoint">
                         <start-addr>1209</start-addr>
@@ -1055,6 +1070,11 @@
                         <start-addr>1100</start-addr>
                         <type>3</type>
                         <toolTip>Неисправность датчиков 4…20 мА</toolTip>
+                    </mwidget>
+                    <mwidget desc="Неисправность датчика температуры ВСМ" view="SinglePoint">
+                        <start-addr>1103</start-addr>
+                        <type>3</type>
+                        <toolTip>Неисправность датчика температуры ВСМ</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
