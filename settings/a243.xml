@@ -22,10 +22,15 @@
                 <item>
                     <addr>1103</addr>
                     <string>Неисправность датчика температуры ВСМ</string>
-                    <order>2</order>
+                    <order>6</order>
                     <highlights>
                         <item>1000</item>
                     </highlights>
+                </item>
+                <item>
+                    <addr>1103</addr>
+                    <string>Неисправность датчика Pt100</string>
+                    <order>2</order>
                 </item>
                 <item>
                     <addr>1104</addr>
@@ -1071,10 +1076,10 @@
                         <type>3</type>
                         <toolTip>Неисправность датчиков 4…20 мА</toolTip>
                     </mwidget>
-                    <mwidget desc="Неисправность датчика температуры ВСМ" view="SinglePoint">
+                    <mwidget desc="Неисправность датчика Pt100" view="SinglePoint">
                         <start-addr>1103</start-addr>
                         <type>3</type>
-                        <toolTip>Неисправность датчика температуры ВСМ</toolTip>
+                        <toolTip>Неисправность датчика Pt100</toolTip>
                     </mwidget>
                 </sgroup>
             </section>

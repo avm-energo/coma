@@ -106,7 +106,7 @@ void ModuleAlarm::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
             if (sp.sigAdr == second.sigAdr)
             {
                 updatePixmap(sigval & 0x00000001, index);
-                break;
+                // break;
             }
         }
     }
