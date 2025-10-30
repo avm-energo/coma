@@ -47,9 +47,10 @@ void Settings::appendAlarmStateAll(const AlarmType type, const u32 index, const 
     m_stateAllCfg.push_back(AlarmStateAllRecord { index, type, desc });
 }
 
-void Settings::appendAlarm(const AlarmType type, const u32 addr, const QString &desc)
+void Settings::appendAlarm(const AlarmType type, const u32 addr, const QString &desc, const u32 order)
 {
-    m_alarms[type].insert(addr, desc);
+    AlarmOne oneAlarm { addr, desc };
+    m_alarms[type].insert(order, oneAlarm);
 }
 
 void Settings::appendHighlight(const AlarmType type, const u32 key, const QList<u32> &values)

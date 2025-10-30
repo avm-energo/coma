@@ -1,17 +1,16 @@
 #include "xml/xmleditor/dialogs/xmlalarmdialog.h"
 
-XmlAlarmDialog::XmlAlarmDialog(QWidget *parent) : XmlDialog(parent)
-{
-}
+XmlAlarmDialog::XmlAlarmDialog(QWidget *parent) : XmlDialog(parent) { }
 
 void XmlAlarmDialog::setupUI(QVBoxLayout *mainLayout)
 {
     // Настройки окна (размер, положение)
-    setupSizePos(650, 120);
+    setupSizePos(650, 170);
     // Создание слоёв окна
     auto descLayout = new QHBoxLayout;
     auto addrLayout = new QHBoxLayout;
     auto hlLayout = new QHBoxLayout;
+    auto orderLayout = new QHBoxLayout;
     m_title += "сигнализации";
 
     // Виджеты для адреса сигнализации
@@ -36,6 +35,21 @@ void XmlAlarmDialog::setupUI(QVBoxLayout *mainLayout)
     descLayout->addWidget(descInput);
     m_dlgItems.append(descInput);
 
+    // For ordering
+    auto orderLabel = new QLabel("Приоритет (0-без приоритета): ", this);
+    auto orderInput = new QSpinBox(this);
+    orderInput->setMinimum(configCountMin);
+    orderInput->setMaximum(configCountMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    QObject::connect(orderInput, &QSpinBox::textChanged,                  //
+        this, qOverload<const QString &>(&XmlAlarmDialog::dataChanged));
+#endif
+    QObject::connect(orderInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlAlarmDialog::dataChanged));
+    orderLayout->addWidget(orderLabel);
+    orderLayout->addWidget(orderInput);
+    m_dlgItems.append(orderInput);
+
     // Виджеты для подсветки сигналов (hl - highlights, not half-life!)
     auto hlLabel = new QLabel("Подсветка: ", this);
     auto hlInput = new QLineEdit("", this);
@@ -47,5 +61,6 @@ void XmlAlarmDialog::setupUI(QVBoxLayout *mainLayout)
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);
     mainLayout->addLayout(descLayout);
+    mainLayout->addLayout(orderLayout);
     mainLayout->addLayout(hlLayout);
 }

@@ -1,11 +1,11 @@
 #include "xml/xmlparser/xmlmoduleparser.h"
 
+#include <common/appconfig.h>
 #include <device/current_device.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/xml/xmlbase.h>
 #include <gen/xml/xmlparse.h>
-#include <common/appconfig.h>
 #include <xml/xmltags.h>
 
 Xml::ModuleParser::ModuleParser(QObject *parent) : m_ifaceType(Interface::IfaceType::Unknown) { }
@@ -214,8 +214,10 @@ void Xml::ModuleParser::parseAlarm(const QDomNode &alarmNode, const AlarmType &t
 {
     auto addr = XmlParse::parseNumFromNode<u32>(alarmNode, tags::addr);
     auto desc = XmlParse::parseString(alarmNode, tags::string);
+    auto order = XmlParse::parseNumFromNode<u32>(alarmNode, tags::order, U16MAX);
+    order = (order == 0) ? U16MAX : order; // if an order is not set force to set it to the lowest priority
     auto hlValues = XmlParse::parseNumArray<u32>(alarmNode, tags::highlights);
-    emit alarmDataSending(type, addr, desc, hlValues);
+    emit alarmDataSending(type, addr, desc, order, hlValues);
 }
 
 void Xml::ModuleParser::parseJournals(const QDomNode &joursNode)

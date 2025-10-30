@@ -39,8 +39,8 @@ const std::map<ModelType, QStringList> XmlModel::s_headers {
     { ModelType::SGroup, { "Адрес", "Имя" } },                                                                     //
     { ModelType::Alarms, { "XML", "Описание" } },                                                                  //
     { ModelType::AlarmStateAll, { "Адрес", "Описание", "Тип" } },                                                  //
-    { ModelType::AlarmsCrit, { "Адрес", "Описание", "Подсветка" } },                                               //
-    { ModelType::AlarmsWarn, { "Адрес", "Описание", "Подсветка" } },                                               //
+    { ModelType::AlarmsCrit, { "Адрес", "Описание", "Приоритет", "Подсветка" } },                                  //
+    { ModelType::AlarmsWarn, { "Адрес", "Описание", "Приоритет", "Подсветка" } },                                  //
     { ModelType::AlarmsInfo, { "Адрес", "Описание" } },                                                            //
     { ModelType::Journals, { "XML", "Описание" } },                                                                //
     { ModelType::WorkJours, { "Адрес", "Описание" } },                                                             //

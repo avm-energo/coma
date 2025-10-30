@@ -38,7 +38,8 @@ signals:
     void tabDataSending(const u32 id, const SectionTabStruct &name);
     void sectionDataSending(const Xml::SGMap &sgmap, const QString &secHead);
     void alarmStateAllDataSending(const Xml::AlarmType type, const u32 index, const QString &desc);
-    void alarmDataSending(const Xml::AlarmType type, const u32 addr, const QString &desc, const QList<u32> &highlights);
+    void alarmDataSending(
+        const Xml::AlarmType type, const u32 addr, const QString &desc, const u32 order, const QList<u32> &highlights);
     void workJourDataSending(const u32 id, const QString &desc);
     void measJourDataSending(const u32 idx, const QString &header, const Xml::BinaryType type, bool visib);
     void protocolGroupSending(const Protocol::AbstractGroup &group);

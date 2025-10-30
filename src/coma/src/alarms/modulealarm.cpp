@@ -19,14 +19,15 @@ ModuleAlarm::ModuleAlarm(const AlarmType type, const AlarmValue &alarms, //
 
 void ModuleAlarm::followToData(const SignalMap &sigMap)
 {
-    auto addr = m_alarms.cbegin().key();
-    auto search = std::find_if(sigMap.cbegin(), sigMap.cend(), //
-        [&addr](const Device::SigMapValue &element) -> bool {  //
-            auto &signal = element.second;
-            auto acceptStart = signal.startAddr;
-            auto acceptEnd = acceptStart + signal.count;
-            return (addr >= acceptStart && addr < acceptEnd);
-        });
+    auto addr = m_alarms.cbegin().value().sigAdr;
+    auto search =
+      std::find_if(sigMap.cbegin(), sigMap.cend(),                       //
+                   [&addr](const Device::SigMapValue &element) -> bool { //
+                     auto &signal = element.second;
+                     auto acceptStart = signal.startAddr;
+                     auto acceptEnd = acceptStart + signal.count;
+                     return (addr >= acceptStart && addr < acceptEnd);
+                   });
     if (search != sigMap.cend())
     {
         auto &signal = search->second;
@@ -35,7 +36,7 @@ void ModuleAlarm::followToData(const SignalMap &sigMap)
     engine()->setUpdatesEnabled();
 }
 
-void ModuleAlarm::setupUI(const QStringList &events)
+void ModuleAlarm::setupUI(const QList<Device::XmlDataTypes::AlarmOne> &events)
 {
     auto mainLayout = new QVBoxLayout(this);
     auto widget = new QWidget(this);
@@ -44,13 +45,13 @@ void ModuleAlarm::setupUI(const QStringList &events)
     // Создаём labels и circles
     m_labelStateStorage.reserve(events.size());
     auto index = 0;
-    for (auto &&desc : events)
+    for (auto &&event : events)
     {
         auto hLayout = new QHBoxLayout;
         auto pixmap = GraphFunc::NewCircle(m_normalColor, circleRadius);
         auto label = LBLFunc::New(this, "", QString::number(index), &pixmap);
         hLayout->addWidget(label, 1);
-        hLayout->addWidget(LBLFunc::New(this, desc), 100);
+        hLayout->addWidget(LBLFunc::New(this, event.desc), 100);
         vLayout->addLayout(hLayout);
         m_labelStateStorage.append({ label, false });
         index++;
@@ -99,9 +100,10 @@ void ModuleAlarm::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
     if (!(sigval & 0x80))
     {
         quint32 index = 0;
-        for (auto it = m_alarms.keyBegin(); it != m_alarms.keyEnd(); it++, index++)
+        for (auto it = m_alarms.cbegin(), end = m_alarms.cend(); it != end; it++, index++)
         {
-            if (sp.sigAdr == *it)
+            auto second = it.value();
+            if (sp.sigAdr == second.sigAdr)
             {
                 updatePixmap(sigval & 0x00000001, index);
                 break;

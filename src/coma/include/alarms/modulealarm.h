@@ -16,7 +16,7 @@ private:
     QList<QPair<QLabel *, bool>> m_labelStateStorage;
 
     /// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
-    void setupUI(const QStringList &events);
+    void setupUI(const QList<Device::XmlDataTypes::AlarmOne> &events);
     /// \brief Check if all pixmap labels inactive.
     bool isAllPixmapInactive() const;
     /// \brief Update a indicator (pixmap) for alarms displaying.

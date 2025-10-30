@@ -37,7 +37,7 @@ public slots:
     void alarmStateAllDataReceive(const XmlDataTypes::AlarmType type, const u32 index, const QString &desc);
     /// \brief Slot for saving device's alarm records.
     void alarmDataReceive(const XmlDataTypes::AlarmType type, const u32 addr, //
-        const QString &desc, const QList<u32> &highlights);
+        const QString &desc, const u32 order, const QList<u32> &highlights);
     /// \brief Slot for saving module a work journal's record.
     void workJourDataReceive(const u32 id, const QString &desc);
     /// \brief Slot for saving module a measurement journal's record.

@@ -13,7 +13,8 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
         makeElement(doc, item, tags::string, data(index(row, 1)));
         if (rowCount() > 2)
         {
-            auto highlights = data(index(row, 2)).toString().split(',');
+            makeElement(doc, item, tags::order, data(index(row, 2)));
+            auto highlights = data(index(row, 3)).toString().split(',');
             if (!(highlights.isEmpty() || (highlights.size() == 1 && highlights.first().isEmpty())))
             {
                 auto highlightsNode = makeElement(doc, tags::highlights);
@@ -184,7 +185,10 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
         parseTag(node, tags::addr, row, 0, "", true);             // Адрес
         parseTag(node, tags::string, row, 1);                     // Строка с сообщением
         if (rowCount() > 2)                                       // Highlights
-            parseAlarmHighlights(node, row, 2);                   //
+        {
+            parseTag(node, tags::order, row, 2);                  // Order
+            parseAlarmHighlights(node, row, 3);                   // Highlights
+        }
         break;                                                    //
     case ModelType::WorkJours:                                    //
         parseTag(node, tags::addr, row, 0, "", true);             // Адрес

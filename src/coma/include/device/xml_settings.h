@@ -121,6 +121,13 @@ struct AlarmStateAllRecord
     QString desc;   ///< узел <string>
 };
 
+/// \brief Structure to save one alarm
+struct AlarmOne
+{
+    u32 sigAdr;
+    QString desc;
+};
+
 /// \brief Структура для хранения информации об элементе BSI Ext.
 struct BsiExtItem
 {
@@ -141,8 +148,9 @@ using SignalMap = std::map<u32, Signal>;     ///< Хранит узлы <signal>
 using TabsMap = QMap<u32, SectionTabStruct>; ///< Хранит узлы <tab> секции <section-tabs>.
 using HighlightMap = QMultiMap<u32, u32>;    ///< Для подсветки элементов.
 using SectionList = std::vector<Section>;    ///< Хранит узлы <section> секции <sections>.
-using AlarmValue = QMap<u32, QString>;       ///< u32 - адрес сигнализации, QString - узел <desc> (описание).
-using WorkJourMap = QMap<u32, QString>;      ///< Хранит узлы <item> секции <work> из <journals>.
+using AlarmValue
+    = QMultiMap<u32, AlarmOne>;         ///< u32 - приоритет отображения, AlarmOne - узел <desc> (адрес и описание).
+using WorkJourMap = QMap<u32, QString>; ///< Хранит узлы <item> секции <work> из <journals>.
 using AlarmStateAllConfig = std::vector<AlarmStateAllRecord>; ///< Хранит узлы <item> секции <state-all> из <alarms>.
 using AlarmMap = QHash<AlarmType, AlarmValue>; ///< Хранит узлы <item> секций <critical>, <warning>, <info> из <alarms>.
 using MeasJourList = std::vector<MeasJournal>; ///< Хранит узлы <item> секции <meas> из <journals>.
@@ -169,7 +177,7 @@ public:
     /// \brief Добавление сигнализации состояния устройства.
     void appendAlarmStateAll(const AlarmType type, const u32 index, const QString &desc);
     /// \brief Добавление сигнализации в список сигнализаций по заданному типу сигнализации (key).
-    void appendAlarm(const AlarmType type, const u32 addr, const QString &desc);
+    void appendAlarm(const AlarmType type, const u32 addr, const QString &desc, const u32 order);
     /// \brief Добавление подсветки указанных полей для подсветки при появлении сигнализации.
     void appendHighlight(const AlarmType type, const u32 key, const QList<u32> &values);
     /// \brief Добавление записи в список описаний рабочего журналов.

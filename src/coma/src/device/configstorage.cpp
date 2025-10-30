@@ -3,9 +3,7 @@
 namespace Device
 {
 
-ConfigStorage::ConfigStorage(QObject *parent) : QObject(parent)
-{
-}
+ConfigStorage::ConfigStorage(QObject *parent) : QObject(parent) { }
 
 const XmlSettings &ConfigStorage::getDeviceSettings() const noexcept
 {
@@ -62,9 +60,9 @@ void ConfigStorage::alarmStateAllDataReceive(const XmlDataTypes::AlarmType type,
 }
 
 void ConfigStorage::alarmDataReceive(const XmlDataTypes::AlarmType type, const u32 addr, //
-    const QString &desc, const QList<u32> &highlights)
+    const QString &desc, const u32 order, const QList<u32> &highlights)
 {
-    m_settings.appendAlarm(type, addr, desc);
+    m_settings.appendAlarm(type, addr, desc, order);
     m_settings.appendHighlight(type, addr, highlights);
 }
 
