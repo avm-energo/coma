@@ -4,10 +4,10 @@
 #include <device/current_device.h>
 #include <gen/std_ext.h>
 #include <s2/delegate_common.h>
-#include <widgets/cbfunc.h>
-#include <widgets/chbfunc.h>
-#include <widgets/ipctrl.h>
-#include <widgets/spbfunc.h>
+#include <avm-widgets/cbfunc.h>
+#include <avm-widgets/chbfunc.h>
+#include <avm-widgets/ipctrl.h>
+#include <avm-widgets/spbfunc.h>
 
 #include <QLineEdit>
 #include <QStandardItemModel>
@@ -186,7 +186,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                     if constexpr (std::is_integral_v<container_type> || //
                         std::is_floating_point_v<container_type>)
                     {
-                        status = SPBFunc::SetGroupData(parent, QString::number(key), value);
+                        status = SPBFunc::setGroupData(parent, QString::number(key), value);
                     }
                 }
             },
@@ -195,21 +195,21 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
             {
                 if constexpr (std::is_integral_v<T> || std::is_floating_point_v<T>)
                 {
-                    status = SPBFunc::SetData(parent, QString::number(key), value);
+                    status = SPBFunc::setData(parent, QString::number(key), value);
                 }
             },
             [&]([[maybe_unused]] const delegate::CheckBoxGroup &arg)
             {
                 if constexpr (std::is_unsigned_v<T>)
                 {
-                    status = ChBFunc::SetUGroupData(parent, QString::number(key), value);
+                    status = ChBFunc::setUGroupData(parent, QString::number(key), value);
                 }
                 else if constexpr (std_ext::is_container<T>())
                 {
                     typedef std::remove_reference_t<typename T::value_type> internalType;
                     if constexpr (std::is_unsigned_v<internalType>)
                     {
-                        status = ChBFunc::SetAGroupData(parent, QString::number(key), value);
+                        status = ChBFunc::setAGroupData(parent, QString::number(key), value);
                     }
                 }
             },
@@ -233,13 +233,13 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                         }
                         auto index = arg.model.indexOf(strValue);
                         if (index != -1)
-                            status = CBFunc::SetIndex(parent, QString::number(key), index);
+                            status = CBFunc::setIndex(parent, QString::number(key), index);
                         break;
                     }
                     default:
                     {
                         if constexpr (std::is_integral_v<T>)
-                            status = CBFunc::SetIndex(parent, QString::number(key), value);
+                            status = CBFunc::setIndex(parent, QString::number(key), value);
                         break;
                     }
                     }
@@ -254,7 +254,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                     bool flag = false;
                     for (auto i = 0; i != count; ++i)
                     {
-                        status = CBFunc::SetIndex(parent, widgetName(key, i), bitset.test(i));
+                        status = CBFunc::setIndex(parent, widgetName(key, i), bitset.test(i));
                         // Q_ASSERT(status && "Couldn't fill QComboBox");
                         if (!status && !flag)
                         {
@@ -275,7 +275,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
                         bool flag = false;
                         for (auto i = 0; i != count; ++i)
                         {
-                            status = CBFunc::SetIndex(parent, widgetName(key, i), value.at(i));
+                            status = CBFunc::setIndex(parent, widgetName(key, i), value.at(i));
                             Q_ASSERT(status && "Couldn't fill QComboBox");
                             if (!status && !flag)
                             {

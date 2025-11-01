@@ -2,10 +2,10 @@
 
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <widgets/emessagebox.h>
-#include <widgets/graphfunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/waitwidget.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/graphfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/waitwidget.h>
 
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -40,7 +40,7 @@ Error::Msg TuneKIVR::showPreWarning()
     auto widget = new QWidget(this);
     auto layout = new QVBoxLayout;
 
-    layout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tunekiv1.png"), 0);
+    layout->addWidget(GraphFunc::newIcon(this, ":/tunes/tunekiv1.png"), 0);
     layout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     layout->addWidget(LBLFunc::New(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока "

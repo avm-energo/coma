@@ -1,5 +1,11 @@
 #include "tune/abstracttunedialog.h"
 
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/hexpbfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/pbfunc.h>
+#include <avm-widgets/waitwidget.h>
+#include <avm-widgets/wdfunc.h>
 #include <gen/datatypes.h>
 #include <gen/error.h>
 #include <gen/files.h>
@@ -8,12 +14,6 @@
 #include <gen/timefunc.h>
 #include <tune/generaltunedialog.h>
 #include <tune/tunesequencefile.h>
-#include <widgets/emessagebox.h>
-#include <widgets/hexpbfunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/pbfunc.h>
-#include <widgets/waitwidget.h>
-#include <widgets/wdfunc.h>
 
 #include <LimeReport>
 #include <QDebug>
@@ -105,10 +105,10 @@ QWidget *AbstractTuneDialog::tuneUI()
     lyout->addWidget(LBLFunc::New(w2, "Настройка завершена!", "tunemsg" + QString::number(i)));
     for (i = 0; i < m_tuneFunctions.size(); ++i)
     {
-        WDFunc::SetVisible(w2, "tunemsg" + QString::number(i), false);
-        WDFunc::SetVisible(w2, "tunemsgres" + QString::number(i), false);
+        WDFunc::setVisible(w2, "tunemsg" + QString::number(i), false);
+        WDFunc::setVisible(w2, "tunemsgres" + QString::number(i), false);
     }
-    WDFunc::SetVisible(w2, "tunemsg" + QString::number(i), false);
+    WDFunc::setVisible(w2, "tunemsg" + QString::number(i), false);
     hlyout = new QHBoxLayout;
     hlyout->addStretch(300);
     hlyout->addWidget(HexPBFunc::New(
@@ -122,7 +122,7 @@ QWidget *AbstractTuneDialog::tuneUI()
     hlyout->addStretch(300);
     lyout->addLayout(hlyout);
     //    lyout->addStretch(1);
-    WDFunc::SetEnabled(this, "finishpb", true);
+    WDFunc::setEnabled(this, "finishpb", true);
     w->setLayout(lyout);
     return w;
 }
@@ -167,16 +167,18 @@ void AbstractTuneDialog::setTuneStep(u8 tuneStep)
 void AbstractTuneDialog::waitNSeconds(int Seconds, bool isAllowedToStop)
 {
     WaitWidget *w = new WaitWidget;
+    w->setObjectName("ww");
     WaitWidget::ww_struct ww;
     ww.isincrement = false;
     ww.isallowedtostop = isAllowedToStop;
     ww.format = WaitWidget::WW_TIME;
     ww.initialseconds = Seconds;
-    w->Init(ww);
+    w->init(ww);
     QEventLoop el;
-    connect(w, &WaitWidget::CountZero, &el, &QEventLoop::quit);
-    w->Start();
+    connect(w, &WaitWidget::countZero, &el, &QEventLoop::quit);
+    w->start();
     el.exec();
+    w->stop();
 }
 
 void AbstractTuneDialog::startWait()
@@ -184,16 +186,16 @@ void AbstractTuneDialog::startWait()
     WaitWidget *ww = new WaitWidget;
     ww->setObjectName("ww");
     WaitWidget::ww_struct wws = { true, true, WaitWidget::WW_SIMPLE, 0 }; // isallowedtostop = true
-    ww->Init(wws);
-    ww->SetMessage("Пожалуйста, подождите");
-    ww->Start();
+    ww->init(wws);
+    ww->setMessage("Пожалуйста, подождите");
+    ww->start();
 }
 
 void AbstractTuneDialog::stopWait()
 {
     WaitWidget *ww = this->findChild<WaitWidget *>("ww");
     if (ww != nullptr)
-        ww->Stop();
+        ww->stop();
 }
 
 Error::Msg AbstractTuneDialog::CheckPassword()
@@ -221,11 +223,11 @@ void AbstractTuneDialog::MsgSetVisible(AbstractTuneDialog::MsgTypes type, int ms
         pm = QPixmap(":/tunes/hr.png");
         break;
     case NoMsg:
-        WDFunc::SetVisible(this, "tunemsg" + QString::number(msg), visible);
+        WDFunc::setVisible(this, "tunemsg" + QString::number(msg), visible);
         return;
     }
-    WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), visible);
-    LBLFunc::SetImage(this, "tunemsgres" + QString::number(msg), &pm);
+    WDFunc::setVisible(this, "tunemsgres" + QString::number(msg), visible);
+    LBLFunc::setImage(this, "tunemsgres" + QString::number(msg), &pm);
 }
 
 void AbstractTuneDialog::MsgClear()
@@ -249,9 +251,9 @@ void AbstractTuneDialog::startTune()
     }
     if (checkCalibrStep() != Error::Msg::NoError)
         return;
-    WDFunc::SetEnabled(this, "starttune", false);
-    WDFunc::SetEnabled(this, "finishpb", false);
-    WDFunc::SetEnabled(this, "stoptune", true);
+    WDFunc::setEnabled(this, "starttune", false);
+    WDFunc::setEnabled(this, "finishpb", false);
+    WDFunc::setEnabled(this, "stoptune", true);
     // сохраняем на всякий случай настроечные коэффициенты
     readTuneCoefs();
     if (saveAllTuneCoefs() != Error::Msg::NoError)
@@ -280,9 +282,9 @@ void AbstractTuneDialog::startTune()
                 res = Error::Cancelled;
             MsgSetVisible(ErMsg, bStep);
 #ifndef DEBUGISON
-            WDFunc::SetEnabled(this, "starttune", true);
-            WDFunc::SetEnabled(this, "stoptune", false);
-            WDFunc::SetEnabled(this, "finishpb", true);
+            WDFunc::setEnabled(this, "starttune", true);
+            WDFunc::setEnabled(this, "stoptune", false);
+            WDFunc::setEnabled(this, "finishpb", true);
             qWarning() << m_tuneFunctions.at(bStep).message;
             loadAllTuneCoefs();
             setWorkMode();
@@ -294,9 +296,9 @@ void AbstractTuneDialog::startTune()
     }
     setWorkMode();
     MsgSetVisible(NoMsg, bStep); // выдаём надпись "Настройка завершена!"
-    WDFunc::SetEnabled(this, "starttune", true);
-    WDFunc::SetEnabled(this, "stoptune", false);
-    WDFunc::SetEnabled(this, "finishpb", true);
+    WDFunc::setEnabled(this, "starttune", true);
+    WDFunc::setEnabled(this, "stoptune", false);
+    WDFunc::setEnabled(this, "finishpb", true);
     EMessageBox::information(this, "Настройка завершена!");
     TuneSequenceFile::saveTuneSequenceFile(m_tuneStep + 1); // +1 to let the next stage run
 }
@@ -441,7 +443,7 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs(bool isUserChoosingRequired)
         QDialog *dlg = new QDialog(this);
         QVBoxLayout *lyout = new QVBoxLayout;
         QHBoxLayout *hlyout = new QHBoxLayout;
-        lyout->addWidget(LBLFunc::NewLBL(this, "Вопрос", "Записать регулировочные коэффициенты?"));
+        lyout->addWidget(LBLFunc::newLBL(this, "Вопрос", "Записать регулировочные коэффициенты?"));
         QTabWidget *tw = new QTabWidget;
         for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
         {

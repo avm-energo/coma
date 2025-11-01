@@ -1,5 +1,6 @@
 #include "xml/xmleditor/models/xmlhidedatamodel.h"
 
+#include <gen/integers.h>
 #include <gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
@@ -10,11 +11,13 @@ constexpr int S2RecordDataRole = 0x0107; /// < Role for hiding data S2RecordHide
 struct SGroupHideData
 {
     int count = 1;
-    QString tooltip = "", view = "float";
+    QString tooltip = "";
+    QString view = "float";
+    u32 decimals = 0;
     QStringList array = {};
     int type = 0;
 };
-Q_DECLARE_METATYPE(SGroupHideData);
+Q_DECLARE_METATYPE(SGroupHideData)
 
 /// \brief Structure, that stores a hiding data for 'record' node from 's2files.xml'.
 /// \details Contains data of 'widget' node.
@@ -25,7 +28,7 @@ struct S2RecordHideData
     QString classname = "", type = "", string = "", tooltip = "", field = "";
     QStringList array = {};
 };
-Q_DECLARE_METATYPE(S2RecordHideData);
+Q_DECLARE_METATYPE(S2RecordHideData)
 
 XmlHideDataModel::XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent)
     : XmlModel(rows, cols, type, parent)
@@ -67,11 +70,11 @@ void XmlHideDataModel::create(const QStringList &saved, int *row)
     switch (m_type)
     {
     case ModelType::SGroup:
-        Q_ASSERT(saved.count() == 7);
+        Q_ASSERT(saved.count() == 8);
         BaseEditorModel::create(saved.mid(0, 2), row);
         if (*row >= 0 && *row < rowCount())
         {
-            auto value = convertToSGroupData(saved.mid(2, 5));
+            auto value = convertToSGroupData(saved.mid(2, 6));
             setData(index(*row, 0), QVariant::fromValue(value), SGroupDataRole);
         }
         emit modelChanged();
@@ -96,11 +99,11 @@ void XmlHideDataModel::update(const QStringList &saved, const int row)
     switch (m_type)
     {
     case ModelType::SGroup:
-        Q_ASSERT(saved.count() == 7);
+        Q_ASSERT(saved.count() == 8);
         BaseEditorModel::update(saved.mid(0, 2), row);
         if (row >= 0 && row < rowCount())
         {
-            auto newHide = convertToSGroupData(saved.mid(2, 5));
+            auto newHide = convertToSGroupData(saved.mid(2, 6));
             setData(index(row, 0), QVariant::fromValue(newHide), SGroupDataRole);
         }
         emit modelChanged();

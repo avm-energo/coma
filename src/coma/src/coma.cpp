@@ -50,14 +50,14 @@
 #include <s2/s2configstorage.h>
 #include <s2/s2datafactory.h>
 #include <s2/s2util.h>
-#include <widgets/emessagebox.h>
-#include <widgets/epopup.h>
-#include <widgets/filefunc.h>
-#include <widgets/graphfunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/styleloader.h>
-#include <widgets/waitwidget.h>
-#include <widgets/wdfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/epopup.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/graphfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/styleloader.h>
+#include <avm-widgets/waitwidget.h>
+#include <avm-widgets/wdfunc.h>
 #include <xml/xmlconfigloader.h>
 #include <xml/xmleditor/xmleditor.h>
 
@@ -251,7 +251,7 @@ void Coma::loadOsc()
 
 void Coma::loadSwj()
 {
-    auto filepath = FileFunc::ChooseFileForOpen(this, "Switch journal files (*.swj)");
+    auto filepath = FileFunc::chooseFileForOpen(this, "Switch journal files (*.swj)");
     if (!filepath.isEmpty())
         loadSwj(filepath);
 }
@@ -296,7 +296,7 @@ void Coma::openSlice() { }
 
 void Coma::openJournalViewer()
 {
-    auto filepath = FileFunc::ChooseFileForOpen(this, "Journal files (*.jn*)");
+    auto filepath = FileFunc::chooseFileForOpen(this, "Journal files (*.jn*)");
     if (!filepath.isEmpty())
         loadJournal(filepath);
 }
@@ -346,7 +346,7 @@ void Coma::setProgressBarSize(int prbnum, int size)
         qDebug("Пустой prb");
         return;
     }
-    LBLFunc::SetText(this, lblname, QString::number(size), false);
+    LBLFunc::setText(this, lblname, QString::number(size), false);
     prb->setMinimum(0);
     prb->setMaximum(size);
 }
@@ -359,12 +359,12 @@ void Coma::setProgressBarCount(int prbnum, int count)
     if (prb != nullptr)
     {
         prb->setValue(count);
-        LBLFunc::SetText(this, lblname, QString::number(count) + " из " + QString::number(prb->maximum()));
+        LBLFunc::setText(this, lblname, QString::number(count) + " из " + QString::number(prb->maximum()));
         // Сброс прогресс-бара после окончания операции чтения/записи
         if (prb->value() >= prb->maximum())
         {
             prb->setValue(0);
-            LBLFunc::SetText(this, lblname, " ");
+            LBLFunc::setText(this, lblname, " ");
         }
     }
 }

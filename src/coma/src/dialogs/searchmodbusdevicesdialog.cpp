@@ -1,11 +1,11 @@
 #include "dialogs/searchmodbusdevicesdialog.h"
 
-#include <widgets/cbfunc.h>
-#include <widgets/chbfunc.h>
-#include <widgets/emessagebox.h>
-#include <widgets/lblfunc.h>
-#include <widgets/pbfunc.h>
-#include <widgets/spbfunc.h>
+#include <avm-widgets/cbfunc.h>
+#include <avm-widgets/chbfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/pbfunc.h>
+#include <avm-widgets/spbfunc.h>
 
 #include <QGridLayout>
 #include <QGroupBox>

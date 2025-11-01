@@ -2,8 +2,8 @@
 
 #include <gen/stdfunc.h>
 #include <gen/utils/crc16.h>
-#include <widgets/emessagebox.h>
-#include <widgets/tvfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/tvfunc.h>
 
 #include <QCoreApplication>
 #include <QHBoxLayout>

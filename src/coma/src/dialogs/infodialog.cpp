@@ -4,8 +4,8 @@
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <widgets/etabwidget.h>
-#include <widgets/lblfunc.h>
+#include <avm-widgets/etabwidget.h>
+#include <avm-widgets/lblfunc.h>
 
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -56,20 +56,20 @@ void InfoDialog::setupUI()
 void InfoDialog::fillBsi()
 {
     const auto &bsi = m_device->bsi();
-    LBLFunc::SetText(this, m_device->getDeviceName(), m_device->getDeviceName());
-    LBLFunc::SetText(this, "snle", QString::number(bsi.SerialNum, 16));
-    LBLFunc::SetText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
-    LBLFunc::SetText(this, "cfcrcle", "0x" + QString::number(static_cast<uint>(bsi.Cfcrc), 16));
-    LBLFunc::SetText(this, "rstle", "0x" + QString::number(bsi.Rst, 16));
-    LBLFunc::SetText(this, "rstcountle", QString::number(bsi.RstCount));
-    LBLFunc::SetText(this, "cpuidle",
+    LBLFunc::setText(this, m_device->getDeviceName(), m_device->getDeviceName());
+    LBLFunc::setText(this, "snle", QString::number(bsi.SerialNum, 16));
+    LBLFunc::setText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
+    LBLFunc::setText(this, "cfcrcle", "0x" + QString::number(static_cast<uint>(bsi.Cfcrc), 16));
+    LBLFunc::setText(this, "rstle", "0x" + QString::number(bsi.Rst, 16));
+    LBLFunc::setText(this, "rstcountle", QString::number(bsi.RstCount));
+    LBLFunc::setText(this, "cpuidle",
         QString::number(bsi.UIDHigh, 16) + QString::number(bsi.UIDMid, 16) + QString::number(bsi.UIDLow, 16));
-    LBLFunc::SetText(this, "typeble", QString::number(bsi.MTypeB, 16));
-    LBLFunc::SetText(this, "snble", QString::number(bsi.SerialNumB, 16));
-    LBLFunc::SetText(this, "hwble", StdFunc::VerToStr(bsi.HwverB));
-    LBLFunc::SetText(this, "typemle", QString::number(bsi.MTypeM, 16));
-    LBLFunc::SetText(this, "snmle", QString::number(bsi.SerialNumM, 16));
-    LBLFunc::SetText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
+    LBLFunc::setText(this, "typeble", QString::number(bsi.MTypeB, 16));
+    LBLFunc::setText(this, "snble", QString::number(bsi.SerialNumB, 16));
+    LBLFunc::setText(this, "hwble", StdFunc::VerToStr(bsi.HwverB));
+    LBLFunc::setText(this, "typemle", QString::number(bsi.MTypeM, 16));
+    LBLFunc::setText(this, "snmle", QString::number(bsi.SerialNumM, 16));
+    LBLFunc::setText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
 }
 
 void InfoDialog::fillBsiExt()
@@ -77,11 +77,11 @@ void InfoDialog::fillBsiExt()
     /// TODO: Необходимо вынести все значения из BSI Ext в отдельную вкладку,
     /// в качестве имени использовать адрес значения, выводить всю BSI Ext информацию
     const auto &bsiExt = *m_device->bsiExt();
-    LBLFunc::SetText(this, "verloader", StdFunc::VerToStr(bsiExt[41]));
+    LBLFunc::setText(this, "verloader", StdFunc::VerToStr(bsiExt[41]));
     auto namepo = bsiExt[40];
     const char *str = reinterpret_cast<const char *>(&namepo);
     std::string string(str, sizeof(namepo));
-    LBLFunc::SetText(this, "namepo", QString::fromStdString(string));
+    LBLFunc::setText(this, "namepo", QString::fromStdString(string));
 }
 
 void InfoDialog::uponInterfaceSetting()

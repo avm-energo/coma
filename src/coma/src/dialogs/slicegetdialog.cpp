@@ -1,11 +1,11 @@
 #include <dialogs/slicegetdialog.h>
 #include <engines/engines.h>
 #include <gen/threadpool.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
-#include <widgets/pbfunc.h>
-#include <widgets/prbfunc.h>
-#include <widgets/wdfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/pbfunc.h>
+#include <avm-widgets/prbfunc.h>
+#include <avm-widgets/wdfunc.h>
 
 #include <QLayout>
 
@@ -33,34 +33,34 @@ void SliceGetDialog::SetupUI()
         [this]()
         {
             emit cancel();
-            WDFunc::SetEnabled(this, "startpb", true);
-            WDFunc::SetEnabled(this, "cancelpb", false);
+            WDFunc::setEnabled(this, "startpb", true);
+            WDFunc::setEnabled(this, "cancelpb", false);
         }));
     lyout->addLayout(hlyout);
     lyout->addWidget(
-        PrbFunc::NewLBL(this, "Получение блока Bsi", c_ProgressMap.value(Engines::Slices::Stages::BsiLoad)));
+        PrbFunc::newLBL(this, "Получение блока Bsi", c_ProgressMap.value(Engines::Slices::Stages::BsiLoad)));
     lyout->addWidget(
-        PrbFunc::NewLBL(this, "Получение блока BsiExt", c_ProgressMap.value(Engines::Slices::Stages::BsiLoadExt)));
+        PrbFunc::newLBL(this, "Получение блока BsiExt", c_ProgressMap.value(Engines::Slices::Stages::BsiLoadExt)));
     lyout->addWidget(
-        PrbFunc::NewLBL(this, "Получение конфигурации", c_ProgressMap.value(Engines::Slices::Stages::ConfigLoad)));
-    lyout->addWidget(PrbFunc::NewLBL(
+        PrbFunc::newLBL(this, "Получение конфигурации", c_ProgressMap.value(Engines::Slices::Stages::ConfigLoad)));
+    lyout->addWidget(PrbFunc::newLBL(
         this, "Скачивание системного журнала", c_ProgressMap.value(Engines::Slices::Stages::SysJourLoad), "%v из %m"));
-    lyout->addWidget(PrbFunc::NewLBL(
+    lyout->addWidget(PrbFunc::newLBL(
         this, "Скачивание журнала событий", c_ProgressMap.value(Engines::Slices::Stages::WorkJourLoad), "%v из %m"));
-    lyout->addWidget(PrbFunc::NewLBL(
+    lyout->addWidget(PrbFunc::newLBL(
         this, "Скачивание журнала измерений", c_ProgressMap.value(Engines::Slices::Stages::MeasJourLoad), "%v из %m"));
-    lyout->addWidget(PrbFunc::NewLBL(
+    lyout->addWidget(PrbFunc::newLBL(
         this, "Получение блока начальных значений", c_ProgressMap.value(Engines::Slices::Stages::StartupLoad)));
-    lyout->addWidget(PrbFunc::NewLBL(
+    lyout->addWidget(PrbFunc::newLBL(
         this, "Получение блока настроечных параметров", c_ProgressMap.value(Engines::Slices::Stages::TuneLoad)));
-    lyout->addWidget(PrbFunc::NewLBL(
+    lyout->addWidget(PrbFunc::newLBL(
         this, "Скачивание осциллограмм", c_ProgressMap.value(Engines::Slices::Stages::GetOsc), "%v из %m"));
-    lyout->addWidget(PrbFunc::NewLBL(
+    lyout->addWidget(PrbFunc::newLBL(
         this, "Получение текущих измерений", c_ProgressMap.value(Engines::Slices::Stages::GetCurrentState)));
     lyout->addWidget(
-        PrbFunc::NewLBL(this, "Сохранение результатов", c_ProgressMap.value(Engines::Slices::Stages::Save)));
+        PrbFunc::newLBL(this, "Сохранение результатов", c_ProgressMap.value(Engines::Slices::Stages::Save)));
     setLayout(lyout);
-    WDFunc::SetEnabled(this, "cancelpb", false);
+    WDFunc::setEnabled(this, "cancelpb", false);
 }
 
 void SliceGetDialog::setRange(Engines::Slices::Stages stage, qint64 max)
@@ -75,12 +75,12 @@ void SliceGetDialog::setPrbValue(Engines::Slices::Stages stage, qint64 value)
 
 void SliceGetDialog::startProcess()
 {
-    auto filename = FileFunc::ChooseFileForSave(this, "Zip files (*.zip)", "zip",
+    auto filename = FileFunc::chooseFileForSave(this, "Zip files (*.zip)", "zip",
         QString("slice_%1").arg(QDateTime::currentDateTime().toString("yyMMdd_hhmmss")));
     if (filename.isEmpty())
         return;
-    WDFunc::SetEnabled(this, "startpb", false);
-    WDFunc::SetEnabled(this, "cancelpb", true);
+    WDFunc::setEnabled(this, "startpb", false);
+    WDFunc::setEnabled(this, "cancelpb", true);
     auto engine = new Engines::Slices(m_device, filename);
     connect(engine, &Engines::Slices::setProgressRange, this, &SliceGetDialog::setRange);
     connect(engine, &Engines::Slices::setProgressValue, this, &SliceGetDialog::setPrbValue);
@@ -97,8 +97,8 @@ void SliceGetDialog::finished(int id)
 {
     if (id == m_proc_id)
     {
-        WDFunc::SetEnabled(this, "startpb", true);
-        WDFunc::SetEnabled(this, "cancelpb", false);
+        WDFunc::setEnabled(this, "startpb", true);
+        WDFunc::setEnabled(this, "cancelpb", false);
         if (!isCancelled)
             EMessageBox::information(this, "Снимок создан");
         else

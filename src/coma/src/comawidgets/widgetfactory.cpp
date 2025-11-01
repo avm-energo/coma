@@ -3,9 +3,9 @@
 #include <interfaces/types/modbus_types.h>
 #include <models/comboboxdelegate.h>
 #include <s2/modbusitem.h>
-#include <widgets/checkboxgroup.h>
-#include <widgets/flowlayout.h>
-#include <widgets/ipctrl.h>
+#include <avm-widgets/checkboxgroup.h>
+#include <avm-widgets/flowlayout.h>
+#include <avm-widgets/ipctrl.h>
 
 #include <QHeaderView>
 #include <QStandardItem>
@@ -151,11 +151,11 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 {
                     assert(static_cast<uint32_t>(arg.items.count()) == arg.count);
                     spbGroup
-                        = SPBFunc::NewGroup(parent, QString::number(key), arg.items, arg.min, arg.max, arg.decimals);
+                        = SPBFunc::newGroup(parent, QString::number(key), arg.items, arg.min, arg.max, arg.decimals);
                 }
                 else
                     spbGroup
-                        = SPBFunc::NewGroup(parent, QString::number(key), arg.count, arg.min, arg.max, arg.decimals);
+                        = SPBFunc::newGroup(parent, QString::number(key), arg.count, arg.min, arg.max, arg.decimals);
 
                 addVerticalLine(lyout, parent);
                 lyout->addWidget(spbGroup, 100);
@@ -598,7 +598,7 @@ bool WidgetFactory::fillBackSPBG(quint32 id, const QWidget *parent) const
                     !std_ext::is_container<container_type>()) //&&
                 {
                     internalType buffer {};
-                    status = SPBFunc::GroupData(parent, QString::number(id), buffer);
+                    status = SPBFunc::groupData(parent, QString::number(id), buffer);
                     if (status)
                         record.setData(buffer);
                 }
@@ -619,7 +619,7 @@ bool WidgetFactory::fillBackSPB(quint32 id, const QWidget *parent) const
             if constexpr (!std_ext::is_container<internalType>()
                 && !std::is_same_v<internalType, S2::CONFMAST> && !std::is_same_v<internalType, S2::GasDensity_3t>)
             {
-                auto buffer = SPBFunc::Data<internalType>(parent, QString::number(id));
+                auto buffer = SPBFunc::data<internalType>(parent, QString::number(id));
                 record.setData(buffer);
                 status = true;
             }
@@ -677,7 +677,7 @@ bool WidgetFactory::fillBackComboBox(quint32 id, const QWidget *parent, delegate
                 {
                 case delegate::ComboBox::data:
                 {
-                    auto buffer = CBFunc::Data<internalType>(parent, QString::number(id));
+                    auto buffer = CBFunc::data<internalType>(parent, QString::number(id));
                     record.setData(buffer);
                     break;
                 }
@@ -689,7 +689,7 @@ bool WidgetFactory::fillBackComboBox(quint32 id, const QWidget *parent, delegate
                 {
                     if constexpr (std::is_integral_v<internalType>)
                     {
-                        int status_code = CBFunc::Index(parent, QString::number(id));
+                        int status_code = CBFunc::index(parent, QString::number(id));
                         if (status_code == -1)
                             return;
                         record.setData(static_cast<internalType>(status_code));
@@ -719,7 +719,7 @@ bool WidgetFactory::fillBackComboBoxGroup(quint32 id, const QWidget *parent, int
                 status = true;
                 for (int i = 0; i != count; ++i)
                 {
-                    int status_code = CBFunc::Index(parent, widgetName(id, i));
+                    int status_code = CBFunc::index(parent, widgetName(id, i));
                     if (status_code == -1)
                     {
                         status = false;
@@ -740,7 +740,7 @@ bool WidgetFactory::fillBackComboBoxGroup(quint32 id, const QWidget *parent, int
                     status = true;
                     for (int i = 0; i != count; ++i)
                     {
-                        int status_code = CBFunc::Index(parent, widgetName(id, i));
+                        int status_code = CBFunc::index(parent, widgetName(id, i));
                         if (status_code == -1)
                         {
                             status = false;

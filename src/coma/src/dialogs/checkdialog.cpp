@@ -1,13 +1,13 @@
 #include "dialogs/checkdialog.h"
 
+#include <avm-widgets/chbfunc.h>
+#include <avm-widgets/graphfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/pbfunc.h>
 #include <device/current_device.h>
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/stdfunc.h>
-#include <widgets/chbfunc.h>
-#include <widgets/graphfunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/pbfunc.h>
 
 #include <QGroupBox>
 #include <QTabWidget>
@@ -151,10 +151,13 @@ void CheckDialog::setupUI()
             }
             for (auto &&group : groups)
             {
-                auto groupBox = new QGroupBox(widget);
-                groupBox->setTitle(group.name);
-                groupBox->setLayout(setupGroup(group, widget));
-                layout->addWidget(groupBox);
+                if (group.notDenied)
+                {
+                    auto groupBox = new QGroupBox(widget);
+                    groupBox->setTitle(group.name);
+                    groupBox->setLayout(setupGroup(group, widget));
+                    layout->addWidget(groupBox);
+                }
             }
             layout->addStretch(100);
             widget->setLayout(layout);
@@ -190,25 +193,28 @@ void CheckDialog::addSignals(const QList<SGroup> &groups, UWidget *widget)
     // Для каждой группы...
     for (auto &&group : groups)
     {
-        // ... для каждого виджета...
-        for (auto &&widget : group.widgets)
+        if (group.notDenied)
         {
-            // ... среди сигналов ищем такой, чтобы...
-            auto search = std::find_if(sigMap.cbegin(), sigMap.cend(),
-                // ... виджет попадал в допустимый диапазон сигнала...
-                [&](const Device::SigMapValue &element) -> bool
-                {
-                    auto &signal = element.second;
-                    auto start = widget.startAddr;
-                    auto end = (widget.view == ViewType::Bitset) ? (start + 1) : (start + widget.count);
-                    auto acceptStart = signal.startAddr;
-                    auto acceptEnd = acceptStart + signal.count;
-                    return ((start >= acceptStart && start < acceptEnd) && (end > acceptStart && end <= acceptEnd));
-                });
-            // ... и когда находим...
-            if (search != sigMap.cend())
-                // ... то добавляем в множество неповторяющихся ключей.
-                sigIds.insert(search->first);
+            // ... для каждого виджета...
+            for (auto &&widget : group.widgets)
+            {
+                // ... среди сигналов ищем такой, чтобы...
+                auto search = std::find_if(sigMap.cbegin(), sigMap.cend(),
+                    // ... виджет попадал в допустимый диапазон сигнала...
+                    [&](const Device::SigMapValue &element) -> bool
+                    {
+                        auto &signal = element.second;
+                        auto start = widget.startAddr;
+                        auto end = (widget.view == ViewType::Bitset) ? (start + 1) : (start + widget.count);
+                        auto acceptStart = signal.startAddr;
+                        auto acceptEnd = acceptStart + signal.count;
+                        return ((start >= acceptStart && start < acceptEnd) && (end > acceptStart && end <= acceptEnd));
+                    });
+                // ... и когда находим...
+                if (search != sigMap.cend())
+                    // ... то добавляем в множество неповторяющихся ключей.
+                    sigIds.insert(search->first);
+            }
         }
     }
 
@@ -293,13 +299,14 @@ QGridLayout *CheckDialog::setupFloatWidget(const MWidget &mwidget, const int wCo
             layout = new QVBoxLayout;
         else
             layout = new QHBoxLayout;
-        auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i), this);
+        auto textLabel = new ELabel(getFormatted(mwidget, mwidget.desc, i), this);
         layout->addWidget(textLabel);
-        auto valueLabel = new QLabel(this);
+        auto valueLabel = new ELabel(this);
         if (!mwidget.tooltip.isEmpty())
             valueLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, i));
 
         valueLabel->setObjectName(QString::number(mwidget.startAddr + i));
+        valueLabel->setData(mwidget.decimals);
         valueLabel->setStyleSheet(c_defaultStyle);
         layout->addWidget(valueLabel);
         gridLayout->addLayout(layout, i / itemsOneLine, i % itemsOneLine);
@@ -341,8 +348,8 @@ void CheckDialog::updatePixmap(const MWidget &mwidget, const DataTypes::BitStrin
         for (auto i = 0; i < mwidget.count; ++i)
         {
             auto isSet = bitSet.test(i);
-            auto pixmap = GraphFunc::NewCircle((isSet) ? c_activeColor[mwidget.type] : c_normalColor, c_circleRadius);
-            LBLFunc::SetImage(uwidget, stringAddr + "_" + QString::number(i), &pixmap);
+            auto pixmap = GraphFunc::newCircle((isSet) ? c_activeColor[mwidget.type] : c_normalColor, c_circleRadius);
+            LBLFunc::setImage(uwidget, stringAddr + "_" + QString::number(i), &pixmap);
         }
     }
 }
@@ -354,14 +361,14 @@ void CheckDialog::updatePixmap(
         && sp.sigQuality == DataTypes::Quality::Good)
     {
         auto pixmap
-            = GraphFunc::NewCircle((sp.sigVal != 0) ? c_activeColor[mwidget.type] : c_normalColor, c_circleRadius);
-        LBLFunc::SetImage(uwidget, QString::number(sp.sigAdr), &pixmap);
+            = GraphFunc::newCircle((sp.sigVal != 0) ? c_activeColor[mwidget.type] : c_normalColor, c_circleRadius);
+        LBLFunc::setImage(uwidget, QString::number(sp.sigAdr), &pixmap);
     }
 }
 
 QLabel *CheckDialog::createPixmapIndicator(const MWidget &mwidget, const quint32 index)
 {
-    auto pixmap = GraphFunc::NewCircle(c_normalColor, c_circleRadius);
+    auto pixmap = GraphFunc::newCircle(c_normalColor, c_circleRadius);
     auto indicatorLabel = new QLabel(this);
     indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(index));
     indicatorLabel->setPixmap(pixmap);
@@ -372,7 +379,7 @@ QLabel *CheckDialog::createPixmapIndicator(const MWidget &mwidget, const quint32
 
 QLabel *CheckDialog::createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const QString name)
 {
-    auto pixmap = GraphFunc::NewCircle(c_normalColor, c_circleRadius);
+    auto pixmap = GraphFunc::newCircle(c_normalColor, c_circleRadius);
     auto indicatorLabel = new QLabel(this);
     indicatorLabel->setObjectName(name);
     indicatorLabel->setPixmap(pixmap);
@@ -442,7 +449,7 @@ QGridLayout *CheckDialog::setupCommandWidget(const Device::XmlDataTypes::MWidget
                 DataTypes::SingleCommand cmd;
                 cmd.addr = realAddr;
                 if (!type)
-                    cbdata = ChBFunc::Data(this, QString::number(realAddr));
+                    cbdata = ChBFunc::data(this, QString::number(realAddr));
                 cmd.value = cbdata;
                 writeCommand(cmd);
             }));

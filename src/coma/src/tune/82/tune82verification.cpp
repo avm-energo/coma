@@ -4,7 +4,7 @@
 #include <interfaces/conn/sync_connection.h>
 #include <tune/82/verification_offset.h>
 #include <tune/mip.h>
-#include <widgets/epopup.h>
+#include <avm-widgets/epopup.h>
 
 #include <QLabel>
 #include <QPushButton>

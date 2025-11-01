@@ -5,12 +5,12 @@
 #include <oscillograms/dialogs/osckivdialog.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/osc_ids.h>
-#include <widgets/cbfunc.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/pbfunc.h>
-#include <widgets/spbfunc.h>
+#include <avm-widgets/cbfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/pbfunc.h>
+#include <avm-widgets/spbfunc.h>
 
 #include <limits>
 
@@ -184,7 +184,7 @@ void OscKivDialog::receiveOscFile(const S2::FileStruct &file)
         QByteArray ba;
         S2Util::StoreDataMem(ba, m_fileBuffer, m_oscFilenum);
         auto filename = getFilename();
-        auto filepath = FileFunc::ChooseFileForSave(this, "Oscillograms (*.osc)", "osc", filename);
+        auto filepath = FileFunc::chooseFileForSave(this, "Oscillograms (*.osc)", "osc", filename);
         if (!filepath.isEmpty())
         {
             if (Files::SaveToFile(filepath, ba) == Error::Msg::NoError)
@@ -201,8 +201,8 @@ void OscKivDialog::writeTypeOsc()
 {
     enableButtons(false);
     TypeOsc command { 0, 0, 0 };
-    command.n_point = SPBFunc::Data<u8>(this, "n_point");
-    command.phase = CBFunc::Index(this, "phase");
+    command.n_point = SPBFunc::data<u8>(this, "n_point");
+    command.phase = CBFunc::index(this, "phase");
     DataTypes::BlockStruct block { oscBlockReqNum, StdFunc::toByteArray(std::move(command)) };
     m_device->async()->writeCommand(Commands::C_WriteTypeOsc, QVariant::fromValue(block));
     m_state = State::WritingTypeOsc;

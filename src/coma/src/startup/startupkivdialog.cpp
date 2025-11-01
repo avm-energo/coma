@@ -2,10 +2,10 @@
 
 #include <gen/error.h>
 #include <gen/files.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/spbfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/spbfunc.h>
 
 #include <QGridLayout>
 #include <QGroupBox>
@@ -207,7 +207,7 @@ void StartupKIVDialog::SetupUI()
 
 void StartupKIVDialog::SaveToFile()
 {
-    auto filepath = FileFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor", getFilenameForDevice());
+    auto filepath = FileFunc::chooseFileForSave(this, "Tune files (*.cor)", "cor", getFilenameForDevice());
     if (filepath.isEmpty())
         return;
 
@@ -235,7 +235,7 @@ void StartupKIVDialog::SaveToFile()
 
 void StartupKIVDialog::ReadFromFile()
 {
-    auto filepath = FileFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
+    auto filepath = FileFunc::chooseFileForOpen(this, "Tune files (*.cor)");
     if (filepath.isEmpty())
         return;
 

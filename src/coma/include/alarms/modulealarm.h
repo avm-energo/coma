@@ -1,10 +1,11 @@
 #pragma once
 
-#include <QLabel>
+#include <alarms/basealarm.h>
+#include <avm-widgets/elabel.h>
+#include <gen/datatypes.h>
+
 #include <QList>
 #include <QPair>
-#include <alarms/basealarm.h>
-#include <gen/datatypes.h>
 
 /// \brief The class for alarm dialog, that displaying critical,
 /// warning and info alarms from XML configuration files.
@@ -13,7 +14,7 @@ class ModuleAlarm final : public BaseAlarm
     Q_OBJECT
 private:
     const AlarmValue m_alarms;
-    QList<QPair<QLabel *, bool>> m_labelStateStorage;
+    QList<QPair<ELabel *, bool>> m_labelStateStorage;
 
     /// \brief Setup UI: creating text labels and indicators (pixmaps) for alarms displaying.
     void setupUI(const QList<Device::XmlDataTypes::AlarmOne> &events);

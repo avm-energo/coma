@@ -5,13 +5,13 @@
 #include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <interfaces/types/serial_settings.h>
-#include <widgets/cbfunc.h>
-#include <widgets/emessagebox.h>
-#include <widgets/lblfunc.h>
-#include <widgets/lefunc.h>
-#include <widgets/pbfunc.h>
-#include <widgets/spbfunc.h>
-#include <widgets/tvfunc.h>
+#include <avm-widgets/cbfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/lefunc.h>
+#include <avm-widgets/pbfunc.h>
+#include <avm-widgets/spbfunc.h>
+#include <avm-widgets/tvfunc.h>
 
 #include <QSerialPortInfo>
 #include <QStandardItemModel>
@@ -264,7 +264,7 @@ void InterfaceSerialDialog::acceptedInterface()
     auto dialog = this->findChild<QDialog *>("rsCreateDialog");
     if (dialog == nullptr)
         return;
-    QString name = LEFunc::Data(dialog, "namele");
+    QString name = LEFunc::data(dialog, "namele");
     // check if there's such name in registry
     Settings::pushGroup("RS485");
     if (Settings::groupExist(name))
@@ -275,11 +275,11 @@ void InterfaceSerialDialog::acceptedInterface()
     }
     int spbdata;
     Settings::pushGroup(name);
-    Settings::set("serialPort", CBFunc::Data(dialog, "portcb"));
-    Settings::set("serialSpeed", CBFunc::Data(dialog, "speedcb"));
-    Settings::set("serialParity", CBFunc::Data(dialog, "paritycb"));
-    Settings::set("serialStop", CBFunc::Data(dialog, "stopbitcb"));
-    if (SPBFunc::Data(dialog, "addressspb", spbdata))
+    Settings::set("serialPort", CBFunc::data(dialog, "portcb"));
+    Settings::set("serialSpeed", CBFunc::data(dialog, "speedcb"));
+    Settings::set("serialParity", CBFunc::data(dialog, "paritycb"));
+    Settings::set("serialStop", CBFunc::data(dialog, "stopbitcb"));
+    if (SPBFunc::data(dialog, "addressspb", spbdata))
         Settings::set("modbusAddress", spbdata);
     Settings::popGroup();
     Settings::popGroup(); // exit from RS-485

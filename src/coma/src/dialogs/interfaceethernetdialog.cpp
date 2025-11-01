@@ -6,11 +6,11 @@
 #include <gen/error.h>
 #include <gen/settings.h>
 #include <gen/stdfunc.h>
-#include <widgets/emessagebox.h>
-#include <widgets/lefunc.h>
-#include <widgets/pbfunc.h>
-#include <widgets/spbfunc.h>
-#include <widgets/tvfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/lefunc.h>
+#include <avm-widgets/pbfunc.h>
+#include <avm-widgets/spbfunc.h>
+#include <avm-widgets/tvfunc.h>
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -169,7 +169,7 @@ void InterfaceEthernetDialog::acceptedInterface()
     auto dialog = this->findChild<QDialog *>("ethCreateDialog");
     if (dialog == nullptr)
         return;
-    QString name = LEFunc::Data(dialog, "namele");
+    QString name = LEFunc::data(dialog, "namele");
     // check if there's such name in registry
     Settings::pushGroup("Ethernet");
     if (Settings::groupExist(name))
@@ -180,12 +180,12 @@ void InterfaceEthernetDialog::acceptedInterface()
     }
 
     QString ipstr =                                                   //
-        QString::number(SPBFunc::Data<int>(dialog, "iple_0")) + "." + //
-        QString::number(SPBFunc::Data<int>(dialog, "iple_1")) + "." + //
-        QString::number(SPBFunc::Data<int>(dialog, "iple_2")) + "." + //
-        QString::number(SPBFunc::Data<int>(dialog, "iple_3"));        //
-    auto port = SPBFunc::Data<quint16>(dialog, "portspb");
-    auto bsAddress = SPBFunc::Data<quint16>(dialog, "bsaddrspb");
+        QString::number(SPBFunc::data<int>(dialog, "iple_0")) + "." + //
+        QString::number(SPBFunc::data<int>(dialog, "iple_1")) + "." + //
+        QString::number(SPBFunc::data<int>(dialog, "iple_2")) + "." + //
+        QString::number(SPBFunc::data<int>(dialog, "iple_3"));        //
+    auto port = SPBFunc::data<quint16>(dialog, "portspb");
+    auto bsAddress = SPBFunc::data<quint16>(dialog, "bsaddrspb");
     if (bsAddress == 0)
     {
         EMessageBox::error(this, "Адрес базовой станции не может быть равен нулю");

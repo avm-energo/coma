@@ -1,7 +1,7 @@
 #include "xml/xmleditor/datacontroller.h"
 
 #include <gen/settings.h>
-#include <widgets/emessagebox.h>
+#include <avm-widgets/emessagebox.h>
 #include <xml/xmleditor/models/mastermodel.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 #include <xml/xmltags.h>

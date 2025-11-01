@@ -1,6 +1,6 @@
 #include "dialogs/relaydialog.h"
 
-#include <widgets/lblfunc.h>
+#include <avm-widgets/lblfunc.h>
 
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -72,7 +72,7 @@ void RelayDialog::changeRelay(int number, bool state)
     QString text = "Разомкнуто";
     if (state)
         text = "Замкнуто";
-    LBLFunc::SetText(this, "lbl" + QString::number(number), text);
+    LBLFunc::setText(this, "lbl" + QString::number(number), text);
 }
 
 void RelayDialog::resetRelays(int count)

@@ -5,7 +5,7 @@
 #include <interfaces/connectionmanager.h>
 #include <interfaces/types/connection_settings.h>
 #include <oscillograms/oscmanager.h>
-#include <widgets/estatusbar.h>
+#include <avm-widgets/estatusbar.h>
 
 #include <QApplication>
 #include <QListWidget>

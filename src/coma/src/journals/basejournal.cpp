@@ -1,8 +1,8 @@
 #include "journals/basejournal.h"
 
 #include <gen/timefunc.h>
-#include <widgets/etableview.h>
-#include <widgets/tvfunc.h>
+#include <avm-widgets/etableview.h>
+#include <avm-widgets/tvfunc.h>
 
 #include <QApplication>
 #include <QFile>

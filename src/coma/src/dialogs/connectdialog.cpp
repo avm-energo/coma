@@ -5,8 +5,8 @@
 #include <dialogs/interfaceserialdialog.h>
 #include <dialogs/interfaceusbdialog.h>
 #include <gen/error.h>
-#include <widgets/cbfunc.h>
-#include <widgets/lblfunc.h>
+#include <avm-widgets/cbfunc.h>
+#include <avm-widgets/lblfunc.h>
 
 #include <QCoreApplication>
 #include <QDebug>

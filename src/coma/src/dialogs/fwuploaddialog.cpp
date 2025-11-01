@@ -3,9 +3,9 @@
 #include <gen/error.h>
 #include <gen/files.h>
 #include <s2/s2util.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
-#include <widgets/pbfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/pbfunc.h>
 
 #include <QDebug>
 #include <QVBoxLayout>
@@ -39,7 +39,7 @@ void FWUploadDialog::loadFirmware()
         return;
     }
 
-    auto filepath = FileFunc::ChooseFileForOpen(this, "Program Version (*.hex)");
+    auto filepath = FileFunc::chooseFileForOpen(this, "Program Version (*.hex)");
     if (filepath.isEmpty())
         return;
 

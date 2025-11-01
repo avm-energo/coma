@@ -1,9 +1,9 @@
 #include "dialogs/keypressdialog.h"
 
 #include <gen/error.h>
-#include <widgets/lblfunc.h>
-#include <widgets/lefunc.h>
-#include <widgets/passwordlineedit.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/lefunc.h>
+#include <avm-widgets/passwordlineedit.h>
 
 #include <QCryptographicHash>
 #include <QDebug>
@@ -47,8 +47,8 @@ void KeyPressDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(
-        LBLFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
-    vlyout->addWidget(LEFunc::NewPsw(this, "pswle", QLineEdit::Password));
+        LBLFunc::newLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "pswlbl"));
+    vlyout->addWidget(LEFunc::newPsw(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
     setMinimumSize(200, 120);
 }
@@ -63,7 +63,7 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
 
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {
-        const QString password = LEFunc::Data(this, "pswle");
+        const QString password = LEFunc::data(this, "pswle");
         if (!password.isEmpty())
             m_password = password;
         emit finished();

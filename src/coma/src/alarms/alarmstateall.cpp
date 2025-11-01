@@ -1,8 +1,8 @@
 #include "alarms/alarmstateall.h"
 
 #include <device/current_device.h>
-#include <widgets/graphfunc.h>
-#include <widgets/lblfunc.h>
+#include <avm-widgets/graphfunc.h>
+#include <avm-widgets/lblfunc.h>
 
 #include <QBoxLayout>
 #include <QPushButton>
@@ -57,7 +57,7 @@ void AlarmStateAll::setupUI()
         Q_ASSERT(m_config[i].index < 32);
         auto hLayout = new QHBoxLayout;
         auto label = LBLFunc::New(this, "", QString::number(m_config[i].index));
-        auto pixmap = GraphFunc::NewCircle(m_normalColor, circleRadius);
+        auto pixmap = GraphFunc::newCircle(m_normalColor, circleRadius);
         label->setPixmap(pixmap);
         hLayout->addWidget(label, 1);
         hLayout->addWidget(LBLFunc::New(this, m_config[i].desc), 100);
@@ -110,8 +110,8 @@ void AlarmStateAll::update(const quint32 health)
         if (state)
             color = getColorByType(record.type);
         updateStrongestColor(color);
-        auto circle = GraphFunc::NewCircle(color, circleRadius);
-        LBLFunc::SetImage(this, QString::number(record.index), &circle);
+        auto circle = GraphFunc::newCircle(color, circleRadius);
+        LBLFunc::setImage(this, QString::number(record.index), &circle);
     }
     emit updateColor(m_strongestColor);
 }

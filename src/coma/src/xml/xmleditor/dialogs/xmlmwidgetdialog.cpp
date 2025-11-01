@@ -1,5 +1,7 @@
 #include "xml/xmleditor/dialogs/xmlmwidgetdialog.h"
 
+#include <QStackedLayout>
+
 XmlMWidgetDialog::XmlMWidgetDialog(QWidget *parent) : XmlDialog(parent) { }
 
 void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
@@ -12,8 +14,10 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     auto countLayout = new QHBoxLayout;
     auto tooltipLayout = new QHBoxLayout;
     auto viewLayout = new QHBoxLayout;
+    auto decimalLayout = new QHBoxLayout;
     auto strArrLayout = new QHBoxLayout;
     auto typeLayout = new QHBoxLayout;
+    QStackedLayout *stl = new QStackedLayout(this);
     m_title += "описания мульти-виджета";
 
     // Виджеты для начального адреса
@@ -81,23 +85,25 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     QObject::connect(                                               //
         viewInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlMWidgetDialog::dataChanged));      //
+    QObject::connect(                                               //
+        viewInput, qOverload<int>(&QComboBox::currentIndexChanged), //
+        stl, &QStackedLayout::setCurrentIndex);
     m_dlgItems.append(viewInput);
 
-    // Виджеты для количества адресов
-    auto typeLabel = new QLabel("Тип (для SP: 1-green,2-yellow,3-red): ", this);
-    auto typeInput = new QSpinBox(this);
-    typeInput->setValue(0);
-    typeInput->setMinimum(countMin);
-    typeInput->setMaximum(countMax);
+    auto decLabel = new QLabel("Количество знаков после запятой: ", this);
+    auto decInput = new QSpinBox(this);
+    decInput->setValue(3);
+    decInput->setMinimum(countMin);
+    decInput->setMaximum(countMax);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(typeInput, &QSpinBox::textChanged, this,            //
+    QObject::connect(decInput, &QSpinBox::textChanged, this,            //
         qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
 #endif
-    QObject::connect(typeInput, qOverload<int>(&QSpinBox::valueChanged), //
+    QObject::connect(decInput, qOverload<int>(&QSpinBox::valueChanged), //
         this, qOverload<int>(&XmlMWidgetDialog::dataChanged));
-    typeLayout->addWidget(typeLabel);
-    typeLayout->addWidget(typeInput);
-    m_dlgItems.append(typeInput);
+    decLayout->addWidget(decLabel);
+    decLayout->addWidget(decInput);
+    m_dlgItems.append(decInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);

@@ -5,7 +5,7 @@
 #include <gen/settings.h>
 #include <interfaces/types/serial_settings.h>
 #include <interfaces/types/usbhidportinfo.h>
-#include <widgets/tvfunc.h>
+#include <avm-widgets/tvfunc.h>
 
 #include <QMessageBox>
 #include <QStandardItem>

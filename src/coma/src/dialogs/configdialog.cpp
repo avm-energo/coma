@@ -7,9 +7,9 @@
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
 #include <common/appconfig.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
-#include <widgets/wdfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/wdfunc.h>
 
 #include <QDebug>
 #include <QGridLayout>
@@ -76,7 +76,7 @@ bool ConfigDialog::isDebugWidget(const quint16 id) const
 
 void ConfigDialog::saveConfigToFile()
 {
-    auto filepath = FileFunc::ChooseFileForSave(this, "Config files (*.cf)", "cf", getFilenameForDevice());
+    auto filepath = FileFunc::chooseFileForSave(this, "Config files (*.cf)", "cf", getFilenameForDevice());
     if (filepath.isEmpty())
         return;
 
@@ -114,7 +114,7 @@ void ConfigDialog::saveConfigToFile()
 
 void ConfigDialog::loadConfigFromFile()
 {
-    auto filepath = FileFunc::ChooseFileForOpen(this, "Config files (*.cf)");
+    auto filepath = FileFunc::chooseFileForOpen(this, "Config files (*.cf)");
     if (filepath.isEmpty())
         return;
 

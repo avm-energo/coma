@@ -2,8 +2,8 @@
 
 #include <gen/timefunc.h>
 #include <oscillograms/swjmanager.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
 
 #include <QDir>
 #include <xlsxdocument.h>
@@ -169,7 +169,7 @@ void SwjPackConvertor::writeToFile(const QString &filepath)
 
 void SwjPackConvertor::selectDirectory()
 {
-    auto dirPath = FileFunc::ChooseDirectoryForOpen(m_parent);
+    auto dirPath = FileFunc::chooseDirectoryForOpen(m_parent);
     if (!dirPath.isEmpty())
     {
         QDir swjDirectory(dirPath);
@@ -180,7 +180,7 @@ void SwjPackConvertor::selectDirectory()
             for (const auto &file : std::as_const(entryFiles))
                 readFile(dirPath + "/" + file);
             sortData();
-            auto excelFilepath = FileFunc::ChooseFileForSave(m_parent, "Excel files (*.xlsx)", "xlsx", "test");
+            auto excelFilepath = FileFunc::chooseFileForSave(m_parent, "Excel files (*.xlsx)", "xlsx", "test");
             if (!excelFilepath.isEmpty())
                 writeToFile(excelFilepath);
             else

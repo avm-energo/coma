@@ -1,8 +1,8 @@
 #include "dialogs/reconnectdialog.h"
 
-#include <widgets/emessagebox.h>
-#include <widgets/eprogressindicator.h>
-#include <widgets/hexpbfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/eprogressindicator.h>
+#include <avm-widgets/hexpbfunc.h>
 
 #include <QLabel>
 #include <QProgressBar>

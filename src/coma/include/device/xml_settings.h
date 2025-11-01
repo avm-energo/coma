@@ -40,6 +40,7 @@ struct MWidget final
     u32 count = 1;                   ///< узел <count>
     QString tooltip = "";            ///< узел <toolTip>
     ViewType view = ViewType::Float; ///< атрибут "view"
+    u32 decimals = 0;                ///< "decimals" attribute
     QStringList subItemList = {};    ///< узел <string-array>
     u32 type;                        ///< узел <type> - тип отображения виджета (alarm = red | yellow | green)
 };
@@ -49,6 +50,7 @@ struct SGroup final
 {
     QString name;                     ///< атрибут "header"
     int order;                        ///< атрибут "order"
+    bool notDenied;                   ///< dtype attribute (only in debug configuration)
     std::vector<MWidget> widgets;     ///< узлы <mwidget>
 };
 

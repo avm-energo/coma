@@ -1,7 +1,7 @@
 #include "alarms/modulealarm.h"
 
-#include <widgets/graphfunc.h>
-#include <widgets/lblfunc.h>
+#include <avm-widgets/graphfunc.h>
+#include <avm-widgets/lblfunc.h>
 
 #include <QPushButton>
 #include <QScrollArea>
@@ -48,7 +48,7 @@ void ModuleAlarm::setupUI(const QList<Device::XmlDataTypes::AlarmOne> &events)
     for (auto &&event : events)
     {
         auto hLayout = new QHBoxLayout;
-        auto pixmap = GraphFunc::NewCircle(m_normalColor, circleRadius);
+        auto pixmap = GraphFunc::newCircle(m_normalColor, circleRadius);
         auto label = LBLFunc::New(this, "", QString::number(index), &pixmap);
         hLayout->addWidget(label, 1);
         hLayout->addWidget(LBLFunc::New(this, event.desc), 100);
@@ -86,7 +86,7 @@ void ModuleAlarm::updatePixmap(const bool &isSet, const quint32 &position)
     {
         const auto color = isSet ? m_alarmColor : m_normalColor;
         auto label = m_labelStateStorage[position].first;
-        const auto pixmap = GraphFunc::NewCircle(color, circleRadius);
+        const auto pixmap = GraphFunc::newCircle(color, circleRadius);
         label->setPixmap(pixmap);
         m_labelStateStorage[position].second = isSet;
         if (isSet or isAllPixmapInactive())

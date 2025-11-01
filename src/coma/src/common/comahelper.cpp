@@ -2,8 +2,8 @@
 #include <common/comahelper.h>
 #include <common/constants.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
-#include <widgets/filefunc.h>
-#include <widgets/graphfunc.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/graphfunc.h>
 
 #include <QFile>
 #include <QFont>
@@ -60,7 +60,7 @@ void ComaHelper::convertPixmap(size_t size, QAction *jourAct)
     const QIcon jourIcon(Constants::Resources[Constants::FROSYA]);
     QPixmap pix = jourIcon.pixmap(QSize(40, 40), QIcon::Disabled);
     QPainter painter(&pix);
-    painter.drawPixmap(QRect(20, 0, 20, 20), GraphFunc::NewCircle(Qt::red, 20));
+    painter.drawPixmap(QRect(20, 0, 20, 20), GraphFunc::newCircle(Qt::red, 20));
     QFont font(painter.font());
     font.setPixelSize(14);
     painter.setFont(font);

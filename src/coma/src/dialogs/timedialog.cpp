@@ -3,8 +3,8 @@
 #include <gen/colors.h>
 #include <gen/error.h>
 #include <gen/timefunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/lefunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/lefunc.h>
 
 #include <QDateTime>
 #include <QGridLayout>
@@ -142,7 +142,7 @@ void TimeDialog::writeTime(QDateTime &myDateTime)
 void TimeDialog::writeDate()
 {
     QDateTime myDateTime
-        = QDateTime::fromString(LEFunc::Data(this, settings::nameByValue(settings::WriteDatetime)), directOrder);
+        = QDateTime::fromString(LEFunc::data(this, settings::nameByValue(settings::WriteDatetime)), directOrder);
     myDateTime.setTimeZone(TimeFunc::userTimeZone());
 
     auto buffer = myDateTime.toUTC();
@@ -176,11 +176,11 @@ void TimeDialog::setTime(quint32 unixtimestamp)
     QDateTime myDateTime = QDateTime::fromSecsSinceEpoch(unixtimestamp, TimeFunc::userTimeZone());
     QString moduleTime = myDateTime.toString(directOrder);
     QString moduleTimeUtc = myDateTime.toUTC().toString(directOrder);
-    LBLFunc::SetText(this, settings::nameByValue(settings::ModuleDatetime), moduleTime);
-    LBLFunc::SetText(this, settings::nameByValue(settings::ModuleDatetimeUtc), moduleTimeUtc);
+    LBLFunc::setText(this, settings::nameByValue(settings::ModuleDatetime), moduleTime);
+    LBLFunc::setText(this, settings::nameByValue(settings::ModuleDatetimeUtc), moduleTimeUtc);
     if (First == 0)
     {
-        LEFunc::SetData(this, settings::nameByValue(settings::WriteDatetime), moduleTime);
+        LEFunc::setData(this, settings::nameByValue(settings::WriteDatetime), moduleTime);
         First = 1;
     }
 }
@@ -188,5 +188,5 @@ void TimeDialog::setTime(quint32 unixtimestamp)
 void TimeDialog::errorRead()
 {
 
-    LBLFunc::SetText(this, settings::nameByValue(settings::ModuleDatetime), "Ошибка чтения");
+    LBLFunc::setText(this, settings::nameByValue(settings::ModuleDatetime), "Ошибка чтения");
 }

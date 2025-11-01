@@ -32,10 +32,10 @@
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/osc_ids.h>
 #include <oscillograms/oscmanager.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
-#include <widgets/signalchoosewidget.h>
-#include <widgets/wdfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/signalchoosewidget.h>
+#include <avm-widgets/wdfunc.h>
 
 #include <QAction>
 #include <QPen>
@@ -799,7 +799,7 @@ bool TrendViewDialog::loadOsc(const QString &filename)
 
 bool TrendViewDialog::loadOsc()
 {
-    auto filepath = FileFunc::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
+    auto filepath = FileFunc::chooseFileForOpen(this, "Oscillogram files (*.osc)");
     if (filepath.isEmpty())
         return false;
     return loadOsc(filepath);

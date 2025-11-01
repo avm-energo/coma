@@ -3,11 +3,11 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <tune/tunetypes.h>
-#include <widgets/emessagebox.h>
-#include <widgets/graphfunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/waitwidget.h>
-#include <widgets/wdfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/graphfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/waitwidget.h>
+#include <avm-widgets/wdfunc.h>
 
 #include <QVBoxLayout>
 
@@ -159,7 +159,7 @@ Error::Msg Tune21One::showScheme()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
-    lyout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tune21.png"));
+    lyout->addWidget(GraphFunc::newIcon(this, ":/tunes/tune21.png"));
     lyout->addWidget(LBLFunc::New(this, "Соберите схему подключения по вышеприведённой картинке"));
     w->setLayout(lyout);
 

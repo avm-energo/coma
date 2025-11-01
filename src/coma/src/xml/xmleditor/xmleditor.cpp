@@ -1,6 +1,6 @@
 #include "xml/xmleditor/xmleditor.h"
 
-#include <widgets/emessagebox.h>
+#include <avm-widgets/emessagebox.h>
 #include <xml/xmleditor/datacontroller.h>
 #include <xml/xmleditor/dialogs/dialogfabric.h>
 #include <xml/xmleditor/models/mastermodel.h>

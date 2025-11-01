@@ -1,8 +1,8 @@
 #include "xml/xmleditor/dialogs/moduledialog.h"
 
-#include <widgets/chbfunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/lefunc.h>
+#include <avm-widgets/chbfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/lefunc.h>
 
 #include <QGuiApplication>
 #include <QScreen>

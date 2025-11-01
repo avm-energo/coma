@@ -1,8 +1,8 @@
 #include "journals/journaltabwidget.h"
 
 #include <gen/files.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
 
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -100,7 +100,7 @@ void JournalTabWidget::saveExcelJournal()
     if (!suggestedFilename.isEmpty())
     {
         suggestedFilename += ".xlsx";
-        auto filename = FileFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
+        auto filename = FileFunc::chooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
         if (!filename.isEmpty())
         {
             m_saveProgressDialog->setMinimumDuration(0);
@@ -115,7 +115,7 @@ void JournalTabWidget::saveBinaryJournal()
     if (!suggestedFilename.isEmpty())
     {
         suggestedFilename += ".jn";
-        auto filename = FileFunc::ChooseFileForSave(this, "Journal files (*.jn)", "jn", suggestedFilename);
+        auto filename = FileFunc::chooseFileForSave(this, "Journal files (*.jn)", "jn", suggestedFilename);
         if (!filename.isEmpty())
         {
             const auto &journalFile = m_currentJournal->getFile();

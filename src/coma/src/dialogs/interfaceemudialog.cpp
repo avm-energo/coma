@@ -3,10 +3,10 @@
 #include <gen/error.h>
 #include <gen/settings.h>
 #include <gen/stdfunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/lefunc.h>
-#include <widgets/pbfunc.h>
-#include <widgets/tvfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/lefunc.h>
+#include <avm-widgets/pbfunc.h>
+#include <avm-widgets/tvfunc.h>
 
 #include <QCoreApplication>
 #include <QMessageBox>
@@ -113,12 +113,12 @@ void InterfaceEmuDialog::acceptedInterface()
     QDialog *dlg = this->findChild<QDialog *>("emudlg");
     if (dlg == nullptr)
         return;
-    QString name = LEFunc::Data(dlg, "namele");
+    QString name = LEFunc::data(dlg, "namele");
     // rotateSettings("EMU-", name);
     QString key = QCoreApplication::applicationName();
     key += "\\" + name;
-    Settings::set("typeb", LEFunc::Data(dlg, "typeble"));
-    Settings::set("typem", LEFunc::Data(dlg, "typemle"));
+    Settings::set("typeb", LEFunc::data(dlg, "typeble"));
+    Settings::set("typem", LEFunc::data(dlg, "typemle"));
 
     if (!updateModel())
         qDebug() << Error::GeneralError;

@@ -1,13 +1,13 @@
 #include "tune/kiv/tunekivcheck.h"
 
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/graphfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/waitwidget.h>
+#include <avm-widgets/wdfunc.h>
 #include <datablocks/kiv/bda.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-#include <widgets/emessagebox.h>
-#include <widgets/graphfunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/waitwidget.h>
-#include <widgets/wdfunc.h>
 
 #include <QCoreApplication>
 #include <QDialog>
@@ -33,7 +33,7 @@ Error::Msg TuneKIVCheck::showScheme()
 {
     auto widget = new QWidget(this);
     auto layout = new QVBoxLayout;
-    layout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
+    layout->addWidget(GraphFunc::newIcon(this, ":/tunes/tunekiv1.png"));
     layout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     layout->addWidget(LBLFunc::New(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока "
@@ -85,14 +85,14 @@ Error::Msg TuneKIVCheck::check()
         return Error::GeneralError;
     }
 
-    WaitWidget *ww = new WaitWidget(this);
-    ww->SetMessage("Пожалуйста, подождите");
-    ww->Start();
+    WaitWidget *ww = new WaitWidget("", this);
+    ww->setMessage("Пожалуйста, подождите");
+    ww->start();
     QElapsedTimer *tmr = new QElapsedTimer;
     tmr->start();
     while (tmr->elapsed() < TIMEFORBDATOSETINMS)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    ww->Stop();
+    ww->stop();
     BdaA284 *bda = new BdaA284(this);
     bda->setup(m_device->getUID(), m_sync);
     bda->readAndUpdate();

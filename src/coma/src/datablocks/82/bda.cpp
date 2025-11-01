@@ -1,6 +1,6 @@
 #include "datablocks/82/bda.h"
 
-#include <widgets/wdfunc.h>
+#include <avm-widgets/wdfunc.h>
 
 Bda82::Bda82(QObject *parent) : DataBlock(parent)
 {

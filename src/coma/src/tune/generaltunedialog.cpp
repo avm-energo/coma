@@ -4,9 +4,9 @@
 #include <gen/stdfunc.h>
 #include <tune/tunereporter.h>
 #include <tune/tunesequencefile.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
-#include <widgets/hexpbfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/hexpbfunc.h>
 
 #include <QHBoxLayout>
 #include <QIcon>
@@ -88,7 +88,7 @@ void GeneralTuneDialog::generateReport()
 {
     if (EMessageBox::question(this, "Сохранить протокол поверки?"))
     {
-        QString filename = FileFunc::ChooseFileForSave(this, "*.pdf", "pdf", getFilenameForDevice());
+        QString filename = FileFunc::chooseFileForSave(this, "*.pdf", "pdf", getFilenameForDevice());
         if (!filename.isEmpty())
         {
             prepareReport();

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <widgets/ecombobox.h>
+#include <avm-widgets/ecombobox.h>
 #include <xml/xmleditor/models/baseeditormodel.h>
 
 #include <QCheckBox>

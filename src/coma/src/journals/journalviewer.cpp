@@ -5,8 +5,8 @@
 #include <journals/sysjournal.h>
 #include <journals/workjournal.h>
 #include <s2/s2util.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
 #include <xml/xmlparser/xmlmoduleparser.h>
 
 #include <QPushButton>
@@ -120,7 +120,7 @@ void JournalViewer::saveExcelJournal()
     auto suggestedFilename = m_journal->getSuggestedFilename();
     if (!suggestedFilename.isEmpty())
     {
-        auto filename = FileFunc::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
+        auto filename = FileFunc::chooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
         if (!filename.isEmpty())
         {
             m_journal->saveToExcel(filename);

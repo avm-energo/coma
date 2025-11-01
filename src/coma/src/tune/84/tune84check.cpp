@@ -3,10 +3,10 @@
 #include <datablocks/kiv/bda.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
-#include <widgets/emessagebox.h>
-#include <widgets/graphfunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/wdfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/graphfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/wdfunc.h>
 
 #include <QDialog>
 #include <QMessageBox>
@@ -29,7 +29,7 @@ Error::Msg Tune84Check::showScheme()
 {
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
+    lyout->addWidget(GraphFunc::newIcon(this, ":/tunes/tunekiv1.png"));
     lyout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(LBLFunc::New(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"

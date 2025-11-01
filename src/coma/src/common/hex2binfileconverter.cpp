@@ -1,8 +1,8 @@
 #include <gen/files.h>
 #include <common/hex2binfileconverter.h>
 #include <s2/s2util.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
 
 #include <QDir>
 
@@ -11,7 +11,7 @@ Hex2BinFileConverter::Hex2BinFileConverter(QWidget *parent) : QObject(parent), m
 void Hex2BinFileConverter::start()
 {
     m_errorHappened = false;
-    auto filePath = FileFunc::ChooseFileForOpen(m_parent, "*.hex");
+    auto filePath = FileFunc::chooseFileForOpen(m_parent, "*.hex");
     if (!filePath.isEmpty())
     {
         QByteArray ba = readFile(filePath);
@@ -57,7 +57,7 @@ bool Hex2BinFileConverter::toBinConvert(QByteArray &ba)
     if (m_errorHappened)
         return false;
     ba = parser->getBinaryFormat();
-    auto filePath = FileFunc::ChooseFileForSave(m_parent, "*.bin", "bin", "output");
+    auto filePath = FileFunc::chooseFileForSave(m_parent, "*.bin", "bin", "output");
     if (!filePath.isEmpty())
     {
         writeToFile(filePath, ba);
@@ -83,7 +83,7 @@ bool Hex2BinFileConverter::toS2Convert(QByteArray &ba)
         EMessageBox::error(m_parent, "Получен файл с некорректным размером.");
         return false;
     }
-    auto filePath = FileFunc::ChooseFileForSave(m_parent, "*.s2", "s2", "output");
+    auto filePath = FileFunc::chooseFileForSave(m_parent, "*.s2", "s2", "output");
     if (!filePath.isEmpty())
     {
         if (writeToFile(filePath, s2ba))

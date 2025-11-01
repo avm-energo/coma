@@ -8,7 +8,7 @@
 #include <tune/85/tune85check.h>
 #include <tune/85/tune85temp60.h>
 #include <tune/tunetypes.h>
-#include <widgets/wdfunc.h>
+#include <avm-widgets/wdfunc.h>
 
 Tune85Dialog::Tune85Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {

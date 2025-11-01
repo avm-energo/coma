@@ -1,12 +1,12 @@
 #include "comawidgets/uwidget.h"
 
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/epopup.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/wdfunc.h>
 #include <device/current_device.h>
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
-#include <widgets/emessagebox.h>
-#include <widgets/epopup.h>
-#include <widgets/lblfunc.h>
-#include <widgets/wdfunc.h>
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -37,9 +37,23 @@ void UWidget::updateFloatData(const DataTypes::FloatStruct &fl)
 {
     bool result;
     if (fl.sigQuality != DataTypes::Quality::Good)
-        result = LBLFunc::SetText(this, QString::number(fl.sigAdr), "***");
+        result = LBLFunc::setText(this, QString::number(fl.sigAdr), "***");
     else
-        result = LBLFunc::SetText(this, QString::number(fl.sigAdr), WDFunc::StringFloatValueWithCheck(fl.sigVal, 3));
+    {
+        bool ok;
+        int decimals;
+        QString decimalsstr = LBLFunc::data(this, QString::number(fl.sigAdr));
+        if (decimalsstr.isEmpty())
+            decimals = 3;
+        else
+        {
+            decimals = decimalsstr.toInt(&ok);
+            if ((!ok) || (decimals > 33))
+                decimals = 3;
+        }
+        result = LBLFunc::setText(
+            this, QString::number(fl.sigAdr), WDFunc::stringFloatValueWithCheck(fl.sigVal, decimals));
+    }
 #ifdef UWIDGET_DEBUG
     if (!result)
         qDebug() << Error::DescError << QString::number(fl.sigAdr) << WDFunc::StringValueWithCheck(fl.sigVal, 3);

@@ -1,8 +1,8 @@
 #include "dialogs/aboutdialog.h"
 
-#include <widgets/graphfunc.h>
-#include <widgets/hexpbfunc.h>
-#include <widgets/lblfunc.h>
+#include <avm-widgets/graphfunc.h>
+#include <avm-widgets/hexpbfunc.h>
+#include <avm-widgets/lblfunc.h>
 
 #include <QVBoxLayout>
 
@@ -16,7 +16,7 @@ void AboutDialog::setupUI()
     setWindowTitle("О программе");
     auto hlyout = new QHBoxLayout;
     auto lyout = new QVBoxLayout;
-    hlyout->addWidget(GraphFunc::NewIcon(this, ":icons/avm-energo.svg"), 0);
+    hlyout->addWidget(GraphFunc::newIcon(this, ":icons/avm-energo.svg"), 0);
     for (const auto &str : std::as_const(m_lines))
     {
         auto label = LBLFunc::New(this, str);

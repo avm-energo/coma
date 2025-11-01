@@ -29,11 +29,11 @@
 #include <gen/settings.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
-#include <widgets/emessagebox.h>
-#include <widgets/filefunc.h>
-#include <widgets/hexpbfunc.h>
-#include <widgets/lefunc.h>
-#include <widgets/wdfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/hexpbfunc.h>
+#include <avm-widgets/lefunc.h>
+#include <avm-widgets/wdfunc.h>
 
 #include <QDialogButtonBox>
 #include <QGroupBox>
@@ -176,7 +176,7 @@ void DataBlock::setEnabled(bool isEnabled)
 {
     for (auto &group : m_valuesDesc)
         for (auto &valueDesc : group.values)
-            WDFunc::SetEnabled(m_widget, valueDesc.valueId, isEnabled);
+            WDFunc::setEnabled(m_widget, valueDesc.valueId, isEnabled);
 }
 
 DataBlock::BlockStruct DataBlock::block()
@@ -200,12 +200,12 @@ void DataBlock::updateWidget()
                 overloaded {                                                                       //
                     [&](float *arg)                                                                //
                     {                                                                              //
-                        LEFunc::SetData(                                                           //
-                            m_widget, valueDesc.valueId, WDFunc::StringFloatValueWithCheck(*arg)); //
+                        LEFunc::setData(                                                           //
+                            m_widget, valueDesc.valueId, WDFunc::stringFloatValueWithCheck(*arg)); //
                     },                                                                             //
                     [&](quint32 *arg)                                                              //
                     {                                                                              //
-                        LEFunc::SetData(m_widget, valueDesc.valueId, QString::number(*arg));       //
+                        LEFunc::setData(m_widget, valueDesc.valueId, QString::number(*arg));       //
                     } },                                                                           //
                 valueDesc.value);
         }
@@ -230,12 +230,12 @@ void DataBlock::updateFromWidget()
                     using T = std::remove_pointer_t<decltype(arg)>;
                     if constexpr (std::is_same_v<T, float>)
                     {
-                        float tmpf = StdFunc::ToFloat(LEFunc::Data(m_widget, valueDesc.valueId));
+                        float tmpf = StdFunc::ToFloat(LEFunc::data(m_widget, valueDesc.valueId));
                         *arg = tmpf;
                     }
                     else if constexpr (std::is_same_v<T, quint32>)
                     {
-                        quint32 tmpi = LEFunc::Data(m_widget, valueDesc.valueId).toUInt();
+                        quint32 tmpi = LEFunc::data(m_widget, valueDesc.valueId).toUInt();
                         *arg = tmpi;
                     }
                     else
@@ -315,7 +315,7 @@ void DataBlock::readBlockFromModule()
 
 void DataBlock::readFromFileUserChoose()
 {
-    auto filepath = FileFunc::ChooseFileForOpen(nullptr, ExtMap[m_block.blocktype].mask);
+    auto filepath = FileFunc::chooseFileForOpen(nullptr, ExtMap[m_block.blocktype].mask);
     if (!filepath.isEmpty())
         loadFromFileAndWriteToModule(filepath);
 }
@@ -349,7 +349,7 @@ Error::Msg DataBlock::saveToFile()
 void DataBlock::saveToFileUserChoose()
 {
     readBlockFromModule();
-    auto filepath = FileFunc::ChooseFileForSave(nullptr, ExtMap[m_block.blocktype].mask, //
+    auto filepath = FileFunc::chooseFileForSave(nullptr, ExtMap[m_block.blocktype].mask, //
         ExtMap[m_block.blocktype].extension, cpuIDFilenameStr());
     if (filepath.isEmpty())
         return;

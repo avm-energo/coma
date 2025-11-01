@@ -2,11 +2,11 @@
 
 #include <QtSvg/QSvgRenderer>
 #include <device/current_device.h>
-#include <widgets/chbfunc.h>
-#include <widgets/emessagebox.h>
-#include <widgets/lefunc.h>
-#include <widgets/pbfunc.h>
-#include <widgets/wdfunc.h>
+#include <avm-widgets/chbfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/lefunc.h>
+#include <avm-widgets/pbfunc.h>
+#include <avm-widgets/wdfunc.h>
 
 #include <QBoxLayout>
 #include <QGroupBox>
@@ -93,7 +93,7 @@ void HiddenDialog::setupUI()
 {
     auto mainLayout = new QVBoxLayout;
     auto tabWidget = new QTabWidget(this);
-    mainLayout->addWidget(LEFunc::NewLBL(this, "Имя модуля:", "modulename"));
+    mainLayout->addWidget(LEFunc::newLBL(this, "Имя модуля:", "modulename"));
 
     for (auto &&tabSettings : m_settings)
     {
@@ -166,13 +166,13 @@ QGroupBox *HiddenDialog::setupGroupBox(const HiddenTab &hiddenTab)
             if (widget.view == ViewType::Version)
             {
                 auto hlyout = new QHBoxLayout;
-                hlyout->addWidget(LEFunc::NewLBL(this, title, widget.name + 'm', false));
-                hlyout->addWidget(LEFunc::NewLBL(this, ".", widget.name + 'l', false));
-                hlyout->addWidget(LEFunc::NewLBL(this, ".", widget.name + 's', false));
+                hlyout->addWidget(LEFunc::newLBL(this, title, widget.name + 'm', false));
+                hlyout->addWidget(LEFunc::newLBL(this, ".", widget.name + 'l', false));
+                hlyout->addWidget(LEFunc::newLBL(this, ".", widget.name + 's', false));
                 gbLayout->addLayout(hlyout);
             }
             else
-                gbLayout->addWidget(LEFunc::NewLBL(this, title, widget.name, false));
+                gbLayout->addWidget(LEFunc::newLBL(this, title, widget.name, false));
         }
     }
     tabGroupBox->setLayout(gbLayout);
@@ -203,7 +203,7 @@ bool HiddenDialog::isTabEnabled(const HiddenTab &tabSettings) const noexcept
 {
     bool enabled = false;
     if (tabSettings.flag != 1)
-        ChBFunc::Data(this, tabSettings.prefix + "enable", enabled);
+        ChBFunc::data(this, tabSettings.prefix + "enable", enabled);
     else
         enabled = true;
     return enabled;
@@ -213,12 +213,12 @@ void HiddenDialog::updateWidget(const bool enabled, const HiddenWidget &widget)
 {
     if (widget.view == ViewType::Version)
     {
-        WDFunc::SetEnabled(this, widget.name + 'm', enabled);
-        WDFunc::SetEnabled(this, widget.name + 'l', enabled);
-        WDFunc::SetEnabled(this, widget.name + 's', enabled);
+        WDFunc::setEnabled(this, widget.name + 'm', enabled);
+        WDFunc::setEnabled(this, widget.name + 'l', enabled);
+        WDFunc::setEnabled(this, widget.name + 's', enabled);
     }
     else
-        WDFunc::SetEnabled(this, widget.name, enabled);
+        WDFunc::setEnabled(this, widget.name, enabled);
 }
 
 const HiddenWidget *HiddenDialog::findWidgetByAddress(const quint32 addr) const noexcept
@@ -280,14 +280,14 @@ void HiddenDialog::fillWidget(const quint32 value, const HiddenWidget &widgetDat
     if (widgetData.view == ViewType::Version)
     {
         QString tmps = QString::number(static_cast<quint8>((value & 0xFF000000) >> 24), 16);
-        LEFunc::SetData(this, widgetData.name + 'm', tmps, "^[a-fA-F0-9]$");
+        LEFunc::setData(this, widgetData.name + 'm', tmps, "^[a-fA-F0-9]$");
         tmps = QString::number(static_cast<quint8>((value & 0x00FF0000) >> 16), 16);
-        LEFunc::SetData(this, widgetData.name + 'l', tmps, "^[a-fA-F0-9]$");
+        LEFunc::setData(this, widgetData.name + 'l', tmps, "^[a-fA-F0-9]$");
         tmps = QString::number(static_cast<quint16>(value & 0x0000FFFF), 16);
-        LEFunc::SetData(this, widgetData.name + 's', tmps, "^[a-fA-F0-9]{0,2}$");
+        LEFunc::setData(this, widgetData.name + 's', tmps, "^[a-fA-F0-9]{0,2}$");
     }
     else
-        LEFunc::SetData(this, widgetData.name, QString::number(value, 16), "^[a-fA-F0-9]{1,8}$");
+        LEFunc::setData(this, widgetData.name, QString::number(value, 16), "^[a-fA-F0-9]{1,8}$");
 }
 
 quint32 HiddenDialog::getDataFrom(const HiddenWidget &widgetData)
@@ -299,18 +299,18 @@ quint32 HiddenDialog::getDataFrom(const HiddenWidget &widgetData)
         // Version fill back
         if (widgetData.view == ViewType::Version)
         {
-            LEFunc::Data(this, widgetData.name + 'm', tmps);
+            LEFunc::data(this, widgetData.name + 'm', tmps);
             quint32 number = static_cast<quint32>(tmps.toInt()) << 24;
-            LEFunc::Data(this, widgetData.name + 'l', tmps);
+            LEFunc::data(this, widgetData.name + 'l', tmps);
             number |= static_cast<quint32>(tmps.toInt()) << 16;
-            LEFunc::Data(this, widgetData.name + 's', tmps);
+            LEFunc::data(this, widgetData.name + 's', tmps);
             number |= static_cast<quint32>(tmps.toInt());
             return number;
         }
         // Line edit fill back
         else
         {
-            LEFunc::Data(this, widgetData.name, tmps);
+            LEFunc::data(this, widgetData.name, tmps);
             quint32 number = static_cast<quint32>(tmps.toUInt(nullptr, 16));
             return number;
         }
@@ -346,7 +346,7 @@ void HiddenDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct 
 
 void HiddenDialog::setModuleName(const QString &moduleName)
 {
-    LEFunc::SetData(this, "modulename", moduleName);
+    LEFunc::setData(this, "modulename", moduleName);
 }
 
 void HiddenDialog::fill()

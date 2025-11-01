@@ -9,7 +9,7 @@
 #include <tune/kiv/tunekivr.h>
 #include <tune/kiv/tunekivtemp60.h>
 #include <tune/tunetypes.h>
-#include <widgets/wdfunc.h>
+#include <avm-widgets/wdfunc.h>
 
 TuneKIVDialog::TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {

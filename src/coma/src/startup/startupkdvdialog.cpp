@@ -5,11 +5,11 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <widgets/emessagebox.h>
-#include <widgets/etableview.h>
-#include <widgets/filefunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/spbfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/etableview.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/spbfunc.h>
 
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -210,7 +210,7 @@ void StartupKDVDialog::SetupUI()
 
 void StartupKDVDialog::SaveToFile()
 {
-    auto filepath = FileFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor", getFilenameForDevice());
+    auto filepath = FileFunc::chooseFileForSave(this, "Tune files (*.cor)", "cor", getFilenameForDevice());
     if (filepath.isEmpty())
         return;
 
@@ -242,7 +242,7 @@ void StartupKDVDialog::SaveToFile()
 
 void StartupKDVDialog::ReadFromFile()
 {
-    auto filepath = FileFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
+    auto filepath = FileFunc::chooseFileForOpen(this, "Tune files (*.cor)");
     if (filepath.isEmpty())
         return;
 

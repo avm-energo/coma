@@ -3,10 +3,10 @@
 #include <gen/colors.h>
 #include <gen/stdfunc.h>
 #include <tune/tunesequencefile.h>
-#include <widgets/emessagebox.h>
-#include <widgets/graphfunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/waitwidget.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/graphfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/waitwidget.h>
 
 #include <QEventLoop>
 #include <QMessageBox>
@@ -89,7 +89,7 @@ Error::Msg Tune84Temp60::showTempDialog()
 
     QString tempstr = (m_tuneType == TUNING60) ? "+60" : "-20";
     //    lyout->addWidget(
-    //        LBLFunc::NewLBL(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"));
+    //        LBLFunc::newLBL(this, "Поместите модуль в термокамеру, установите температуру " + tempstr + " ± 2 °С"));
     //    lyout->addWidget(PBFunc::NewPB(this, "", "Готово", [&dlg] { dlg->close(); }));
     //    lyout->addWidget(PBFunc::NewPB(this, "cancelpb", "Отмена", [&dlg] { dlg->close(); }));
     //    dlg->setLayout(lyout);
@@ -106,12 +106,12 @@ Error::Msg Tune84Temp60::waitForTempToRise()
     ww->setObjectName("ww");
     WaitWidget::ww_struct wws = { true, false, WaitWidget::WW_TIME,
         1800 };                   // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
-    ww->Init(wws);
-    ww->SetMessage("Пожалуйста, подождите");
+    ww->init(wws);
+    ww->setMessage("Пожалуйста, подождите");
     StdFunc::SetCancelDisabled(); // to prevent cancellation of the main algorythm while breaking waiting
     QEventLoop loop;
     connect(ww, &WaitWidget::finished, &loop, &QEventLoop::quit);
-    ww->Start();
+    ww->start();
     loop.exec();
     StdFunc::SetCancelEnabled();
     //    if (StdFunc::isCancelled())
@@ -123,7 +123,7 @@ Error::Msg Tune84Temp60::showSignalsDialog()
 {
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(GraphFunc::NewIcon(this, ":/tunes/tunekiv1.png"));
+    lyout->addWidget(GraphFunc::newIcon(this, ":/tunes/tunekiv1.png"));
     lyout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(LBLFunc::New(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
@@ -212,11 +212,11 @@ Error::Msg Tune84Temp60::inputEnergomonitorValues()
     //    QDialog *dlg = new QDialog(this);
     //    dlg->setObjectName("energomonitordlg");
     //    QVBoxLayout *vlyout = new QVBoxLayout;
-    //    vlyout->addWidget(LBLFunc::NewLBL(this, "Ввод значений сигналов c Энергомонитора"));
+    //    vlyout->addWidget(LBLFunc::newLBL(this, "Ввод значений сигналов c Энергомонитора"));
 
-    //    vlyout->addWidget(LEFunc::NewLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
-    //    vlyout->addWidget(LEFunc::NewLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
-    //    vlyout->addWidget(LEFunc::NewLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
+    //    vlyout->addWidget(LEFunc::newLBLAndLE(this, "Uэт, В", "ValuetuneU", true));
+    //    vlyout->addWidget(LEFunc::newLBLAndLE(this, "Iэт, мА", "ValuetuneI", true));
+    //    vlyout->addWidget(LEFunc::newLBLAndLE(this, "Yэт, град", "ValuetuneY", true));
     //    QPushButton *pb = new QPushButton("Продолжить");
     //    if (m_tuneType == TUNING60)
     //        connect(pb, &QPushButton::clicked, [&dlg, this]() {

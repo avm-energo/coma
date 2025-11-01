@@ -5,12 +5,12 @@
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <widgets/emessagebox.h>
-#include <widgets/etableview.h>
-#include <widgets/filefunc.h>
-#include <widgets/lblfunc.h>
-#include <widgets/pbfunc.h>
-#include <widgets/spbfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/etableview.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/pbfunc.h>
+#include <avm-widgets/spbfunc.h>
 
 #include <QGridLayout>
 #include <QVBoxLayout>
@@ -188,7 +188,7 @@ void StartupKTFDialog::SetupUI()
 void StartupKTFDialog::SaveToFile()
 {
 
-    auto filepath = FileFunc::ChooseFileForSave(this, "Tune files (*.cor)", "cor", getFilenameForDevice());
+    auto filepath = FileFunc::chooseFileForSave(this, "Tune files (*.cor)", "cor", getFilenameForDevice());
     if (filepath.isEmpty())
         return;
 
@@ -216,7 +216,7 @@ void StartupKTFDialog::SaveToFile()
 
 void StartupKTFDialog::ReadFromFile()
 {
-    auto filepath = FileFunc::ChooseFileForOpen(this, "Tune files (*.cor)");
+    auto filepath = FileFunc::chooseFileForOpen(this, "Tune files (*.cor)");
     if (filepath.isEmpty())
         return;
 

@@ -7,10 +7,10 @@
 #include <oscillograms/dialogs/oscdialog.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <s2/s2util.h>
-#include <widgets/emessagebox.h>
-#include <widgets/etableview.h>
-#include <widgets/pbfunc.h>
-#include <widgets/pushbuttondelegate.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/etableview.h>
+#include <avm-widgets/pbfunc.h>
+#include <avm-widgets/pushbuttondelegate.h>
 
 #include <QLayout>
 
