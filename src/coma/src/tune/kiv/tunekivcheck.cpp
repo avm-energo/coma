@@ -96,7 +96,7 @@ Error::Msg TuneKIVCheck::check()
     BdaA284 *bda = new BdaA284(this);
     bda->setup(m_device->getUID(), m_sync);
     bda->readAndUpdate();
-    auto s2file = config.toByteArray();
+    auto s2file = m_config.toByteArray();
 
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)

@@ -53,8 +53,8 @@ void Tune82Verification::setTuneFunctions()
 
 Error::Msg Tune82Verification::setupNFiltrValue()
 {
-    config.setRecord("NFiltr_ID", S2::DWORD(10));
-    auto result = m_sync->writeConfigurationSync(config.toByteArray());
+    m_config.setRecord("NFiltr_ID", S2::DWORD(10));
+    auto result = m_sync->writeConfigurationSync(m_config.toByteArray());
     StdFunc::Wait(1000);
     return result;
 }

@@ -28,7 +28,7 @@ ReportData AbstractTuneDialog::s_reportData {};
 AbstractTuneDialog::AbstractTuneDialog(Device::CurrentDevice *device, QWidget *parent)
     : QDialog(parent)
     , m_device(device)
-    , config(m_device->getS2Datamanager()->getCurrentConfiguration().m_workingConfig)
+    , m_config(m_device->getS2Datamanager()->getCurrentConfiguration().m_workingConfig)
     , m_async(m_device->async())
     , m_sync(m_device->sync())
     , m_typeB(static_cast<Device::BaseBoard>(m_device->getBaseType()))
@@ -391,7 +391,7 @@ Error::Msg AbstractTuneDialog::readTuneCoefs()
 
 Error::Msg AbstractTuneDialog::sendChangedConfig(const std::vector<std::pair<QString, S2::valueType>> &changes) const
 {
-    S2::Configuration configCopy(config);
+    S2::Configuration configCopy(m_config);
     for (const auto &[name, value] : changes)
         configCopy.setRecord(name, value);
     auto s2file = configCopy.toByteArray();
@@ -406,8 +406,8 @@ ReportData &AbstractTuneDialog::getReportData()
 Error::Msg AbstractTuneDialog::setCurrentsTo(const float value)
 {
     S2::FLOAT_6t i2NomConfig { value, value, value, value, value, value };
-    config.setRecord("I2nom", i2NomConfig);
-    auto result = m_sync->writeConfigurationSync(config.toByteArray());
+    m_config.setRecord("I2nom", i2NomConfig);
+    auto result = m_sync->writeConfigurationSync(m_config.toByteArray());
     // StdFunc::Wait(5000);
     // waitNSeconds(5);
     return result;

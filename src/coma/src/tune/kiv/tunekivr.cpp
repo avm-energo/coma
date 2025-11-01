@@ -69,7 +69,7 @@ Error::Msg TuneKIVR::setR80()
 
 Error::Msg TuneKIVR::processR80()
 {
-    m_pt100 = processR();
+    m_pt100_80 = processR();
     if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
     return Error::Msg::NoError;
@@ -87,15 +87,15 @@ Error::Msg TuneKIVR::processR120()
     if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
 #ifndef NO_LIMITS
-    if (StdFunc::FloatIsWithinLimits(pt100_120, m_pt100, 40))
+    if (StdFunc::FloatIsWithinLimits(pt100_120, m_pt100_80, 40))
     {
         qWarning() << "Ошибка в полученных данных, значения сопротивлений равны";
         StdFunc::Cancel();
         return Error::Msg::GeneralError;
     }
 #endif
-    m_bac->data()->Art = (pt100_120 - m_pt100) / 40;
-    m_bac->data()->Brt = pt100_120 * 2 - m_pt100 * 3;
+    m_bac->data()->Art = (pt100_120 - m_pt100_80) / 40;
+    m_bac->data()->Brt = pt100_120 * 2 - m_pt100_80 * 3;
     m_bac->updateWidget();
     showTWTab(m_BacWidgetIndex);
     saveAllTuneCoefs();

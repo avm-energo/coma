@@ -69,7 +69,7 @@ Error::Msg Tune82Check::check()
     bda->setup(m_device->getUID(), m_sync);
     bda->readAndUpdate();
 #ifndef NO_LIMITS
-    const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
+    const auto inom = m_config["I2nom"].value<S2::FLOAT_6t>();
     return bda->checkValues(m_typeM, inom);
 #elif
     return Error::Msg::NoError;
@@ -79,7 +79,7 @@ Error::Msg Tune82Check::check()
 Error::Msg Tune82Check::checkMip()
 {
     Mip *mip = new Mip(true, Device::MezzanineBoard::MTM_82, this);
-    const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
+    const auto inom = m_config["I2nom"].value<S2::FLOAT_6t>();
     static_assert(inom.size() > 3);
     mip->setNominalCurrent(inom.at(3)); // 2nd currents, phase A
     if (!mip->start())

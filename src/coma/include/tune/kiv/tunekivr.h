@@ -14,7 +14,7 @@ public:
 private:
     Bac2A284 *m_bac;
     BdaA284 *m_bda;
-    double m_pt100;
+    double m_pt100_80;
     int m_curTuneStep;
     BdaIn m_bdain;
     int m_BacWidgetIndex, m_BdaWidgetIndex;

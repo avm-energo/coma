@@ -122,7 +122,7 @@ private slots:
 
 protected:
     Device::CurrentDevice *m_device;
-    S2::Configuration &config;
+    S2::Configuration &m_config;
     Interface::AsyncConnection *m_async;
     Interface::SyncConnection *m_sync;
     Device::BaseBoard m_typeB;

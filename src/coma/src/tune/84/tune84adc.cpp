@@ -118,7 +118,7 @@ Error::Msg Tune84ADC::ADCCoef(int coef)
 {
     QMap<int, int> currentMap = { { 1, 290 }, { 2, 250 }, { 4, 140 }, { 8, 80 }, { 16, 40 }, { 32, 23 } };
     m_curTuneStep = coef;
-    config.setRecord("Unom1", float(220));
+    m_config.setRecord("Unom1", float(220));
 
     Error::Msg res = setADCCoef(coef);
     if (res != Error::Msg::NoError)
@@ -243,8 +243,8 @@ Error::Msg Tune84ADC::setADCCoef(int coef)
 {
     QMap<int, float> adcCoefMap = { { 1, 9000 }, { 2, 4500 }, { 4, 2250 }, { 8, 1124 }, { 16, 562 }, { 32, 281 } };
     const auto adcCoef = adcCoefMap.value(coef);
-    config.setRecord("C_Pasp_ID", S2::FLOAT_3t { adcCoef, adcCoef, adcCoef });
-    const auto s2file = config.toByteArray();
+    m_config.setRecord("C_Pasp_ID", S2::FLOAT_3t { adcCoef, adcCoef, adcCoef });
+    const auto s2file = m_config.toByteArray();
     return m_sync->writeFileSync(S2::FilesEnum::Config, s2file);
 }
 

@@ -82,7 +82,7 @@ Error::Msg Tune82ADC::getAnalogData()
     StdFunc::Wait(1000);
     m_bda->readAndUpdate();
     m_bd1->readAndUpdate();
-    const auto inom = config["I2nom"].value<S2::FLOAT_6t>();
+    const auto inom = m_config["I2nom"].value<S2::FLOAT_6t>();
     return m_bda->checkValues(m_typeM, inom);
 }
 

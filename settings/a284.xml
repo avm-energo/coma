@@ -12,6 +12,7 @@
                 <item>
                     <addr>3024</addr>
                     <string>Авария по приращению тангенса дельта ввода фазы А</string>
+                    <order>0</order>
                     <highlights>
                         <item>2429</item>
                     </highlights>
@@ -19,6 +20,7 @@
                 <item>
                     <addr>3025</addr>
                     <string>Авария по приращению тангенса дельта ввода фазы B</string>
+                    <order></order>
                     <highlights>
                         <item>2430</item>
                     </highlights>
@@ -26,6 +28,7 @@
                 <item>
                     <addr>3026</addr>
                     <string>Авария по приращению тангенса дельта ввода фазы C</string>
+                    <order></order>
                     <highlights>
                         <item>2431</item>
                     </highlights>
@@ -33,6 +36,7 @@
                 <item>
                     <addr>3030</addr>
                     <string>Авария по приращению C ввода фазы А</string>
+                    <order></order>
                     <highlights>
                         <item>2426</item>
                     </highlights>
@@ -40,6 +44,7 @@
                 <item>
                     <addr>3031</addr>
                     <string>Авария по приращению C ввода фазы B</string>
+                    <order></order>
                     <highlights>
                         <item>2427</item>
                     </highlights>
@@ -47,6 +52,7 @@
                 <item>
                     <addr>3032</addr>
                     <string>Авария по приращению C ввода фазы C</string>
+                    <order></order>
                     <highlights>
                         <item>2428</item>
                     </highlights>
@@ -54,6 +60,7 @@
                 <item>
                     <addr>3035</addr>
                     <string>Авария по изменению небаланса тока</string>
+                    <order></order>
                     <highlights>
                         <item>2432</item>
                     </highlights>
@@ -69,6 +76,7 @@
                 <item>
                     <addr>3011</addr>
                     <string>Отсутствует сигнал напряжения фазы A</string>
+                    <order></order>
                     <highlights>
                         <item>1000</item>
                     </highlights>
@@ -76,6 +84,7 @@
                 <item>
                     <addr>3012</addr>
                     <string>Отсутствует сигнал напряжения фазы B</string>
+                    <order></order>
                     <highlights>
                         <item>1001</item>
                     </highlights>
@@ -83,6 +92,7 @@
                 <item>
                     <addr>3013</addr>
                     <string>Отсутствует сигнал напряжения фазы C</string>
+                    <order></order>
                     <highlights>
                         <item>1002</item>
                     </highlights>
@@ -90,6 +100,7 @@
                 <item>
                     <addr>3014</addr>
                     <string>Нет тока канала А (ток меньше допустимого)</string>
+                    <order></order>
                     <highlights>
                         <item>1100</item>
                     </highlights>
@@ -97,6 +108,7 @@
                 <item>
                     <addr>3015</addr>
                     <string>Нет тока канала B (ток меньше допустимого)</string>
+                    <order></order>
                     <highlights>
                         <item>1101</item>
                     </highlights>
@@ -104,6 +116,7 @@
                 <item>
                     <addr>3016</addr>
                     <string>Нет тока канала C (ток меньше допустимого)</string>
+                    <order></order>
                     <highlights>
                         <item>1102</item>
                     </highlights>
@@ -111,6 +124,7 @@
                 <item>
                     <addr>3017</addr>
                     <string>Не заданы начальные значения</string>
+                    <order></order>
                     <highlights>
                         <item>2426</item>
                         <item>2427</item>
@@ -125,6 +139,7 @@
                 <item>
                     <addr>3018</addr>
                     <string>Низкое напряжение фазы A</string>
+                    <order></order>
                     <highlights>
                         <item>1000</item>
                     </highlights>
@@ -132,6 +147,7 @@
                 <item>
                     <addr>3019</addr>
                     <string>Низкое напряжение фазы B</string>
+                    <order></order>
                     <highlights>
                         <item>1001</item>
                     </highlights>
@@ -139,6 +155,7 @@
                 <item>
                     <addr>3020</addr>
                     <string>Низкое напряжение фазы C</string>
+                    <order></order>
                     <highlights>
                         <item>1002</item>
                     </highlights>
@@ -146,6 +163,7 @@
                 <item>
                     <addr>3021</addr>
                     <string>Сигнализация по ∆tg δ  фазы А</string>
+                    <order></order>
                     <highlights>
                         <item>2429</item>
                     </highlights>
@@ -153,6 +171,7 @@
                 <item>
                     <addr>3022</addr>
                     <string>Сигнализация по ∆tg δ  фазы B</string>
+                    <order></order>
                     <highlights>
                         <item>2430</item>
                     </highlights>
@@ -160,6 +179,7 @@
                 <item>
                     <addr>3023</addr>
                     <string>Сигнализация по ∆tg δ  фазы C</string>
+                    <order></order>
                     <highlights>
                         <item>2431</item>
                     </highlights>
@@ -167,6 +187,7 @@
                 <item>
                     <addr>3027</addr>
                     <string>Сигнализация по ∆C  фазы А</string>
+                    <order></order>
                     <highlights>
                         <item>2426</item>
                     </highlights>
@@ -174,6 +195,7 @@
                 <item>
                     <addr>3028</addr>
                     <string>Сигнализация по ∆C  фазы B</string>
+                    <order></order>
                     <highlights>
                         <item>2427</item>
                     </highlights>
@@ -181,6 +203,7 @@
                 <item>
                     <addr>3029</addr>
                     <string>Сигнализация по ∆C  фазы C</string>
+                    <order></order>
                     <highlights>
                         <item>2428</item>
                     </highlights>
@@ -188,6 +211,7 @@
                 <item>
                     <addr>3033</addr>
                     <string>Не заданы паспортные значения</string>
+                    <order></order>
                     <highlights>
                         <item>2420</item>
                         <item>2421</item>
@@ -200,6 +224,7 @@
                 <item>
                     <addr>3034</addr>
                     <string>Сигнализация по изменению небаланса тока</string>
+                    <order></order>
                     <highlights>
                         <item>2432</item>
                     </highlights>
@@ -207,6 +232,7 @@
                 <item>
                     <addr>3036</addr>
                     <string>Ошибка задания начальных значений</string>
+                    <order></order>
                 </item>
             </warning>
         </alarms>
@@ -1072,6 +1098,10 @@
                 <signal-id>2</signal-id>
             </group>
             <group>
+                <block>1</block>
+                <signal-id>22</signal-id>
+            </group>
+            <group>
                 <block>2</block>
                 <signal-id>5</signal-id>
             </group>
@@ -1108,6 +1138,10 @@
                 <signal-id>18</signal-id>
             </group>
             <group>
+                <block>48</block>
+                <signal-id>19</signal-id>
+            </group>
+            <group>
                 <block>100</block>
                 <signal-id>13</signal-id>
             </group>
@@ -1118,10 +1152,6 @@
             <group>
                 <block>250</block>
                 <signal-id>16</signal-id>
-            </group>
-            <group>
-                <block>48</block>
-                <signal-id>19</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -1146,31 +1176,31 @@
             <section header="Метрология">
                 <sgroup header="Метрология" tab="4">
                     <mwidget desc="Напряжение Ua, В" view="float">
-                        <start-addr>1000</start-addr>
+                        <start-addr>1061</start-addr>
                         <toolTip>Напряжение Ua, В</toolTip>
                     </mwidget>
                     <mwidget desc="Напряжение Ub, В" view="float">
-                        <start-addr>1001</start-addr>
+                        <start-addr>1062</start-addr>
                         <toolTip>Напряжение Ub, В</toolTip>
                     </mwidget>
                     <mwidget desc="Напряжение Uc, В" view="float">
-                        <start-addr>1002</start-addr>
+                        <start-addr>1063</start-addr>
                         <toolTip>Напряжение Uc, В</toolTip>
                     </mwidget>
                     <mwidget desc="Ток Ia, А" view="float">
-                        <start-addr>1100</start-addr>
+                        <start-addr>1064</start-addr>
                         <toolTip>Ток Ia, А</toolTip>
                     </mwidget>
                     <mwidget desc="Ток Ib, А" view="float">
-                        <start-addr>1101</start-addr>
+                        <start-addr>1065</start-addr>
                         <toolTip>Ток Ib, А</toolTip>
                     </mwidget>
                     <mwidget desc="Ток Ic, А" view="float">
-                        <start-addr>1102</start-addr>
+                        <start-addr>1066</start-addr>
                         <toolTip>Ток Ic, А</toolTip>
                     </mwidget>
                     <mwidget desc="Частота, Гц" view="float">
-                        <start-addr>2400</start-addr>
+                        <start-addr>1060</start-addr>
                         <toolTip>Частота, Гц</toolTip>
                     </mwidget>
                     <mwidget desc="Угол ф.%1, град." view="float">
@@ -1183,17 +1213,9 @@
                             <item>C</item>
                         </string-array>
                     </mwidget>
-                    <mwidget desc="Температура, °C" view="float">
-                        <start-addr>4501</start-addr>
-                        <toolTip>Температура, °C</toolTip>
-                    </mwidget>
                     <mwidget desc="Температура Pt100" view="float">
                         <start-addr>4503</start-addr>
                         <toolTip>Температура Pt100</toolTip>
-                    </mwidget>
-                    <mwidget desc="Влажность, %" view="float">
-                        <start-addr>4504</start-addr>
-                        <toolTip>Влажность, %</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
@@ -1382,63 +1404,9 @@
                 <type>BitString</type>
             </signal>
             <signal>
-                <start-addr>4501</start-addr>
+                <start-addr>40</start-addr>
                 <count>5</count>
-                <id>10</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>7000</start-addr>
-                <count>7</count>
-                <id>11</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>201</start-addr>
-                <count>3</count>
-                <id>12</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>3011</start-addr>
-                <count>26</count>
-                <id>13</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>4600</start-addr>
-                <count>1</count>
-                <id>14</id>
-                <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>4520</start-addr>
-                <count>2</count>
-                <id>15</id>
-                <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>13000</start-addr>
-                <count>8</count>
-                <id>16</id>
-                <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>910</start-addr>
-                <count>11</count>
-                <id>17</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>13100</start-addr>
-                <count>1</count>
-                <id>18</id>
-                <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>2480</start-addr>
-                <count>3</count>
-                <id>19</id>
+                <id>20</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1448,21 +1416,9 @@
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>40</start-addr>
-                <count>5</count>
-                <id>20</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>3100</start-addr>
-                <count>1</count>
-                <id>21</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>801</start-addr>
+                <start-addr>201</start-addr>
                 <count>3</count>
-                <id>3</id>
+                <id>12</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1472,9 +1428,27 @@
                 <type>Float</type>
             </signal>
             <signal>
+                <start-addr>910</start-addr>
+                <count>11</count>
+                <id>17</id>
+                <type>Float</type>
+            </signal>
+            <signal>
                 <start-addr>1000</start-addr>
                 <count>16</count>
                 <id>5</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>1060</start-addr>
+                <count>26</count>
+                <id>22</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>801</start-addr>
+                <count>3</count>
+                <id>3</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1496,10 +1470,64 @@
                 <type>Float</type>
             </signal>
             <signal>
+                <start-addr>2480</start-addr>
+                <count>3</count>
+                <id>19</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>3011</start-addr>
+                <count>26</count>
+                <id>13</id>
+                <type>SinglePoint</type>
+            </signal>
+            <signal>
+                <start-addr>3100</start-addr>
+                <count>1</count>
+                <id>21</id>
+                <type>Float</type>
+            </signal>
+            <signal>
                 <start-addr>4000</start-addr>
                 <count>11</count>
                 <id>9</id>
                 <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>4501</start-addr>
+                <count>5</count>
+                <id>10</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>4520</start-addr>
+                <count>2</count>
+                <id>15</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>4600</start-addr>
+                <count>1</count>
+                <id>14</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>7000</start-addr>
+                <count>7</count>
+                <id>11</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>13000</start-addr>
+                <count>8</count>
+                <id>16</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>13100</start-addr>
+                <count>1</count>
+                <id>18</id>
+                <type>BitString</type>
             </signal>
         </signals>
     </resources>
