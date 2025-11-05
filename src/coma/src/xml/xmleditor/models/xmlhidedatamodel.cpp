@@ -172,6 +172,23 @@ void XmlHideDataModel::parseInteger(const QDomNode &source, const QString &nodeN
     }
 }
 
+void XmlHideDataModel::parseInteger(const QDomNode &source, const QString &nodeName, u32 &dest, u32 defValue)
+{
+    auto state = false;
+    auto search = source.firstChildElement(nodeName);
+    if (!search.isNull())
+    {
+        auto intText = search.firstChild().toText().data();
+        auto value = intText.toUInt(&state);
+        if (state)
+        {
+            dest = value;
+            return;
+        }
+    }
+    dest = defValue;
+}
+
 void XmlHideDataModel::parseText(const QDomNode &source, const QString &nodeName, QString &dest)
 {
     auto search = source.firstChildElement(nodeName);
@@ -203,24 +220,30 @@ SGroupHideData XmlHideDataModel::parseSGroupData(QDomNode &node)
     parseInteger(node, tags::count, retVal.count);                 // Парсим тег count
     parseInteger(node, tags::type, retVal.type);                   // Парсим тег type
     parseText(node, tags::tooltip, retVal.tooltip);                // Парсим тег toolTip
-    retVal.view = node.toElement().attribute(tags::view, "float"); // Парсим аттрибут view
+    retVal.view = node.toElement().attribute(tags::view, "float"); // Парсим атрибут view
+    parseInteger(node, tags::decimals, retVal.decimals);           // parse decimals tag
+    if (retVal.decimals == U32MAX)
+        retVal.decimals = 3;                                       // 3 decimals for float by default
     parseStringArray(node, retVal.array);                          // Парсим тег string-array
     return retVal;
 }
 
 SGroupHideData XmlHideDataModel::convertToSGroupData(const QStringList &input)
 {
-    Q_ASSERT(input.count() == 5);
+    Q_ASSERT(input.count() == 6);
     SGroupHideData hiding;
     auto state = false;
-    auto count = input[0].toInt(&state);
+    auto number = input[0].toInt(&state);
     if (state)
-        hiding.count = count;
+        hiding.count = number;
     hiding.tooltip = input[1];
     if (!input[2].isEmpty())
         hiding.array = input[2].split(',');
     hiding.view = input[3];
-    auto type = input[4].toInt(&state);
+    number = input[4].toInt(&state);
+    if (state)
+        hiding.decimals = number;
+    auto type = input[5].toInt(&state);
     if (state)
         hiding.type = type;
     return hiding;
@@ -233,6 +256,7 @@ QStringList XmlHideDataModel::convertFromSGroupData(const SGroupHideData &input)
     retList.append(input.tooltip);
     retList.append(input.array.join(','));
     retList.append(input.view);
+    retList.append(QString::number(input.decimals));
     retList.append(QString::number(input.type));
     return retList;
 }
@@ -263,6 +287,8 @@ QDomElement XmlHideDataModel::makeSGroupNode(QDomDocument &doc)
                 makeElement(doc, mwidget, tags::tooltip, hideData.tooltip);
             if (!hideData.view.isEmpty())
                 setAttribute(doc, mwidget, tags::view, hideData.view);
+            if (hideData.decimals != 3) // 3 by default thus we can dismiss attribute decimals
+                makeElement(doc, mwidget, tags::decimals, QString::number(hideData.decimals));
             if (!(hideData.array.isEmpty() || (hideData.array.size() == 1 && hideData.array.first().isEmpty())))
             {
                 auto strArray = makeElement(doc, tags::str_array);

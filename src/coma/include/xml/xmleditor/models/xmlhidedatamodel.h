@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gen/integers.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 
 struct SGroupHideData;
@@ -12,6 +13,9 @@ private:
     /// \brief Parsing node with specified name to the integer variable.
     /// \ingroup Internal parsing
     void parseInteger(const QDomNode &source, const QString &nodeName, int &dest);
+    /// \brief Parsing node with specified name to the unsigned integer variable.
+    /// \ingroup Internal parsing
+    void parseInteger(const QDomNode &source, const QString &nodeName, u32 &dest, u32 defValue = U32MAX);
     /// \brief Parsing node with specified name to the string variable.
     /// \ingroup Internal parsing
     void parseText(const QDomNode &source, const QString &nodeName, QString &dest);

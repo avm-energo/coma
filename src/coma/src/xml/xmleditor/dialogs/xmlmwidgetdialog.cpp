@@ -14,10 +14,10 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     auto countLayout = new QHBoxLayout;
     auto tooltipLayout = new QHBoxLayout;
     auto viewLayout = new QHBoxLayout;
-    auto decimalLayout = new QHBoxLayout;
+    auto decLayout = new QHBoxLayout;
     auto strArrLayout = new QHBoxLayout;
     auto typeLayout = new QHBoxLayout;
-    QStackedLayout *stl = new QStackedLayout(this);
+    QStackedLayout *stl = new QStackedLayout;
     m_title += "описания мульти-виджета";
 
     // Виджеты для начального адреса
@@ -90,6 +90,7 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
         stl, &QStackedLayout::setCurrentIndex);
     m_dlgItems.append(viewInput);
 
+    // decimals widget - active only when viewLabel == float
     auto decLabel = new QLabel("Количество знаков после запятой: ", this);
     auto decInput = new QSpinBox(this);
     decInput->setValue(3);
@@ -103,7 +104,33 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
         this, qOverload<int>(&XmlMWidgetDialog::dataChanged));
     decLayout->addWidget(decLabel);
     decLayout->addWidget(decInput);
+    QWidget *w = new QWidget(this);
+    w->setLayout(decLayout);
+    stl->addWidget(w);
     m_dlgItems.append(decInput);
+
+    // empty widget - active only when viewLabel == bitset
+    w = new QWidget(this);
+    stl->addWidget(w);
+
+    // SinglePoint type widget - active only when viewInput == SinglePoint
+    auto typeLabel = new QLabel("Тип (для SP: 1-green,2-yellow,3-red): ", this);
+    auto typeInput = new QSpinBox(this);
+    typeInput->setValue(0);
+    typeInput->setMinimum(countMin);
+    typeInput->setMaximum(countMax);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    QObject::connect(typeInput, &QSpinBox::textChanged, this,            //
+        qOverload<const QString &>(&XmlMWidgetDialog::dataChanged));
+#endif
+    QObject::connect(typeInput, qOverload<int>(&QSpinBox::valueChanged), //
+        this, qOverload<int>(&XmlMWidgetDialog::dataChanged));
+    typeLayout->addWidget(typeLabel);
+    typeLayout->addWidget(typeInput);
+    w = new QWidget(this);
+    w->setLayout(typeLayout);
+    stl->addWidget(w);
+    m_dlgItems.append(typeInput);
 
     // Добавляем слои на главный слой
     mainLayout->addLayout(addrLayout);
@@ -111,6 +138,6 @@ void XmlMWidgetDialog::setupUI(QVBoxLayout *mainLayout)
     mainLayout->addLayout(countLayout);
     mainLayout->addLayout(tooltipLayout);
     mainLayout->addLayout(viewLayout);
-    mainLayout->addLayout(typeLayout);
+    mainLayout->addLayout(stl);
     mainLayout->addLayout(strArrLayout);
 }

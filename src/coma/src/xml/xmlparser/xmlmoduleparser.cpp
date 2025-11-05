@@ -175,7 +175,8 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
                     count = (count == 0) ? 1 : count;
                     auto tooltip = XmlParse::parseString(mwidgetNode, tags::tooltip);
                     auto type = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::type);
-                    auto decimals = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::decimals, U32MAX);
+                    auto decimals = XmlParse::parseNumFromNode<u32>(
+                        mwidgetNode, tags::decimals, 3); // 3 decimals by default for float widgets
                     auto view = parseViewType(viewString);
                     auto itemList = XmlParse::parseArray(mwidgetNode, tags::str_array);
                     sgroup.widgets.push_back({ mwidgetDesc, addr, count, tooltip, view, decimals, itemList, type });

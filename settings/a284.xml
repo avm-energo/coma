@@ -1175,47 +1175,60 @@
         <sections desc="Разделы">
             <section header="Метрология">
                 <sgroup header="Метрология" tab="4">
+                    <mwidget desc="Частота, Гц" view="float">
+                        <start-addr>1060</start-addr>
+                        <toolTip>Частота, Гц</toolTip>
+                        <decimals>2</decimals>
+                    </mwidget>
                     <mwidget desc="Напряжение Ua, В" view="float">
                         <start-addr>1061</start-addr>
                         <toolTip>Напряжение Ua, В</toolTip>
+                        <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Напряжение Ub, В" view="float">
                         <start-addr>1062</start-addr>
                         <toolTip>Напряжение Ub, В</toolTip>
+                        <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Напряжение Uc, В" view="float">
                         <start-addr>1063</start-addr>
                         <toolTip>Напряжение Uc, В</toolTip>
+                        <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Ток Ia, А" view="float">
                         <start-addr>1064</start-addr>
                         <toolTip>Ток Ia, А</toolTip>
+                        <decimals>5</decimals>
                     </mwidget>
                     <mwidget desc="Ток Ib, А" view="float">
                         <start-addr>1065</start-addr>
                         <toolTip>Ток Ib, А</toolTip>
+                        <decimals>5</decimals>
                     </mwidget>
                     <mwidget desc="Ток Ic, А" view="float">
                         <start-addr>1066</start-addr>
                         <toolTip>Ток Ic, А</toolTip>
+                        <decimals>5</decimals>
                     </mwidget>
-                    <mwidget desc="Частота, Гц" view="float">
-                        <start-addr>1060</start-addr>
-                        <toolTip>Частота, Гц</toolTip>
-                    </mwidget>
-                    <mwidget desc="Угол ф.%1, град." view="float">
+                    <mwidget desc="Угол между напряжением и током φA, град." view="float">
                         <start-addr>2480</start-addr>
-                        <count>3</count>
-                        <toolTip>Угол между током пина и напряжением ф.%1, град.</toolTip>
-                        <string-array>
-                            <item>A</item>
-                            <item>B</item>
-                            <item>C</item>
-                        </string-array>
+                        <toolTip>Угол между током пина и напряжением ф.A, град.</toolTip>
+                        <decimals>2</decimals>
+                    </mwidget>
+                    <mwidget desc="Угол между напряжением и током φB, град." view="float">
+                        <start-addr>2481</start-addr>
+                        <toolTip>Угол между током пина и напряжением ф.B, град.</toolTip>
+                        <decimals>2</decimals>
+                    </mwidget>
+                    <mwidget desc="Угол между напряжением и током φC, град." view="float">
+                        <start-addr>2482</start-addr>
+                        <toolTip>Угол между током пина и напряжением ф.C, град.</toolTip>
+                        <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Температура Pt100" view="float">
                         <start-addr>4503</start-addr>
                         <toolTip>Температура Pt100</toolTip>
+                        <decimals>1</decimals>
                     </mwidget>
                 </sgroup>
             </section>
