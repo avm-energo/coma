@@ -96,9 +96,10 @@ void DialogCreator::createConfigDialogs()
 
 void DialogCreator::createCheckDialogs()
 {
-    auto &sections = m_device->getConfigStorage()->getDeviceSettings().getSections();
+    Device::XmlDataTypes::SectionList sections = m_device->getConfigStorage()->getDeviceSettings().getSections();
+    std::sort(sections.begin(), sections.end());
     auto index = 0;
-    for (auto &section : sections)
+    for (auto section : sections)
     {
         auto indexStr = QString::number(index);
         auto checkDialog = new CheckDialog(section, m_device, m_parent);

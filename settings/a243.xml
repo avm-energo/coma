@@ -17,7 +17,6 @@
                 <item>
                     <addr>1102</addr>
                     <string>Аварийная сигнализация по температуре масла или обмотки</string>
-                    <order></order>
                 </item>
                 <item>
                     <addr>1103</addr>
@@ -59,7 +58,6 @@
                 <item>
                     <addr>1111</addr>
                     <string>Температура ВСМ превысила аварийную уставку</string>
-                    <order></order>
                     <highlights>
                         <item>1000</item>
                     </highlights>
@@ -67,7 +65,6 @@
                 <item>
                     <addr>1112</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №1 превысила аварийную уставку</string>
-                    <order></order>
                     <highlights>
                         <item>1008</item>
                     </highlights>
@@ -75,7 +72,6 @@
                 <item>
                     <addr>1113</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №2 превысила аварийную уставку</string>
-                    <order></order>
                     <highlights>
                         <item>1009</item>
                     </highlights>
@@ -83,7 +79,6 @@
                 <item>
                     <addr>1114</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №3 превысила аварийную уставку</string>
-                    <order></order>
                     <highlights>
                         <item>1010</item>
                     </highlights>
@@ -94,12 +89,10 @@
                 <item>
                     <addr>1101</addr>
                     <string>Предупредительная сигнализация по температуре масла или обмотки</string>
-                    <order></order>
                 </item>
                 <item>
                     <addr>1107</addr>
                     <string>Температура ВСМ превысила предупредительную уставку</string>
-                    <order></order>
                     <highlights>
                         <item>1000</item>
                     </highlights>
@@ -107,7 +100,6 @@
                 <item>
                     <addr>1108</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №1 превысила предупредительную уставку</string>
-                    <order></order>
                     <highlights>
                         <item>1008</item>
                     </highlights>
@@ -115,7 +107,6 @@
                 <item>
                     <addr>1109</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №2 превысила предупредительную уставку</string>
-                    <order></order>
                     <highlights>
                         <item>1009</item>
                     </highlights>
@@ -123,7 +114,6 @@
                 <item>
                     <addr>1110</addr>
                     <string>Температура наиболее нагретой точки (ННТ) обмотки №3 превысила предупредительную уставку</string>
-                    <order></order>
                     <highlights>
                         <item>1010</item>
                     </highlights>
@@ -901,10 +891,6 @@
                 <signal-id>5</signal-id>
             </group>
             <group>
-                <block>200</block>
-                <signal-id>7</signal-id>
-            </group>
-            <group>
                 <block>3</block>
                 <signal-id>8</signal-id>
             </group>
@@ -913,8 +899,20 @@
                 <signal-id>9</signal-id>
             </group>
             <group>
+                <block>5</block>
+                <signal-id>11</signal-id>
+            </group>
+            <group>
                 <block>100</block>
                 <signal-id>6</signal-id>
+            </group>
+            <group>
+                <block>200</block>
+                <signal-id>7</signal-id>
+            </group>
+            <group>
+                <block>8</block>
+                <signal-id>12</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -936,16 +934,31 @@
             </tab>
         </section-tabs>
         <sections desc="Разделы">
-            <section header="Метрология">
+            <section header="Метрология" order="2">
                 <sgroup header="Метрология" tab="4">
+                    <mwidget desc="Сила постоянного тока (канал 1), мА" view="float">
+                        <start-addr>2000</start-addr>
+                        <toolTip>Ток, приведённый ко входу 1, мА</toolTip>
+                        <decimals>1</decimals>
+                    </mwidget>
+                    <mwidget desc="Сила постоянного тока (канал 2), мА" view="float">
+                        <start-addr>2002</start-addr>
+                        <toolTip>Ток, приведённый ко входу 2, мА</toolTip>
+                        <decimals>1</decimals>
+                    </mwidget>
+                    <mwidget desc="Сила постоянного тока (канал 3), мА" view="float">
+                        <start-addr>2004</start-addr>
+                        <toolTip>Ток, приведённый ко входу 3, мА</toolTip>
+                        <decimals>1</decimals>
+                    </mwidget>
                     <mwidget desc="Температура Pt100" view="float">
-                        <start-addr>4503</start-addr>
+                        <start-addr>2020</start-addr>
                         <toolTip>Температура Pt100</toolTip>
                         <decimals>1</decimals>
                     </mwidget>
                 </sgroup>
             </section>
-            <section header="Текущие данные">
+            <section header="Текущие данные" order="1">
                 <sgroup header="Команды" tab="3">
                     <mwidget desc="Сброс значений" view="command">
                         <start-addr>814</start-addr>
@@ -1156,6 +1169,18 @@
                 <start-addr>1400</start-addr>
                 <count>8</count>
                 <id>9</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>2000</start-addr>
+                <count>6</count>
+                <id>11</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>2020</start-addr>
+                <count>2</count>
+                <id>12</id>
                 <type>Float</type>
             </signal>
         </signals>

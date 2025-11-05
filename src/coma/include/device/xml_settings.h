@@ -60,7 +60,13 @@ using SGMap = QMultiMap<u32, SGroup>; ///< u32 - id вкладки, SGroup - г�
 struct Section final
 {
     QString name; ///< атрибут "header"
+    u32 order;    ///< order field
     SGMap sgMap;  ///< узлы <sgroup>
+
+    bool operator<(const Section &other) const
+    {
+        return (order < other.order);
+    }
 };
 
 /// \brief Перечисление для хранение типа, читаемого из бинарного файла.

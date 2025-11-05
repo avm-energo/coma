@@ -12,7 +12,6 @@
                 <item>
                     <addr>3024</addr>
                     <string>Авария по приращению тангенса дельта ввода фазы А</string>
-                    <order>0</order>
                     <highlights>
                         <item>2429</item>
                     </highlights>
@@ -20,7 +19,6 @@
                 <item>
                     <addr>3025</addr>
                     <string>Авария по приращению тангенса дельта ввода фазы B</string>
-                    <order></order>
                     <highlights>
                         <item>2430</item>
                     </highlights>
@@ -28,7 +26,6 @@
                 <item>
                     <addr>3026</addr>
                     <string>Авария по приращению тангенса дельта ввода фазы C</string>
-                    <order></order>
                     <highlights>
                         <item>2431</item>
                     </highlights>
@@ -36,7 +33,6 @@
                 <item>
                     <addr>3030</addr>
                     <string>Авария по приращению C ввода фазы А</string>
-                    <order></order>
                     <highlights>
                         <item>2426</item>
                     </highlights>
@@ -44,7 +40,6 @@
                 <item>
                     <addr>3031</addr>
                     <string>Авария по приращению C ввода фазы B</string>
-                    <order></order>
                     <highlights>
                         <item>2427</item>
                     </highlights>
@@ -52,7 +47,6 @@
                 <item>
                     <addr>3032</addr>
                     <string>Авария по приращению C ввода фазы C</string>
-                    <order></order>
                     <highlights>
                         <item>2428</item>
                     </highlights>
@@ -60,7 +54,6 @@
                 <item>
                     <addr>3035</addr>
                     <string>Авария по изменению небаланса тока</string>
-                    <order></order>
                     <highlights>
                         <item>2432</item>
                     </highlights>
@@ -76,7 +69,6 @@
                 <item>
                     <addr>3011</addr>
                     <string>Отсутствует сигнал напряжения фазы A</string>
-                    <order></order>
                     <highlights>
                         <item>1000</item>
                     </highlights>
@@ -84,7 +76,6 @@
                 <item>
                     <addr>3012</addr>
                     <string>Отсутствует сигнал напряжения фазы B</string>
-                    <order></order>
                     <highlights>
                         <item>1001</item>
                     </highlights>
@@ -92,7 +83,6 @@
                 <item>
                     <addr>3013</addr>
                     <string>Отсутствует сигнал напряжения фазы C</string>
-                    <order></order>
                     <highlights>
                         <item>1002</item>
                     </highlights>
@@ -100,7 +90,6 @@
                 <item>
                     <addr>3014</addr>
                     <string>Нет тока канала А (ток меньше допустимого)</string>
-                    <order></order>
                     <highlights>
                         <item>1100</item>
                     </highlights>
@@ -108,7 +97,6 @@
                 <item>
                     <addr>3015</addr>
                     <string>Нет тока канала B (ток меньше допустимого)</string>
-                    <order></order>
                     <highlights>
                         <item>1101</item>
                     </highlights>
@@ -116,7 +104,6 @@
                 <item>
                     <addr>3016</addr>
                     <string>Нет тока канала C (ток меньше допустимого)</string>
-                    <order></order>
                     <highlights>
                         <item>1102</item>
                     </highlights>
@@ -124,7 +111,6 @@
                 <item>
                     <addr>3017</addr>
                     <string>Не заданы начальные значения</string>
-                    <order></order>
                     <highlights>
                         <item>2426</item>
                         <item>2427</item>
@@ -139,7 +125,6 @@
                 <item>
                     <addr>3018</addr>
                     <string>Низкое напряжение фазы A</string>
-                    <order></order>
                     <highlights>
                         <item>1000</item>
                     </highlights>
@@ -147,7 +132,6 @@
                 <item>
                     <addr>3019</addr>
                     <string>Низкое напряжение фазы B</string>
-                    <order></order>
                     <highlights>
                         <item>1001</item>
                     </highlights>
@@ -155,7 +139,6 @@
                 <item>
                     <addr>3020</addr>
                     <string>Низкое напряжение фазы C</string>
-                    <order></order>
                     <highlights>
                         <item>1002</item>
                     </highlights>
@@ -163,7 +146,6 @@
                 <item>
                     <addr>3021</addr>
                     <string>Сигнализация по ∆tg δ  фазы А</string>
-                    <order></order>
                     <highlights>
                         <item>2429</item>
                     </highlights>
@@ -171,7 +153,6 @@
                 <item>
                     <addr>3022</addr>
                     <string>Сигнализация по ∆tg δ  фазы B</string>
-                    <order></order>
                     <highlights>
                         <item>2430</item>
                     </highlights>
@@ -179,7 +160,6 @@
                 <item>
                     <addr>3023</addr>
                     <string>Сигнализация по ∆tg δ  фазы C</string>
-                    <order></order>
                     <highlights>
                         <item>2431</item>
                     </highlights>
@@ -187,7 +167,6 @@
                 <item>
                     <addr>3027</addr>
                     <string>Сигнализация по ∆C  фазы А</string>
-                    <order></order>
                     <highlights>
                         <item>2426</item>
                     </highlights>
@@ -195,7 +174,6 @@
                 <item>
                     <addr>3028</addr>
                     <string>Сигнализация по ∆C  фазы B</string>
-                    <order></order>
                     <highlights>
                         <item>2427</item>
                     </highlights>
@@ -203,7 +181,6 @@
                 <item>
                     <addr>3029</addr>
                     <string>Сигнализация по ∆C  фазы C</string>
-                    <order></order>
                     <highlights>
                         <item>2428</item>
                     </highlights>
@@ -211,7 +188,6 @@
                 <item>
                     <addr>3033</addr>
                     <string>Не заданы паспортные значения</string>
-                    <order></order>
                     <highlights>
                         <item>2420</item>
                         <item>2421</item>
@@ -224,7 +200,6 @@
                 <item>
                     <addr>3034</addr>
                     <string>Сигнализация по изменению небаланса тока</string>
-                    <order></order>
                     <highlights>
                         <item>2432</item>
                     </highlights>
@@ -232,7 +207,6 @@
                 <item>
                     <addr>3036</addr>
                     <string>Ошибка задания начальных значений</string>
-                    <order></order>
                 </item>
             </warning>
         </alarms>
@@ -1173,7 +1147,7 @@
             </tab>
         </section-tabs>
         <sections desc="Разделы">
-            <section header="Метрология">
+            <section header="Метрология" order="2">
                 <sgroup header="Метрология" tab="4">
                     <mwidget desc="Частота, Гц" view="float">
                         <start-addr>1060</start-addr>
@@ -1232,7 +1206,7 @@
                     </mwidget>
                 </sgroup>
             </section>
-            <section header="Текущие данные">
+            <section header="Текущие данные" order="1">
                 <sgroup header="Коэффициенты несимметрии" tab="2">
                     <mwidget desc="KuU1, %" view="float">
                         <start-addr>1014</start-addr>
@@ -1251,7 +1225,7 @@
                         <toolTip>Коэффициент несимметрии тока по обратной последовательности, %</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Общие" tab="1">
+                <sgroup header="Общие" order="1" tab="1">
                     <mwidget desc="Температура микроконтроллера, °С" view="float">
                         <start-addr>101</start-addr>
                         <toolTip>Температура микроконтроллера, °С</toolTip>
@@ -1268,7 +1242,7 @@
                         <toolTip>Температура окружающей среды, °С</toolTip>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Параметры вводов" tab="1">
+                <sgroup header="Параметры вводов" order="2" tab="1">
                     <mwidget desc="U ф.%1, кВ" view="float">
                         <start-addr>1000</start-addr>
                         <count>3</count>
@@ -1330,7 +1304,7 @@
                         </string-array>
                     </mwidget>
                 </sgroup>
-                <sgroup header="Параметры небаланса токов" tab="1">
+                <sgroup header="Параметры небаланса токов" order="3" tab="1">
                     <mwidget desc="Iunb, %" view="float">
                         <start-addr>2432</start-addr>
                         <toolTip>Действующее значение небаланса токов, %</toolTip>

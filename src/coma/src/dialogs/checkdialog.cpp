@@ -27,7 +27,7 @@ constexpr auto c_errStyle = "QLabel {border: 1px solid green; border-radius: 4px
 const auto c_errorStyle = QString(c_errStyle).arg("red");
 const auto c_warnStyle = QString(c_errStyle).arg("yellow");
 
-CheckDialog::CheckDialog(const Section &section, Device::CurrentDevice *device, QWidget *parent)
+CheckDialog::CheckDialog(Section &section, Device::CurrentDevice *device, QWidget *parent)
     : UDialog(device, parent)
     , mSection(section)
 {
@@ -366,10 +366,10 @@ void CheckDialog::updatePixmap(
     }
 }
 
-QLabel *CheckDialog::createPixmapIndicator(const MWidget &mwidget, const quint32 index)
+ELabel *CheckDialog::createPixmapIndicator(const MWidget &mwidget, const quint32 index)
 {
     auto pixmap = GraphFunc::newCircle(c_normalColor, c_circleRadius);
-    auto indicatorLabel = new QLabel(this);
+    auto indicatorLabel = new ELabel(this);
     indicatorLabel->setObjectName(QString::number(mwidget.startAddr) + "_" + QString::number(index));
     indicatorLabel->setPixmap(pixmap);
     if (!mwidget.tooltip.isEmpty())
@@ -377,10 +377,10 @@ QLabel *CheckDialog::createPixmapIndicator(const MWidget &mwidget, const quint32
     return indicatorLabel;
 }
 
-QLabel *CheckDialog::createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const QString name)
+ELabel *CheckDialog::createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const QString name)
 {
     auto pixmap = GraphFunc::newCircle(c_normalColor, c_circleRadius);
-    auto indicatorLabel = new QLabel(this);
+    auto indicatorLabel = new ELabel(this);
     indicatorLabel->setObjectName(name);
     indicatorLabel->setPixmap(pixmap);
     return indicatorLabel;
@@ -402,7 +402,7 @@ QVBoxLayout *CheckDialog::setupBitsetWidget(const MWidget &mwidget, UWidget *wid
         const auto limit = i + c_maxIndicatorCountInRow;
         for (; (i < mwidget.count) && (i < limit); i++)
         {
-            auto textLabel = new QLabel(getFormatted(mwidget, mwidget.desc, i + 1, startIndex), this);
+            auto textLabel = new ELabel(getFormatted(mwidget, mwidget.desc, i + 1, startIndex), this);
             layout->addWidget(textLabel);
             layout->addWidget(createPixmapIndicator(mwidget, i));
         }
@@ -516,7 +516,7 @@ void CheckDialog::setHighlights()
 {
     for (auto [key, value] : m_curHighlight.asKeyValueRange())
     {
-        auto label = findChild<QLabel *>(QString::number(key));
+        auto label = findChild<ELabel *>(QString::number(key));
         if (!label)
             continue;
         if (value == Highlights::RED)

@@ -154,6 +154,7 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
 {
     using namespace Xml;
     auto secHeader = sectionNode.toElement().attribute(tags::header, "");
+    auto secOrder = sectionNode.toElement().attribute(tags::order, 0).toUInt();
     SGMap sgmap;
     XmlParse::callForEachChild(sectionNode,
         [&](const QDomNode &sgroupNode)
@@ -186,7 +187,7 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
             sgroup.notDenied = AppConfiguration::notDenied(sgroupDType);
             sgmap.insert(sgroupTab, sgroup);
         });
-    emit sectionDataSending(sgmap, secHeader);
+    emit sectionDataSending(sgmap, secOrder, secHeader);
 }
 
 void Xml::ModuleParser::parseAlarms(const QDomNode &alarmsNode)

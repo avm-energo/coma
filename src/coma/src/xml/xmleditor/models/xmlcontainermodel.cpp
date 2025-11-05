@@ -32,12 +32,11 @@ void XmlContainerModel::parseNode(QDomNode &node, int &row)
     // Для узлов <sections> и <section>
     if (m_type == ModelType::Sections || m_type == ModelType::Section)
     {
-        parseAttribute(node, tags::header, row, 0);    // Заголовок
-        if (m_type == ModelType::Section)              //
-        {
-            parseAttribute(node, tags::tab, row, 1);   // ID вкладки
-            parseAttribute(node, tags::order, row, 2); // Приоритет внутри вкладки
-        }
+        int count = 0;
+        parseAttribute(node, tags::header, row, count++);  // Заголовок
+        if (m_type == ModelType::Section)                  //
+            parseAttribute(node, tags::tab, row, count++); // ID вкладки
+        parseAttribute(node, tags::order, row, count++);   // Приоритет внутри вкладки
     }
     // Для узлов <hidden>
     else if (m_type == ModelType::Hidden)
@@ -114,18 +113,19 @@ QDomElement XmlContainerModel::toNode(QDomDocument &doc)
                 // Для узлов <sections> и <section>
                 if (m_type == ModelType::Sections || m_type == ModelType::Section)
                 {
+                    int colCount = 0;
                     // Добавляем описание (атрибут header)
-                    setAttribute(doc, childNode, tags::header, data(index(row, 0)));
+                    setAttribute(doc, childNode, tags::header, data(index(row, colCount++)));
                     // Добавляем номер вкладки (атрибут tab) и приоритет (атрибут order)
-                    if ((m_type == ModelType::Section) && (columnCount() > 1))
+                    if ((m_type == ModelType::Section) && (columnCount() > colCount))
                     {
-                        setAttribute(doc, childNode, tags::tab, data(index(row, 1)));
-                        if (columnCount() > 2)
-                        {
-                            auto order = data(index(row, 2)).value<QString>();
-                            if ((!order.isEmpty()) && (order != "0"))
-                                setAttribute(doc, childNode, tags::order, order);
-                        }
+                        setAttribute(doc, childNode, tags::tab, data(index(row, colCount++)));
+                    }
+                    if (columnCount() > colCount)
+                    {
+                        auto order = data(index(row, colCount++)).value<QString>();
+                        if ((!order.isEmpty()) && (order != "0"))
+                            setAttribute(doc, childNode, tags::order, order);
                     }
                 }
                 // Для узлов <hidden>

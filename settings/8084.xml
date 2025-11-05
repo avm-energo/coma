@@ -662,6 +662,9 @@
                         <start-addr>2400</start-addr>
                         <toolTip>Частота, Гц</toolTip>
                     </mwidget>
+                    <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <start-addr>102</start-addr>
+                    </mwidget>
                 </sgroup>
                 <sgroup header="Параметры вводов" tab="1">
                     <mwidget desc="U ф.%1, кВ" view="float">

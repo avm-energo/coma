@@ -32,7 +32,7 @@ public slots:
     /// \brief Slot for saving check's tab records.
     void tabDataReceive(const u32 id, const XmlDataTypes::SectionTabStruct &name);
     /// \brief Slot for saving check's section records.
-    void sectionDataReceive(const XmlDataTypes::SGMap &sgmap, const QString &secHead);
+    void sectionDataReceive(const XmlDataTypes::SGMap &sgmap, const u32 order, const QString &secHead);
     /// \brief Slot for saving device's state alarm records.
     void alarmStateAllDataReceive(const XmlDataTypes::AlarmType type, const u32 index, const QString &desc);
     /// \brief Slot for saving device's alarm records.

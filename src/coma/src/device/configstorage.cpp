@@ -49,9 +49,9 @@ void ConfigStorage::tabDataReceive(const u32 id, const XmlDataTypes::SectionTabS
         m_settings.appendTab(id, sectionTab);
 }
 
-void ConfigStorage::sectionDataReceive(const XmlDataTypes::SGMap &sgmap, const QString &secHead)
+void ConfigStorage::sectionDataReceive(const XmlDataTypes::SGMap &sgmap, const u32 order, const QString &secHead)
 {
-    m_settings.appendSection({ secHead, sgmap });
+    m_settings.appendSection({ secHead, order, sgmap });
 }
 
 void ConfigStorage::alarmStateAllDataReceive(const XmlDataTypes::AlarmType type, const u32 index, const QString &desc)

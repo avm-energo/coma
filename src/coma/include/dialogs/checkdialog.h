@@ -1,10 +1,10 @@
 #pragma once
 
+#include <avm-widgets/elabel.h>
 #include <comawidgets/udialog.h>
 #include <device/xml_settings.h>
 
 #include <QHBoxLayout>
-#include <QLabel>
 
 /// \brief Абстрактный класс проверки работы модулей АВ-ТУК
 class CheckDialog final : public UDialog
@@ -14,7 +14,7 @@ public:
     using HighlightMap = QMultiMap<quint32, quint32>;
 
     explicit CheckDialog(
-        const Device::XmlDataTypes::Section &mSection, Device::CurrentDevice *device, QWidget *parent = nullptr);
+        Device::XmlDataTypes::Section &mSection, Device::CurrentDevice *device, QWidget *parent = nullptr);
     ~CheckDialog() override;
     void setHighlights(Device::XmlDataTypes::AlarmType type, const HighlightMap &map);
 
@@ -49,7 +49,7 @@ private:
      */
     QList<TabWidget> m_TabList;
     QMap<int, BdBlocks *> Bd_blocks;
-    const Device::XmlDataTypes::Section &mSection;
+    Device::XmlDataTypes::Section mSection;
     int currentTabIndex;
     HighlightMap m_highlightWarn, m_highlightCrit;
     QMap<quint32, Highlights> m_curHighlight;
@@ -65,8 +65,8 @@ private:
         const DataTypes::BitStringStruct &bs, UWidget *uwidget);
     void updatePixmap(const Device::XmlDataTypes::MWidget &mwidget,   //
         const DataTypes::SinglePointWithTimeStruct &sp, UWidget *uwidget);
-    QLabel *createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const quint32 index);
-    QLabel *createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const QString name);
+    ELabel *createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const quint32 index);
+    ELabel *createPixmapIndicator(const Device::XmlDataTypes::MWidget &mwidget, const QString name);
     QVBoxLayout *setupGroup(const Device::XmlDataTypes::SGroup &arg, UWidget *uwidget);
     QGridLayout *setupFloatWidget(const Device::XmlDataTypes::MWidget &mwidget, const int wCount);
     QVBoxLayout *setupBitsetWidget(const Device::XmlDataTypes::MWidget &mwidget, UWidget *widget);
