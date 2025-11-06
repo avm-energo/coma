@@ -1,11 +1,11 @@
+#include <avm-widgets/checkboxgroup.h>
+#include <avm-widgets/flowlayout.h>
+#include <avm-widgets/ipctrl.h>
 #include <comawidgets/widgetfactory.h>
 #include <ctti/type_id.hpp>
 #include <interfaces/types/modbus_types.h>
 #include <models/comboboxdelegate.h>
 #include <s2/modbusitem.h>
-#include <avm-widgets/checkboxgroup.h>
-#include <avm-widgets/flowlayout.h>
-#include <avm-widgets/ipctrl.h>
 
 #include <QHeaderView>
 #include <QStandardItem>
@@ -134,7 +134,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
         return widget;
     }
 
-    const auto var = search->second;
+    const auto var = search.value();
     std::visit(
         overloaded {
             [&](const delegate::DoubleSpinBoxGroup &arg)
@@ -242,7 +242,7 @@ bool WidgetFactory::fillBack(quint16 key, const QWidget *parent) const
         return status;
     }
 
-    const auto var = search->second;
+    const auto var = search.value();
     std::visit(
         overloaded {
             [&]([[maybe_unused]] const delegate::DoubleSpinBoxGroup &arg) { status = fillBackSPBG(key, parent); },
@@ -299,7 +299,7 @@ QList<QStandardItem *> WidgetFactory::createItem(quint16 key, const S2::CONFMAST
         return items;
     }
 
-    const auto var = search->second;
+    const auto var = search.value();
     std::visit( //
         overloaded {
             [](const auto &_) { Q_UNUSED(_); },
@@ -451,7 +451,7 @@ quint16 WidgetFactory::getRealCount(const quint16 key)
                     [&](const delegate::ComboBoxGroup &val) { realCount = val.count; },
                     [&]([[maybe_unused]] const auto &arg) { realCount = 0; },
                 },
-                widgetSearch->second);
+                widgetSearch.value());
         }
         return realCount;
     }

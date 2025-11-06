@@ -1,15 +1,15 @@
 #include "dialogs/configdialog.h"
 
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/wdfunc.h>
+#include <common/appconfig.h>
 #include <device/current_device.h>
 #include <dialogs/keypressdialog.h>
 #include <gen/error.h>
 #include <gen/files.h>
 #include <gen/stdfunc.h>
 #include <gen/timefunc.h>
-#include <common/appconfig.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/wdfunc.h>
 
 #include <QDebug>
 #include <QGridLayout>
@@ -59,17 +59,17 @@ void ConfigDialog::checkForDiff()
         qDebug() << diffItems;
 }
 
-bool ConfigDialog::isVisible(const quint16 id) const
+bool ConfigDialog::isVisible(const u32 id) const
 {
     const auto &detailMap = m_datamanager.getStorage().getWidgetDetailMap();
     auto search = detailMap.find(id);
     if (search != detailMap.cend())
-        return search->second.isVisible;
+        return search.value().isVisible;
     else
         return false;
 }
 
-bool ConfigDialog::isDebugWidget(const quint16 id) const
+bool ConfigDialog::isDebugWidget(const u32 id) const
 {
     return m_datamanager.getStorage().getDType(id);
 }
@@ -162,7 +162,7 @@ QWidget *ConfigDialog::ConfButtons()
     return wdgt;
 }
 
-u16 ConfigDialog::tabForId(u16 id)
+u32 ConfigDialog::tabForId(u32 id)
 {
     auto &widgetMap = m_datamanager.getStorage().getWidgetMap();
     auto search = widgetMap.find(id);
@@ -171,15 +171,15 @@ u16 ConfigDialog::tabForId(u16 id)
         qWarning() << "Not found" << id;
         return 0;
     }
-    const auto var = search->second;
+    const auto var = search.value();
     u16 tab = 0;
     std::visit([&](const auto &arg) { tab = arg.group; }, var);
     return tab;
 }
 
-std::set<u16> ConfigDialog::createTabs(QTabWidget *tabWidget)
+std::set<u32> ConfigDialog::createTabs(QTabWidget *tabWidget)
 {
-    std::set<u16> uniqueTabs;
+    std::set<u32> uniqueTabs;
     auto &tabs = m_datamanager.getStorage().getConfigTabs();
     for (const auto &record : m_boardConfig.m_defaultConfig)
     {
@@ -195,9 +195,9 @@ std::set<u16> ConfigDialog::createTabs(QTabWidget *tabWidget)
         }
     }
 
-    for (const auto &tab : uniqueTabs)
+    for (auto tab : uniqueTabs)
     {
-        auto &tabName = tabs.at(tab);
+        auto tabName = tabs[tab];
         auto scrollArea = new QScrollArea(this);
         scrollArea->setObjectName(QString::number(tab));
         scrollArea->setFrameShape(QFrame::NoFrame);
@@ -226,9 +226,9 @@ void ConfigDialog::setupUI()
 {
     auto vlyout = new QVBoxLayout;
     auto ConfTW = new QTabWidget(this);
-    std::set<u16> tabs = createTabs(ConfTW);
+    std::set<u32> tabs = createTabs(ConfTW);
     std::map<quint32, bool> tabUseMap;
-    QMap<u16, WidgetList> sortedWidgetMap; // id : WidgetList
+    QMap<u32, WidgetList> sortedWidgetMap; // id : WidgetList
     for (const auto &record : m_boardConfig.m_defaultConfig)
     {
         const auto id = record.first;
@@ -271,7 +271,7 @@ void ConfigDialog::setupUI()
             }
         }
     }
-    quint8 count = 0;
+    u8 count = 0;
     for (const auto tab : tabs)
     {
         if (tabUseMap.find(tab) == tabUseMap.end())
@@ -353,7 +353,7 @@ void ConfigDialog::insertWidgetIntoListByItsOrder(const u16 id, QWidget *w, Widg
     auto search = detailMap.find(id);
     if (search != detailMap.cend())
     {
-        u16 order = search->second.order;
+        u16 order = search.value().order;
         for (int i = 0; i < wlist.size(); ++i)
         {
             if (wlist.at(i).order > order)

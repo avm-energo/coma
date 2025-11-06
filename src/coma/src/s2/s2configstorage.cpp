@@ -5,68 +5,62 @@
 namespace S2
 {
 
-ConfigStorage::ConfigStorage(QObject *parent) : QObject(parent), m_status(ParseStatus::NotYetParsed) { }
-
-ParseStatus ConfigStorage::getParseStatus() const
-{
-    return m_status;
-}
-
-void ConfigStorage::setParseStatus(const ParseStatus pStatus)
-{
-    m_status = pStatus;
-}
+ConfigStorage::ConfigStorage(QObject *parent) : QObject(parent) { }
 
 void ConfigStorage::clearDetailData() noexcept
 {
     m_widgetDetailMap.clear();
 }
 
-const std::map<QString, quint32> &ConfigStorage::getIdByNameMap() const
+const QMap<QString, u32> &ConfigStorage::getIdByNameMap() const
 {
     return m_idByName;
 }
 
-const std::map<quint32, ctti::unnamed_type_id_t> &ConfigStorage::getTypeByIdMap() const
+const QMap<u32, ctti::detail::hash_t> &ConfigStorage::getTypeByIdMap() const
 {
     return m_typeById;
 }
 
-bool ConfigStorage::getDType(quint16 id)
+bool ConfigStorage::getDType(u32 id)
 {
     auto search = m_dtypes.find(id);
     if (search == m_dtypes.end())
         return false;
-    return search->second;
+    return search.value();
 }
 
-const std::map<u16, QString> &ConfigStorage::getConfigTabs() const
+const QMap<u32, QString> &ConfigStorage::getConfigTabs() const
 {
     return m_configTabs;
 }
 
-const std::map<quint32, ConfigStorage::WidgetDetail> &ConfigStorage::getWidgetDetailMap() const
-{
-    return m_widgetDetailMap;
-}
-
-quint32 ConfigStorage::getIdFor(const QString &name) const noexcept
-{
-    auto search = m_idByName.find(name);
-    if (search == m_idByName.cend())
-        return 0;
-    else
-        return search->second;
-}
-
-void ConfigStorage::nameDataReceive(const quint32 id, const QString &name)
+void ConfigStorage::nameDataReceive(const u32 id, const QString &name)
 {
     if (id == 0)
         qWarning() << "Invalid S2 config id: " << id;
     else if (name.isEmpty())
         qWarning() << "Empty S2 name for item with id: " << id;
     else
-        m_idByName.insert({ name, id });
+    {
+        auto key = m_idByName.key(id);
+        m_idByName.remove(key);
+        m_idByName[name] = id;
+    }
+}
+
+const QMap<u32, ConfigStorage::WidgetDetail> &ConfigStorage::getWidgetDetailMap() const
+{
+    return m_widgetDetailMap;
+}
+
+u32 ConfigStorage::getIdFor(const QString &name) const noexcept
+{
+    auto search = m_idByName.find(name);
+    if (search == m_idByName.cend())
+        return 0;
+    else
+        return search.value();
 }
 
 const config::widgetMap &ConfigStorage::getWidgetMap() const
@@ -74,42 +68,42 @@ const config::widgetMap &ConfigStorage::getWidgetMap() const
     return m_widgetMap;
 }
 
-void ConfigStorage::typeDataReceive(const quint32 id, const std::uint64_t typeId)
+void ConfigStorage::typeDataReceive(const u32 id, const ctti::detail::hash_t typeId)
 {
     if (id == 0)
         qWarning() << "Invalid S2 config id: " << id;
     else if (typeId != 0)
-        m_typeById.insert({ id, typeId });
+        m_typeById[id] = typeId;
 }
 
-void ConfigStorage::dtypeDataReceive(const quint32 id, bool dtype)
+void ConfigStorage::dtypeDataReceive(const u32 id, bool dtype)
 {
     if (id == 0)
         qWarning() << "Invalid S2 config id: " << id;
-    m_dtypes.insert({ id, dtype });
+    m_dtypes[id] = dtype;
 }
 
-void ConfigStorage::widgetDataReceive(const quint32 id, const config::itemVariant &widget)
+void ConfigStorage::widgetDataReceive(const u32 id, const config::itemVariant &widget)
 {
     if (id == 0)
         qWarning() << "Invalid S2 widget id: " << id;
     else if (widget.valueless_by_exception())
         qWarning() << "Invalid S2 widget data, widget id: " << id;
     else
-        m_widgetMap.insert({ id, widget });
+        m_widgetMap[id] = widget;
 }
 
-void ConfigStorage::configTabDataReceive(const quint32 id, const QString &tabName)
+void ConfigStorage::configTabDataReceive(const u32 id, const QString &tabName)
 {
     if (tabName.isEmpty())
         qWarning() << "Empty tab name, tab id: " << id;
     else
-        m_configTabs.insert({ id, tabName });
+        m_configTabs[id] = tabName;
 }
 
-void ConfigStorage::widgetDetailsReceive(const quint32 id, const bool visib, const quint16 count, const quint16 order)
+void ConfigStorage::widgetDetailsReceive(const u32 id, const bool visib, const quint16 count, const quint16 order)
 {
-    m_widgetDetailMap.insert({ id, { visib, count, order } });
+    m_widgetDetailMap[id] = { visib, count, order };
 }
 
 } // namespace S2

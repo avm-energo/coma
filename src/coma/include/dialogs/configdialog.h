@@ -29,8 +29,8 @@ private:
     };
     using WidgetList = QList<OrderedWidget>;
     QWidget *ConfButtons();
-    u16 tabForId(u16 id);
-    std::set<u16> createTabs(QTabWidget *tabWidget);
+    u32 tabForId(u32 id);
+    std::set<u32> createTabs(QTabWidget *tabWidget);
     void setupUI();
 
     void fill();
@@ -42,8 +42,8 @@ private:
     void readConfig();
     void writeConfig();
     void checkForDiff();
-    bool isVisible(const quint16 id) const;
-    bool isDebugWidget(const quint16 id) const;
+    bool isVisible(const u32 id) const;
+    bool isDebugWidget(const u32 id) const;
     void showConfigErrState();
     void insertWidgetIntoListByItsOrder(const u16 id, QWidget *w, WidgetList &wlist);
 

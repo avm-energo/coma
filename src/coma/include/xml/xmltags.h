@@ -7,6 +7,7 @@ namespace tags
 constexpr auto module = "module";
 constexpr auto features = "features";
 constexpr auto res = "resources";
+constexpr auto overlay = "overlay";
 constexpr auto sigs = "signals";
 constexpr auto tabs = "section-tabs";
 constexpr auto sections = "sections";

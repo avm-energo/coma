@@ -17,8 +17,8 @@ class ConfigLoader final : public QObject
 private:
     Device::CurrentDevice *m_device;
     bool m_parseStatus;
-
-    bool loadS2Data() noexcept;
+    
+    void loadS2Data() noexcept;
     bool loadDeviceData() noexcept;
 
 private slots:

@@ -17,12 +17,12 @@ auto setInserter(Set &set)
 namespace S2
 {
 
-Configuration::Configuration(const S2ConfigStorage &storage) : m_storage(storage), m_factory(storage)
-{
-}
+Configuration::Configuration(const S2ConfigStorage &storage) : m_storage(storage), m_factory(storage) { }
 
 Configuration::Configuration(const Configuration &rhs)
-    : m_storage(rhs.m_storage), m_factory(m_storage), m_data(rhs.m_data)
+    : m_storage(rhs.m_storage)
+    , m_factory(m_storage)
+    , m_data(rhs.m_data)
 {
 }
 
@@ -32,7 +32,7 @@ quint32 Configuration::getIdByName(const QString &name) const noexcept
     auto search = nameMap.find(name);
     Q_ASSERT(search != nameMap.cend());
     if (search != nameMap.cend())
-        return search->second;
+        return search.value();
     else
         return 0;
 }
@@ -157,7 +157,7 @@ void Configuration::merge(const Configuration &other)
 std::vector<quint32> Configuration::checkDiff(const Configuration &rhs) const
 {
     std::set<quint32> currentItems, receivedtItems;
-    std::transform(m_data.cbegin(), m_data.cend(), detail::setInserter(currentItems), //
+    std::transform(m_data.cbegin(), m_data.cend(), detail::setInserter(currentItems),           //
         [](const auto &iter) { return iter.first; });
     std::transform(rhs.m_data.cbegin(), rhs.m_data.cend(), detail::setInserter(receivedtItems), //
         [](const auto &iter) { return iter.first; });

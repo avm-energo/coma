@@ -1,13 +1,13 @@
 #pragma once
 
-#include <comawidgets/gasdensitywidget.h>
-#include <device/current_device.h>
-#include <gen/std_ext.h>
-#include <s2/delegate_common.h>
 #include <avm-widgets/cbfunc.h>
 #include <avm-widgets/chbfunc.h>
 #include <avm-widgets/ipctrl.h>
 #include <avm-widgets/spbfunc.h>
+#include <comawidgets/gasdensitywidget.h>
+#include <device/current_device.h>
+#include <gen/std_ext.h>
+#include <s2/delegate_common.h>
 
 #include <QLineEdit>
 #include <QStandardItemModel>
@@ -138,7 +138,7 @@ template <typename T> bool WidgetFactory::fillWidget(const QWidget *parent, quin
         return status;
     }
 
-    const auto var = search->second;
+    const auto var = search.value();
     std::visit(
         overloaded {
             [&](const auto &arg)

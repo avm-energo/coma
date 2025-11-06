@@ -17,40 +17,36 @@ ConfigLoader::ConfigLoader(Device::CurrentDevice *device) noexcept
 bool ConfigLoader::loadSettings() noexcept
 {
     m_parseStatus = true;
-    if (loadS2Data())
-        if (loadDeviceData())
-            m_device->internalProtocolUpdate();
+    loadS2Data();
+    if (loadDeviceData())
+        m_device->internalProtocolUpdate();
     return m_parseStatus;
 }
 
-bool ConfigLoader::loadS2Data() noexcept
+void ConfigLoader::loadS2Data() noexcept
 {
     // Если ещё не парсили s2files.xml
     auto &s2storage = m_device->getS2Datamanager()->getStorage();
-    if (s2storage.getParseStatus() == S2::ParseStatus::NotYetParsed)
-    {
-        auto mS2Parser = new Xml::S2Parser(this);
-        QObject::connect(mS2Parser, &Xml::S2Parser::nameDataSending,      //
-            &s2storage, &S2::ConfigStorage::nameDataReceive);
-        QObject::connect(mS2Parser, &Xml::S2Parser::typeDataSending,      //
-            &s2storage, &S2::ConfigStorage::typeDataReceive);
-        QObject::connect(mS2Parser, &Xml::S2Parser::dtypeDataSending,     //
-            &s2storage, &S2::ConfigStorage::dtypeDataReceive);
-        QObject::connect(mS2Parser, &Xml::S2Parser::widgetDataSending,    //
-            &s2storage, &S2::ConfigStorage::widgetDataReceive);
-        QObject::connect(mS2Parser, &Xml::S2Parser::configTabDataSending, //
-            &s2storage, &S2::ConfigStorage::configTabDataReceive);
-        // Парсинг s2files.xml
-        mS2Parser->parse();
-        // Успешно распарсили s2files.xml
-        s2storage.setParseStatus(S2::ParseStatus::AlreadyParsed);
-        mS2Parser->deleteLater();
-    }
-    return m_parseStatus;
+    auto mXmlParser = new Xml::XmlS2Parser(this);
+    QObject::connect(mXmlParser, &Xml::XmlParser::nameDataSending,      //
+        &s2storage, &S2::ConfigStorage::nameDataReceive);
+    QObject::connect(mXmlParser, &Xml::XmlParser::typeDataSending,      //
+        &s2storage, &S2::ConfigStorage::typeDataReceive);
+    QObject::connect(mXmlParser, &Xml::XmlParser::dtypeDataSending,     //
+        &s2storage, &S2::ConfigStorage::dtypeDataReceive);
+    QObject::connect(mXmlParser, &Xml::XmlParser::widgetDataSending,    //
+        &s2storage, &S2::ConfigStorage::widgetDataReceive);
+    QObject::connect(mXmlParser, &Xml::XmlParser::configTabDataSending, //
+        &s2storage, &S2::ConfigStorage::configTabDataReceive);
+    // Парсинг s2files.xml
+    mXmlParser->parse();
+    // Успешно распарсили s2files.xml
+    mXmlParser->deleteLater();
 }
 
 bool ConfigLoader::loadDeviceData() noexcept
 {
+    auto &s2storage = m_device->getS2Datamanager()->getStorage();
     auto s2manager = m_device->getS2Datamanager();
     auto cfgStorage = m_device->getConfigStorage();
     auto moduleParser = new Xml::ModuleParser(this);
@@ -84,6 +80,16 @@ bool ConfigLoader::loadDeviceData() noexcept
         cfgStorage, &Device::ConfigStorage::bsiExtItemDataReceive);              //
     QObject::connect(moduleParser, &Xml::ModuleParser::parseError,               //
         this, &Xml::ConfigLoader::parseErrorHandle);                             //
+    QObject::connect(moduleParser, &Xml::XmlParser::nameDataSending,             //
+        &s2storage, &S2::ConfigStorage::nameDataReceive);
+    QObject::connect(moduleParser, &Xml::XmlParser::typeDataSending,             //
+        &s2storage, &S2::ConfigStorage::typeDataReceive);
+    QObject::connect(moduleParser, &Xml::XmlParser::dtypeDataSending,            //
+        &s2storage, &S2::ConfigStorage::dtypeDataReceive);
+    QObject::connect(moduleParser, &Xml::XmlParser::widgetDataSending,           //
+        &s2storage, &S2::ConfigStorage::widgetDataReceive);
+    QObject::connect(moduleParser, &Xml::XmlParser::configTabDataSending,        //
+        &s2storage, &S2::ConfigStorage::configTabDataReceive);
     moduleParser->parse(m_device);
     m_device->configFileLoadFinished();
     moduleParser->deleteLater();

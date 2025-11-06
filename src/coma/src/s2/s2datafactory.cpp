@@ -90,7 +90,7 @@ ctti::unnamed_type_id_t DataFactory::getType(const quint32 id) const
         qDebug() << "id " << id << " is absent in s2files.xml";
         return ctti::unnamed_type_id_t(ctti::type_id_t()); // return "void"
     }
-    return search->second;
+    return search.value();
 }
 
 DataItem DataFactory::create(const DataRec &record) const

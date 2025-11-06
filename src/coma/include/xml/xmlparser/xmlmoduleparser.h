@@ -1,9 +1,7 @@
 #pragma once
 
-#include <device/xml_settings.h>
-#include <interfaces/types/common_types.h>
-
-#include <QDomElement>
+#include "xml/xmlparser/xmlparser.h"
+// #include <interfaces/types/common_types.h>
 
 namespace Device
 {
@@ -16,7 +14,7 @@ namespace Xml
 using namespace ::Device::XmlDataTypes;
 
 /// \brief Класс для парсинга XML файлов конфигурации устройств.
-class ModuleParser final : public QObject
+class ModuleParser final : public XmlParser
 {
     Q_OBJECT
 private:
@@ -75,9 +73,13 @@ private:
     void parseDocument(const QStringList &filenames, const Device::CurrentDevice *device);
     /// \brief Парсинг раздела features
     void parseFeatures(const QDomNode &featuresNode);
-    /// \brief Парсинг XML файла конфигурации устройства.
-    void parseResources(const QDomElement &resourcesNode, const QStringList &nodes = {});
     /// \brief Парсинг содержимого узла <resources>.
+    void parseResources(const QDomElement &resourcesNode, const QStringList &nodes = {});
+    /// \brief overlay node parse
+    void parseOverlay(const QDomElement &overlayNode);
+    /// \brief detect resource type for overlay and parse it
+    void parseOverlayDetector(const QDomNode &overlayNode);
+    /// \brief detect resource type for node and parse it
     void parseDetector(const QDomNode &node);
     /// \brief Парсинг узла <signals>.
     void parseSignal(const QDomNode &sigNode);
@@ -111,6 +113,10 @@ private:
     void parseHiddenTab(const QDomNode &hiddenTabNode);
     /// \brief Парсинг узлов <item> внутри <bsi-ext>.
     void parseBsiExtItem(const QDomNode &bsiExtItemNode);
+    /// \brief parse overlay config-tab tag
+    void parseOverlayConfigTab(const QDomNode &tabNode);
+    /// \brief parse overlay record tag
+    void parseOverlayRecord(const QDomNode &recordNode);
 };
 
 }

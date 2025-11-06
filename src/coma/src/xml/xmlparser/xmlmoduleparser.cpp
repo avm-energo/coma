@@ -356,6 +356,31 @@ void Xml::ModuleParser::parseBsiExtItem(const QDomNode &bsiExtItemNode)
     emit bsiExtItemDataSending(address, type, visibility, desc);
 }
 
+void Xml::ModuleParser::parseOverlayConfigTab(const QDomNode &tabNode)
+{
+    auto id = XmlParse::parseNumFromNode<u32>(tabNode, tags::id);
+    auto name = XmlParse::parseString(tabNode, tags::name);
+    emit configTabDataSending(id, name);
+}
+
+void Xml::ModuleParser::parseOverlayRecord(const QDomNode &recordNode)
+{
+    auto id = quint32(0);
+    auto idNode = recordNode.firstChildElement(tags::id);
+    if (!idNode.isNull())
+    {
+        id = XmlParse::parseNum<u32>(idNode);
+        if (XmlParse::isNodeExist(recordNode, tags::name))
+            emit nameDataSending(id, XmlParse::parseString(recordNode, tags::name));
+        if (XmlParse::isNodeExist(recordNode, tags::dtype))
+            emit dtypeDataSending(id, AppConfiguration::notDenied(XmlParse::parseString(recordNode, tags::dtype)));
+        if (XmlParse::isNodeExist(recordNode, tags::type))
+            emit typeDataSending(id, parseType(XmlParse::elementByTag(recordNode, tags::type)));
+        if (XmlParse::isNodeExist(recordNode, tags::widget))
+            emit widgetDataSending(id, parseWidget(XmlParse::elementByTag(recordNode, tags::widget)));
+    }
+}
+
 void Xml::ModuleParser::parseDetector(const QDomNode &node)
 {
     const auto tag = node.toElement().tagName();
@@ -409,6 +434,15 @@ void Xml::ModuleParser::parseResources(const QDomElement &resourcesNode, const Q
         emit parseError("В файле не найден узел <resources>");
 }
 
+void Xml::ModuleParser::parseOverlay(const QDomElement &overlayNode)
+{
+    if (!overlayNode.isNull())
+    {
+        auto parseAction = [this](const QDomNode &node) { parseOverlayDetector(node); };
+        XmlParse::callForEachChild(overlayNode, parseAction);
+    }
+}
+
 void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList &nodes)
 {
     if (Files::isFileExist(filename))
@@ -422,6 +456,8 @@ void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList
                     featuresNode, tags::features, [&](const QDomNode &featuresNode) { parseFeatures(featuresNode); });
             auto resources = moduleNode.firstChildElement(tags::res);
             parseResources(resources, nodes);
+            auto overlay = moduleNode.firstChildElement(tags::overlay);
+            parseOverlay(overlay);
         }
         else
             emit parseError(QString("В файле %1 не найден узел <module>").arg(filename));
@@ -450,6 +486,8 @@ void Xml::ModuleParser::parseDocument(const QStringList &filenames, const Device
                             featuresNode, [&](const QDomNode &featuresNode) { parseFeatures(featuresNode); });
                     auto resources = moduleNode.firstChildElement(tags::res);
                     parseResources(resources);
+                    auto overlay = moduleNode.firstChildElement(tags::overlay);
+                    parseOverlay(overlay);
                 }
                 else
                     break;
@@ -506,4 +544,14 @@ void Xml::ModuleParser::parse(Device::CurrentDevice *device)
     }
     else
         emit parseError("Получен нулевой указатель на устройство");
+}
+
+void Xml::ModuleParser::parseOverlayDetector(const QDomNode &overlayNode)
+{
+    const auto tag = overlayNode.toElement().tagName();
+    if (tag == tags::conf_tabs)
+        XmlParse::parseNode(
+            overlayNode, tags::conf_tabs, [this](const QDomNode &tabNode) { parseOverlayConfigTab(tabNode); });
+    XmlParse::parseNode(
+        overlayNode, tags::records, [this](const QDomNode &recordNode) { parseOverlayRecord(recordNode); });
 }

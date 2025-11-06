@@ -1,5 +1,4 @@
-#ifndef DELEGATE_COMMON_H
-#define DELEGATE_COMMON_H
+#pragma once
 
 #include <ctti/type_id.hpp>
 #include <gen/integers.h>
@@ -18,6 +17,7 @@ enum class ItemType : int
 
 struct Widget
 {
+    Widget() : type(0) { }
     Widget(const ctti::unnamed_type_id_t type_) : type(type_) { }
 
     Widget(const ctti::unnamed_type_id_t type_, const u16 group_) : type(type_), group(group_) { }
@@ -38,6 +38,7 @@ struct Widget
 
 struct DoubleSpinBoxWidget : Widget
 {
+    DoubleSpinBoxWidget() { }
     DoubleSpinBoxWidget(const ctti::unnamed_type_id_t &type_, const QString &desc_, //
         const u16 &group_, const QString &toolTip_)                                 //
         : Widget(type_, desc_, group_, toolTip_)                                    //
@@ -57,6 +58,7 @@ struct Group
 
 struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
 {
+    DoubleSpinBoxGroup() { }
     DoubleSpinBoxGroup(
         const ctti::unnamed_type_id_t &type_, const QString &desc_, const u16 &group_, const QString &toolTip_)
         : DoubleSpinBoxWidget(type_, desc_, group_, toolTip_)
@@ -66,6 +68,7 @@ struct DoubleSpinBoxGroup : DoubleSpinBoxWidget, Group
 
 struct CheckBoxGroup : Widget, Group
 {
+    CheckBoxGroup() { }
     CheckBoxGroup(
         const ctti::unnamed_type_id_t &type_, const QString &desc_, const u16 &group_, const QString &toolTip_)
         : Widget(type_, desc_, group_, toolTip_)
@@ -82,6 +85,7 @@ struct ComboBox : Widget
         bitfield = 2
     };
 
+    ComboBox() { }
     ComboBox(const ctti::unnamed_type_id_t &type_, const QString &desc_, const u16 &group_, const QString &toolTip_)
         : Widget(type_, desc_, group_, toolTip_)
     {
@@ -93,6 +97,7 @@ struct ComboBox : Widget
 
 struct ComboBoxGroup : ComboBox, Group
 {
+    ComboBoxGroup() { }
     ComboBoxGroup(
         const ctti::unnamed_type_id_t &type_, const QString &desc_, const u16 &group_, const QString &toolTip_)
         : ComboBox(type_, desc_, group_, toolTip_)
@@ -121,6 +126,7 @@ struct Item : delegate::Widget
         Count
     };
 
+    Item() { }
     Item(const ctti::unnamed_type_id_t type_) : Widget(type_) { }
 
     Item(const ctti::unnamed_type_id_t &type_, const delegate::ItemType &itype_, //
@@ -145,7 +151,5 @@ using itemVariant = std::variant<  //
     Item                           //
     >;
 
-using widgetMap = std::map<quint32, itemVariant>;
+using widgetMap = QMap<u32, itemVariant>;
 }
-
-#endif // DELEGATE_COMMON_H
