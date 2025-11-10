@@ -1,27 +1,20 @@
 #include "xml/xmlparser/xmlparser.h"
 
+#include <avm-widgets/basespinboxgroup.h>
+#include <avm-widgets/checkboxgroup.h>
+#include <avm-widgets/ipctrl.h>
+#include <comawidgets/gasdensitywidget.h>
 #include <common/appconfig.h>
 #include <gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
+#include <QTableView>
 #include <QtDebug>
 
 namespace Xml
 {
 
 XmlParser::XmlParser(QObject *parent) : QObject { parent } { }
-
-class DoubleSpinBoxGroup;
-class QLabel;
-class QDoubleSpinBox;
-class QCheckBox;
-class QComboBox;
-class QComboBoxGroup;
-class QTableView;
-class CheckBoxGroup;
-class IPCtrl;
-class QLineEdit;
-class GasDensityWidget;
 
 const QHash<QString, ctti::detail::hash_t> Xml::XmlParser::s_nameTypeMap = {
     { "M_SP", ctti::unnamed_type_id<DataTypes::SinglePointWithTimeStruct>().hash() }, //
@@ -30,7 +23,7 @@ const QHash<QString, ctti::detail::hash_t> Xml::XmlParser::s_nameTypeMap = {
     { "IpControl", ctti::unnamed_type_id<IPCtrl>().hash() },                          //
     { "CheckBoxGroup", ctti::unnamed_type_id<CheckBoxGroup>().hash() },               //
     { "DoubleSpinBoxGroup", ctti::unnamed_type_id<DoubleSpinBoxGroup>().hash() },     //
-    { "QComboBoxGroup", ctti::unnamed_type_id<QComboBoxGroup>().hash() },             //
+    { "ComboBoxGroup", ctti::unnamed_type_id<delegate::ComboBoxGroup>().hash() },     //
     { "QLabel", ctti::unnamed_type_id<QLabel>().hash() },                             //
     { "QDoubleSpinBox", ctti::unnamed_type_id<QDoubleSpinBox>().hash() },             //
     { "QCheckBox", ctti::unnamed_type_id<QCheckBox>().hash() },                       //
@@ -205,7 +198,7 @@ config::itemVariant Xml::XmlParser::parseWidget(const QDomElement &widgetNode)
             comboBoxParse(widget, widgetNode, items);
             return std::move(widget);
         }
-        case ctti::unnamed_type_id<QComboBoxGroup>().hash():
+        case ctti::unnamed_type_id<delegate::ComboBoxGroup>().hash():
         {
             delegate::ComboBoxGroup widget(type, description, widgetGroup, toolTip);
             groupParse(widget, widgetNode, items);

@@ -394,7 +394,7 @@
             <name>in_typeA_IDB</name>
             <type>BYTE[8]</type>
             <widget>
-                <type>QComboBoxGroup</type>
+                <type>ComboBoxGroup</type>
                 <group>4</group>
                 <string>Тип входа</string>
                 <count>8</count>
@@ -659,7 +659,7 @@
             <name>in_typeA_IDE</name>
             <type>BYTE[8]</type>
             <widget>
-                <type>QComboBoxGroup</type>
+                <type>ComboBoxGroup</type>
                 <group>4</group>
                 <string>Тип входа</string>
                 <count>8</count>
@@ -924,7 +924,7 @@
             <name>In3_type_ID</name>
             <type>BYTE[3]</type>
             <widget>
-                <type>QComboBoxGroup</type>
+                <type>ComboBoxGroup</type>
                 <group>4</group>
                 <string>Тип аналоговых входов</string>
                 <toolTip>Тип аналоговых входов</toolTip>
@@ -1098,7 +1098,7 @@
             <name>typeU_IDB</name>
             <type>DWORD</type>
             <widget>
-                <type>QComboBoxGroup</type>
+                <type>ComboBoxGroup</type>
                 <group>300</group>
                 <string>Тип напряжения</string>
                 <count>11</count>
@@ -1274,7 +1274,7 @@
             <name>typeU_IDE</name>
             <type>DWORD</type>
             <widget>
-                <type>QComboBoxGroup</type>
+                <type>ComboBoxGroup</type>
                 <group>300</group>
                 <string>Тип напряжения</string>
                 <count>11</count>
@@ -1750,7 +1750,7 @@
             <name>ispulse_IDB</name>
             <type>DWORD</type>
             <widget>
-                <type>QComboBoxGroup</type>
+                <type>ComboBoxGroup</type>
                 <group>300</group>
                 <string>Постоянный сигнал или импульс</string>
                 <count>30</count>
@@ -1765,7 +1765,7 @@
             <name>type_pulse_IDB</name>
             <type>DWORD</type>
             <widget>
-                <type>QComboBoxGroup</type>
+                <type>ComboBoxGroup</type>
                 <group>300</group>
                 <string>Тип импульса</string>
                 <count>30</count>
@@ -1847,7 +1847,7 @@
             <name>ispulse_IDE</name>
             <type>DWORD</type>
             <widget>
-                <type>QComboBoxGroup</type>
+                <type>ComboBoxGroup</type>
                 <group>300</group>
                 <string>Постоянный сигнал или импульс</string>
                 <count>30</count>
@@ -1862,7 +1862,7 @@
             <name>type_pulse_IDE</name>
             <type>DWORD</type>
             <widget>
-                <type>QComboBoxGroup</type>
+                <type>ComboBoxGroup</type>
                 <group>300</group>
                 <string>Тип импульса</string>
                 <count>30</count>
@@ -2750,6 +2750,7 @@
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>300</group>
+                <string>В осциллограмму записывается каждая ... точка</string>
                 <toolTip>В осциллограмму записывается каждая ... точка</toolTip>
                 <min>1</min>
                 <max>512</max>
@@ -4281,7 +4282,7 @@
                 <string>Коэффициент передачи датчиков вибрации</string>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>3</decimals>
             </widget>
         </record>
         <record>
@@ -5761,6 +5762,18 @@
                 <min>0</min>
                 <max>100</max>
                 <decimals>1</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1229</id>
+            <name></name>
+            <type>BYTE</type>
+            <dtype>Yes</dtype>
+            <widget>
+                <type>None</type>
+                <group>210</group>
+                <string>В длинную осциллограмму записывается каждая ... точка</string>
+                <toolTip>В длинную осциллограмму записывается каждая ... точка</toolTip>
             </widget>
         </record>
     </records>

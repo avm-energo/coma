@@ -319,7 +319,7 @@
             <record>
                 <id>3</id>
                 <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
+                <visibility>false</visibility>
             </record>
             <record>
                 <id>4</id>
@@ -383,7 +383,7 @@
             </record>
             <record>
                 <id>24</id>
-                <defaultValue>172,16,31,220</defaultValue>
+                <defaultValue>172,16,31,222</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -403,6 +403,11 @@
             </record>
             <record>
                 <id>28</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>29</id>
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
@@ -754,6 +759,26 @@
             <record>
                 <id>1324</id>
                 <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1002</id>
+                <defaultValue>512</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1085</id>
+                <defaultValue>2</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1086</id>
+                <defaultValue>1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>1229</id>
+                <defaultValue>1</defaultValue>
                 <visibility>true</visibility>
             </record>
         </config>
@@ -1375,6 +1400,10 @@
                 <signal-id>2</signal-id>
             </group>
             <group>
+                <block>1</block>
+                <signal-id>22</signal-id>
+            </group>
+            <group>
                 <block>2</block>
                 <signal-id>3</signal-id>
             </group>
@@ -1427,10 +1456,6 @@
                 <signal-id>19</signal-id>
             </group>
             <group>
-                <block>200</block>
-                <signal-id>29</signal-id>
-            </group>
-            <group>
                 <block>35</block>
                 <signal-id>17</signal-id>
             </group>
@@ -1451,8 +1476,16 @@
                 <signal-id>26</signal-id>
             </group>
             <group>
+                <block>200</block>
+                <signal-id>29</signal-id>
+            </group>
+            <group>
                 <block>250</block>
                 <signal-id>36</signal-id>
+            </group>
+            <group>
+                <block>48</block>
+                <signal-id>38</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -1563,17 +1596,17 @@
                         <toolTip>Ток Ic, А</toolTip>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φA, град." view="float">
-                        <start-addr>2480</start-addr>
+                        <start-addr>2900</start-addr>
                         <toolTip>Угол между током пина и напряжением ф.A, град.</toolTip>
                         <decimals>1</decimals>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φB, град." view="float">
-                        <start-addr>2481</start-addr>
+                        <start-addr>2901</start-addr>
                         <toolTip>Угол между током пина и напряжением ф.B, град.</toolTip>
                         <decimals>1</decimals>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φC, град." view="float">
-                        <start-addr>2482</start-addr>
+                        <start-addr>2902</start-addr>
                         <toolTip>Угол между током пина и напряжением ф.C, град.</toolTip>
                         <decimals>1</decimals>
                     </mwidget>
@@ -2045,6 +2078,12 @@
                 <type>Float</type>
             </signal>
             <signal>
+                <start-addr>1060</start-addr>
+                <count>47</count>
+                <id>22</id>
+                <type>Float</type>
+            </signal>
+            <signal>
                 <start-addr>1220</start-addr>
                 <count>8</count>
                 <id>8</id>
@@ -2090,6 +2129,12 @@
                 <start-addr>2420</start-addr>
                 <count>32</count>
                 <id>15</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>2900</start-addr>
+                <count>3</count>
+                <id>38</id>
                 <type>Float</type>
             </signal>
             <signal>

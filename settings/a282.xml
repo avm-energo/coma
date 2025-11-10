@@ -80,8 +80,8 @@
             </record>
             <record>
                 <id>3</id>
-                <defaultValue>1</defaultValue>
-                <visibility>true</visibility>
+                <defaultValue>8</defaultValue>
+                <visibility>false</visibility>
             </record>
             <record>
                 <id>4</id>
@@ -140,7 +140,7 @@
             </record>
             <record>
                 <id>24</id>
-                <defaultValue>172,16,29,12</defaultValue>
+                <defaultValue>172,16,31,222</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -160,6 +160,11 @@
             </record>
             <record>
                 <id>28</id>
+                <defaultValue>0</defaultValue>
+                <visibility>true</visibility>
+            </record>
+            <record>
+                <id>29</id>
                 <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
@@ -928,6 +933,10 @@
                 <signal-id>3</signal-id>
             </group>
             <group>
+                <block>1</block>
+                <signal-id>29</signal-id>
+            </group>
+            <group>
                 <block>2</block>
                 <signal-id>5</signal-id>
             </group>
@@ -998,6 +1007,10 @@
             <group>
                 <block>250</block>
                 <signal-id>27</signal-id>
+            </group>
+            <group>
+                <block>48</block>
+                <signal-id>30</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -1074,17 +1087,17 @@
                         <toolTip>Ток Ic, А</toolTip>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φA, град." view="float">
-                        <start-addr>2480</start-addr>
+                        <start-addr>2900</start-addr>
                         <toolTip>Угол между током пина и напряжением ф.A, град.</toolTip>
                         <decimals>1</decimals>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φB, град." view="float">
-                        <start-addr>2481</start-addr>
+                        <start-addr>2901</start-addr>
                         <toolTip>Угол между током пина и напряжением ф.B, град.</toolTip>
                         <decimals>1</decimals>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φC, град." view="float">
-                        <start-addr>2482</start-addr>
+                        <start-addr>2902</start-addr>
                         <toolTip>Угол между током пина и напряжением ф.C, град.</toolTip>
                         <decimals>1</decimals>
                     </mwidget>
@@ -1317,6 +1330,98 @@
                     </mwidget>
                 </sgroup>
             </section>
+            <section header="Текущие данные. Вторая тройка">
+                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
+                    <mwidget desc="I0, А" view="float">
+                        <start-addr>1411</start-addr>
+                        <toolTip>Ток нулевой последовательности гр.1, А</toolTip>
+                    </mwidget>
+                    <mwidget desc="I1, А" view="float">
+                        <start-addr>1412</start-addr>
+                        <toolTip>Ток прямой последовательности гр.1, А</toolTip>
+                    </mwidget>
+                    <mwidget desc="I2, А" view="float">
+                        <start-addr>1413</start-addr>
+                        <toolTip>Ток обратной последовательности гр.1, А</toolTip>
+                    </mwidget>
+                    <mwidget desc="KuI2, %" view="float">
+                        <start-addr>1414</start-addr>
+                        <toolTip>Коэффициент несимметрии тока по обратной последовательности гр.1, %</toolTip>
+                    </mwidget>
+                    <mwidget desc="KuI0, %" view="float">
+                        <start-addr>1415</start-addr>
+                        <toolTip>Коэффициент несимметрии тока по нулевой последовательности гр.1, %</toolTip>
+                    </mwidget>
+                    <mwidget desc="THD_I ф.%1" view="float">
+                        <start-addr>1416</start-addr>
+                        <count>3</count>
+                        <toolTip>Общий коэффициент гарм. искажений тока ф.%1 гр.1</toolTip>
+                        <string-array>
+                            <item>A</item>
+                            <item>B</item>
+                            <item>C</item>
+                        </string-array>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Действующие значения и крест-факторы сигналов" tab="1">
+                    <mwidget desc="I ф.%1, А" view="float">
+                        <start-addr>1400</start-addr>
+                        <count>3</count>
+                        <toolTip>Фазное истинное действующее значение тока ф.%1, А</toolTip>
+                        <string-array>
+                            <item>A</item>
+                            <item>B</item>
+                            <item>C</item>
+                        </string-array>
+                    </mwidget>
+                    <mwidget desc="I ср., А" view="float">
+                        <start-addr>1403</start-addr>
+                        <toolTip>Среднее истинное фазное действующее значение тока, А</toolTip>
+                    </mwidget>
+                    <mwidget desc="IhA1 ф.%1, А" view="float">
+                        <start-addr>1404</start-addr>
+                        <count>3</count>
+                        <toolTip>Фазное действующее значение тока ф.%1 по 1-й гармонике, А</toolTip>
+                        <string-array>
+                            <item>A</item>
+                            <item>B</item>
+                            <item>C</item>
+                        </string-array>
+                    </mwidget>
+                    <mwidget desc="IhA1 ср., А" view="float">
+                        <start-addr>1407</start-addr>
+                        <toolTip>Среднее фазное действующее значение тока по 1-й гарм., А</toolTip>
+                    </mwidget>
+                    <mwidget desc="KrF_I ф.%1, А" view="float">
+                        <start-addr>1408</start-addr>
+                        <count>3</count>
+                        <toolTip>Крест-фактор тока в фазе %1, А</toolTip>
+                        <string-array>
+                            <item>A</item>
+                            <item>B</item>
+                            <item>C</item>
+                        </string-array>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
+                    <mwidget desc="Гм %1" view="float">
+                        <start-addr>3420</start-addr>
+                        <count>61</count>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
+                    <mwidget desc="Гм %1" view="float">
+                        <start-addr>3546</start-addr>
+                        <count>61</count>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
+                    <mwidget desc="Гм %1" view="float">
+                        <start-addr>3670</start-addr>
+                        <count>61</count>
+                    </mwidget>
+                </sgroup>
+            </section>
             <section header="Текущие данные. Первая тройка">
                 <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
                     <mwidget desc="U0, кВ" view="float">
@@ -1439,98 +1544,6 @@
                     </mwidget>
                 </sgroup>
             </section>
-            <section header="Текущие данные. Вторая тройка">
-                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
-                    <mwidget desc="I0, А" view="float">
-                        <start-addr>1411</start-addr>
-                        <toolTip>Ток нулевой последовательности гр.1, А</toolTip>
-                    </mwidget>
-                    <mwidget desc="I1, А" view="float">
-                        <start-addr>1412</start-addr>
-                        <toolTip>Ток прямой последовательности гр.1, А</toolTip>
-                    </mwidget>
-                    <mwidget desc="I2, А" view="float">
-                        <start-addr>1413</start-addr>
-                        <toolTip>Ток обратной последовательности гр.1, А</toolTip>
-                    </mwidget>
-                    <mwidget desc="KuI2, %" view="float">
-                        <start-addr>1414</start-addr>
-                        <toolTip>Коэффициент несимметрии тока по обратной последовательности гр.1, %</toolTip>
-                    </mwidget>
-                    <mwidget desc="KuI0, %" view="float">
-                        <start-addr>1415</start-addr>
-                        <toolTip>Коэффициент несимметрии тока по нулевой последовательности гр.1, %</toolTip>
-                    </mwidget>
-                    <mwidget desc="THD_I ф.%1" view="float">
-                        <start-addr>1416</start-addr>
-                        <count>3</count>
-                        <toolTip>Общий коэффициент гарм. искажений тока ф.%1 гр.1</toolTip>
-                        <string-array>
-                            <item>A</item>
-                            <item>B</item>
-                            <item>C</item>
-                        </string-array>
-                    </mwidget>
-                </sgroup>
-                <sgroup header="Действующие значения и крест-факторы сигналов" tab="1">
-                    <mwidget desc="I ф.%1, А" view="float">
-                        <start-addr>1400</start-addr>
-                        <count>3</count>
-                        <toolTip>Фазное истинное действующее значение тока ф.%1, А</toolTip>
-                        <string-array>
-                            <item>A</item>
-                            <item>B</item>
-                            <item>C</item>
-                        </string-array>
-                    </mwidget>
-                    <mwidget desc="I ср., А" view="float">
-                        <start-addr>1403</start-addr>
-                        <toolTip>Среднее истинное фазное действующее значение тока, А</toolTip>
-                    </mwidget>
-                    <mwidget desc="IhA1 ф.%1, А" view="float">
-                        <start-addr>1404</start-addr>
-                        <count>3</count>
-                        <toolTip>Фазное действующее значение тока ф.%1 по 1-й гармонике, А</toolTip>
-                        <string-array>
-                            <item>A</item>
-                            <item>B</item>
-                            <item>C</item>
-                        </string-array>
-                    </mwidget>
-                    <mwidget desc="IhA1 ср., А" view="float">
-                        <start-addr>1407</start-addr>
-                        <toolTip>Среднее фазное действующее значение тока по 1-й гарм., А</toolTip>
-                    </mwidget>
-                    <mwidget desc="KrF_I ф.%1, А" view="float">
-                        <start-addr>1408</start-addr>
-                        <count>3</count>
-                        <toolTip>Крест-фактор тока в фазе %1, А</toolTip>
-                        <string-array>
-                            <item>A</item>
-                            <item>B</item>
-                            <item>C</item>
-                        </string-array>
-                    </mwidget>
-                </sgroup>
-                <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
-                    <mwidget desc="Гм %1" view="float">
-                        <start-addr>3420</start-addr>
-                        <count>61</count>
-                    </mwidget>
-                </sgroup>
-                <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
-                    <mwidget desc="Гм %1" view="float">
-                        <start-addr>3546</start-addr>
-                        <count>61</count>
-                    </mwidget>
-                </sgroup>
-                <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
-                    <mwidget desc="Гм %1" view="float">
-                        <start-addr>3670</start-addr>
-                        <count>61</count>
-                    </mwidget>
-                </sgroup>
-            </section>
         </sections>
         <signals desc="Сигналы">
             <signal>
@@ -1538,60 +1551,6 @@
                 <count>15</count>
                 <id>1</id>
                 <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>40</start-addr>
-                <count>5</count>
-                <id>2</id>
-                <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>101</start-addr>
-                <count>2</count>
-                <id>3</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>120</start-addr>
-                <count>1</count>
-                <id>4</id>
-                <type>BitString</type>
-            </signal>
-            <signal>
-                <start-addr>1000</start-addr>
-                <count>19</count>
-                <id>5</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>1220</start-addr>
-                <count>8</count>
-                <id>6</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>1400</start-addr>
-                <count>19</count>
-                <id>7</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>2400</start-addr>
-                <count>7</count>
-                <id>8</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>2420</start-addr>
-                <count>32</count>
-                <id>9</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>2500</start-addr>
-                <count>16</count>
-                <id>28</id>
-                <type>Float</type>
             </signal>
             <signal>
                 <start-addr>3020</start-addr>
@@ -1654,6 +1613,12 @@
                 <type>Float</type>
             </signal>
             <signal>
+                <start-addr>40</start-addr>
+                <count>5</count>
+                <id>2</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
                 <start-addr>3940</start-addr>
                 <count>4</count>
                 <id>20</id>
@@ -1700,6 +1665,66 @@
                 <count>7</count>
                 <id>27</id>
                 <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>2500</start-addr>
+                <count>16</count>
+                <id>28</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>1060</start-addr>
+                <count>47</count>
+                <id>29</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>101</start-addr>
+                <count>2</count>
+                <id>3</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>120</start-addr>
+                <count>1</count>
+                <id>4</id>
+                <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>1000</start-addr>
+                <count>19</count>
+                <id>5</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>1220</start-addr>
+                <count>8</count>
+                <id>6</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>1400</start-addr>
+                <count>19</count>
+                <id>7</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>2400</start-addr>
+                <count>7</count>
+                <id>8</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>2420</start-addr>
+                <count>32</count>
+                <id>9</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>2900</start-addr>
+                <count>3</count>
+                <id>30</id>
+                <type>Float</type>
             </signal>
         </signals>
     </resources>

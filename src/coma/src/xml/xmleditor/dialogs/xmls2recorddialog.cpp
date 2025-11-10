@@ -1,7 +1,7 @@
+#include <avm-widgets/wdfunc.h>
 #include <gen/integers.h>
 #include <gen/settings.h>
 #include <gen/xml/xmlparse.h>
-#include <avm-widgets/wdfunc.h>
 #include <xml/xmleditor/dialogs/xmls2recorddialog.h>
 #include <xml/xmleditor/models/xmldatamodel.h>
 #include <xml/xmltags.h>
@@ -9,17 +9,49 @@
 #include <limits>
 
 const QStringList XmlS2RecordDialog::s_dataTypes {
-    "BYTE", "BYTE[3]", "BYTE[4]", "BYTE[6]", "BYTE[8]", "BYTE[16]", "BYTE[32]", //
-    "WORD", "WORD[3]", "WORD[4]", "WORD[6]", "WORD[8]", "WORD[16]", "WORD[32]", //
-    "DWORD", "DWORD[4]", "DWORD[6]", "DWORD[8]", "DWORD[16]", "DWORD[32]",      //
-    "FLOAT", "FLOAT[2]", "FLOAT[3]", "FLOAT[4]", "FLOAT[6]", "FLOAT[8]",        //
-    "CONF_DENS", "CONF_DENS[3]", "BYTE[]", "INT32",                             //
+    "BYTE",
+    "BYTE[3]",
+    "BYTE[4]",
+    "BYTE[6]",
+    "BYTE[8]",
+    "BYTE[16]",
+    "BYTE[32]", //
+    "WORD",
+    "WORD[3]",
+    "WORD[4]",
+    "WORD[6]",
+    "WORD[8]",
+    "WORD[16]",
+    "WORD[32]", //
+    "DWORD",
+    "DWORD[4]",
+    "DWORD[6]",
+    "DWORD[8]",
+    "DWORD[16]",
+    "DWORD[32]", //
+    "FLOAT",
+    "FLOAT[2]",
+    "FLOAT[3]",
+    "FLOAT[4]",
+    "FLOAT[6]",
+    "FLOAT[8]", //
+    "CONF_DENS",
+    "CONF_DENS[3]",
+    "BYTE[]",
+    "INT32", //
 };
 
 const QStringList XmlS2RecordDialog::s_widgetTypes {
-    "None", "IpControl", "CheckBoxGroup", "DoubleSpinBoxGroup",   //
-    "QComboBoxGroup", "QDoubleSpinBox", "QCheckBox", "QComboBox", //
-    "QTableView", "GasDensityWidget",                             //
+    "None",
+    "IpControl",
+    "CheckBoxGroup",
+    "DoubleSpinBoxGroup", //
+    "ComboBoxGroup",
+    "QDoubleSpinBox",
+    "QCheckBox",
+    "QComboBox",        //
+    "QTableView",
+    "GasDensityWidget", //
 };
 
 XmlS2RecordDialog::XmlS2RecordDialog(QWidget *parent)

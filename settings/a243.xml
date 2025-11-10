@@ -134,7 +134,7 @@
             <record>
                 <id>3</id>
                 <defaultValue>8</defaultValue>
-                <visibility>true</visibility>
+                <visibility>false</visibility>
             </record>
             <record>
                 <id>4</id>

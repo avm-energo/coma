@@ -288,7 +288,7 @@
             </record>
             <record>
                 <id>24</id>
-                <defaultValue>172,16,31,220</defaultValue>
+                <defaultValue>172,16,31,222</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -313,7 +313,7 @@
             </record>
             <record>
                 <id>29</id>
-                <defaultValue>1</defaultValue>
+                <defaultValue>0</defaultValue>
                 <visibility>true</visibility>
             </record>
             <record>
@@ -1185,17 +1185,17 @@
                         <decimals>5</decimals>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φA, град." view="float">
-                        <start-addr>2480</start-addr>
+                        <start-addr>2900</start-addr>
                         <toolTip>Угол между током пина и напряжением ф.A, град.</toolTip>
                         <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φB, град." view="float">
-                        <start-addr>2481</start-addr>
+                        <start-addr>2901</start-addr>
                         <toolTip>Угол между током пина и напряжением ф.B, град.</toolTip>
                         <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φC, град." view="float">
-                        <start-addr>2482</start-addr>
+                        <start-addr>2902</start-addr>
                         <toolTip>Угол между током пина и напряжением ф.C, град.</toolTip>
                         <decimals>2</decimals>
                     </mwidget>
@@ -1409,6 +1409,12 @@
                 <type>Float</type>
             </signal>
             <signal>
+                <start-addr>801</start-addr>
+                <count>3</count>
+                <id>3</id>
+                <type>Float</type>
+            </signal>
+            <signal>
                 <start-addr>900</start-addr>
                 <count>8</count>
                 <id>4</id>
@@ -1433,12 +1439,6 @@
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>801</start-addr>
-                <count>3</count>
-                <id>3</id>
-                <type>Float</type>
-            </signal>
-            <signal>
                 <start-addr>1100</start-addr>
                 <count>16</count>
                 <id>6</id>
@@ -1457,7 +1457,7 @@
                 <type>Float</type>
             </signal>
             <signal>
-                <start-addr>2480</start-addr>
+                <start-addr>2900</start-addr>
                 <count>3</count>
                 <id>19</id>
                 <type>Float</type>
