@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     ComaHelper *helper = new ComaHelper;
     AppConfiguration::setApp(AppConfiguration::Debug);
-    helper->initAppSettings();
     Settings::initialize(PROGNAME, SOFTDEVELOPER, COMAVERSION);
+    helper->initAppSettings();
     app.setWindowIcon(QIcon(":/icons/coma.ico"));
     Coma coma;
     // Если есть аргументы запуска

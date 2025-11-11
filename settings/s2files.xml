@@ -4533,6 +4533,21 @@
             </widget>
         </record>
         <record>
+            <id>1229</id>
+            <name>MpointLosc</name>
+            <type>BYTE</type>
+            <dtype>Yes</dtype>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>300</group>
+                <string>В длинную осциллограмму записывается каждая ... точка</string>
+                <toolTip>В длинную осциллограмму записывается каждая ... точка</toolTip>
+                <min>1</min>
+                <max>10000</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
             <id>1233</id>
             <name>UVmax6</name>
             <type>FLOAT[6]</type>
@@ -5762,18 +5777,6 @@
                 <min>0</min>
                 <max>100</max>
                 <decimals>1</decimals>
-            </widget>
-        </record>
-        <record>
-            <id>1229</id>
-            <name></name>
-            <type>BYTE</type>
-            <dtype>Yes</dtype>
-            <widget>
-                <type>None</type>
-                <group>210</group>
-                <string>В длинную осциллограмму записывается каждая ... точка</string>
-                <toolTip>В длинную осциллограмму записывается каждая ... точка</toolTip>
             </widget>
         </record>
     </records>
