@@ -77,8 +77,6 @@ private:
     void parseResources(const QDomElement &resourcesNode, const QStringList &nodes = {});
     /// \brief overlay node parse
     void parseOverlay(const QDomElement &overlayNode);
-    /// \brief detect resource type for overlay and parse it
-    void parseOverlayDetector(const QDomNode &overlayNode);
     /// \brief detect resource type for node and parse it
     void parseDetector(const QDomNode &node);
     /// \brief Парсинг узла <signals>.

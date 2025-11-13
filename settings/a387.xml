@@ -1472,6 +1472,10 @@
                 <signal-id>21</signal-id>
             </group>
             <group>
+                <block>48</block>
+                <signal-id>38</signal-id>
+            </group>
+            <group>
                 <block>100</block>
                 <signal-id>26</signal-id>
             </group>
@@ -1482,10 +1486,6 @@
             <group>
                 <block>250</block>
                 <signal-id>36</signal-id>
-            </group>
-            <group>
-                <block>48</block>
-                <signal-id>38</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -1611,9 +1611,39 @@
                         <decimals>1</decimals>
                     </mwidget>
                     <mwidget desc="Температура Pt100" view="float">
-                        <start-addr>4503</start-addr>
+                        <start-addr>4508</start-addr>
                         <toolTip>Температура Pt100</toolTip>
                         <decimals>1</decimals>
+                    </mwidget>
+                    <mwidget desc="Среднеквадратичное значение виброускорения по каналу 1, м/с2" view="float">
+                        <start-addr>6040</start-addr>
+                        <toolTip>Среднеквадратичное значение виброускорения по каналу 1, м/с2</toolTip>
+                        <decimals>2</decimals>
+                    </mwidget>
+                    <mwidget desc="Среднеквадратичное значение виброускорения по каналу 2, м/с2" view="float">
+                        <start-addr>6041</start-addr>
+                        <toolTip>Среднеквадратичное значение виброускорения по каналу 2, м/с2</toolTip>
+                        <decimals>2</decimals>
+                    </mwidget>
+                    <mwidget desc="Среднеквадратичное значение виброускорения по каналу 3, м/с2" view="float">
+                        <start-addr>6042</start-addr>
+                        <toolTip>Среднеквадратичное значение виброускорения по каналу 3, м/с2</toolTip>
+                        <decimals>2</decimals>
+                    </mwidget>
+                    <mwidget desc="Среднеквадратичное значение виброускорения по каналу 4, м/с2" view="float">
+                        <start-addr>6043</start-addr>
+                        <toolTip>Среднеквадратичное значение виброускорения по каналу 4, м/с2</toolTip>
+                        <decimals>2</decimals>
+                    </mwidget>
+                    <mwidget desc="Среднеквадратичное значение виброускорения по каналу 5, м/с2" view="float">
+                        <start-addr>6044</start-addr>
+                        <toolTip>Среднеквадратичное значение виброускорения по каналу 5, м/с2</toolTip>
+                        <decimals>2</decimals>
+                    </mwidget>
+                    <mwidget desc="Среднеквадратичное значение виброускорения по каналу 6, м/с2" view="float">
+                        <start-addr>6045</start-addr>
+                        <toolTip>Среднеквадратичное значение виброускорения по каналу 6, м/с2</toolTip>
+                        <decimals>2</decimals>
                     </mwidget>
                 </sgroup>
             </section>

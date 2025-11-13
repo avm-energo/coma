@@ -365,6 +365,7 @@ void Xml::ModuleParser::parseOverlayConfigTab(const QDomNode &tabNode)
 
 void Xml::ModuleParser::parseOverlayRecord(const QDomNode &recordNode)
 {
+    auto name = recordNode.nodeName();
     auto id = quint32(0);
     auto idNode = recordNode.firstChildElement(tags::id);
     if (!idNode.isNull())
@@ -436,11 +437,10 @@ void Xml::ModuleParser::parseResources(const QDomElement &resourcesNode, const Q
 
 void Xml::ModuleParser::parseOverlay(const QDomElement &overlayNode)
 {
-    if (!overlayNode.isNull())
-    {
-        auto parseAction = [this](const QDomNode &node) { parseOverlayDetector(node); };
-        XmlParse::callForEachChild(overlayNode, parseAction);
-    }
+    XmlParse::parseNode(
+        overlayNode, tags::conf_tabs, [this](const QDomNode &tabNode) { parseOverlayConfigTab(tabNode); });
+    XmlParse::parseNode(
+        overlayNode, tags::records, [this](const QDomNode &recordNode) { parseOverlayRecord(recordNode); });
 }
 
 void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList &nodes)
@@ -544,14 +544,4 @@ void Xml::ModuleParser::parse(Device::CurrentDevice *device)
     }
     else
         emit parseError("Получен нулевой указатель на устройство");
-}
-
-void Xml::ModuleParser::parseOverlayDetector(const QDomNode &overlayNode)
-{
-    const auto tag = overlayNode.toElement().tagName();
-    if (tag == tags::conf_tabs)
-        XmlParse::parseNode(
-            overlayNode, tags::conf_tabs, [this](const QDomNode &tabNode) { parseOverlayConfigTab(tabNode); });
-    XmlParse::parseNode(
-        overlayNode, tags::records, [this](const QDomNode &recordNode) { parseOverlayRecord(recordNode); });
 }

@@ -1,5 +1,9 @@
 #include "s2/s2configstorage.h"
 
+#include "gen/floats.h"
+#include "gen/std_ext.h"
+#include <gen/strings.h>
+
 #include <QDebug>
 
 namespace S2
@@ -63,6 +67,84 @@ u32 ConfigStorage::getIdFor(const QString &name) const noexcept
         return search.value();
 }
 
+config::itemVariant ConfigStorage::mergeWidgets(
+    const config::itemVariant &oldWidget, const config::itemVariant &newWidget)
+{
+    config::itemVariant outw;
+    std::visit(
+        overloaded {
+            [&](const delegate::DoubleSpinBoxGroup &neww, const delegate::DoubleSpinBoxGroup &oldw)
+            {
+                delegate::DoubleSpinBoxGroup outw2 = oldw;
+                if (neww.decimals != U32MAX)
+                    outw2.decimals = neww.decimals;
+                if (neww.min != F4MAX)
+                    outw2.min = neww.min;
+                if (neww.max != F4MAX)
+                    outw2.max = neww.max;
+                if (neww.count != U32MAX)
+                    outw2.count = neww.count;
+                outw = outw2;
+            },
+            [&](const delegate::DoubleSpinBoxWidget &neww, const delegate::DoubleSpinBoxWidget &oldw)
+            {
+                delegate::DoubleSpinBoxWidget outw2 = oldw;
+                if (neww.decimals != U32MAX)
+                    outw2.decimals = neww.decimals;
+                if (neww.min != F4MAX)
+                    outw2.min = neww.min;
+                if (neww.max != F4MAX)
+                    outw2.max = neww.max;
+                outw = outw2;
+            },
+            [&](const delegate::CheckBoxGroup &neww, const delegate::CheckBoxGroup &oldw)
+            {
+                delegate::CheckBoxGroup outw2 = oldw;
+                if (neww.items != STRLISTINF)
+                    outw2.items = neww.items;
+                if (neww.count != U32MAX)
+                    outw2.count = neww.count;
+                outw = outw2;
+            },
+            [&](const delegate::ComboBox &neww, const delegate::ComboBox &oldw)
+            {
+                delegate::ComboBox outw2 = oldw;
+                if (neww.model != STRLISTINF)
+                    outw2.model = neww.model;
+                if (neww.primaryField != delegate::ComboBox::unknown)
+                    outw2.primaryField = neww.primaryField;
+                outw = outw2;
+            },
+            [&](const delegate::ComboBoxGroup &neww, const delegate::ComboBoxGroup &oldw)
+            {
+                delegate::ComboBoxGroup outw2 = oldw;
+                if (neww.model != STRLISTINF)
+                    outw2.model = neww.model;
+                if (neww.primaryField != delegate::ComboBox::unknown)
+                    outw2.primaryField = neww.primaryField;
+                if (neww.count != U32MAX)
+                    outw2.count = neww.count;
+                if (neww.items != STRLISTINF)
+                    outw2.items = neww.items;
+                outw = outw2;
+            },
+            [&](const auto &neww, const auto &oldw) { outw = neww; },
+        },
+        newWidget, oldWidget);
+    auto mainEqualizer = [&](auto &neww, auto &oldw) {
+
+    };
+    std::visit(overloaded { [&](const auto &neww, const auto &oldw, auto &outw)
+                   {
+                       outw.desc = (neww.desc == STRINF) ? oldw.desc : neww.desc;
+                       outw.group = (neww.group == U16MAX) ? oldw.group : neww.group;
+                       outw.toolTip = (neww.toolTip == STRINF) ? oldw.desc : neww.desc;
+                       outw.type = (neww.type == 0) ? oldw.type : neww.type;
+                   } },
+        newWidget, oldWidget, outw);
+    return outw;
+}
+
 const config::widgetMap &ConfigStorage::getWidgetMap() const
 {
     return m_widgetMap;
@@ -90,7 +172,13 @@ void ConfigStorage::widgetDataReceive(const u32 id, const config::itemVariant &w
     else if (widget.valueless_by_exception())
         qWarning() << "Invalid S2 widget data, widget id: " << id;
     else
-        m_widgetMap[id] = widget;
+    {
+        auto w = m_widgetMap.find(id);
+        if (w != m_widgetMap.end())
+            m_widgetMap[id] = mergeWidgets(w.value(), widget); // merging widget
+        else
+            m_widgetMap[id] = widget;
+    }
 }
 
 void ConfigStorage::configTabDataReceive(const u32 id, const QString &tabName)

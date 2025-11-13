@@ -78,11 +78,12 @@ struct CheckBoxGroup : Widget, Group
 
 struct ComboBox : Widget
 {
-    enum PrimaryField : int
+    enum PrimaryField : u16
     {
         index = 0,
         data = 1,
-        bitfield = 2
+        bitfield = 2,
+        unknown = U16MAX
     };
 
     ComboBox() { }

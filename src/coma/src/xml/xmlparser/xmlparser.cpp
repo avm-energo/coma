@@ -5,6 +5,7 @@
 #include <avm-widgets/ipctrl.h>
 #include <comawidgets/gasdensitywidget.h>
 #include <common/appconfig.h>
+#include <gen/floats.h>
 #include <gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
@@ -101,14 +102,14 @@ void Xml::XmlParser::parseRecord(const QDomNode &recordNode)
 
 void Xml::XmlParser::dSpinBoxParse(delegate::DoubleSpinBoxWidget &dsbw, const QDomElement &widgetNode)
 {
-    dsbw.min = XmlParse::parseNumFromNode<double>(widgetNode, tags::min);
-    dsbw.max = XmlParse::parseNumFromNode<double>(widgetNode, tags::max);
-    dsbw.decimals = XmlParse::parseNumFromNode<quint32>(widgetNode, tags::decimals);
+    dsbw.min = XmlParse::parseNumFromNode<double>(widgetNode, tags::min, F4MAX);
+    dsbw.max = XmlParse::parseNumFromNode<double>(widgetNode, tags::max, F4MAX);
+    dsbw.decimals = XmlParse::parseNumFromNode<quint32>(widgetNode, tags::decimals, U32MAX);
 }
 
 void Xml::XmlParser::groupParse(delegate::Group &group, const QDomElement &widgetNode, const QStringList &items)
 {
-    group.count = XmlParse::parseNumFromNode<quint32>(widgetNode, tags::count);
+    group.count = XmlParse::parseNumFromNode<quint32>(widgetNode, tags::count, U32MAX);
     // В оригинальном коде items для delegate::QComboBox присваивается переменной
     // model, а не items (см. функцию S2XmlParser::comboBoxParse)
     if constexpr (!is_comboBox<decltype(group)>)
@@ -130,10 +131,16 @@ void Xml::XmlParser::comboBoxParse(delegate::ComboBox &comboBox, //
                 comboBox.primaryField = delegate::ComboBox::data;
             else if (fieldStr.contains(tags::bitfield))
                 comboBox.primaryField = delegate::ComboBox::bitfield;
-            else
+            else if (fieldStr.contains(tags::index))
                 comboBox.primaryField = delegate::ComboBox::index;
+            else
+                comboBox.primaryField = delegate::ComboBox::unknown;
         }
+        else
+            comboBox.primaryField = delegate::ComboBox::unknown;
     }
+    else
+        comboBox.primaryField = delegate::ComboBox::unknown;
 }
 
 config::Item Xml::XmlParser::parseItem(const QDomElement &itemNode, //
@@ -145,12 +152,12 @@ config::Item Xml::XmlParser::parseItem(const QDomElement &itemNode, //
     else
         return { 0 };
 
-    auto widgetGroup = XmlParse::parseNumFromNode<int>(itemNode, tags::group);
+    auto widgetGroup = XmlParse::parseNumFromNode<u16>(itemNode, tags::group, U16MAX);
     switch (itemType)
     {
     case delegate::ItemType::ModbusItem:
     {
-        auto parent = XmlParse::parseNumFromNode<quint16>(itemNode, tags::parent);
+        auto parent = XmlParse::parseNumFromNode<u16>(itemNode, tags::parent, U16MAX);
         return config::Item(type, itemType, parent, widgetGroup);
     }
     default:
@@ -166,7 +173,7 @@ config::itemVariant Xml::XmlParser::parseWidget(const QDomElement &widgetNode)
 
     if (className.isEmpty())
     {
-        auto widgetGroup = XmlParse::parseNumFromNode<int>(widgetNode, tags::group);
+        u16 widgetGroup = XmlParse::parseNumFromNode<u16>(widgetNode, tags::group, U16MAX);
         const auto description = XmlParse::parseString(widgetNode, tags::string);
         const auto toolTip = XmlParse::parseString(widgetNode, tags::tooltip);
         const auto items = XmlParse::parseArray(widgetNode, tags::str_array);

@@ -77,6 +77,7 @@ public slots:
     /// \brief Слот для сохранения уточнённой информации о виджете по его S2 ID.
     /// \see getWidgetDetailMap.
     void widgetDetailsReceive(const quint32 id, const bool visib, const quint16 count, const quint16 order);
+    config::itemVariant mergeWidgets(const config::itemVariant &oldWidget, const config::itemVariant &newWidget);
 };
 
 } // namespace S2
