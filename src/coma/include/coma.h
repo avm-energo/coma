@@ -1,11 +1,12 @@
 #pragma once
 
-#include <dialogs/dialogmanager.h>
+#include "journals/basejournal.h"
+#include <avm-widgets/estatusbar.h>
 #include <common/comahelper.h>
+#include <dialogs/dialogmanager.h>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/types/connection_settings.h>
 #include <oscillograms/oscmanager.h>
-#include <avm-widgets/estatusbar.h>
 
 #include <QApplication>
 #include <QListWidget>
@@ -39,7 +40,7 @@ public:
 public slots:
     void disconnectAndClear();
     void loadSwj(const QString &filename);
-    void loadJournal(const QString &filename);
+    void loadJournal(const QString &filename, journals::JournalType type);
 
 private slots:
     void createSlice();
@@ -52,7 +53,8 @@ private slots:
     void loadSwj();
     void loadSwjPackConvertor();
     void hex2BinConverter();
-    void openJournalViewer();
+    void openJournalViewerJN();
+    void openJournalViewerDAT();
     void openXmlEditor();
     void showAboutDialog();
     void closeEvent(QCloseEvent *event) override;

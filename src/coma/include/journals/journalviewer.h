@@ -1,9 +1,10 @@
 #pragma once
 
-#include <QDialog>
 #include <device/xml_settings.h>
 #include <journals/basejournal.h>
 #include <s2/s2datatypes.h>
+
+#include <QDialog>
 
 namespace journals
 {
@@ -21,6 +22,7 @@ private:
     UniquePointer<BaseJournal> m_journal;
     WorkSettings m_workSettings;
     MeasSettings m_measSettings;
+    u16 m_typeB, m_typeM, m_fname;
 
     /// \brief Парсинг и отображение полученного файла журнала.
     void showJournal(const S2::S2BFile &file);
@@ -47,9 +49,11 @@ private slots:
     void measDataReceived(const u32 index, const QString &header, const journals::BinaryType type, bool visib);
     /// \brief Слот для сохранения журнала в Excel-таблицу.
     void saveExcelJournal();
+    /// \bried Get journal type and module type slot
+    void jnAndModuleTypesReceived(u16 mTypeB, u16 mTypeM, u16 fname);
 
 public:
-    explicit JournalViewer(const QString &filepath, QWidget *parent = nullptr);
+    explicit JournalViewer(const QString &filepath, JournalType type, QWidget *parent = nullptr);
 };
 
 }

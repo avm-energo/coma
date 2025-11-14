@@ -18,7 +18,9 @@ enum class JournalType : quint8
 {
     System = 4,
     Work = 5,
-    Meas = 6
+    Meas = 6,
+    Jn = 100,
+    Dat = 101
 };
 
 /// \brief Абстрактный базовый класс журнала.

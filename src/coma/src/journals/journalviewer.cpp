@@ -1,12 +1,14 @@
 #include "journals/journalviewer.h"
 
+#include <avm-widgets/cbfunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/pbfunc.h>
 #include <gen/files.h>
 #include <journals/measjournal.h>
 #include <journals/sysjournal.h>
 #include <journals/workjournal.h>
 #include <s2/s2util.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
 #include <xml/xmlparser/xmlmoduleparser.h>
 
 #include <QPushButton>
@@ -15,23 +17,55 @@
 namespace journals
 {
 
-JournalViewer::JournalViewer(const QString &filepath, QWidget *parent) : QDialog(parent, Qt::Dialog)
+JournalViewer::JournalViewer(const QString &filepath, JournalType type, QWidget *parent) : QDialog(parent, Qt::Dialog)
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
     setWindowTitle("Journal Viewer: " + filepath.mid(filepath.lastIndexOf('/') + 1));
     QByteArray fileData;
+    Error::Msg result;
     if (Files::LoadFromFile(filepath, fileData) == Error::Msg::NoError)
     {
         S2::S2BFile s2bFile;
         S2Util util;
 
-        // TODOTODOTODOTODO
-        // auto result = Error::Msg::NoError;
-        // s2bFile.data = fileData;
-        // s2bFile.header = { 6, 0, static_cast<quint32>(fileData.size()), 0xA2, 0x84, 0 };
-        // s2bFile.tail = { 0, 0, 0, 0xEEEE1111 };
+        if (type == JournalType::Dat)
+        {
+            QDialog *dlg = new QDialog(this);
+            QVBoxLayout *lyout = new QVBoxLayout;
+            lyout->addWidget(CBFunc::newLBL(this, "Тип модуля: ", "mtype", { "KIV", "KDV", "KTF" }));
+            lyout->addWidget(CBFunc::newLBL(this, "Тип журнала: ", "fname", { "Системный", "Рабочий", "Измерений" }));
+            lyout->addWidget(PBFunc::New(this, "", "Далее",
+                [&]()
+                {
+                    auto mType = CBFunc::data(this, "mtype");
+                    if (mType == "KIV")
+                    {
+                        m_typeB = 0xA2;
+                        m_typeM = 0x84;
+                    }
+                    else if (mType == "KDV")
+                    {
+                        m_typeB = 0xA3;
+                        m_typeM = 0x87;
+                    }
+                    else
+                    {
+                        m_typeB = 0xA2;
+                        m_typeM = 0x82;
+                    }
+                    m_fname = 0x04 + CBFunc::index(this, "fname");
+                    dlg->close();
+                }));
+            dlg->setLayout(lyout);
+            dlg->exec();
+            s2bFile.data = fileData;
+            s2bFile.header = { m_fname, 0, static_cast<quint32>(fileData.size()), m_typeB, m_typeM, 0 };
+            s2bFile.tail = { 0, 0, 0, 0xEEEE1111 };
+            result = Error::Msg::NoError;
+        }
+        else
+            result = util.parseS2B(fileData, s2bFile);
 
-        auto result = util.parseS2B(fileData, s2bFile);
         switch (result)
         {
         case Error::Msg::NoError:
@@ -127,6 +161,13 @@ void JournalViewer::saveExcelJournal()
             EMessageBox::information(this, "Записано успешно!");
         }
     }
+}
+
+void JournalViewer::jnAndModuleTypesReceived(u16 mTypeB, u16 mTypeM, u16 fname)
+{
+    m_typeB = mTypeB;
+    m_typeM = mTypeM;
+    m_fname = fname;
 }
 
 void JournalViewer::setupUI(const S2::S2BFile &file)

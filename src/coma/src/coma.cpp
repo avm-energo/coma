@@ -21,6 +21,14 @@
  */
 
 #include <alarms/alarmwidget.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/epopup.h>
+#include <avm-widgets/filefunc.h>
+#include <avm-widgets/graphfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/styleloader.h>
+#include <avm-widgets/waitwidget.h>
+#include <avm-widgets/wdfunc.h>
 #include <comawidgets/gasdensitywidget.h>
 #include <comawidgets/splashscreen.h>
 #include <common/appconfig.h>
@@ -50,14 +58,6 @@
 #include <s2/s2configstorage.h>
 #include <s2/s2datafactory.h>
 #include <s2/s2util.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/epopup.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/graphfunc.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/styleloader.h>
-#include <avm-widgets/waitwidget.h>
-#include <avm-widgets/wdfunc.h>
 #include <xml/xmlconfigloader.h>
 #include <xml/xmleditor/xmleditor.h>
 
@@ -206,7 +206,8 @@ void Coma::setupMenubar()
         menu->addAction("Конвертация файлов переключений", this, &Coma::loadSwjPackConvertor);
         menu->addAction("Конвертация файлов HEX -> BIN", this, &Coma::hex2BinConverter);
         menu->addAction("Редактор XML модулей", this, &Coma::openXmlEditor);
-        menu->addAction("Просмотрщик журналов", this, &Coma::openJournalViewer);
+        menu->addAction("Просмотрщик журналов JN", this, &Coma::openJournalViewerJN);
+        menu->addAction("Просмотрщик журналов DAT", this, &Coma::openJournalViewerDAT);
         menu->addAction("Просмотреть снимок", this, &Coma::openSlice);
         menubar->addMenu(menu);
     }
@@ -268,9 +269,9 @@ void Coma::hex2BinConverter()
     converter->start();
 }
 
-void Coma::loadJournal(const QString &filename)
+void Coma::loadJournal(const QString &filename, journals::JournalType type)
 {
-    auto jourViewer = new journals::JournalViewer(filename, this);
+    auto jourViewer = new journals::JournalViewer(filename, type, this);
     jourViewer->exec();
 }
 
@@ -294,11 +295,18 @@ void Coma::restoreFromSlice() { }
 
 void Coma::openSlice() { }
 
-void Coma::openJournalViewer()
+void Coma::openJournalViewerJN()
 {
     auto filepath = FileFunc::chooseFileForOpen(this, "Journal files (*.jn*)");
     if (!filepath.isEmpty())
-        loadJournal(filepath);
+        loadJournal(filepath, journals::JournalType::Jn);
+}
+
+void Coma::openJournalViewerDAT()
+{
+    auto filepath = FileFunc::chooseFileForOpen(this, "Journal files (*.dat)");
+    if (!filepath.isEmpty())
+        loadJournal(filepath, journals::JournalType::Dat);
 }
 
 void Coma::openXmlEditor()

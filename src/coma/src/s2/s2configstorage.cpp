@@ -70,7 +70,94 @@ u32 ConfigStorage::getIdFor(const QString &name) const noexcept
 config::itemVariant ConfigStorage::mergeWidgets(
     const config::itemVariant &oldWidget, const config::itemVariant &newWidget)
 {
+    enum Cases
+    {
+        NewWidgetIsTheSame,
+        NewWidgetIsNotTheSame,
+        NotProcessed
+    };
+
+    Cases flag = NotProcessed;
     config::itemVariant outw;
+
+    // first: check newWidget type
+    std::visit(overloaded { [&](const auto &neww, const auto &oldw)
+                   {
+                       if ((neww.type == 0) || (neww.type == oldw.type))
+                           flag = NewWidgetIsTheSame;
+                       else
+                           flag = NewWidgetIsNotTheSame;
+                   } },
+        newWidget, oldWidget);
+    if (flag == NewWidgetIsTheSame)
+    {
+        // if 0 or equal then it's a modification of the existent widget
+        //      get old widget type
+        //      process it depending of what it's type is (modify fields that are given)
+        /*      std::visit(
+                  overloaded {
+                      [&](const delegate::DoubleSpinBoxGroup &oldw, const auto &neww)
+                      {
+                          delegate::DoubleSpinBoxGroup outw2 = oldw;
+                          if (neww.decimals != U32MAX)
+                              outw2.decimals = neww.decimals;
+                          if (neww.min != F4MAX)
+                              outw2.min = neww.min;
+                          if (neww.max != F4MAX)
+                              outw2.max = neww.max;
+                          if (neww.count != U32MAX)
+                              outw2.count = neww.count;
+                          outw = outw2;
+                      },
+                      [&](const delegate::DoubleSpinBoxWidget &neww, const delegate::DoubleSpinBoxWidget &oldw)
+                      {
+                          delegate::DoubleSpinBoxWidget outw2 = oldw;
+                          if (neww.decimals != U32MAX)
+                              outw2.decimals = neww.decimals;
+                          if (neww.min != F4MAX)
+                              outw2.min = neww.min;
+                          if (neww.max != F4MAX)
+                              outw2.max = neww.max;
+                          outw = outw2;
+                      },
+                      [&](const delegate::CheckBoxGroup &neww, const delegate::CheckBoxGroup &oldw)
+                      {
+                          delegate::CheckBoxGroup outw2 = oldw;
+                          if (neww.items != STRLISTINF)
+                              outw2.items = neww.items;
+                          if (neww.count != U32MAX)
+                              outw2.count = neww.count;
+                          outw = outw2;
+                      },
+                      [&](const delegate::ComboBox &neww, const delegate::ComboBox &oldw)
+                      {
+                          delegate::ComboBox outw2 = oldw;
+                          if (neww.model != STRLISTINF)
+                              outw2.model = neww.model;
+                          if (neww.primaryField != delegate::ComboBox::unknown)
+                              outw2.primaryField = neww.primaryField;
+                          outw = outw2;
+                      },
+                      [&](const delegate::ComboBoxGroup &neww, const delegate::ComboBoxGroup &oldw)
+                      {
+                          delegate::ComboBoxGroup outw2 = oldw;
+                          if (neww.model != STRLISTINF)
+                              outw2.model = neww.model;
+                          if (neww.primaryField != delegate::ComboBox::unknown)
+                              outw2.primaryField = neww.primaryField;
+                          if (neww.count != U32MAX)
+                              outw2.count = neww.count;
+                          if (neww.items != STRLISTINF)
+                              outw2.items = neww.items;
+                          outw = outw2;
+                      },
+                      [&](const auto &neww, const auto &oldw) { outw = neww; },
+                  },
+                  oldWidget, newWidget); */
+    }
+    // if not
+    //      get all the fields from new widget except shared ones
+    // process all shared fields and set them to new widget's ones if given
     std::visit(
         overloaded {
             [&](const delegate::DoubleSpinBoxGroup &neww, const delegate::DoubleSpinBoxGroup &oldw)

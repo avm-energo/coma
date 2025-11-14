@@ -1,5 +1,6 @@
 #include "dialogs/checkdialog.h"
 
+#include "gen/strings.h"
 #include <avm-widgets/chbfunc.h>
 #include <avm-widgets/graphfunc.h>
 #include <avm-widgets/lblfunc.h>
@@ -246,7 +247,7 @@ void CheckDialog::addSignals(const QList<SGroup> &groups, UWidget *widget)
 QString CheckDialog::getFormatted(const MWidget &widget, //
     const QString &form, const quint32 number, const quint32 start)
 {
-    if (!widget.subItemList.empty() && number < widget.subItemList.count())
+    if (!(widget.subItemList == STRLISTINF) && number < widget.subItemList.count())
         return form.arg(widget.subItemList.at(number));
     else
         return (widget.count > 1) ? form.arg(start + number) : form;
