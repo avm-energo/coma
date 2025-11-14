@@ -2724,17 +2724,18 @@
         <record>
             <id>1085</id>
             <name>SourseTW</name>
-            <type>BYTE</type>
+            <type>DWORD</type>
             <widget>
                 <type>CheckBoxGroup</type>
                 <group>4</group>
+                <string>Источник температуры обмотки</string>
                 <toolTip>Источник температуры обмотки: 0-Pt100,1-первый датчик RS485_1,2-второй, ...</toolTip>
                 <count>9</count>
                 <string-array>
                     <item>Pt100</item>
                     <item>RS485-1-1</item>
                     <item>RS485-1-2</item>
-                    <item>RS485-2-3</item>
+                    <item>RS485-1-3</item>
                     <item>RS485-1-4</item>
                     <item>RS485-2-1</item>
                     <item>RS485-2-2</item>
