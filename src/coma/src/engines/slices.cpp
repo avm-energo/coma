@@ -45,7 +45,7 @@ void Slices::createSlice()
             writeFile("measjour", getMeasJournal());
         // get oscs
         // writeFile("oscs", getOscs());
-        ZipUtil::CompressDir(m_tempDir.path(), m_zipFileName);
+        ZipUtil::CompressDir(m_zipFileName, m_tempDir.path());
     }
     if (!m_isCancelled)
     {
