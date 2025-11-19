@@ -1,3 +1,4 @@
+#include "gen/strings.h"
 #include <avm-widgets/checkboxgroup.h>
 #include <avm-widgets/flowlayout.h>
 #include <avm-widgets/ipctrl.h>
@@ -147,7 +148,7 @@ QWidget *WidgetFactory::createWidget(quint16 key, QWidget *parent)
                 lyout->addWidget(label, 0);
 
                 QWidget *spbGroup;
-                if (!arg.items.isEmpty())
+                if ((!arg.items.isEmpty()) && (arg.items != STRLISTINF))
                 {
                     assert(static_cast<uint32_t>(arg.items.count()) == arg.count);
                     spbGroup

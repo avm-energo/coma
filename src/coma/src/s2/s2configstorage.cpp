@@ -78,157 +78,89 @@ config::itemVariant ConfigStorage::mergeWidgets(
     };
 
     Cases flag = NotProcessed;
-    config::itemVariant outw;
+    config::itemVariant outw = newWidget;
 
     // first: check newWidget type
-    std::visit(overloaded { [&](const auto &neww, const auto &oldw)
+    std::visit(overloaded { [&](const auto &neww, const auto &oldw, auto &outw)
                    {
                        if ((neww.type == 0) || (neww.type == oldw.type))
+                       {
+                           outw.type = oldw.type;
                            flag = NewWidgetIsTheSame;
+                       }
                        else
                            flag = NewWidgetIsNotTheSame;
                    } },
-        newWidget, oldWidget);
+        newWidget, oldWidget, outw);
+
     if (flag == NewWidgetIsTheSame)
     {
         // if 0 or equal then it's a modification of the existent widget
         //      get old widget type
         //      process it depending of what it's type is (modify fields that are given)
-        /*      std::visit(
-                  overloaded {
-                      [&](const delegate::DoubleSpinBoxGroup &oldw, const auto &neww)
-                      {
-                          delegate::DoubleSpinBoxGroup outw2 = oldw;
-                          if (neww.decimals != U32MAX)
-                              outw2.decimals = neww.decimals;
-                          if (neww.min != F4MAX)
-                              outw2.min = neww.min;
-                          if (neww.max != F4MAX)
-                              outw2.max = neww.max;
-                          if (neww.count != U32MAX)
-                              outw2.count = neww.count;
-                          outw = outw2;
-                      },
-                      [&](const delegate::DoubleSpinBoxWidget &neww, const delegate::DoubleSpinBoxWidget &oldw)
-                      {
-                          delegate::DoubleSpinBoxWidget outw2 = oldw;
-                          if (neww.decimals != U32MAX)
-                              outw2.decimals = neww.decimals;
-                          if (neww.min != F4MAX)
-                              outw2.min = neww.min;
-                          if (neww.max != F4MAX)
-                              outw2.max = neww.max;
-                          outw = outw2;
-                      },
-                      [&](const delegate::CheckBoxGroup &neww, const delegate::CheckBoxGroup &oldw)
-                      {
-                          delegate::CheckBoxGroup outw2 = oldw;
-                          if (neww.items != STRLISTINF)
-                              outw2.items = neww.items;
-                          if (neww.count != U32MAX)
-                              outw2.count = neww.count;
-                          outw = outw2;
-                      },
-                      [&](const delegate::ComboBox &neww, const delegate::ComboBox &oldw)
-                      {
-                          delegate::ComboBox outw2 = oldw;
-                          if (neww.model != STRLISTINF)
-                              outw2.model = neww.model;
-                          if (neww.primaryField != delegate::ComboBox::unknown)
-                              outw2.primaryField = neww.primaryField;
-                          outw = outw2;
-                      },
-                      [&](const delegate::ComboBoxGroup &neww, const delegate::ComboBoxGroup &oldw)
-                      {
-                          delegate::ComboBoxGroup outw2 = oldw;
-                          if (neww.model != STRLISTINF)
-                              outw2.model = neww.model;
-                          if (neww.primaryField != delegate::ComboBox::unknown)
-                              outw2.primaryField = neww.primaryField;
-                          if (neww.count != U32MAX)
-                              outw2.count = neww.count;
-                          if (neww.items != STRLISTINF)
-                              outw2.items = neww.items;
-                          outw = outw2;
-                      },
-                      [&](const auto &neww, const auto &oldw) { outw = neww; },
-                  },
-                  oldWidget, newWidget); */
+        std::visit(
+            overloaded {
+                [&](const delegate::DoubleSpinBoxGroup &oldw, delegate::DoubleSpinBoxGroup &outw)
+                {
+                    if (outw.decimals == U32MAX)
+                        outw.decimals = oldw.decimals;
+                    if (outw.min == F4MAX)
+                        outw.min = oldw.min;
+                    if (outw.max == F4MAX)
+                        outw.max = oldw.max;
+                    if (outw.count == U32MAX)
+                        outw.count = oldw.count;
+                },
+                [&](const delegate::DoubleSpinBoxWidget &oldw, delegate::DoubleSpinBoxWidget &outw)
+                {
+                    if (outw.decimals == U32MAX)
+                        outw.decimals = oldw.decimals;
+                    if (outw.min == F4MAX)
+                        outw.min = oldw.min;
+                    if (outw.max == F4MAX)
+                        outw.max = oldw.max;
+                },
+                [&](const delegate::CheckBoxGroup &oldw, delegate::CheckBoxGroup &outw)
+                {
+                    if (outw.items == STRLISTINF)
+                        outw.items = oldw.items;
+                    if (outw.count == U32MAX)
+                        outw.count = oldw.count;
+                },
+                [&](const delegate::ComboBox &oldw, delegate::ComboBox &outw)
+                {
+                    if (outw.model == STRLISTINF)
+                        outw.model = oldw.model;
+                    if (outw.primaryField == delegate::ComboBox::unknown)
+                        outw.primaryField = oldw.primaryField;
+                },
+                [&](const delegate::ComboBoxGroup &oldw, delegate::ComboBoxGroup &outw)
+                {
+                    if (outw.model == STRLISTINF)
+                        outw.model = oldw.model;
+                    if (outw.primaryField == delegate::ComboBox::unknown)
+                        outw.primaryField = oldw.primaryField;
+                    if (outw.count == U32MAX)
+                        outw.count = oldw.count;
+                    if (outw.items == STRLISTINF)
+                        outw.items = oldw.items;
+                },
+                [&](const auto &oldw, auto &outw)
+                { qDebug() << "Type fields of widgets are equal but widgets itself are not equal!"; },
+            },
+            oldWidget, outw);
     }
-    // if not
-    //      get all the fields from new widget except shared ones
     // process all shared fields and set them to new widget's ones if given
-    std::visit(
-        overloaded {
-            [&](const delegate::DoubleSpinBoxGroup &neww, const delegate::DoubleSpinBoxGroup &oldw)
-            {
-                delegate::DoubleSpinBoxGroup outw2 = oldw;
-                if (neww.decimals != U32MAX)
-                    outw2.decimals = neww.decimals;
-                if (neww.min != F4MAX)
-                    outw2.min = neww.min;
-                if (neww.max != F4MAX)
-                    outw2.max = neww.max;
-                if (neww.count != U32MAX)
-                    outw2.count = neww.count;
-                outw = outw2;
-            },
-            [&](const delegate::DoubleSpinBoxWidget &neww, const delegate::DoubleSpinBoxWidget &oldw)
-            {
-                delegate::DoubleSpinBoxWidget outw2 = oldw;
-                if (neww.decimals != U32MAX)
-                    outw2.decimals = neww.decimals;
-                if (neww.min != F4MAX)
-                    outw2.min = neww.min;
-                if (neww.max != F4MAX)
-                    outw2.max = neww.max;
-                outw = outw2;
-            },
-            [&](const delegate::CheckBoxGroup &neww, const delegate::CheckBoxGroup &oldw)
-            {
-                delegate::CheckBoxGroup outw2 = oldw;
-                if (neww.items != STRLISTINF)
-                    outw2.items = neww.items;
-                if (neww.count != U32MAX)
-                    outw2.count = neww.count;
-                outw = outw2;
-            },
-            [&](const delegate::ComboBox &neww, const delegate::ComboBox &oldw)
-            {
-                delegate::ComboBox outw2 = oldw;
-                if (neww.model != STRLISTINF)
-                    outw2.model = neww.model;
-                if (neww.primaryField != delegate::ComboBox::unknown)
-                    outw2.primaryField = neww.primaryField;
-                outw = outw2;
-            },
-            [&](const delegate::ComboBoxGroup &neww, const delegate::ComboBoxGroup &oldw)
-            {
-                delegate::ComboBoxGroup outw2 = oldw;
-                if (neww.model != STRLISTINF)
-                    outw2.model = neww.model;
-                if (neww.primaryField != delegate::ComboBox::unknown)
-                    outw2.primaryField = neww.primaryField;
-                if (neww.count != U32MAX)
-                    outw2.count = neww.count;
-                if (neww.items != STRLISTINF)
-                    outw2.items = neww.items;
-                outw = outw2;
-            },
-            [&](const auto &neww, const auto &oldw) { outw = neww; },
-        },
-        newWidget, oldWidget);
-    auto mainEqualizer = [&](auto &neww, auto &oldw) {
-
-    };
-    std::visit(overloaded { [&](const auto &neww, const auto &oldw, auto &outw)
+    std::visit(overloaded { [&](const auto &oldw, auto &outw)
                    {
-                       outw.desc = (neww.desc == STRINF) ? oldw.desc : neww.desc;
-                       outw.group = (neww.group == U16MAX) ? oldw.group : neww.group;
-                       outw.toolTip = (neww.toolTip == STRINF) ? oldw.desc : neww.desc;
-                       outw.type = (neww.type == 0) ? oldw.type : neww.type;
+                       if (outw.desc == STRINF)
+                           outw.desc = oldw.desc;
+                       if (outw.group == U16MAX)
+                           outw.group = oldw.group;
+                       if (outw.toolTip == STRINF)
+                           outw.toolTip = oldw.toolTip;
                    } },
-        newWidget, oldWidget, outw);
+        oldWidget, outw);
     return outw;
 }
 

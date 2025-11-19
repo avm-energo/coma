@@ -175,7 +175,7 @@ config::itemVariant Xml::XmlParser::parseWidget(const QDomElement &widgetNode)
     {
         u16 widgetGroup = XmlParse::parseNumFromNode<u16>(widgetNode, tags::group, U16MAX);
         const auto description = XmlParse::parseString(widgetNode, tags::string);
-        const auto toolTip = XmlParse::parseString(widgetNode, tags::tooltip);
+        const auto toolTip = XmlParse::parseString(widgetNode, tags::tooltip, description);
         const auto items = XmlParse::parseArray(widgetNode, tags::str_array);
 
         switch (type)
