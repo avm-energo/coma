@@ -1521,6 +1521,10 @@
                 <id>313</id>
                 <name>Гармоники фазы C</name>
             </tab>
+            <tab>
+                <id>2</id>
+                <name>Основные-2</name>
+            </tab>
         </section-tabs>
         <sections desc="Разделы">
             <section header="Вибрации" order="4">
@@ -1648,16 +1652,7 @@
                 </sgroup>
             </section>
             <section header="Текущие данные" order="1">
-                <sgroup header="Общие" tab="1">
-                    <mwidget desc="Температура микроконтроллера, °С" view="float">
-                        <start-addr>101</start-addr>
-                        <toolTip>Температура микроконтроллера, °С</toolTip>
-                    </mwidget>
-                    <mwidget desc="Напряжение на батарейке, В" view="float">
-                        <start-addr>102</start-addr>
-                    </mwidget>
-                </sgroup>
-                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="1">
+                <sgroup header="Данные по несимметрии и искажениям сигналов" tab="2">
                     <mwidget desc="Vst" view="float">
                         <start-addr>4700</start-addr>
                         <toolTip>Относительная скорость старения изоляции</toolTip>
@@ -1681,62 +1676,6 @@
                     <mwidget desc="MotHTotal" view="float">
                         <start-addr>4705</start-addr>
                         <toolTip>Общая наработка, час</toolTip>
-                    </mwidget>
-                </sgroup>
-                <sgroup header="Оставшееся время работы" tab="1">
-                    <mwidget desc="Tpred" view="float">
-                        <start-addr>4010</start-addr>
-                        <toolTip>Температура обмотки (расчетная), °С</toolTip>
-                    </mwidget>
-                    <mwidget desc="Tdop" view="float">
-                        <start-addr>4011</start-addr>
-                        <toolTip>Допустимое оставшееся время работы при данной нагрузке</toolTip>
-                    </mwidget>
-                    <mwidget desc="Tdop%1%" view="float">
-                        <start-addr>4012</start-addr>
-                        <count>20</count>
-                        <toolTip>Допустимое оставшееся время работы при нагрузке %1%</toolTip>
-                        <string-array>
-                            <item>105</item>
-                            <item>110</item>
-                            <item>115</item>
-                            <item>120</item>
-                            <item>125</item>
-                            <item>130</item>
-                            <item>135</item>
-                            <item>140</item>
-                            <item>145</item>
-                            <item>150</item>
-                            <item>155</item>
-                            <item>160</item>
-                            <item>165</item>
-                            <item>170</item>
-                            <item>175</item>
-                            <item>180</item>
-                            <item>185</item>
-                            <item>190</item>
-                            <item>195</item>
-                            <item>200</item>
-                        </string-array>
-                    </mwidget>
-                </sgroup>
-                <sgroup header="Температура" tab="1">
-                    <mwidget desc="ExtTempWin%1" view="float">
-                        <start-addr>4503</start-addr>
-                        <count>4</count>
-                        <toolTip>Температура обмотки, измеренная встроенным датчиком %1</toolTip>
-                    </mwidget>
-                    <mwidget desc="Rterm" view="float">
-                        <start-addr>4502</start-addr>
-                        <toolTip>Сопротивление термометра окружающей среды</toolTip>
-                    </mwidget>
-                    <mwidget desc="Ta, °С" view="float">
-                        <start-addr>4501</start-addr>
-                        <toolTip>Температура окружающей среды, °С</toolTip>
-                    </mwidget>
-                    <mwidget desc="Tw, °С" view="float">
-                        <start-addr>4500</start-addr>
-                        <toolTip>Температура обмотки (расчетная), °С</toolTip>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Данные по частоте и углам сдвига сигналов" tab="10">
@@ -1864,6 +1803,71 @@
                     <mwidget desc="Cos ϕ1 ср" view="float">
                         <start-addr>2451</start-addr>
                         <toolTip>Коэффициент мощности средний (по S и P) по 1-й гармонике</toolTip>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Общие" tab="2">
+                    <mwidget desc="Температура микроконтроллера, °С" view="float">
+                        <start-addr>101</start-addr>
+                        <toolTip>Температура микроконтроллера, °С</toolTip>
+                    </mwidget>
+                    <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <start-addr>102</start-addr>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Оставшееся время работы" tab="1">
+                    <mwidget desc="Tpred" view="float">
+                        <start-addr>4010</start-addr>
+                        <toolTip>Температура обмотки (расчетная), °С</toolTip>
+                    </mwidget>
+                    <mwidget desc="Tdop" view="float">
+                        <start-addr>4011</start-addr>
+                        <toolTip>Допустимое оставшееся время работы при данной нагрузке</toolTip>
+                    </mwidget>
+                    <mwidget desc="Tdop%1%" view="float">
+                        <start-addr>4012</start-addr>
+                        <count>20</count>
+                        <toolTip>Допустимое оставшееся время работы при нагрузке %1%</toolTip>
+                        <string-array>
+                            <item>105</item>
+                            <item>110</item>
+                            <item>115</item>
+                            <item>120</item>
+                            <item>125</item>
+                            <item>130</item>
+                            <item>135</item>
+                            <item>140</item>
+                            <item>145</item>
+                            <item>150</item>
+                            <item>155</item>
+                            <item>160</item>
+                            <item>165</item>
+                            <item>170</item>
+                            <item>175</item>
+                            <item>180</item>
+                            <item>185</item>
+                            <item>190</item>
+                            <item>195</item>
+                            <item>200</item>
+                        </string-array>
+                    </mwidget>
+                </sgroup>
+                <sgroup header="Температура" tab="1">
+                    <mwidget desc="Tw, °С" view="float">
+                        <start-addr>4500</start-addr>
+                        <toolTip>Температура обмотки (расчетная), °С</toolTip>
+                    </mwidget>
+                    <mwidget desc="Ta, °С" view="float">
+                        <start-addr>4501</start-addr>
+                        <toolTip>Температура окружающей среды, °С</toolTip>
+                    </mwidget>
+                    <mwidget desc="Rterm" view="float">
+                        <start-addr>4502</start-addr>
+                        <toolTip>Сопротивление термометра окружающей среды</toolTip>
+                    </mwidget>
+                    <mwidget desc="ExtTempWin%1" view="float">
+                        <start-addr>4503</start-addr>
+                        <count>4</count>
+                        <toolTip>Температура обмотки, измеренная встроенным датчиком %1</toolTip>
                     </mwidget>
                 </sgroup>
             </section>
@@ -2241,7 +2245,7 @@
             </signal>
             <signal>
                 <start-addr>4500</start-addr>
-                <count>7</count>
+                <count>11</count>
                 <id>24</id>
                 <type>Float</type>
             </signal>
