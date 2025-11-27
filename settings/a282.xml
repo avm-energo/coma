@@ -1641,7 +1641,7 @@
             </signal>
             <signal>
                 <start-addr>4500</start-addr>
-                <count>7</count>
+                <count>11</count>
                 <id>23</id>
                 <type>Float</type>
             </signal>
