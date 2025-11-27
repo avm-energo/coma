@@ -10,6 +10,13 @@ struct S2RecordHideData;
 class XmlHideDataModel final : public XmlModel
 {
 private:
+    enum DataRoles
+    {
+        SGroupDataRole = 0x0106,   ///< Role for hiding data SGroupHideData.
+        S2RecordDataRole = 0x0107, /// < Role for hiding data S2RecordHideData.
+        OverlayRecordDataRole = 0x0108
+    };
+
     /// \brief Parsing node with specified name to the integer variable.
     /// \ingroup Internal parsing
     void parseInteger(const QDomNode &source, const QString &nodeName, int &dest);

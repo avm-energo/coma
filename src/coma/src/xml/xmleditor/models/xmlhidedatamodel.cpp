@@ -4,8 +4,8 @@
 #include <gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
-constexpr int SGroupDataRole = 0x0106;   ///< Role for hiding data SGroupHideData.
-constexpr int S2RecordDataRole = 0x0107; /// < Role for hiding data S2RecordHideData.
+// constexpr int SGroupDataRole = 0x0106;
+// constexpr int S2RecordDataRole = 0x0107;
 
 /// \brief Structure, that stores a hiding data for 'sgroup' node.
 struct SGroupHideData

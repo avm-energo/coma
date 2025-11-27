@@ -1,5 +1,6 @@
 #include "xml/xmleditor/dialogs/dialogfabric.h"
 
+#include "xml/xmleditor/dialogs/xmloverlaydialog.h"
 #include <avm-widgets/emessagebox.h>
 #include <xml/xmleditor/dialogs/moduledialog.h>
 #include <xml/xmleditor/dialogs/xml104dialog.h>
@@ -93,6 +94,9 @@ void XmlDialogFabric::createOrEditDialog(BaseEditorModel *model, int row, QWidge
             break;
         case ModelType::S2Records:
             dialog = new XmlS2RecordDialog(parent);
+            break;
+        case ModelType::Overlay:
+            dialog = new XmlOverlayDialog(parent);
             break;
         case ModelType::Resources:
             if (row == createId)

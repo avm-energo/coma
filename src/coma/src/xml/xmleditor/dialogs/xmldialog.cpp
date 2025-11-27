@@ -1,7 +1,7 @@
 #include "xml/xmleditor/dialogs/xmldialog.h"
 
-#include <gen/std_ext.h>
 #include <avm-widgets/emessagebox.h>
+#include <gen/std_ext.h>
 
 #include <QGuiApplication>
 #include <QScreen>
@@ -65,6 +65,9 @@ QStringList XmlDialog::collectData()
                 [&](const QSpinBox *widget) { //
                     collected.append(QString::number(widget->value()));
                 },
+                [&](const EDoubleSpinBox *widget) { //
+                    collected.append(QString::number(widget->value()));
+                },
                 [&](const QCheckBox *widget) { //
                     collected.append(QString::number(widget->isChecked()));
                 },
@@ -116,6 +119,9 @@ void XmlDialog::loadModelData(const QStringList &response)
                 },
                 [&](QSpinBox *widget) { //
                     widget->setValue(response[i].toInt());
+                },
+                [&](EDoubleSpinBox *widget) { //
+                    widget->setValue(response[i].toDouble());
                 },
                 [&](QCheckBox *widget) { //
                     auto state = (response[i] == "1") ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
@@ -174,6 +180,12 @@ void XmlDialog::dataChanged(const QString &strData)
 void XmlDialog::dataChanged(int index)
 {
     Q_UNUSED(index);
+    dataChanged();
+}
+
+void XmlDialog::dataChanged(double value)
+{
+    Q_UNUSED(value);
     dataChanged();
 }
 

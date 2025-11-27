@@ -32,6 +32,7 @@ enum class ModelType : quint16
     S2Files,
     S2Tabs,
     S2Records,
+    Overlay
 };
 
 /// \brief Base class for models that used in XML editor.
