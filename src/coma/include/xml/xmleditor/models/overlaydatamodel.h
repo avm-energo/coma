@@ -3,9 +3,6 @@
 #include <gen/integers.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 
-struct SGroupHideData;
-struct S2RecordHideData;
-
 /// \brief Class for storing hiding data.
 class OverlayDataModel final : public XmlModel
 {

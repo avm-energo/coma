@@ -31,13 +31,24 @@ const std::map<QString, ModelType> XmlModel::s_types {
     { tags::overlay, ModelType::Overlay },         //
 };
 
-const std::map<ModelType, QStringList> XmlModel::s_headers {
-    { ModelType::Resources, { "XML", "Описание" } },                                                               //
-    { ModelType::Signals, { "Стартовый адрес", "Количество", "ID сигнала", "Тип" } },                              //
-    { ModelType::SectionTabs, { "ID вкладки", "Название", "Для наладки" } },                                       //
-    { ModelType::Sections, { "Название", "Приоритет" } },                                                          //
-    { ModelType::Section, { "Название", "ID вкладки", "Приоритет" } },                                             //
-    { ModelType::SGroup, { "Адрес", "Имя" } },                                                                     //
+const std::map<ModelType, XmlTagDescriptions> XmlModel::s_headers {
+    { ModelType::Resources,                                                                       //
+        { { "XML", "xml" }, { "Описание", tags::desc } } },                                       //
+    { ModelType::Signals,                                                                         //
+        { { "Стартовый адрес", tags::start_addr }, { "Количество", tags::count },                 //
+            { "ID сигнала", tags::id }, { "Тип", tags::type } } },                                //
+    { ModelType::Sections,                                                                        //
+        { { "ID раздела", tags::id }, { "Название", tags::header }, { "Приоритет", tags::order }, //
+            { "Для наладки", tags::dtype } } },                                                   //
+    { ModelType::SectionTabs,                                                                     //
+        { { "ID вкладки", tags::id }, { "Название", tags::header }, { "Раздел", tags::section },  //
+            { "Для наладки", tags::dtype } } },                                                   //
+    { ModelType::SGroup,                                                                          //
+        { { "Название", tags::header }, { "Вкладка", tags::tab }, { "Приоритет", tags::order },   //
+            { "Для наладки", tags::dtype } } },                                                   //
+}; //
+{
+
     { ModelType::Alarms, { "XML", "Описание" } },                                                                  //
     { ModelType::AlarmStateAll, { "Адрес", "Описание", "Тип" } },                                                  //
     { ModelType::AlarmsCrit, { "Адрес", "Описание", "Приоритет", "Подсветка" } },                                  //
