@@ -1062,29 +1062,32 @@
                     <mwidget desc="Напряжение Ua, В" view="float">
                         <start-addr>1061</start-addr>
                         <toolTip>Напряжение Ua, В</toolTip>
-                        <decimals>1</decimals>
+                        <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Напряжение Ub, В" view="float">
                         <start-addr>1062</start-addr>
                         <toolTip>Напряжение Ub, В</toolTip>
-                        <decimals>1</decimals>
+                        <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Напряжение Uc, В" view="float">
                         <start-addr>1063</start-addr>
                         <toolTip>Напряжение Uc, В</toolTip>
-                        <decimals>1</decimals>
+                        <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Ток Ia, А" view="float">
                         <start-addr>1064</start-addr>
                         <toolTip>Ток Ia, А</toolTip>
+                        <decimals>5</decimals>
                     </mwidget>
                     <mwidget desc="Ток Ib, А" view="float">
                         <start-addr>1065</start-addr>
                         <toolTip>Ток Ib, А</toolTip>
+                        <decimals>5</decimals>
                     </mwidget>
                     <mwidget desc="Ток Ic, А" view="float">
                         <start-addr>1066</start-addr>
                         <toolTip>Ток Ic, А</toolTip>
+                        <decimals>5</decimals>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φA, град." view="float">
                         <start-addr>2900</start-addr>
@@ -1102,7 +1105,7 @@
                         <decimals>1</decimals>
                     </mwidget>
                     <mwidget desc="Температура Pt100" view="float">
-                        <start-addr>4503</start-addr>
+                        <start-addr>4508</start-addr>
                         <toolTip>Температура Pt100</toolTip>
                         <decimals>1</decimals>
                     </mwidget>
