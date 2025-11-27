@@ -39,6 +39,13 @@ protected:
     void parseAttribute(QDomNode &node, const QString &attrName, int row, int col, const QString &defValue = "");
 
 public:
+    enum DataRoles
+    {
+        SGroupDataRole = 0x0106,   ///< Role for hiding data SGroupHideData.
+        S2RecordDataRole = 0x0107, /// < Role for hiding data S2RecordHideData.
+        OverlayRecordDataRole = 0x0108
+    };
+
     static const std::map<QString, ModelType> s_types;       ///< Types Map with enumeration, key = name of group type
     static const std::map<ModelType, QStringList> s_headers; ///< Settings Map, key = group type enumeration
 

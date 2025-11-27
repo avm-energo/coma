@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+xml version="1.0" encoding="utf-8"?>
 <module mtypeb="a2" mtypem="82">
     <name>AVM-KTF</name>
     <version>0.6-0004</version>
@@ -1638,7 +1638,7 @@
             </signal>
             <signal>
                 <start-addr>4500</start-addr>
-                <count>7</count>
+                <count>11</count>
                 <id>23</id>
                 <type>Float</type>
             </signal>
