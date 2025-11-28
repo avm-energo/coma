@@ -60,7 +60,7 @@ public:
     inline const QString cpuIDFilenameStr()
     {
         Q_ASSERT(!m_deviceUID.isEmpty());
-        QString filenamestr = m_deviceUID + ExtMap[m_block.blocktype].extension + QString::number(m_block.blocknum);
+        QString filenamestr = m_deviceUID + "->" + QString::number(m_block.blocknum);
         return filenamestr;
     }
 
@@ -92,18 +92,18 @@ public:
     void updateWidget();
 
     /// \brief Update specific fields
-    virtual void specificUpdateWidget() {};
+    virtual void specificUpdateWidget() { };
 
     /// \brief Update block values from widget fields
     void updateFromWidget();
 
     /// \brief Update specific values
-    virtual void specificUpdateFromWidget() {};
+    virtual void specificUpdateFromWidget() { };
 
     /// \brief Setup visual representation of block data
     virtual void setupValuesDesc() = 0;
 
-    virtual void setDefBlock() {};
+    virtual void setDefBlock() { };
 
     template <typename T>                                           //
     void addNewGroup(const QString &groupName, const QString &name, //

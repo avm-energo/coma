@@ -2011,8 +2011,8 @@
                 <group>100</group>
                 <string>Уставка скачка напряжения для запуска осциллографирования, %</string>
                 <min>0</min>
-                <max>10000</max>
-                <decimals>0</decimals>
+                <max>100</max>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2024,8 +2024,8 @@
                 <group>100</group>
                 <string>Уставка скачка тока для запуска осциллографирования, %</string>
                 <min>0</min>
-                <max>10000</max>
-                <decimals>0</decimals>
+                <max>100</max>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2037,8 +2037,8 @@
                 <group>200</group>
                 <string>Уставка порога минимального напряжения - % от номинального уровня</string>
                 <min>0</min>
-                <max>10000</max>
-                <decimals>0</decimals>
+                <max>100</max>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2050,8 +2050,8 @@
                 <group>1</group>
                 <string>Минимальный ток (от номинального значения), % (ниже этого значения ток считается нулевым)</string>
                 <min>0</min>
-                <max>10000</max>
-                <decimals>0</decimals>
+                <max>100</max>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2084,7 +2084,7 @@
                 <string>Уставка предупредительной сигнализации по ΔC, %</string>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2097,7 +2097,7 @@
                 <string>Уставка аварийной сигнализации по ΔC, %</string>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2110,7 +2110,7 @@
                 <string>Уставка предупредительной сигнализации по Δtg δ, %</string>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2123,7 +2123,7 @@
                 <string>Уставка аварийной сигнализации по Δtg δ, %</string>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2136,7 +2136,7 @@
                 <string>Уставка предупредительной сигнализации по небалансу токов, %</string>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2149,7 +2149,7 @@
                 <string>Уставка аварийной сигнализации по небалансу токов, %</string>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2161,8 +2161,8 @@
                 <group>300</group>
                 <string>Гистерезис на отключение сигнализации по ΔC, % от уставки</string>
                 <min>0</min>
-                <max>10000</max>
-                <decimals>0</decimals>
+                <max>100</max>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2174,8 +2174,8 @@
                 <group>300</group>
                 <string>Гистерезис на отключение сигнализации по Δtg δ, % от уставки</string>
                 <min>0</min>
-                <max>10000</max>
-                <decimals>0</decimals>
+                <max>100</max>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2187,8 +2187,8 @@
                 <group>300</group>
                 <string>Гистерезис на отключение сигнализации по небалансу токов, %</string>
                 <min>0</min>
-                <max>10000</max>
-                <decimals>0</decimals>
+                <max>100</max>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>

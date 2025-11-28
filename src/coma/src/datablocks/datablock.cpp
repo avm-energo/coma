@@ -25,15 +25,15 @@
 
 #include "datablocks/datablock.h"
 
-#include <gen/files.h>
-#include <gen/settings.h>
-#include <gen/stdfunc.h>
-#include <interfaces/conn/sync_connection.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/filefunc.h>
 #include <avm-widgets/hexpbfunc.h>
 #include <avm-widgets/lefunc.h>
 #include <avm-widgets/wdfunc.h>
+#include <gen/files.h>
+#include <gen/settings.h>
+#include <gen/stdfunc.h>
+#include <interfaces/conn/sync_connection.h>
 
 #include <QDialogButtonBox>
 #include <QGroupBox>
@@ -43,10 +43,10 @@
 using namespace Interface;
 
 const QMap<DataTypes::DataBlockTypes, DataBlock::FilePropertiesStruct> DataBlock::ExtMap {
-    { DataTypes::DataBlockTypes::BacBlock, { ".tn", "Tune files (*.tn?)" } },          //
-    { DataTypes::DataBlockTypes::BciBlock, { ".cf", "Configuration files (*.cf?)" } }, //
-    { DataTypes::DataBlockTypes::BdBlock, { ".bd", "Data files (*.bd?)" } },           //
-    { DataTypes::DataBlockTypes::BdaBlock, { ".bda", "Simple data files (*.bda)" } }   //
+    { DataTypes::DataBlockTypes::BacBlock, { "tn", "Tune files (*.tn)" } },          //
+    { DataTypes::DataBlockTypes::BciBlock, { "cf", "Configuration files (*.cf)" } }, //
+    { DataTypes::DataBlockTypes::BdBlock, { "bd", "Data files (*.bd)" } },           //
+    { DataTypes::DataBlockTypes::BdaBlock, { "bda", "Simple data files (*.bda)" } }  //
 };
 
 DataBlock::DataBlock(QObject *parent)
