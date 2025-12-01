@@ -39,10 +39,16 @@ CheckDialog::CheckDialog(Section &section, Device::CurrentDevice *device, QWidge
     // collect all highlight regs
     QList<HighlightMap::mapped_type> regs = m_highlightWarn.values();
     for (const auto reg : std::as_const(regs))
+    {
+        m_curAdrIsYellow[reg] = false;
         m_curHighlight[reg] = Highlights::CLEAN;
+    }
     regs = m_highlightCrit.values();
     for (const auto reg : std::as_const(regs))
+    {
+        m_curAdrIsRed[reg] = false;
         m_curHighlight[reg] = Highlights::CLEAN;
+    }
 }
 
 CheckDialog::~CheckDialog()
@@ -76,9 +82,9 @@ void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
         for (const auto reg : std::as_const(regs))
         {
             if (status)
-                needUpdate = (setYellow(reg) && !needUpdate);
+                needUpdate = (setYellow(reg) || needUpdate);
             else
-                needUpdate = (clearYellow(reg) && !needUpdate);
+                needUpdate = (clearYellow(reg) || needUpdate);
         }
     }
     if (m_highlightCrit.contains(sp.sigAdr))
@@ -87,9 +93,9 @@ void CheckDialog::updateSPData(const DataTypes::SinglePointWithTimeStruct &sp)
         for (const auto reg : std::as_const(regs))
         {
             if (status)
-                needUpdate = (setRed(reg) && !needUpdate);
+                needUpdate = (setRed(reg) || needUpdate);
             else
-                needUpdate = (clearRed(reg) && !needUpdate);
+                needUpdate = (clearRed(reg) || needUpdate);
         }
     }
     if (needUpdate)
@@ -462,53 +468,45 @@ QGridLayout *CheckDialog::setupCommandWidget(const Device::XmlDataTypes::MWidget
 
 bool CheckDialog::setYellow(quint32 reg)
 {
-    switch (m_curHighlight[reg])
-    {
-    case Highlights::RED:
-    case Highlights::YELLOW:
+    m_curAdrIsYellow[reg] = true;
+    if ((m_curHighlight[reg] == Highlights::YELLOW) || (m_curHighlight[reg] == Highlights::RED))
         return false;
-    default:
-        m_curHighlight[reg] = Highlights::YELLOW;
-    }
+    m_curHighlight[reg] = Highlights::YELLOW;
     return true;
 }
 
 bool CheckDialog::clearYellow(quint32 reg)
 {
-    switch (m_curHighlight[reg])
+    m_curAdrIsYellow[reg] = false;
+    if (m_curHighlight[reg] == Highlights::YELLOW)
     {
-    case Highlights::RED:
-    case Highlights::CLEAN:
-        return false;
-    default:
+        if (reg == 2429)
+            qDebug() << "123";
         m_curHighlight[reg] = Highlights::CLEAN;
+        return true;
     }
-    return true;
+    return false;
 }
 
 bool CheckDialog::setRed(quint32 reg)
 {
-    switch (m_curHighlight[reg])
-    {
-    case Highlights::RED:
+    m_curAdrIsRed[reg] = true;
+    if (m_curHighlight[reg] == Highlights::RED)
         return false;
-    default:
-        m_curHighlight[reg] = Highlights::RED;
-    }
+    m_curHighlight[reg] = Highlights::RED;
     return true;
 }
 
 bool CheckDialog::clearRed(quint32 reg)
 {
-    switch (m_curHighlight[reg])
+    m_curAdrIsRed[reg] = false;
+    if (m_curHighlight[reg] == Highlights::RED)
     {
-    case Highlights::RED:
-        m_curHighlight[reg] = Highlights::CLEAN;
+        if (m_curAdrIsYellow[reg])
+            m_curHighlight[reg] = Highlights::YELLOW;
+        else
+            m_curHighlight[reg] = Highlights::CLEAN;
         return true;
-    case Highlights::YELLOW:
-        return true; // old was RED and current is YELLOW (set by previous step)
-    default:
-        break;
     }
     return false;
 }

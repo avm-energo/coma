@@ -1957,7 +1957,7 @@
                 <string>Номинальное линейное первичное напряжение, кВ</string>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>2</decimals>
             </widget>
         </record>
         <record>
@@ -1985,7 +1985,7 @@
                 <count>6</count>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2486,7 +2486,7 @@
                 <string>Номинальный первичный ток ТТ, А</string>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2499,7 +2499,7 @@
                 <string>Номинальный вторичный ток ТТ, А</string>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -2986,7 +2986,7 @@
                 <string>Номинальный первичный ток внешнего ТТ, А</string>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>

@@ -52,6 +52,8 @@ private:
     Device::XmlDataTypes::Section mSection;
     int currentTabIndex;
     HighlightMap m_highlightWarn, m_highlightCrit;
+    QMap<quint32, bool> m_curAdrIsYellow;
+    QMap<quint32, bool> m_curAdrIsRed;
     QMap<quint32, Highlights> m_curHighlight;
 
     void setupUI();

@@ -4,4 +4,4 @@ Maintainer: AVM-Energo <support@avmenergo.ru>
 Package: avm-service
 Description: Service software for various AV-TUK & AVM modules
 Architecture: amd64
-Depends: ${shlibs:Depends}, libavm-widgets (>= 2.3.0), libavm-gen (>= 1.10.8)
+Depends: ${shlibs:Depends}, libavm-widgets (>= 2.3.0), libavm-gen (>= 1.10.10)

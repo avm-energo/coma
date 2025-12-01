@@ -1,5 +1,32 @@
+avm-debug (3.4.3) unstable; urgency=low
+
+  [*] s2Files: UNom & INom decimals are set to 2 or 1
+  [*] bugfix with alarms highlights
+  [*] s2Files: set decimals for some thresholds to 1-2 instead of zero
+  [*] proper filename with extension for datablocks
+  [*] renumeration of bac for KIV
+
+ -- AVM-Energo <support@avmenergo.ru>  Mon, 01 Dec 2025 10:38:49 +0300
+
 avm-debug (3.4.2) unstable; urgency=low
 
+  [*] KTF: Pt100 in metrology
+  [*] KTF tolerances in metrology section
+  [*] KDV: split general data in checkDialog
+  [*] KDV: wrong number of registers in temperature block
+  [+] 13000 registers in KOT
+  [*] tooltip = description when tooltip is empty
+  [*] s2files: id 1085
+  [+] Autonomous JN and DAT journals viewing and convert to Excel
+  [+] sq vibr for metrology in KDV
+  [+] ID 1229
+  [*] fix for the log file created in wrong location
+  [*] Kxx XMLs updated to the last changes (29, 248x->290x etc)
+  [*] bugfix with hashes calculated for the not ready classes
+  [+] overlays (only in "read-only" mode, not implemented in XMLEditor)
+  [+] metrology for KTF, KDV & KOT
+  [*] real values in KIV metrology section
+  [*] make it possible to have several alarms with one signal address
   [+] priorities (orders) in alarms, sections
   [*] real values in metrology section in KOT
   [+] decimals in mwidget xml config
