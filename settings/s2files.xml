@@ -5363,11 +5363,11 @@
             <widget>
                 <type>QDoubleSpinBox</type>
                 <group>2</group>
-                <string>Постоянная времени температуры ВСМ, мин</string>
-                <toolTip>Постоянная времени температуры ВСМ, мин</toolTip>
+                <string>Тепловая постоянная времени бака τо, мин</string>
+                <toolTip>Тепловая постоянная времени бака τо, мин</toolTip>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
             </widget>
         </record>
         <record>
@@ -5377,12 +5377,12 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>2</group>
-                <string>Постоянная времени температуры ННТ, мин</string>
-                <toolTip>Постоянная времени температуры ННТ, мин</toolTip>
+                <string>Тепловая постоянная времени ННТ τw, мин</string>
+                <toolTip>Тепловая постоянная времени ННТ τw, мин</toolTip>
                 <count>3</count>
                 <min>1</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
                 <string-array>
                     <item>Обмотка ВН</item>
                     <item>Обмотка №2</item>
@@ -5397,12 +5397,12 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>2</group>
-                <string>Превышение температуры ННТ над температурой ВСМ при номинальном токе, °С</string>
-                <toolTip>Превышение температуры ННТ над температурой ВСМ при номинальном токе, °С</toolTip>
+                <string>Номинальное превышение температуры ННТ над температурой ВСМ ΔΘhr, °С</string>
+                <toolTip>Номинальное превышение температуры ННТ над температурой ВСМ ΔΘhr, °С</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
                 <string-array>
                     <item>Обмотка ВН</item>
                     <item>Обмотка №2</item>
@@ -5417,8 +5417,8 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>2</group>
-                <string>Константа теплового уравнения для обмоток k21: При выборе значения 0,0 устанавливаются значения «по умолчанию»: для М – 2.0; для Д – 2.0; для ДЦ – 1.3; для НДЦ – 1.0</string>
-                <toolTip>Константа теплового уравнения k21</toolTip>
+                <string>Константа теплового уравнения K21: При выборе значения 0,0 устанавливаются значения «по умолчанию»: для М – 2.0; для Д – 2.0; для ДЦ – 1.3; для НДЦ – 1.0</string>
+                <toolTip>Константа теплового уравнения K21</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10</max>
@@ -5437,8 +5437,8 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>2</group>
-                <string>Константа теплового уравнения для обмоток k22: При выборе значения 0,0 устанавливаются значения «по умолчанию»: для М – 2.0; для Д – 2.0; для ДЦ – 1.0; для НДЦ – 1.0</string>
-                <toolTip>Константа теплового уравнения для обмоток k22</toolTip>
+                <string>Константа теплового уравнения K22: При выборе значения 0,0 устанавливаются значения «по умолчанию»: для М – 2.0; для Д – 2.0; для ДЦ – 1.0; для НДЦ – 1.0</string>
+                <toolTip>Константа теплового уравнения K22</toolTip>
                 <count>3</count>
                 <min>0</min>
                 <max>10</max>
@@ -5462,7 +5462,7 @@
                 <count>3</count>
                 <min>0</min>
                 <max>10000</max>
-                <decimals>0</decimals>
+                <decimals>1</decimals>
                 <string-array>
                     <item>Обмотка ВН</item>
                     <item>Обмотка №2</item>
