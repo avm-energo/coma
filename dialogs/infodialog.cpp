@@ -1,20 +1,21 @@
-#include <QVBoxLayout>
 #include "infodialog.h"
+
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/stdfunc.h"
 #include "../gen/modulebsi.h"
+#include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 
-InfoDialog::InfoDialog(QWidget *parent) :
-    QDialog(parent)
+#include <QVBoxLayout>
+
+InfoDialog::InfoDialog(QWidget *parent) : QDialog(parent)
 {
     SetupUI();
 }
 
 void InfoDialog::SetupUI()
 {
-    QString tmps = "QDialog {background-color: "+QString(MAINWINCLRA1)+";}";
+    QString tmps = "QDialog {background-color: " + QString(MAINWINCLRA1) + ";}";
     setStyleSheet(tmps);
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -56,10 +57,11 @@ void InfoDialog::FillBsi()
     ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
     WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
     WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
-    WDFunc::SetLBLText(this, "cfcrcle", "0x"+QString::number(static_cast<uint>(bsi.Cfcrc), 16));
-    WDFunc::SetLBLText(this, "rstle", "0x"+QString::number(bsi.Rst, 16));
+    WDFunc::SetLBLText(this, "cfcrcle", "0x" + QString::number(static_cast<uint>(bsi.Cfcrc), 16));
+    WDFunc::SetLBLText(this, "rstle", "0x" + QString::number(bsi.Rst, 16));
     WDFunc::SetLBLText(this, "rstcountle", QString::number(bsi.RstCount, 16));
-    WDFunc::SetLBLText(this, "cpuidle", QString::number(bsi.UIDHigh, 16)+QString::number(bsi.UIDMid, 16)+QString::number(bsi.UIDLow, 16));
+    WDFunc::SetLBLText(this, "cpuidle",
+        QString::number(bsi.UIDHigh, 16) + QString::number(bsi.UIDMid, 16) + QString::number(bsi.UIDLow, 16));
     WDFunc::SetLBLText(this, "typeble", QString::number(bsi.MTypeB, 16));
     WDFunc::SetLBLText(this, "snble", QString::number(bsi.SerialNumB, 16));
     WDFunc::SetLBLText(this, "hwble", StdFunc::VerToStr(bsi.HwverB));
@@ -86,7 +88,7 @@ void InfoDialog::ClearBsi()
     // расшифровка Hth
     for (int i = 0; i < 32; i++)
     {
-        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
+        QLabel *lbl = this->findChild<QLabel *>("hth" + QString::number(i));
         if (lbl == nullptr)
         {
             DBGMSG;

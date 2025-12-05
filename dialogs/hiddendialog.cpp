@@ -1,28 +1,29 @@
+#include "hiddendialog.h"
+
+#include "../gen/error.h"
+#include "../gen/modulebsi.h"
+#include "../widgets/emessagebox.h"
+#include "../widgets/wd_func.h"
+
+#include <QCoreApplication>
+#include <QElapsedTimer>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPainter>
-#include <QElapsedTimer>
-#include <QCoreApplication>
-#include <QGroupBox>
-#include <QPushButton>
 #include <QPixmap>
-#include "hiddendialog.h"
-#include "../widgets/wd_func.h"
-#include "../widgets/emessagebox.h"
-#include "../gen/modulebsi.h"
-#include "../gen/error.h"
+#include <QPushButton>
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
 
-HiddenDialog::HiddenDialog(int status, QWidget *parent) :
-    QDialog(parent)
+HiddenDialog::HiddenDialog(int status, QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     Type = 0x00;
     ResultOk = false;
-//    setStyleSheet("QDialog {background-color: rgb(0,192,0);}");
+    //    setStyleSheet("QDialog {background-color: rgb(0,192,0);}");
     ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
     if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_00)
     {
@@ -42,29 +43,29 @@ HiddenDialog::HiddenDialog(int status, QWidget *parent) :
 
     WithMezzanine = false;
     if (Bhb.BoardBBhb.MType == 0xA1)
-        BGImage="images/pkdn.png";
+        BGImage = "images/pkdn.png";
     else
     {
         switch (Type)
         {
         case BYMY:
-            BGImage="images/BM.png";
+            BGImage = "images/BM.png";
             WithMezzanine = true;
             break;
         case BNMY:
-            BGImage="images/BnM.png";
+            BGImage = "images/BnM.png";
             Type = BYMY;
             WithMezzanine = true;
             break;
         case BYMN:
-            BGImage="images/BMn.png";
+            BGImage = "images/BMn.png";
             break;
         case BNMN:
-            BGImage="images/BnMn.png";
+            BGImage = "images/BnMn.png";
             Type = BYMN;
             break;
         default:
-            BGImage="";
+            BGImage = "";
             break;
         }
     }
@@ -84,37 +85,37 @@ void HiddenDialog::SetupUI()
     setMinimumSize(QSize(800, 600));
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Тип "+tmps+" (hex):", "modtype"), 10);
+    QString tmps = "прибора";
+    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Тип " + tmps + " (hex):", "modtype"), 10);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Серийный номер "+tmps+":", "modsn", true), 10);
+    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Серийный номер " + tmps + ":", "modsn", true), 10);
     vlyout->addLayout(hlyout);
-/*    if (WithMezzanine) // ввод данных по мезонинной плате открывается только в случае её наличия
-    { */
-        QGroupBox *gb = new QGroupBox("Мезонинная плата");
-        QVBoxLayout *gblyout = new QVBoxLayout;
-        gblyout->addWidget(WDFunc::NewChB(this, "withmezzanine", "Установлена"));
-        hlyout = new QHBoxLayout;
-        hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Тип платы (hex):", "meztp", true));
-        gblyout->addLayout(hlyout);
-        hlyout = new QHBoxLayout;
-        WDFunc::AddLabelAndLineeditH(hlyout, "Версия платы:", "mezhwmv", true);
-        WDFunc::AddLabelAndLineeditH(hlyout, ".", "mezhwlv", true);
-        WDFunc::AddLabelAndLineeditH(hlyout, ".", "mezhwsv", true);
-        gblyout->addLayout(hlyout);
-        hlyout = new QHBoxLayout;
-        if(st)
+    /*    if (WithMezzanine) // ввод данных по мезонинной плате открывается только в случае её наличия
+        { */
+    QGroupBox *gb = new QGroupBox("Мезонинная плата");
+    QVBoxLayout *gblyout = new QVBoxLayout;
+    gblyout->addWidget(WDFunc::NewChB(this, "withmezzanine", "Установлена"));
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Тип платы (hex):", "meztp", true));
+    gblyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
+    WDFunc::AddLabelAndLineeditH(hlyout, "Версия платы:", "mezhwmv", true);
+    WDFunc::AddLabelAndLineeditH(hlyout, ".", "mezhwlv", true);
+    WDFunc::AddLabelAndLineeditH(hlyout, ".", "mezhwsv", true);
+    gblyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
+    if (st)
         WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "mezsn", true);
-        else
+    else
         WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "mezsn", false);
-        gblyout->addLayout(hlyout);
-        gb->setLayout(gblyout);
-        hlyout = new QHBoxLayout;
-        hlyout->addWidget(gb,1);
-        hlyout->addStretch(600);
-        vlyout->addLayout(hlyout);
-//    }
+    gblyout->addLayout(hlyout);
+    gb->setLayout(gblyout);
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(gb, 1);
+    hlyout->addStretch(600);
+    vlyout->addLayout(hlyout);
+    //    }
     vlyout->addStretch(800);
     gb = new QGroupBox("Базовая плата");
     gblyout = new QVBoxLayout;
@@ -127,20 +128,20 @@ void HiddenDialog::SetupUI()
     WDFunc::AddLabelAndLineeditH(hlyout, ".", "bashwsv", true);
     gblyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    if(st)
-    WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "bassn", true);
+    if (st)
+        WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "bassn", true);
     else
-    WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "bassn", false);
+        WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "bassn", false);
     gblyout->addLayout(hlyout);
     gb->setLayout(gblyout);
     hlyout = new QHBoxLayout;
     hlyout->addStretch(600);
-    hlyout->addWidget(gb,1);
+    hlyout->addWidget(gb, 1);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Записать и закрыть");
     pb->setObjectName("acceptpb");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(AcceptChanges()));
+    connect(pb, SIGNAL(clicked(bool)), this, SLOT(AcceptChanges()));
     hlyout->addStretch(800);
     hlyout->addWidget(pb);
     vlyout->addLayout(hlyout);
@@ -153,7 +154,7 @@ void HiddenDialog::SetupUI()
     SetMezzanineEnabled(WithMezzanine);
     QCheckBox *cb = this->findChild<QCheckBox *>("withmezzanine");
     if (cb != nullptr)
-        connect(cb,SIGNAL(stateChanged(int)), this, SLOT(SetMezzanineEnabled(int)));
+        connect(cb, SIGNAL(stateChanged(int)), this, SLOT(SetMezzanineEnabled(int)));
 }
 
 void HiddenDialog::Fill()
@@ -179,11 +180,11 @@ void HiddenDialog::Fill()
 void HiddenDialog::SetVersion(quint32 number, QString lename)
 {
     QString tmps = QString::number(static_cast<quint8>(number >> 24), 16);
-    WDFunc::SetLEData(this, lename+"mv", tmps, "^[a-fA-F0-9]$");
+    WDFunc::SetLEData(this, lename + "mv", tmps, "^[a-fA-F0-9]$");
     tmps = QString::number(static_cast<quint8>((number & 0x00FF0000) >> 16), 16);
-    WDFunc::SetLEData(this, lename+"lv", tmps, "^[a-fA-F0-9]$");
+    WDFunc::SetLEData(this, lename + "lv", tmps, "^[a-fA-F0-9]$");
     tmps = QString::number(static_cast<quint16>(number & 0x0000FFFF), 16);
-    WDFunc::SetLEData(this, lename+"sv", tmps, "^[a-fA-F0-9]{0,2}$");
+    WDFunc::SetLEData(this, lename + "sv", tmps, "^[a-fA-F0-9]{0,2}$");
 }
 
 void HiddenDialog::AcceptChanges()
@@ -198,9 +199,10 @@ void HiddenDialog::AcceptChanges()
     Bhb.BoardBBhb.SerialNum = tmps.toUInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bastp", tmps);
     Bhb.BoardBBhb.MType = tmps.toUInt(Q_NULLPTR, 16);
-    if (WDFunc::ChBData(this, "withmezzanine", chbdata))  // ввод данных по мезонинной плате открывается только в случае её наличия
+    if (WDFunc::ChBData(
+            this, "withmezzanine", chbdata)) // ввод данных по мезонинной плате открывается только в случае её наличия
     {
-        if(chbdata)
+        if (chbdata)
         {
             Type |= 0x02;
             GetVersion(Bhb.BoardMBhb.HWVer, "mezhw");
@@ -240,20 +242,20 @@ void HiddenDialog::SetMezzanineEnabled(int Enabled)
     WDFunc::SetEnabled(this, "mezhwmv", Enabled);
     WDFunc::SetEnabled(this, "mezhwsv", Enabled);
     WDFunc::SetEnabled(this, "mezhwlv", Enabled);
-    if(st)
-    WDFunc::SetEnabled(this, "mezsn", Enabled);
-    //else
-    //WDFunc::SetDisabled(this, "mezsn", Enabled);
+    if (st)
+        WDFunc::SetEnabled(this, "mezsn", Enabled);
+    // else
+    // WDFunc::SetDisabled(this, "mezsn", Enabled);
 }
 
 void HiddenDialog::GetVersion(quint32 &number, QString lename)
 {
     QString tmps;
-    WDFunc::LEData(this, lename+"mv", tmps);
+    WDFunc::LEData(this, lename + "mv", tmps);
     number = static_cast<quint32>(tmps.toInt()) << 24;
-    WDFunc::LEData(this, lename+"lv", tmps);
+    WDFunc::LEData(this, lename + "lv", tmps);
     number += static_cast<quint32>(tmps.toInt()) << 16;
-    WDFunc::LEData(this, lename+"sv", tmps);
+    WDFunc::LEData(this, lename + "sv", tmps);
     number += static_cast<quint32>(tmps.toInt());
 }
 

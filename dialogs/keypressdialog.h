@@ -5,18 +5,18 @@
  * or Esc key. Signal Cancelled() is emitted when user press Esc key
  */
 
-#ifndef KEYPRESSDIALOG_H
-#define KEYPRESSDIALOG_H
+#pragma once
 
-#include <QDialog>
 #include <QCloseEvent>
+#include <QDialog>
 #include <QKeyEvent>
 
 class KeyPressDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit KeyPressDialog(const QString &PswPhrase, QWidget *parent = nullptr); // PswPhrase - фраза, которую надо написать пользователю
+    explicit KeyPressDialog(
+        const QString &PswPhrase, QWidget *parent = nullptr); // PswPhrase - фраза, которую надо написать пользователю
 
 signals:
     void Finished(QString str);
@@ -32,5 +32,3 @@ protected:
     void keyPressEvent(QKeyEvent *e);
     void closeEvent(QCloseEvent *e);
 };
-
-#endif // KEYPRESSDIALOG_H

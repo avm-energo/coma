@@ -1,10 +1,10 @@
-#ifndef ABSTRACTCONFDIALOG_H
-#define ABSTRACTCONFDIALOG_H
+#pragma once
 
-#define MAXBYTEARRAY    65535
+#define MAXBYTEARRAY 65535
+
+#include "../gen/s2util.h"
 
 #include <QDialog>
-#include "config.h"
 
 #define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
 
@@ -14,7 +14,7 @@ class AbstractConfDialog : public QDialog
 public:
     explicit AbstractConfDialog(QWidget *parent = nullptr);
 
-    QVector<S2::DataRec> *S2Config;
+    QList<S2::DataRec> S2Config;
 
     QStringList CheckConfErrors;
     bool IsNeededDefConf = false;
@@ -22,19 +22,17 @@ public:
     quint8 TheEnd;
 
     QWidget *ConfButtons();
-    virtual void Fill() = 0; // заполнить значения полей вывода из структуры конфигурации
-    virtual void FillBack() = 0; // ввести информацию из полей вывода в конфигурацию
+    virtual void Fill() = 0;       // заполнить значения полей вывода из структуры конфигурации
+    virtual void FillBack() = 0;   // ввести информацию из полей вывода в конфигурацию
     virtual void SetDefConf() = 0; // задать конфигурацию по умолчанию
-    virtual void CheckConf() = 0; // проверить конфигурацию на корректность, признаком наличия некорректностей
-                                    // является непустой список CheckConfErrors
+    virtual void CheckConf() = 0;  // проверить конфигурацию на корректность, признаком наличия некорректностей
+                                   // является непустой список CheckConfErrors
 #if PROGSIZE != PROGSIZE_EMUL
     void PrereadConf();
 #endif
     int GetChNumFromObjectName(QString ObjectName);
 
-
 private:
-
     virtual void SetupUI() = 0;
     bool PrepareConfToWrite();
 
@@ -51,11 +49,11 @@ public slots:
 
 #endif
 signals:
-    void BsiIsNeedToBeAcquiredAndChecked(); // signal to reload start block emitted when new configuration has been sent to module
-    void NewConfToBeLoaded(); // signal to load configuration in all appropriate windows (main conf, base conf, mez conf)
+    void BsiIsNeedToBeAcquiredAndChecked(); // signal to reload start block emitted when new configuration has been sent
+                                            // to module
+    void
+    NewConfToBeLoaded(); // signal to load configuration in all appropriate windows (main conf, base conf, mez conf)
     void DefConfToBeLoaded(); // signal to load default configuration
-    void SendTg(float*);
+    void SendTg(float *);
     void stopRead(int);
 };
-
-#endif // ABSTRACTCONFDIALOG_H

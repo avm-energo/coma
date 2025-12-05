@@ -1,21 +1,21 @@
-#ifndef MODULEBSI_H
-#define MODULEBSI_H
+#pragma once
 
-#include <QtGlobal>
-#include <QWidget>
+#include "../gen/s2datatypes.h"
 #include "maindef.h"
-#include "../gen/s2.h"
+
+#include <QWidget>
+#include <QtGlobal>
 
 #define MAXERRORFLAGNUM 32
 
-#define HTH_FNC             0x00000200 // частота не в допуске (Э)
-#define HTH_LS              0x00000100 // сигналы малы (Э)
-#define HTH_CONFIG          0x00000080 // в модуле нет конфигурации
-#define HTH_REGPARS         0x00000040 // в модуле нет настроечных параметров
-#define HTH_ADC             0x00000020 // проблема с АЦП (Э)
-#define HTH_1PPS            0x00000010 // нет сигнала 1PPS
-#define HTH_REL             0x00000008 // неисправность выходных реле (Д)
-#define HTH_TUPP            0x00000004 // перегрев модуля
+#define HTH_FNC 0x00000200     // частота не в допуске (Э)
+#define HTH_LS 0x00000100      // сигналы малы (Э)
+#define HTH_CONFIG 0x00000080  // в модуле нет конфигурации
+#define HTH_REGPARS 0x00000040 // в модуле нет настроечных параметров
+#define HTH_ADC 0x00000020     // проблема с АЦП (Э)
+#define HTH_1PPS 0x00000010    // нет сигнала 1PPS
+#define HTH_REL 0x00000008     // неисправность выходных реле (Д)
+#define HTH_TUPP 0x00000004    // перегрев модуля
 
 enum BoardTypes
 {
@@ -61,12 +61,10 @@ public:
     static Bsi GetBsi();
     static quint32 GetHealth();
     static bool IsKnownModule();
-    static int PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config);
+    static int PrereadConf(QWidget *w, QList<S2::DataRec> S2Config);
 
 private:
     static quint32 MType;
     static Bsi ModuleBsi;
     static QString ModuleTypeString;
 };
-
-#endif // MODULEBSI_H

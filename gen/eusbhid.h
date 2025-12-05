@@ -1,31 +1,29 @@
-#ifndef EUSBHID_H
-#define EUSBHID_H
+#pragma once
 
-#include <QObject>
-#include <QByteArray>
-#include <QTimer>
-#include <QLabel>
-
-#include "log.h"
 #include "eabstractprotocomchannel.h"
 #include "hidapi/hidapi.h"
+
+#include <QByteArray>
+#include <QLabel>
+#include <QObject>
+#include <QTimer>
 
 // Канал связи с модулем
 
 #define UH_MAXSEGMENTLENGTH 64 // максимальная длина одного сегмента (0x40)
-#define UH_MAINLOOP_DELAY   50 // 100 ms main loop sleep
+#define UH_MAINLOOP_DELAY 50   // 100 ms main loop sleep
 
-#define UH_VID  0xC251
-#define UH_PID  0x3505
+#define UH_VID 0xC251
+#define UH_PID 0x3505
 
 class EUsbThread : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbThread(Log *logh, bool writelog = false, QObject *parent = 0);
+    explicit EUsbThread(Logger logh, bool writelog = false, QObject *parent = 0);
     ~EUsbThread();
 
-    Log *log;
+    Logger log;
 
     int Set(EAbstractProtocomChannel::DeviceConnectStruct &devinfo);
 
@@ -74,5 +72,3 @@ private:
 
     void ClosePort();
 };
-
-#endif // EUSBHID_H

@@ -1,6 +1,7 @@
-#include "../widgets/emessagebox.h"
-#include "../config/config.h"
 #include "modulebsi.h"
+
+#include "../config/config.h"
+#include "../widgets/emessagebox.h"
 #include "error.h"
 #include "stdfunc.h"
 #if PROGSIZE != PROGSIZE_EMUL
@@ -21,17 +22,17 @@ int ModuleBSI::SetupBSI()
 {
     if (Commands::GetBsi(ModuleBsi) != Error::ER_NOERROR)
         return Error::ER_CANAL;
-/*    quint32 mtype;
-    QString mtypestring;
-    mtype = ((ModuleBsi.MTypeB & 0x000000FF) << 8) | (ModuleBsi.MTypeM & 0x000000FF);
-#ifndef MODULE_A1
-    mtypestring = "АВТУК-";
-    mtypestring.append(QString::number(mtype, 16));
-#else
-    mtypestring = "ПКС-1";
-#endif */
-    ModuleTypeString = Config::ModuleBaseBoards()[ModuleBsi.MTypeB << 8].TextString + \
-            Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].TextString;
+    /*    quint32 mtype;
+        QString mtypestring;
+        mtype = ((ModuleBsi.MTypeB & 0x000000FF) << 8) | (ModuleBsi.MTypeM & 0x000000FF);
+    #ifndef MODULE_A1
+        mtypestring = "АВТУК-";
+        mtypestring.append(QString::number(mtype, 16));
+    #else
+        mtypestring = "ПКС-1";
+    #endif */
+    ModuleTypeString = Config::ModuleBaseBoards()[ModuleBsi.MTypeB << 8].TextString
+        + Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].TextString;
     ModuleBSI::Bsi bsi = ModuleBsi;
     QString tmps = ModuleTypeString;
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -88,9 +89,9 @@ quint32 ModuleBSI::GetHealth()
 bool ModuleBSI::IsKnownModule()
 {
     // проверка серийных номеров
-    if ((ModuleBsi.SerialNumB == 0xFFFFFFFF) || \
-            ((ModuleBsi.SerialNumM == 0xFFFFFFFF) && (ModuleBsi.MTypeM != Config::MTM_00)) || \
-            (ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
+    if ((ModuleBsi.SerialNumB == 0xFFFFFFFF)
+        || ((ModuleBsi.SerialNumM == 0xFFFFFFFF) && (ModuleBsi.MTypeM != Config::MTM_00))
+        || (ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
         return false;
     // проверка известных типов плат
     if (Config::ModuleBaseBoards().keys().contains(ModuleBsi.MTypeB << 8))
@@ -99,7 +100,8 @@ bool ModuleBSI::IsKnownModule()
         {
             if (Config::ModuleMezzanineBoards().keys().contains(ModuleBsi.MTypeM))
                 return true;
-            else return false;
+            else
+                return false;
         }
         return true;
     }
@@ -107,17 +109,18 @@ bool ModuleBSI::IsKnownModule()
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
-int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
+int ModuleBSI::PrereadConf(QWidget *w, QList<S2::DataRec> S2Config)
 {
     int res;
 
-    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+    if ((ModuleBSI::Health() & HTH_CONFIG)
+        || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
         return Error::ER_RESEMPTY;
-    else // иначе заполнить значениями из модуля
+    else                                 // иначе заполнить значениями из модуля
     {
         if ((res = Commands::GetFile(1, S2Config)) != Error::ER_NOERROR)
         {
-            QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
+            QString tmps = "прибора ";
             EMessageBox::error(w, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(res));
             return Error::ER_GENERALERROR;
         }

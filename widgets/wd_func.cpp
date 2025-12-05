@@ -1,13 +1,15 @@
-#include <QPalette>
-#include <QTextEdit>
-#include <QHBoxLayout>
-#include <QRegularExpression>
-#include <QPainter>
-#include <QStringListModel>
-#include <QtMath>
 #include "wd_func.h"
+
 #include "etableview.h"
 
+#include <QHBoxLayout>
+#include <QPainter>
+#include <QPalette>
+#include <QRegularExpression>
+#include <QStringListModel>
+#include <QTextEdit>
+#include <QtMath>
+#include <float.h>
 QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lestyle)
 {
     QLineEdit *le = new QLineEdit(w);
@@ -18,7 +20,8 @@ QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letex
     return le;
 }
 
-PasswordLineEdit *WDFunc::NewPswLE(QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle, const QString &lestyle)
+PasswordLineEdit *WDFunc::NewPswLE(
+    QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle, const QString &lestyle)
 {
     PasswordLineEdit *le = new PasswordLineEdit(echostyle, w);
     le->setObjectName(lename);
@@ -55,7 +58,8 @@ bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
     return true;
 }
 
-QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor, const QString &lblname, const QPixmap *pm)
+QLabel *WDFunc::NewLBL(
+    QWidget *w, const QString &text, const QString &lblcolor, const QString &lblname, const QPixmap *pm)
 {
     QLabel *lbl = new QLabel(w);
     lbl->setText(text);
@@ -71,7 +75,8 @@ QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor,
     return lbl;
 }
 
-QLabel *WDFunc::NewLBLT(QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip)
+QLabel *WDFunc::NewLBLT(
+    QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip)
 {
     QLabel *lbl = new QLabel(w);
     lbl->setText(text);
@@ -79,7 +84,6 @@ QLabel *WDFunc::NewLBLT(QWidget *w, const QString &text, const QString &lblname,
     lbl->setStyleSheet(lblstyle);
     lbl->setToolTip(lbltip);
     return lbl;
-
 }
 
 bool WDFunc::SetTEData(QWidget *w, const QString &tename, const QString &tetext)
@@ -132,7 +136,8 @@ QString WDFunc::CBData(QWidget *w, const QString &cbname)
     return cb->currentText();
 }
 
-QMetaObject::Connection WDFunc::CBConnect(QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method)
+QMetaObject::Connection WDFunc::CBConnect(
+    QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method)
 {
     QComboBox *cb = w->findChild<QComboBox *>(cbname);
     if (cb == nullptr)
@@ -183,7 +188,8 @@ bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
     return true;
 }
 
-QDoubleSpinBox *WDFunc::NewSPB(QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor)
+QDoubleSpinBox *WDFunc::NewSPB(
+    QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor)
 {
     QDoubleSpinBox *dspbls = new QDoubleSpinBox(parent);
     double step = qPow(0.1f, decimals);
@@ -286,7 +292,9 @@ QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
         return QString();
-    QString tmps = tv->model()->data(tv->model()->index(tv->currentIndex().row(),column,QModelIndex()),Qt::DisplayRole).toString();
+    QString tmps = tv->model()
+                       ->data(tv->model()->index(tv->currentIndex().row(), column, QModelIndex()), Qt::DisplayRole)
+                       .toString();
     if (isid) // если поле с ИД, надо убрать первую цифру - номер таблицы и разделяющую точку, если они присутствуют
     {
         QStringList sl = tmps.split(".");
@@ -317,7 +325,7 @@ QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString
     chb->setText(chbtext);
     if (!chbcolor.isEmpty())
     {
-        QString tmps = "QCheckBox {background-color: "+chbcolor+";}";
+        QString tmps = "QCheckBox {background-color: " + chbcolor + ";}";
         chb->setStyleSheet(tmps);
     }
     return chb;
@@ -358,29 +366,29 @@ void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lenam
 {
     QHBoxLayout *hlyout = static_cast<QHBoxLayout *>(lyout);
     QLabel *lbl = new QLabel(caption);
-    hlyout->addWidget(lbl,0);
+    hlyout->addWidget(lbl, 0);
     QLineEdit *le = new QLineEdit("");
     le->setObjectName(lename);
-    if(enabled)
-    le->setEnabled(enabled);
+    if (enabled)
+        le->setEnabled(enabled);
     else
-    le->setDisabled(~enabled);
-    //le->setReadOnly(false);
-    //le->setModified(enabled);
-    hlyout->addWidget(le,10);
+        le->setDisabled(~enabled);
+    // le->setReadOnly(false);
+    // le->setModified(enabled);
+    hlyout->addWidget(le, 10);
 }
 
 QWidget *WDFunc::NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled)
 {
     QWidget *w = new QWidget(parent);
-    w->setContentsMargins(0,0,0,0);
+    w->setContentsMargins(0, 0, 0, 0);
     QHBoxLayout *hlyout = new QHBoxLayout;
     QLabel *lbl = new QLabel(caption);
-    hlyout->addWidget(lbl,0);
+    hlyout->addWidget(lbl, 0);
     QLineEdit *le = new QLineEdit("");
     le->setObjectName(lename);
     le->setEnabled(enabled);
-    hlyout->addWidget(le,10);
+    hlyout->addWidget(le, 10);
     w->setLayout(hlyout);
     return w;
 }
@@ -428,8 +436,8 @@ QVariant WDFunc::FloatValueWithCheck(float value)
 QImage *WDFunc::TwoImages(const QString &first, const QString &second)
 {
     QImage *image = new QImage;
-    QString FirstImage = "images/"+first+".png";
-    QString SecondImage = "images/"+second+".png";
+    QString FirstImage = "images/" + first + ".png";
+    QString SecondImage = "images/" + second + ".png";
     QImage FirstI(FirstImage);
     QImage SecondI(SecondImage);
     if ((first.isEmpty()) && (!SecondI.isNull()))
@@ -440,7 +448,7 @@ QImage *WDFunc::TwoImages(const QString &first, const QString &second)
         image = new QImage("images/cross.png");
     else
     {
-        *image = QImage((FirstI.width()+SecondI.width()), qMax(FirstI.height(), SecondI.height()), FirstI.format());
+        *image = QImage((FirstI.width() + SecondI.width()), qMax(FirstI.height(), SecondI.height()), FirstI.format());
         image->fill(0);
         QPainter p(image);
         p.drawImage(0, 0, FirstI);
@@ -450,14 +458,14 @@ QImage *WDFunc::TwoImages(const QString &first, const QString &second)
     return image;
 }
 
-QPushButton *WDFunc::NewPB(QWidget *parent, const QString &text, \
-                           const QObject *receiver, const char *method, const QString &pbtooltip)
+QPushButton *WDFunc::NewPB(
+    QWidget *parent, const QString &text, const QObject *receiver, const char *method, const QString &pbtooltip)
 {
     QPushButton *pb = new QPushButton(parent);
     pb->setText(text);
     pb->setToolTip(pbtooltip);
     if (receiver != nullptr)
-        QObject::connect(pb,SIGNAL(clicked(bool)),receiver,method);
+        QObject::connect(pb, SIGNAL(clicked(bool)), receiver, method);
     return pb;
 }
 
@@ -477,6 +485,6 @@ bool WDFunc::LE_write_data(QWidget *w, QString &levalue, const QString &lename)
         return false;
     le->text() = levalue;
     le->setText(levalue);
-    //SetTEData(w, lename, levalue);
+    // SetTEData(w, lename, levalue);
     return true;
 }

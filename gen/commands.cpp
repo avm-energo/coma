@@ -1,19 +1,13 @@
 // commands.cpp
-#include <QCoreApplication>
 #include "commands.h"
+
 #include "error.h"
 
-#ifdef USBENABLE
-    EUsbHid *cn;
-#else
-#ifdef COMPORTENABLE
-    EUsbCom *cn;
-#endif
-#endif
+#include <QCoreApplication>
 
-Commands::Commands()
-{
-}
+EUsbHid *cn;
+
+Commands::Commands() { }
 
 int Commands::GetBsi(ModuleBSI::Bsi &bsi)
 {
@@ -25,7 +19,7 @@ int Commands::GetBsi(ModuleBSI::Bsi &bsi)
 #endif
 }
 
-int Commands::GetFile(int filenum, QVector<S2::DataRec> *data)
+int Commands::GetFile(int filenum, QList<S2::DataRec> data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_GF, BoardTypes::BT_NONE, nullptr, 0, filenum, data);
@@ -51,7 +45,7 @@ int Commands::GetOsc(int filenum, void *ptr)
 #endif
 }
 
-int Commands::WriteFile(void *ptr, int filenum, QVector<S2::DataRec> *data)
+int Commands::WriteFile(void *ptr, int filenum, QList<S2::DataRec> data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_WF, BoardTypes::BT_BASE, ptr, 0, filenum, data);
@@ -229,7 +223,7 @@ int Commands::GetMode(int &mode)
 #endif
 }
 
-int Commands::WriteTimeMNK(uint*Time,  int TimeSize)
+int Commands::WriteTimeMNK(qint64 *Time, int TimeSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_WTime, BoardTypes::BT_NONE, Time, TimeSize);
@@ -243,9 +237,9 @@ int Commands::WriteTimeMNK(uint*Time,  int TimeSize)
 int Commands::GetTimeMNK(uint &Time)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    //quint8 tmpi;
+    // quint8 tmpi;
     cn->Send(CN_GTime, BoardTypes::BT_NONE, &Time, sizeof(uint));
-    //Time = tmpi;
+    // Time = tmpi;
     return cn->result;
 #else
     Q_UNUSED(Time);

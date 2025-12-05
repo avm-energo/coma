@@ -1,23 +1,23 @@
+#include "../widgets/ecombobox.h"
+#include "../widgets/emessagebox.h"
+#include "../widgets/wd_func.h"
+
+#include <QGridLayout>
 #include <QGroupBox>
-#include <QTabWidget>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QGridLayout>
+#include <QTabWidget>
 #include <QVBoxLayout>
-#include "../widgets/emessagebox.h"
-#include "../widgets/ecombobox.h"
-#include "../widgets/wd_func.h"
-//#include "../gen/publicclass.h"
+// #include "../gen/publicclass.h"
 #include "../gen/colors.h"
 #include "confdialoga1.h"
 
-ConfDialogA1::ConfDialogA1(QVector<S2::DataRec> &S2Config, QWidget *parent) :
-    AbstractConfDialog(parent)
+ConfDialogA1::ConfDialogA1(QList<S2::DataRec> &S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
-    QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
+    QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
     setStyleSheet(tmps);
-    this->S2Config = &S2Config;
+    this->S2Config = S2Config;
     CA1 = new ConfigA1(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -34,13 +34,13 @@ ConfDialogA1::~ConfDialogA1()
 
 void ConfDialogA1::Fill()
 {
-//    WDFunc::SetLEData(this, "DividerSN", QString::number(CA1->Bci_block.DNFNum));
-//    WDFunc::SetSPBData(this, "K_DNSPB", CA1->Bci_block.K_DN);
+    //    WDFunc::SetLEData(this, "DividerSN", QString::number(CA1->Bci_block.DNFNum));
+    //    WDFunc::SetSPBData(this, "K_DNSPB", CA1->Bci_block.K_DN);
     WDFunc::SetCBIndex(this, "TokrCB", CA1->Bci_block.DTCanal);
     WDFunc::SetSPBData(this, "TokrSPB4", CA1->Bci_block.T4);
     WDFunc::SetSPBData(this, "TokrSPB20", CA1->Bci_block.T20);
     WDFunc::SetSPBData(this, "TokrW100", CA1->Bci_block.W100);
-    WDFunc::SetCBIndex(this, "HumidityCB", (CA1->Bci_block.DHCanal > 0) ? (CA1->Bci_block.DHCanal-1) : 0);
+    WDFunc::SetCBIndex(this, "HumidityCB", (CA1->Bci_block.DHCanal > 0) ? (CA1->Bci_block.DHCanal - 1) : 0);
     WDFunc::SetSPBData(this, "HumiditySPB4", CA1->Bci_block.H4);
     WDFunc::SetSPBData(this, "HumiditySPB20", CA1->Bci_block.H20);
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -57,15 +57,15 @@ void ConfDialogA1::FillBack()
     QString tmps;
     int tmpi;
     CA1->Bci_block.DDOsc = 0;
-//    WDFunc::LEData(this, "DividerSN", tmps);
-//    CA1->Bci_block.DNFNum = tmps.toInt();
-//    WDFunc::SPBData(this, "K_DNSPB", CA1->Bci_block.K_DN);
+    //    WDFunc::LEData(this, "DividerSN", tmps);
+    //    CA1->Bci_block.DNFNum = tmps.toInt();
+    //    WDFunc::SPBData(this, "K_DNSPB", CA1->Bci_block.K_DN);
     CA1->Bci_block.DTCanal = WDFunc::CBIndex(this, "TokrCB");
     WDFunc::SPBData(this, "TokrSPB4", CA1->Bci_block.T4);
     WDFunc::SPBData(this, "TokrSPB20", CA1->Bci_block.T20);
     WDFunc::SPBData(this, "TokrW100", CA1->Bci_block.W100);
     tmpi = WDFunc::CBIndex(this, "HumidityCB");
-    CA1->Bci_block.DHCanal = (tmpi > 0) ? (tmpi+1) : 0;
+    CA1->Bci_block.DHCanal = (tmpi > 0) ? (tmpi + 1) : 0;
     WDFunc::SPBData(this, "HumiditySPB4", CA1->Bci_block.H4);
     WDFunc::SPBData(this, "HumiditySPB20", CA1->Bci_block.H20);
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -81,17 +81,17 @@ void ConfDialogA1::FillBack()
 void ConfDialogA1::SetupUI()
 {
     QVBoxLayout *vlyout1 = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
+    QHBoxLayout *hlyout;
     QWidget *cp1 = new QWidget;
-    QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
+    QString tmps = "QWidget {background-color: " + QString(UCONFCLR) + ";}";
     cp1->setStyleSheet(tmps);
 
-/*    hlyout->addWidget(WDFunc::NewLBL(this,"Заводской номер делителя:"), 0);
-    hlyout->addWidget(WDFunc::NewLE(this, "DividerSN", "", tmps),10);
-    hlyout->addWidget(WDFunc::NewLBL(this,"Номинальный коэффициент деления ДН:"), 0);
-    hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB",1,10000,0,UCONFWCLR));
-    hlyout->addStretch(10);
-    vlyout1->addLayout(hlyout); */
+    /*    hlyout->addWidget(WDFunc::NewLBL(this,"Заводской номер делителя:"), 0);
+        hlyout->addWidget(WDFunc::NewLE(this, "DividerSN", "", tmps),10);
+        hlyout->addWidget(WDFunc::NewLBL(this,"Номинальный коэффициент деления ДН:"), 0);
+        hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB",1,10000,0,UCONFWCLR));
+        hlyout->addStretch(10);
+        vlyout1->addLayout(hlyout); */
 
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Канал датчика Tокр:"));
@@ -150,8 +150,9 @@ void ConfDialogA1::SetupUI()
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBLT(this, "Постоянная фильтрации гармоник:", "", "", "Задаётся в циклах, каждый цикл равен количеству гармоник, \n"
-                                                                                       "умноженному на длину одного такта (20 мс), по умолчанию 61 такт"));
+    hlyout->addWidget(WDFunc::NewLBLT(this, "Постоянная фильтрации гармоник:", "", "",
+        "Задаётся в циклах, каждый цикл равен количеству гармоник, \n"
+        "умноженному на длину одного такта (20 мс), по умолчанию 61 такт"));
     hlyout->addWidget(WDFunc::NewSPB(this, "NHarmFiltSPB", 1, 1000, 0, UCONFCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
@@ -162,15 +163,15 @@ void ConfDialogA1::SetupUI()
     vlyout1 = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLORA1)+";}";
+    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(TABCOLORA1) + ";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
-    ConfTW->addTab(cp1,"Конфигурация");
+    ConfTW->addTab(cp1, "Конфигурация");
     vlyout1->addWidget(ConfTW);
 
     QWidget *wdgt = ConfButtons();
     vlyout1->addWidget(wdgt);
     setLayout(vlyout1);
-//    WDFunc::SetLEData(this, "DividerSN", "00000000", "^\\d{8}$");
+    //    WDFunc::SetLEData(this, "DividerSN", "00000000", "^\\d{8}$");
 }
 
 void ConfDialogA1::CheckConf()

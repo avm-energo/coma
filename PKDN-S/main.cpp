@@ -1,26 +1,34 @@
+#include "../gen/colors.h"
+#include "../gen/stdfunc.h"
+#include "config.h"
+#include "pkdn_s.h"
+#include <gen/settings.h>
+
 #include <QApplication>
 #include <QCommandLineParser>
-#include "pkdn_s.h"
-#include "../gen/stdfunc.h"
 
 int main(int argc, char *argv[])
 {
     QString Parameter;
     QApplication a(argc, argv);
     StdFunc::Init();
+    Settings::initialize(PROGNAME, SOFTDEVELOPER, COMAVERSION);
+    a.setStyleSheet("QWidget { color: " + QString(BLKCOLOR) + "; margin: 2px; }"); // Все виджеты унаследуют
     pkdn_s w;
-//    w.setAttribute(Qt::WA_AlwaysShowToolTips);
+    //    w.setAttribute(Qt::WA_AlwaysShowToolTips);
     w.SetMode(MainWindow::COMA_GENERALMODE);
-    QCoreApplication::setApplicationName("PKDN-S");
-    QCoreApplication::setApplicationVersion(COMAVERSION);
+    // QCoreApplication::setApplicationName(PROGNAME);
+    // QCoreApplication::setApplicationVersion(COMAVERSION);
+
     if (argc > 1) // есть аргументы запуска
     {
         QCommandLineParser parser;
-/*        parser.setApplicationDescription("COMA");
-        parser.addHelpOption();
-        parser.addVersionOption(); */
-        parser.addPositionalArgument("file", "file with oscillogramm (*.osc), with switch journal (*.swj)\n" \
-                                             "or with pkdn file (*.vrf)");
+        /*        parser.setApplicationDescription("COMA");
+                parser.addHelpOption();
+                parser.addVersionOption(); */
+        parser.addPositionalArgument("file",
+            "file with oscillogramm (*.osc), with switch journal (*.swj)\n"
+            "or with pkdn file (*.vrf)");
         parser.process(QCoreApplication::arguments());
         const QStringList files = parser.positionalArguments();
         // file is files.at(0)

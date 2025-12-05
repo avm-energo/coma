@@ -1,8 +1,8 @@
-#ifndef PKDN_S_H
-#define PKDN_S_H
+#pragma once
+
+#include "../gen/mainwindow.h"
 
 #include <QResizeEvent>
-#include "../gen/mainwindow.h"
 
 class pkdn_s : public MainWindow
 {
@@ -23,5 +23,3 @@ private:
 private slots:
     void AcceptVoltageType();
 };
-
-#endif // PKDN_S_H

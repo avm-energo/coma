@@ -1,24 +1,23 @@
+#include "error.h"
+
 #include <QDateTime>
+#include <QFile>
 #include <QStandardPaths>
 #include <QTextStream>
-#include <QFile>
-#include "error.h"
 
 QStringList Error::ErrMsgs;
 QList<Error::ErMsg> Error::ErMsgPool;
-Log Error::LogFile;
+Logger Error::LogFile;
 
-Error::Error()
-{
-}
+Error::Error() { }
 
 void Error::Init()
 {
-    LogFile.Init(LOGFILE);
-    LogFile.info("=== Log started ===\n");
+    LogFile.writeStart(LOGFILE);
+    LogFile.writeLog(Logger::Info, "=== Log started ===\n");
     QFile file;
     QString ermsgspath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/";
-    file.setFileName(ermsgspath+"ermsgs.dat");
+    file.setFileName(ermsgspath + "ermsgs.dat");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
     QString tmpString;
@@ -36,7 +35,7 @@ void Error::Init()
 
 void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
 {
-    if (ErMsgPool.size()>=ER_BUFMAX)
+    if (ErMsgPool.size() >= ER_BUFMAX)
         ErMsgPool.removeFirst();
     ErMsg tmpm;
     tmpm.type = msgtype;
@@ -52,18 +51,24 @@ void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
         case ER_MSG:
             prefix = "Ошибка ";
             break;
-        case WARN_MSG: prefix = "Проблема "; break;
-        case INFO_MSG: prefix = "Инфо "; break;
-        case DBG_MSG: prefix = "Отладка "; break;
+        case WARN_MSG:
+            prefix = "Проблема ";
+            break;
+        case INFO_MSG:
+            prefix = "Инфо ";
+            break;
+        case DBG_MSG:
+            prefix = "Отладка ";
+            break;
         }
-        msg = prefix+"в файле " + tmpm.file + " строка " + QString::number(tmpm.line);
+        msg = prefix + "в файле " + tmpm.file + " строка " + QString::number(tmpm.line);
     }
     if ((msgtype == ER_MSG) || (msgtype == DBG_MSG))
-        LogFile.error("file: "+tmpm.file+", line: "+QString::number(tmpm.line)+": "+msg);
+        LogFile.writeLog(Logger::Fatal, "file: " + tmpm.file + ", line: " + QString::number(tmpm.line) + ": " + msg);
     else if (msgtype == WARN_MSG)
-        LogFile.warning("file: "+tmpm.file+", line: "+QString::number(tmpm.line)+": "+msg);
+        LogFile.writeLog(Logger::Warning, "file: " + tmpm.file + ", line: " + QString::number(tmpm.line) + ": " + msg);
     else
-        LogFile.info("file: "+tmpm.file+", line: "+QString::number(tmpm.line)+": "+msg);
+        LogFile.writeLog(Logger::Info, "file: " + tmpm.file + ", line: " + QString::number(tmpm.line) + ": " + msg);
     tmpm.msg = msg;
     ErMsgPool.append(tmpm);
 }
@@ -73,7 +78,7 @@ void Error::ShowErMsg(int ermsgnum)
     if (ermsgnum < ErrMsgs.size())
         ERMSG(ErrMsgs.at(ermsgnum));
     else
-        ERMSG("Произошла неведомая фигня #"+QString::number(ermsgnum,10));
+        ERMSG("Произошла неведомая фигня #" + QString::number(ermsgnum, 10));
 }
 
 int Error::ErMsgPoolSize()
@@ -88,4 +93,3 @@ Error::ErMsg Error::ErMsgAt(int idx)
     else
         return ErMsg();
 }
-

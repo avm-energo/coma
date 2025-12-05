@@ -1,14 +1,16 @@
-#include <QApplication>
-#include <QPushButton>
-#include <QMessageBox>
 #include "emessagebox.h"
+
+#include "../gen/colors.h"
+
+#include <QApplication>
+#include <QMessageBox>
+#include <QPushButton>
 
 #if QT_VERSION >= 0x040600
 #include <QScopedPointer>
 #else
 #include <QSharedPointer>
 #endif
-
 
 /*
     Copyright (c) 2009-10 Qtrac Ltd. All rights reserved.
@@ -26,8 +28,7 @@
 namespace EMessageBox
 {
 
-void information(QWidget *parent, const QString &title,
-                 const QString &text, const QString &detailedText)
+void information(QWidget *parent, const QString &title, const QString &text, const QString &detailedText)
 {
 #if QT_VERSION >= 0x040600
     QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
@@ -42,20 +43,23 @@ void information(QWidget *parent, const QString &title,
         messageBox->setInformativeText(detailedText);
     messageBox->setIcon(QMessageBox::Information);
     messageBox->addButton(QMessageBox::Ok);
-//    messageBox->addButton(QMessageBox::Close);
+    //    messageBox->addButton(QMessageBox::Close);
     messageBox->exec();
 }
 
-void error(QWidget *parent, const QString &title,
-                 const QString &text, const QString &detailedText)
+void error(QWidget *parent, const QString &title, const QString &text, const QString &detailedText)
 {
 #if QT_VERSION >= 0x040600
-        QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
+    QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 #else
     QSharedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 #endif
     if (parent)
         messageBox->setWindowModality(Qt::WindowModal);
+    messageBox->setStyleSheet("QMessageBox {background-color: " + QString(RDLCOLOR)
+        + ";}"
+          "QMessageBox QLabel {color: "
+        + QString(BLKCOLOR) + ";}");
     messageBox->setWindowTitle(QString("%1 - %2").arg(QApplication::applicationName()).arg(title));
     messageBox->setText(text);
     if (!detailedText.isEmpty())
@@ -65,9 +69,8 @@ void error(QWidget *parent, const QString &title,
     messageBox->exec();
 }
 
-bool question(QWidget *parent, const QString &title,
-              const QString &text, const QString &detailedText,
-              const QString &yesText, const QString &noText)
+bool question(QWidget *parent, const QString &title, const QString &text, const QString &detailedText,
+    const QString &yesText, const QString &noText)
 {
 #if QT_VERSION >= 0x040600
     QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));

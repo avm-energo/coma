@@ -1,14 +1,17 @@
+#include "stdfunc.h"
+
+#include "config.h"
+#include "maindef.h"
+
 #include <QDateTime>
-#include <QFile>
-#include <QTextStream>
 #include <QDir>
+#include <QFile>
 #include <QFileDialog>
 #include <QSettings>
 #include <QStandardPaths>
-#include "stdfunc.h"
-#include "maindef.h"
+#include <QTextStream>
 
-QString StdFunc::HomeDir = ""; // рабочий каталог программы
+QString StdFunc::HomeDir = "";       // рабочий каталог программы
 QString StdFunc::SystemHomeDir = ""; // системный каталог программы
 bool StdFunc::Emul = false;
 bool StdFunc::Cancelled = false;
@@ -16,9 +19,7 @@ QString StdFunc::PrbMsg = "";
 QString StdFunc::s_MIPIP = "";
 QString StdFunc::s_OrganizationString = "";
 
-StdFunc::StdFunc()
-{
-}
+StdFunc::StdFunc() { }
 
 void StdFunc::Init()
 {
@@ -28,23 +29,24 @@ void StdFunc::Init()
     QDir dir(SystemHomeDir);
     if (!dir.exists())
         dir.mkdir(SystemHomeDir);
-    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
     SetOrganizationString(sets->value("OrganizationString", "Р&К").toString());
     SetMIPIP(sets->value("MIPIP", "172.16.11.12").toString());
 }
 
 QString StdFunc::VerToStr(quint32 num)
 {
-    int mv = (num&0xFF000000)>>24;
-    int lv = (num&0x00FF0000)>>16;
-    int sv = (num&0x0000FFFF);
-    QString tmpString = QString::number(mv, 10) + "." + QString::number(lv, 10) + "-" + QString("%1").arg(sv, 4, 10, QChar('0'));
+    int mv = (num & 0xFF000000) >> 24;
+    int lv = (num & 0x00FF0000) >> 16;
+    int sv = (num & 0x0000FFFF);
+    QString tmpString
+        = QString::number(mv, 10) + "." + QString::number(lv, 10) + "-" + QString("%1").arg(sv, 4, 10, QChar('0'));
     return tmpString;
 }
 
 bool StdFunc::FloatInRange(float var, float value, float tolerance)
 {
-    if ((var >= (value-tolerance)) && (var <= (value+tolerance)))
+    if ((var >= (value - tolerance)) && (var <= (value + tolerance)))
         return true;
     else
         return false;
@@ -68,7 +70,7 @@ QString StdFunc::GetSystemHomeDir()
 void StdFunc::SetMIPIP(const QString &ip)
 {
     s_MIPIP = ip;
-    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
     sets->setValue("MIPIP", ip);
 }
 
@@ -80,7 +82,7 @@ QString StdFunc::MIPIP()
 void StdFunc::SetOrganizationString(const QString &str)
 {
     s_OrganizationString = str;
-    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
     sets->setValue("OrganizationString", str);
 }
 
@@ -117,9 +119,9 @@ void StdFunc::SetEmulated(bool tb)
 int StdFunc::IndexByBit(quint32 dword)
 {
     quint32 bit = 0x00000001;
-    for (int i=0; i<32; ++i)
+    for (int i = 0; i < 32; ++i)
         if (dword & bit)
-            return (i+1);
+            return (i + 1);
     return 0;
 }
 
@@ -127,7 +129,7 @@ quint32 StdFunc::BitByIndex(int idx)
 {
     if ((idx == 0) || (idx > 31))
         return 0;
-    return (0x00000001 << (idx-1));
+    return (0x00000001 << (idx - 1));
 }
 
 QString StdFunc::PrbMessage()

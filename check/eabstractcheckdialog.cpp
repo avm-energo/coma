@@ -1,33 +1,32 @@
-#include <QCoreApplication>
-#include <QtTest/QTest>
-#include <QtMath>
-#include <QTime>
-#include <QTabWidget>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGroupBox>
-#include <QLabel>
-#include <QRadioButton>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QLineEdit>
 #include "eabstractcheckdialog.h"
-#include "../widgets/emessagebox.h"
-#include "../widgets/wd_func.h"
+
+#include "../config/config.h"
+#include "../gen/colors.h"
+#include "../gen/error.h"
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
-#include "../gen/error.h"
-#include "../gen/colors.h"
-#include "../gen/files.h"
 #include "../gen/timefunc.h"
-#include "../config/config.h"
+#include "../widgets/emessagebox.h"
+
+#include <QCoreApplication>
+#include <QFileDialog>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QTabWidget>
+#include <QTime>
+#include <QVBoxLayout>
+#include <QtMath>
+#include <qtabbar.h>
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
 
-EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) :
-    QDialog(parent)
+EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) : QDialog(parent)
 {
     XlsxWriting = false;
     Busy = false;
@@ -38,7 +37,7 @@ EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) :
     timer = new QTimer;
     timer->setObjectName("checktimer");
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(timer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(TimerTimeout()));
 #endif
     timer->setInterval(1000);
     setAttribute(Qt::WA_DeleteOnClose);
@@ -51,35 +50,33 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
         ERMSG("Wrong BdTab size");
         return;
     }
-    QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
     QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
-                       "QTabBar::tab:selected {background-color: "+QString(TABCOLORA1)+";"
-                        "border: 1px solid #000000;"
-                        "border-top-left-radius: 4px;"
-                        "border-top-right-radius: 4px;"
-                        "padding: 2px;"
-                        "margin-left: -4px; margin-right: -4px;}" \
-                       "QTabBar::tab:first:selected {margin-left: 0;}" \
-                       "QTabBar::tab:last:selected {margin-right: 0;}" \
-                       "QTabBar::tab:only-one {margin: 0;}";
+                       "QTabBar::tab:selected {background-color: "
+        + QString(TABCOLORA1)
+        + ";"
+          "border: 1px solid #000000;"
+          "border-top-left-radius: 4px;"
+          "border-top-right-radius: 4px;"
+          "padding: 2px;"
+          "margin-left: -4px; margin-right: -4px;}"
+          "QTabBar::tab:first:selected {margin-left: 0;}"
+          "QTabBar::tab:last:selected {margin-right: 0;}"
+          "QTabBar::tab:only-one {margin: 0;}";
     CheckTW->tabBar()->setStyleSheet(ConfTWss);
-//    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
-    for (int i=0; i<BdUINum; ++i)
-        CheckTW->addTab(BdUI(i),"  "+tabnames.at(i)+"  ");
+    //    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
+    for (int i = 0; i < BdUINum; ++i)
+        CheckTW->addTab(BdUI(i), "  " + tabnames.at(i) + "  ");
     QWidget *w = CustomTab();
     if (w != nullptr)
         CheckTW->addTab(w, "  Прочее  ");
-    lyout = new QVBoxLayout;
+    QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(CheckTW);
     lyout->addWidget(BottomUI());
     setLayout(lyout);
 }
 
-void EAbstractCheckDialog::Check1PPS()
-{
-
-}
+void EAbstractCheckDialog::Check1PPS() { }
 
 void EAbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
@@ -101,65 +98,65 @@ QWidget *EAbstractCheckDialog::BottomUI()
     QRadioButton *rb = new QRadioButton;
     rb->setObjectName("1000");
     rb->setText("1");
-    connect(rb,SIGNAL(clicked()),this,SLOT(SetTimerPeriod()));
+    connect(rb, SIGNAL(clicked()), this, SLOT(SetTimerPeriod()));
     hlyout->addWidget(rb);
     rb = new QRadioButton;
     rb->setObjectName("2000");
     rb->setText("2");
     rb->setChecked(true);
-    connect(rb,SIGNAL(clicked()),this,SLOT(SetTimerPeriod()));
+    connect(rb, SIGNAL(clicked()), this, SLOT(SetTimerPeriod()));
     hlyout->addWidget(rb);
     rb = new QRadioButton;
     rb->setObjectName("10000");
     rb->setText("10");
-    connect(rb,SIGNAL(clicked()),this,SLOT(SetTimerPeriod()));
+    connect(rb, SIGNAL(clicked()), this, SLOT(SetTimerPeriod()));
     hlyout->addWidget(rb);
     lyout->addLayout(hlyout);
 
     QPushButton *pb = new QPushButton("Запустить чтение сигналов");
     pb->setObjectName("pbmeasurements");
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurements()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(StartAnalogMeasurements()));
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
-    glyout->addWidget(pb,1,1,1,1);
+    glyout->addWidget(pb, 1, 1, 1, 1);
     pb = new QPushButton("Запустить чтение сигналов в файл");
     pb->setObjectName("pbfilemeasurements");
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurementsToFile()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(StartAnalogMeasurementsToFile()));
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
-    glyout->addWidget(pb,1,2,1,1);
+    glyout->addWidget(pb, 1, 2, 1, 1);
     pb = new QPushButton("Остановить чтение сигналов");
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked()),this,SLOT(StopAnalogMeasurements()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(StopAnalogMeasurements()));
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
-    glyout->addWidget(pb,1,3,1,1);
+    glyout->addWidget(pb, 1, 3, 1, 1);
 
     if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_84)
     {
         pb = new QPushButton("Начать тестирование мезонина");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(StartTest()));
-    #endif
+#if PROGSIZE != PROGSIZE_EMUL
+        connect(pb, SIGNAL(clicked()), this, SLOT(StartTest()));
+#endif
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
 
-        glyout->addWidget(pb,2,1,1,1);
+        glyout->addWidget(pb, 2, 1, 1, 1);
 
         pb = new QPushButton("Завершить тестирование мезонина");
-        #if PROGSIZE != PROGSIZE_EMUL
-            connect(pb,SIGNAL(clicked()),this,SLOT(StopTest()));
-        #endif
-            if (StdFunc::IsInEmulateMode())
-                pb->setEnabled(false);
+#if PROGSIZE != PROGSIZE_EMUL
+        connect(pb, SIGNAL(clicked()), this, SLOT(StopTest()));
+#endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
     }
 
-    glyout->addWidget(pb,2,3,1,1);
+    glyout->addWidget(pb, 2, 3, 1, 1);
     lyout->addLayout(glyout);
     w->setLayout(lyout);
     return w;
@@ -190,8 +187,8 @@ void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString Filename = dlg->getSaveFileName(this, "Сохранить данные",StdFunc::GetHomeDir(),"Excel files (*.xlsx)", \
-                                            Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    QString Filename = dlg->getSaveFileName(this, "Сохранить данные", StdFunc::GetHomeDir(), "Excel files (*.xlsx)",
+        Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     dlg->close();
     if (Filename == "")
     {
@@ -207,12 +204,13 @@ void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
         fn.remove();
     XlsxWriting = true;
     xlsx = new QXlsx::Document(Filename);
-    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "Модуль" : "Прибор");
-    xlsx->write(1,1,QVariant(tmps + ": "+ModuleBSI::GetModuleTypeString()+" сер. ном. " + \
-                             QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE),10)));
-    xlsx->write(2,1,QVariant("Дата начала записи: "+QDateTime::currentDateTime().toString("dd-MM-yyyy")));
-    xlsx->write(3,1,QVariant("Время начала записи: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
-    xlsx->write(5,1,QVariant("Дата и время отсчёта"));
+    QString tmps = "Прибор";
+    xlsx->write(1, 1,
+        QVariant(tmps + ": " + ModuleBSI::GetModuleTypeString() + " сер. ном. "
+            + QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 10)));
+    xlsx->write(2, 1, QVariant("Дата начала записи: " + QDateTime::currentDateTime().toString("dd-MM-yyyy")));
+    xlsx->write(3, 1, QVariant("Время начала записи: " + QDateTime::currentDateTime().toString("hh:mm:ss")));
+    xlsx->write(5, 1, QVariant("Дата и время отсчёта"));
     PrepareHeadersForFile(6); // в 6 ряду пишем заголовки
     WRow = 7;
     QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
@@ -228,21 +226,21 @@ void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
 
 void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 {
-//    int Interval = ElapsedTimeCounter->elapsed();
-//    qDebug() << ElapsedTimeCounter->elapsed();
+    //    int Interval = ElapsedTimeCounter->elapsed();
+    //    qDebug() << ElapsedTimeCounter->elapsed();
     // получение текущих аналоговых сигналов от модуля
     if (Busy)
         return;
     Busy = true;
     if (XlsxWriting)
     {
-        xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("hh:mm:ss.zzz")));
+        xlsx->write(WRow, 1, QVariant(QDateTime::currentDateTime().toString("hh:mm:ss.zzz")));
         QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
         if (pb != nullptr)
         {
             int MSecs = ElapsedTimeCounter->elapsed();
             QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss.zzz");
-            pb->setText("Идёт запись: "+TimeElapsed);
+            pb->setText("Идёт запись: " + TimeElapsed);
         }
     }
     int bdkeyssize = Bd_blocks.keys().size();
@@ -263,15 +261,15 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
                 WriteToFile(WRow, bdnum);
         }
     }
-//    Interval = ElapsedTimeCounter->elapsed() - Interval;
-//    qDebug() << Interval;
+    //    Interval = ElapsedTimeCounter->elapsed() - Interval;
+    //    qDebug() << Interval;
     WRow++;
     Busy = false;
 }
 
 void EAbstractCheckDialog::StartAnalogMeasurements()
 {
-//    CurBdNum = 1;
+    //    CurBdNum = 1;
     PrepareAnalogMeasurements();
     timer->start();
 }
@@ -327,14 +325,13 @@ void EAbstractCheckDialog::StartTest()
     int res = Commands::TestCom(1);
     if (res != Error::ER_NOERROR)
     {
-        //EMessageBox::information(this, "Ошибка", "Ошибка запуска тестирования");
+        // EMessageBox::information(this, "Ошибка", "Ошибка запуска тестирования");
     }
     else
     {
-       // EMessageBox::information(this, "Успешно", "Режим тестирования");
+        // EMessageBox::information(this, "Успешно", "Режим тестирования");
     }
     TimeFunc::Wait(100);
-
 }
 
 void EAbstractCheckDialog::StopTest()
@@ -343,23 +340,19 @@ void EAbstractCheckDialog::StopTest()
     int res = Commands::TestCom(0);
     if (res != Error::ER_NOERROR)
     {
-        //EMessageBox::information(this, "Ошибка","Ошибка остановки тестирования");
+        // EMessageBox::information(this, "Ошибка","Ошибка остановки тестирования");
     }
     else
     {
-       // EMessageBox::information(this, "Успешно", "Тестирование завершено");
+        // EMessageBox::information(this, "Успешно", "Тестирование завершено");
     }
     TimeFunc::Wait(100);
-
 }
-
 
 void EAbstractCheckDialog::TestMode(int index)
 {
-    if(index == checkIndex)
-    StartTest();
+    if (index == checkIndex)
+        StartTest();
     else
-    StopTest();
+        StopTest();
 }
-
-

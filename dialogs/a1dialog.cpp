@@ -1,27 +1,29 @@
 /* A1Dialog - dialog providing a main function of the device
  *
-*/
-#include <QtMath>
-#include <QGridLayout>
-#include <QVBoxLayout>
-#include <QCoreApplication>
-#include <QGroupBox>
-#include <QRadioButton>
-#include <QStringListModel>
-#include <QPushButton>
-#include <QTableView>
-#include <QTime>
-#include <QTimer>
+ */
 #include "a1dialog.h"
-#include "../widgets/emessagebox.h"
-#include "../widgets/waitwidget.h"
-#include "../widgets/wd_func.h"
-#include "../gen/maindef.h"
-#include "../gen/stdfunc.h"
+
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
+#include "../gen/maindef.h"
+#include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include "../widgets/emessagebox.h"
+#include "../widgets/waitwidget.h"
+#include "../widgets/wd_func.h"
+
+#include <QCoreApplication>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QStringListModel>
+#include <QTableView>
+#include <QTime>
+#include <QTimer>
+#include <QVBoxLayout>
+#include <QtMath>
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -42,8 +44,8 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : EAbstractTuneDial
     }
     TuneVariant = 0;
 #if PROGSIZE != PROGSIZE_EMUL
-// считать варианты использования и соответствующие им коэффициенты из модуля
-    if (Commands::GetFile(1, &S2Config) != Error::ER_NOERROR)
+    // считать варианты использования и соответствующие им коэффициенты из модуля
+    if (Commands::GetFile(1, S2Config) != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации из модуля");
         return;
@@ -59,17 +61,16 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : EAbstractTuneDial
     WDFunc::SetLBLText(this, "tunevarcoef3", QString::number(Bac_block2.Bac_block2[2].K_DN, 'f', 0));
 }
 
-A1Dialog::~A1Dialog()
-{
-}
+A1Dialog::~A1Dialog() { }
 
 void A1Dialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
+    QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
     setStyleSheet(tmps);
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
-            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+                           "background-color: "
+        + QString(ACONFOCLR) + "; font: bold 10px;}";
     QGridLayout *glyout = new QGridLayout;
     QGroupBox *gb = new QGroupBox("Конфигурация");
     glyout->addWidget(WDFunc::NewLBL(this, "Варианты использования:"), 0, 0, 1, 1, Qt::AlignRight);
@@ -95,13 +96,13 @@ void A1Dialog::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Freq, Гц"), 1, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednfreq", ValuesFormat, ""), 1, 1, 1, 1);
     QPushButton *pb = new QPushButton("Подтвердить");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Good()));
+    connect(pb, SIGNAL(clicked(bool)), this, SLOT(Good()));
     QHBoxLayout *hlyout = new QHBoxLayout;
     pb->setObjectName("acceptpb");
     pb->setEnabled(false);
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(NoGood()));
+    connect(pb, SIGNAL(clicked(bool)), this, SLOT(NoGood()));
     pb->setObjectName("cancelpb");
     pb->setEnabled(false);
     hlyout->addWidget(pb);
@@ -130,9 +131,9 @@ void A1Dialog::SetupUI()
     pb = new QPushButton("Начать поверку делителя");
     pb->setObjectName("StartWorkPb");
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(StartWork()));
+    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StartWork()));
 #endif
-//    connect(pb,SIGNAL(clicked(bool)),this,SLOT(TempRandomizeModel()));
+    //    connect(pb,SIGNAL(clicked(bool)),this,SLOT(TempRandomizeModel()));
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
@@ -147,7 +148,7 @@ void A1Dialog::StartWork()
     Autonomous = false;
     StdFunc::ClearCancel();
     TemplateCheck();
-    if (Commands::GetFile(1, &S2Config) != Error::ER_NOERROR)
+    if (Commands::GetFile(1, S2Config) != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации из модуля");
         return;
@@ -163,7 +164,7 @@ void A1Dialog::StartWork()
     AndClearInitialValues();
     if (StdFunc::IsCancelled())
         return;
-    if (Commands::SetUsingVariant(TuneVariant+1) != Error::ER_NOERROR)
+    if (Commands::SetUsingVariant(TuneVariant + 1) != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка установки варианта использования");
         return;
@@ -178,18 +179,18 @@ void A1Dialog::StartWork()
     lyout->addWidget(WDFunc::NewLBL(this, "Выберите тип поверяемого оборудования"));
     QRadioButton *rb = new QRadioButton("Трансформаторы напряжения измерительные лабораторные по ГОСТ 23625-2001");
     rb->setObjectName("rb1");
-    connect(rb,SIGNAL(toggled(bool)),this,SLOT(RBToggled()));
+    connect(rb, SIGNAL(toggled(bool)), this, SLOT(RBToggled()));
     lyout->addWidget(rb);
     rb = new QRadioButton("Трансформаторы напряжения по ГОСТ 1983-2001");
     rb->setObjectName("rb2");
-    connect(rb,SIGNAL(toggled(bool)),this,SLOT(RBToggled()));
+    connect(rb, SIGNAL(toggled(bool)), this, SLOT(RBToggled()));
     lyout->addWidget(rb);
     QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Proceed()));
+    connect(pb, SIGNAL(clicked(bool)), this, SLOT(Proceed()));
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Cancel()));
+    connect(pb, SIGNAL(clicked(bool)), this, SLOT(Cancel()));
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
@@ -202,9 +203,11 @@ void A1Dialog::StartWork()
     RepModel->SetModel(rowcount, columncount);
     if (!StdFunc::IsCancelled())
     {
-        if (EMessageBox::question(this, "Подтверждение", "Подключите вывод нижнего плеча \"своего\" делителя напряжения ко входу U1 прибора\n"
-                                  "Вывод нижнего плеча поверяемого делителя или выход низшего напряжения поверяемого ТН - ко входу U2\n"
-                                  "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 0,25·Sном") == true)
+        if (EMessageBox::question(this, "Подтверждение",
+                "Подключите вывод нижнего плеча \"своего\" делителя напряжения ко входу U1 прибора\n"
+                "Вывод нижнего плеча поверяемого делителя или выход низшего напряжения поверяемого ТН - ко входу U2\n"
+                "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 0,25·Sном")
+            == true)
         {
             CurrentS = 0.25;
             Index = 0;
@@ -227,7 +230,7 @@ void A1Dialog::StartWork()
 #if PROGSIZE != PROGSIZE_EMUL
 int A1Dialog::GetConf()
 {
-    return Commands::GetFile(1, &S2Config);
+    return Commands::GetFile(1, S2Config);
 }
 #endif
 
@@ -254,7 +257,7 @@ void A1Dialog::GenerateReport()
     }
     else
         report->SetVar("KNI", "");
-    #endif
+#endif
     report->SetVar("Organization", StdFunc::OrganizationString());
     QString day = QDateTime::currentDateTime().toString("dd");
     QString month = QDateTime::currentDateTime().toString("MM");
@@ -312,10 +315,11 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
     {
         ResultsStruct Results;
         memcpy(&Results, &ba.data()[0], sizeof(ResultsStruct));
-        PovDev.DevSN = QString::number(Results.DNFNum); // переписываем серийный номер установки для редактора полей протокола
+        PovDev.DevSN
+            = QString::number(Results.DNFNum); // переписываем серийный номер установки для редактора полей протокола
         MainDataStruct MDS;
         int MDSCount;
-        if (Results.GOST == 0) // GOST 1983
+        if (Results.GOST == 0)                 // GOST 1983
         {
             MDSCount = 6;
             rowcount = GOST1983ROWCOUNT;
@@ -336,7 +340,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
         }
         // разберём время
         quint32 tmpi = Results.Time >> 32;
-        QDateTime tn = QDateTime::fromSecsSinceEpoch(tmpi, Qt::UTC);
+        QDateTime tn = QDateTime::fromSecsSinceEpoch(tmpi, QTimeZone::UTC);
         ReportHeader.PovDateTime = tn.toString("dd-MM-yyyy hh:mm:ss");
         ChA1->Bda_h.HarmBuf[0][0] = Results.THD;
         TuneVariant = (Results.VarNum >= TUNEVARIANTSNUM) ? 0 : Results.VarNum;
@@ -351,7 +355,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
         int index = 0;
         DNType = DNT_FOREIGN;
         int endcounter = (PovType == GOST_1983) ? 3 : 9;
-        for (int i=0; i<MDSCount; ++i)
+        for (int i = 0; i < MDSCount; ++i)
         {
             int Pindex = (index > 4) ? (8 - index) : index;
             if (memptr > (ba.size() - MDSs))
@@ -399,9 +403,8 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
 void A1Dialog::Go()
 {
     int endcounter = (PovType == GOST_1983) ? 3 : 9;
-    int Pindex = (Index > 4) ? (8 - Index) : Index;
-    const int Percents23625[] = {20, 50, 80, 100, 120};
-    const int Percents1983[] = {80, 100, 120};
+    const int Percents23625[] = { 20, 50, 80, 100, 120 };
+    const int Percents1983[] = { 80, 100, 120 };
     const int *Percents = (PovType == GOST_1983) ? Percents1983 : Percents23625;
 
     int res = GetAndAverage(GAAT_BDA_OUT, &Dd_Block[Index], Index);
@@ -415,7 +418,9 @@ void A1Dialog::Go()
             {
                 Index = 0;
                 CurrentS = 1;
-                if (EMessageBox::question(this, "Подтверждение", "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 1,0·Sном") == false)
+                if (EMessageBox::question(this, "Подтверждение",
+                        "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 1,0·Sном")
+                    == false)
                 {
                     StdFunc::Cancel();
                     Decline();
@@ -446,7 +451,7 @@ void A1Dialog::Go()
                 return;
             }
         }
-        Pindex = (Index > 4) ? (8 - Index) : Index;
+        int Pindex = (Index > 4) ? (8 - Index) : Index;
         if (ShowVoltageDialog(Percents[Pindex]) != Error::ER_NOERROR)
         {
             Decline();

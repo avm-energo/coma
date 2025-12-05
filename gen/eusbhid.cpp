@@ -1,33 +1,33 @@
-#include <QCoreApplication>
-#include <QTime>
 #include "eusbhid.h"
+
 #include "error.h"
 #include "stdfunc.h"
+
+#include <QCoreApplication>
+#include <QTime>
 
 EUsbHid::EUsbHid(QObject *parent) : EAbstractProtocomChannel(parent)
 {
     ThreadRunning = false;
 }
 
-EUsbHid::~EUsbHid()
-{
-}
+EUsbHid::~EUsbHid() { }
 
 bool EUsbHid::Connect()
 {
     if (Connected)
         Disconnect();
     UThread = new EUsbThread(CnLog, IsWriteUSBLog());
-    connect(UThread,SIGNAL(NewDataReceived(QByteArray)),this,SLOT(ParseIncomeData(QByteArray)));
-    connect(this,SIGNAL(StopUThread()),UThread,SLOT(Finish()));
+    connect(UThread, SIGNAL(NewDataReceived(QByteArray)), this, SLOT(ParseIncomeData(QByteArray)));
+    connect(this, SIGNAL(StopUThread()), UThread, SLOT(Finish()));
     if (UThread->Set(UsbPort) != Error::ER_NOERROR)
         return false;
     Connected = true;
     QTimer *tmr = new QTimer;
     tmr->setInterval(UH_MAINLOOP_DELAY);
-    connect(tmr,SIGNAL(timeout()),UThread,SLOT(Run()));
+    connect(tmr, SIGNAL(timeout()), UThread, SLOT(Run()));
     tmr->start();
-    connect(this,SIGNAL(StopUThread()),tmr,SLOT(stop()));
+    connect(this, SIGNAL(StopUThread()), tmr, SLOT(stop()));
     ThreadRunning = true;
     return true;
 }
@@ -74,8 +74,8 @@ QStringList EUsbHid::DevicesFound()
             venid = cur_dev->vendor_id;
             prodid = cur_dev->product_id;
             sn = QString::fromWCharArray(cur_dev->serial_number);
-            QString tmps = "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + \
-                    "_ & SN_" + sn;
+            QString tmps
+                = "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + "_ & SN_" + sn;
             sl << tmps;
         }
         cur_dev = cur_dev->next;
@@ -84,7 +84,7 @@ QStringList EUsbHid::DevicesFound()
     return sl;
 }
 
-EUsbThread::EUsbThread(Log *logh, bool writelog, QObject *parent) : QObject(parent)
+EUsbThread::EUsbThread(Logger logh, bool writelog, QObject *parent) : QObject(parent)
 {
     log = logh;
     AboutToFinish = false;
@@ -92,9 +92,7 @@ EUsbThread::EUsbThread(Log *logh, bool writelog, QObject *parent) : QObject(pare
     WriteUSBLog = writelog;
 }
 
-EUsbThread::~EUsbThread()
-{
-}
+EUsbThread::~EUsbThread() { }
 
 int EUsbThread::Set(EAbstractProtocomChannel::DeviceConnectStruct &devinfo)
 {
@@ -111,38 +109,38 @@ void EUsbThread::Run()
 {
     try
     {
-        unsigned char data[UH_MAXSEGMENTLENGTH+1]; // +1 to ID
+        unsigned char data[UH_MAXSEGMENTLENGTH + 1]; // +1 to ID
         if (!AboutToFinish)
         {
             // check if there's any data in input buffer
             int bytes;
             if (HidDevice != nullptr)
             {
-                bytes = hid_read(HidDevice, data, UH_MAXSEGMENTLENGTH+1);
+                bytes = hid_read(HidDevice, data, UH_MAXSEGMENTLENGTH + 1);
                 if (bytes < 0)
                 {
                     if (WriteUSBLog)
-                        log->WriteRaw("UsbThread: Unable to hid_read()");
+                        log.writeLog(Logger::Debug, "UsbThread: Unable to hid_read()");
                     AboutToFinish = true;
                     emit Finished();
                     return;
                 }
                 if (bytes > 0)
                 {
-                    QByteArray ba(reinterpret_cast<char*>(data), bytes);
+                    QByteArray ba(reinterpret_cast<char *>(data), bytes);
                     emit NewDataReceived(ba);
                 }
-/*            QTime tme;
-            tme.start();
-            while (tme.elapsed() < UH_MAINLOOP_DELAY)
-                QCoreApplication::processEvents(QEventLoop::AllEvents);
-            RunMutex.lock();
-            QWC.wait(&RunMutex);
-            RunMutex.unlock(); */
+                /*            QTime tme;
+                            tme.start();
+                            while (tme.elapsed() < UH_MAINLOOP_DELAY)
+                                QCoreApplication::processEvents(QEventLoop::AllEvents);
+                            RunMutex.lock();
+                            QWC.wait(&RunMutex);
+                            RunMutex.unlock(); */
             }
         }
     }
-    catch(...)
+    catch (...)
     {
         emit Finished();
     }
@@ -155,8 +153,8 @@ int EUsbThread::WriteData(QByteArray &ba)
         if (ba.size() > UH_MAXSEGMENTLENGTH)
         {
             if (WriteUSBLog)
-                log->WriteRaw("UsbThread: WRONG SEGMENT LENGTH!\n");
-            ERMSG("Длина сегмента больше "+QString::number(UH_MAXSEGMENTLENGTH)+" байт");
+                log.writeLog(Logger::Debug, "UsbThread: WRONG SEGMENT LENGTH!\n");
+            ERMSG("Длина сегмента больше " + QString::number(UH_MAXSEGMENTLENGTH) + " байт");
             return Error::ER_GENERALERROR;
         }
         if (ba.size() < UH_MAXSEGMENTLENGTH)
@@ -165,7 +163,7 @@ int EUsbThread::WriteData(QByteArray &ba)
         if (WriteUSBLog)
         {
             QByteArray tmpba = "UsbThread: ->" + ba.toHex() + "\n";
-            log->WriteRaw(tmpba);
+            log.writeLog(Logger::Debug, tmpba);
         }
         size_t tmpt = static_cast<size_t>(ba.size());
         return hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);

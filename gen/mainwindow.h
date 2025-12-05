@@ -1,51 +1,42 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
+
+#include "../check/eabstractcheckdialog.h"
+#include "../config/confdialog.h"
+#include "../dialogs/fwupdialog.h"
+#include "../dialogs/mnktime.h"
+#include "../gen/maindef.h"
+#include "../gen/modulebsi.h"
+#include "../tune/eabstracttunedialog.h"
+#include "eabstractprotocomchannel.h"
 
 #include <QMainWindow>
 #include <QModelIndex>
 #include <QSplashScreen>
-#include "../config/confdialog.h"
-#include "../check/eabstractcheckdialog.h"
-#ifndef MODULE_A1
-#include "../dialogs/oscdialog.h"
-#include "../dialogs/switchjournaldialog.h"
-#include "eoscillogram.h"
-#endif
-#include "../tune/eabstracttunedialog.h"
-#include "../gen/modulebsi.h"
-#include "../gen/maindef.h"
-#include "../dialogs/swjdialog.h"
-#include "../dialogs/fwupdialog.h"
-#include "../dialogs/cordialog.h"
-#include "../dialogs/mnktime.h"
 
-#include "eabstractprotocomchannel.h"
-
-#define C_TE_MAXSIZE    100
+#define C_TE_MAXSIZE 100
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
     void SetMode(int mode);
     int GetMode();
-    void Go(const QString &parameter="");
+    void Go(const QString &parameter = "");
 
     enum Modes
     {
-        COMA_GENERALMODE, // обычный режим
-        COMA_AUTON_OSCMODE, // автономный режим с отображением сохранённой осциллограммы
+        COMA_GENERALMODE,    // обычный режим
+        COMA_AUTON_OSCMODE,  // автономный режим с отображением сохранённой осциллограммы
         COMA_AUTON_PROTMODE, // автономный режим с отображением протокола из прибора
-        COMA_AUTON_SWJMODE, // автономный режим с отображением сохранённого журнала
-        COMA_AUTON_MODE // просто автономный режим
+        COMA_AUTON_SWJMODE,  // автономный режим с отображением сохранённого журнала
+        COMA_AUTON_MODE      // просто автономный режим
     };
 
-    int Mode; // режим запуска программы
+    int Mode;                // режим запуска программы
     bool SWHide;
     QRect SWGeometry;
     QVector<S2::DataRec> S2Config;
@@ -56,16 +47,16 @@ public:
     EAbstractCheckDialog *CheckB, *CheckM;
     MNKTime *Time;
     QTimer *TimeTimer;
-#ifndef MODULE_A1
-    SwitchJournalDialog *SwjD;
-    OscDialog *OscD;
-    CorDialog *CorD;
-    EOscillogram *OscFunc;
-    SWJDialog *dlg;
-    fwupdialog *FwUpD;
-    void LoadOscFromFile(const QString &filename);
-    void LoadSwjFromFile(const QString &filename);
-#endif
+    // #ifndef MODULE_A1
+    //     SwitchJournalDialog *SwjD;
+    //     OscDialog *OscD;
+    //     CorDialog *CorD;
+    //     EOscillogram *OscFunc;
+    //     SWJDialog *dlg;
+    //     fwupdialog *FwUpD;
+    //     void LoadOscFromFile(const QString &filename);
+    //     void LoadSwjFromFile(const QString &filename);
+    // #endif
     int CheckPassword();
     int AdminCheckPassword();
 
@@ -96,7 +87,7 @@ public:
         sl.append("FLS2");
         sl.append("FRM");
         int ts = sl.size();
-        for (int i=ts; i<MAXERRORFLAGNUM; ++i)
+        for (int i = ts; i < MAXERRORFLAGNUM; ++i)
             sl.append("");
         return sl;
     }
@@ -121,12 +112,12 @@ public:
         sl.append("Не работает внешняя flash-память (Мезонин)");
         sl.append("Не работает внешняя fram");
         int ts = sl.size();
-        for (int i=ts; i<MAXERRORFLAGNUM; ++i)
+        for (int i = ts; i < MAXERRORFLAGNUM; ++i)
             sl.append("");
         return sl;
     }
 
-    virtual void SetupUI() = 0;
+    virtual void SetupUI() { }
     virtual void AddActionsToMenuBar(QMenuBar *menubar) = 0;
     virtual void Stage3() = 0;
     void ClearTW();
@@ -137,7 +128,7 @@ public:
 #if PROGSIZE >= PROGSIZE_LARGE
     void SetSlideWidget();
 #endif
-//    void SetParent(QWidget *parent);
+    //    void SetParent(QWidget *parent);
 
 signals:
     void CloseConnectDialog();
@@ -150,13 +141,10 @@ signals:
     void Finished();
     void stoptime();
 
-
 private:
     bool ok;
     bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
-#ifdef USBENABLE
     EAbstractProtocomChannel::DeviceConnectStruct DevInfo;
-#endif
 
 #if PROGSIZE >= PROGSIZE_LARGE
     void PrepareTimers();
@@ -169,7 +157,6 @@ private:
     void SetProgressBar(QString prbnum, int cursize);
 #endif
 
-
 private slots:
     void StartSettingsDialog();
     void ShowErrorDialog();
@@ -177,11 +164,11 @@ private slots:
     void DisconnectAndClear();
     void FinishHim();
     void closeEvent(QCloseEvent *event);
-#ifndef MODULE_A1
-    void LoadOsc();
-    void LoadSWJ();
-    void ShowOsc();
-#endif
+    // #ifndef MODULE_A1
+    //     void LoadOsc();
+    //     void LoadSWJ();
+    //     void ShowOsc();
+    // #endif
     void ProtocolFromFile();
     void StartA1Dialog(const QString &filename);
 
@@ -222,5 +209,3 @@ protected:
     void keyPressEvent(QKeyEvent *e);
     void resizeEvent(QResizeEvent *e);
 };
-
-#endif // MAINWINDOW_H

@@ -1,30 +1,32 @@
+#include "tunedialoga1.h"
+
+#include "../gen/maindef.h"
+
+#include <QCoreApplication>
 #include <QElapsedTimer>
-#include <QtMath>
+#include <QEventLoop>
+#include <QFileDialog>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QInputDialog>
+#include <QPushButton>
 #include <QSettings>
 #include <QTabWidget>
-#include <QEventLoop>
-#include <QGridLayout>
 #include <QVBoxLayout>
-#include <QGroupBox>
-#include <QPushButton>
-#include <QInputDialog>
-#include <QCoreApplication>
-#include <QFileDialog>
-#include "tunedialoga1.h"
-#include "../gen/maindef.h"
+#include <QtMath>
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
 #include "../dialogs/keypressdialog.h"
-#include "../widgets/emessagebox.h"
-#include "../gen/stdfunc.h"
 #include "../gen/colors.h"
-#include "../gen/modulebsi.h"
 #include "../gen/error.h"
+#include "../gen/modulebsi.h"
+#include "../gen/stdfunc.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+#include "config.h"
 
-TuneDialogA1::TuneDialogA1(QWidget *parent) :
-    EAbstractTuneDialog(parent)
+TuneDialogA1::TuneDialogA1(QWidget *parent) : EAbstractTuneDialog(parent)
 {
     CA1 = new ConfigA1(S2Config);
     ChA1 = new CheckA1;
@@ -70,56 +72,81 @@ void TuneDialogA1::SetPf()
     int count = 0;
     pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword; // 1. Ввод пароля
     int (EAbstractTuneDialog::*func)() = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::ShowScheme);
-    pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_2); // 6.3.2. Получение настроечных коэффициентов
+    pf[lbls.at(count++)] = func;                                // 2. Отображение схемы подключения
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_2);                             // 6.3.2. Получение настроечных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_1); // 6.3.3.1. КПТ: выдача предупреждения
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_3_1);                           // 6.3.3.1. КПТ: выдача предупреждения
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_2); // 6.3.3.2. КПТ: опрос постоянных напряжений
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_3_2);                           // 6.3.3.2. КПТ: опрос постоянных напряжений
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_3); // 6.3.3.3. КПТ: вычисление смещения
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_3_3);                           // 6.3.3.3. КПТ: вычисление смещения
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_4); // 6.3.3.4. КПТ: выдача предупреждения
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_3_4);                           // 6.3.3.4. КПТ: выдача предупреждения
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_5); // 6.3.3.5. КПТ: получение блока данных и усреднение
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_3_5);                           // 6.3.3.5. КПТ: получение блока данных и усреднение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_6); // 6.3.3.6. КПТ: ввод данных от энергомонитора
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_3_6);                           // 6.3.3.6. КПТ: ввод данных от энергомонитора
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_7); // 6.3.3.7. КПТ: расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_3_7);                           // 6.3.3.7. КПТ: расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_4_1); // 6.3.4.1. КТС: подтверждение установки 80 Ом
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_4_1);                           // 6.3.4.1. КТС: подтверждение установки 80 Ом
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_4_3); // 6.3.4.3. КТС: подтверждение установки 120 Ом
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_4_3);                           // 6.3.4.3. КТС: подтверждение установки 120 Ом
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_4_4); // 6.3.4.4. КТС: получение блока данных и расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_4_4);  // 6.3.4.4. КТС: получение блока данных и расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_5); // 6.3.5. КМТ2: подтверждение установки 4 мА
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_5);    // 6.3.5. КМТ2: подтверждение установки 4 мА
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_6_1); // 6.3.6.1. КМТ2: получение блока данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_6_1);  // 6.3.6.1. КМТ2: получение блока данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_6_2); // 6.3.6.2. КМТ2: подтверждение установки 20 мА
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_6_2);  // 6.3.6.2. КМТ2: подтверждение установки 20 мА
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_6_3); // 6.3.6.3. КМТ2: получение блока данных и расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_6_3);  // 6.3.6.3. КМТ2: получение блока данных и расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_7); // 6.3.7. КМТ1: подтверждение установки 4 мА
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_7);    // 6.3.7. КМТ1: подтверждение установки 4 мА
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_8_1); // 6.3.8.1. КМТ1: получение блока данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_8_1);  // 6.3.8.1. КМТ1: получение блока данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_8_2); // 6.3.8.2. КМТ1: подтверждение установки 20 мА
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_8_2);  // 6.3.8.2. КМТ1: подтверждение установки 20 мА
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_8_3); // 6.3.8.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_8_3);  // 6.3.8.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_9); // 6.3.9. Проверка данных блока Bda_out_an
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_9);    // 6.3.9. Проверка данных блока Bda_out_an
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_10_1); // 6.3.10.1 Настройка температурной коррекции по 20 градусам
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_10_1); // 6.3.10.1 Настройка температурной коррекции по 20 градусам
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_10_2); // 6.3.10.2 Настройка температурной коррекции по 50 градусам
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_10_2); // 6.3.10.2 Настройка температурной коррекции по 50 градусам
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_10_3); // 6.3.10.3 Настройка температурной коррекции по 0 градусам
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_10_3); // 6.3.10.3 Настройка температурной коррекции по 0 градусам
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_11); // 6.3.11. Запись настроечных коэффициентов и переход на новую конфигурацию
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_11);   // 6.3.11. Запись настроечных коэффициентов и переход на новую конфигурацию
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_12); // 6.3.12. Проверка аналоговых данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogA1::Start6_3_12);   // 6.3.12. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
 }
 #endif
@@ -129,22 +156,24 @@ void TuneDialogA1::SetupUI()
     QWidget *cp1 = TuneUI();
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *lyout;
     QTabWidget *TuneTW = new QTabWidget;
+    TuneTW->setStyleSheet("QTabWidget::tab-bar::tab { background: transparent; }");
     TuneTW->setObjectName("tunetw");
 
-    QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
+    QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
     setStyleSheet(tmps);
-    QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
-            "background-color: "+QString(UCONFWCLR)+"; font: bold 10px;}";
-    tmps = "QWidget {background-color: "+QString(UCONFWCLR)+";}";
+    QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+                             "background-color: "
+        + QString(UCONFWCLR) + "; font: bold 10px;}";
+    tmps = "QWidget {background-color: " + QString(UCONFWCLR) + ";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
     cp3->setStyleSheet(tmps);
 
-    TuneTW->addTab(cp1,"Настройка прибора");
-    TuneTW->addTab(cp2,"Коэффициенты");
-    TuneTW->addTab(cp3,"Данные измерений");
+    TuneTW->addTab(cp1, "Настройка прибора");
+    TuneTW->addTab(cp2, "Коэффициенты");
+    TuneTW->addTab(cp3, "Данные измерений");
 
     // CP2 - КОЭФФИЦИЕНТЫ МОДУЛЯ
 
@@ -227,14 +256,14 @@ QWidget *TuneDialogA1::BdaBottomUI()
     QPushButton *pb = new QPushButton("Запустить чтение сигналов");
     pb->setObjectName("pbmeasurements");
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked()),this,SLOT(StartMeasurement()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(StartMeasurement()));
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Остановить чтение сигналов");
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked()),this,SLOT(Good()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(Good()));
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -299,8 +328,9 @@ int TuneDialogA1::Start6_3_3_4()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-    EMessageBox::information(this, "Требование", "Снимите закоротку с РЕТОМ, подключите РЕТОМ ко входам U1 и U2 \n "
-                             "и задайте на выходе напряжения фазы А напряжение 100,0 В при частоте 51 Гц");
+    EMessageBox::information(this, "Требование",
+        "Снимите закоротку с РЕТОМ, подключите РЕТОМ ко входам U1 и U2 \n "
+        "и задайте на выходе напряжения фазы А напряжение 100,0 В при частоте 51 Гц");
     return Error::ER_NOERROR;
 }
 
@@ -313,7 +343,7 @@ int TuneDialogA1::Start6_3_3_5()
         EMessageBox::error(this, "Ошибка", "Ошибка установки рода напряжения");
         return Error::ER_GENERALERROR;
     }
-//    EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 100 В");
+    //    EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 100 В");
     // получение текущих аналоговых сигналов от модуля
     WaitNSeconds(WAITFORCONST);
     if (StdFunc::IsCancelled())
@@ -334,9 +364,9 @@ int TuneDialogA1::Start6_3_3_6()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-/*    if (GetExternalData() != Error::NOERROR)
-        return Error::GENERALERROR;
-    return CheckAnalogValues(false); */
+    /*    if (GetExternalData() != Error::NOERROR)
+            return Error::GENERALERROR;
+        return CheckAnalogValues(false); */
     return GetExternalData();
 }
 
@@ -368,7 +398,7 @@ int TuneDialogA1::Start6_3_4_1()
     if (ReadAnalogMeasurements() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
     RegData = ChA1->Bda_block.Pt100;
-//    return CheckBdaValues(CHECK_PT100);
+    //    return CheckBdaValues(CHECK_PT100);
     return Error::ER_NOERROR;
 }
 
@@ -391,7 +421,7 @@ int TuneDialogA1::Start6_3_4_4()
     if (res == Error::ER_NOERROR)
     {
         Bac_block.Art = (ChA1->Bda_block.Pt100 - RegData) / 40;
-        Bac_block.Brt = 2*ChA1->Bda_block.Pt100 - 3*RegData;
+        Bac_block.Brt = 2 * ChA1->Bda_block.Pt100 - 3 * RegData;
     }
     return res;
 }
@@ -446,7 +476,7 @@ int TuneDialogA1::Start6_3_6_3()
     if (res == Error::ER_NOERROR)
     {
         Bac_block.Ama2 = (RegData - ChA1->Bda_block.EXTmA2) / 16;
-        Bac_block.Bma2 = (4*RegData - 20*ChA1->Bda_block.EXTmA2) / 16;
+        Bac_block.Bma2 = (4 * RegData - 20 * ChA1->Bda_block.EXTmA2) / 16;
     }
     return res;
 }
@@ -501,7 +531,7 @@ int TuneDialogA1::Start6_3_8_3()
     if (res == Error::ER_NOERROR)
     {
         Bac_block.Ama1 = (ChA1->Bda_block.EXTmA1 - RegData) / 16;
-        Bac_block.Bma1 = (4*ChA1->Bda_block.EXTmA1 - 20*RegData) / 16;
+        Bac_block.Bma1 = (4 * ChA1->Bda_block.EXTmA1 - 20 * RegData) / 16;
     }
     return res;
 }
@@ -526,16 +556,17 @@ int TuneDialogA1::Start6_3_9()
         EMessageBox::information(this, "Внимание", "Напряжение батарейки находится вне пределов (1,7...3,4) В");
         return Error::ER_GENERALERROR;
     }
-/*    if ((tmpst.Tamb < 51.85f) || (tmpst.Tamb > 52.05f)) // Температура окр воздуха 51,95+/-0,1 град С при установленном 120 Ом
-    {
-        EMessageBox::information(this, "Внимание", "Температура окр воздуха вне пределов (51,85...52,02) град С");
-        return Error::ER_GENERALERROR;
-    }
-    if ((tmpst.Hamb < 0) || (tmpst.Vbat > 0.1f)) // Влажность
-    {
-        EMessageBox::information(this, "Внимание", "Влажность находится вне пределов (0...0,1) %");
-        return Error::ER_GENERALERROR;
-    } */
+    /*    if ((tmpst.Tamb < 51.85f) || (tmpst.Tamb > 52.05f)) // Температура окр воздуха 51,95+/-0,1 град С при
+       установленном 120 Ом
+        {
+            EMessageBox::information(this, "Внимание", "Температура окр воздуха вне пределов (51,85...52,02) град С");
+            return Error::ER_GENERALERROR;
+        }
+        if ((tmpst.Hamb < 0) || (tmpst.Vbat > 0.1f)) // Влажность
+        {
+            EMessageBox::information(this, "Внимание", "Влажность находится вне пределов (0...0,1) %");
+            return Error::ER_GENERALERROR;
+        } */
     return Error::ER_NOERROR;
 }
 
@@ -560,16 +591,11 @@ int TuneDialogA1::Start6_3_10_1()
         return Error::ER_GENERALERROR;
     }
     return Start6_3_10_60(0);
-/*    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[0], &TKUSourceData.Bda_out_an[0]) != Error::ER_NOERROR)
-        return Error::ER_GENERALERROR;
-    if (GetExternalTemp() == Error::ER_GENERALERROR)
-        return Error::ER_GENERALERROR;
-    TKUSourceData.Tmk[0] = RealData.t;
-    memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[0], sizeof(CheckA1::A1_Bd1));
-    ChA1->FillBda_in(this);
-    memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_out_an[0], sizeof(CheckA1::A1_Bd4));
-    ChA1->FillBda_out_an(this);
-    return Error::ER_NOERROR; */
+    /*    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[0], &TKUSourceData.Bda_out_an[0]) !=
+       Error::ER_NOERROR) return Error::ER_GENERALERROR; if (GetExternalTemp() == Error::ER_GENERALERROR) return
+       Error::ER_GENERALERROR; TKUSourceData.Tmk[0] = RealData.t; memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[0],
+       sizeof(CheckA1::A1_Bd1)); ChA1->FillBda_in(this); memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_out_an[0],
+       sizeof(CheckA1::A1_Bd4)); ChA1->FillBda_out_an(this); return Error::ER_NOERROR; */
 }
 
 int TuneDialogA1::Start6_3_10_2()
@@ -581,19 +607,14 @@ int TuneDialogA1::Start6_3_10_2()
         Skipped = true;
         return Error::ER_RESEMPTY;
     }
-    WaitNSeconds(30*60, true);
+    WaitNSeconds(30 * 60, true);
     StdFunc::ClearCancel(); // если прервали 30-минутный отсчёт, это дело пользователя
     return Start6_3_10_60(1);
-/*    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[1], &TKUSourceData.Bda_out_an[1]) != Error::ER_NOERROR)
-        return Error::ER_GENERALERROR;
-    if (GetExternalTemp() == Error::ER_GENERALERROR)
-        return Error::ER_GENERALERROR;
-    TKUSourceData.Tmk[1] = RealData.t;
-    memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[1], sizeof(CheckA1::A1_Bd1));
-    ChA1->FillBda_in(this);
-    memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[1], sizeof(CheckA1::A1_Bd4));
-    ChA1->FillBda_out_an(this);
-    return Error::ER_NOERROR; */
+    /*    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[1], &TKUSourceData.Bda_out_an[1]) !=
+       Error::ER_NOERROR) return Error::ER_GENERALERROR; if (GetExternalTemp() == Error::ER_GENERALERROR) return
+       Error::ER_GENERALERROR; TKUSourceData.Tmk[1] = RealData.t; memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[1],
+       sizeof(CheckA1::A1_Bd1)); ChA1->FillBda_in(this); memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[1],
+       sizeof(CheckA1::A1_Bd4)); ChA1->FillBda_out_an(this); return Error::ER_NOERROR; */
 }
 
 int TuneDialogA1::Start6_3_10_3()
@@ -605,28 +626,24 @@ int TuneDialogA1::Start6_3_10_3()
         Skipped = true;
         return Error::ER_RESEMPTY;
     }
-    WaitNSeconds(30*60, true);
+    WaitNSeconds(30 * 60, true);
     StdFunc::ClearCancel(); // если прервали 30-минутный отсчёт, это дело пользователя
     Start6_3_10_60(2);
-/*    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[2], &TKUSourceData.Bda_out_an[2]) != Error::ER_NOERROR)
-        return Error::ER_GENERALERROR;
-    if (GetExternalTemp() == Error::ER_GENERALERROR)
-        return Error::ER_GENERALERROR;
-    TKUSourceData.Tmk[2] = RealData.t;
-    memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[2], sizeof(CheckA1::A1_Bd1));
-    ChA1->FillBda_in(this);
-    memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[2], sizeof(CheckA1::A1_Bd4));
-    ChA1->FillBda_out_an(this); */
-/*    float Um[2], Up[2], Uo[2], Tmkm, Tmkp, Tmko;
-    Tmkm = TKUSourceData.Tmk[2];
-    Tmkp = TKUSourceData.Tmk[1];
-    Tmko = TKUSourceData.Tmk[0];
-    Uo[0] = TKUSourceData.Bda_in[0].UefNat_filt[0];
-    Uo[1] = TKUSourceData.Bda_in[0].UefNat_filt[1];
-    Up[0] = TKUSourceData.Bda_in[1].UefNat_filt[0];
-    Up[1] = TKUSourceData.Bda_in[1].UefNat_filt[1];
-    Um[0] = TKUSourceData.Bda_in[2].UefNat_filt[0];
-    Um[1] = TKUSourceData.Bda_in[2].UefNat_filt[1]; */
+    /*    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[2], &TKUSourceData.Bda_out_an[2]) !=
+       Error::ER_NOERROR) return Error::ER_GENERALERROR; if (GetExternalTemp() == Error::ER_GENERALERROR) return
+       Error::ER_GENERALERROR; TKUSourceData.Tmk[2] = RealData.t; memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[2],
+       sizeof(CheckA1::A1_Bd1)); ChA1->FillBda_in(this); memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[2],
+       sizeof(CheckA1::A1_Bd4)); ChA1->FillBda_out_an(this); */
+    /*    float Um[2], Up[2], Uo[2], Tmkm, Tmkp, Tmko;
+        Tmkm = TKUSourceData.Tmk[2];
+        Tmkp = TKUSourceData.Tmk[1];
+        Tmko = TKUSourceData.Tmk[0];
+        Uo[0] = TKUSourceData.Bda_in[0].UefNat_filt[0];
+        Uo[1] = TKUSourceData.Bda_in[0].UefNat_filt[1];
+        Up[0] = TKUSourceData.Bda_in[1].UefNat_filt[0];
+        Up[1] = TKUSourceData.Bda_in[1].UefNat_filt[1];
+        Um[0] = TKUSourceData.Bda_in[2].UefNat_filt[0];
+        Um[1] = TKUSourceData.Bda_in[2].UefNat_filt[1]; */
     double dUm0 = TKUSourceData.Bda_in[2].UefNat_filt[0] / TKUSourceData.Bda_in[0].UefNat_filt[0] - 1;
     double dUp0 = TKUSourceData.Bda_in[1].UefNat_filt[0] / TKUSourceData.Bda_in[0].UefNat_filt[0] - 1;
     double dUm1 = TKUSourceData.Bda_in[2].UefNat_filt[1] / TKUSourceData.Bda_in[0].UefNat_filt[1] - 1;
@@ -635,8 +652,9 @@ int TuneDialogA1::Start6_3_10_3()
     double dTp = TKUSourceData.Bda_out_an[1].Tmk - TKUSourceData.Bda_out_an[0].Tmk;
     if ((qAbs(dTm) < 1.0f) || (qAbs(dTp) < 1.0f))
     {
-        EMessageBox::error(this, "Ошибка", "Разница измеренных температур в опытах \n"
-                                           "повышенной и пониженной температур слишком маленькая");
+        EMessageBox::error(this, "Ошибка",
+            "Разница измеренных температур в опытах \n"
+            "повышенной и пониженной температур слишком маленькая");
         return Error::ER_GENERALERROR;
     }
     Bac_block.TKUa[0] = (dUm0 * dTp * dTp - dUp0 * dTm * dTm) / (dTp * dTm * (dTp - dTm));
@@ -649,11 +667,12 @@ int TuneDialogA1::Start6_3_10_3()
 
 int TuneDialogA1::Start6_3_10_60(int index)
 {
-    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[index], &TKUSourceData.Bda_out_an[index]) != Error::ER_NOERROR)
+    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[index], &TKUSourceData.Bda_out_an[index])
+        != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     if (GetExternalTemp() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
-//    TKUSourceData.Tmk[index] = RealData.t;
+    //    TKUSourceData.Tmk[index] = RealData.t;
     memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[index], sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
     memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_out_an[index], sizeof(CheckA1::A1_Bd4));
@@ -674,16 +693,18 @@ int TuneDialogA1::Start6_3_11()
 
 int TuneDialogA1::Start6_3_12()
 {
-    QString tmps = "Пожалуйста, после нажатия \"ОК\" просмотрите текущие данные после регулировки в соответствующих окнах";
+    QString tmps
+        = "Пожалуйста, после нажатия \"ОК\" просмотрите текущие данные после регулировки в соответствующих окнах";
     if (TuneFileSaved)
         tmps += "\nЕсли в процессе регулировки произошла ошибка, сохранённые коэффициенты\n"
-                "Вы можете загрузить из файла "+StdFunc::GetSystemHomeDir()+"temptune.tn1";
+                "Вы можете загрузить из файла "
+            + StdFunc::GetSystemHomeDir() + "temptune.tn1";
     tmps += "\nПосле окончания проверки нажмите Enter для завершения процедуры регулировки";
     EMessageBox::information(this, "Завершение регулировки", tmps);
     QTabWidget *TuneTW = this->findChild<QTabWidget *>("tunetw");
     if (TuneTW != nullptr)
         TuneTW->setCurrentIndex(2); // показ данных измерений
-    connect(this,SIGNAL(Finished()),this,SLOT(Good()));
+    connect(this, SIGNAL(Finished()), this, SLOT(Good()));
     StartMeasurement();
     if (TuneTW != nullptr)
         TuneTW->setCurrentIndex(0);
@@ -704,8 +725,8 @@ int TuneDialogA1::Start60PointsMeasurements(int whichtomeasure, void *dst1, void
     if (whichtomeasure & TDA1_BD1)
     {
         out1 = static_cast<CheckA1::A1_Bd1 *>(dst1);
-        out1->Frequency = out1->Phy = out1->UefNat_filt[0] = out1->UefNat_filt[1] = \
-                out1->Uef_filt[0] = out1->Uef_filt[1] = out1->dU = out1->dUrms = 0;
+        out1->Frequency = out1->Phy = out1->UefNat_filt[0] = out1->UefNat_filt[1] = out1->Uef_filt[0]
+            = out1->Uef_filt[1] = out1->dU = out1->dUrms = 0;
         out1busy = true;
     }
     if (whichtomeasure & TDA1_BD4)
@@ -733,8 +754,8 @@ int TuneDialogA1::Start60PointsMeasurements(int whichtomeasure, void *dst1, void
         }
         else
             out3 = static_cast<CheckA1::Bda *>(dst1);
-        out3->EXTmA1 = out3->EXTmA2 = out3->Frequency = out3->Middle_ADC[0] = out3->Middle_ADC[1] = \
-                out3->Pt100 = out3->Ueff_ADC[0] = out3->Ueff_ADC[1] = 0;
+        out3->EXTmA1 = out3->EXTmA2 = out3->Frequency = out3->Middle_ADC[0] = out3->Middle_ADC[1] = out3->Pt100
+            = out3->Ueff_ADC[0] = out3->Ueff_ADC[1] = 0;
     }
     int count = 0;
     int res = Error::ER_NOERROR;
@@ -832,8 +853,10 @@ int TuneDialogA1::MeasureBda(CheckA1::Bda *result)
     result->EXTmA2 += tmpbda.EXTmA2;
     result->Frequency += tmpbda.Frequency;
     result->Pt100 += tmpbda.Pt100;
-    result->Middle_ADC[0] += tmpbda.Middle_ADC[0]; result->Middle_ADC[1] += tmpbda.Middle_ADC[1];
-    result->Ueff_ADC[0] += tmpbda.Ueff_ADC[0]; result->Ueff_ADC[1] += tmpbda.Ueff_ADC[1];
+    result->Middle_ADC[0] += tmpbda.Middle_ADC[0];
+    result->Middle_ADC[1] += tmpbda.Middle_ADC[1];
+    result->Ueff_ADC[0] += tmpbda.Ueff_ADC[0];
+    result->Ueff_ADC[1] += tmpbda.Ueff_ADC[1];
     return 0;
 }
 
@@ -874,21 +897,29 @@ int TuneDialogA1::ShowScheme()
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/tunea1.png")));
-    lyout->addWidget(WDFunc::NewLBL(this, "1. На выходах РЕТОМ задайте частоту 51,0 Гц, уровень напряжения фазы А 100 В с фазой 0 градусов, включите режим однофазного выхода;"));
-    lyout->addWidget(WDFunc::NewLBL(this, "2. Включите питание прибора Энергомонитор-3.1КМ и настройте его следующим образом:"));
+    lyout->addWidget(WDFunc::NewLBL(this,
+        "1. На выходах РЕТОМ задайте частоту 51,0 Гц, уровень напряжения фазы А 100 В с фазой 0 градусов, включите "
+        "режим однофазного выхода;"));
+    lyout->addWidget(
+        WDFunc::NewLBL(this, "2. Включите питание прибора Энергомонитор-3.1КМ и настройте его следующим образом:"));
     lyout->addWidget(WDFunc::NewLBL(this, "  2.1. Схема подключения: однофазная двухпроводная;"));
     lyout->addWidget(WDFunc::NewLBL(this, "  2.2. Режим измерения: диапазон 0...240 В;"));
-    lyout->addWidget(WDFunc::NewLBL(this, "3. Перейдите в окно Энергомонитора \"Измерения - Переменного тока - Гармоники\";"));
-    lyout->addWidget(WDFunc::NewLBL(this, "4. На магазине сопротивлений установите значение сопротивления 100,0 Ом (при необходимости регулировки канала Pt100);"));
-    lyout->addWidget(WDFunc::NewLBL(this, "5. Подключите калибратор токовой петли на вход 2 и установите выходной ток 20 мА (при необходимости регулировки каналов 4..20 мА);"));
+    lyout->addWidget(
+        WDFunc::NewLBL(this, "3. Перейдите в окно Энергомонитора \"Измерения - Переменного тока - Гармоники\";"));
+    lyout->addWidget(WDFunc::NewLBL(this,
+        "4. На магазине сопротивлений установите значение сопротивления 100,0 Ом (при необходимости регулировки канала "
+        "Pt100);"));
+    lyout->addWidget(WDFunc::NewLBL(this,
+        "5. Подключите калибратор токовой петли на вход 2 и установите выходной ток 20 мА (при необходимости "
+        "регулировки каналов 4..20 мА);"));
     lyout->addWidget(WDFunc::NewLBL(this, "6. Включите выходы РЕТОМ;"));
     lyout->addWidget(WDFunc::NewLBL(this, "7. Задайте нормальную температуру в термокамере +20±5 °C."));
     QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
     lyout->addWidget(pb);
     pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
-    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(CancelTune()));
+    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
@@ -928,8 +959,8 @@ int TuneDialogA1::CheckBdaValues(int checktype)
 
 int TuneDialogA1::CheckAnalogValues(bool isPrecise)
 {
-    double Tols[6] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.15};
-    double PrecTols[6] = {0.03, 0.03, 0.03, 0.03, 0.025, 0.05};
+    double Tols[6] = { 0.5, 0.5, 0.5, 0.5, 0.5, 0.15 };
+    double PrecTols[6] = { 0.03, 0.03, 0.03, 0.03, 0.025, 0.05 };
     double *T;
     T = (isPrecise) ? &PrecTols[0] : &Tols[0];
     if (!IsWithinLimits(ChA1->Bda_in.UefNat_filt[0], RealData.u, T[0]))
@@ -953,17 +984,17 @@ int TuneDialogA1::GetExternalData()
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setObjectName("extdatad");
     QGridLayout *glyout = new QGridLayout;
-    glyout->addWidget(WDFunc::NewLBL(dlg, "Введите значения сигналов по приборам"),0,0,1,4);
-    glyout->addWidget(WDFunc::NewLBL(dlg, "Значение напряжения, В"), 1,0,1,1);
-    glyout->addWidget(WDFunc::NewSPB(dlg, "u", -125, 125, 5), 1,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(dlg, "Частота, Гц"), 2,2,1,1);
-    glyout->addWidget(WDFunc::NewSPB(dlg, "freq", -100, 100, 5), 2,3,1,1);
+    glyout->addWidget(WDFunc::NewLBL(dlg, "Введите значения сигналов по приборам"), 0, 0, 1, 4);
+    glyout->addWidget(WDFunc::NewLBL(dlg, "Значение напряжения, В"), 1, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewSPB(dlg, "u", -125, 125, 5), 1, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(dlg, "Частота, Гц"), 2, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewSPB(dlg, "freq", -100, 100, 5), 2, 3, 1, 1);
     QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetExtData()));
-    glyout->addWidget(pb,4,0,1,3);
+    connect(pb, SIGNAL(clicked()), this, SLOT(SetExtData()));
+    glyout->addWidget(pb, 4, 0, 1, 3);
     pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked()),this,SLOT(CancelExtData()));
-    glyout->addWidget(pb,4,3,1,3);
+    connect(pb, SIGNAL(clicked()), this, SLOT(CancelExtData()));
+    glyout->addWidget(pb, 4, 3, 1, 3);
     dlg->setLayout(glyout);
     dlg->exec();
     if (StdFunc::IsCancelled())
@@ -977,14 +1008,14 @@ int TuneDialogA1::GetExternalTemp()
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setObjectName("extdatat");
     QGridLayout *glyout = new QGridLayout;
-    glyout->addWidget(WDFunc::NewLBL(dlg, "Введите текущее значение температуры в камере:"),0,0,1,1);
-    glyout->addWidget(WDFunc::NewSPB(dlg, "t", -125, 125, 3),0,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(dlg, "Введите текущее значение температуры в камере:"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewSPB(dlg, "t", -125, 125, 3), 0, 1, 1, 1);
     QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetExtTemp()));
-    glyout->addWidget(pb,4,0,1,3);
+    connect(pb, SIGNAL(clicked()), this, SLOT(SetExtTemp()));
+    glyout->addWidget(pb, 4, 0, 1, 3);
     pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked()),this,SLOT(CancelExtData()));
-    glyout->addWidget(pb,4,3,1,3);
+    connect(pb, SIGNAL(clicked()), this, SLOT(CancelExtData()));
+    glyout->addWidget(pb, 4, 3, 1, 3);
     dlg->setLayout(glyout);
     dlg->exec();
     if (StdFunc::IsCancelled())
@@ -1019,7 +1050,7 @@ int TuneDialogA1::ReadAnalogMeasurements()
 
 void TuneDialogA1::LoadSettings()
 {
-    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
     PovNumPoints = sets->value("PovNumPoints", "60").toInt();
 }
 

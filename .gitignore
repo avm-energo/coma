@@ -1,5 +1,7 @@
-# C++ objects and libs
+# Custom ignore rules
+/output/*
 
+# C++ objects and libs
 *.slo
 *.lo
 *.o
@@ -11,9 +13,8 @@
 *.dylib
 
 # Qt-es
-
-/.qmake.cache
-/.qmake.stash
+**/.qmake.cache
+**/.qmake.stash
 *.pro.user
 *.pro.user.*
 *.qbs.user
@@ -22,13 +23,34 @@
 moc_*.cpp
 qrc_*.cpp
 ui_*.h
+*.obj
 Makefile*
-*-build-*
+*build-*
+*.lib
+lib
 
 # QtCreator
-
 *.autosave
 
-#QtCtreator Qml
+# QtCtreator Qml
 *.qmlproject.user
 *.qmlproject.user.*
+
+# MSVS
+**/.vs
+*.vcxproj.filters
+*.vcxproj.user
+*msvc_make.bat
+/conan*
+/graph_info.json
+/src/comaversion/gversion.h
+/src/bin*
+/src/share*
+/src/lib*
+/src/include*
+/src/out/build
+/include
+CMakeLists.txt.user*
+
+# Doxygen
+/doc/doxy-doc/*
