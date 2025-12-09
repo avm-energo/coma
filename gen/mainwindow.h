@@ -145,6 +145,7 @@ private:
     bool ok;
     bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
     EAbstractProtocomChannel::DeviceConnectStruct DevInfo;
+    bool m_cancelled;
 
 #if PROGSIZE >= PROGSIZE_LARGE
     void PrepareTimers();

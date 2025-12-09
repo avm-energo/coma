@@ -1,7 +1,6 @@
 #include "eusbhid.h"
 
 #include "error.h"
-#include "stdfunc.h"
 
 #include <QCoreApplication>
 #include <QTime>

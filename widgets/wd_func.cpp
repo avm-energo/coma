@@ -1,5 +1,6 @@
 #include "wd_func.h"
 
+#include "../gen/colors.h"
 #include "etableview.h"
 
 #include <QHBoxLayout>
@@ -17,6 +18,8 @@ QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letex
     le->setText(letext);
     if (!lestyle.isEmpty())
         le->setStyleSheet(lestyle);
+    else
+        le->setStyleSheet(lineeditTransparentSS);
     return le;
 }
 
@@ -27,6 +30,8 @@ PasswordLineEdit *WDFunc::NewPswLE(
     le->setObjectName(lename);
     if (!lestyle.isEmpty())
         le->setStyleSheet(lestyle);
+    else
+        le->setStyleSheet(lineeditTransparentSS);
     return le;
 }
 
@@ -63,6 +68,7 @@ QLabel *WDFunc::NewLBL(
 {
     QLabel *lbl = new QLabel(w);
     lbl->setText(text);
+    lbl->setStyleSheet(labelTransparentSS);
     if (!lblname.isEmpty())
         lbl->setObjectName(lblname);
     if (!lblcolor.isEmpty())
@@ -79,6 +85,7 @@ QLabel *WDFunc::NewLBLT(
     QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip)
 {
     QLabel *lbl = new QLabel(w);
+    lbl->setStyleSheet(labelTransparentSS);
     lbl->setText(text);
     lbl->setObjectName(lblname);
     lbl->setStyleSheet(lblstyle);

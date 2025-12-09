@@ -1,5 +1,7 @@
 #include "error.h"
 
+#include <gen/settings.h>
+
 #include <QDateTime>
 #include <QFile>
 #include <QStandardPaths>
@@ -16,10 +18,13 @@ void Error::Init()
     LogFile.writeStart(LOGFILE);
     LogFile.writeLog(Logger::Info, "=== Log started ===\n");
     QFile file;
-    QString ermsgspath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/";
+    QString ermsgspath = Settings::configDir();
     file.setFileName(ermsgspath + "ermsgs.dat");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Error opening ermsgs.dat";
         return;
+    }
     QString tmpString;
     QTextStream streamfile(&file);
     // streamfile.setCodec("WIN-1251");

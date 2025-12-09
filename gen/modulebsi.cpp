@@ -22,15 +22,6 @@ int ModuleBSI::SetupBSI()
 {
     if (Commands::GetBsi(ModuleBsi) != Error::ER_NOERROR)
         return Error::ER_CANAL;
-    /*    quint32 mtype;
-        QString mtypestring;
-        mtype = ((ModuleBsi.MTypeB & 0x000000FF) << 8) | (ModuleBsi.MTypeM & 0x000000FF);
-    #ifndef MODULE_A1
-        mtypestring = "АВТУК-";
-        mtypestring.append(QString::number(mtype, 16));
-    #else
-        mtypestring = "ПКС-1";
-    #endif */
     ModuleTypeString = Config::ModuleBaseBoards()[ModuleBsi.MTypeB << 8].TextString
         + Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].TextString;
     ModuleBSI::Bsi bsi = ModuleBsi;

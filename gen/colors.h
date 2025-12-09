@@ -12,6 +12,7 @@
 #define DCONFRCLR "#FFCCCC"
 #define DCONFYCLR "#FFFFCC"
 #define DCONFOCLR "#FFCC99"
+constexpr auto DCONFOCLT = "rgba(255,204,153,255)";
 #define ACONFCLR "#D0FFD0"
 #define ACONFWCLR "#C0FFC0"
 #define ACONFWCLRO "#E0FFE0"
@@ -35,4 +36,6 @@
 #define BLUCOLOR "#2222FF"
 #define BLKCOLOR "#000000"
 
-constexpr auto yellowDialogSS = "QDialog { background-color: #FFCC99; color: #000000 }";
+constexpr auto yellowDialogSS = "QDialog { background-color: #FFCC99; color: #000000; }";
+constexpr auto lineeditTransparentSS = "QLineEdit { background-color: transparent; }";
+constexpr auto labelTransparentSS = "QLabel { background-color: transparent; }";

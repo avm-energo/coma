@@ -2,7 +2,7 @@
 
 #define MAXBYTEARRAY 65535
 
-#include "../gen/s2util.h"
+#include "../gen/s2datatypes.h"
 
 #include <QDialog>
 

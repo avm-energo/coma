@@ -143,6 +143,12 @@ if(NOT EXISTS ${DBG_CHECK_PATH})
     "${CMAKE_CURRENT_SOURCE_DIR}/images"
     "${APPDATA}/images"
     COMMENT "Copying images...")
+  add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD COMMAND
+    ${CMAKE_COMMAND} -E copy
+    "${CMAKE_CURRENT_SOURCE_DIR}/errors/ermsgs.dat"
+    "${APPDATA}"
+    COMMENT "Copying error messages...")
 endif()
 
 install(TARGETS ${PROJECT_NAME}
@@ -151,20 +157,6 @@ install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
-
-# Copying lrxml report files
-install(
-  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/reports"
-  DESTINATION ${CMAKE_INSTALL_PREFIX}
-  FILES_MATCHING PATTERN "*.lrxml"
-  PERMISSIONS OWNER_READ GROUP_READ)
-
-# Copying lrxml report files
-install(
-  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/images"
-  DESTINATION ${CMAKE_INSTALL_PREFIX}
-  FILES_MATCHING PATTERN "*.*"
-  PERMISSIONS OWNER_READ GROUP_READ)
 
 # Cross-platform deploy target
 if(SYSTEM_NAME STREQUAL "windows")

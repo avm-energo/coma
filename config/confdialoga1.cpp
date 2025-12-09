@@ -1,5 +1,4 @@
 #include "../widgets/ecombobox.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -163,7 +162,7 @@ void ConfDialogA1::SetupUI()
     vlyout1 = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(TABCOLORA1) + ";}";
+    QString ConfTWss = "QTabWidget::tab-bar::tab { background: transparent; }";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(cp1, "Конфигурация");
     vlyout1->addWidget(ConfTW);

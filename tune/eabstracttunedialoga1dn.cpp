@@ -6,6 +6,7 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/waitwidget.h"
 #include "config.h"
+#include <gen/settings.h>
 
 #include <QComboBox>
 #include <QElapsedTimer>
@@ -376,7 +377,7 @@ void EAbstractTuneDialogA1DN::FillHeaders()
 void EAbstractTuneDialogA1DN::TemplateCheck()
 {
     QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
-    QString path = StdFunc::GetSystemHomeDir() + "a1_" + GOST + ".lrxml";
+    QString path = Settings::configDir() + "a1_" + GOST + ".lrxml";
     QFile file(path);
     if (!file.exists()) // нет файла шаблона
     {

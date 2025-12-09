@@ -1,5 +1,6 @@
 #include "settingsdialog.h"
 
+#include "../gen/colors.h"
 #include "../gen/eabstractprotocomchannel.h"
 #include "../gen/maindef.h"
 #include "../gen/modulebsi.h"
@@ -20,6 +21,7 @@
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
+    setStyleSheet(yellowDialogSS);
     setWindowTitle("Настройки");
     SetupUI();
     Fill();
@@ -28,10 +30,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 void SettingsDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
+    QHBoxLayout *hlyout;
     quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
-    /*    if (MTypeB == Config::MTB_A1)
-        { */
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "Наименование организации, эксплуатирующей прибор"));
     hlyout->addWidget(WDFunc::NewLE(this, "orgle"));
@@ -52,7 +52,6 @@ void SettingsDialog::SetupUI()
     hlyout->addWidget(WDFunc::NewLBLT(this, "Количество точек усреднения для поверки"), 0);
     hlyout->addWidget(WDFunc::NewSPB(this, "povnumpoints", 1, 65535, 0), 1);
     vlyout->addLayout(hlyout);
-    //    }
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Рабочий каталог программы"), 0);
     hlyout->addWidget(WDFunc::NewLE(this, "pathle"), 1);

@@ -51,18 +51,7 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
         return;
     }
     QTabWidget *CheckTW = new QTabWidget;
-    QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
-                       "QTabBar::tab:selected {background-color: "
-        + QString(TABCOLORA1)
-        + ";"
-          "border: 1px solid #000000;"
-          "border-top-left-radius: 4px;"
-          "border-top-right-radius: 4px;"
-          "padding: 2px;"
-          "margin-left: -4px; margin-right: -4px;}"
-          "QTabBar::tab:first:selected {margin-left: 0;}"
-          "QTabBar::tab:last:selected {margin-right: 0;}"
-          "QTabBar::tab:only-one {margin: 0;}";
+    QString ConfTWss = "QTabWidget::tab-bar::tab { background: transparent; }";
     CheckTW->tabBar()->setStyleSheet(ConfTWss);
     //    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
     for (int i = 0; i < BdUINum; ++i)

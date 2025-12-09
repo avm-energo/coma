@@ -13,7 +13,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     StdFunc::Init();
     Settings::initialize(PROGNAME, SOFTDEVELOPER, COMAVERSION);
-    a.setStyleSheet("QWidget { color: " + QString(BLKCOLOR) + "; margin: 2px; }"); // Все виджеты унаследуют
+    a.setStyleSheet("QWidget { background: " + QString(MAINWINCLRA1) + "; color: " + QString(BLKCOLOR)
+        + "; margin: 2px; }"); // Все виджеты унаследуют
     pkdn_s w;
     //    w.setAttribute(Qt::WA_AlwaysShowToolTips);
     w.SetMode(MainWindow::COMA_GENERALMODE);

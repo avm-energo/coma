@@ -4,10 +4,41 @@
 
 #include <QIcon>
 #include <QPainter>
+#include <QProxyStyle>
 #include <QStyleOptionTab>
 #include <QStylePainter>
 #include <QTabBar>
 #include <QTabWidget>
+
+class CustomTabStyle : public QProxyStyle
+{
+public:
+    QSize sizeFromContents(
+        ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const
+    {
+        QSize s = QProxyStyle::sizeFromContents(type, option, size, widget);
+        if (type == QStyle::CT_TabBarTab)
+        {
+            s.transpose();
+        }
+        return s;
+    }
+
+    void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+    {
+        if (element == CE_TabBarTabLabel)
+        {
+            if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option))
+            {
+                QStyleOptionTab opt(*tab);
+                opt.shape = QTabBar::RoundedNorth;
+                QProxyStyle::drawControl(element, &opt, painter, widget);
+                return;
+            }
+        }
+        QProxyStyle::drawControl(element, option, painter, widget);
+    }
+};
 
 class ETabBar : public QTabBar
 {
@@ -20,39 +51,8 @@ public:
               "color: #000000;}"
               "QTabBar::tab::selected {background-color: "
             + QString(GRLCOLOR) + ";}";
+        setStyle(new CustomTabStyle);
         this->setStyleSheet(tbss);
-    }
-
-protected:
-    QSize tabSizeHint(int index) const
-    {
-        Q_UNUSED(index)
-        return QSize(150, 40);
-    }
-    void paintEvent(QPaintEvent *)
-    {
-        QStylePainter painter(this);
-        QStyleOptionTab opt;
-        for (int i = 0; i < count(); i++)
-        {
-            initStyleOption(&opt, i);
-            painter.drawControl(QStyle::CE_TabBarTabShape, opt);
-            painter.save();
-
-            QSize s = opt.rect.size();
-            s.transpose();
-            QRect r(QPoint(), s);
-            r.adjust(0, 8, 0, -8);
-            r.moveCenter(opt.rect.center());
-            opt.rect = r;
-
-            QPoint c = tabRect(i).center();
-            painter.translate(c);
-            painter.rotate(90);
-            painter.translate(-c);
-            painter.drawControl(QStyle::CE_TabBarTabLabel, opt);
-            painter.restore();
-        }
     }
 };
 

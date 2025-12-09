@@ -419,19 +419,17 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         {
             if (RDSize >= RDLength)
             {
-                if (DR.isEmpty())
+                if (!S2::Util::RestoreData(ReadData, DR))
+                    Finish(S2_DESCERROR);
+                else
                 {
-                    Finish(CN_NULLDATAERROR);
-                    break;
-                }
-                res = S2::Util::RestoreData(ReadData, DR);
-                if (res == 0)
-                {
-                    //                    SendOk(false);
+                    if (DR.isEmpty())
+                    {
+                        Finish(CN_NULLDATAERROR);
+                        break;
+                    }
                     Finish(Error::ER_NOERROR);
                 }
-                else
-                    Finish(res);
             }
             else
                 SendOk(true);
@@ -599,7 +597,7 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
         if (WriteUSBLog)
         {
             QByteArray tmps = "->" + tmpba.toHex() + "\n";
-            CnLog.writeLog(Logger::Debug, tmps);
+            CnLog.writeLog(Logger::All, tmps);
         }
         int tmpi = RawWrite(tmpba);
         if (tmpi == Error::ER_GENERALERROR)

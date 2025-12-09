@@ -32,11 +32,10 @@
 #include "../dialogs/settingsdialog.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
-#include "../widgets/etablemodel.h"
+#include "../widgets/epushbutton.h"
 #include "../widgets/etableview.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/wd_func.h"
@@ -44,8 +43,9 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    QPixmap StartWindowSplashPixmap("images/2.1.x.png");
+    QPixmap StartWindowSplashPixmap(Settings::configDir() + "images/splash.png");
     StartWindowSplashScreen = new QSplashScreen(StartWindowSplashPixmap);
+    StartWindowSplashScreen->setFixedSize(500, 500);
     StartWindowSplashScreen->show();
     StartWindowSplashScreen->showMessage("Подготовка окружения...", Qt::AlignRight, Qt::white);
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
@@ -230,6 +230,13 @@ void MainWindow::SetupMenubar()
     menubar->setStyleSheet(tmps);
     QMenu *menu = new QMenu;
     menu->setTitle("Главное");
+    menu->setStyleSheet("QMenu {background-color: " + QString(MAINWINCLRA1)
+        + "; }"
+          "QMenu::item {background-color: "
+        + QString(MAINWINCLRA1)
+        + "; color: #000000; }"
+          "QMenu::item::selected {background-color: "
+        + QString(MAINWINCLR) + "; border: 2px;}");
     QAction *act = new QAction(this);
     act->setText("Выход");
     connect(act, SIGNAL(triggered()), this, SLOT(close()));
@@ -411,6 +418,8 @@ int MainWindow::AdminCheckPassword()
 void MainWindow::Stage1_5()
 {
     ShowConnectDialog();
+    if (m_cancelled)
+        return;
     QApplication::setOverrideCursor(Qt::WaitCursor);
     if (Commands::Connect() != Error::ER_NOERROR)
     {
@@ -671,17 +680,26 @@ void MainWindow::ShowConnectDialog()
         Error::ShowErMsg(CN_NOPORTSERROR);
     }
     tmpmodel->setStringList(sl);
-    QComboBox *portscb = new QComboBox;
-    connect(portscb, &QComboBox::currentTextChanged, this, &MainWindow::SetPortSlot);
+    EComboBox *portscb = new EComboBox;
+    connect(portscb, &EComboBox::currentTextChanged, this, &MainWindow::SetPortSlot);
     portscb->setModel(tmpmodel);
     lyout->addWidget(portscb);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Далее");
-    connect(pb, SIGNAL(clicked(bool)), dlg, SLOT(close()));
+    EPushButton *pb = new EPushButton("Далее");
+    connect(pb, &QPushButton::clicked,
+        [&]()
+        {
+            m_cancelled = false;
+            dlg->close();
+        });
     hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked(bool)), cn, SLOT(SetCancelled()));
-    connect(pb, SIGNAL(clicked(bool)), dlg, SLOT(close()));
+    pb = new EPushButton("Отмена");
+    connect(pb, &QPushButton::clicked,
+        [&]()
+        {
+            m_cancelled = true;
+            dlg->close();
+        });
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
@@ -727,10 +745,11 @@ void MainWindow::GetAbout()
 
     l2yout->addWidget(WDFunc::NewLBL(this, tmps));
     l2yout->addWidget(WDFunc::NewLBL(this, "ООО \"АВМ-Энерго\""));
-    l2yout->addWidget(WDFunc::NewLBL(this, "2015-2019 гг."));
+    l2yout->addWidget(WDFunc::NewLBL(this, "2015-2025 гг."));
     l2yout->addWidget(WDFunc::NewLBL(this, "info@avmenergo.ru"));
     l2yout->addStretch(10);
-    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/evel.png")), 1, Qt::AlignVCenter);
+    hlyout->addWidget(
+        WDFunc::NewLBL(this, "", "", "", new QPixmap(Settings::configDir() + "images/evel.png")), 1, Qt::AlignVCenter);
     hlyout->addLayout(l2yout, 100);
     lyout->addLayout(hlyout, 1);
     QPushButton *pb = new QPushButton("Готово");
