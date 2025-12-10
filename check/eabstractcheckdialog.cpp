@@ -1,7 +1,6 @@
 #include "eabstractcheckdialog.h"
 
 #include "../config/config.h"
-#include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
@@ -10,7 +9,6 @@
 
 #include <QCoreApplication>
 #include <QFileDialog>
-#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -102,7 +100,7 @@ QWidget *EAbstractCheckDialog::BottomUI()
     hlyout->addWidget(rb);
     lyout->addLayout(hlyout);
 
-    QPushButton *pb = new QPushButton("Запустить чтение сигналов");
+    QPushButton *pb = new QPushButton("Запустить чтение");
     pb->setObjectName("pbmeasurements");
 #if PROGSIZE != PROGSIZE_EMUL
     connect(pb, SIGNAL(clicked()), this, SLOT(StartAnalogMeasurements()));
@@ -110,7 +108,7 @@ QWidget *EAbstractCheckDialog::BottomUI()
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     glyout->addWidget(pb, 1, 1, 1, 1);
-    pb = new QPushButton("Запустить чтение сигналов в файл");
+    pb = new QPushButton("Запустить чтение в файл");
     pb->setObjectName("pbfilemeasurements");
 #if PROGSIZE != PROGSIZE_EMUL
     connect(pb, SIGNAL(clicked()), this, SLOT(StartAnalogMeasurementsToFile()));

@@ -44,6 +44,7 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     QPixmap StartWindowSplashPixmap(Settings::configDir() + "images/splash.png");
+    StartWindowSplashPixmap = StartWindowSplashPixmap.scaled(500, 500);
     StartWindowSplashScreen = new QSplashScreen(StartWindowSplashPixmap);
     StartWindowSplashScreen->setFixedSize(500, 500);
     StartWindowSplashScreen->show();
@@ -58,11 +59,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     S2ConfigForTune.clear();
     MainConfDialog = nullptr;
     ConfB = ConfM = nullptr;
-// #ifndef MODULE_A1
-//     OscD = nullptr;
-//     CorD = nullptr;
-//     SwjD = nullptr;
-// #endif
 #if PROGSIZE >= PROGSIZE_LARGE
     PrepareTimers();
 #endif
@@ -100,37 +96,10 @@ int MainWindow::GetMode()
     return Mode;
 }
 
-void MainWindow::Go(const QString &parameter)
+void MainWindow::Go()
 {
-    if (Mode != COMA_GENERALMODE)
-    {
-        StdFunc::SetEmulated(true);
-        Autonomous = true;
-    }
     SetupUI();
     show();
-    switch (Mode)
-    {
-        // #ifndef MODULE_A1
-        //     case COMA_AUTON_OSCMODE:
-        //     {
-        //         LoadOscFromFile(parameter);
-        //         break;
-        //     }
-        //     case COMA_AUTON_SWJMODE:
-        //     {
-        //         LoadSwjFromFile(parameter);
-        //         break;
-        //     }
-        // #endif
-    case COMA_AUTON_PROTMODE:
-    {
-        StartA1Dialog(parameter);
-        break;
-    }
-    default:
-        break;
-    }
 }
 
 QWidget *MainWindow::HthWidget()
@@ -280,20 +249,6 @@ void MainWindow::SetupMenubar()
     menubar->addAction(act);
 
     menubar->addSeparator();
-    // #ifndef MODULE_A1
-    //     menu = new QMenu;
-    //     menu->setObjectName("autonomousmenu");
-    //     menu->setTitle("Автономная работа");
-    //     act = new QAction(this);
-    //     act->setText("Загрузка осциллограммы");
-    //     connect(act, SIGNAL(triggered()), this, SLOT(LoadOsc()));
-    //     menu->addAction(act);
-    //     act = new QAction(this);
-    //     act->setText("Загрузка журнала переключений");
-    //     connect(act, SIGNAL(triggered()), this, SLOT(LoadSWJ()));
-    //     menu->addAction(act);
-    //     menubar->addMenu(menu);
-    // #endif
     setMenuBar(menubar);
     AddActionsToMenuBar(menubar);
 }
@@ -444,9 +399,6 @@ void MainWindow::Stage2()
             == 1) // Yes
         {
             cn->Disconnect();
-#ifdef COMPORTENABLE
-            ShowConnectDialog();
-#endif
             emit Retry();
         }
         return;
@@ -477,9 +429,9 @@ void MainWindow::UpdateHthWidget()
     else
         lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
 
-    for (int i = 0; i < MAXERRORFLAGNUM; i++)
+    for (int i = 1; i < MAXERRORFLAGNUM; i++)
     {
-        QLabel *lbl = this->findChild<QLabel *>("hth" + QString::number(i + 1));
+        QLabel *lbl = this->findChild<QLabel *>("hth" + QString::number(i));
         if (lbl == nullptr)
             return;
         quint32 tmpui = (0x00000001 << i) & bsi.Hth;
@@ -789,7 +741,6 @@ void MainWindow::GetDeviceFromTable(QModelIndex idx)
 #endif
 void MainWindow::DisconnectAndClear()
 {
-
 #if PROGSIZE != PROGSIZE_EMUL
     if (ConfM != nullptr)
         ConfM->TheEnd = 1;
@@ -797,11 +748,7 @@ void MainWindow::DisconnectAndClear()
     Disconnect();
     TuneB = TuneM = nullptr;
 #endif
-    // #ifndef MODULE_A1
-    //     OscD = nullptr;
-    // #endif
     CheckB = CheckM = nullptr;
-    // Time = nullptr;
     emit ClearBsi();
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -809,11 +756,6 @@ void MainWindow::DisconnectAndClear()
         return;
     MainTW->hide();
     StdFunc::SetEmulated(false);
-
-    // if(thr != nullptr)
-    // emit FinishAll();
-
-    // thr = nullptr;
 }
 #if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::MouseMove()
@@ -901,18 +843,14 @@ void MainWindow::ProtocolFromFile()
 void MainWindow::FinishHim()
 {
     thr->exit();
-    // thr->wait(100);
     thr->deleteLater();
     ConfM->timeIndex = -1;
     ConfM->confIndex = -1;
     TimeFunc::Wait(1000);
-    // ConfM->stopRead(ConfM->timeIndex);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     DisconnectAndClear();
-    // while(!TimeThrFinished || !ModBusThrFinished)
-    // TimeFunc::Wait(100);
     event->accept();
 }

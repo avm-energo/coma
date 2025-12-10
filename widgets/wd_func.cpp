@@ -85,10 +85,12 @@ QLabel *WDFunc::NewLBLT(
     QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip)
 {
     QLabel *lbl = new QLabel(w);
-    lbl->setStyleSheet(labelTransparentSS);
+    if (lblstyle.isEmpty())
+        lbl->setStyleSheet(labelTransparentSS);
+    else
+        lbl->setStyleSheet(lblstyle);
     lbl->setText(text);
     lbl->setObjectName(lblname);
-    lbl->setStyleSheet(lblstyle);
     lbl->setToolTip(lbltip);
     return lbl;
 }
@@ -207,9 +209,14 @@ QDoubleSpinBox *WDFunc::NewSPB(
     dspbls->setMaximum(max);
     if (!spbcolor.isEmpty())
     {
-        QString tmps = "QDoubleSpinBox {background-color: " + spbcolor + ";}";
+        QString tmps = "QDoubleSpinBox {background-color: " + spbcolor
+            + "; border: 1px solid lightgray;"
+              "border-radius: 5px;}";
         dspbls->setStyleSheet(tmps);
     }
+    else
+        dspbls->setStyleSheet("QDoubleSpinBox {background-color: transparent; border: 1px solid lightgray;"
+                              "border-radius: 5px;}");
     return dspbls;
 }
 
@@ -335,6 +342,8 @@ QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString
         QString tmps = "QCheckBox {background-color: " + chbcolor + ";}";
         chb->setStyleSheet(tmps);
     }
+    else
+        chb->setStyleSheet("QCheckBox {background-color: transparent;}");
     return chb;
 }
 
@@ -442,15 +451,15 @@ QVariant WDFunc::FloatValueWithCheck(float value)
 
 QImage *WDFunc::TwoImages(const QString &first, const QString &second)
 {
-    QImage *image = new QImage;
+    QImage *image;
     QString FirstImage = "images/" + first + ".png";
     QString SecondImage = "images/" + second + ".png";
     QImage FirstI(FirstImage);
     QImage SecondI(SecondImage);
     if ((first.isEmpty()) && (!SecondI.isNull()))
-        *image = SecondI;
+        image = new QImage(SecondI);
     else if ((second.isEmpty()) && (!FirstI.isNull()))
-        *image = FirstI;
+        image = new QImage(FirstI);
     else if ((FirstI.isNull()) || (SecondI.isNull()))
         image = new QImage("images/cross.png");
     else

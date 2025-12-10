@@ -3,8 +3,8 @@
 #include "../gen/colors.h"
 #include "../gen/eabstractprotocomchannel.h"
 #include "../gen/maindef.h"
-#include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
+#include "../widgets/epushbutton.h"
 #include "../widgets/wd_func.h"
 #include "config.h"
 
@@ -31,7 +31,6 @@ void SettingsDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout;
-    quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "Наименование организации, эксплуатирующей прибор"));
     hlyout->addWidget(WDFunc::NewLE(this, "orgle"));
@@ -55,21 +54,14 @@ void SettingsDialog::SetupUI()
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Рабочий каталог программы"), 0);
     hlyout->addWidget(WDFunc::NewLE(this, "pathle"), 1);
-    QPushButton *pb = new QPushButton("...");
+    EPushButton *pb = new EPushButton("...");
     connect(pb, SIGNAL(clicked(bool)), this, SLOT(SetHomeDir()));
     hlyout->addWidget(pb, 0);
     vlyout->addLayout(hlyout);
-    /*    if (MTypeB == Config::MTB_80)
-        { */
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(this, "IP-адрес МИП:"));
-    hlyout->addWidget(WDFunc::NewLE(this, "miple"));
-    vlyout->addLayout(hlyout);
-    //    }
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewChB(this, "writelogchb", "Запись обмена данными в файл"));
     vlyout->addLayout(hlyout);
-    pb = new QPushButton("Готово");
+    pb = new EPushButton("Готово");
     connect(pb, SIGNAL(clicked()), this, SLOT(AcceptSettings()));
     vlyout->addWidget(pb);
     setLayout(vlyout);

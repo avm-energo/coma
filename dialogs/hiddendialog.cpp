@@ -2,12 +2,12 @@
 
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
+#include "../widgets/egroupbox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
 #include <QElapsedTimer>
-#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -93,7 +93,7 @@ void HiddenDialog::SetupUI()
     vlyout->addLayout(hlyout);
     /*    if (WithMezzanine) // ввод данных по мезонинной плате открывается только в случае её наличия
         { */
-    QGroupBox *gb = new QGroupBox("Мезонинная плата");
+    EGroupBox *gb = new EGroupBox("Мезонинная плата");
     QVBoxLayout *gblyout = new QVBoxLayout;
     gblyout->addWidget(WDFunc::NewChB(this, "withmezzanine", "Установлена"));
     hlyout = new QHBoxLayout;
@@ -117,7 +117,7 @@ void HiddenDialog::SetupUI()
     vlyout->addLayout(hlyout);
     //    }
     vlyout->addStretch(800);
-    gb = new QGroupBox("Базовая плата");
+    gb = new EGroupBox("Базовая плата");
     gblyout = new QVBoxLayout;
     hlyout = new QHBoxLayout;
     WDFunc::AddLabelAndLineeditH(hlyout, "Тип платы:", "bastp", true);

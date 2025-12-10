@@ -25,7 +25,7 @@ public:
 
     void SetMode(int mode);
     int GetMode();
-    void Go(const QString &parameter = "");
+    void Go();
 
     enum Modes
     {
@@ -47,16 +47,6 @@ public:
     EAbstractCheckDialog *CheckB, *CheckM;
     MNKTime *Time;
     QTimer *TimeTimer;
-    // #ifndef MODULE_A1
-    //     SwitchJournalDialog *SwjD;
-    //     OscDialog *OscD;
-    //     CorDialog *CorD;
-    //     EOscillogram *OscFunc;
-    //     SWJDialog *dlg;
-    //     fwupdialog *FwUpD;
-    //     void LoadOscFromFile(const QString &filename);
-    //     void LoadSwjFromFile(const QString &filename);
-    // #endif
     int CheckPassword();
     int AdminCheckPassword();
 
@@ -70,22 +60,18 @@ public:
     static QStringList Hth()
     {
         QStringList sl;
-        sl.append("ERR");
-        sl.append("ADCI");
+        sl.append("!OK");
         sl.append("FLS");
         sl.append("TUP");
-        sl.append("ADCB");
+        sl.append("REL");
         sl.append("1PPS");
-        sl.append("ADCM");
-        sl.append("REGB");
-        sl.append("RCN");
-        sl.append("HWIB");
-        sl.append("HWIM");
-        sl.append("REGM");
+        sl.append("ADC");
+        sl.append("REG");
+        sl.append("CNF");
+        sl.append("LS");
+        sl.append("FNC");
+        sl.append("FW");
         sl.append("BAT");
-        sl.append("NTP");
-        sl.append("FLS2");
-        sl.append("FRM");
         int ts = sl.size();
         for (int i = ts; i < MAXERRORFLAGNUM; ++i)
             sl.append("");
@@ -96,21 +82,17 @@ public:
     {
         QStringList sl;
         sl.append("Что-то не в порядке");
-        sl.append("Проблемы с встроенным АЦП ");
-        sl.append("Не работает внешняя flash-память");
+        sl.append("Ошибка внешней FLASH-памяти");
         sl.append("Перегрев");
-        sl.append("Проблемы с АЦП (нет связи) (базовая)");
+        sl.append("Неисправность выходных реле");
         sl.append("Нет сигнала 1PPS с антенны");
-        sl.append("Проблемы с АЦП (нет связи) (Мезонин)");
-        sl.append("Ошибка регулировочных коэффициентов (базовая)");
-        sl.append("Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию");
-        sl.append("Некорректная Hardware информация (базовая)");
-        sl.append("Некорректная Hardware информация (мезонин)");
-        sl.append("Ошибка регулировочных коэффициентов (Мезонин)");
-        sl.append("Напряжение батареи низко (< 2,5 В)");
-        sl.append("Нет связи с NTP-сервером");
-        sl.append("Не работает внешняя flash-память (Мезонин)");
-        sl.append("Не работает внешняя fram");
+        sl.append("Нет связи с АЦП");
+        sl.append("Нет настроечных параметров в памяти");
+        sl.append("Ошибка конфигурации в памяти, взята конфигурация по умолчанию");
+        sl.append("Сигналы слишком малы");
+        sl.append("Частота находится вне диапазона");
+        sl.append("Ошибка файла фирменного ПО");
+        sl.append("Требуется замена батарейки");
         int ts = sl.size();
         for (int i = ts; i < MAXERRORFLAGNUM; ++i)
             sl.append("");
@@ -128,7 +110,6 @@ public:
 #if PROGSIZE >= PROGSIZE_LARGE
     void SetSlideWidget();
 #endif
-    //    void SetParent(QWidget *parent);
 
 signals:
     void CloseConnectDialog();
@@ -165,11 +146,6 @@ private slots:
     void DisconnectAndClear();
     void FinishHim();
     void closeEvent(QCloseEvent *event);
-    // #ifndef MODULE_A1
-    //     void LoadOsc();
-    //     void LoadSWJ();
-    //     void ShowOsc();
-    // #endif
     void ProtocolFromFile();
     void StartA1Dialog(const QString &filename);
 

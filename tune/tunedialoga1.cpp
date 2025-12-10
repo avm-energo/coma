@@ -1,13 +1,13 @@
 #include "tunedialoga1.h"
 
 #include "../gen/maindef.h"
+#include "../widgets/egroupbox.h"
 
 #include <QCoreApplication>
 #include <QElapsedTimer>
 #include <QEventLoop>
 #include <QFileDialog>
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QInputDialog>
 #include <QPushButton>
 #include <QSettings>
@@ -17,7 +17,6 @@
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
-#include "../dialogs/keypressdialog.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
@@ -179,7 +178,7 @@ void TuneDialogA1::SetupUI()
 
     lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    QGroupBox *gb = new QGroupBox("Настроечные коэффициенты");
+    EGroupBox *gb = new EGroupBox("Настроечные коэффициенты");
     glyout->addWidget(WDFunc::NewLBL(this, "KmU[0]"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "tune0", "", ValuesLEFormat), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "KmU[1]"), 0, 2, 1, 1, Qt::AlignRight);
@@ -227,13 +226,13 @@ void TuneDialogA1::SetupUI()
     // CP3 - Данные измерений
 
     lyout = new QVBoxLayout;
-    gb = new QGroupBox("Данные измерений без настройки (Bda)");
+    gb = new EGroupBox("Данные измерений без настройки (Bda)");
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(ChA1->BdaW(this));
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
     lyout->addWidget(ChA1->Bda_inW(this));
-    gb = new QGroupBox("Входные сигналы постоянного тока (Bda_in_an)");
+    gb = new EGroupBox("Входные сигналы постоянного тока (Bda_in_an)");
     vlyout = new QVBoxLayout;
     vlyout->addWidget(ChA1->Bda_in_anW(this));
     gb->setLayout(vlyout);

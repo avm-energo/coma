@@ -9,13 +9,12 @@
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include "../widgets/egroupbox.h"
 #include "../widgets/emessagebox.h"
-#include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QStringListModel>
@@ -72,7 +71,7 @@ void A1Dialog::SetupUI()
                            "background-color: "
         + QString(ACONFOCLR) + "; font: bold 10px;}";
     QGridLayout *glyout = new QGridLayout;
-    QGroupBox *gb = new QGroupBox("Конфигурация");
+    EGroupBox *gb = new EGroupBox("Конфигурация");
     glyout->addWidget(WDFunc::NewLBL(this, "Варианты использования:"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "1", "tunevar1", ValuesFormat, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(this, "2", "tunevar2", ValuesFormat, ""), 0, 2, 1, 1);
@@ -84,7 +83,7 @@ void A1Dialog::SetupUI()
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     glyout = new QGridLayout;
-    gb = new QGroupBox("Измерения в первичном масштабе");
+    gb = new EGroupBox("Измерения в первичном масштабе");
     glyout->addWidget(WDFunc::NewLBL(this, "U1, кВ"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1", ValuesFormat, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U2, кВ"), 0, 2, 1, 1, Qt::AlignRight);
@@ -114,7 +113,7 @@ void A1Dialog::SetupUI()
     lyout->addWidget(gb);
 
     glyout = new QGridLayout;
-    gb = new QGroupBox("СКО");
+    gb = new EGroupBox("СКО");
     glyout->addWidget(WDFunc::NewLBL(this, "dUrms(m), В"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunedurmsm", ValuesFormat, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "φ(m), мин"), 0, 2, 1, 1, Qt::AlignRight);

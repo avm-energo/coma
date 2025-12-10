@@ -3,7 +3,6 @@
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/maindef.h"
-#include "../gen/s2util.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/etableview.h"
@@ -14,7 +13,6 @@
 #include <QDoubleSpinBox>
 #include <QFileDialog>
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>

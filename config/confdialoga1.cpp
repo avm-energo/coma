@@ -2,7 +2,6 @@
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>

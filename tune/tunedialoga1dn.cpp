@@ -1,13 +1,12 @@
 #include "tunedialoga1dn.h"
 
-#include "../dialogs/keypressdialog.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/maindef.h"
 #include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
+#include "../widgets/egroupbox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 #include "config.h"
@@ -16,7 +15,6 @@
 #include <QEventLoop>
 #include <QFileDialog>
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QInputDialog>
 #include <QPushButton>
 #include <QSettings>
@@ -141,7 +139,7 @@ void TuneDialogA1DN::SetupUI()
     QWidget *cp6 = CoefUI3(1);
     QWidget *cp7 = CoefUI3(2);
     QWidget *cp8 = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *lyout;
     QTabWidget *TuneTW = new QTabWidget;
 
     QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
@@ -176,7 +174,7 @@ void TuneDialogA1DN::SetupUI()
     hlyout->addWidget(WDFunc::NewLBLT(this, "", "tune00", ValuesFormat));
     lyout->addLayout(hlyout);
     QGridLayout *glyout = new QGridLayout;
-    QGroupBox *gb = new QGroupBox("Измерения в первичном масштабе");
+    EGroupBox *gb = new EGroupBox("Измерения в первичном масштабе");
     glyout->addWidget(WDFunc::NewLBL(this, "U1, кВ"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1", ValuesFormat, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U2, кВ"), 0, 2, 1, 1, Qt::AlignRight);
@@ -194,7 +192,7 @@ void TuneDialogA1DN::SetupUI()
     lyout->addWidget(gb);
 
     glyout = new QGridLayout;
-    gb = new QGroupBox("Измерения в масштабе, приведённом ко входу");
+    gb = new EGroupBox("Измерения в масштабе, приведённом ко входу");
     glyout->addWidget(WDFunc::NewLBL(this, "U1, В"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1i", ValuesFormat, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U2, В"), 0, 2, 1, 1, Qt::AlignRight);
@@ -228,7 +226,7 @@ void TuneDialogA1DN::SetupUI()
     lyout->addLayout(hlyout);
 
     glyout = new QGridLayout;
-    gb = new QGroupBox("СКО");
+    gb = new EGroupBox("СКО");
     glyout->addWidget(WDFunc::NewLBL(this, "dUrms(m)"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunedurmsm", ValuesFormat, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "φ(m)"), 0, 2, 1, 1, Qt::AlignRight);
@@ -249,17 +247,17 @@ void TuneDialogA1DN::SetupUI()
     // CP8 - Данные измерений
 
     lyout = new QVBoxLayout;
-    gb = new QGroupBox("Данные измерений без настройки (Bda)");
+    gb = new EGroupBox("Данные измерений без настройки (Bda)");
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(ChA1->BdaW(this));
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
-    gb = new QGroupBox("Напряжения в масштабе входных сигналов (Bda_in)");
+    gb = new EGroupBox("Напряжения в масштабе входных сигналов (Bda_in)");
     vlyout = new QVBoxLayout;
     vlyout->addWidget(ChA1->Bda_inW(this));
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
-    gb = new QGroupBox("Входные сигналы постоянного тока (Bda_in_an)");
+    gb = new EGroupBox("Входные сигналы постоянного тока (Bda_in_an)");
     vlyout = new QVBoxLayout;
     vlyout->addWidget(ChA1->Bda_in_anW(this));
     gb->setLayout(vlyout);
@@ -281,7 +279,7 @@ QWidget *TuneDialogA1DN::CoefUI(int bac2num)
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
+    QGridLayout *glyout;
     QString tmps = "QWidget {background-color: " + QString(UCONFWCLR) + ";}";
     QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
                              "background-color: "
@@ -294,7 +292,7 @@ QWidget *TuneDialogA1DN::CoefUI(int bac2num)
     lyout->addLayout(hlyout);
 
     glyout = new QGridLayout;
-    //    gb = new QGroupBox("Настроечные коэффициенты");
+    //    gb = new EGroupBox("Настроечные коэффициенты");
     for (int i = 0; i < 6; ++i)
     {
         glyout->addWidget(WDFunc::NewLBL(this, "U1kDN[" + QString::number(i) + "]"), 0, i, 1, 1);
@@ -339,7 +337,7 @@ QWidget *TuneDialogA1DN::CoefUI3(int bac3num)
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
+    QGridLayout *glyout;
     QString tmps = "QWidget {background-color: " + QString(UCONFWCLR) + ";}";
     QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
                              "background-color: "
@@ -352,7 +350,7 @@ QWidget *TuneDialogA1DN::CoefUI3(int bac3num)
     lyout->addLayout(hlyout);
 
     glyout = new QGridLayout;
-    //    gb = new QGroupBox("Настроечные коэффициенты");
+    //    gb = new EGroupBox("Настроечные коэффициенты");
     for (int i = 0; i < 6; ++i)
     {
         glyout->addWidget(WDFunc::NewLBL(this, "U1kDN[" + QString::number(i) + "]"), 0, i, 1, 1);

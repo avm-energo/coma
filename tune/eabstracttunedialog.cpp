@@ -7,7 +7,6 @@
 #include <QEventLoop>
 #include <QFileDialog>
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QInputDialog>
 #include <QPushButton>
 #include <QScrollArea>
@@ -105,13 +104,12 @@ QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QPushButton *pb = new QPushButton("Установить настроечные коэффициенты по умолчанию");
+    QPushButton *pb = new QPushButton("Установить по умолчанию");
     pb->setObjectName(QString::number(bacnum));
     connect(pb, SIGNAL(clicked()), this, SLOT(SetDefCoefs()));
     lyout->addWidget(pb);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QString tmps = "Прочитать настроечные коэффициенты из ";
-    tmps += "прибора";
+    QString tmps = "Прочитать из прибора";
     pb = new QPushButton(tmps);
     pb->setObjectName(QString::number(bacnum));
 #if PROGSIZE != PROGSIZE_EMUL
@@ -120,8 +118,7 @@ QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
-    tmps = "Записать настроечные коэффициенты в ";
-    tmps += "прибор";
+    tmps = "Записать в прибор";
     pb = new QPushButton(tmps);
     pb->setObjectName(QString::number(bacnum));
 #if PROGSIZE != PROGSIZE_EMUL
@@ -132,12 +129,12 @@ QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
+    pb = new QPushButton("Прочитать из файла");
     pb->setIcon(QIcon("../load.png"));
     pb->setObjectName(QString::number(bacnum));
     connect(pb, SIGNAL(clicked()), this, SLOT(LoadFromFile()));
     hlyout->addWidget(pb);
-    pb = new QPushButton("Записать настроечные коэффициенты в файл");
+    pb = new QPushButton("Записать в файл");
     pb->setIcon(QIcon("../save.png"));
     pb->setObjectName(QString::number(bacnum));
     connect(pb, SIGNAL(clicked()), this, SLOT(SaveToFile()));

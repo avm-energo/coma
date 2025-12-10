@@ -8,9 +8,9 @@
 #define DCONFCLR "#DDDDAA"
 // #define DCONFCLR    "#D0FFFF"
 #define DCONFWCLR "#EEEECC"
-#define DCONFGCLR "#CCCC99"
+constexpr auto DCONFGCLR = "#CCCC99";
 #define DCONFRCLR "#FFCCCC"
-#define DCONFYCLR "#FFFFCC"
+constexpr auto DCONFYCLR = "#FFFFCC";
 #define DCONFOCLR "#FFCC99"
 constexpr auto DCONFOCLT = "rgba(255,204,153,255)";
 #define ACONFCLR "#D0FFD0"
