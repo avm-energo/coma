@@ -1,30 +1,28 @@
 #ifndef EABSTRACTTUNEDIALOGA1DN_H
 #define EABSTRACTTUNEDIALOGA1DN_H
 
-#define GOST1983ROWCOUNT    6 // 80, 100, 120 %
-#define GOST23625ROWCOUNT   10 // 20, 50, 80, 100, 120 %
-#define GOST1983COLCOUNT    10 // K, S, 3x(dU, dP), sU, sP
-#define GOST23625COLCOUNT   18 // K, S, 5x(dU, dP), dd, dD, 2x(sU, sP)
+#define GOST1983ROWCOUNT 6   // 80, 100, 120 %
+#define GOST23625ROWCOUNT 10 // 20, 50, 80, 100, 120 %
+#define GOST1983COLCOUNT 10  // K, S, 3x(dU, dP), sU, sP
+#define GOST23625COLCOUNT 18 // K, S, 5x(dU, dP), dd, dD, 2x(sU, sP)
 
-#define TUNEA1LEVELS    9
+#define TUNEA1LEVELS 9
 #define TUNEVARIANTSNUM 3
 
-#include "eabstracttunedialog.h"
-#include "../gen/report.h"
-#include "../config/configa1.h"
 #include "../check/checka1.h"
+#include "../config/configa1.h"
+#include "eabstracttunedialog.h"
 
 class EAbstractTuneDialogA1DN : public EAbstractTuneDialog
 {
     Q_OBJECT
 
 public:
-
     enum PovTypes
     {
-        GOST_NONE, // не задано
+        GOST_NONE,  // не задано
         GOST_23625, // по 5 точкам туда-сюда
-        GOST_1983 // по 3 точкам только туда
+        GOST_1983   // по 3 точкам только туда
     };
 
     enum DNTypes
@@ -73,21 +71,22 @@ public:
         QString PovDateTime;    // дата и время выполнения поверки
     };
 
-    struct PovDevStruct // данные об установке
+    struct PovDevStruct         // данные об установке
     {
-        QString DevName; // наименование установки
-        QString DevSN; // серийный (заводской) номер
-        QString DevPrecision; // точность
+        QString DevName;        // наименование установки
+        QString DevSN;          // серийный (заводской) номер
+        QString DevPrecision;   // точность
     };
 
     struct Baci2
     {
-        float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений 0 и вблизи 12, 30, 48, 60 и 72 В
-        float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя
-        float PhyDN[6]; 	// фазовый сдвиг ДН на частоте 50 Гц для значений напряжения U1kDN[6]
-        float dU_cor[5];    // относительная ампл. погрешность установки после коррекции, в %
+        float U1kDN[6];  // измеренные при калибровке напряжения на выходе своего ДН для значений 0 и вблизи 12, 30, 48,
+                         // 60 и 72 В
+        float U2kDN[6];  // и соответствующие им значения на выходе эталонного делителя
+        float PhyDN[6];  // фазовый сдвиг ДН на частоте 50 Гц для значений напряжения U1kDN[6]
+        float dU_cor[5]; // относительная ампл. погрешность установки после коррекции, в %
         float dPhy_cor[5];  // абс. фазовая погрешность установки после коррекции, мин
-        float ddU_cor[5];	// среднеквадратичное отклонение амплитудной погрешности
+        float ddU_cor[5];   // среднеквадратичное отклонение амплитудной погрешности
         float ddPhy_cor[5]; // среднеквадратичное отклонение фазовой погрешности
         float K_DN;         // номинальный коэффициент деления ДН
     };
@@ -95,16 +94,17 @@ public:
     struct Bac2
     {
         Baci2 Bac_block2[TUNEVARIANTSNUM];
-        quint32 DNFNum;     // заводской номер делителя
+        quint32 DNFNum; // заводской номер делителя
     };
 
     struct Baci3
     {
-        float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений 0 и вблизи 20, 50, 80, 100, 120 В
-        float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя
-        float dU_cor[5];    // относительная ампл. погрешность установки после коррекции, в %
-        float ddU_cor[5];	// среднеквадратичное отклонение амплитудной погрешности
-        float K_DN;         // номинальный коэффициент деления ДН
+        float U1kDN[6];  // измеренные при калибровке напряжения на выходе своего ДН для значений 0 и вблизи 20, 50, 80,
+                         // 100, 120 В
+        float U2kDN[6];  // и соответствующие им значения на выходе эталонного делителя
+        float dU_cor[5]; // относительная ампл. погрешность установки после коррекции, в %
+        float ddU_cor[5]; // среднеквадратичное отклонение амплитудной погрешности
+        float K_DN;       // номинальный коэффициент деления ДН
     };
 
     struct DdStruct
@@ -127,14 +127,16 @@ public:
     CheckA1 *ChA1;
     bool Accepted;
     int PovNumPoints;
-    int Mode; // 0 - переменный, 1 - постоянный ток
+    int m_mode;            // 0 - переменный, 1 - постоянный ток
+    float m_kdn, m_kdnet;  // our DN & etalon DN coefficient
+    float m_nomSecVoltage; // nominal secondary voltage - 100 / sqrt(3) or 100
     ReportHeaderStructure ReportHeader;
     PovDevStruct PovDev;
     DdStruct Dd_Block[TUNEA1LEVELS];
     int VoltageType, DNType;
-//    int Index;
+    //    int Index;
     float CurrentS; // текущее значение нагрузки
-    int PovType; // тип поверяемого оборудования (по какому ГОСТу)
+    int PovType;    // тип поверяемого оборудования (по какому ГОСТу)
 
     EAbstractTuneDialogA1DN(QWidget *parent = nullptr);
 
@@ -165,7 +167,7 @@ public slots:
     void FillBac(int bacnum);
     void FillBackBac(int bacnum);
     void SetDefCoefs();
-//    void AcceptDNData();
+    //    void AcceptDNData();
     void SetDNData();
     void TempRandomizeModel();
 

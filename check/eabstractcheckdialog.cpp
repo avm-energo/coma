@@ -1,6 +1,5 @@
 #include "eabstractcheckdialog.h"
 
-#include "../config/config.h"
 #include "../gen/error.h"
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
@@ -124,48 +123,11 @@ QWidget *EAbstractCheckDialog::BottomUI()
         pb->setEnabled(false);
     glyout->addWidget(pb, 1, 3, 1, 1);
 
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_84)
-    {
-        pb = new QPushButton("Начать тестирование мезонина");
-#if PROGSIZE != PROGSIZE_EMUL
-        connect(pb, SIGNAL(clicked()), this, SLOT(StartTest()));
-#endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-        glyout->addWidget(pb, 2, 1, 1, 1);
-
-        pb = new QPushButton("Завершить тестирование мезонина");
-#if PROGSIZE != PROGSIZE_EMUL
-        connect(pb, SIGNAL(clicked()), this, SLOT(StopTest()));
-#endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-    }
-
     glyout->addWidget(pb, 2, 3, 1, 1);
     lyout->addLayout(glyout);
     w->setLayout(lyout);
     return w;
 }
-
-/*void EAbstractCheckDialog::GetIP()
-{
-    if (Commands::GetIP(&Bip_block, sizeof(Bip)) != Error::NOERROR)
-        EMessageBox::error(this, "Ошибка", "Ошибка получения данных по IP адресу модуля");
-    else
-        CheckIP();
-}
-
-void EAbstractCheckDialog::CheckIP()
-{
-    QLabel *lbl = this->findChild<QLabel *>("ipl");
-    if (lbl == 0)
-        return;
-    for (int i = 0; i < 4; i++)
-        lbl->text().append(QString::number(Bip_block.ip[i], 16) + ".");
-    lbl->text().chop(1);
-} */
 
 #if PROGSIZE != PROGSIZE_EMUL
 
@@ -304,42 +266,4 @@ void EAbstractCheckDialog::SetTimerPeriod()
     timer->setInterval(per);
     if (TimerIsActive)
         timer->start();
-}
-
-void EAbstractCheckDialog::StartTest()
-{
-    TimeFunc::Wait(100);
-    int res = Commands::TestCom(1);
-    if (res != Error::ER_NOERROR)
-    {
-        // EMessageBox::information(this, "Ошибка", "Ошибка запуска тестирования");
-    }
-    else
-    {
-        // EMessageBox::information(this, "Успешно", "Режим тестирования");
-    }
-    TimeFunc::Wait(100);
-}
-
-void EAbstractCheckDialog::StopTest()
-{
-    TimeFunc::Wait(100);
-    int res = Commands::TestCom(0);
-    if (res != Error::ER_NOERROR)
-    {
-        // EMessageBox::information(this, "Ошибка","Ошибка остановки тестирования");
-    }
-    else
-    {
-        // EMessageBox::information(this, "Успешно", "Тестирование завершено");
-    }
-    TimeFunc::Wait(100);
-}
-
-void EAbstractCheckDialog::TestMode(int index)
-{
-    if (index == checkIndex)
-        StartTest();
-    else
-        StopTest();
 }

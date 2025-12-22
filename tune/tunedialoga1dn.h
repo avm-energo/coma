@@ -1,13 +1,14 @@
 #ifndef TUNEDIALOGA1DN_H
 #define TUNEDIALOGA1DN_H
 
-#include <QDialog>
-#include <QCloseEvent>
-#include <QHBoxLayout>
-#include <QByteArray>
-#include <QStringList>
-#include "eabstracttunedialoga1dn.h"
 #include "eabstracttunedialog.h"
+#include "eabstracttunedialoga1dn.h"
+
+#include <QByteArray>
+#include <QCloseEvent>
+#include <QDialog>
+#include <QHBoxLayout>
+#include <QStringList>
 
 class TuneDialogA1DN : public EAbstractTuneDialogA1DN
 {
@@ -19,6 +20,7 @@ public:
 
 private:
     void SetupUI();
+    QWidget *CommonUI();
     QWidget *CoefUI(int bac2num);
     QWidget *CoefUI3(int bac3num);
 

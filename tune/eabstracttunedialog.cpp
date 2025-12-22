@@ -59,12 +59,14 @@ QWidget *EAbstractTuneDialog::TuneUI()
     QPushButton *pb = new QPushButton("Начать настройку");
     pb->setObjectName("starttune");
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb, SIGNAL(clicked()), this, SLOT(StartTune()));
+    connect(pb, &QPushButton::clicked, this, &EAbstractTuneDialog::StartTune);
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     else
         pb->setEnabled(true);
+    lyout->addWidget(
+        WDFunc::NewLBL(w, "Не забудьте перед настройкой проверить коэффициенты делителей!"), 0, Qt::AlignCenter);
     lyout->addWidget(pb);
     QScrollArea *area = new QScrollArea;
     area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");

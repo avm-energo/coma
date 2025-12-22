@@ -1,3 +1,6 @@
+#include "confdialoga1.h"
+
+#include "../gen/colors.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
 
@@ -7,14 +10,10 @@
 #include <QPushButton>
 #include <QTabWidget>
 #include <QVBoxLayout>
-// #include "../gen/publicclass.h"
-#include "../gen/colors.h"
-#include "confdialoga1.h"
 
 ConfDialogA1::ConfDialogA1(QList<S2::DataRec> &S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
-    QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
-    setStyleSheet(tmps);
+    setStyleSheet(uconfWSS);
     this->S2Config = S2Config;
     CA1 = new ConfigA1(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);

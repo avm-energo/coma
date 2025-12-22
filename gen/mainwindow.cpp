@@ -619,7 +619,7 @@ void MainWindow::SetProgressBar2(int cursize)
 void MainWindow::ShowConnectDialog()
 {
     QDialog *dlg = new QDialog(this);
-    dlg->setStyleSheet(yellowDialogSS);
+    dlg->setStyleSheet(yellowDlgSS);
     QStringList sl = cn->DevicesFound();
     QStringListModel *tmpmodel = new QStringListModel;
     dlg->setMinimumWidth(150);

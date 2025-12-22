@@ -36,6 +36,11 @@ constexpr auto DCONFOCLT = "rgba(255,204,153,255)";
 #define BLUCOLOR "#2222FF"
 #define BLKCOLOR "#000000"
 
-constexpr auto yellowDialogSS = "QDialog { background-color: #FFCC99; color: #000000; }";
-constexpr auto lineeditTransparentSS = "QLineEdit { background-color: transparent; }";
-constexpr auto labelTransparentSS = "QLabel { background-color: transparent; }";
+constexpr auto yellowDlgSS = "QDialog { background-color: #FFCC99; color: #000000; }";
+constexpr auto TransparentLESS = "QLineEdit { background-color: transparent; }";
+constexpr auto TransparentLBLSS = "QLabel { background-color: transparent; }";
+constexpr auto uconfWSS = "QWidget {background-color: #FFFFC0;}";
+constexpr auto valuesLESS = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+                            "background-color: #FFFFC0; font: bold 10px;}";
+constexpr auto valuesLBLSS = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+                             "background-color: #FFDDAA; font: bold 10px;}";

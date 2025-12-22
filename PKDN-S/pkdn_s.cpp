@@ -181,7 +181,7 @@ void pkdn_s::Stage3()
 QDialog *pkdn_s::ChangeVoltageTypeDialog()
 {
     QDialog *dlg = new QDialog;
-    dlg->setStyleSheet("QDialog {background-color: " + QString(UCONFCLR) + ";}");
+    dlg->setStyleSheet(uconfWSS);
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *lyout = new QVBoxLayout;
 

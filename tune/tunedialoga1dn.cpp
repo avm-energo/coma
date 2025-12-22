@@ -132,59 +132,56 @@ void TuneDialogA1DN::SetPf()
 void TuneDialogA1DN::SetupUI()
 {
     QWidget *cp1 = new QWidget;
-    QWidget *cp2 = CoefUI(0);
-    QWidget *cp3 = CoefUI(1);
-    QWidget *cp4 = CoefUI(2);
-    QWidget *cp5 = CoefUI3(0);
-    QWidget *cp6 = CoefUI3(1);
-    QWidget *cp7 = CoefUI3(2);
-    QWidget *cp8 = new QWidget;
+    QWidget *cp2 = CommonUI();
+    QWidget *cp3 = CoefUI(0);
+    QWidget *cp4 = CoefUI(1);
+    QWidget *cp5 = CoefUI(2);
+    QWidget *cp6 = CoefUI3(0);
+    QWidget *cp7 = CoefUI3(1);
+    QWidget *cp8 = CoefUI3(2);
+    QWidget *cp9 = new QWidget;
     QVBoxLayout *lyout;
     QTabWidget *TuneTW = new QTabWidget;
 
-    QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
-    setStyleSheet(tmps);
-    tmps = "QWidget {background-color: " + QString(UCONFWCLR) + ";}";
-    cp1->setStyleSheet(tmps);
-    cp2->setStyleSheet(tmps);
-    cp3->setStyleSheet(tmps);
-    cp4->setStyleSheet(tmps);
-    cp5->setStyleSheet(tmps);
-    cp6->setStyleSheet(tmps);
-    cp7->setStyleSheet(tmps);
-    cp8->setStyleSheet(tmps);
+    cp1->setStyleSheet(uconfWSS);
+    cp2->setStyleSheet(uconfWSS);
+    cp3->setStyleSheet(uconfWSS);
+    cp4->setStyleSheet(uconfWSS);
+    cp5->setStyleSheet(uconfWSS);
+    cp6->setStyleSheet(uconfWSS);
+    cp7->setStyleSheet(uconfWSS);
+    cp8->setStyleSheet(uconfWSS);
+    cp9->setStyleSheet(uconfWSS);
 
     TuneTW->addTab(cp1, "Настройка штатного ДН");
-    TuneTW->addTab(cp2, "Коэф~ 1");
-    TuneTW->addTab(cp3, "Коэф~ 2");
-    TuneTW->addTab(cp4, "Коэф~ 3");
-    TuneTW->addTab(cp5, "Коэф= 1");
-    TuneTW->addTab(cp6, "Коэф= 2");
-    TuneTW->addTab(cp7, "Коэф= 3");
-    TuneTW->addTab(cp8, "Данные измерений");
+    TuneTW->addTab(cp2, "Общие");
+    TuneTW->addTab(cp3, "Коэф ~1");
+    TuneTW->addTab(cp4, "Коэф ~2");
+    TuneTW->addTab(cp5, "Коэф ~3");
+    TuneTW->addTab(cp6, "Коэф =1");
+    TuneTW->addTab(cp7, "Коэф =2");
+    TuneTW->addTab(cp8, "Коэф =3");
+    TuneTW->addTab(cp9, "Данные измерений");
 
     // CP1 - НАСТРОЙКА ДН
 
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                           "background-color: "
-        + QString(ACONFOCLR) + "; font: bold 10px;}";
     lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Вариант использования: "));
-    hlyout->addWidget(WDFunc::NewLBLT(this, "", "tune00", ValuesFormat));
+    hlyout->addWidget(WDFunc::NewLBLT(this, "", "tune00", valuesLBLSS));
     lyout->addLayout(hlyout);
     QGridLayout *glyout = new QGridLayout;
     EGroupBox *gb = new EGroupBox("Измерения в первичном масштабе");
     glyout->addWidget(WDFunc::NewLBL(this, "U1, кВ"), 0, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1", ValuesFormat, ""), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1", valuesLBLSS, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U2, кВ"), 0, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu2", ValuesFormat, ""), 0, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu2", valuesLBLSS, ""), 0, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "ΔU, %"), 0, 4, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunepercent", ValuesFormat, ""), 0, 5, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunepercent", valuesLBLSS, ""), 0, 5, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Phy"), 1, 4, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednphy", ValuesFormat, ""), 1, 5, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednphy", valuesLBLSS, ""), 1, 5, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Freq, Гц"), 1, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednfreq", ValuesFormat, ""), 1, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednfreq", valuesLBLSS, ""), 1, 1, 1, 1);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     glyout->setColumnStretch(5, 10);
@@ -194,15 +191,15 @@ void TuneDialogA1DN::SetupUI()
     glyout = new QGridLayout;
     gb = new EGroupBox("Измерения в масштабе, приведённом ко входу");
     glyout->addWidget(WDFunc::NewLBL(this, "U1, В"), 0, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1i", ValuesFormat, ""), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1i", valuesLBLSS, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U2, В"), 0, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu2i", ValuesFormat, ""), 0, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu2i", valuesLBLSS, ""), 0, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "ΔU, %"), 0, 4, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunepercenti", ValuesFormat, ""), 0, 5, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunepercenti", valuesLBLSS, ""), 0, 5, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Phy"), 1, 4, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednphyi", ValuesFormat, ""), 1, 5, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednphyi", valuesLBLSS, ""), 1, 5, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Freq, Гц"), 1, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednfreqi", ValuesFormat, ""), 1, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednfreqi", valuesLBLSS, ""), 1, 1, 1, 1);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     glyout->setColumnStretch(5, 10);
@@ -228,13 +225,13 @@ void TuneDialogA1DN::SetupUI()
     glyout = new QGridLayout;
     gb = new EGroupBox("СКО");
     glyout->addWidget(WDFunc::NewLBL(this, "dUrms(m)"), 0, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunedurmsm", ValuesFormat, ""), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunedurmsm", valuesLBLSS, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "φ(m)"), 0, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunephym", ValuesFormat, ""), 0, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunephym", valuesLBLSS, ""), 0, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "σUrms"), 1, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesurms", ValuesFormat, ""), 1, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesurms", valuesLBLSS, ""), 1, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "σφ"), 1, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesphy", ValuesFormat, ""), 1, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesphy", valuesLBLSS, ""), 1, 3, 1, 1);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     gb->setLayout(glyout);
@@ -244,7 +241,7 @@ void TuneDialogA1DN::SetupUI()
     //    lyout->addStretch(1);
     cp1->setLayout(lyout);
 
-    // CP8 - Данные измерений
+    // CP9 - Данные измерений
 
     lyout = new QVBoxLayout;
     gb = new EGroupBox("Данные измерений без настройки (Bda)");
@@ -264,64 +261,84 @@ void TuneDialogA1DN::SetupUI()
     lyout->addWidget(gb);
 
     lyout->addStretch(1);
-    cp8->setLayout(lyout);
+    cp9->setLayout(lyout);
 
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
-    for (int i = 0; i < TUNEVARIANTSNUM; ++i)
-        WDFunc::SetLEData(this, "DividerSN" + QString::number(i), "00000000", "^\\d{8}$");
+    WDFunc::SetLEData(this, "DividerSN", "00000000", "^\\d{8}$");
+}
+
+QWidget *TuneDialogA1DN::CommonUI()
+{
+    QWidget *w = new QWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL(this, "Заводской номер делителя:"), 0);
+    hlyout->addWidget(WDFunc::NewLE(this, "DividerSN", "", uconfWSS));
+    lyout->addLayout(hlyout);
+    QStringList sl = { "100/√3", "100" };
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL(this, "Вторичное напряжение:"), 0);
+    hlyout->addWidget(WDFunc::NewCB(this, "SecVoltage", sl, uconfWSS));
+    lyout->addLayout(hlyout);
+    lyout->addWidget(WDFunc::NewLBL(this, "Номинальные коэффициенты деления своего ДН (0 - ступень отсутствует):"), 0);
+    hlyout = new QHBoxLayout;
+    for (int i = 0; i < 3; ++i)
+        hlyout->addWidget(WDFunc::NewSPB(this, "K_DNSPB." + QString::number(i), 1, 10000, 0, UCONFWCLR));
+    lyout->addLayout(hlyout);
+    // hlyout = new QHBoxLayout;
+    // lyout->addWidget(
+    //     WDFunc::NewLBL(this, "Номинальные коэффициенты деления эталонного ДН (0 - ступень отсутствует):"), 0);
+    // for (int i = 0; i < 3; ++i)
+    //     hlyout->addWidget(WDFunc::NewSPB(this, "K_DNEtSPB." + QString::number(i), 1, 10000, 0, UCONFWCLR));
+    // lyout->addLayout(hlyout);
+    lyout->addStretch(100);
+    w->setLayout(lyout);
+    return w;
 }
 
 QWidget *TuneDialogA1DN::CoefUI(int bac2num)
 {
     QString Si = QString::number(bac2num);
     QWidget *w = new QWidget;
+    w->setStyleSheet("QWidget {margin: 0px;}");
     QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
+    // QHBoxLayout *hlyout = new QHBoxLayout;
     QGridLayout *glyout;
-    QString tmps = "QWidget {background-color: " + QString(UCONFWCLR) + ";}";
-    QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                             "background-color: "
-        + QString(UCONFWCLR) + "; font: bold 10px;}";
-    hlyout->addWidget(WDFunc::NewLBL(this, "Заводской номер делителя:"), 0);
-    hlyout->addWidget(WDFunc::NewLE(this, "DividerSN" + Si, "", tmps), 10);
-    hlyout->addWidget(WDFunc::NewLBL(this, "Номинальный коэффициент деления ДН:"), 0);
-    hlyout->addWidget(WDFunc::NewSPB(this, "K_DNSPB." + Si, 1, 10000, 0, UCONFWCLR));
-    hlyout->addStretch(10);
-    lyout->addLayout(hlyout);
+    // hlyout->addWidget(WDFunc::NewLBL(this, "Номинальный коэффициент деления ДН:"), 0);
+    // hlyout->addWidget(WDFunc::NewLBLT(this, "", "K_DNSPB." + Si, valuesLESS));
+    // hlyout->addStretch(10);
+    // lyout->addLayout(hlyout);
 
     glyout = new QGridLayout;
     //    gb = new EGroupBox("Настроечные коэффициенты");
     for (int i = 0; i < 6; ++i)
     {
         glyout->addWidget(WDFunc::NewLBL(this, "U1kDN[" + QString::number(i) + "]"), 0, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLE(this, "tune" + QString::number(i + 4) + "." + Si, "", ValuesLEFormat), 1, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLE(this, "tune" + QString::number(i + 4) + "." + Si, "", valuesLESS), 1, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(this, "U2kDN[" + QString::number(i) + "]"), 2, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLE(this, "tune" + QString::number(i + 10) + "." + Si, "", ValuesLEFormat), 3, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLE(this, "tune" + QString::number(i + 10) + "." + Si, "", valuesLESS), 3, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(this, "PhyDN[" + QString::number(i) + "]"), 4, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLE(this, "tune" + QString::number(i + 16) + "." + Si, "", ValuesLEFormat), 5, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLE(this, "tune" + QString::number(i + 16) + "." + Si, "", valuesLESS), 5, i, 1, 1);
         if (i < 5)
         {
             glyout->addWidget(WDFunc::NewLBL(this, "δU[" + QString::number(i) + "]"), 6, i, 1, 1);
             glyout->addWidget(
-                WDFunc::NewLE(this, "tune" + QString::number(i + 22) + "." + Si, "", ValuesLEFormat), 7, i, 1, 1);
+                WDFunc::NewLE(this, "tune" + QString::number(i + 22) + "." + Si, "", valuesLESS), 7, i, 1, 1);
             glyout->addWidget(WDFunc::NewLBL(this, "Δφ[" + QString::number(i) + "]"), 8, i, 1, 1);
             glyout->addWidget(
-                WDFunc::NewLE(this, "tune" + QString::number(i + 27) + "." + Si, "", ValuesLEFormat), 9, i, 1, 1);
+                WDFunc::NewLE(this, "tune" + QString::number(i + 27) + "." + Si, "", valuesLESS), 9, i, 1, 1);
             glyout->addWidget(
                 WDFunc::NewLBLT(this, "σU[" + QString::number(i) + "]", "", "", "СКО амплитудной погрешности"), 10, i,
                 1, 1);
             glyout->addWidget(
-                WDFunc::NewLE(this, "tune" + QString::number(i + 32) + "." + Si, "", ValuesLEFormat), 11, i, 1, 1);
+                WDFunc::NewLE(this, "tune" + QString::number(i + 32) + "." + Si, "", valuesLESS), 11, i, 1, 1);
             glyout->addWidget(
                 WDFunc::NewLBLT(this, "σφ[" + QString::number(i) + "]", "", "", "СКО фазовой погрешности"), 12, i, 1,
                 1);
             glyout->addWidget(
-                WDFunc::NewLE(this, "tune" + QString::number(i + 37) + "." + Si, "", ValuesLEFormat), 13, i, 1, 1);
+                WDFunc::NewLE(this, "tune" + QString::number(i + 37) + "." + Si, "", valuesLESS), 13, i, 1, 1);
         }
     }
     lyout->addLayout(glyout);
@@ -336,39 +353,32 @@ QWidget *TuneDialogA1DN::CoefUI3(int bac3num)
     QString Si = QString::number(bac3num + 3); // для различия настроечных коэффициентов по Bac_block даём смещение +3
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
+    // QHBoxLayout *hlyout = new QHBoxLayout;
     QGridLayout *glyout;
-    QString tmps = "QWidget {background-color: " + QString(UCONFWCLR) + ";}";
-    QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                             "background-color: "
-        + QString(UCONFWCLR) + "; font: bold 10px;}";
-    hlyout->addWidget(WDFunc::NewLBL(this, "Заводской номер делителя:"), 0);
-    hlyout->addWidget(WDFunc::NewLE(this, "DividerSN" + Si, "", tmps), 10);
-    hlyout->addWidget(WDFunc::NewLBL(this, "Номинальный коэффициент деления ДН:"), 0);
-    hlyout->addWidget(WDFunc::NewSPB(this, "K_DNSPB." + Si, 1, 10000, 0, UCONFWCLR));
-    hlyout->addStretch(10);
-    lyout->addLayout(hlyout);
+    // hlyout->addWidget(WDFunc::NewLBL(this, "Номинальный коэффициент деления ДН:"), 0);
+    // hlyout->addWidget(WDFunc::NewLBLT(this, "", "K_DNSPB." + Si, valuesLBLSS));
+    // hlyout->addStretch(10);
+    // lyout->addLayout(hlyout);
 
     glyout = new QGridLayout;
     //    gb = new EGroupBox("Настроечные коэффициенты");
     for (int i = 0; i < 6; ++i)
     {
         glyout->addWidget(WDFunc::NewLBL(this, "U1kDN[" + QString::number(i) + "]"), 0, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLE(this, "tune" + QString::number(i + 4) + "." + Si, "", ValuesLEFormat), 1, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLE(this, "tune" + QString::number(i + 4) + "." + Si, "", valuesLBLSS), 1, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(this, "U2kDN[" + QString::number(i) + "]"), 2, i, 1, 1);
         glyout->addWidget(
-            WDFunc::NewLE(this, "tune" + QString::number(i + 10) + "." + Si, "", ValuesLEFormat), 3, i, 1, 1);
+            WDFunc::NewLE(this, "tune" + QString::number(i + 10) + "." + Si, "", valuesLBLSS), 3, i, 1, 1);
         if (i < 5)
         {
             glyout->addWidget(WDFunc::NewLBL(this, "δU[" + QString::number(i) + "]"), 6, i, 1, 1);
             glyout->addWidget(
-                WDFunc::NewLE(this, "tune" + QString::number(i + 22) + "." + Si, "", ValuesLEFormat), 7, i, 1, 1);
+                WDFunc::NewLE(this, "tune" + QString::number(i + 22) + "." + Si, "", valuesLBLSS), 7, i, 1, 1);
             glyout->addWidget(
                 WDFunc::NewLBLT(this, "σU[" + QString::number(i) + "]", "", "", "СКО амплитудной погрешности"), 10, i,
                 1, 1);
             glyout->addWidget(
-                WDFunc::NewLE(this, "tune" + QString::number(i + 32) + "." + Si, "", ValuesLEFormat), 11, i, 1, 1);
+                WDFunc::NewLE(this, "tune" + QString::number(i + 32) + "." + Si, "", valuesLBLSS), 11, i, 1, 1);
         }
     }
     lyout->addLayout(glyout);
@@ -395,7 +405,7 @@ int TuneDialogA1DN::Start7_2_5()
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     WriteBacBlock();
-    if (Commands::SetMode(Mode) != Error::ER_NOERROR)
+    if (Commands::SetMode(m_mode) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
@@ -448,7 +458,7 @@ int TuneDialogA1DN::Start7_2_78910(int counter)
         if (GetAndAverage(GAAT_BDA_IN, &tmpst2, counter) == Error::ER_NOERROR)
         {
             // теперь в tmpst2 лежат нужные нам значения
-            if (Mode == MODE_ALTERNATIVE)
+            if (m_mode == MODE_ALTERNATIVE)
             {
                 Bac_block2.Bac_block2[TuneVariant].U1kDN[counter + 1] = tmpst2.UefNat_filt[0];
                 Bac_block2.Bac_block2[TuneVariant].U2kDN[counter + 1] = tmpst2.UefNat_filt[1];
@@ -470,7 +480,7 @@ int TuneDialogA1DN::Start7_2_78910(int counter)
 
 int TuneDialogA1DN::Start7_2_11()
 {
-    if (!WriteTuneCoefs(Mode + 2)) // MODE = BLOCK + 1
+    if (!WriteTuneCoefs(m_mode + 2)) // MODE = BLOCK + 1
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
 }
@@ -526,7 +536,7 @@ int TuneDialogA1DN::Start7_2_13_8()
         return Error::ER_GENERALERROR;
     //    FillDdWithNumbers();
     // теперь считаем средние погрешности и СКО
-    if (Mode == MODE_ALTERNATIVE)
+    if (m_mode == MODE_ALTERNATIVE)
     {
         Bac_block2.Bac_block2[TuneVariant].dPhy_cor[0] = Dd_Block[4].Phy;
         Bac_block2.Bac_block2[TuneVariant].dU_cor[0] = Dd_Block[4].dUrms;
@@ -635,7 +645,7 @@ int TuneDialogA1DN::ShowScheme()
 
 void TuneDialogA1DN::WriteBacBlock()
 {
-    if (Mode == MODE_ALTERNATIVE)
+    if (m_mode == MODE_ALTERNATIVE)
     {
         if (Commands::WriteBac(2, &Bac_block2, sizeof(Bac2)) != Error::ER_NOERROR)
         {
@@ -682,7 +692,7 @@ void TuneDialogA1DN::GenerateReport()
     report->AddModel("maindata", RepModel);
     // запрос блока Bda_h, чтобы выдать KNI в протокол
 #if PROGSIZE != PROGSIZE_EMUL
-    if (Mode == MODE_ALTERNATIVE)
+    if (m_mode == MODE_ALTERNATIVE)
     {
         if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
             report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
@@ -710,7 +720,7 @@ void TuneDialogA1DN::GenerateReport()
     report->SetVar("Humidity", ReportHeader.Humidity);
     report->SetVar("Pressure", ReportHeader.Pressure);
     report->SetVar("Voltage", ReportHeader.Voltage);
-    if (Mode == MODE_ALTERNATIVE)
+    if (m_mode == MODE_ALTERNATIVE)
         report->SetVar("Freq", ReportHeader.Freq);
     report->SetVar("OuterInsp", ReportHeader.OuterInsp);
     report->SetVar("PovDateTime", ReportHeader.PovDateTime);

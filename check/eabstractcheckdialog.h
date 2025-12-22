@@ -52,7 +52,7 @@ public:
     QTimer *timer;
     int WRow, BdUINum; // BdUINum - количество вкладок с выводом блоков данных модуля, один блок может быть разделён на
                        // несколько вкладок
-    int Board; // тип платы
+    int Board;         // тип платы
     int checkIndex;
 
     // CurBdNum,
@@ -63,9 +63,6 @@ signals:
 public slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void StopAnalogMeasurements();
-    void StartTest();
-    void StopTest();
-    void TestMode(int index);
 
 #endif
 

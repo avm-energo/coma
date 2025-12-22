@@ -1,6 +1,5 @@
 #include "checkdialoga1.h"
 
-#include "../config/config.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../widgets/emessagebox.h"
@@ -24,8 +23,7 @@
 
 CheckDialogA1::CheckDialogA1(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
-    QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
-    setStyleSheet(tmps);
+    setStyleSheet(uconfWSS);
     //    BdNum = 6; // количество блоков данных 6
     BdUINum = 9; // количество вкладок - 9 (блок Bda_h разделён ввиду его огромности на четыре вкладки)
     ChA1 = new CheckA1;

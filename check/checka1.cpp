@@ -11,74 +11,63 @@ CheckA1::CheckA1() { }
 
 QWidget *CheckA1::BdaW(QWidget *parent)
 {
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                           "background-color: "
-        + QString(ACONFOCLR) + "; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
     QGridLayout *glyout = new QGridLayout;
     glyout->addWidget(WDFunc::NewLBL(parent, "1. UeffADC1:"), 0, 0);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Действующее значение напряжения 1 в единицах АЦП"), 0, 1);
+        WDFunc::NewLBLT(parent, "", "value0", valuesLBLSS, "Действующее значение напряжения 1 в единицах АЦП"), 0, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "2. UeffADC2:"), 0, 2);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "value1", ValuesFormat, "Действующее значение напряжения 2 в единицах АЦП"), 0, 3);
+        WDFunc::NewLBLT(parent, "", "value1", valuesLBLSS, "Действующее значение напряжения 2 в единицах АЦП"), 0, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "3. Freq:"), 1, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value2", ValuesFormat, "Частота сигналов, Гц"), 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value2", valuesLBLSS, "Частота сигналов, Гц"), 1, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "4. Pt100:"), 1, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value3", ValuesFormat, "Значение температурного сигнала"), 1, 3);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value3", valuesLBLSS, "Значение температурного сигнала"), 1, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "5. EXTmA1:"), 2, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value4", ValuesFormat, "Значение первого сигнала (4-20) мА"), 2, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value4", valuesLBLSS, "Значение первого сигнала (4-20) мА"), 2, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "6. EXTmA2:"), 2, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value5", ValuesFormat, "Значение второго сигнала (4-20) мА"), 2, 3);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value5", valuesLBLSS, "Значение второго сигнала (4-20) мА"), 2, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "7. UeffADC1:"), 3, 0);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "value6", ValuesFormat, "Среднее значение напряжения 1 в единицах АЦП"), 3, 1);
+        WDFunc::NewLBLT(parent, "", "value6", valuesLBLSS, "Среднее значение напряжения 1 в единицах АЦП"), 3, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "8. UeffADC2:"), 3, 2);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "value7", ValuesFormat, "Среднее значение напряжения 2 в единицах АЦП"), 3, 3);
+        WDFunc::NewLBLT(parent, "", "value7", valuesLBLSS, "Среднее значение напряжения 2 в единицах АЦП"), 3, 3);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     w->setLayout(glyout);
-    QString tmps = "QWidget {background-color: transparent;}";
-    w->setStyleSheet(tmps);
+    w->setStyleSheet("QWidget {background-color: transparent;}");
     return w;
 }
 
 QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *parent)
 {
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                           "background-color: "
-        + QString(ACONFOCLR) + "; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
-    /*    QHBoxLayout *hlyout = new QHBoxLayout;
-        hlyout->addWidget(WDFunc::NewLBL(parent, "Вариант использования: "));
-        hlyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"00", ValuesFormat));
-        lyout->addLayout(hlyout); */
     EGroupBox *gb = new EGroupBox(title);
     QGridLayout *glyout = new QGridLayout;
     QString tmps = (begin == "Bda_out") ? "кВ" : "В";
     glyout->addWidget(WDFunc::NewLBL(parent, "1. UefNat_filt1, " + tmps), 0, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "0", ValuesFormat, "Значение напряжения 1, " + tmps), 0, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "0", valuesLBLSS, "Значение напряжения 1, " + tmps), 0, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "2. UefNat_filt2, " + tmps), 0, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "1", ValuesFormat, "Значение напряжения 2, " + tmps), 0, 3);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "1", valuesLBLSS, "Значение напряжения 2, " + tmps), 0, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "δUrms, %"), 0, 4);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "dU", ValuesFormat, "Относительная погрешность, %"), 0, 5);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "dU", valuesLBLSS, "Относительная погрешность, %"), 0, 5);
     glyout->addWidget(WDFunc::NewLBLT(parent, "3. Uef_filt1, " + tmps, begin + "2l"), 1, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "2", ValuesFormat,
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "2", valuesLBLSS,
                           "Действующие значения первых гармоник напряжения 1, " + tmps),
         1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "4. Uef_filt2, " + tmps, begin + "3l"), 1, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "3", ValuesFormat,
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "3", valuesLBLSS,
                           "Действующие значения первых гармоник напряжения 2, " + tmps),
         1, 3);
     glyout->addWidget(WDFunc::NewLBLT(parent, "5. δU, %", begin + "dU2l"), 1, 4);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "dU2", ValuesFormat, "Относительная погрешность, %"), 1, 5);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "dU2", valuesLBLSS, "Относительная погрешность, %"), 1, 5);
     glyout->addWidget(WDFunc::NewLBLT(parent, "6. Phy, мин", begin + "4l"), 2, 0);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", begin + "4", ValuesFormat, "Разность фаз первых гармоник напряжений, мин"), 2, 1);
+        WDFunc::NewLBLT(parent, "", begin + "4", valuesLBLSS, "Разность фаз первых гармоник напряжений, мин"), 2, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "7. Frequency, Гц", begin + "5l"), 2, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "5", ValuesFormat, "Частота в сети, Гц"), 2, 3);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "5", valuesLBLSS, "Частота в сети, Гц"), 2, 3);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     glyout->setColumnStretch(5, 10);
@@ -86,28 +75,24 @@ QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *pare
     lyout->addWidget(gb);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    tmps = "QWidget {background-color: transparent;}";
-    w->setStyleSheet(tmps);
+    w->setStyleSheet("QWidget {background-color: transparent;}");
     return w;
 }
 
 QWidget *CheckA1::Bd2W(const QString &begin, QWidget *parent)
 {
-    int Beg = (begin.at(begin.size() - 1).digitValue()) * 16;
-    int End = Beg + 16;
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                           "background-color: "
-        + QString(ACONFOCLR) + "; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
     QGridLayout *glyout = new QGridLayout;
+    int Beg = (begin.at(begin.size() - 1).digitValue()) * 16;
+    int End = Beg + 16;
     for (int i = Beg; i < End; ++i)
     {
         if (i == 0)
         {
             glyout->addWidget(WDFunc::NewLBLT(parent, "Канал 0, КГИ, %", begin + "0" + QString::number(i) + "l"), i, 0);
-            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "0" + QString::number(i), ValuesFormat), i, 1);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "0" + QString::number(i), valuesLBLSS), i, 1);
             glyout->addWidget(WDFunc::NewLBLT(parent, "Канал 1, КГИ, %", begin + "1" + QString::number(i) + "l"), i, 2);
-            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "1" + QString::number(i), ValuesFormat), i, 3);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "1" + QString::number(i), valuesLBLSS), i, 3);
         }
         else if (i > MAXHARMINDEX)
             break;
@@ -116,37 +101,33 @@ QWidget *CheckA1::Bd2W(const QString &begin, QWidget *parent)
             glyout->addWidget(WDFunc::NewLBLT(parent, "Канал 0, гарм. " + QString::number(i + 1) + ", %",
                                   begin + "0" + QString::number(i) + "l"),
                 i, 0);
-            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "0" + QString::number(i), ValuesFormat), i, 1);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "0" + QString::number(i), valuesLBLSS), i, 1);
             glyout->addWidget(WDFunc::NewLBLT(parent, "Канал 1, гарм. " + QString::number(i + 1) + ", %",
                                   begin + "1" + QString::number(i) + "l"),
                 i, 2);
-            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "1" + QString::number(i), ValuesFormat), i, 3);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "1" + QString::number(i), valuesLBLSS), i, 3);
         }
     }
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     w->setLayout(glyout);
-    QString tmps = "QWidget {background-color: transparent;}";
-    w->setStyleSheet(tmps);
+    w->setStyleSheet("QWidget {background-color: transparent;}");
     w->setObjectName(begin);
     return w;
 }
 
 QWidget *CheckA1::Bd3W(const QString &begin, QWidget *parent)
 {
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                           "background-color: "
-        + QString(ACONFOCLR) + "; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     glyout->addWidget(WDFunc::NewLBL(parent, "1. Rt, Ом"), 0, 0);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", begin + "0", ValuesFormat, "Измеренное сопротивление по каналу Pt100"), 0, 1);
+        WDFunc::NewLBLT(parent, "", begin + "0", valuesLBLSS, "Измеренное сопротивление по каналу Pt100"), 0, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "2. EXTmA1, мА"), 0, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "1", ValuesFormat, "Измеренный ток по каналу EXTmA1"), 0, 3);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "1", valuesLBLSS, "Измеренный ток по каналу EXTmA1"), 0, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "3. EXTmA2, мА"), 0, 4);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "2", ValuesFormat, "Измеренный ток по каналу EXTmA2"), 0, 5);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "2", valuesLBLSS, "Измеренный ток по каналу EXTmA2"), 0, 5);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     glyout->setColumnStretch(5, 10);
@@ -160,24 +141,20 @@ QWidget *CheckA1::Bd3W(const QString &begin, QWidget *parent)
 
 QWidget *CheckA1::Bd4W(const QString &begin, QWidget *parent)
 {
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                           "background-color: "
-        + QString(ACONFOCLR) + "; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     glyout->addWidget(WDFunc::NewLBL(parent, "3. Tamb, °С:"), 0, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "2", ValuesFormat, "Температура окружающей среды, °С"), 0, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin + "2", valuesLBLSS, "Температура окружающей среды, °С"), 0, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "4. Hamb, %:"), 0, 2);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", begin + "3", ValuesFormat, "Относительная влажность окружающей среды, %"), 0, 3);
+        WDFunc::NewLBLT(parent, "", begin + "3", valuesLBLSS, "Относительная влажность окружающей среды, %"), 0, 3);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    QString tmps = "QWidget {background-color: transparent;}";
-    w->setStyleSheet(tmps);
+    w->setStyleSheet("QWidget {background-color: transparent;}");
     return w;
 }
 

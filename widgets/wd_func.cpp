@@ -19,7 +19,7 @@ QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letex
     if (!lestyle.isEmpty())
         le->setStyleSheet(lestyle);
     else
-        le->setStyleSheet(lineeditTransparentSS);
+        le->setStyleSheet(TransparentLESS);
     return le;
 }
 
@@ -31,7 +31,7 @@ PasswordLineEdit *WDFunc::NewPswLE(
     if (!lestyle.isEmpty())
         le->setStyleSheet(lestyle);
     else
-        le->setStyleSheet(lineeditTransparentSS);
+        le->setStyleSheet(TransparentLESS);
     return le;
 }
 
@@ -68,7 +68,7 @@ QLabel *WDFunc::NewLBL(
 {
     QLabel *lbl = new QLabel(w);
     lbl->setText(text);
-    lbl->setStyleSheet(labelTransparentSS);
+    lbl->setStyleSheet(TransparentLBLSS);
     if (!lblname.isEmpty())
         lbl->setObjectName(lblname);
     if (!lblcolor.isEmpty())
@@ -86,7 +86,7 @@ QLabel *WDFunc::NewLBLT(
 {
     QLabel *lbl = new QLabel(w);
     if (lblstyle.isEmpty())
-        lbl->setStyleSheet(labelTransparentSS);
+        lbl->setStyleSheet(TransparentLBLSS);
     else
         lbl->setStyleSheet(lblstyle);
     lbl->setText(text);

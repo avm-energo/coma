@@ -21,7 +21,7 @@
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    setStyleSheet(yellowDialogSS);
+    setStyleSheet(yellowDlgSS);
     setWindowTitle("Настройки");
     SetupUI();
     Fill();

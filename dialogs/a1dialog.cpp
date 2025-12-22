@@ -65,35 +65,31 @@ A1Dialog::~A1Dialog() { }
 void A1Dialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
-    setStyleSheet(tmps);
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
-                           "background-color: "
-        + QString(ACONFOCLR) + "; font: bold 10px;}";
+    setStyleSheet(uconfWSS);
     QGridLayout *glyout = new QGridLayout;
     EGroupBox *gb = new EGroupBox("Конфигурация");
     glyout->addWidget(WDFunc::NewLBL(this, "Варианты использования:"), 0, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "1", "tunevar1", ValuesFormat, ""), 0, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "2", "tunevar2", ValuesFormat, ""), 0, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "3", "tunevar3", ValuesFormat, ""), 0, 3, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef1", ValuesFormat, ""), 1, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef2", ValuesFormat, ""), 1, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef3", ValuesFormat, ""), 1, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "1", "tunevar1", valuesLBLSS, ""), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "2", "tunevar2", valuesLBLSS, ""), 0, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "3", "tunevar3", valuesLBLSS, ""), 0, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef1", valuesLBLSS, ""), 1, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef2", valuesLBLSS, ""), 1, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef3", valuesLBLSS, ""), 1, 3, 1, 1);
     glyout->setColumnStretch(0, 10);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     glyout = new QGridLayout;
     gb = new EGroupBox("Измерения в первичном масштабе");
     glyout->addWidget(WDFunc::NewLBL(this, "U1, кВ"), 0, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1", ValuesFormat, ""), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1", valuesLBLSS, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U2, кВ"), 0, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu2", ValuesFormat, ""), 0, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu2", valuesLBLSS, ""), 0, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "δU, %"), 0, 4, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunepercent", ValuesFormat, ""), 0, 5, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunepercent", valuesLBLSS, ""), 0, 5, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Phy, мин"), 1, 4, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednphy", ValuesFormat, ""), 1, 5, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednphy", valuesLBLSS, ""), 1, 5, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Freq, Гц"), 1, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednfreq", ValuesFormat, ""), 1, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednfreq", valuesLBLSS, ""), 1, 1, 1, 1);
     QPushButton *pb = new QPushButton("Подтвердить");
     connect(pb, SIGNAL(clicked(bool)), this, SLOT(Good()));
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -115,13 +111,13 @@ void A1Dialog::SetupUI()
     glyout = new QGridLayout;
     gb = new EGroupBox("СКО");
     glyout->addWidget(WDFunc::NewLBL(this, "dUrms(m), В"), 0, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunedurmsm", ValuesFormat, ""), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunedurmsm", valuesLBLSS, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "φ(m), мин"), 0, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunephym", ValuesFormat, ""), 0, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunephym", valuesLBLSS, ""), 0, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "σUrms, %"), 1, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesurms", ValuesFormat, ""), 1, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesurms", valuesLBLSS, ""), 1, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "σφ, мин"), 1, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesphy", ValuesFormat, ""), 1, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesphy", valuesLBLSS, ""), 1, 3, 1, 1);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     gb->setLayout(glyout);
@@ -168,7 +164,7 @@ void A1Dialog::StartWork()
         EMessageBox::error(this, "Ошибка", "Ошибка установки варианта использования");
         return;
     }
-    if (Commands::SetMode(Mode) != Error::ER_NOERROR)
+    if (Commands::SetMode(m_mode) != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка установки рода напряжения");
         return;
@@ -244,7 +240,7 @@ void A1Dialog::GenerateReport()
     report->AddModel("maindata", RepModel);
     // запрос блока Bda_h, чтобы выдать KNI в протокол
 #if PROGSIZE != PROGSIZE_EMUL
-    if (Mode == MODE_ALTERNATIVE)
+    if (m_mode == MODE_ALTERNATIVE)
     {
         if (!Autonomous)
         {

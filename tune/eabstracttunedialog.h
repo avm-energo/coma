@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../gen/report.h"
-#include "../gen/s2util.h"
+#include "../gen/s2datatypes.h"
 
 #include <QByteArray>
 #include <QCloseEvent>
@@ -47,7 +47,6 @@ public:
                            //    QString OrganizationString; // наименование организации, работающей с программой
     int TuneIndex;
 
-    virtual void SetupUI() = 0;
     QWidget *TuneUI();
     QWidget *BottomUI(int bacnum);
     void SetBac(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
