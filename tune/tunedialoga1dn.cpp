@@ -267,6 +267,8 @@ void TuneDialogA1DN::SetupUI()
     lyout->addWidget(TuneTW);
     setLayout(lyout);
     WDFunc::SetLEData(this, "DividerSN", "00000000", "^\\d{8}$");
+    ReadTuneCoefsByBac(2);
+    ReadTuneCoefsByBac(3);
 }
 
 QWidget *TuneDialogA1DN::CommonUI()
@@ -293,6 +295,7 @@ QWidget *TuneDialogA1DN::CommonUI()
     // for (int i = 0; i < 3; ++i)
     //     hlyout->addWidget(WDFunc::NewSPB(this, "K_DNEtSPB." + QString::number(i), 1, 10000, 0, UCONFWCLR));
     // lyout->addLayout(hlyout);
+    lyout->addWidget(BottomUI(2)); // блок Bac2 - первый по счёту в EAbstractTuneDialog
     lyout->addStretch(100);
     w->setLayout(lyout);
     return w;

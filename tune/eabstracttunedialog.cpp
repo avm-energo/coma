@@ -115,7 +115,7 @@ QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
     pb = new QPushButton(tmps);
     pb->setObjectName(QString::number(bacnum));
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb, SIGNAL(clicked()), this, SLOT(ReadTuneCoefs()));
+    connect(pb, &QPushButton::clicked, this, &EAbstractTuneDialog::ReadTuneCoefs);
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -124,7 +124,7 @@ QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
     pb = new QPushButton(tmps);
     pb->setObjectName(QString::number(bacnum));
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb, SIGNAL(clicked()), this, SLOT(WriteTuneCoefsSlot()));
+    connect(pb, &QPushButton::clicked, this, &EAbstractTuneDialog::WriteTuneCoefsSlot);
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);

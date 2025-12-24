@@ -92,6 +92,7 @@ void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
         return;
     }
     WDFunc::SetSPBData(this, "kdnspb", Bac_block2.Bac_block2[cbindex].K_DN);
+    WDFunc::SetSPBData(this, "kdnetspb", Bac_block2.Bac_block2[cbindex].K_DN);
 #endif
     dlg->show();
     while (!Accepted && !StdFunc::IsCancelled())
@@ -655,9 +656,12 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out, int index)
                 EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
                 return Error::ER_GENERALERROR;
             }
-            tmpdd.dUrms += ChA1->Bda_out.dUrms;
+            float dUrms = (ChA1->Bda_out.UefNat_filt[1] * m_kdnet / m_kdn - ChA1->Bda_out.UefNat_filt[0]) * 100.0f
+                / ChA1->Bda_out.UefNat_filt[0];
+            tmpdd.dUrms += dUrms;
             tmpdd.Phy += ChA1->Bda_out.Phy;
-            sU.append(ChA1->Bda_out.dUrms);
+            // sU.append(ChA1->Bda_out.dUrms);
+            sU.append(dUrms);
             sPhy.append(ChA1->Bda_out.Phy);
         }
         else
@@ -751,15 +755,17 @@ int EAbstractTuneDialogA1DN::AndClearInitialValues()
 
 int EAbstractTuneDialogA1DN::ShowVoltageDialog(int percent)
 {
+    float kcoef = m_kdn / m_kdnet;
     float VoltageInV = (m_mode == MODE_ALTERNATIVE) ? m_nomSecVoltage : m_nomSecVoltage * qSqrt(2);
     VoltageInV *= static_cast<float>(percent) / 100.0;
+    float VoltageInVet = VoltageInV * kcoef;
     float VoltageInkV = (m_mode == MODE_ALTERNATIVE) ? Bac_block2.Bac_block2[TuneVariant].K_DN
                                                      : Bac_block3.Bac_block3[TuneVariant].K_DN;
-    VoltageInkV *= VoltageInV / 1000.0;
+    VoltageInkV *= m_nomSecVoltage * percent / 100000.0;
     if (EMessageBox::question(this, "Подтверждение",
-            "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ ("
-                + QString::number(VoltageInV, 'f', 3)
-                + " В) \n"
+            "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ\n("
+                + QString::number(VoltageInV, 'f', 3) + " В на своём ДН или " + QString::number(VoltageInVet, 'f', 3)
+                + " В на эталонном ДН)\n"
                   "и нажмите кнопку \"Продолжить\", когда напряжения установятся")
         == false)
     {

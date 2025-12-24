@@ -240,6 +240,7 @@ void TuneDialogA1::SetupUI()
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
+    ReadTuneCoefsByBac(1);
 }
 
 QWidget *TuneDialogA1::BdaBottomUI()
