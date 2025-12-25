@@ -5,4 +5,6 @@ FetchContent_Declare(limereport
   GIT_TAG           master
 )
 
+set(LIMEREPORT_DEMO OFF)
+
 FetchContent_MakeAvailable(limereport)
