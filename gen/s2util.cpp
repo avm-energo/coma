@@ -1,6 +1,6 @@
 #include "s2util.h"
 
-#include "crc32.h"
+#include <gen/utils/crc32.h>
 #include <gen/stdfunc.h>
 // #include <s2/s2configuration.h>
 

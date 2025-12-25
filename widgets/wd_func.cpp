@@ -388,7 +388,7 @@ void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lenam
     if (enabled)
         le->setEnabled(enabled);
     else
-        le->setDisabled(~enabled);
+        le->setDisabled(!enabled);
     // le->setReadOnly(false);
     // le->setModified(enabled);
     hlyout->addWidget(le, 10);
@@ -464,7 +464,7 @@ QImage *WDFunc::TwoImages(const QString &first, const QString &second)
         image = new QImage("images/cross.png");
     else
     {
-        *image = QImage((FirstI.width() + SecondI.width()), qMax(FirstI.height(), SecondI.height()), FirstI.format());
+        image = new QImage((FirstI.width() + SecondI.width()), qMax(FirstI.height(), SecondI.height()), FirstI.format());
         image->fill(0);
         QPainter p(image);
         p.drawImage(0, 0, FirstI);
