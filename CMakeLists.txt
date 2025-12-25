@@ -13,6 +13,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(BUILD_SHARED_LIBS ON)
 set(BUILD_TESTING OFF)
 set(HIDAPI_INSTALL_TARGETS ON)
+set(HIDAPI_WITH_TESTS OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -32,7 +33,7 @@ endif()
 find_package(QT NAMES Qt6)
 message(STATUS "Qt major version: ${QT_VERSION_MAJOR}")
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
-  Core Gui PrintSupport Widgets SerialPort REQUIRED)
+  Core Gui PrintSupport Widgets REQUIRED)
 
 # Define a variable for the number
 set(PROGRAM_VARIANT_OPTION "FULL" CACHE STRING "Program size (functions content): FULL/LARGE/MEDIUM/SMALL")
