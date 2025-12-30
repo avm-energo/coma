@@ -33,7 +33,7 @@ endif()
 find_package(QT NAMES Qt6)
 message(STATUS "Qt major version: ${QT_VERSION_MAJOR}")
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
-  Core Gui PrintSupport Widgets REQUIRED)
+  Core Gui PrintSupport Widgets SerialPort REQUIRED)
 
 # Define a variable for the number
 set(PROGRAM_VARIANT_OPTION "FULL" CACHE STRING "Program size (functions content): FULL/LARGE/MEDIUM/SMALL")
