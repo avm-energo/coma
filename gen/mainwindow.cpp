@@ -2,7 +2,7 @@
 
 #include "config.h"
 #include <QtSerialPort/QSerialPortInfo>
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QApplication>
 #include <QCursor>

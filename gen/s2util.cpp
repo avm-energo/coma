@@ -1,7 +1,7 @@
 #include "s2util.h"
 
-#include <gen/utils/crc32.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/stdfunc.h>
+#include <avm-gen/utils/crc32.h>
 // #include <s2/s2configuration.h>
 
 #include <QDateTime>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "s2datatypes.h"
-#include <gen/datatypes.h>
+#include <avm-gen/datatypes.h>
 
 namespace S2
 {
