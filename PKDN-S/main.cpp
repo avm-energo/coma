@@ -2,7 +2,7 @@
 #include "../gen/stdfunc.h"
 #include "config.h"
 #include "pkdn_s.h"
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QApplication>
 #include <QCommandLineParser>
