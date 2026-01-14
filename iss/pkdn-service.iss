@@ -16,7 +16,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={C5B45B27-A76D-4C97-B3E4-7DCEF5E90F8D}
+AppId={{C5B45B27-A76D-4C97-B3E4-7DCEF5E90F8D}
 AppName={#GroupName}
 AppVerName={#EngName} {#ApplicationVersion}
 AppPublisher={#Publisher}
@@ -44,9 +44,9 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 [Files]
 Source: "{#OUTPUT_DIR}\bin\*"; DestDir: "{app}"; Excludes: "*.xml"; Flags: ignoreversion recursesubdirs 
 Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
-Source: "{#OUTPUT_DIR}\settings\*.xml"; DestDir: "{userappdata}\{#Publisher}\{#EngName}"
-Source: "{#OUTPUT_DIR}\images\*.*"; DestDir: "{userappdata}\{#Publisher}\{#EngName}\images"
-Source: "{#OUTPUT_DIR}\reports\*.lrxml"; DestDir: "{userappdata}\{#Publisher}\{#EngName}\reports"
+Source: "..\images\*.*"; DestDir: "{userappdata}\{#Publisher}\{#EngName}\images"
+Source: "..\reports\*.lrxml"; DestDir: "{userappdata}\{#Publisher}\{#EngName}\reports"
+Source: "..\errors\*.dat"; DestDir: "{userappdata}\{#Publisher}\{#EngName}\errors"
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
