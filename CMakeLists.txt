@@ -71,8 +71,8 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc
 @ONLY)
 
-file(GLOB_RECURSE files_cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-file(GLOB_RECURSE files_h ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
+file(GLOB_RECURSE files_cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE files_h ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h)
 
 add_executable(${PROJECT_NAME}
   ${files_cpp} ${files_h} coma.rc
