@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/logger.h>
+#include <gen/logger.h>
 
 #include <QList>
 #include <QString>

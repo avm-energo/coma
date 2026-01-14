@@ -6,7 +6,7 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/waitwidget.h"
 #include "config.h"
-#include <avm-gen/settings.h>
+#include <gen/settings.h>
 
 #include <QComboBox>
 #include <QElapsedTimer>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "s2datatypes.h"
-#include <avm-gen/logger.h>
+#include <gen/logger.h>
 
 #include <QByteArray>
 #include <QMutex>
