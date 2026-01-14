@@ -9,11 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(BUILD_SHARED_LIBS ON)
-set(BUILD_TESTING OFF)
-set(HIDAPI_INSTALL_TARGETS ON)
-set(HIDAPI_WITH_TESTS OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -60,6 +55,7 @@ endif()
 # Building libraries and targets
 # Step 1: Build dependencies
 
+include(gen)
 include(hidapi)
 include(limereport)
 include(qxlsx)
@@ -75,8 +71,8 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc
 @ONLY)
 
-file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
-file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
+file(GLOB_RECURSE files_cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE files_h ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 
 add_executable(${PROJECT_NAME}
   ${files_cpp} ${files_h} coma.rc
@@ -84,9 +80,11 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${limereport_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${avm-gen_SOURCE_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${hidapi_SOURCE_DIR})
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
 
+# tell windows to start prog without console
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)
 endif()
@@ -99,6 +97,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::SerialPort
   limereport
   QXlsx
+  avm-gen
   )
 
 if(SYSTEM_NAME STREQUAL "windows")
