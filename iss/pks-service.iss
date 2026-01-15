@@ -2,10 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 #define Name "ПКС-Сервис"
 #define GroupName "ПКС-Сервис"
-#define EngName "PKS-Service"
+#define EngName "pks-service"
 #define Publisher "AVM-Energo"
 #define URL "https://www.avmenergo.ru"
-#define ExeName "pkdn-service.exe"
+#define ExeName "pks-service.exe"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #define ARCH "win64"
 #define BUILD_TYPE "Release"
