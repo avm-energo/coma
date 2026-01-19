@@ -953,7 +953,7 @@
                     <mwidget desc="Сила постоянного тока (канал 3), мА" view="float">
                         <start-addr>2004</start-addr>
                         <toolTip>Ток, приведённый ко входу 3, мА</toolTip>
-                        <decimals>1</decimals>
+                        <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Температура Pt100" view="float">
                         <start-addr>2020</start-addr>
