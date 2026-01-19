@@ -118,6 +118,8 @@ void EAbstractTuneDialogA1DN::SetTuneParameters()
             DBGMSG;
         if (!WDFunc::SPBData(this, "kdnetspb", m_kdnet))
             DBGMSG;
+        ChA1->m_kdnet = m_kdnet;
+        ChA1->m_kdn = m_kdn;
         if (m_mode == MODE_ALTERNATIVE)
             Bac_block2.Bac_block2[TuneVariant].K_DN = m_kdn;
         else
@@ -656,6 +658,7 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out, int index)
                 EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
                 return Error::ER_GENERALERROR;
             }
+            assert(m_kdn != 0);
             float dUrms = (ChA1->Bda_out.UefNat_filt[1] * m_kdnet / m_kdn - ChA1->Bda_out.UefNat_filt[0]) * 100.0f
                 / ChA1->Bda_out.UefNat_filt[0];
             tmpdd.dUrms += dUrms;
@@ -722,6 +725,7 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out, int index)
     }
     else
     {
+        assert(m_kdn != 0);
         Bd->Phy = tmpbd.Phy / count;
         Bd->UefNat_filt[0] = tmpbd.UefNat_filt[0] / count;
         Bd->UefNat_filt[1] = tmpbd.UefNat_filt[1] / count //
@@ -755,6 +759,7 @@ int EAbstractTuneDialogA1DN::AndClearInitialValues()
 
 int EAbstractTuneDialogA1DN::ShowVoltageDialog(int percent)
 {
+    assert(m_kdnet != 0);
     float kcoef = m_kdn / m_kdnet;
     float VoltageInV = (m_mode == MODE_ALTERNATIVE) ? m_nomSecVoltage : m_nomSecVoltage * qSqrt(2);
     VoltageInV *= static_cast<float>(percent) / 100.0;
@@ -778,7 +783,7 @@ int EAbstractTuneDialogA1DN::ShowVoltageDialog(int percent)
 void EAbstractTuneDialogA1DN::FillBdOut()
 {
     WDFunc::SetLBLText(this, "tunednu1", QString::number(ChA1->Bda_out.UefNat_filt[0], 'f', 5));
-    WDFunc::SetLBLText(this, "tunednu2", QString::number(ChA1->Bda_out.UefNat_filt[1], 'f', 5));
+    WDFunc::SetLBLText(this, "tunednu2", QString::number(ChA1->Bda_out.UefNat_filt[1] * m_kdnet / m_kdn, 'f', 5));
     WDFunc::SetLBLText(this, "tunednphy", QString::number(ChA1->Bda_out.Phy, 'f', 5));
     WDFunc::SetLBLText(this, "tunednfreq", QString::number(ChA1->Bda_out.Frequency, 'f', 5));
     WDFunc::SetLBLText(this, "tunepercent", QString::number(ChA1->Bda_out.dUrms, 'f', 5));
@@ -805,7 +810,7 @@ void EAbstractTuneDialogA1DN::FillBdIn()
     WDFunc::SetLBLText(this, "tunednu2i", QString::number(ChA1->Bda_in.UefNat_filt[1], 'f', 5));
     WDFunc::SetLBLText(this, "tunednphyi", QString::number(ChA1->Bda_in.Phy, 'f', 5));
     WDFunc::SetLBLText(this, "tunednfreqi", QString::number(ChA1->Bda_in.Frequency, 'f', 5));
-    WDFunc::SetLBLText(this, "tunepercenti", QString::number(ChA1->Bda_in.dUrms, 'f', 5));
+    // WDFunc::SetLBLText(this, "tunepercenti", QString::number(ChA1->Bda_in.dUrms, 'f', 5));
 }
 
 void EAbstractTuneDialogA1DN::FillBackBdIn()
@@ -819,8 +824,8 @@ void EAbstractTuneDialogA1DN::FillBackBdIn()
     ChA1->Bda_in.Phy = tmps.toFloat();
     WDFunc::LBLText(this, "tunednfreqi", tmps);
     ChA1->Bda_in.Frequency = tmps.toFloat();
-    WDFunc::LBLText(this, "tunepercenti", tmps);
-    ChA1->Bda_in.dUrms = tmps.toFloat();
+    // WDFunc::LBLText(this, "tunepercenti", tmps);
+    // ChA1->Bda_in.dUrms = tmps.toFloat();
 }
 
 void EAbstractTuneDialogA1DN::FillMedian(int index)

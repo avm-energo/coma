@@ -217,9 +217,11 @@ void CheckDialogA1::WriteToFile(int row, int bdnum)
         break;
     case 4:
         xlsx->write(row, 10, WDFunc::FloatValueWithCheck(ChA1->Bda_out.UefNat_filt[0]), format);
-        xlsx->write(row, 11, WDFunc::FloatValueWithCheck(ChA1->Bda_out.UefNat_filt[1]), format);
+        assert(ChA1->m_kdn != 0);
+        xlsx->write(
+            row, 11, WDFunc::FloatValueWithCheck(ChA1->Bda_out.UefNat_filt[1] * ChA1->m_kdnet / ChA1->m_kdn), format);
         xlsx->write(row, 12, WDFunc::FloatValueWithCheck(ChA1->Bda_out.Uef_filt[0]), format);
-        xlsx->write(row, 13, WDFunc::FloatValueWithCheck(ChA1->Bda_out.Uef_filt[1]), format);
+        xlsx->write(row, 13, WDFunc::FloatValueWithCheck(ChA1->Bda_out.Uef_filt[1]), format); // it's recalc olready
         xlsx->write(row, 14, WDFunc::FloatValueWithCheck(ChA1->Bda_out.Phy), format);
         xlsx->write(row, 15, WDFunc::FloatValueWithCheck(ChA1->Bda_out.Frequency), format);
         break;

@@ -194,8 +194,8 @@ void TuneDialogA1DN::SetupUI()
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1i", valuesLBLSS, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U2, В"), 0, 2, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu2i", valuesLBLSS, ""), 0, 3, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "ΔU, %"), 0, 4, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunepercenti", valuesLBLSS, ""), 0, 5, 1, 1);
+    // glyout->addWidget(WDFunc::NewLBL(this, "ΔU, %"), 0, 4, 1, 1, Qt::AlignRight);
+    // glyout->addWidget(WDFunc::NewLBLT(this, "", "tunepercenti", valuesLBLSS, ""), 0, 5, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Phy"), 1, 4, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednphyi", valuesLBLSS, ""), 1, 5, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Freq, Гц"), 1, 0, 1, 1, Qt::AlignRight);
