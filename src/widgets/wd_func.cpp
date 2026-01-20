@@ -2,6 +2,7 @@
 
 #include "../gen/colors.h"
 #include "etableview.h"
+#include <gen/settings.h>
 
 #include <QHBoxLayout>
 #include <QPainter>
@@ -452,8 +453,8 @@ QVariant WDFunc::FloatValueWithCheck(float value)
 QImage *WDFunc::TwoImages(const QString &first, const QString &second)
 {
     QImage *image;
-    QString FirstImage = "images/" + first + ".png";
-    QString SecondImage = "images/" + second + ".png";
+    QString FirstImage = Settings::configDir() + "images/" + first + ".png";
+    QString SecondImage = Settings::configDir() + "images/" + second + ".png";
     QImage FirstI(FirstImage);
     QImage SecondI(SecondImage);
     if ((first.isEmpty()) && (!SecondI.isNull()))
@@ -461,10 +462,11 @@ QImage *WDFunc::TwoImages(const QString &first, const QString &second)
     else if ((second.isEmpty()) && (!FirstI.isNull()))
         image = new QImage(FirstI);
     else if ((FirstI.isNull()) || (SecondI.isNull()))
-        image = new QImage("images/cross.png");
+        image = new QImage(Settings::configDir() + "images/cross.png");
     else
     {
-        image = new QImage((FirstI.width() + SecondI.width()), qMax(FirstI.height(), SecondI.height()), FirstI.format());
+        image
+            = new QImage((FirstI.width() + SecondI.width()), qMax(FirstI.height(), SecondI.height()), FirstI.format());
         image->fill(0);
         QPainter p(image);
         p.drawImage(0, 0, FirstI);

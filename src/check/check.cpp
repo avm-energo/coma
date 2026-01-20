@@ -15,8 +15,6 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QStringListModel>
-#include <QTabBar>
-#include <QTabWidget>
 #include <QVBoxLayout>
 
 Check::Check() { }

@@ -17,6 +17,7 @@
 #include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
+#include <gen/settings.h>
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
@@ -141,11 +142,11 @@ QWidget *AbstractConfDialog::ConfButtons()
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Прочитать из файла");
-    pb->setIcon(QIcon("images/load.png"));
+    pb->setIcon(QIcon(Settings::configDir() + "images/load.png"));
     connect(pb, SIGNAL(clicked()), this, SLOT(LoadConfFromFile()));
     wdgtlyout->addWidget(pb, 1, 0, 1, 1);
     pb = new QPushButton("Записать в файл");
-    pb->setIcon(QIcon("images/save.png"));
+    pb->setIcon(QIcon(Settings::configDir() + "images/save.png"));
     connect(pb, SIGNAL(clicked()), this, SLOT(SaveConfToFile()));
     wdgtlyout->addWidget(pb, 1, 1, 1, 1);
     pb = new QPushButton("Задать конфигурацию по умолчанию");

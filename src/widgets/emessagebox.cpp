@@ -1,6 +1,7 @@
 #include "emessagebox.h"
 
 #include "../gen/colors.h"
+#include <gen/settings.h>
 
 #include <QApplication>
 #include <QMessageBox>
@@ -85,9 +86,9 @@ bool question(QWidget *parent, const QString &title, const QString &text, const 
         messageBox->setInformativeText(detailedText);
     messageBox->setIcon(QMessageBox::Question);
     QPushButton *yesButton = messageBox->addButton(yesText, QMessageBox::AcceptRole);
-    yesButton->setIcon(QIcon("images/ok.png"));
+    yesButton->setIcon(QIcon(Settings::configDir() + "images/ok.png"));
     QPushButton *noButton = messageBox->addButton(noText, QMessageBox::RejectRole);
-    noButton->setIcon(QIcon("images/cross.png"));
+    noButton->setIcon(QIcon(Settings::configDir() + "images/cross.png"));
     messageBox->setDefaultButton(yesButton);
     messageBox->exec();
     QPushButton *pb = qobject_cast<QPushButton *>(messageBox->clickedButton());

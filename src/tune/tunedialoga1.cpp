@@ -24,6 +24,7 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 #include "config.h"
+#include <gen/settings.h>
 
 TuneDialogA1::TuneDialogA1(QWidget *parent) : EAbstractTuneDialog(parent)
 {
@@ -157,7 +158,9 @@ void TuneDialogA1::SetupUI()
     QWidget *cp3 = new QWidget;
     QVBoxLayout *lyout;
     QTabWidget *TuneTW = new QTabWidget;
-    TuneTW->setStyleSheet("QTabWidget::tab-bar::tab { background: transparent; }");
+    QString ConfTWss = "QTabWidget::tab-bar { left: 5px; } QTabBar::tab:selected { border-color: #666666; background: "
+        + QString(DCONFOCLR) + "; } QTabWidget::tab-bar::tab { background: transparent; }";
+    TuneTW->setStyleSheet(ConfTWss);
     TuneTW->setObjectName("tunetw");
 
     setStyleSheet(uconfWSS);
@@ -891,7 +894,7 @@ int TuneDialogA1::ShowScheme()
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/tunea1.png")));
+    lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap(Settings::configDir() + "images/tunea1.png")));
     lyout->addWidget(WDFunc::NewLBL(this,
         "1. На выходах РЕТОМ задайте частоту 51,0 Гц, уровень напряжения фазы А 100 В с фазой 0 градусов, включите "
         "режим однофазного выхода;"));

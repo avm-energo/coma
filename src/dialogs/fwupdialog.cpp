@@ -19,8 +19,6 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QStringListModel>
-#include <QTabBar>
-#include <QTabWidget>
 #include <QVBoxLayout>
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"

@@ -142,6 +142,9 @@ void TuneDialogA1DN::SetupUI()
     QWidget *cp9 = new QWidget;
     QVBoxLayout *lyout;
     QTabWidget *TuneTW = new QTabWidget;
+    TuneTW->setStyleSheet(
+        "QTabWidget::tab-bar { left: 5px; } QTabBar::tab:selected { border-color: #666666; background: "
+        + QString(DCONFOCLR) + "; }");
 
     cp1->setStyleSheet(uconfWSS);
     cp2->setStyleSheet(uconfWSS);

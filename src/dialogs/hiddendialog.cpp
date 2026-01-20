@@ -5,6 +5,7 @@
 #include "../widgets/egroupbox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+#include <gen/settings.h>
 
 #include <QCoreApplication>
 #include <QElapsedTimer>
@@ -43,25 +44,25 @@ HiddenDialog::HiddenDialog(int status, QWidget *parent) : QDialog(parent)
 
     WithMezzanine = false;
     if (Bhb.BoardBBhb.MType == 0xA1)
-        BGImage = "images/pkdn.png";
+        BGImage = Settings::configDir() + "images/pkdn.png";
     else
     {
         switch (Type)
         {
         case BYMY:
-            BGImage = "images/BM.png";
+            BGImage = Settings::configDir() + "images/BM.png";
             WithMezzanine = true;
             break;
         case BNMY:
-            BGImage = "images/BnM.png";
+            BGImage = Settings::configDir() + "images/BnM.png";
             Type = BYMY;
             WithMezzanine = true;
             break;
         case BYMN:
-            BGImage = "images/BMn.png";
+            BGImage = Settings::configDir() + "images/BMn.png";
             break;
         case BNMN:
-            BGImage = "images/BnMn.png";
+            BGImage = Settings::configDir() + "images/BnMn.png";
             Type = BYMN;
             break;
         default:

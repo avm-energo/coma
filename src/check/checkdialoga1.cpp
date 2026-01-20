@@ -13,7 +13,6 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
-#include <QTabWidget>
 #include <QTime>
 #include <QVBoxLayout>
 #include <QtMath>

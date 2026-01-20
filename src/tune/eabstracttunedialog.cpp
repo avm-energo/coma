@@ -2,6 +2,7 @@
 
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
+#include <gen/settings.h>
 
 #include <QCoreApplication>
 #include <QEventLoop>
@@ -11,7 +12,6 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QScrollBar>
-#include <QTabWidget>
 #include <QTableView>
 #include <QTime>
 #include <QTimer>
@@ -265,21 +265,21 @@ void EAbstractTuneDialog::MsgSetVisible(int msg, bool Visible)
 
 void EAbstractTuneDialog::OkMsgSetVisible(int msg, bool Visible)
 {
-    QPixmap *pm = new QPixmap("images/ok.png");
+    QPixmap *pm = new QPixmap(Settings::configDir() + "images/ok.png");
     WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), Visible);
     WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
 }
 
 void EAbstractTuneDialog::ErMsgSetVisible(int msg, bool Visible)
 {
-    QPixmap *pm = new QPixmap("images/cross.png");
+    QPixmap *pm = new QPixmap(Settings::configDir() + "images/cross.png");
     WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), Visible);
     WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
 }
 
 void EAbstractTuneDialog::SkMsgSetVisible(int msg, bool Visible)
 {
-    QPixmap *pm = new QPixmap("images/hr.png");
+    QPixmap *pm = new QPixmap(Settings::configDir() + "images/hr.png");
     WDFunc::SetVisible(this, "tunemsgres" + QString::number(msg), Visible);
     WDFunc::SetLBLImage(this, "tunemsgres" + QString::number(msg), pm);
 }

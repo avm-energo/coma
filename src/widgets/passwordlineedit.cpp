@@ -1,11 +1,12 @@
-#include <QHBoxLayout>
-#include <QPushButton>
-#include "wd_func.h"
 #include "passwordlineedit.h"
 
-PasswordLineEdit::PasswordLineEdit(QWidget *parent) : QWidget(parent)
-{
-}
+#include "wd_func.h"
+#include <gen/settings.h>
+
+#include <QHBoxLayout>
+#include <QPushButton>
+
+PasswordLineEdit::PasswordLineEdit(QWidget *parent) : QWidget(parent) { }
 
 PasswordLineEdit::PasswordLineEdit(QLineEdit::EchoMode echostyle, QWidget *parent)
 {
@@ -15,7 +16,7 @@ PasswordLineEdit::PasswordLineEdit(QLineEdit::EchoMode echostyle, QWidget *paren
     le->setText("");
     hlyout->addWidget(le, 10);
     QPushButton *pb = new QPushButton(parent);
-    pb->setIcon(QIcon("images/pswshow.png"));
+    pb->setIcon(QIcon(Settings::configDir() + "images/pswshow.png"));
     QObject::connect(pb, SIGNAL(clicked(bool)), this, SLOT(PswLEToggleEchoMode()));
     hlyout->addWidget(pb, 0);
     setLayout(hlyout);

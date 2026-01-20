@@ -1,19 +1,22 @@
-#include <QLabel>
-#include <QTimer>
-#include <QPixmap>
-#include <QBitmap>
-#include <QImage>
-#include <QPainter>
-#include <QVBoxLayout>
+#include "waitwidget.h"
+
+#include "../gen/stdfunc.h"
+#include <gen/settings.h>
+
 #include <QApplication>
+#include <QBitmap>
 #include <QDateTime>
 #include <QFontMetrics>
-#include "waitwidget.h"
-#include "../gen/stdfunc.h"
+#include <QImage>
+#include <QLabel>
+#include <QPainter>
+#include <QPixmap>
+#include <QTimer>
+#include <QVBoxLayout>
 
 WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
 {
-//    setAttribute(Qt::WA_TranslucentBackground);
+    //    setAttribute(Qt::WA_TranslucentBackground);
     setStyleSheet("QWidget {background: rgb(0, 186, 144);}");
     setAttribute(Qt::WA_DeleteOnClose);
     gamma = 0.0;
@@ -23,10 +26,7 @@ WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
     vel1 = 0.5;
 }
 
-WaitWidget::~WaitWidget()
-{
-
-}
+WaitWidget::~WaitWidget() { }
 
 void WaitWidget::Init(WaitWidget::ww_struct &ww)
 {
@@ -36,7 +36,7 @@ void WaitWidget::Init(WaitWidget::ww_struct &ww)
     this->Seconds = ww.initialseconds;
     QFont font;
     QFontMetrics fm(font);
-    PressAnyKeyStringWidth = fm.horizontalAdvance(PressAnyKeyString);//+10;
+    PressAnyKeyStringWidth = fm.horizontalAdvance(PressAnyKeyString); //+10;
 }
 
 void WaitWidget::Start()
@@ -44,11 +44,11 @@ void WaitWidget::Start()
     show();
     QTimer *tmr = new QTimer;
     tmr->setInterval(10);
-    connect(tmr,SIGNAL(timeout()),this,SLOT(Rotate()));
+    connect(tmr, SIGNAL(timeout()), this, SLOT(Rotate()));
     tmr->start();
     QTimer *tmrs = new QTimer;
     tmrs->setInterval(1000);
-    connect(tmrs,SIGNAL(timeout()),this,SLOT(UpdateSeconds()));
+    connect(tmrs, SIGNAL(timeout()), this, SLOT(UpdateSeconds()));
     tmrs->start();
 }
 
@@ -83,7 +83,7 @@ void WaitWidget::UpdateSeconds()
         --Seconds;
         if (Seconds == 0)
         {
-//            emit CountZero();
+            //            emit CountZero();
             Stop();
         }
     }
@@ -91,35 +91,35 @@ void WaitWidget::UpdateSeconds()
 
 void WaitWidget::paintEvent(QPaintEvent *e)
 {
-    QPixmap rotatedPixmap("images/Koma.png");
+    QPixmap rotatedPixmap(Settings::configDir() + "images/Koma.png");
     QSize size = rotatedPixmap.size();
-    QSize wsize = QSize(310,380);
-    int left = wsize.width()/2-size.width()/2;
+    QSize wsize = QSize(310, 380);
+    int left = wsize.width() / 2 - size.width() / 2;
     QPainter p1(this);
     p1.setRenderHint(QPainter::Antialiasing);
-    p1.translate(wsize.width()/2,size.height()/2);
-    p1.rotate(gamma*vel1);
-    p1.translate(-wsize.width()/2,-size.height()/2);
+    p1.translate(wsize.width() / 2, size.height() / 2);
+    p1.rotate(gamma * vel1);
+    p1.translate(-wsize.width() / 2, -size.height() / 2);
     p1.drawPixmap(left, 0, rotatedPixmap);
     p1.end();
     QPainter p(this);
-//    p.translate(wsize.width()/2,size.height()/2);
+    //    p.translate(wsize.width()/2,size.height()/2);
     QFont font;
     QFontMetrics fm(font);
-    int center = wsize.width()/2;
-    int msgwidth = fm.horizontalAdvance(Message);//+10;
-    left = center - msgwidth/2;
-    QRect mrect = QRect(left,height()-20,msgwidth,20);
-//    p.setPen(Qt::blue);
-//    QBrush brush(Qt::lightGray, Qt::SolidPattern);
-//    p.drawRect(mrect);
-//    p.fillRect(mrect, brush);
+    int center = wsize.width() / 2;
+    int msgwidth = fm.horizontalAdvance(Message); //+10;
+    left = center - msgwidth / 2;
+    QRect mrect = QRect(left, height() - 20, msgwidth, 20);
+    //    p.setPen(Qt::blue);
+    //    QBrush brush(Qt::lightGray, Qt::SolidPattern);
+    //    p.drawRect(mrect);
+    //    p.fillRect(mrect, brush);
     p.setPen(Qt::black);
     p.drawText(mrect, Qt::AlignCenter, Message);
     if (IsAllowedToStop)
     {
-        left = center - PressAnyKeyStringWidth/2;
-        mrect = QRect(left,height()-40,PressAnyKeyStringWidth,20);
+        left = center - PressAnyKeyStringWidth / 2;
+        mrect = QRect(left, height() - 40, PressAnyKeyStringWidth, 20);
         p.drawText(mrect, Qt::AlignCenter, PressAnyKeyString);
     }
     p.end();
@@ -129,9 +129,10 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     font.setFamily("Helvetica");
     font.setPointSize(20);
     ps.setFont(font);
-    QRect srect = QRect(0,height()-65,width(),24);
-    QString SecondsString = (TimeFormat == WW_TIME) ? (QString::number(Seconds/60)+":"+QString::number(Seconds%60)) : \
-                                                      QString::number(Seconds);
+    QRect srect = QRect(0, height() - 65, width(), 24);
+    QString SecondsString = (TimeFormat == WW_TIME)
+        ? (QString::number(Seconds / 60) + ":" + QString::number(Seconds % 60))
+        : QString::number(Seconds);
     ps.drawText(srect, Qt::AlignCenter, SecondsString);
     ps.end();
     e->accept();
@@ -143,7 +144,7 @@ void WaitWidget::keyPressEvent(QKeyEvent *e)
     {
         StdFunc::Cancel();
         Stop();
-//        emit CountZero();
+        //        emit CountZero();
     }
     QWidget::keyPressEvent(e);
 }

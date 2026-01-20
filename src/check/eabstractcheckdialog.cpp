@@ -20,6 +20,7 @@
 #include <QtMath>
 #include <qtabbar.h>
 #if PROGSIZE != PROGSIZE_EMUL
+#include "../gen/colors.h"
 #include "../gen/commands.h"
 #endif
 
@@ -48,7 +49,8 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
         return;
     }
     QTabWidget *CheckTW = new QTabWidget;
-    QString ConfTWss = "QTabWidget::tab-bar::tab { background: transparent; }";
+    QString ConfTWss = "QTabWidget::tab-bar { left: 5px; } QTabBar::tab:selected { border-color: #666666; background: "
+        + QString(DCONFOCLR) + "; } QTabWidget::tab-bar::tab { background: transparent; }";
     CheckTW->tabBar()->setStyleSheet(ConfTWss);
     //    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
     for (int i = 0; i < BdUINum; ++i)

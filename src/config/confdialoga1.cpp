@@ -160,7 +160,8 @@ void ConfDialogA1::SetupUI()
     vlyout1 = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
-    QString ConfTWss = "QTabWidget::tab-bar::tab { background: transparent; }";
+    QString ConfTWss = "QTabWidget::tab-bar { left: 5px; } QTabBar::tab:selected { border-color: #666666; background: "
+        + QString(DCONFOCLR) + "; } QTabWidget::tab-bar::tab { background: transparent; }";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(cp1, "Конфигурация");
     vlyout1->addWidget(ConfTW);
