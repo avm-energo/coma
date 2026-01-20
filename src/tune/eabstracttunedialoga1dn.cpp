@@ -769,7 +769,7 @@ int EAbstractTuneDialogA1DN::ShowVoltageDialog(int percent)
     VoltageInkV *= m_nomSecVoltage * percent / 100000.0;
     if (EMessageBox::question(this, "Подтверждение",
             "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ\n("
-                + QString::number(VoltageInV, 'f', 3) + " В на своём ДН или " + QString::number(VoltageInVet, 'f', 3)
+                + QString::number(VoltageInV, 'f', 3) + " В на своём ДН и " + QString::number(VoltageInVet, 'f', 3)
                 + " В на эталонном ДН)\n"
                   "и нажмите кнопку \"Продолжить\", когда напряжения установятся")
         == false)
@@ -786,7 +786,9 @@ void EAbstractTuneDialogA1DN::FillBdOut()
     WDFunc::SetLBLText(this, "tunednu2", QString::number(ChA1->Bda_out.UefNat_filt[1] * m_kdnet / m_kdn, 'f', 5));
     WDFunc::SetLBLText(this, "tunednphy", QString::number(ChA1->Bda_out.Phy, 'f', 5));
     WDFunc::SetLBLText(this, "tunednfreq", QString::number(ChA1->Bda_out.Frequency, 'f', 5));
-    WDFunc::SetLBLText(this, "tunepercent", QString::number(ChA1->Bda_out.dUrms, 'f', 5));
+    float dUrms = (ChA1->Bda_out.UefNat_filt[1] * m_kdnet / m_kdn - ChA1->Bda_out.UefNat_filt[0]) * 100.0f
+        / ChA1->Bda_out.UefNat_filt[0];
+    WDFunc::SetLBLText(this, "tunepercent", QString::number(dUrms, 'f', 5));
 }
 
 void EAbstractTuneDialogA1DN::FillBackBdOut()
