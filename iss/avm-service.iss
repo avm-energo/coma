@@ -5,20 +5,20 @@
 #define EngName "AVM-Service"
 #define Publisher "AVM-Energo"
 #define URL "https://www.avmenergo.ru"
-#define ExeName "AVM-Service.exe"
+#define ExeName "avm-service.exe"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #define ARCH "win64"
 #define BUILD_TYPE "Release"
 #define Redist_DIR "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143"
 #define OUTPUT_DIR  "..\output"
-#define ApplicationVersion() GetVersionNumbersString('..\output\bin\AVM-Service.exe')
+#define AppVersion LoadStringFromFile('package/src/VERSION')
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{0543FE28-6CB4-4DFE-8566-0B5E96AC4D1A}
 AppName={#GroupName}
-AppVerName={#EngName} {#ApplicationVersion}
+AppVerName={#EngName} {#AppVersion}
 AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
@@ -30,9 +30,9 @@ SetupIconFile=..\coma.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-OutputBaseFilename={#EngName}-{#ApplicationVersion}
+OutputBaseFilename={#EngName}-{#AppVersion}
 OutputDir={#OUTPUT_DIR}
-VersionInfoVersion={#ApplicationVersion}
+VersionInfoVersion={#AppVersion}
 LicenseFile="..\license.txt"
 InfoAfterFile="..\AVM-Service.NOTES"
 

@@ -156,7 +156,7 @@ QWidget *AbstractTuneDialog::bottomUI()
 
 void AbstractTuneDialog::setBac(DataBlock *block)
 {
-    AbsBac[block->block().blocknum] = block;
+    m_absBac[block->block().blocknum] = block;
 }
 
 void AbstractTuneDialog::setTuneStep(u8 tuneStep)
@@ -348,7 +348,7 @@ void AbstractTuneDialog::setProgressCountSlot(int count)
 Error::Msg AbstractTuneDialog::saveAllTuneCoefs()
 {
     QString tunenum;
-    for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    for (QMap<int, DataBlock *>::Iterator it = m_absBac.begin(); it != m_absBac.end(); ++it)
     {
         tunenum = QString::number(it.key(), 16); // key is the number of Bac block
         QByteArray ba;
@@ -365,7 +365,7 @@ Error::Msg AbstractTuneDialog::saveAllTuneCoefs()
 Error::Msg AbstractTuneDialog::loadAllTuneCoefs()
 {
     QString tunenum;
-    for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    for (QMap<int, DataBlock *>::Iterator it = m_absBac.begin(); it != m_absBac.end(); ++it)
     {
         tunenum = QString::number(it.key(), 16); // key is the number of Bac block
         QByteArray ba;
@@ -386,7 +386,7 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs()
 
 Error::Msg AbstractTuneDialog::readTuneCoefs()
 {
-    for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    for (QMap<int, DataBlock *>::Iterator it = m_absBac.begin(); it != m_absBac.end(); ++it)
         readTuneCoefsByBac(it.key());
     return Error::Msg::NoError;
 }
@@ -423,8 +423,8 @@ void AbstractTuneDialog::writeReportData(const QString &name, const QString &val
 // на будущее, если вдруг будем регулировать модуль по частям
 void AbstractTuneDialog::readTuneCoefsByBac(int bacnum)
 {
-    if (AbsBac.contains(bacnum))
-        AbsBac[bacnum]->readAndUpdate();
+    if (m_absBac.contains(bacnum))
+        m_absBac[bacnum]->readAndUpdate();
 }
 
 void AbstractTuneDialog::showTWTab(int index)
@@ -445,7 +445,7 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs(bool isUserChoosingRequired)
         QHBoxLayout *hlyout = new QHBoxLayout;
         lyout->addWidget(LBLFunc::newLBL(this, "Вопрос", "Записать регулировочные коэффициенты?"));
         QTabWidget *tw = new QTabWidget;
-        for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+        for (QMap<int, DataBlock *>::Iterator it = m_absBac.begin(); it != m_absBac.end(); ++it)
         {
             tw->addTab(it.value()->widget(false), it.value()->block().caption); // do not show buttons
             it.value()->updateWidget();
@@ -472,7 +472,7 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs(bool isUserChoosingRequired)
 
 void AbstractTuneDialog::writeTuneCoefsSlot()
 {
-    for (QMap<int, DataBlock *>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    for (QMap<int, DataBlock *>::Iterator it = m_absBac.begin(); it != m_absBac.end(); ++it)
     {
         if (it.value()->writeBlockToModule() != Error::Msg::NoError)
         {

@@ -1,12 +1,12 @@
 #include "tune/82/tune82adc.h"
 
-#include <gen/colors.h>
-#include <gen/stdfunc.h>
-#include <tune/82/verification_offset.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/graphfunc.h>
 #include <avm-widgets/lblfunc.h>
 #include <avm-widgets/waitwidget.h>
+#include <gen/colors.h>
+#include <gen/stdfunc.h>
+#include <tune/82/verification_offset.h>
 
 #include <QMessageBox>
 #include <QVBoxLayout>
@@ -79,6 +79,7 @@ Error::Msg Tune82ADC::setDefBac()
 
 Error::Msg Tune82ADC::getAnalogData()
 {
+    showPreWarning();
     StdFunc::Wait(1000);
     m_bda->readAndUpdate();
     m_bd1->readAndUpdate();
@@ -120,7 +121,6 @@ Error::Msg Tune82ADC::calcPhaseCorrection()
 
 Error::Msg Tune82ADC::calcInterChannelCorrelation()
 {
-    showPreWarning();
     m_bd1->readBlockFromModule();
     float fTmp = 0;
     for (int i : { 0, 3 })
@@ -227,8 +227,7 @@ Error::Msg Tune82ADC::showPreWarning()
 
 Error::Msg Tune82ADC::saveNewBac()
 {
-    Bac82::BlockData *bacRef = m_bac->data();
-    bacRef = m_bacNewBlock;
+    m_bac->setData(m_bacNewBlock);
     return Error::NoError;
 }
 

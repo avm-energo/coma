@@ -16,10 +16,9 @@ void Bd182::setupValuesDesc()
     int precision = (m_typeM != Device::MezzanineBoard::MTM_81) ? 3 : 4;
     addNewValue("Частота:", "Частота сигналов, Гц", &m_blockData->Frequency, 3);
     addNewGroup("Истинные действующие значения сигналов", "IUNF", 0, 6, &m_blockData->IUefNat_filt[0], precision);
-    addNewGroup("Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы", "IUF", 6, 6,
-        &m_blockData->IUeff_filtered[0], precision);
-    addNewGroup("Угол сдвига между сигналами по первой гармонике\nотносительно ф. А 1-й группы", "PHF", 12, 6,
-        &m_blockData->phi_next_f[0], 4);
+    addNewGroup(
+        "Действующие значения сигналов по 1-й гармонике", "IUF", 6, 6, &m_blockData->IUeff_filtered[0], precision);
+    addNewGroup("Угол сдвига между сигналами по первой гармонике", "PHF", 12, 6, &m_blockData->phi_next_f[0], 4);
     addNewGroup("Истинная активная мощность", "PNF", 18, 3, &m_blockData->PNatf[0], 3);
     addNewGroup("Кажущаяся полная мощность", "SNF", 21, 3, &m_blockData->SNatf[0], 3);
     addNewGroup("Реактивная мощность", "QNF", 24, 3, &m_blockData->QNatf[0], 3);

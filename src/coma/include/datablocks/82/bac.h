@@ -21,6 +21,7 @@ public:
     void setDefBlock(Bac82::BlockData *blck);
     void setupValuesDesc() override;
     BlockData *data();
+    void setData(BlockData *data);
     void setDefBlock() override;
 
 private:

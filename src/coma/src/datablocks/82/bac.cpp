@@ -38,3 +38,8 @@ Bac82::BlockData *Bac82::data()
 {
     return m_blockData;
 }
+
+void Bac82::setData(BlockData *data)
+{
+    m_blockData = data;
+}

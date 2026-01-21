@@ -96,7 +96,7 @@ public:
     bool checkFloat(const QString &name, double var, double base, double tolerance);
 
 private:
-    QMap<int, DataBlock *> AbsBac;
+    QMap<int, DataBlock *> m_absBac;
     TuneTabWidget *m_tuneTabWidget;
     void readTuneCoefsByBac(int bacnum);
 
