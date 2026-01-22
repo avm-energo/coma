@@ -11,14 +11,14 @@
 #define BUILD_TYPE "Release"
 #define Redist_DIR "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143"
 #define OUTPUT_DIR  "..\output"
-#define ApplicationVersion() GetVersionNumbersString('..\output\bin\pks-service.exe')
+#define AppVersion LoadStringFromFile('package/src/VERSION')
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{C5B45B27-A76D-4C97-B3E4-7DCEF5E90F8D}
 AppName={#GroupName}
-AppVerName={#EngName} {#ApplicationVersion}
+AppVerName={#EngName} {#AppVersion}
 AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
@@ -30,9 +30,9 @@ SetupIconFile=..\coma.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-OutputBaseFilename={#EngName}-{#ApplicationVersion}
+OutputBaseFilename={#EngName}-{#AppVersion}
 OutputDir={#OUTPUT_DIR}
-VersionInfoVersion={#ApplicationVersion}
+VersionInfoVersion={#AppVersion}
 LicenseFile="..\license.txt"
 
 [Dirs]
