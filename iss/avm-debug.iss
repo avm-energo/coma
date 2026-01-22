@@ -11,7 +11,10 @@
 #define BUILD_TYPE "Release"
 #define Redist_DIR "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143"
 #define OUTPUT_DIR  "..\output"
-#define AppVersion LoadStringFromFile('package/src/VERSION')
+#define VerFile FileOpen("..\package\src\VERSION")
+#define AppVersion FileRead(VerFile)
+#expr FileClose(VerFile)
+#undef VerFile
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
