@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(pks-service VERSION 3.4.3)
+project(pks-service VERSION 3.4.4)
 
 set(SOFTDEVELOPER "AVM-Energo")
 
