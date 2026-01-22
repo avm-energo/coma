@@ -50,7 +50,7 @@ install(CODE [[
       FILES "${_file}")
   endforeach()
   execute_process(COMMAND ${QT_BIN_DIR}/windeployqt.exe --no-quick-import --no-system-d3d-compiler
-      --no-virtualkeyboard --no-compiler-runtime --no-opengl-sw
+      --no-compiler-runtime --no-opengl-sw
       --skip-plugin-types generic,iconengines,networkinformation,styles,tls,translations
       ${INSTALL_PREFIX}/bin/${PROJECT_NAME}.exe)
 ]])
