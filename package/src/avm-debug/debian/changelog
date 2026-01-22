@@ -1,3 +1,14 @@
+avm-debug (3.4.4) unstable; urgency=low
+
+  [*] 2 decimals for AVM-KOT's 4-20 metrology
+  [*] find_packages instead of simple includes
+  [*] some tune82 changes to make procedure more accurate
+  [*] iss files: get appversion from VERSION file to write it on the ftp server
+  [-] Windeploy: remove no-virtualkeyboard key because platform plugin wasn't included into the installation
+  [+] auto upload tsv files to the files.asu-vei.ru
+
+ -- AVM-Energo <support@avmenergo.ru>  Thu, 22 Jan 2026 15:56:16 +0300
+
 avm-debug (3.4.3) unstable; urgency=low
 
   [*] s2Files: UNom & INom decimals are set to 2 or 1

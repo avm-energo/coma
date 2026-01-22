@@ -10,6 +10,11 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc
 @ONLY)
 
+configure_file(
+  ${CMAKE_SOURCE_DIR}/avm.tsv.in
+  ${CMAKE_SOURCE_DIR}/package/src/${PROJECT_NAME}.tsv
+@ONLY)
+
 file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
