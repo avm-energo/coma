@@ -100,7 +100,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::SerialPort
   limereport
-  QXlsx
+  avm-qxlsx
   avm-gen
   )
 

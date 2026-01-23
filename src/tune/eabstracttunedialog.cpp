@@ -2,7 +2,7 @@
 
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QCoreApplication>
 #include <QEventLoop>

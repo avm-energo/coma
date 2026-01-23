@@ -1,7 +1,7 @@
 #include "emessagebox.h"
 
 #include "../gen/colors.h"
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QApplication>
 #include <QMessageBox>

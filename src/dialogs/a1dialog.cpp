@@ -5,13 +5,13 @@
 
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/files.h"
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../widgets/egroupbox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+#include <avm-gen/files.h>
 
 #include <QCoreApplication>
 #include <QGridLayout>

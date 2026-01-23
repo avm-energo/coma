@@ -37,7 +37,7 @@
 #include "../widgets/etabwidget.h"
 #include "../widgets/wd_func.h"
 #include "config.h"
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QAction>
 #include <QFileDialog>

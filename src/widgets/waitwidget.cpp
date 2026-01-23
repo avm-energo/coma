@@ -1,7 +1,7 @@
 #include "waitwidget.h"
 
 #include "../gen/stdfunc.h"
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QApplication>
 #include <QBitmap>

@@ -2,7 +2,7 @@
 
 #include "../gen/colors.h"
 #include "etableview.h"
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QHBoxLayout>
 #include <QPainter>

@@ -2,7 +2,7 @@
 
 #include "config.h"
 #include <QtSerialPort/QSerialPortInfo>
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QApplication>
 #include <QCursor>
@@ -77,6 +77,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     //     OscFunc = new EOscillogram;
     // #endif
     StartWindowSplashScreen->finish(this);
+    // checking for updates timer
+    QTimer *tmr = new QTimer(this);
+    tmr->setInterval(5000);
+    tmr->setSingleShot(true);
+    connect(tmr, &QTimer::timeout, this, [&]() {
+
+        });
 }
 
 MainWindow::~MainWindow()

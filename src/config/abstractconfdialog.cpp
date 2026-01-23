@@ -17,7 +17,7 @@
 #include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
