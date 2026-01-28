@@ -1,6 +1,6 @@
 #include <QVBoxLayout>
 #include "keypressdialog.h"
-#include "../gen/stdfunc.h"
+#include <gen/stdfunc.h>
 #include "../widgets/wd_func.h"
 
 KeyPressDialog::KeyPressDialog(const QString &PswPhrase, QWidget *parent) :

@@ -1,10 +1,12 @@
 #include "eabstractcheckdialog.h"
 
+#include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/maindef.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
+#include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QFileDialog>
@@ -19,10 +21,6 @@
 #include <QVBoxLayout>
 #include <QtMath>
 #include <qtabbar.h>
-#if PROGSIZE != PROGSIZE_EMUL
-#include "../gen/colors.h"
-#include "../gen/commands.h"
-#endif
 
 EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) : QDialog(parent)
 {
@@ -103,26 +101,14 @@ QWidget *EAbstractCheckDialog::BottomUI()
 
     QPushButton *pb = new QPushButton("Запустить чтение");
     pb->setObjectName("pbmeasurements");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb, SIGNAL(clicked()), this, SLOT(StartAnalogMeasurements()));
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
     glyout->addWidget(pb, 1, 1, 1, 1);
     pb = new QPushButton("Запустить чтение в файл");
     pb->setObjectName("pbfilemeasurements");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb, SIGNAL(clicked()), this, SLOT(StartAnalogMeasurementsToFile()));
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
     glyout->addWidget(pb, 1, 2, 1, 1);
     pb = new QPushButton("Остановить чтение сигналов");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb, SIGNAL(clicked()), this, SLOT(StopAnalogMeasurements()));
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
     glyout->addWidget(pb, 1, 3, 1, 1);
 
     glyout->addWidget(pb, 2, 3, 1, 1);
@@ -138,7 +124,7 @@ void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString Filename = dlg->getSaveFileName(this, "Сохранить данные", StdFunc::GetHomeDir(), "Excel files (*.xlsx)",
+    QString Filename = dlg->getSaveFileName(this, "Сохранить данные", Settings::workDir(), "Excel files (*.xlsx)",
         Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     dlg->close();
     if (Filename == "")

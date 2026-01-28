@@ -1,6 +1,4 @@
-#ifndef EABSTRACTTUNEDIALOGA1DN_H
-#define EABSTRACTTUNEDIALOGA1DN_H
-
+#pragma once
 #define GOST1983ROWCOUNT 6   // 80, 100, 120 %
 #define GOST23625ROWCOUNT 10 // 20, 50, 80, 100, 120 %
 #define GOST1983COLCOUNT 10  // K, S, 3x(dU, dP), sU, sP
@@ -22,7 +20,8 @@ public:
     {
         GOST_NONE,  // не задано
         GOST_23625, // по 5 точкам туда-сюда
-        GOST_1983   // по 3 точкам только туда
+        GOST_1983,  // по 3 точкам только туда
+        DN          // по 5 точкам туда-сюда но для делителей не по ГОСТ
     };
 
     enum DNTypes
@@ -130,23 +129,22 @@ public:
     int m_mode;            // 0 - переменный, 1 - постоянный ток
     float m_kdn, m_kdnet;  // our DN & etalon DN coefficient
     float m_nomSecVoltage; // nominal secondary voltage - 100 / sqrt(3) or 100
+    bool m_isSecVoltageIs100;
     ReportHeaderStructure ReportHeader;
     PovDevStruct PovDev;
     DdStruct Dd_Block[TUNEA1LEVELS];
-    int VoltageType, DNType;
+    int m_voltageType, m_DNType;
     //    int Index;
     float CurrentS; // текущее значение нагрузки
-    int PovType;    // тип поверяемого оборудования (по какому ГОСТу)
+    int m_povType;  // тип поверяемого оборудования (по какому ГОСТу)
 
     EAbstractTuneDialogA1DN(QWidget *parent = nullptr);
 
     void InputTuneParameters(int dntype);
-#if PROGSIZE != PROGSIZE_EMUL
     void GetBdAndFillMTT();
     int GetAndAverage(int type, void *out, int index); // type = GAAT_BDA_OUT, GAAT_BDA_IN
     int GetBac();
     int AndClearInitialValues();
-#endif
     int ShowVoltageDialog(int percent);
     void FillMedian(int index);
 
@@ -162,7 +160,7 @@ signals:
     void SetPercent(int Percent);
 
 public slots:
-    void SetTuneParameters();
+    bool SetTuneParameters();
     void SetConditionData();
     void FillBac(int bacnum);
     void FillBackBac(int bacnum);
@@ -180,5 +178,3 @@ private:
     void FillBackBdOut();
     void FillBdOut();
 };
-
-#endif // EABSTRACTTUNEDIALOGA1DN_H

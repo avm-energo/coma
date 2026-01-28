@@ -1,7 +1,16 @@
 #include "tunedialoga1.h"
 
-#include "../gen/maindef.h"
+#include "../gen/colors.h"
+#include "../gen/commands.h"
+#include "../gen/error.h"
+#include "../gen/modulebsi.h"
 #include "../widgets/egroupbox.h"
+#include "../widgets/emessagebox.h"
+#include "../widgets/waitwidget.h"
+#include "../widgets/wd_func.h"
+#include "config.h"
+#include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QElapsedTimer>
@@ -14,17 +23,6 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 #include <QtMath>
-#if PROGSIZE != PROGSIZE_EMUL
-#include "../gen/commands.h"
-#endif
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-#include "../gen/stdfunc.h"
-#include "../widgets/emessagebox.h"
-#include "../widgets/wd_func.h"
-#include "config.h"
-#include <gen/settings.h>
 
 TuneDialogA1::TuneDialogA1(QWidget *parent) : EAbstractTuneDialog(parent)
 {
@@ -35,7 +33,6 @@ TuneDialogA1::TuneDialogA1(QWidget *parent) : EAbstractTuneDialog(parent)
     LoadSettings();
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialogA1::SetLbls()
 {
     lbls.append("1 Ввод пароля...");
@@ -149,7 +146,6 @@ void TuneDialogA1::SetPf()
         &TuneDialogA1::Start6_3_12);   // 6.3.12. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
 }
-#endif
 
 void TuneDialogA1::SetupUI()
 {
@@ -253,24 +249,15 @@ QWidget *TuneDialogA1::BdaBottomUI()
 
     QPushButton *pb = new QPushButton("Запустить чтение сигналов");
     pb->setObjectName("pbmeasurements");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb, SIGNAL(clicked()), this, SLOT(StartMeasurement()));
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Остановить чтение сигналов");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb, SIGNAL(clicked()), this, SLOT(Good()));
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
     lyout->addWidget(pb);
     w->setLayout(lyout);
     return w;
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 int TuneDialogA1::Start6_3_2()
 {
     if (Commands::GetBac(BT_BASE, &Bac_block_old, sizeof(Bac)) != Error::ER_NOERROR)
@@ -696,7 +683,7 @@ int TuneDialogA1::Start6_3_12()
     if (TuneFileSaved)
         tmps += "\nЕсли в процессе регулировки произошла ошибка, сохранённые коэффициенты\n"
                 "Вы можете загрузить из файла "
-            + StdFunc::GetSystemHomeDir() + "temptune.tn1";
+            + Settings::workDir() + "temptune.tn1";
     tmps += "\nПосле окончания проверки нажмите Enter для завершения процедуры регулировки";
     EMessageBox::information(this, "Завершение регулировки", tmps);
     QTabWidget *TuneTW = this->findChild<QTabWidget *>("tunetw");
@@ -1044,12 +1031,10 @@ int TuneDialogA1::ReadAnalogMeasurements()
     ChA1->FillBda(this);
     return Error::ER_NOERROR;
 }
-#endif
 
 void TuneDialogA1::LoadSettings()
 {
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
-    PovNumPoints = sets->value("PovNumPoints", "60").toInt();
+    PovNumPoints = Settings::get("PovNumPoints", "60");
 }
 
 void TuneDialogA1::FillBac(int bacnum)
@@ -1116,7 +1101,6 @@ void TuneDialogA1::SetDefCoefs()
     FillBac(1);
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialogA1::SetExtData()
 {
     QDialog *dlg = this->findChild<QDialog *>("extdatad");
@@ -1156,4 +1140,3 @@ void TuneDialogA1::CancelExt(const QString &dlgname)
     StdFunc::Cancel();
     dlg->close();
 }
-#endif

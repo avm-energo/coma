@@ -1,6 +1,7 @@
 #include "checkdialoga1.h"
 
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
@@ -16,9 +17,6 @@
 #include <QTime>
 #include <QVBoxLayout>
 #include <QtMath>
-#if PROGSIZE != PROGSIZE_EMUL
-#include "../gen/commands.h"
-#endif
 
 CheckDialogA1::CheckDialogA1(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
@@ -143,7 +141,6 @@ QWidget *CheckDialogA1::BdUI(int bdnum)
     }
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void CheckDialogA1::RefreshAnalogValues(int bdnum)
 {
     switch (bdnum)
@@ -247,7 +244,7 @@ void CheckDialogA1::PrepareAnalogMeasurements()
     WDFunc::SetLBLText(this, "Bda_in00", QString::number(NVar));
     WDFunc::SetLBLText(this, "Bda_out00", QString::number(NVar));
 }
-#endif
+
 QWidget *CheckDialogA1::CustomTab()
 {
     return nullptr;

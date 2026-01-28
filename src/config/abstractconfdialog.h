@@ -27,9 +27,7 @@ public:
     virtual void SetDefConf() = 0; // задать конфигурацию по умолчанию
     virtual void CheckConf() = 0;  // проверить конфигурацию на корректность, признаком наличия некорректностей
                                    // является непустой список CheckConfErrors
-#if PROGSIZE != PROGSIZE_EMUL
     void PrereadConf();
-#endif
     int GetChNumFromObjectName(QString ObjectName);
 
 private:
@@ -39,7 +37,6 @@ private:
 private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
-#if PROGSIZE != PROGSIZE_EMUL
     void ButtonReadConf();
     void tginit(float *tg);
 
@@ -47,7 +44,6 @@ public slots:
     void WriteConf();
     void ReadConf(int index);
 
-#endif
 signals:
     void BsiIsNeedToBeAcquiredAndChecked(); // signal to reload start block emitted when new configuration has been sent
                                             // to module

@@ -1,5 +1,6 @@
 #include "hiddendialog.h"
 
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../widgets/egroupbox.h"
@@ -15,9 +16,6 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QPushButton>
-#if PROGSIZE != PROGSIZE_EMUL
-#include "../gen/commands.h"
-#endif
 
 HiddenDialog::HiddenDialog(int status, QWidget *parent) : QDialog(parent)
 {
@@ -214,13 +212,11 @@ void HiddenDialog::AcceptChanges()
             Bhb.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
         }
     }
-#if PROGSIZE != PROGSIZE_EMUL
     if (!SendBhb())
     {
         EMessageBox::error(this, "Ошибка", "Ошибка при записи Hidden block");
         return;
     }
-#endif
     QElapsedTimer tme;
     tme.start();
     int endcounter = RSTTIMEOUT / 1000;
@@ -260,7 +256,6 @@ void HiddenDialog::GetVersion(quint32 &number, QString lename)
     number += static_cast<quint32>(tmps.toInt());
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 bool HiddenDialog::SendBhb()
 {
     void *ptr;
@@ -294,4 +289,3 @@ bool HiddenDialog::SendBhb()
     ResultOk = true;
     return true;
 }
-#endif

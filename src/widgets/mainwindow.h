@@ -2,12 +2,11 @@
 
 #include "../check/eabstractcheckdialog.h"
 #include "../config/confdialog.h"
-#include "../dialogs/fwupdialog.h"
 #include "../dialogs/mnktime.h"
+#include "../gen/eabstractprotocomchannel.h"
 #include "../gen/maindef.h"
 #include "../gen/modulebsi.h"
 #include "../tune/eabstracttunedialog.h"
-#include "eabstractprotocomchannel.h"
 
 #include <QMainWindow>
 #include <QModelIndex>
@@ -37,8 +36,6 @@ public:
     };
 
     int Mode;                // режим запуска программы
-    bool SWHide;
-    QRect SWGeometry;
     QVector<S2::DataRec> S2Config;
     QVector<S2::DataRec> S2ConfigForTune;
     ConfDialog *MainConfDialog;
@@ -107,9 +104,6 @@ public:
     QWidget *MainInfoWidget();
     QWidget *HthWidget();
     QWidget *Least();
-#if PROGSIZE >= PROGSIZE_LARGE
-    void SetSlideWidget();
-#endif
 
 signals:
     void CloseConnectDialog();
@@ -124,20 +118,15 @@ signals:
 
 private:
     bool ok;
-    bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
     EAbstractProtocomChannel::DeviceConnectStruct DevInfo;
     bool m_cancelled;
 
 #if PROGSIZE >= PROGSIZE_LARGE
-    void PrepareTimers();
-    void ShowOrHideSlideSW();
 #endif
     void LoadSettings();
     void SaveSettings();
-#if PROGSIZE != PROGSIZE_EMUL
     void SetProgressBarSize(QString prbnum, int size);
     void SetProgressBar(QString prbnum, int cursize);
-#endif
 
 private slots:
     void StartSettingsDialog();
@@ -156,7 +145,6 @@ private slots:
     void Fill();
     void PasswordCheck(QString psw);
     void AdminPasswordCheck(QString psw);
-#if PROGSIZE != PROGSIZE_EMUL
     void GetDeviceFromTable(QModelIndex idx);
     void Stage1_5();
     void Stage2();
@@ -166,15 +154,8 @@ private slots:
     void SetProgressBar2Size(int size);
     void SetProgressBar2(int cursize);
     void ShowConnectDialog();
-#endif
-#if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL
-    void StartEmul();
-#endif
 #if PROGSIZE >= PROGSIZE_LARGE
-    void UpdateMainTE(QByteArray ba);
-    void SetTEEnabled(bool enabled);
     int OpenBhbDialog();
-    void MouseMove();
 
 #endif
     void ShowErrorMessageBox(QString message);
@@ -184,5 +165,4 @@ protected:
     bool Autonomous; // признак автономного режима
 
     void keyPressEvent(QKeyEvent *e);
-    void resizeEvent(QResizeEvent *e);
 };

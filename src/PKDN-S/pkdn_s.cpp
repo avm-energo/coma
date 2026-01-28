@@ -172,9 +172,6 @@ void pkdn_s::Stage3()
 
     MainTW->repaint();
     MainTW->show();
-#if PROGSIZE >= PROGSIZE_LARGE
-    SetSlideWidget();
-#endif
     emit BsiRefresh();
 }
 

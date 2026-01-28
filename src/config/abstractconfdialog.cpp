@@ -1,6 +1,13 @@
 #include "abstractconfdialog.h"
 
+#include "../gen/commands.h"
+#include "../gen/error.h"
+#include "../gen/files.h"
+#include "../gen/modulebsi.h"
+#include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
+#include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QFileDialog>
@@ -8,16 +15,6 @@
 #include <QGroupBox>
 #include <QPushButton>
 #include <QTextEdit>
-#if PROGSIZE != PROGSIZE_EMUL
-#include "../gen/commands.h"
-#endif
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/maindef.h"
-#include "../gen/modulebsi.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
-#include <gen/settings.h>
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
@@ -25,7 +22,6 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
     connect(this, SIGNAL(SendTg(float *)), this, SLOT(tginit(float *)));
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void AbstractConfDialog::ReadConf(int index)
 {
     if (!TheEnd)
@@ -69,7 +65,7 @@ void AbstractConfDialog::WriteConf()
     else
         EMessageBox::error(this, "Ошибка", "Ошибка записи конфигурации" + QString::number(res));
 }
-#endif
+
 void AbstractConfDialog::SaveConfToFile()
 {
     QByteArray ba;
@@ -126,20 +122,12 @@ QWidget *AbstractConfDialog::ConfButtons()
     QGridLayout *wdgtlyout = new QGridLayout;
     QString tmps = "прибора";
     QPushButton *pb = new QPushButton("Прочитать из " + tmps);
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb, SIGNAL(clicked()), this, SLOT(ButtonReadConf()));
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 0, 1, 1);
     tmps = "прибор";
     pb = new QPushButton("Записать в " + tmps);
     pb->setObjectName("WriteConfPB");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb, SIGNAL(clicked()), this, SLOT(WriteConf()));
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Прочитать из файла");
     pb->setIcon(QIcon(Settings::configDir() + "images/load.png"));
@@ -156,16 +144,13 @@ QWidget *AbstractConfDialog::ConfButtons()
     return wdgt;
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void AbstractConfDialog::PrereadConf()
 {
-    if ((ModuleBSI::Health() & HTH_CONFIG)
-        || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
-        IsNeededDefConf = true;          // emit LoadDefConf();
-    else                                 // иначе заполнить значениями из модуля
+    if ((ModuleBSI::Health() & HTH_CONFIG)) // если в модуле нет конфигурации, заполнить поля по умолчанию
+        IsNeededDefConf = true;             // emit LoadDefConf();
+    else                                    // иначе заполнить значениями из модуля
         ReadConf(confIndex);
 }
-#endif
 // по имени виджета взять его номер
 
 int AbstractConfDialog::GetChNumFromObjectName(QString ObjectName)

@@ -1,12 +1,15 @@
 #include "eabstracttunedialoga1dn.h"
 
+#include "../gen/commands.h"
 #include "../gen/error.h"
-#include "../gen/stdfunc.h"
+#include "../gen/maindef.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/waitwidget.h"
+#include "../widgets/wd_func.h"
 #include "config.h"
 #include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #include <QComboBox>
 #include <QElapsedTimer>
@@ -14,14 +17,12 @@
 #include <QPushButton>
 #include <QRandomGenerator64>
 #include <QtMath>
-#if PROGSIZE != PROGSIZE_EMUL
-#include "../gen/commands.h"
-#endif
-#include "../widgets/wd_func.h"
-
 #include <float.h>
 
-EAbstractTuneDialogA1DN::EAbstractTuneDialogA1DN(QWidget *parent) : EAbstractTuneDialog(parent) { }
+EAbstractTuneDialogA1DN::EAbstractTuneDialogA1DN(QWidget *parent) : EAbstractTuneDialog(parent)
+{
+    m_isSecVoltageIs100 = false;
+}
 
 void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
 {
@@ -32,7 +33,7 @@ void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
     hlyout->addWidget(WDFunc::NewLBL(this, "Заводской номер ТН(ДН)"), 0);
     hlyout->addWidget(WDFunc::NewLE(this, "dnfnumle", QString::number(Bac_block2.DNFNum)), 10);
     lyout->addLayout(hlyout);
-    DNType = dntype;
+    m_DNType = dntype;
     QStringList sl;
     for (int i = 0; i < TUNEVARIANTSNUM; ++i)
         sl << QString::number(i + 1);
@@ -40,7 +41,12 @@ void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
     hlyout->addWidget(WDFunc::NewCB(this, "tunevariantcb", sl), 10);
     WDFunc::CBConnect(this, "tunevariantcb", WDFunc::CT_INDEXCHANGED, this, SLOT(SetKDNByTuneVariant(int)));
     lyout->addLayout(hlyout);
-    if (DNType == DNT_OWN)
+    sl = { "100/√3", "100" };
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL(this, "Вторичное напряжение:"), 0);
+    hlyout->addWidget(WDFunc::NewCB(this, "SecVoltage", sl));
+    lyout->addLayout(hlyout);
+    if (m_DNType == DNT_OWN)
     {
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(this, "Коэффициент деления для данного варианта: "));
@@ -51,11 +57,17 @@ void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
         hlyout->addWidget(WDFunc::NewSPB(this, "kdnetspb", 5, 99999, 0), 10);
         lyout->addLayout(hlyout);
     }
+    else
+    {
+        hlyout = new QHBoxLayout;
+        hlyout->addWidget(WDFunc::NewLBL(this, "Коэффициент деления поверяемого ТН(ДН): "));
+        hlyout->addWidget(WDFunc::NewSPB(this, "kdnetspb", 5, 99999, 0), 10);
+        lyout->addLayout(hlyout);
+    }
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "Род напряжения"), 0);
     sl = QStringList() << "Переменное" << "Постоянное";
     hlyout->addWidget(WDFunc::NewCB(this, "voltagetype", sl), 10);
-#if PROGSIZE != PROGSIZE_EMUL
     if (Commands::GetMode(m_mode) == Error::ER_NOERROR)
         WDFunc::SetCBIndex(this, "voltagetype", m_mode);
     else
@@ -63,14 +75,13 @@ void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
         ERMSG("Невозможно задать режим работы");
         return;
     }
-#endif
     lyout->addLayout(hlyout);
     QPushButton *pb = new QPushButton("Подтвердить");
     connect(pb, &QPushButton::clicked, this,
         [&]()
         {
-            SetTuneParameters();
-            dlg->close();
+            if (SetTuneParameters())
+                dlg->close();
         });
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
@@ -84,7 +95,6 @@ void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
     Accepted = false;
-#if PROGSIZE != PROGSIZE_EMUL
     int cbindex = WDFunc::CBIndex(this, "tunevariantcb");
     if ((cbindex < 0) || (cbindex > TUNEVARIANTSNUM))
     {
@@ -93,46 +103,68 @@ void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
     }
     WDFunc::SetSPBData(this, "kdnspb", Bac_block2.Bac_block2[cbindex].K_DN);
     WDFunc::SetSPBData(this, "kdnetspb", Bac_block2.Bac_block2[cbindex].K_DN);
-#endif
     dlg->show();
     while (!Accepted && !StdFunc::IsCancelled())
         TimeFunc::Wait();
 }
 
-void EAbstractTuneDialogA1DN::SetTuneParameters()
+bool EAbstractTuneDialogA1DN::SetTuneParameters()
 {
     if ((TuneVariant = WDFunc::CBIndex(this, "tunevariantcb")) == -1)
     {
         DBGMSG;
-        return;
+        return false;
     }
-    if ((VoltageType = WDFunc::CBIndex(this, "voltagetype")) == -1)
+    if ((m_voltageType = WDFunc::CBIndex(this, "voltagetype")) == -1)
     {
         DBGMSG;
-        return;
+        return false;
     }
-    m_mode = VoltageType;
-    if (DNType == DNT_OWN)
+    m_mode = m_voltageType;
+    if (m_DNType == DNT_OWN)
     {
         if (!WDFunc::SPBData(this, "kdnspb", m_kdn))
+        {
             DBGMSG;
-        if (!WDFunc::SPBData(this, "kdnetspb", m_kdnet))
-            DBGMSG;
-        ChA1->m_kdnet = m_kdnet;
-        ChA1->m_kdn = m_kdn;
-        if (m_mode == MODE_ALTERNATIVE)
-            Bac_block2.Bac_block2[TuneVariant].K_DN = m_kdn;
-        else
-            Bac_block3.Bac_block3[TuneVariant].K_DN = m_kdn;
-        if (m_mode == MODE_ALTERNATIVE)
-            WDFunc::LENumber(this, "dnfnumle", Bac_block2.DNFNum);
-        else
-            WDFunc::LENumber(this, "dnfnumle", Bac_block3.DNFNum);
-        QString tmps = WDFunc::CBData(this, "SecVoltage");
-        if (!tmps.isEmpty())
-            m_nomSecVoltage = (tmps == "100") ? static_cast<float>(100) : static_cast<float>(100) / sqrt(3);
+            return false;
+        }
+    }
+    else
+        m_kdn = Bac_block2.Bac_block2[TuneVariant].K_DN;
+    if (!WDFunc::SPBData(this, "kdnetspb", m_kdnet))
+    {
+        DBGMSG;
+        return false;
+    }
+    if (((m_DNType == DNT_OWN) && (m_kdn > m_kdnet)) || ((m_DNType == DNT_FOREIGN) && (m_kdn < m_kdnet)))
+    {
+        QString tmps = (m_DNType == DNT_OWN) ? "своего" : "внешнего";
+        QString tmps2 = (m_DNType == DNT_OWN) ? "больше" : "меньше";
+        EMessageBox::error(this, "Ошибка коэффициентов делителей",
+            "В режиме настройки " + tmps
+                + " делителя \n"
+                  "KDN своего не может быть "
+                + tmps2 + " KDN внешнего");
+        return false;
+    }
+    ChA1->m_kdnet = m_kdnet;
+    ChA1->m_kdn = m_kdn;
+    if (m_mode == MODE_ALTERNATIVE)
+        Bac_block2.Bac_block2[TuneVariant].K_DN = m_kdn;
+    else
+        Bac_block3.Bac_block3[TuneVariant].K_DN = m_kdn;
+    if (m_mode == MODE_ALTERNATIVE)
+        WDFunc::LENumber(this, "dnfnumle", Bac_block2.DNFNum);
+    else
+        WDFunc::LENumber(this, "dnfnumle", Bac_block3.DNFNum);
+    QString tmps = WDFunc::CBData(this, "SecVoltage");
+    if (!tmps.isEmpty())
+    {
+        m_nomSecVoltage = (tmps == "100") ? static_cast<float>(100) : static_cast<float>(100) / sqrt(3);
+        m_isSecVoltageIs100 = (tmps == "100");
     }
     Accepted = true;
+    return true;
 }
 
 bool EAbstractTuneDialogA1DN::ConditionDataDialog()
@@ -149,13 +181,13 @@ bool EAbstractTuneDialogA1DN::ConditionDataDialog()
     glyout->addWidget(WDFunc::NewLE(this, "PovDateTime", ReportHeader.PovDateTime), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Температура окружающей среды, °С"), row, 0, 1, 1, Qt::AlignRight);
     QString tmps;
-    if (StdFunc::FloatInRange(ChA1->Bda_out_an.Tamb, FLT_MAX, TH1))
+    if (StdFunc::FloatIsWithinLimits(ChA1->Bda_out_an.Tamb, FLT_MAX, TH1))
         tmps = "";
     else
         tmps = ReportHeader.Temp;
     glyout->addWidget(WDFunc::NewLE(this, "Temp", tmps), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Влажность воздуха, %"), row, 0, 1, 1, Qt::AlignRight);
-    if (StdFunc::FloatInRange(ChA1->Bda_out_an.Hamb, FLT_MAX, TH1))
+    if (StdFunc::FloatIsWithinLimits(ChA1->Bda_out_an.Hamb, FLT_MAX, TH1))
         tmps = "";
     else
         tmps = ReportHeader.Humidity;
@@ -182,8 +214,8 @@ bool EAbstractTuneDialogA1DN::ConditionDataDialog()
 
 bool EAbstractTuneDialogA1DN::DNDialog(PovDevStruct &PovDev)
 {
-    QString DNNamePhaseLblText = (DNType == DNT_FOREIGN) ? "Обозначение по схеме, фаза" : "Номер ступени делителя";
-    QString DNNamePhaseLeText = (DNType == DNT_FOREIGN) ? "" : QString::number(TuneVariant);
+    QString DNNamePhaseLblText = (m_DNType == DNT_FOREIGN) ? "Обозначение по схеме, фаза" : "Номер ступени делителя";
+    QString DNNamePhaseLeText = (m_DNType == DNT_FOREIGN) ? "" : QString::number(TuneVariant);
     StdFunc::ClearCancel();
     //    Cancelled = false;
     int row = 0;
@@ -193,8 +225,8 @@ bool EAbstractTuneDialogA1DN::DNDialog(PovDevStruct &PovDev)
     QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Данные ТН(ДН)"), Qt::AlignCenter);
     glyout->addWidget(WDFunc::NewLBL(this, "Организация, проводившая поверку"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(
-        WDFunc::NewLE(this, "UKDNOrganization", StdFunc::OrganizationString()), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE(this, "UKDNOrganization", Settings::get("OrganizationString", "Р&К")), row++, 1, 1,
+        1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Тип ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "DNType", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, DNNamePhaseLblText), row, 0, 1, 1, Qt::AlignRight);
@@ -207,7 +239,7 @@ bool EAbstractTuneDialogA1DN::DNDialog(PovDevStruct &PovDev)
     glyout->addWidget(WDFunc::NewLE(this, "DNU1", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение, В"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "DNU2", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    if (DNType == DNT_OWN)
+    if (m_DNType == DNT_OWN)
     {
         glyout->addWidget(WDFunc::NewLBL(this, "Номинальная мощность нагрузки, ВА"), row, 0, 1, 1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLE(this, "DNP", ""), row++, 1, 1, 1, Qt::AlignLeft);
@@ -252,7 +284,7 @@ void EAbstractTuneDialogA1DN::SetDNData()
     //    QString PovDev, PovDevSN, PovDevPrecision;
     QString tmps;
     WDFunc::LEData(this, "UKDNOrganization", tmps);
-    StdFunc::SetOrganizationString(tmps);
+    Settings::set("OrganizationString", tmps);
     WDFunc::LEData(this, "DNType", ReportHeader.DNType);
     WDFunc::LEData(this, "DNNamePhase", ReportHeader.DNNamePhase);
     WDFunc::LEData(this, "DNSerialNum", ReportHeader.DNSerNum);
@@ -286,21 +318,34 @@ void EAbstractTuneDialogA1DN::SetConditionData()
 void EAbstractTuneDialogA1DN::FillModelRow(int index)
 {
     int row;
-    const int Percents23625[] = { 20, 50, 80, 100, 120 };
-    const int Percents1983[] = { 80, 100, 120 };
-    const int *Percents = (PovType == GOST_1983) ? Percents1983 : Percents23625;
+    QList<int> Percents;
+    if (m_isSecVoltageIs100)
+    {
+        if (m_povType == GOST_1983)
+            Percents = { 50, 80, 100 };
+        else
+            Percents = { 20, 50, 80, 100 };
+    }
+    else
+    {
+        if (m_povType == GOST_1983)
+            Percents = { 80, 100, 120 };
+        else
+            Percents = { 20, 50, 80, 100, 120 };
+    }
 
-    if (DNType == DNT_OWN) // для собственного ДН PovType = GOST_23625 и проценты идут задом наперёд
+    if (m_DNType == DNT_OWN) // для собственного ДН PovType = GOST_23625 и проценты идут задом наперёд
         row = (index > 4) ? (index - 4) : (4 - index);
     else
         row = (index > 4) ? (8 - index) : index;
 
-    int percent = Percents[row];
-    float sign = (DNType == DNT_OWN) ? -1.0 : 1.0;
+    assert(row < Percents.size());
+    int percent = Percents.at(row);
+    float sign = (m_DNType == DNT_OWN) ? -1.0 : 1.0;
     // заполняем модель по полученным измерениям:
-    if ((StdFunc::FloatInRange(CurrentS, 1)) && (DNType == DNT_FOREIGN))
+    if ((StdFunc::FloatIsWithinLimits(CurrentS, 1, TH01)) && (m_DNType == DNT_FOREIGN))
     {
-        if (PovType == GOST_1983)
+        if (m_povType == GOST_1983)
             row += GOST1983ROWCOUNT / 2;
         else
             row += GOST23625ROWCOUNT / 2;
@@ -310,7 +355,7 @@ void EAbstractTuneDialogA1DN::FillModelRow(int index)
         int column = 0;
         RepModel->UpdateItem(row, column++, percent, 0);
 
-        if (DNType == DNT_OWN)
+        if (m_DNType == DNT_OWN)
             RepModel->UpdateItem(row, column++, "");
         else
             RepModel->UpdateItem(row, column++, CurrentS, 3);
@@ -322,18 +367,18 @@ void EAbstractTuneDialogA1DN::FillModelRow(int index)
         else
             RepModel->UpdateItem(row, column++, "");
 
-        if (PovType == GOST_23625)
+        if (m_povType == GOST_23625)
             column += 12;
         else
         {
-            if (DNType == DNT_FOREIGN)
+            if (m_DNType == DNT_FOREIGN)
                 RepModel->UpdateItem(row, column++, Bac_block2.Bac_block2[TuneVariant].dU_cor[index] * sign, 5);
             else
                 RepModel->UpdateItem(row, column++, Dd_Block[index].dUrms * sign, 5);
 
             if (m_mode == MODE_ALTERNATIVE)
             {
-                if (DNType == DNT_FOREIGN)
+                if (m_DNType == DNT_FOREIGN)
                     RepModel->UpdateItem(row, column++, Bac_block2.Bac_block2[TuneVariant].dPhy_cor[index] * sign, 5);
                 else
                     RepModel->UpdateItem(row, column++, Dd_Block[index].Phy * sign, 5);
@@ -361,7 +406,7 @@ void EAbstractTuneDialogA1DN::FillModelRow(int index)
         float dUrmsU = RepModel->Item(row, 2);
         float UrmsM = (dUrmsU + Dd_Block[index].dUrms * sign) / 2;
         RepModel->UpdateItem(row, 6, UrmsM, 5);
-        if (DNType == DNT_FOREIGN)
+        if (m_DNType == DNT_FOREIGN)
             RepModel->UpdateItem(row, 8, Bac_block2.Bac_block2[TuneVariant].dU_cor[8 - index] * sign, 5);
         else
             RepModel->UpdateItem(row, 8, UrmsM, 5);
@@ -374,7 +419,7 @@ void EAbstractTuneDialogA1DN::FillModelRow(int index)
             float PhyU = RepModel->Item(row, 3);
             float PhyM = (PhyU + Dd_Block[index].Phy * sign) / 2;
             RepModel->UpdateItem(row, 7, PhyM, 5);
-            if (DNType == DNT_FOREIGN)
+            if (m_DNType == DNT_FOREIGN)
                 RepModel->UpdateItem(row, 9, Bac_block2.Bac_block2[TuneVariant].dPhy_cor[8 - index] * sign, 5);
             else
                 RepModel->UpdateItem(row, 9, PhyM, 5);
@@ -397,19 +442,24 @@ void EAbstractTuneDialogA1DN::FillModelRow(int index)
 void EAbstractTuneDialogA1DN::FillHeaders()
 {
     QStringList sl = QStringList() << "Проц" << "S/Sном" << "dUrms(u)" << "Phy(u)";
-    if (PovType == GOST_23625)
+    if (m_povType == GOST_1983)
+        sl << "dUcor" << "dPhycor" << "dUrms" << "Phy";
+    else
         sl << "dUrms(d)" << "Phy(d)" << "dUrms(ud)" << "Phy(ud)" << "dUrms(md)" << "Phy(md)" << "dUrms(u-d)"
            << "Phy(u-d)" << "dUrms" << "Phy" << "sUrms(d)" << "sPhy(d)";
-    else
-        sl << "dUcor" << "dPhycor" << "dUrms" << "Phy";
     sl << "sUrms(u)" << "sPhy(u)";
     RepModel->SetHeader(sl);
 }
 
 void EAbstractTuneDialogA1DN::TemplateCheck()
 {
-    QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
-    QString path = Settings::configDir() + "/reports/a1_" + GOST + ".lrxml";
+    QString path;
+    if (m_povType == GOST_1983)
+        path = Settings::configDir() + "/reports/a1_1983.lrxml";
+    else if (m_povType == GOST_23625)
+        path = Settings::configDir() + "/reports/a1_23625.lrxml";
+    else
+        path = Settings::configDir() + "/reports/a1_dn.lrxml";
     QFile file(path);
     if (!file.exists()) // нет файла шаблона
     {
@@ -532,8 +582,8 @@ void EAbstractTuneDialogA1DN::FillBackBac(int bacnum)
 void EAbstractTuneDialogA1DN::SetDefCoefs()
 {
     int bacnum = sender()->objectName().toInt();
-    float defu2[6] = { 0.0, 12.0, 30.0, 48.0, 60.0, 72.0 };
-    float defu3[6] = { 0.0, 16.0, 40.0, 64.0, 80.0, 100.0 };
+    float defu2[6] = { 0.0, 11.5, 28.8, 46.2, 57.7, 69.3 };
+    float defu3[6] = { 0.0, 16.7, 41.6, 66.6, 83.3, 100.0 };
 
     if (bacnum == 2)
     {
@@ -583,27 +633,24 @@ void EAbstractTuneDialogA1DN::SetDefCoefs()
 
 void EAbstractTuneDialogA1DN::LoadSettings()
 {
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
-    PovDev.DevName = sets->value("PovDevName", "UPTN").toString();
-    PovDev.DevSN = sets->value("PovDevSN", "00000001").toString();
-    PovDev.DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
-    PovNumPoints = sets->value("PovNumPoints", "60").toInt();
+    PovDev.DevName = QString(Settings::get("PovDevName", "ПКС-1"));
+    PovDev.DevSN = QString(Settings::get("PovDevSN", "00000001"));
+    PovDev.DevPrecision = QString(Settings::get("PovDevPrecision", "0.05"));
+    PovNumPoints = Settings::get("PovNumPoints", "60");
     if ((PovNumPoints <= 0) || (PovNumPoints > 1000))
         PovNumPoints = 60;
-    //    OrganizationString = sets->value("Organization", "Р&К").toString();
+    //    OrganizationString = Settings::get("Organization", "Р&К").toString();
 }
 
 void EAbstractTuneDialogA1DN::SaveSettings()
 {
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
-    sets->setValue("PovDevName", PovDev.DevName);
-    sets->setValue("PovDevSN", PovDev.DevSN);
-    sets->setValue("PovDevPrecision", PovDev.DevPrecision);
-    sets->setValue("PovNumPoints", QString::number(PovNumPoints, 10));
-    //    sets->setValue("Organization", OrganizationString);
+    Settings::set("PovDevName", PovDev.DevName);
+    Settings::set("PovDevSN", PovDev.DevSN);
+    Settings::set("PovDevPrecision", PovDev.DevPrecision);
+    Settings::set("PovNumPoints", QString::number(PovNumPoints, 10));
+    //    Settings::set("Organization", OrganizationString);
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void EAbstractTuneDialogA1DN::GetBdAndFillMTT()
 {
     if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
@@ -624,6 +671,7 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out, int index)
     else
         return Error::ER_GENERALERROR;
 
+#ifndef AVM_DEBUG
     WaitNSeconds(WAITFORCONST);
     if (StartMeasurement() != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
@@ -695,7 +743,7 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out, int index)
     if (type == GAAT_BDA_OUT)
     {
         float Um = tmpdd.dUrms / count; // среднее значение погрешности по напряжению
-        if (!StdFunc::FloatInRange(Um, 0, TH005))
+        if (!StdFunc::FloatIsWithinLimits(Um, 0, TH005))
         {
             EMessageBox::error(this, "Ошибка", "Среднее значение погрешности за пределами 0,05 %");
             return Error::ER_GENERALERROR;
@@ -715,7 +763,7 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out, int index)
         }
         sUo = qSqrt(sUo / count);
         sPhyo = qSqrt(sPhyo / count);
-        if (!StdFunc::FloatInRange(sUo, 0, TH005) || !StdFunc::FloatInRange(sPhyo, 0, TH05))
+        if (!StdFunc::FloatIsWithinLimits(sUo, 0, TH005) || !StdFunc::FloatIsWithinLimits(sPhyo, 0, TH05))
         {
             EMessageBox::error(this, "Ошибка", "Среднее значение погрешности за пределами 0,05 % или по углу - за 0,5");
             return Error::ER_GENERALERROR;
@@ -731,6 +779,7 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out, int index)
         Bd->UefNat_filt[1] = tmpbd.UefNat_filt[1] / count //
             * m_kdnet / m_kdn; // given value if there would an etalon DN with the same coefficient
     }
+#endif
     FillModelRow(index);
     return Error::ER_NOERROR;
 }
@@ -755,18 +804,53 @@ int EAbstractTuneDialogA1DN::AndClearInitialValues()
     Bac_block3.Bac_block3[TuneVariant].U2kDN[0] = 0;
     return Error::ER_NOERROR;
 }
-#endif
 
 int EAbstractTuneDialogA1DN::ShowVoltageDialog(int percent)
 {
-    assert(m_kdnet != 0);
-    float kcoef = m_kdn / m_kdnet;
-    float VoltageInV = (m_mode == MODE_ALTERNATIVE) ? m_nomSecVoltage : m_nomSecVoltage * qSqrt(2);
-    VoltageInV *= static_cast<float>(percent) / 100.0;
-    float VoltageInVet = VoltageInV * kcoef;
-    float VoltageInkV = (m_mode == MODE_ALTERNATIVE) ? Bac_block2.Bac_block2[TuneVariant].K_DN
-                                                     : Bac_block3.Bac_block3[TuneVariant].K_DN;
-    VoltageInkV *= m_nomSecVoltage * percent / 100000.0;
+    assert(m_kdnet > 0.9); // not zero
+    float VoltageInV, VoltageInVet, VoltageInkV, kcoef;
+    if (m_DNType == DNTypes::DNT_OWN)
+    {
+        kcoef = m_kdn / m_kdnet;
+
+        if (m_isSecVoltageIs100)
+        {
+            VoltageInV = m_nomSecVoltage;
+            VoltageInkV = m_kdn;
+        }
+        else
+        {
+            VoltageInV = (m_mode == MODE_ALTERNATIVE) ? m_nomSecVoltage : m_nomSecVoltage * qSqrt(2);
+            VoltageInkV = (m_mode == MODE_ALTERNATIVE) ? m_kdn / qSqrt(3) : m_kdn / qSqrt(3) * qSqrt(2);
+        }
+
+        VoltageInV *= static_cast<float>(percent) / 100.0;
+
+        VoltageInVet = VoltageInV * kcoef;
+
+        VoltageInkV *= static_cast<float>(percent) / 1000.0;
+    }
+    else
+    {
+        kcoef = m_kdnet / m_kdn;
+
+        if (m_isSecVoltageIs100)
+        {
+            VoltageInVet = m_nomSecVoltage;
+            VoltageInkV = m_kdn;
+        }
+        else
+        {
+            VoltageInVet = (m_mode == MODE_ALTERNATIVE) ? m_nomSecVoltage : m_nomSecVoltage * qSqrt(2);
+            VoltageInkV = (m_mode == MODE_ALTERNATIVE) ? m_kdn / qSqrt(3) : m_kdn / qSqrt(3) * qSqrt(2);
+        }
+
+        VoltageInVet *= static_cast<float>(percent) / 100.0;
+
+        VoltageInV = VoltageInVet * kcoef;
+
+        VoltageInkV *= static_cast<float>(percent) / 1000.0;
+    }
     if (EMessageBox::question(this, "Подтверждение",
             "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ\n("
                 + QString::number(VoltageInV, 'f', 3) + " В на своём ДН и " + QString::number(VoltageInVet, 'f', 3)
@@ -845,7 +929,7 @@ void EAbstractTuneDialogA1DN::TempRandomizeModel()
 {
     // 1983
     QRandomGenerator64 generator;
-    PovType = GOST_23625;
+    m_povType = GOST_23625;
     RepModel->SetModel(GOST23625ROWCOUNT, GOST23625COLCOUNT);
     for (int i = 0; i < GOST23625ROWCOUNT; ++i)
     {

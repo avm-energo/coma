@@ -4,14 +4,16 @@
 #include "a1dialog.h"
 
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/maindef.h"
-#include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../widgets/egroupbox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+#include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QGridLayout>
@@ -23,9 +25,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QtMath>
-#if PROGSIZE != PROGSIZE_EMUL
-#include "../gen/commands.h"
-#endif
 
 A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : EAbstractTuneDialogA1DN(parent)
 {
@@ -42,7 +41,6 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : EAbstractTuneDial
         return;
     }
     TuneVariant = 0;
-#if PROGSIZE != PROGSIZE_EMUL
     // считать варианты использования и соответствующие им коэффициенты из модуля
     if (Commands::GetFile(1, S2Config) != Error::ER_NOERROR)
     {
@@ -54,7 +52,6 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : EAbstractTuneDial
         EMessageBox::error(this, "Ошибка", "Ошибка чтения настроечных параметров из модуля");
         return;
     }
-#endif
     WDFunc::SetLBLText(this, "tunevarcoef1", QString::number(Bac_block2.Bac_block2[0].K_DN, 'f', 0));
     WDFunc::SetLBLText(this, "tunevarcoef2", QString::number(Bac_block2.Bac_block2[1].K_DN, 'f', 0));
     WDFunc::SetLBLText(this, "tunevarcoef3", QString::number(Bac_block2.Bac_block2[2].K_DN, 'f', 0));
@@ -125,18 +122,13 @@ void A1Dialog::SetupUI()
 
     pb = new QPushButton("Начать поверку делителя");
     pb->setObjectName("StartWorkPb");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb, SIGNAL(clicked(bool)), this, SLOT(StartWork()));
-#endif
     //    connect(pb,SIGNAL(clicked(bool)),this,SLOT(TempRandomizeModel()));
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
     lyout->addWidget(pb);
     lyout->addStretch(10);
     setLayout(lyout);
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void A1Dialog::StartWork()
 {
     TuneVariant = 0;
@@ -148,14 +140,15 @@ void A1Dialog::StartWork()
         EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации из модуля");
         return;
     }
-    WDFunc::SetEnabled(this, "StartWorkPb", false);
-    PovType = TempPovType = GOST_NONE;
+    // WDFunc::SetEnabled(this, "StartWorkPb", false);
+    m_povType = m_tempPovType = GOST_NONE;
     if (GetBac() != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка чтения настроечных параметров из модуля");
         return;
     }
     InputTuneParameters(DNT_FOREIGN);
+#ifndef AVM_DEBUG
     AndClearInitialValues();
     if (StdFunc::IsCancelled())
         return;
@@ -169,19 +162,21 @@ void A1Dialog::StartWork()
         EMessageBox::error(this, "Ошибка", "Ошибка установки рода напряжения");
         return;
     }
+#endif
     QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Выберите тип поверяемого оборудования"));
     QRadioButton *rb = new QRadioButton("Трансформаторы напряжения измерительные лабораторные по ГОСТ 23625-2001");
-    rb->setObjectName("rb1");
-    connect(rb, SIGNAL(toggled(bool)), this, SLOT(RBToggled()));
+    connect(rb, &QRadioButton::toggled, this, [&]() { m_tempPovType = GOST_23625; });
     lyout->addWidget(rb);
     rb = new QRadioButton("Трансформаторы напряжения по ГОСТ 1983-2001");
-    rb->setObjectName("rb2");
-    connect(rb, SIGNAL(toggled(bool)), this, SLOT(RBToggled()));
+    connect(rb, &QRadioButton::toggled, this, [&]() { m_tempPovType = GOST_1983; });
+    lyout->addWidget(rb);
+    rb = new QRadioButton("Делители напряжения");
+    connect(rb, &QRadioButton::toggled, this, [&]() { m_tempPovType = DN; });
     lyout->addWidget(rb);
     QPushButton *pb = new QPushButton("Готово");
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(Proceed()));
+    connect(pb, &QPushButton::clicked, this, [&]() { m_povType = m_tempPovType; });
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
@@ -190,26 +185,27 @@ void A1Dialog::StartWork()
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
     dlg->show();
-    while ((PovType == GOST_NONE) && !StdFunc::IsCancelled())
+    while ((m_povType == GOST_NONE) && !StdFunc::IsCancelled())
         TimeFunc::Wait();
     dlg->close();
-    int rowcount = (PovType == GOST_1983) ? GOST1983ROWCOUNT : GOST23625ROWCOUNT;
-    int columncount = (PovType == GOST_1983) ? GOST1983COLCOUNT : GOST23625COLCOUNT;
+    int rowcount = (m_povType == GOST_1983) ? GOST1983ROWCOUNT : GOST23625ROWCOUNT;
+    int columncount = (m_povType == GOST_1983) ? GOST1983COLCOUNT : GOST23625COLCOUNT;
     RepModel->SetModel(rowcount, columncount);
     if (!StdFunc::IsCancelled())
     {
         if (EMessageBox::question(this, "Подтверждение",
                 "Подключите вывод нижнего плеча \"своего\" делителя напряжения ко входу U1 прибора\n"
-                "Вывод нижнего плеча поверяемого делителя или выход низшего напряжения поверяемого ТН - ко входу U2\n"
-                "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 0,25·Sном")
+                "Вывод нижнего плеча поверяемого делителя или выход низшего напряжения поверяемого ТН(ДН) - ко входу "
+                "U2\n"
+                "На нагрузочном устройстве поверяемого ТН(ДН) установите значение мощности, равное 0,25·Sном")
             == true)
         {
             CurrentS = 0.25;
-            Index = 0;
-            Counter = 0;
+            m_index = 0;
+            m_counter = 0;
             WDFunc::SetEnabled(this, "cancelpb", true);
             WDFunc::SetEnabled(this, "acceptpb", true);
-            int percent = (PovType == GOST_1983) ? 80 : 20;
+            int percent = (m_povType == GOST_1983) ? 80 : 20;
             if (ShowVoltageDialog(percent) == Error::ER_NOERROR)
             {
                 Go();
@@ -220,26 +216,34 @@ void A1Dialog::StartWork()
     WDFunc::SetEnabled(this, "StartWorkPb", true);
     EMessageBox::information(this, "Информация", "Операция прервана");
 }
-#endif
 
-#if PROGSIZE != PROGSIZE_EMUL
 int A1Dialog::GetConf()
 {
     return Commands::GetFile(1, S2Config);
 }
-#endif
 
 void A1Dialog::GenerateReport()
 {
+    Report *report;
     // данные в таблицу уже получены или из файла, или в процессе работы
     // отобразим таблицу
     FillHeaders();
     ShowTable();
-    QString GOST = (PovType == GOST_1983) ? "a1_1983" : "a1_23625";
-    Report *report = new Report(GOST, this);
+    switch (m_povType)
+    {
+    case GOST_1983:
+        report = new Report("a1_1983", this);
+        break;
+    case GOST_23625:
+        report = new Report("a1_23625", this);
+        break;
+    default:
+        report = new Report("a1_dn", this);
+        break;
+    }
     report->AddModel("maindata", RepModel);
     // запрос блока Bda_h, чтобы выдать KNI в протокол
-#if PROGSIZE != PROGSIZE_EMUL
+#ifndef AVM_DEBUG
     if (m_mode == MODE_ALTERNATIVE)
     {
         if (!Autonomous)
@@ -253,7 +257,7 @@ void A1Dialog::GenerateReport()
     else
         report->SetVar("KNI", "");
 #endif
-    report->SetVar("Organization", StdFunc::OrganizationString());
+    report->SetVar("Organization", Settings::get("OrganizationString", "Р&К"));
     QString day = QDateTime::currentDateTime().toString("dd");
     QString month = QDateTime::currentDateTime().toString("MM");
     QString yr = QDateTime::currentDateTime().toString("yy");
@@ -290,6 +294,8 @@ void A1Dialog::GenerateReport()
     delete report;
 }
 
+// TODO: implement DN branch
+
 void A1Dialog::ParsePKDNFile(const QString &filename)
 {
     int rowcount, columncount;
@@ -319,14 +325,14 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
             MDSCount = 6;
             rowcount = GOST1983ROWCOUNT;
             columncount = GOST1983COLCOUNT;
-            PovType = GOST_1983;
+            m_povType = GOST_1983;
         }
         else if (Results.GOST == 1) // GOST 23625
         {
             MDSCount = 18;
             rowcount = GOST23625ROWCOUNT;
             columncount = GOST23625COLCOUNT;
-            PovType = GOST_23625;
+            m_povType = GOST_23625;
         }
         else
         {
@@ -348,8 +354,8 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
         memptr = sizeof(ResultsStruct);
         MDSs = sizeof(MainDataStruct);
         int index = 0;
-        DNType = DNT_FOREIGN;
-        int endcounter = (PovType == GOST_1983) ? 3 : 9;
+        m_DNType = DNT_FOREIGN;
+        int endcounter = (m_povType == GOST_1983) ? 3 : 9;
         for (int i = 0; i < MDSCount; ++i)
         {
             int Pindex = (index > 4) ? (8 - index) : index;
@@ -393,66 +399,93 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
     }
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
-
 void A1Dialog::Go()
 {
-    int endcounter = (PovType == GOST_1983) ? 3 : 9;
-    const int Percents23625[] = { 20, 50, 80, 100, 120 };
-    const int Percents1983[] = { 80, 100, 120 };
-    const int *Percents = (PovType == GOST_1983) ? Percents1983 : Percents23625;
-
-    int res = GetAndAverage(GAAT_BDA_OUT, &Dd_Block[Index], Index);
-    if (res == Error::ER_NOERROR)
+    int endcounter; // = (m_povType == GOST_1983) ? 3 : 9;
+    QList<int> Percents;
+    if (m_isSecVoltageIs100)
     {
-        FillMedian(Index);
-        ++Index;
-        if (Index >= endcounter)
+        if (m_povType == GOST_1983)
         {
-            if (StdFunc::FloatInRange(CurrentS, 0.25))
+            Percents = { 50, 80, 100 };
+            endcounter = 3;
+        }
+        else
+        {
+            Percents = { 20, 50, 80, 100 };
+            endcounter = 7;
+        }
+    }
+    else
+    {
+        if (m_povType == GOST_1983)
+        {
+            Percents = { 80, 100, 120 };
+            endcounter = 3;
+        }
+        else
+        {
+            Percents = { 20, 50, 80, 100, 120 };
+            endcounter = 9;
+        }
+    }
+
+    while (true)
+    {
+        int res = GetAndAverage(GAAT_BDA_OUT, &Dd_Block[m_index], m_index);
+        if (res == Error::ER_NOERROR)
+        {
+            FillMedian(m_index);
+            ++m_index;
+            if (m_index >= endcounter)
             {
-                Index = 0;
-                CurrentS = 1;
-                if (EMessageBox::question(this, "Подтверждение",
-                        "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 1,0·Sном")
-                    == false)
+                if (StdFunc::FloatIsWithinLimits(CurrentS, 0.25, TH01))
                 {
-                    StdFunc::Cancel();
+                    m_index = 0;
+                    CurrentS = 1;
+                    if (EMessageBox::question(this, "Подтверждение",
+                            "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное "
+                            "1,0·Sном")
+                        == false)
+                    {
+                        StdFunc::Cancel();
+                        Decline();
+                        return;
+                    }
+                }
+                else
+                {
+                    // запись файла протокола
+                    ReportHeader.PovDateTime = QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss");
+                    Commands::GetBd(A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
+                    ReportHeader.Freq = QString::number(ChA1->Bda_out.Frequency, 'g', 4);
+                    ReportHeader.Humidity = QString::number(ChA1->Bda_out_an.Hamb, 'g', 3);
+                    ReportHeader.Temp = QString::number(ChA1->Bda_out_an.Tamb, 'g', 2);
+                    if (DNDialog(PovDev)) // вводим данные по делителю
+                    {
+                        EMessageBox::information(this, "Отменено", "Операция отменена");
+                        return;
+                    }
+                    if (ConditionDataDialog()) // задаём условия поверки
+                    {
+                        EMessageBox::information(this, "Отменено", "Операция отменена");
+                        return;
+                    }
+                    GenerateReport();
+                    // вывод протокола на экран
+                    // формирование отчёта
                     Decline();
+                    return;
                 }
             }
-            else
+            int Pindex = (m_index >= Percents.size()) ? (2 * Percents.size() - m_index - 2) : m_index;
+            assert(Pindex < Percents.size());
+            if (ShowVoltageDialog(Percents.at(Pindex)) != Error::ER_NOERROR)
             {
-                // запись файла протокола
-                ReportHeader.PovDateTime = QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss");
-                Commands::GetBd(A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
-                ReportHeader.Freq = QString::number(ChA1->Bda_out.Frequency, 'g', 4);
-                ReportHeader.Humidity = QString::number(ChA1->Bda_out_an.Hamb, 'g', 3);
-                ReportHeader.Temp = QString::number(ChA1->Bda_out_an.Tamb, 'g', 2);
-                if (DNDialog(PovDev)) // вводим данные по делителю
-                {
-                    EMessageBox::information(this, "Отменено", "Операция отменена");
-                    return;
-                }
-                if (ConditionDataDialog()) // задаём условия поверки
-                {
-                    EMessageBox::information(this, "Отменено", "Операция отменена");
-                    return;
-                }
-                GenerateReport();
-                // вывод протокола на экран
-                // формирование отчёта
                 Decline();
                 return;
             }
         }
-        int Pindex = (Index > 4) ? (8 - Index) : Index;
-        if (ShowVoltageDialog(Percents[Pindex]) != Error::ER_NOERROR)
-        {
-            Decline();
-            return;
-        }
-        Go();
     }
     StdFunc::ClearCancel();
     Decline();
@@ -466,26 +499,11 @@ void A1Dialog::Decline()
     MeasurementTimer->stop();
 }
 
-void A1Dialog::Proceed()
-{
-    PovType = TempPovType;
-}
-#endif
-
 void A1Dialog::Cancel()
 {
     WDFunc::SetEnabled(this, "StartWorkPb", true);
     StdFunc::Cancel();
     emit Finished();
-}
-
-void A1Dialog::RBToggled()
-{
-    QString tmps = sender()->objectName();
-    if (tmps == "rb1")
-        TempPovType = GOST_23625;
-    else
-        TempPovType = GOST_1983;
 }
 
 int A1Dialog::ReadAnalogMeasurements()

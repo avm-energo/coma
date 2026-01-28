@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../gen/s2datatypes.h"
-#include "maindef.h"
 
 #include <QWidget>
 #include <QtGlobal>
@@ -50,9 +49,7 @@ public:
 
     ModuleBSI();
 
-#if PROGSIZE != PROGSIZE_EMUL
     static int SetupBSI();
-#endif
     static void SetupEmulatedBsi(Bsi &bsi);
     static QString GetModuleTypeString();
     static quint32 GetMType(BoardTypes type);

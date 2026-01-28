@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../gen/mainwindow.h"
+#include "../widgets/mainwindow.h"
 
 #include <QResizeEvent>
 

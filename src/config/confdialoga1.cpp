@@ -19,9 +19,7 @@ ConfDialogA1::ConfDialogA1(QList<S2::DataRec> &S2Config, QWidget *parent) : Abst
     setAttribute(Qt::WA_DeleteOnClose);
 
     SetupUI();
-#if PROGSIZE != PROGSIZE_EMUL
     PrereadConf();
-#endif
 }
 
 ConfDialogA1::~ConfDialogA1()

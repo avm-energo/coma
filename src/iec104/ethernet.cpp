@@ -1,13 +1,12 @@
 #include "ethernet.h"
 
 #include "../gen/error.h"
-#include "../gen/stdfunc.h"
 #include "config.h"
+#include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #include <QCoreApplication>
-#include <QSettings>
 #include <QThread>
-
 ethernet::ethernet(QObject *parent) : QObject(parent)
 {
     OutDataBuf.clear();
@@ -16,13 +15,13 @@ ethernet::ethernet(QObject *parent) : QObject(parent)
 
 void ethernet::Run()
 {
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
-    StdFunc::SetMIPIP(sets->value("MIPIP", "172.16.31.178").toString());
+    Settings::set("MIPIP", "172.16.31.178");
     sock = new QTcpSocket(this);
     connect(sock, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(seterr(QAbstractSocket::SocketError)));
     connect(sock, SIGNAL(connected()), this, SIGNAL(connected()));
     connect(sock, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-    sock->connectToHost(StdFunc::MIPIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
+    sock->connectToHost(
+        Settings::get("MIPIP", "172.16.11.12"), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     connect(sock, SIGNAL(readyRead()), this, SLOT(CheckForData()));
     while (1)
     {

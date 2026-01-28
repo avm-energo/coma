@@ -51,7 +51,6 @@ public:
     QWidget *BottomUI(int bacnum);
     void SetBac(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
-#if PROGSIZE != PROGSIZE_EMUL
     void ProcessTune();
     int CheckPassword();
     virtual void SetLbls() = 0; // заполнить список сообщений
@@ -67,7 +66,6 @@ public:
     int SaveAllTuneCoefs();
     void PrereadConf();
     virtual void GetBdAndFillMTT() = 0;
-#endif
     virtual void FillBac(int bacnum) = 0;
     virtual void FillBackBac(int bacnum) = 0;
     void SaveToFileEx(int bacnum);
@@ -83,7 +81,6 @@ signals:
     void LoadDefConf();
 
 public slots:
-#if PROGSIZE != PROGSIZE_EMUL
     void CancelTune();
     void ReadAllTuneCoefs();
     void ReadTuneCoefs();
@@ -93,21 +90,17 @@ public slots:
     int StartMeasurement();
     virtual void SetDefCoefs() = 0;
     void TuneMode(int);
-
-#endif
     void SaveToFile();
 
 private:
     void SetMeasurementEnabled(bool enabled);
 
 private slots:
-#if PROGSIZE != PROGSIZE_EMUL
     void StartTune();
     void PasswordCheck(QString psw);
     virtual int ReadAnalogMeasurements() = 0;
     //    void UpdateNSecondsWidget();
     void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
-#endif
     void LoadFromFile();
 
 protected:

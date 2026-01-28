@@ -1,8 +1,8 @@
 #include "../gen/colors.h"
-#include "../gen/stdfunc.h"
 #include "config.h"
 #include "pkdn_s.h"
 #include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -19,9 +19,6 @@ int main(int argc, char *argv[])
     //    w.setAttribute(Qt::WA_AlwaysShowToolTips);
     w.SetMode(MainWindow::COMA_GENERALMODE);
 
-#if PROGSIZE == PROGSIZE_EMUL
-    w.SetMode(Coma::COMA_AUTON_MODE);
-#endif
     w.Go();
 
     return a.exec();

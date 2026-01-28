@@ -1,15 +1,17 @@
 #include "tunedialoga1dn.h"
 
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/maindef.h"
 #include "../gen/modulebsi.h"
-#include "../gen/stdfunc.h"
 #include "../widgets/egroupbox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 #include "config.h"
+#include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QEventLoop>
@@ -21,9 +23,6 @@
 #include <QTabWidget>
 #include <QTime>
 #include <QVBoxLayout>
-#if PROGSIZE != PROGSIZE_EMUL
-#include "../gen/commands.h"
-#endif
 
 TuneDialogA1DN::TuneDialogA1DN(QWidget *parent) : EAbstractTuneDialogA1DN(parent)
 {
@@ -37,7 +36,6 @@ TuneDialogA1DN::TuneDialogA1DN(QWidget *parent) : EAbstractTuneDialogA1DN(parent
 
 TuneDialogA1DN::~TuneDialogA1DN() { }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialogA1DN::SetLbls()
 {
     lbls.append("7.2.2. Ввод пароля...");
@@ -127,7 +125,6 @@ void TuneDialogA1DN::SetPf()
     /*    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::StartTempRandomizeModel); //
        TempRandomizeModel pf[lbls.at(count++)] = func; */
 }
-#endif
 
 void TuneDialogA1DN::SetupUI()
 {
@@ -282,11 +279,6 @@ QWidget *TuneDialogA1DN::CommonUI()
     hlyout->addWidget(WDFunc::NewLBL(this, "Заводской номер делителя:"), 0);
     hlyout->addWidget(WDFunc::NewLE(this, "DividerSN", "", uconfWSS));
     lyout->addLayout(hlyout);
-    QStringList sl = { "100/√3", "100" };
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(this, "Вторичное напряжение:"), 0);
-    hlyout->addWidget(WDFunc::NewCB(this, "SecVoltage", sl, uconfWSS));
-    lyout->addLayout(hlyout);
     lyout->addWidget(WDFunc::NewLBL(this, "Номинальные коэффициенты деления своего ДН (0 - ступень отсутствует):"), 0);
     hlyout = new QHBoxLayout;
     for (int i = 0; i < 3; ++i)
@@ -394,11 +386,10 @@ QWidget *TuneDialogA1DN::CoefUI3(int bac3num)
     return w;
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 int TuneDialogA1DN::Start7_2_3()
 {
     TemplateCheck(); // проверка наличия шаблонов протоколов
-    PovType = GOST_23625;
+    m_povType = GOST_23625;
     return Error::ER_NOERROR;
 }
 
@@ -407,6 +398,7 @@ int TuneDialogA1DN::Start7_2_5()
     if (GetBac() != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     InputTuneParameters(DNT_OWN);
+#ifndef AVM_DEBUG
     AndClearInitialValues();
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
@@ -415,14 +407,17 @@ int TuneDialogA1DN::Start7_2_5()
         return Error::ER_GENERALERROR;
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
+#endif
     return Error::ER_NOERROR;
 }
 
 int TuneDialogA1DN::Start7_2_6()
 {
+#ifndef AVM_DEBUG
     if (Commands::SetUsingVariant(TuneVariant + 1) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     WDFunc::SetLBLText(this, "tune00", QString::number(TuneVariant + 1));
+#endif
     return Error::ER_NOERROR;
 }
 
@@ -455,11 +450,15 @@ int TuneDialogA1DN::Start7_2_7_5()
 int TuneDialogA1DN::Start7_2_78910(int counter)
 {
     CheckA1::A1_Bd1 tmpst2;
-    const int Percents[] = { 20, 50, 80, 100, 120 };
+    QList<int> Percents;
+    if (m_nomSecVoltage == 100)
+        Percents = { 20, 40, 60, 80, 100 };
+    else
+        Percents = { 20, 50, 80, 100, 120 };
 
     if (counter > 4)
         return Error::ER_GENERALERROR;
-    if (ShowVoltageDialog(Percents[counter]) == Error::ER_NOERROR)
+    if (ShowVoltageDialog(Percents.at(counter)) == Error::ER_NOERROR)
     {
         if (GetAndAverage(GAAT_BDA_IN, &tmpst2, counter) == Error::ER_NOERROR)
         {
@@ -486,8 +485,10 @@ int TuneDialogA1DN::Start7_2_78910(int counter)
 
 int TuneDialogA1DN::Start7_2_11()
 {
+#ifndef AVM_DEBUG
     if (!WriteTuneCoefs(m_mode + 2)) // MODE = BLOCK + 1
         return Error::ER_GENERALERROR;
+#endif
     return Error::ER_NOERROR;
 }
 
@@ -581,7 +582,11 @@ int TuneDialogA1DN::Start7_2_13_8()
 
 int TuneDialogA1DN::Start7_2_13(int counter)
 {
-    const int Percents[] = { 120, 100, 80, 50, 20, 50, 80, 100, 120 };
+    QList<int> Percents;
+    if (m_nomSecVoltage == 100)
+        Percents = { 100, 80, 60, 40, 20, 40, 60, 80, 100 };
+    else
+        Percents = { 120, 100, 80, 50, 20, 50, 80, 100, 120 };
     if (counter >= TUNEA1LEVELS)
         return Error::ER_GENERALERROR;
     if (ShowVoltageDialog(Percents[counter]) == Error::ER_NOERROR)
@@ -681,12 +686,9 @@ void TuneDialogA1DN::WriteBacBlock()
     }
 }
 
-#endif
-
 void TuneDialogA1DN::LoadSettings()
 {
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
-    PovNumPoints = sets->value("PovNumPoints", "60").toInt();
+    PovNumPoints = Settings::get("PovNumPoints", "60");
 }
 
 void TuneDialogA1DN::GenerateReport()
@@ -706,7 +708,7 @@ void TuneDialogA1DN::GenerateReport()
     else
         report->SetVar("KNI", "");
 #endif
-    report->SetVar("Organization", StdFunc::OrganizationString());
+    report->SetVar("Organization", Settings::get("OrganizationString", "Р&К"));
     QString day = QDateTime::currentDateTime().toString("dd");
     QString month = QDateTime::currentDateTime().toString("MM");
     QString yr = QDateTime::currentDateTime().toString("yy");

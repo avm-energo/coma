@@ -1,8 +1,24 @@
 #include "mainwindow.h"
 
+#include "../dialogs/a1dialog.h"
+#include "../dialogs/errordialog.h"
+#include "../dialogs/hiddendialog.h"
+#include "../dialogs/keypressdialog.h"
+#include "../dialogs/settingsdialog.h"
+#include "../gen/colors.h"
+#include "../gen/commands.h"
+#include "../gen/error.h"
+#include "../gen/eusbhid.h"
+#include "../gen/timefunc.h"
+#include "../widgets/emessagebox.h"
+#include "../widgets/epushbutton.h"
+#include "../widgets/etableview.h"
+#include "../widgets/etabwidget.h"
+#include "../widgets/wd_func.h"
 #include "config.h"
 #include <QtSerialPort/QSerialPortInfo>
 #include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #include <QApplication>
 #include <QCursor>
@@ -22,24 +38,6 @@
 #include <QTextEdit>
 #include <QTimer>
 #include <qthread.h>
-#if PROGSIZE != PROGSIZE_EMUL
-#include "commands.h"
-#endif
-#include "../dialogs/a1dialog.h"
-#include "../dialogs/errordialog.h"
-#include "../dialogs/hiddendialog.h"
-#include "../dialogs/keypressdialog.h"
-#include "../dialogs/settingsdialog.h"
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
-#include "../widgets/emessagebox.h"
-#include "../widgets/epushbutton.h"
-#include "../widgets/etableview.h"
-#include "../widgets/etabwidget.h"
-#include "../widgets/wd_func.h"
-#include "eusbhid.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -50,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     StartWindowSplashScreen->show();
     StartWindowSplashScreen->showMessage("Подготовка окружения...", Qt::AlignRight, Qt::white);
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
-    QDir dir(StdFunc::GetHomeDir());
+    QDir dir(Settings::workDir());
     if (!dir.exists())
         dir.mkpath(".");
     StdFunc::Init();
@@ -59,23 +57,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     S2ConfigForTune.clear();
     MainConfDialog = nullptr;
     ConfB = ConfM = nullptr;
-#if PROGSIZE >= PROGSIZE_LARGE
-    PrepareTimers();
-#endif
     LoadSettings();
-#if PROGSIZE != PROGSIZE_EMUL
     cn = new EUsbHid;
     connect(cn, SIGNAL(Retry()), this, SLOT(ShowConnectDialog()));
     connect(cn, SIGNAL(SetDataSize(int)), this, SLOT(SetProgressBar1Size(int)));
     connect(cn, SIGNAL(SetDataCount(int)), this, SLOT(SetProgressBar1(int)));
-    connect(cn, SIGNAL(readbytessignal(QByteArray)), this, SLOT(UpdateMainTE(QByteArray)));
-    connect(cn, SIGNAL(writebytessignal(QByteArray)), this, SLOT(UpdateMainTE(QByteArray)));
     connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
     connect(this, SIGNAL(Retry()), this, SLOT(Stage1_5()));
-#endif
-    // #ifndef MODULE_A1
-    //     OscFunc = new EOscillogram;
-    // #endif
     StartWindowSplashScreen->finish(this);
 }
 
@@ -160,32 +148,6 @@ QWidget *MainWindow::Least()
     return w;
 }
 
-#if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::SetSlideWidget()
-{
-    QWidget *SlideWidget = new QWidget(this);
-    SlideWidget->setWindowFlags(Qt::FramelessWindowHint);
-    SlideWidget->setObjectName("slidew");
-    SlideWidget->setStyleSheet("QWidget {background-color: rgba(110,234,145,255);}");
-    QVBoxLayout *slyout = new QVBoxLayout;
-    QCheckBox *chb = WDFunc::NewChB(this, "teenablechb", "Включить протокол");
-    connect(chb, SIGNAL(toggled(bool)), this, SLOT(SetTEEnabled(bool)));
-    slyout->addWidget(chb, 0, Qt::AlignLeft);
-    QTextEdit *MainTE = new QTextEdit;
-    MainTE->setObjectName("mainte");
-    MainTE->setReadOnly(true);
-    MainTE->setUndoRedoEnabled(false);
-    MainTE->setWordWrapMode(QTextOption::WrapAnywhere);
-    MainTE->document()->setMaximumBlockCount(C_TE_MAXSIZE);
-    slyout->addWidget(MainTE, 40);
-    SlideWidget->setLayout(slyout);
-    SlideWidget->setMinimumWidth(250);
-    SlideWidget->hide();
-    SWGeometry = SlideWidget->geometry();
-    SWHide = true;
-}
-#endif
-
 void MainWindow::SetupMenubar()
 {
     QMenuBar *menubar = new QMenuBar;
@@ -253,33 +215,16 @@ void MainWindow::SetupMenubar()
     AddActionsToMenuBar(menubar);
 }
 
-#if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::PrepareTimers()
-{
-    QTimer *MouseTimer = new QTimer;
-    connect(MouseTimer, SIGNAL(timeout()), this, SLOT(MouseMove()));
-    MouseTimer->start(50);
-}
-#endif
-
 void MainWindow::LoadSettings()
 {
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
-    StdFunc::SetHomeDir(sets->value("Homedir", Settings::dataDir()).toString());
-#if PROGSIZE != PROGSIZE_EMUL
-    EAbstractProtocomChannel::SetWriteUSBLog(sets->value("WriteLog", "0").toBool());
-#endif
-    TEEnabled = sets->value("TEEnabled", "0").toBool();
+    Settings::setWorkDir(Settings::get("Homedir", Settings::dataDir()));
+    EAbstractProtocomChannel::SetWriteUSBLog(Settings::get("WriteLog", "0"));
 }
 
 void MainWindow::SaveSettings()
 {
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
-    sets->setValue("Homedir", StdFunc::GetHomeDir());
-#if PROGSIZE != PROGSIZE_EMUL
-    sets->setValue("WriteLog", EAbstractProtocomChannel::IsWriteUSBLog());
-#endif
-    sets->setValue("TEEnabled", TEEnabled);
+    Settings::set("Homedir", Settings::workDir());
+    Settings::set("WriteLog", EAbstractProtocomChannel::IsWriteUSBLog());
 }
 
 void MainWindow::ClearTW()
@@ -299,35 +244,6 @@ void MainWindow::ClearTW()
         MainTE->clear();
 }
 
-#if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::ShowOrHideSlideSW()
-{
-    QWidget *w = this->findChild<QWidget *>("slidew");
-    if (w == nullptr)
-        return;
-    if (w->isHidden())
-        w->show();
-    if (SWHide)
-        w->setGeometry(SWGeometry);
-    QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
-    ani->setDuration(500);
-    QRect startRect(width(), 30, 0, height() - 30);
-    QRect endRect(width() - w->width(), 30, w->width(), height() - 30);
-    if (SWHide)
-    {
-        ani->setStartValue(startRect);
-        ani->setEndValue(endRect);
-    }
-    else
-    {
-        ani->setStartValue(endRect);
-        ani->setEndValue(startRect);
-    }
-    ani->start();
-    SWHide = !SWHide;
-}
-#endif
-#if PROGSIZE != PROGSIZE_EMUL
 int MainWindow::CheckPassword()
 {
     ok = false;
@@ -367,9 +283,7 @@ int MainWindow::AdminCheckPassword()
     }
     return Error::ER_NOERROR;
 }
-#endif
 
-#if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Stage1_5()
 {
     ShowConnectDialog();
@@ -441,7 +355,6 @@ void MainWindow::UpdateHthWidget()
             lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
     }
 }
-#endif
 
 void MainWindow::SetMainDefConf()
 {
@@ -473,22 +386,6 @@ void MainWindow::Fill()
     if (ConfM != nullptr)
         ConfM->Fill();
 }
-
-#if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::UpdateMainTE(QByteArray ba)
-{
-    if (!TEEnabled)
-        return;
-    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
-    if (MainTE != nullptr)
-        MainTE->append(ba.toHex());
-}
-
-void MainWindow::SetTEEnabled(bool enabled)
-{
-    TEEnabled = enabled;
-}
-#endif
 
 void MainWindow::PasswordCheck(QString psw)
 {
@@ -558,31 +455,6 @@ int MainWindow::OpenBhbDialog()
 }
 #endif
 
-#if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL
-void MainWindow::StartEmul()
-{
-    bool ok;
-    quint16 MType = sender()->objectName().toUShort(&ok, 16);
-    if (!ok)
-    {
-        ERMSG("Wrong object name in StartEmul()");
-        return;
-    }
-    ModuleBSI::Bsi bsi;
-    bsi.MTypeB = (MType & 0xFF00) >> 8;
-    bsi.MTypeM = MType & 0x00FF;
-#if PROGSIZE != PROGSIZE_EMUL
-    if (cn->Connected)
-        DisconnectAndClear();
-#endif
-    bsi.SerialNum = 0x12345678;
-    bsi.Hth = 0x00;
-    ModuleBSI::SetupEmulatedBsi(bsi);
-    StdFunc::SetEmulated(true);
-    Stage3();
-}
-#endif
-
 void MainWindow::StartSettingsDialog()
 {
     SettingsDialog *dlg = new SettingsDialog;
@@ -595,7 +467,7 @@ void MainWindow::ShowErrorDialog()
     ErrorDialog *dlg = new ErrorDialog;
     dlg->exec();
 }
-#if PROGSIZE != PROGSIZE_EMUL
+
 void MainWindow::SetProgressBar1Size(int size)
 {
     SetProgressBarSize("1", size);
@@ -668,7 +540,7 @@ void MainWindow::SetProgressBarSize(QString prbnum, int size)
         DBGMSG;
         return;
     }
-    WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(size), false);
+    WDFunc::SetLBLText(this, lblname, QString::number(size), false);
     prb->setMinimum(0);
     prb->setMaximum(size);
 }
@@ -681,11 +553,9 @@ void MainWindow::SetProgressBar(QString prbnum, int cursize)
     if (prb != nullptr)
     {
         prb->setValue(cursize);
-        WDFunc::SetLBLText(
-            this, lblname, StdFunc::PrbMessage() + QString::number(cursize) + " из " + QString::number(prb->maximum()));
+        WDFunc::SetLBLText(this, lblname, QString::number(cursize) + " из " + QString::number(prb->maximum()));
     }
 }
-#endif
 
 void MainWindow::GetAbout()
 {
@@ -710,14 +580,10 @@ void MainWindow::GetAbout()
     dlg->setLayout(lyout);
     dlg->exec();
 }
-#if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Disconnect()
 {
     emit stoptime();
-    if (!StdFunc::IsInEmulateMode())
-    {
-        cn->Disconnect();
-    }
+    cn->Disconnect();
 }
 
 void MainWindow::GetDeviceFromTable(QModelIndex idx)
@@ -738,16 +604,14 @@ void MainWindow::GetDeviceFromTable(QModelIndex idx)
     tmps = tv->model()->index(tv->currentIndex().row(), 3, QModelIndex()).data(Qt::DisplayRole).toString();
     tmps.toWCharArray(DevInfo.serial);
 }
-#endif
+
 void MainWindow::DisconnectAndClear()
 {
-#if PROGSIZE != PROGSIZE_EMUL
     if (ConfM != nullptr)
         ConfM->TheEnd = 1;
 
     Disconnect();
     TuneB = TuneM = nullptr;
-#endif
     CheckB = CheckM = nullptr;
     emit ClearBsi();
     ClearTW();
@@ -755,43 +619,11 @@ void MainWindow::DisconnectAndClear()
     if (MainTW == nullptr)
         return;
     MainTW->hide();
-    StdFunc::SetEmulated(false);
 }
-#if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::MouseMove()
-{
-    QPoint curPos = mapFromGlobal(QCursor::pos());
-    QWidget *sww = this->findChild<QWidget *>("slidew");
-    if (sww == nullptr)
-        return;
-    if ((abs(curPos.x() - width()) < 10) && (curPos.y() > 0) && (curPos.y() < height()))
-    {
-        if (SWHide)
-            ShowOrHideSlideSW();
-    }
-    else if ((abs(curPos.x() - width()) > sww->width()) && (curPos.y() > 0) && (curPos.y() < height()))
-    {
-        if (!SWHide)
-            ShowOrHideSlideSW();
-    }
-}
-#endif
 
 void MainWindow::ShowErrorMessageBox(QString message)
 {
     EMessageBox::error(this, "Ошибка", message);
-}
-
-void MainWindow::resizeEvent(QResizeEvent *e)
-{
-    QMainWindow::resizeEvent(e);
-    if (!SWHide)
-    {
-        QWidget *sww = this->findChild<QWidget *>("slidew");
-        if (sww == nullptr)
-            return;
-        sww->setGeometry(QRect(width() - sww->width(), 0, sww->width(), height()));
-    }
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
@@ -805,9 +637,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 
 void MainWindow::SetPortSlot(QString port)
 {
-#if PROGSIZE != PROGSIZE_EMUL
     cn->TranslateDeviceAndSave(port);
-#endif
 }
 
 void MainWindow::StartA1Dialog(const QString &filename)
@@ -834,7 +664,7 @@ void MainWindow::ProtocolFromFile()
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getOpenFileName(this, "Открыть файл", StdFunc::GetHomeDir(),
+    QString filename = dlg->getOpenFileName(this, "Открыть файл", Settings::workDir(),
         "PKDN verification files (*.vrf)", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     dlg->close();
     StartA1Dialog(filename);

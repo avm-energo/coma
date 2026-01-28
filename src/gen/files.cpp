@@ -1,24 +1,24 @@
+#include "files.h"
+
+#include "error.h"
+#include "modulebsi.h"
+#include <gen/settings.h>
+#include <gen/stdfunc.h>
+
 #include <QFile>
 #include <QFileDialog>
 
-#include "stdfunc.h"
-#include "files.h"
-#include "error.h"
-#include "modulebsi.h"
-
-Files::Files()
-{
-
-}
+Files::Files() { }
 
 QString Files::ChooseFileForOpen(QWidget *parent, QString mask)
 {
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getOpenFileName(parent, "Открыть файл", StdFunc::GetHomeDir(), mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    QString filename = dlg->getOpenFileName(
+        parent, "Открыть файл", Settings::workDir(), mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     QFileInfo info(filename);
-    StdFunc::SetHomeDir(info.absolutePath());
+    Settings::setWorkDir(info.absolutePath());
     dlg->close();
     return filename;
 }
@@ -47,15 +47,18 @@ int Files::LoadFromFile(const QString &filename, QByteArray &ba)
 
 QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext)
 {
-    QString MTypeM = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == 0) ? "00" : QString::number(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN), 16);
-    QString tmps = StdFunc::GetHomeDir() + "/" + QString::number(ModuleBSI::GetMType(BoardTypes::BT_BASE), 16)+MTypeM+"-"+\
-            QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0'))+"."+ext;
+    QString MTypeM = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == 0)
+        ? "00"
+        : QString::number(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN), 16);
+    QString tmps = Settings::workDir() + "/" + QString::number(ModuleBSI::GetMType(BoardTypes::BT_BASE), 16) + MTypeM
+        + "-" + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + "." + ext;
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    QString filename
+        = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     QFileInfo info(filename);
-    StdFunc::SetHomeDir(info.absolutePath());
+    Settings::setWorkDir(info.absolutePath());
     dlg->close();
     return filename;
 }
@@ -73,6 +76,5 @@ int Files::SaveToFile(const QString &filename, QByteArray &src, unsigned int num
     delete file;
     if (res == Error::ER_GENERALERROR)
         return ER_FILEWRITE; // ошибка записи
-    return ER_NOERROR; // нет ошибок
+    return ER_NOERROR;       // нет ошибок
 }
-

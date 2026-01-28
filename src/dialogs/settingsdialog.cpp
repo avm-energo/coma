@@ -2,11 +2,11 @@
 
 #include "../gen/colors.h"
 #include "../gen/eabstractprotocomchannel.h"
-#include "../gen/maindef.h"
-#include "../gen/stdfunc.h"
 #include "../widgets/epushbutton.h"
 #include "../widgets/wd_func.h"
 #include "config.h"
+#include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #include <QCheckBox>
 #include <QFileDialog>
@@ -69,22 +69,19 @@ void SettingsDialog::SetupUI()
 
 void SettingsDialog::Fill()
 {
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
-    QString DevName = sets->value("PovDevName", "UPTN").toString();
-    QString DevSN = sets->value("PovDevSN", "00000001").toString();
-    QString DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
-    quint32 PovNumPoints = sets->value("PovNumPoints", "60").toUInt();
-    WDFunc::SetLEData(this, "orgle", StdFunc::OrganizationString());
-    WDFunc::SetLEData(this, "pathle", StdFunc::GetHomeDir());
+    QString DevName = Settings::get("PovDevName", "ПКС-1");
+    QString DevSN = Settings::get("PovDevSN", "00000001");
+    QString DevPrecision = Settings::get("PovDevPrecision", "0.05");
+    quint32 PovNumPoints = Settings::get("PovNumPoints", "60");
+    WDFunc::SetLEData(this, "orgle", Settings::get("OrganizationString", "Р&К"));
+    WDFunc::SetLEData(this, "pathle", Settings::workDir());
     WDFunc::SetLEData(this, "povdev", DevName);
     WDFunc::SetLEData(this, "povdevsn", DevSN);
     WDFunc::SetLEData(this, "povdevprecision", DevPrecision);
     //    QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
     QString restring = "";
-    WDFunc::SetLEData(this, "miple", StdFunc::MIPIP(), restring);
-#if PROGSIZE != PROGSIZE_EMUL
+    WDFunc::SetLEData(this, "miple", Settings::get("MIPIP", "172.16.11.12"), restring);
     WDFunc::SetChBData(this, "writelogchb", EAbstractProtocomChannel::IsWriteUSBLog());
-#endif
     WDFunc::SetSPBData(this, "povnumpoints", PovNumPoints);
 }
 
@@ -94,26 +91,21 @@ void SettingsDialog::AcceptSettings()
     quint32 PovNumPoints;
     bool tmpb;
     WDFunc::LEData(this, "orgle", tmps);
-    StdFunc::SetOrganizationString(tmps);
+    Settings::set("OrganizationString", tmps);
     WDFunc::LEData(this, "pathle", dir);
-    StdFunc::SetHomeDir(dir);
+    Settings::setWorkDir(dir);
     WDFunc::LEData(this, "povdev", DevName);
     WDFunc::LEData(this, "povdevsn", DevSN);
     WDFunc::LEData(this, "povdevprecision", DevPrecision);
     WDFunc::LEData(this, "miple", tmps);
-    StdFunc::SetMIPIP(tmps);
+    Settings::set("MIPIP", tmps);
     WDFunc::ChBData(this, "writelogchb", tmpb);
-#if PROGSIZE != PROGSIZE_EMUL
     EAbstractProtocomChannel::SetWriteUSBLog(tmpb);
-#endif
     WDFunc::SPBData(this, "povnumpoints", PovNumPoints);
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
-    sets->setValue("PovDevName", DevName);
-    sets->setValue("PovDevSN", DevSN);
-    sets->setValue("PovDevPrecision", DevPrecision);
-    sets->setValue("PovNumPoints", QString::number(PovNumPoints, 10));
-    sets->setValue("Organization", StdFunc::OrganizationString());
-    sets->setValue("MIPIP", StdFunc::MIPIP());
+    Settings::set("PovDevName", DevName);
+    Settings::set("PovDevSN", DevSN);
+    Settings::set("PovDevPrecision", DevPrecision);
+    Settings::set("PovNumPoints", QString::number(PovNumPoints, 10));
     this->close();
 }
 
@@ -122,7 +114,7 @@ void SettingsDialog::SetHomeDir()
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString dir = dlg->getExistingDirectory(this, "Домашний каталог", StdFunc::GetHomeDir());
+    QString dir = dlg->getExistingDirectory(this, "Домашний каталог", Settings::workDir());
     if (!dir.isEmpty())
         WDFunc::SetLEData(this, "pathle", dir);
 }

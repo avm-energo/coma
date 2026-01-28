@@ -1,7 +1,5 @@
-#ifndef TUNEDIALOGA1DN_H
-#define TUNEDIALOGA1DN_H
+#pragma once
 
-#include "eabstracttunedialog.h"
 #include "eabstracttunedialoga1dn.h"
 
 #include <QByteArray>
@@ -24,7 +22,6 @@ private:
     QWidget *CoefUI(int bac2num);
     QWidget *CoefUI3(int bac3num);
 
-#if PROGSIZE != PROGSIZE_EMUL
     void SetLbls();
     void SetPf();
     int Start7_2_3();
@@ -51,7 +48,6 @@ private:
     int StartTempRandomizeModel();
     int ReadAnalogMeasurements();
     int ShowScheme();
-#endif
     void WriteBacBlock();
     void LoadSettings();
     void GenerateReport();
@@ -59,5 +55,3 @@ private:
 
 private slots:
 };
-
-#endif // TUNEDIALOGA1DN_H

@@ -2,7 +2,7 @@
 #include <QThread>
 #include <QTime>
 
-// #include "../gen/stdfunc.h"
+// #include <gen/stdfunc.h>
 #include "../gen/error.h"
 #include "ethernet.h"
 #include "iec104.h"

@@ -13,6 +13,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(BUILD_TESTING OFF)
 set(HIDAPI_INSTALL_TARGETS ON)
 set(HIDAPI_WITH_TESTS OFF)
+option(AVM_TEST "Debug version of the program" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -45,6 +46,10 @@ elseif(PROGRAM_VARIANT_OPTION STREQUAL "MEDIUM")
   add_compile_definitions(PROGSIZE=2)
 else()
   add_compile_definitions(PROGSIZE=1)
+endif()
+
+if(AVM_TEST)
+  add_compile_definitions(AVM_DEBUG)
 endif()
 
 if(SYSTEM_NAME STREQUAL "windows")

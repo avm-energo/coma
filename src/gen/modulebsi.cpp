@@ -2,11 +2,9 @@
 
 #include "../config/config.h"
 #include "../widgets/emessagebox.h"
-#include "error.h"
-#include "stdfunc.h"
-#if PROGSIZE != PROGSIZE_EMUL
 #include "commands.h"
-#endif
+#include "error.h"
+#include <gen/stdfunc.h>
 
 quint32 ModuleBSI::MType = 0;
 ModuleBSI::Bsi ModuleBSI::ModuleBsi;
@@ -17,7 +15,6 @@ ModuleBSI::ModuleBSI()
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 int ModuleBSI::SetupBSI()
 {
     if (Commands::GetBsi(ModuleBsi) != Error::ER_NOERROR)
@@ -32,7 +29,7 @@ int ModuleBSI::SetupBSI()
 #endif
     return Error::ER_NOERROR;
 }
-#endif
+
 void ModuleBSI::SetupEmulatedBsi(ModuleBSI::Bsi &bsi)
 {
     ModuleBsi = bsi;
@@ -99,15 +96,13 @@ bool ModuleBSI::IsKnownModule()
     return false;
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 int ModuleBSI::PrereadConf(QWidget *w, QList<S2::DataRec> S2Config)
 {
     int res;
 
-    if ((ModuleBSI::Health() & HTH_CONFIG)
-        || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+    if ((ModuleBSI::Health() & HTH_CONFIG)) // если в модуле нет конфигурации, заполнить поля по умолчанию
         return Error::ER_RESEMPTY;
-    else                                 // иначе заполнить значениями из модуля
+    else                                    // иначе заполнить значениями из модуля
     {
         if ((res = Commands::GetFile(1, S2Config)) != Error::ER_NOERROR)
         {
@@ -118,4 +113,3 @@ int ModuleBSI::PrereadConf(QWidget *w, QList<S2::DataRec> S2Config)
     }
     return Error::ER_NOERROR;
 }
-#endif

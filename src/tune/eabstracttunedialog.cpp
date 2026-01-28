@@ -1,8 +1,16 @@
 #include "eabstracttunedialog.h"
 
+#include "../dialogs/keypressdialog.h"
+#include "../gen/commands.h"
+#include "../gen/error.h"
+#include "../gen/files.h"
 #include "../gen/maindef.h"
-#include "../gen/stdfunc.h"
+#include "../gen/timefunc.h"
+#include "../widgets/emessagebox.h"
+#include "../widgets/waitwidget.h"
+#include "../widgets/wd_func.h"
 #include <gen/settings.h>
+#include <gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QEventLoop>
@@ -17,16 +25,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QtMath>
-#if PROGSIZE != PROGSIZE_EMUL
-#include "../gen/commands.h"
-#endif
-#include "../dialogs/keypressdialog.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/timefunc.h"
-#include "../widgets/emessagebox.h"
-#include "../widgets/waitwidget.h"
-#include "../widgets/wd_func.h"
 
 EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) : QDialog(parent)
 {
@@ -36,9 +34,7 @@ EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) : QDialog(parent)
     MeasurementTimer = new QTimer;
     MeasurementTimer->setInterval(MEASTIMERINT);
     IsNeededDefConf = false;
-#if PROGSIZE != PROGSIZE_EMUL
     connect(MeasurementTimer, SIGNAL(timeout()), this, SLOT(MeasTimerTimeout()));
-#endif
     RepModel = new ReportModel;
 }
 
@@ -48,23 +44,16 @@ QWidget *EAbstractTuneDialog::TuneUI()
 {
     lbls.clear();
     pf.clear();
-#if PROGSIZE != PROGSIZE_EMUL
     SetLbls();
     SetPf();
-#endif
     int i;
     // CP1 - НАСТРОЙКА ПРИБОРА/МОДУЛЯ
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QPushButton *pb = new QPushButton("Начать настройку");
     pb->setObjectName("starttune");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb, &QPushButton::clicked, this, &EAbstractTuneDialog::StartTune);
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-    else
-        pb->setEnabled(true);
+    pb->setEnabled(true);
     lyout->addWidget(
         WDFunc::NewLBL(w, "Не забудьте перед настройкой проверить коэффициенты делителей!"), 0, Qt::AlignCenter);
     lyout->addWidget(pb);
@@ -114,20 +103,12 @@ QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
     QString tmps = "Прочитать из прибора";
     pb = new QPushButton(tmps);
     pb->setObjectName(QString::number(bacnum));
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb, &QPushButton::clicked, this, &EAbstractTuneDialog::ReadTuneCoefs);
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
     hlyout->addWidget(pb);
     tmps = "Записать в прибор";
     pb = new QPushButton(tmps);
     pb->setObjectName(QString::number(bacnum));
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb, &QPushButton::clicked, this, &EAbstractTuneDialog::WriteTuneCoefsSlot);
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
@@ -185,7 +166,6 @@ void EAbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
     el.exec();
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void EAbstractTuneDialog::ProcessTune()
 {
     if (lbls.size() > pf.size())
@@ -378,7 +358,7 @@ int EAbstractTuneDialog::SaveAllTuneCoefs()
         QByteArray ba;
         ba.resize(it.value().BacBlockSize);
         memcpy(&(ba.data()[0]), it.value().BacBlock, it.value().BacBlockSize);
-        if (Files::SaveToFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba, it.value().BacBlockSize)
+        if (Files::SaveToFile(Settings::workDir() + "temptune.tn" + tunenum, ba, it.value().BacBlockSize)
             != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
     }
@@ -389,7 +369,6 @@ void EAbstractTuneDialog::PrereadConf()
 {
     IsNeededDefConf = (ModuleBSI::PrereadConf(this, S2Config) == Error::ER_RESEMPTY) ? true : false;
 }
-#endif
 
 void EAbstractTuneDialog::SaveToFileEx(int bacnum)
 {
@@ -469,7 +448,6 @@ void EAbstractTuneDialog::LoadFromFile()
     EMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void EAbstractTuneDialog::Good()
 {
     SetMeasurementEnabled(false);
@@ -494,7 +472,6 @@ void EAbstractTuneDialog::MeasTimerTimeout()
     if (MeasurementEnabled)
         GetBdAndFillMTT();
 }
-#endif
 // ##################### PROTECTED ####################
 
 void EAbstractTuneDialog::closeEvent(QCloseEvent *e)
