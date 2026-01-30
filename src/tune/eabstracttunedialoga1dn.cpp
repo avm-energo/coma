@@ -319,6 +319,7 @@ void EAbstractTuneDialogA1DN::FillModelRow(int index)
 {
     int row;
     QList<int> Percents;
+
     if (m_isSecVoltageIs100)
     {
         if (m_povType == GOST_1983)
@@ -335,9 +336,9 @@ void EAbstractTuneDialogA1DN::FillModelRow(int index)
     }
 
     if (m_DNType == DNT_OWN) // для собственного ДН PovType = GOST_23625 и проценты идут задом наперёд
-        row = (index > 4) ? (index - 4) : (4 - index);
+        row = (index >= Percents.size()) ? (index - Percents.size() + 1) : (Percents.size() - index - 1);
     else
-        row = (index > 4) ? (8 - index) : index;
+        row = (index >= Percents.size()) ? (2 * Percents.size() - index - 1) : index;
 
     assert(row < Percents.size());
     int percent = Percents.at(row);
@@ -694,6 +695,8 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out, int index)
     ww.initialseconds = 0;
     w->Init(ww);
     w->Start();
+    assert(m_kdn != 0);
+    float kcoef = m_kdnet / m_kdn;
     while ((count < PovNumPoints) && !StdFunc::IsCancelled())
     {
         if (type == GAAT_BDA_OUT)
@@ -706,8 +709,7 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out, int index)
                 EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
                 return Error::ER_GENERALERROR;
             }
-            assert(m_kdn != 0);
-            float dUrms = (ChA1->Bda_out.UefNat_filt[1] * m_kdnet / m_kdn - ChA1->Bda_out.UefNat_filt[0]) * 100.0f
+            float dUrms = (ChA1->Bda_out.UefNat_filt[1] * kcoef - ChA1->Bda_out.UefNat_filt[0]) * 100.0f
                 / ChA1->Bda_out.UefNat_filt[0];
             tmpdd.dUrms += dUrms;
             tmpdd.Phy += ChA1->Bda_out.Phy;
@@ -777,7 +779,7 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out, int index)
         Bd->Phy = tmpbd.Phy / count;
         Bd->UefNat_filt[0] = tmpbd.UefNat_filt[0] / count;
         Bd->UefNat_filt[1] = tmpbd.UefNat_filt[1] / count //
-            * m_kdnet / m_kdn; // given value if there would an etalon DN with the same coefficient
+            * kcoef; // given value if there would an etalon DN with the same coefficient
     }
 #endif
     FillModelRow(index);
