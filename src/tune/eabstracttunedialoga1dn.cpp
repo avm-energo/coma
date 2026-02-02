@@ -839,12 +839,12 @@ int EAbstractTuneDialogA1DN::ShowVoltageDialog(int percent)
         if (m_isSecVoltageIs100)
         {
             VoltageInVet = m_nomSecVoltage;
-            VoltageInkV = m_kdn;
+            VoltageInkV = m_kdnet;
         }
         else
         {
             VoltageInVet = (m_mode == MODE_ALTERNATIVE) ? m_nomSecVoltage : m_nomSecVoltage * qSqrt(2);
-            VoltageInkV = (m_mode == MODE_ALTERNATIVE) ? m_kdn / qSqrt(3) : m_kdn / qSqrt(3) * qSqrt(2);
+            VoltageInkV = (m_mode == MODE_ALTERNATIVE) ? m_kdnet / qSqrt(3) : m_kdnet / qSqrt(3) * qSqrt(2);
         }
 
         VoltageInVet *= static_cast<float>(percent) / 100.0;
