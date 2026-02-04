@@ -943,12 +943,12 @@
                     <mwidget desc="Сила постоянного тока (канал 1), мА" view="float">
                         <start-addr>2000</start-addr>
                         <toolTip>Ток, приведённый ко входу 1, мА</toolTip>
-                        <decimals>1</decimals>
+                        <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Сила постоянного тока (канал 2), мА" view="float">
                         <start-addr>2002</start-addr>
                         <toolTip>Ток, приведённый ко входу 2, мА</toolTip>
-                        <decimals>1</decimals>
+                        <decimals>2</decimals>
                     </mwidget>
                     <mwidget desc="Сила постоянного тока (канал 3), мА" view="float">
                         <start-addr>2004</start-addr>
