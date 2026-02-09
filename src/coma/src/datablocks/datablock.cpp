@@ -76,17 +76,16 @@ void DataBlock::setup(const QString &UID, Interface::SyncConnection *syncConnect
 QWidget *DataBlock::widget(bool showButtons)
 {
     if (!m_widgetIsSet)
-        createWidget();
+        createGeneralWidget();
     if (m_isBottomButtonsWidgetCreated)
         m_bottomButtonsWidget->setVisible(showButtons);
     setEnabled(showButtons);
     return m_widget;
 }
 
-void DataBlock::createWidget()
+void DataBlock::createWidget(QWidget *w)
 {
-    m_widget = new QWidget;
-    auto scrollWidget = new QWidget(m_widget);
+    auto scrollWidget = new QWidget(w);
     auto mainLayout = new QVBoxLayout;
     int count = 0;
     for (auto &group : m_valuesDesc)
@@ -112,7 +111,7 @@ void DataBlock::createWidget()
         mainLayout->addWidget(gb);
     }
     scrollWidget->setLayout(mainLayout);
-    auto scrollArea = new QScrollArea(m_widget);
+    auto scrollArea = new QScrollArea(w);
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(scrollWidget);
@@ -120,8 +119,21 @@ void DataBlock::createWidget()
     mainLayout->addWidget(scrollArea);
     if (m_block.bottomButtonsVisible)
         mainLayout->addWidget(blockButtonsUI());
-    m_widget->setLayout(mainLayout);
+    w->setLayout(mainLayout);
+}
+
+void DataBlock::createGeneralWidget()
+{
+    m_widget = new QWidget;
+    createWidget(m_widget);
     m_widgetIsSet = true;
+}
+
+QWidget *DataBlock::createCopy(QWidget *parent)
+{
+    m_widgetCopy = new QWidget(parent);
+    createWidget(m_widgetCopy);
+    return m_widgetCopy;
 }
 
 QHBoxLayout *DataBlock::addBlockValueToWidget(ValueStr &value, QWidget *parent)
@@ -184,13 +196,8 @@ DataBlock::BlockStruct DataBlock::block()
     return m_block;
 }
 
-void DataBlock::updateWidget()
+void DataBlock::updateWidget(QWidget *w)
 {
-    if (!m_widgetIsSet)
-    {
-        qDebug() << "Widget is not set!";
-        return;
-    }
     specificUpdateWidget();
     for (auto &group : m_valuesDesc)
     {
@@ -201,15 +208,35 @@ void DataBlock::updateWidget()
                     [&](float *arg)                                                                //
                     {                                                                              //
                         LEFunc::setData(                                                           //
-                            m_widget, valueDesc.valueId, WDFunc::stringFloatValueWithCheck(*arg)); //
+                            w, valueDesc.valueId, WDFunc::stringFloatValueWithCheck(*arg)); //
                     },                                                                             //
                     [&](quint32 *arg)                                                              //
                     {                                                                              //
-                        LEFunc::setData(m_widget, valueDesc.valueId, QString::number(*arg));       //
+                        LEFunc::setData(w, valueDesc.valueId, QString::number(*arg));       //
                     } },                                                                           //
                 valueDesc.value);
         }
     }
+}
+
+void DataBlock::updateGeneralWidget()
+{
+    if (!m_widgetIsSet)
+    {
+        qDebug() << "Widget is not set!";
+        return;
+    }
+    updateWidget(m_widget);
+}
+
+void DataBlock::updateCopy()
+{
+    if(!m_widgetCopy)
+    {
+        qDebug() << "Copy widget is not set!";
+        return;
+    }
+    updateWidget(m_widgetCopy);
 }
 
 void DataBlock::updateFromWidget()
@@ -326,7 +353,7 @@ Error::Msg DataBlock::loadFromFileAndWriteToModule(const QString &filename)
     if (Files::LoadFromFile(filename, ba) == Error::Msg::NoError)
     {
         memcpy(m_block.block, &ba.data()[0], m_block.blocksize);
-        updateWidget();
+        updateGeneralWidget();
         if (writeBlockToModule() == Error::Msg::NoError)
             return Error::Msg::NoError;
     }
@@ -357,15 +384,21 @@ void DataBlock::saveToFileUserChoose()
     Files::SaveToFile(filepath, ba);
 }
 
+void DataBlock::deleteWidgetCopy()
+{
+    if(m_widgetCopy)
+        delete m_widgetCopy;
+}
+
 void DataBlock::readAndUpdate()
 {
     readBlockFromModule();
-    updateWidget();
+    updateGeneralWidget();
 }
 
 void DataBlock::setDefBlockAndUpdate()
 {
     setDefBlock();
     if (m_widgetIsSet)
-        updateWidget();
+        updateGeneralWidget();
 }

@@ -96,7 +96,7 @@ Error::Msg TuneKIVR::processR120()
 #endif
     m_bac->data()->Art = (pt100_120 - m_pt100_80) / 40;
     m_bac->data()->Brt = pt100_120 * 2 - m_pt100_80 * 3;
-    m_bac->updateWidget();
+    m_bac->updateGeneralWidget();
     showTWTab(m_BacWidgetIndex);
     saveAllTuneCoefs();
     return writeTuneCoefs();

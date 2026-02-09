@@ -60,7 +60,7 @@ public:
     inline const QString cpuIDFilenameStr()
     {
         Q_ASSERT(!m_deviceUID.isEmpty());
-        QString filenamestr = m_deviceUID + "->" + QString::number(m_block.blocknum);
+        QString filenamestr = m_deviceUID + "--" + QString::number(m_block.blocknum);
         return filenamestr;
     }
 
@@ -81,7 +81,12 @@ public:
     QWidget *widget(bool showButtons = true);
 
     /// \brief Create block widget
-    void createWidget();
+    void createWidget(QWidget *w);
+
+    void createGeneralWidget();
+
+    /// \brief Create copy widget
+    QWidget *createCopy(QWidget *parent);
 
     QHBoxLayout *addBlockValueToWidget(ValueStr &values, QWidget *parent = nullptr);
 
@@ -89,7 +94,10 @@ public:
     BlockStruct block();
 
     /// \brief Copy values from block to widget fields
-    void updateWidget();
+    void updateWidget(QWidget *w);
+
+    void updateGeneralWidget();
+    void updateCopy();
 
     /// \brief Update specific fields
     virtual void specificUpdateWidget() { };
@@ -163,12 +171,13 @@ public slots:
     Error::Msg loadFromFileAndWriteToModule(const QString &filename);
     Error::Msg saveToFile();
     void saveToFileUserChoose();
+    void deleteWidgetCopy();
 
 private:
     int m_valueNumberCounter;
     bool m_widgetIsSet;
     bool m_isBottomButtonsWidgetCreated;
-    QWidget *m_widget;
+    QWidget *m_widget, *m_widgetCopy;
     BlockStruct m_block, m_defBlock;
     QWidget *m_bottomButtonsWidget;
     QList<ValueGroupStr> m_valuesDesc;

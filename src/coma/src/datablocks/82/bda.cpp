@@ -6,7 +6,7 @@ Bda82::Bda82(QObject *parent) : DataBlock(parent)
 {
     m_blockData = new BlockData;
     setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdaBlock, m_blockData, sizeof(BlockData), false });
-    createWidget();
+    createGeneralWidget();
 }
 
 void Bda82::setupValuesDesc()

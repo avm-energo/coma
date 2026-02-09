@@ -15,7 +15,7 @@ public:
 
 private:
     Bac82 *m_bac;
-    Bac82::BlockData *m_bacNewBlock;
+    Bac82 *m_bacNew;
     Bd182 *m_bd1;
     Bda82 *m_bda;
     Mip *m_mip;

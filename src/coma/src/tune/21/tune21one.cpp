@@ -21,7 +21,7 @@ Tune21One::Tune21One(Device::BoardTypes boardType, Device::CurrentDevice *device
     m_bda->setup(m_device->getUID(), m_sync);
 
     setBac(m_bac);
-    m_bac->createWidget();
+    m_bac->createGeneralWidget();
     addWidgetToTabWidget(m_bda->widget(), "Текущие данные");
     setupUI();
 }
@@ -146,7 +146,7 @@ Error::Msg Tune21One::calcNewTuneCoefs()
 
 Error::Msg Tune21One::sendBac()
 {
-    m_bac->updateWidget();
+    m_bac->updateGeneralWidget();
     if (writeTuneCoefs() != Error::Msg::NoError)
         return Error::Msg::WriteError;
     if (loadWorkConfig() != Error::Msg::NoError)

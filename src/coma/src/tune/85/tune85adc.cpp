@@ -206,7 +206,7 @@ Error::Msg Tune85ADC::Tmk0()
 
 Error::Msg Tune85ADC::SendBac()
 {
-    m_bac->updateWidget();
+    m_bac->updateGeneralWidget();
     if (writeTuneCoefs() != Error::Msg::NoError)
         return Error::Msg::WriteError;
     if (!loadWorkConfig())

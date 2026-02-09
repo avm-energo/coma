@@ -22,6 +22,7 @@ public:
     void setupValuesDesc() override;
     BlockData *data();
     void setData(BlockData *data);
+    void copyData(BlockData *data);
     void setDefBlock() override;
 
 private:

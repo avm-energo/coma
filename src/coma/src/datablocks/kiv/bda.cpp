@@ -4,7 +4,7 @@ BdaA284::BdaA284(QObject *parent) : DataBlock(parent)
 {
     m_blockData = std::unique_ptr<BlockData>(new BlockData);
     setBlock({ 1, "Текущие данные", DataTypes::DataBlockTypes::BdaBlock, m_blockData.get(), sizeof(BlockData), false });
-    createWidget();
+    createGeneralWidget();
 }
 
 void BdaA284::setupValuesDesc()

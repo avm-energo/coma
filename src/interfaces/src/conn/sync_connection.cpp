@@ -184,7 +184,7 @@ Error::Msg SyncConnection::readFileSync(S2::FilesEnum filenum, QByteArray &ba)
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::Binary);
     eventLoop();
     QObject::disconnect(conn);
-    if (m_responseResult != Error::Msg::NoError)
+    if (m_byteArrayResult.isEmpty())
         return Error::Msg::ReadError;
     ba = m_byteArrayResult;
     return Error::Msg::NoError;
@@ -199,10 +199,10 @@ Error::Msg SyncConnection::readS2BFileSync(S2::FilesEnum filenum, S2::S2BFile &f
     eventLoop();
     QObject::disconnect(conn);
     QObject::disconnect(conn2);
-    if (m_responseResult != Error::Msg::NoError)
-        return m_responseResult;
+    if (m_s2bFile.data.isEmpty())
+        return Error::Msg::ReadError;
     file = m_s2bFile;
-    return m_responseResult;
+    return Error::Msg::NoError;
 }
 
 Error::Msg SyncConnection::reqTimeSync(void *block, quint32 blocksize)

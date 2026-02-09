@@ -382,7 +382,7 @@ void IEC104Parser::parseIFormat(QByteArray &ba) // основной разбор
         DUI.cause.test = ba.at(2) >> 7;
         DUI.cause.initiator = ba.at(3);
         DUI.commonAdrASDU = ba.at(4) + ba.at(5) * 256;
-        qDebug() << "Address ASDU: " << DUI.commonAdrASDU;
+        // qDebug() << "Address ASDU: " << DUI.commonAdrASDU;
         if (DUI.commonAdrASDU != m_baseAdr) // not our station
             return;
         quint32 objectAdr = 0;

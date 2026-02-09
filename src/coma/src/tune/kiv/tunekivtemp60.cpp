@@ -270,7 +270,7 @@ Error::Msg TuneKIVTemp60::calcTuneCoefs()
         m_bac->data()->TKPsi_a[i] = ((dYm * dTp * dTp) - (dYp * dTm * dTm)) / (dTp * dTm * (dTp - dTm));
         m_bac->data()->TKPsi_b[i] = ((dYp * dTm) - (dYm * dTp)) / (dTp * dTm * (dTp - dTm));
     }
-    m_bac->updateWidget();
+    m_bac->updateGeneralWidget();
     return Error::Msg::NoError;
 }
 

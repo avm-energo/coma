@@ -443,18 +443,24 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs(bool isUserChoosingRequired)
         QDialog *dlg = new QDialog(this);
         QVBoxLayout *lyout = new QVBoxLayout;
         QHBoxLayout *hlyout = new QHBoxLayout;
-        lyout->addWidget(LBLFunc::newLBL(this, "Вопрос", "Записать регулировочные коэффициенты?"));
+        lyout->addWidget(LBLFunc::New(this, "Вопрос", "Записать регулировочные коэффициенты?"));
         QTabWidget *tw = new QTabWidget;
+        QWidget *bacWidget;
         for (QMap<int, DataBlock *>::Iterator it = m_absBac.begin(); it != m_absBac.end(); ++it)
         {
-            tw->addTab(it.value()->widget(false), it.value()->block().caption); // do not show buttons
-            it.value()->updateWidget();
+            bacWidget = it.value()->createCopy(this);
+            tw->addTab(bacWidget, it.value()->block().caption); // do not show buttons
+            it.value()->updateCopy();
         }
         lyout->addWidget(tw);
         hlyout->addWidget(PBFunc::New(this, "", "Записать", this, &AbstractTuneDialog::writeTuneCoefsSlot));
         hlyout->addWidget(PBFunc::New(this, "", "Отмена",
             [this]()
             {
+        for (QMap<int, DataBlock *>::Iterator it = m_absBac.begin(); it != m_absBac.end(); ++it)
+        {
+            it.value()->deleteWidgetCopy();
+        }
                 CancelTune();
                 emit generalEventReceived();
             }));
@@ -476,9 +482,11 @@ void AbstractTuneDialog::writeTuneCoefsSlot()
     {
         if (it.value()->writeBlockToModule() != Error::Msg::NoError)
         {
+            it.value()->deleteWidgetCopy();
             CancelTune();
             return;
         }
+        it.value()->deleteWidgetCopy();
     }
     EMessageBox::information(this, "Коэффициенты записаны успешно!");
     emit generalEventReceived();
