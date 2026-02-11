@@ -239,18 +239,18 @@ Error::Msg Tune82ADC::checkTune()
     /// Возвращаем виджет обратно на диалоговое окно
     // addWidgetToTabWidget(m_bac->widget(), "Настроечные параметры");
     // m_bd1->readBlockFromModule();
-    EMessageBox::information(this,
-        "После закрытия данного сообщения для завершения настройки нажмите Enter\n"
-        "Для отказа от настройки нажмите Esc");
-    m_finished = false;
-    while ((!StdFunc::IsCancelled()) && !m_finished)
-    {
-        m_bd1->readAndUpdate();
-        m_bda->readAndUpdate();
-        StdFunc::Wait(500);
-    }
-    if (StdFunc::IsCancelled())
-        return Error::Msg::Cancelled;
+    // EMessageBox::information(this,
+    //     "После закрытия данного сообщения для завершения настройки нажмите Enter\n"
+    //     "Для отказа от настройки нажмите Esc");
+    // m_finished = false;
+    // while ((!StdFunc::IsCancelled()) && !m_finished)
+    // {
+    //     m_bd1->readAndUpdate();
+    //     m_bda->readAndUpdate();
+    //     StdFunc::Wait(500);
+    // }
+    // if (StdFunc::IsCancelled())
+    //     return Error::Msg::Cancelled;
     return Error::Msg::NoError;
 }
 

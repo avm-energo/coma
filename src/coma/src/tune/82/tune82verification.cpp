@@ -1,10 +1,10 @@
 #include "tune/82/tune82verification.h"
 
+#include <avm-widgets/emessagebox.h>
 #include <gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 #include <tune/82/verification_offset.h>
 #include <tune/mip.h>
-#include <avm-widgets/epopup.h>
 
 #include <QLabel>
 #include <QPushButton>
@@ -41,6 +41,7 @@ Tune82Verification::Tune82Verification(Device::CurrentDevice *device, QWidget *p
 {
     m_bd1->setup(m_device->getUID(), m_sync);
     setupUI();
+    reportInit();
 }
 
 void Tune82Verification::setTuneFunctions()
@@ -145,7 +146,7 @@ void Tune82Verification::writeOffsetDataToReport(const VerificationOffset &offse
     writeReportData(QString("OffsetPhiUBC.%1").arg(iter), QString::number(offset.offsetPhiUbc, 'f', 3));
 }
 
-void Tune82Verification::init()
+void Tune82Verification::reportInit()
 {
     StdFunc::ClearCancel();
     if (!s_reportData.empty())
@@ -155,13 +156,18 @@ void Tune82Verification::init()
     writeReportData("Day", QDateTime::currentDateTime().toString("dd"));
     writeReportData("Month", QDateTime::currentDateTime().toString("MM"));
     writeReportData("Yr", QDateTime::currentDateTime().toString("yy"));
+    writeReportData("Serial", QString::number(m_device->bsi().SerialNum, 16));
+    writeReportData("SerialB", QString::number(m_device->bsi().SerialNumB, 16));
+    writeReportData("SerialM", QString::number(m_device->bsi().SerialNumM, 16));
+    writeReportData("HardwareB", StdFunc::VerToStr(m_device->bsi().HwverB));
+    writeReportData("HardwareM", StdFunc::VerToStr(m_device->bsi().HwverM));
+    writeReportData("Software", StdFunc::VerToStr(m_device->bsi().Fwver));
 }
 
 Error::Msg Tune82Verification::verification()
 {
     bool ok;
     float i2nom = 0.0;
-    init();
 
     MipDataStruct mipData { 0 };
     Bd182::BlockData deviceData { 0 };
@@ -189,19 +195,45 @@ Error::Msg Tune82Verification::verification()
             return Error::Msg::GeneralError;
 
         StdFunc::Wait(1000);
-        // waitNSeconds(1);
-        // mipData = m_mip->takeOneMeasurement(i2nom, ok);
         mipData = m_mip->takeOneMeasurement(ok);
         if (!ok)
             return Error::Msg::GeneralError;
         m_bd1->readBlockFromModule();
         deviceData = *(m_bd1->data());
+
         QCoreApplication::processEvents();
         offsetData.update(mipData, deviceData);
-
+        if (checkMeasuredDataForCorrectValues(mipData, retomData) != Error::Msg::NoError)
+        {
+            if (EMessageBox::next(this, "Проверьте правильность задания значений на РЕТОМ"))
+            {
+                --iter;
+                continue;
+            }
+            else
+                return Error::Msg::GeneralError;
+        }
         writeMipDataToReport(mipData, iter);
         writeDeviceDataToReport(deviceData, iter);
         writeOffsetDataToReport(offsetData, iter);
+    }
+    return Error::Msg::NoError;
+}
+
+Error::Msg Tune82Verification::checkMeasuredDataForCorrectValues(
+    const MipDataStruct &mipData, const RetomSettings &retomData)
+{
+    if (!StdFunc::FloatIsWithinLimits(mipData.freqUPhase[0], 51.0, 0.1))
+        return Error::Msg::GeneralError;
+    for (int i = 0; i < 3; ++i)
+    {
+        if (!StdFunc::FloatIsWithinLimits(mipData.uPhase[i], retomData.voltage, 2))
+            return Error::Msg::GeneralError;
+        if (!StdFunc::FloatIsWithinLimits(mipData.iPhase[i], retomData.current, 0.2))
+            return Error::Msg::GeneralError;
+        float retPhiLoad = (retomData.phiLoad >= 180) ? (360 - retomData.phiLoad) : -retomData.phiLoad;
+        if (!StdFunc::FloatIsWithinLimits(mipData.phiLoadPhase[i], retPhiLoad, 5))
+            return Error::Msg::GeneralError;
     }
     return Error::Msg::NoError;
 }

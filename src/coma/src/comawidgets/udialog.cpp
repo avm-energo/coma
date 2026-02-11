@@ -1,7 +1,7 @@
+#include <avm-widgets/emessagebox.h>
 #include <comawidgets/udialog.h>
 #include <device/current_device.h>
 #include <gen/error.h>
-#include <avm-widgets/emessagebox.h>
 
 UDialog::UDialog(Device::CurrentDevice *device, QWidget *parent) : UWidget(device, parent)
 {
@@ -90,5 +90,5 @@ QString UDialog::getFilenameForDevice() const
     return QString("%1%2-%3")
         .arg(bsi.MTypeB, 2, 16, QChar('0'))
         .arg(bsi.MTypeM, 2, 16, QChar('0'))
-        .arg(bsi.SerialNum, 8, 10, QChar('0'));
+        .arg(bsi.SerialNum, 8, 16, QChar('0'));
 }

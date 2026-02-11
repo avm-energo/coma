@@ -20,8 +20,9 @@ private:
     void writeOffsetDataToReport(const VerificationOffset &offset, const std::size_t iter);
 
     Error::Msg setupNFiltrValue();
-    void init();
+    void reportInit();
     Error::Msg verification();
+    Error::Msg checkMeasuredDataForCorrectValues(const MipDataStruct &mipData, const RetomSettings &retomData);
 
 public:
     Tune82Verification(Device::CurrentDevice *device, QWidget *parent = nullptr);

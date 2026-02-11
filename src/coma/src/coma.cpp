@@ -475,6 +475,8 @@ void Coma::prepareDialogs()
 {
     EMessageBox::information(this, "Установлена связь с " + m_currentDevice->getDeviceName());
 
+    WaitWidget *ww = new WaitWidget;
+    ww->start();
     m_alarmW->configure(m_currentDevice);
     m_dlgManager->setupUI(m_currentDevice, size());
     // Запрашиваем s2 конфигурацию от модуля
@@ -485,6 +487,7 @@ void Coma::prepareDialogs()
     // нет коэффициентов
     if (m_currentDevice->health().isNoTuneCoef())
         qCritical() << "Модуль требует проведения регулировки";
+    ww->stop();
 }
 
 void Coma::disconnectAndClear()
