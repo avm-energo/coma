@@ -1,8 +1,8 @@
 #include <common/appconfig.h>
 #include <common/names.h>
 #include <dialogs/settingsdialog.h>
-#include <gen/logger.h>
-#include <gen/settings.h>
+#include <avm-gen/logger.h>
+#include <avm-gen/settings.h>
 #include <avm-widgets/cbfunc.h>
 #include <avm-widgets/chbfunc.h>
 #include <avm-widgets/emessagebox.h>

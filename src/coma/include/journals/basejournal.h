@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gen/stdfunc.h>
+#include <avm-gen/stdfunc.h>
 #include <models/edynamictablemodel.h>
 #include <s2/s2datatypes.h>
 

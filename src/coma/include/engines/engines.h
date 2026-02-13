@@ -1,7 +1,7 @@
 #pragma once
 
-#include <gen/singleton.h>
-#include <gen/threadpool.h>
+#include <avm-gen/singleton.h>
+#include <avm-gen/threadpool.h>
 
 namespace Engines
 {

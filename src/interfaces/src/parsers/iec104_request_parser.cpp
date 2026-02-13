@@ -1,7 +1,7 @@
 #include "interfaces/parsers/iec104_request_parser.h"
 
-#include <gen/datatypes.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/datatypes.h>
+#include <avm-gen/stdfunc.h>
 #include <s2/filestruct.h>
 
 namespace Interface

@@ -1,6 +1,6 @@
 #include "xml/xmleditor/models/mastermodel.h"
 
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 #include <xml/xmltags.h>
 
 MasterModel::MasterModel(QObject *parent) : BaseEditorModel(1, 1, ModelType::Master, parent)

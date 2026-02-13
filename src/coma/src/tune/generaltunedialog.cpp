@@ -1,7 +1,7 @@
 #include "tune/generaltunedialog.h"
 
-#include <gen/files.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/files.h>
+#include <avm-gen/stdfunc.h>
 #include <tune/tunereporter.h>
 #include <tune/tunesequencefile.h>
 #include <avm-widgets/emessagebox.h>

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <gen/error.h>
-#include <gen/logger.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/error.h>
+#include <avm-gen/logger.h>
+#include <avm-gen/stdfunc.h>
 #include <interfaces/types/base_settings.h>
 #include <interfaces/types/common_types.h>
 

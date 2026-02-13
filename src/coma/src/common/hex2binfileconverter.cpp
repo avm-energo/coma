@@ -1,4 +1,4 @@
-#include <gen/files.h>
+#include <avm-gen/files.h>
 #include <common/hex2binfileconverter.h>
 #include <s2/s2util.h>
 #include <avm-widgets/emessagebox.h>

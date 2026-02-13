@@ -1,8 +1,8 @@
 #include "interfaces/types/iec104/asdu.h"
 
-#include <gen/datatypes.h>
-#include <gen/std_ext.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/datatypes.h>
+#include <avm-gen/std_ext.h>
+#include <avm-gen/stdfunc.h>
 
 namespace Iec104
 {

@@ -1,14 +1,14 @@
 #include "dialogs/checkdialog.h"
 
-#include "gen/strings.h"
+#include <avm-gen/colors.h>
+#include <avm-gen/error.h>
+#include <avm-gen/stdfunc.h>
+#include <avm-gen/strings.h>
 #include <avm-widgets/chbfunc.h>
 #include <avm-widgets/graphfunc.h>
 #include <avm-widgets/lblfunc.h>
 #include <avm-widgets/pbfunc.h>
 #include <device/current_device.h>
-#include <gen/colors.h>
-#include <gen/error.h>
-#include <gen/stdfunc.h>
 
 #include <QGroupBox>
 #include <QTabWidget>

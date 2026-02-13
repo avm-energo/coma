@@ -1,7 +1,7 @@
 #include "xml/xmleditor/models/xmlhidedatamodel.h"
 
-#include <gen/integers.h>
-#include <gen/xml/xmlparse.h>
+#include <avm-gen/integers.h>
+#include <avm-gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
 constexpr int SGroupDataRole = 0x0106;   ///< Role for hiding data SGroupHideData.

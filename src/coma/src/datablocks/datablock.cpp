@@ -30,9 +30,9 @@
 #include <avm-widgets/hexpbfunc.h>
 #include <avm-widgets/lefunc.h>
 #include <avm-widgets/wdfunc.h>
-#include <gen/files.h>
-#include <gen/settings.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/files.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 
 #include <QDialogButtonBox>

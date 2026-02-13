@@ -1,5 +1,5 @@
 #include <comawidgets/gasdensitywidget.h>
-#include <gen/std_ext.h>
+#include <avm-gen/std_ext.h>
 
 #include <QComboBox>
 #include <QDebug>

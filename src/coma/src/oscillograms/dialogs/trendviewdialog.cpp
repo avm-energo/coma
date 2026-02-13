@@ -25,10 +25,10 @@
  *          dlg->show();
  */
 
-#include <gen/error.h>
-#include <gen/files.h>
-#include <gen/pch.h>
-#include <gen/settings.h>
+#include <avm-gen/error.h>
+#include <avm-gen/files.h>
+#include <avm-gen/pch.h>
+#include <avm-gen/settings.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/osc_ids.h>
 #include <oscillograms/oscmanager.h>

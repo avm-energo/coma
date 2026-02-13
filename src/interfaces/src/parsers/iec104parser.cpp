@@ -1,7 +1,7 @@
 #include "interfaces/parsers/iec104parser.h"
 
-#include <gen/pch.h>
-#include <gen/settings.h>
+#include <avm-gen/pch.h>
+#include <avm-gen/settings.h>
 #include <interfaces/types/iec104_types.h>
 #include <s2/s2util.h>
 

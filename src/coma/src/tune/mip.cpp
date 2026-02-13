@@ -1,7 +1,7 @@
 #include "tune/mip.h"
 
-#include <gen/settings.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/ifaces/ethernet.h>
 #include <interfaces/parsers/iec104parser.h>

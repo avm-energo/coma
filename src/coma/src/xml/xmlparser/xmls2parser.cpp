@@ -1,9 +1,9 @@
 #include "xml/xmlparser/xmls2parser.h"
 
 #include <common/appconfig.h>
-#include <gen/datatypes.h>
-#include <gen/xml/xmlbase.h>
-#include <gen/xml/xmlparse.h>
+#include <avm-gen/datatypes.h>
+#include <avm-gen/xml/xmlbase.h>
+#include <avm-gen/xml/xmlparse.h>
 #include <s2/s2datatypes.h>
 #include <xml/xmltags.h>
 

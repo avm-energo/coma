@@ -10,7 +10,7 @@
 #include <QCloseEvent>
 #include <QDialog>
 #include <QKeyEvent>
-#include <gen/error.h>
+#include <avm-gen/error.h>
 
 class KeyPressDialog final : public QDialog
 {

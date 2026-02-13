@@ -1,7 +1,7 @@
 #pragma once
 
 #include <comawidgets/uwidget.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/stdfunc.h>
 
 #include <QTimer>
 

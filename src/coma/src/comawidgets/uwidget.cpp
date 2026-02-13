@@ -5,8 +5,8 @@
 #include <avm-widgets/lblfunc.h>
 #include <avm-widgets/wdfunc.h>
 #include <device/current_device.h>
-#include <gen/colors.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QDebug>

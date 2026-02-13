@@ -3,9 +3,9 @@
 #include <QtConcurrent/QtConcurrent>
 #include <QtConcurrent/QtConcurrentMap>
 #include <QtNetwork/QHostAddress>
-#include <gen/error.h>
-#include <gen/settings.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/error.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/lefunc.h>
 #include <avm-widgets/pbfunc.h>

@@ -1,7 +1,7 @@
 #include <device/current_device.h>
-#include <gen/files.h>
-#include <gen/stdfunc.h>
-#include <gen/timefunc.h>
+#include <avm-gen/files.h>
+#include <avm-gen/stdfunc.h>
+#include <avm-gen/timefunc.h>
 #include <oscillograms/dialogs/osckivdialog.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/osc_ids.h>

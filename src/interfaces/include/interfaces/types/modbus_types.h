@@ -2,7 +2,7 @@
 
 #include <QDebug>
 #include <QtEndian>
-#include <gen/stdfunc.h>
+#include <avm-gen/stdfunc.h>
 
 namespace Modbus
 {

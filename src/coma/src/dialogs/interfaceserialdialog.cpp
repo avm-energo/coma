@@ -1,9 +1,9 @@
 #include "dialogs/interfaceserialdialog.h"
 
 #include <dialogs/searchmodbusdevicesdialog.h>
-#include <gen/error.h>
-#include <gen/settings.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/error.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
 #include <interfaces/types/serial_settings.h>
 #include <avm-widgets/cbfunc.h>
 #include <avm-widgets/emessagebox.h>

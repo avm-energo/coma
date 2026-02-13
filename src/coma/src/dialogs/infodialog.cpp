@@ -1,9 +1,9 @@
 #include "dialogs/infodialog.h"
 
 #include <device/current_device.h>
-#include <gen/colors.h>
-#include <gen/error.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/error.h>
+#include <avm-gen/stdfunc.h>
 #include <avm-widgets/etabwidget.h>
 #include <avm-widgets/lblfunc.h>
 

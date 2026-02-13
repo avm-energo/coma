@@ -1,6 +1,6 @@
 #include "dialogs/keypressdialog.h"
 
-#include <gen/error.h>
+#include <avm-gen/error.h>
 #include <avm-widgets/lblfunc.h>
 #include <avm-widgets/lefunc.h>
 #include <avm-widgets/passwordlineedit.h>

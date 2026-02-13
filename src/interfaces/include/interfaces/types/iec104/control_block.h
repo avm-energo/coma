@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QByteArray>
-#include <gen/error.h>
+#include <avm-gen/error.h>
 #include <interfaces/types/iec104/unnumbered_control.h>
 #include <memory>
 

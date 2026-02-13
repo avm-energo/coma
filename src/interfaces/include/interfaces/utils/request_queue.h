@@ -2,7 +2,7 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <gen/std_ext.h>
+#include <avm-gen/std_ext.h>
 #include <interfaces/types/common_types.h>
 #include <interfaces/utils/unique_queue.h>
 #include <mutex>

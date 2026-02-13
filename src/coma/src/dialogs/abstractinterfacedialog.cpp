@@ -1,6 +1,6 @@
 #include "dialogs/abstractinterfacedialog.h"
 
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QLayout>
 #include <QPushButton>

@@ -2,7 +2,7 @@
 
 #include <alarms/alarmbutton.h>
 #include <device/current_device.h>
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 #include <avm-widgets/graphfunc.h>
 
 #include <QDialogButtonBox>

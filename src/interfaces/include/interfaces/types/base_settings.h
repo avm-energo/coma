@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gen/memsettings.h>
+#include <avm-gen/memsettings.h>
 
 #include <QObject>
 #include <QString>

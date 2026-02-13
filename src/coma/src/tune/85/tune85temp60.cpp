@@ -1,7 +1,7 @@
 #include "tune/85/tune85temp60.h"
 
-#include <gen/colors.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/stdfunc.h>
 #include <tune/tunesequencefile.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/graphfunc.h>

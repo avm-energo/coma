@@ -5,8 +5,8 @@
 #include <avm-widgets/ipctrl.h>
 #include <comawidgets/gasdensitywidget.h>
 #include <common/appconfig.h>
-#include <gen/floats.h>
-#include <gen/xml/xmlparse.h>
+#include <avm-gen/floats.h>
+#include <avm-gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
 #include <QTableView>

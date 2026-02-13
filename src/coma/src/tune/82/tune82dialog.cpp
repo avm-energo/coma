@@ -1,9 +1,9 @@
 #include "tune/82/tune82dialog.h"
 
-#include <gen/colors.h>
-#include <gen/error.h>
-#include <gen/files.h>
-#include <gen/settings.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/error.h>
+#include <avm-gen/files.h>
+#include <avm-gen/settings.h>
 #include <tune/82/tune82adc.h>
 #include <tune/82/tune82check.h>
 #include <tune/82/tune82iowidget.h>

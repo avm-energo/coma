@@ -1,6 +1,6 @@
 #include "oscillograms/swjpackconvertor.h"
 
-#include <gen/timefunc.h>
+#include <avm-gen/timefunc.h>
 #include <oscillograms/swjmanager.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/filefunc.h>

@@ -1,9 +1,9 @@
 #include "tune/21/tune21dialog.h"
 
-#include <gen/colors.h>
-#include <gen/error.h>
-#include <gen/files.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/error.h>
+#include <avm-gen/files.h>
+#include <avm-gen/stdfunc.h>
 #include <tune/21/tune21one.h>
 #include <avm-widgets/wdfunc.h>
 

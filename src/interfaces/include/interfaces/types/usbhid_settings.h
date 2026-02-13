@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gen/pch.h>
+#include <avm-gen/pch.h>
 #include <interfaces/types/base_settings.h>
 
 #include <QDebug>

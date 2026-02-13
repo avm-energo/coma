@@ -1,6 +1,6 @@
 #include <dialogs/slicegetdialog.h>
 #include <engines/engines.h>
-#include <gen/threadpool.h>
+#include <avm-gen/threadpool.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/filefunc.h>
 #include <avm-widgets/pbfunc.h>

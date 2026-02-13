@@ -1,7 +1,7 @@
 #include "dialogs/fwuploaddialog.h"
 
-#include <gen/error.h>
-#include <gen/files.h>
+#include <avm-gen/error.h>
+#include <avm-gen/files.h>
 #include <s2/s2util.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/filefunc.h>

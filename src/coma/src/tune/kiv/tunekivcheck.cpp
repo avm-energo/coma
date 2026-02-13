@@ -6,8 +6,8 @@
 #include <avm-widgets/waitwidget.h>
 #include <avm-widgets/wdfunc.h>
 #include <datablocks/kiv/bda.h>
-#include <gen/files.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/files.h>
+#include <avm-gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QDialog>

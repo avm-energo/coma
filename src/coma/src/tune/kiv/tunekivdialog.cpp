@@ -1,9 +1,9 @@
 #include "tune/kiv/tunekivdialog.h"
 
-#include <gen/colors.h>
-#include <gen/error.h>
-#include <gen/files.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/error.h>
+#include <avm-gen/files.h>
+#include <avm-gen/stdfunc.h>
 #include <tune/kiv/tunekivadc.h>
 #include <tune/kiv/tunekivcheck.h>
 #include <tune/kiv/tunekivr.h>

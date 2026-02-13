@@ -1,8 +1,8 @@
 #include "tune/82/tune82check.h"
 
 #include <datablocks/82/bda.h>
-#include <gen/files.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/files.h>
+#include <avm-gen/stdfunc.h>
 #include <tune/mip.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/graphfunc.h>

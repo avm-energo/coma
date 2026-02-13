@@ -1,9 +1,9 @@
 #ifndef IEC104PARSER_H
 #define IEC104PARSER_H
 
-#include <gen/datatypes.h>
-#include <gen/error.h>
-#include <gen/logger.h>
+#include <avm-gen/datatypes.h>
+#include <avm-gen/error.h>
+#include <avm-gen/logger.h>
 #include <interfaces/types/iec104/asdu.h>
 #include <interfaces/utils/request_queue.h>
 #include <s2/filestruct.h>

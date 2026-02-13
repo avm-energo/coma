@@ -1,7 +1,7 @@
 #pragma once
 
-#include <gen/error.h>
-#include <gen/logger.h>
+#include <avm-gen/error.h>
+#include <avm-gen/logger.h>
 #include <interfaces/types/base_settings.h>
 #include <interfaces/types/protocol_settings.h>
 #include <interfaces/utils/request_queue.h>

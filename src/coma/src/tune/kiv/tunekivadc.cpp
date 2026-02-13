@@ -1,7 +1,7 @@
 #include "tune/kiv/tunekivadc.h"
 
-#include <gen/colors.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/stdfunc.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/graphfunc.h>
 #include <avm-widgets/lblfunc.h>

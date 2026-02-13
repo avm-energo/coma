@@ -1,7 +1,7 @@
 #include "dialogs/searchproccessdialog.h"
 
-#include <gen/stdfunc.h>
-#include <gen/utils/crc16.h>
+#include <avm-gen/stdfunc.h>
+#include <avm-gen/utils/crc16.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/tvfunc.h>
 

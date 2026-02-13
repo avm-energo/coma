@@ -1,7 +1,7 @@
 #include "startup/abstractstartupdialog.h"
 
-#include <gen/stdfunc.h>
-#include <gen/pch.h>
+#include <avm-gen/stdfunc.h>
+#include <avm-gen/pch.h>
 #include <avm-widgets/epopup.h>
 #include <avm-widgets/spbfunc.h>
 

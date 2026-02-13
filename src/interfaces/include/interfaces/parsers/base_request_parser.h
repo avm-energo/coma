@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gen/logger.h>
+#include <avm-gen/logger.h>
 #include <interfaces/types/protocol_settings.h>
 
 #include <deque>

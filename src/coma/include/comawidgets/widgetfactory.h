@@ -6,7 +6,7 @@
 #include <avm-widgets/spbfunc.h>
 #include <comawidgets/gasdensitywidget.h>
 #include <device/current_device.h>
-#include <gen/std_ext.h>
+#include <avm-gen/std_ext.h>
 #include <s2/delegate_common.h>
 
 #include <QLineEdit>

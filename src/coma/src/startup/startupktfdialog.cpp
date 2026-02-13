@@ -1,10 +1,10 @@
 #include "startup/startupktfdialog.h"
 
-#include <gen/colors.h>
-#include <gen/error.h>
-#include <gen/files.h>
-#include <gen/stdfunc.h>
-#include <gen/timefunc.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/error.h>
+#include <avm-gen/files.h>
+#include <avm-gen/stdfunc.h>
+#include <avm-gen/timefunc.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/etableview.h>
 #include <avm-widgets/filefunc.h>

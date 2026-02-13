@@ -1,9 +1,9 @@
 #include "tune/85/tune85dialog.h"
 
-#include <gen/colors.h>
-#include <gen/error.h>
-#include <gen/files.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/error.h>
+#include <avm-gen/files.h>
+#include <avm-gen/stdfunc.h>
 #include <tune/85/tune85adc.h>
 #include <tune/85/tune85check.h>
 #include <tune/85/tune85temp60.h>

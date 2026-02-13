@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gen/integers.h>
+#include <avm-gen/integers.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 
 struct SGroupHideData;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gen/datatypes.h>
+#include <avm-gen/datatypes.h>
 #include <interfaces/types/protocol_settings.h>
 #include <s2/dataitem.h>
 

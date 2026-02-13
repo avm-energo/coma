@@ -1,6 +1,6 @@
 #include "oscillograms/viewmodels/trendviewmodelkiv.h"
 
-#include <gen/colors.h>
+#include <avm-gen/colors.h>
 #include <oscillograms/osc_ids.h>
 
 TrendViewModelKIV::TrendViewModelKIV(int pointsum) : TrendViewModel(pointsum) { }

@@ -2,10 +2,10 @@
 
 #include <common/appconfig.h>
 #include <device/current_device.h>
-#include <gen/files.h>
-#include <gen/stdfunc.h>
-#include <gen/xml/xmlbase.h>
-#include <gen/xml/xmlparse.h>
+#include <avm-gen/files.h>
+#include <avm-gen/stdfunc.h>
+#include <avm-gen/xml/xmlbase.h>
+#include <avm-gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
 Xml::ModuleParser::ModuleParser(QObject *parent) : m_ifaceType(Interface::IfaceType::Unknown) { }

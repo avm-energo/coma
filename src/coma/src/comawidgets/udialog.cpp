@@ -1,7 +1,7 @@
 #include <avm-widgets/emessagebox.h>
 #include <comawidgets/udialog.h>
 #include <device/current_device.h>
-#include <gen/error.h>
+#include <avm-gen/error.h>
 
 UDialog::UDialog(Device::CurrentDevice *device, QWidget *parent) : UWidget(device, parent)
 {

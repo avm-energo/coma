@@ -1,6 +1,6 @@
 #include "oscillograms/viewmodels/trendviewmodelkdv.h"
 
-#include <gen/colors.h>
+#include <avm-gen/colors.h>
 
 TrendViewModelKDV::TrendViewModelKDV(int pointsnum) : TrendViewModel(pointsnum) { }
 

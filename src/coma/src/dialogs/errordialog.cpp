@@ -1,8 +1,8 @@
 #include "dialogs/errordialog.h"
 
 #include <comawidgets/errorprotocolwidget.h>
-#include <gen/colors.h>
-#include <gen/error.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/error.h>
 
 #include <QHBoxLayout>
 #include <QPushButton>

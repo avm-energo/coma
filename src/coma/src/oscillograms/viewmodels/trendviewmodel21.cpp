@@ -1,6 +1,6 @@
 #include "oscillograms/viewmodels/trendviewmodel21.h"
 
-#include <gen/colors.h>
+#include <avm-gen/colors.h>
 
 TrendViewModel21::TrendViewModel21(int pointsnum) : TrendViewModel(pointsnum) { }
 

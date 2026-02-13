@@ -1,8 +1,8 @@
 #include "dialogs/interfaceusbdialog.h"
 
 #include <common/names.h>
-#include <gen/error.h>
-#include <gen/settings.h>
+#include <avm-gen/error.h>
+#include <avm-gen/settings.h>
 #include <interfaces/types/serial_settings.h>
 #include <interfaces/types/usbhidportinfo.h>
 #include <avm-widgets/tvfunc.h>

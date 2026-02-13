@@ -1,6 +1,6 @@
 #include "journals/journaltabwidget.h"
 
-#include <gen/files.h>
+#include <avm-gen/files.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/filefunc.h>
 

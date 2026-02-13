@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gen/error.h>
+#include <avm-gen/error.h>
 #include <interfaces/types/protocol_settings.h>
 #include <interfaces/utils/request_queue.h>
 #include <interfaces/utils/slot_trait.h>

@@ -1,9 +1,9 @@
 #include "oscillograms/dialogs/switchjournaldialog.h"
 
 #include <device/current_device.h>
-#include <gen/files.h>
-#include <gen/settings.h>
-#include <gen/timefunc.h>
+#include <avm-gen/files.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/timefunc.h>
 #include <models/etablemodel.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/swjmanager.h>

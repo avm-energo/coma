@@ -1,7 +1,7 @@
 #include "models/report.h"
 
-#include <gen/error.h>
-#include <gen/settings.h>
+#include <avm-gen/error.h>
+#include <avm-gen/settings.h>
 #include <limereport/lrreportengine.h>
 
 #include <QStandardItem>

@@ -2,7 +2,7 @@
 
 #include <QByteArray>
 #include <QObject>
-#include <gen/integers.h>
+#include <avm-gen/integers.h>
 #include <s2/s2datatypes.h>
 
 namespace Device

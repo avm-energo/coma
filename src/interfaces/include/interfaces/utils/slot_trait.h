@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include <gen/std_ext.h>
+#include <avm-gen/std_ext.h>
 #include <type_traits>
 #include <utility>
 

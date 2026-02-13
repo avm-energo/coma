@@ -7,9 +7,9 @@
 #include <QIcon>
 #include <QString>
 #include <QStringList>
-#include <gen/error.h>
-#include <gen/errorqueue.h>
-#include <gen/helper.h>
+#include <avm-gen/error.h>
+#include <avm-gen/errorqueue.h>
+#include <avm-gen/helper.h>
 
 ErrorProtocolModel::ErrorProtocolModel(QObject *parent) : QAbstractTableModel(parent)
 {

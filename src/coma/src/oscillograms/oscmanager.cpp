@@ -1,7 +1,7 @@
 #include "oscillograms/oscmanager.h"
 
-#include <gen/files.h>
-#include <gen/timefunc.h>
+#include <avm-gen/files.h>
+#include <avm-gen/timefunc.h>
 #include <oscillograms/parsers/parseid10001.h>
 #include <oscillograms/parsers/parseid10020.h>
 #include <oscillograms/parsers/parseid10022.h>

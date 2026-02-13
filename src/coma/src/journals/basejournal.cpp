@@ -1,6 +1,6 @@
 #include "journals/basejournal.h"
 
-#include <gen/timefunc.h>
+#include <avm-gen/timefunc.h>
 #include <avm-widgets/etableview.h>
 #include <avm-widgets/tvfunc.h>
 

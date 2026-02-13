@@ -1,4 +1,4 @@
-#include "gen/strings.h"
+#include <avm-gen/strings.h>
 #include <avm-widgets/checkboxgroup.h>
 #include <avm-widgets/flowlayout.h>
 #include <avm-widgets/ipctrl.h>

@@ -1,7 +1,7 @@
 #include "interfaces/exec/default_query_executor.h"
 
 #include <common/names.h>
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 #include <interfaces/parsers/base_request_parser.h>
 #include <interfaces/parsers/base_response_parser.h>
 

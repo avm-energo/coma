@@ -1,7 +1,7 @@
 #include "tune/21/tune21one.h"
 
-#include <gen/colors.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/stdfunc.h>
 #include <tune/tunetypes.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/graphfunc.h>

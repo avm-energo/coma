@@ -2,7 +2,7 @@
 
 #include "device/bsi.h"
 #include "device/bsi_ext.h"
-#include <gen/std_ext.h>
+#include <avm-gen/std_ext.h>
 #include <s2/s2util.h>
 
 namespace Interface

@@ -1,7 +1,7 @@
 #include "tune/kiv/tunekivtemp60.h"
 
-#include <gen/colors.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 #include <tune/tunesequencefile.h>
 #include <avm-widgets/emessagebox.h>

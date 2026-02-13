@@ -2,7 +2,7 @@
 
 #include <QByteArray>
 #include <QVariant>
-#include <gen/stdfunc.h>
+#include <avm-gen/stdfunc.h>
 #include <interfaces/types/iec104/control_block.h>
 
 namespace Iec104

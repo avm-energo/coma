@@ -6,12 +6,12 @@
 #include <avm-widgets/pbfunc.h>
 #include <avm-widgets/waitwidget.h>
 #include <avm-widgets/wdfunc.h>
-#include <gen/datatypes.h>
-#include <gen/error.h>
-#include <gen/files.h>
-#include <gen/settings.h>
-#include <gen/stdfunc.h>
-#include <gen/timefunc.h>
+#include <avm-gen/datatypes.h>
+#include <avm-gen/error.h>
+#include <avm-gen/files.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
+#include <avm-gen/timefunc.h>
 #include <tune/generaltunedialog.h>
 #include <tune/tunesequencefile.h>
 

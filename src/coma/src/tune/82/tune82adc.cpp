@@ -4,8 +4,8 @@
 #include <avm-widgets/graphfunc.h>
 #include <avm-widgets/lblfunc.h>
 #include <avm-widgets/waitwidget.h>
-#include <gen/colors.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/colors.h>
+#include <avm-gen/stdfunc.h>
 #include <tune/82/verification_offset.h>
 
 #include <QMessageBox>

@@ -4,7 +4,7 @@
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/filefunc.h>
 #include <avm-widgets/pbfunc.h>
-#include <gen/files.h>
+#include <avm-gen/files.h>
 #include <journals/measjournal.h>
 #include <journals/sysjournal.h>
 #include <journals/workjournal.h>

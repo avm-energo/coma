@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <gen/std_ext.h>
+#include <avm-gen/std_ext.h>
 #include <tl/expected.hpp>
 
 namespace Iec104

@@ -1,6 +1,6 @@
 #include "device/bsi_ext.h"
 
-#include <gen/stdfunc.h>
+#include <avm-gen/stdfunc.h>
 namespace Device
 {
 

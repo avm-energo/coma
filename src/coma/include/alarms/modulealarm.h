@@ -2,7 +2,7 @@
 
 #include <alarms/basealarm.h>
 #include <avm-widgets/elabel.h>
-#include <gen/datatypes.h>
+#include <avm-gen/datatypes.h>
 
 #include <QList>
 #include <QPair>

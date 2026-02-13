@@ -1,6 +1,6 @@
 #include "xml/xmleditor/models/xmldatamodel.h"
 
-#include <gen/xml/xmlparse.h>
+#include <avm-gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
 XmlDataModel::XmlDataModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent) { }

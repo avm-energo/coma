@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gen/integers.h>
+#include <avm-gen/integers.h>
 #include <oscillograms/viewmodels/trendviewmodel.h>
 
 class TrendViewModelKIV final : public TrendViewModel

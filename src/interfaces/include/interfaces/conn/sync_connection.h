@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gen/error.h>
+#include <avm-gen/error.h>
 #include <interfaces/types/common_types.h>
 
 #include <QTimer>

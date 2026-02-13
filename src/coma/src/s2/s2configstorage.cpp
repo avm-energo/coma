@@ -1,8 +1,8 @@
 #include "s2/s2configstorage.h"
 
-#include "gen/floats.h"
-#include "gen/std_ext.h"
-#include <gen/strings.h>
+#include <avm-gen/floats.h>
+#include <avm-gen/std_ext.h>
+#include <avm-gen/strings.h>
 
 #include <QDebug>
 

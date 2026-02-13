@@ -1,8 +1,8 @@
 #pragma once
 
 #include <device/device_list.h>
-#include <gen/error.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/error.h>
+#include <avm-gen/stdfunc.h>
 #include <interfaces/types/serial_settings.h>
 #include <comawidgets/udialog.h>
 

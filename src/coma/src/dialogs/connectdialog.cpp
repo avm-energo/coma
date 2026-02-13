@@ -4,7 +4,7 @@
 #include <dialogs/interfaceethernetdialog.h>
 #include <dialogs/interfaceserialdialog.h>
 #include <dialogs/interfaceusbdialog.h>
-#include <gen/error.h>
+#include <avm-gen/error.h>
 #include <avm-widgets/cbfunc.h>
 #include <avm-widgets/lblfunc.h>
 
