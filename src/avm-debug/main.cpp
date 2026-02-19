@@ -1,5 +1,5 @@
-#include <common/appconfig.h>
 #include <avm-gen/settings.h>
+#include <common/appconfig.h>
 
 #include <QApplication>
 #include <coma.h>

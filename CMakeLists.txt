@@ -90,6 +90,13 @@ else()
   include(qxlsx)
 endif()
 
+find_package(avm-updater 0.0.1 QUIET)
+if(${avm-updater_FOUND})
+  message(STATUS "Found package avm-updater")
+else()
+  include(avm-updater)
+endif()
+
 add_subdirectory(src/coma)
 add_subdirectory(src/ctti)
 add_subdirectory(src/interfaces)

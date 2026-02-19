@@ -33,6 +33,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   limereport
   qcustomplot
   avm-qxlsx
+  avm-updater
   Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
 )
 

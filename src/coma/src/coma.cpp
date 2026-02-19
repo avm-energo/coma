@@ -21,6 +21,14 @@
  */
 
 #include <alarms/alarmwidget.h>
+#include <avm-gen/errorqueue.h>
+#include <avm-gen/files.h>
+#include <avm-gen/logger.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
+#include <avm-gen/timefunc.h>
+#include <avm-updater/check.h>
+#include <avm-updater/update.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/epopup.h>
 #include <avm-widgets/filefunc.h>
@@ -43,12 +51,6 @@
 #include <dialogs/reconnectdialog.h>
 #include <dialogs/settingsdialog.h>
 #include <dialogs/slicegetdialog.h>
-#include <avm-gen/errorqueue.h>
-#include <avm-gen/files.h>
-#include <avm-gen/logger.h>
-#include <avm-gen/settings.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-gen/timefunc.h>
 #include <interfaces/types/serial_settings.h>
 #include <journals/journalviewer.h>
 #include <oscillograms/dialogs/switchjournaldialog.h>
