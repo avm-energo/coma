@@ -5,7 +5,7 @@
 namespace journals
 {
 
-WorkJournal::WorkJournal(const QMap<quint32, QString> &desc, QObject *parent)
+WorkJournal::WorkJournal(const Device::XmlDataTypes::WorkJourMap &desc, QObject *parent)
     : BaseJournal(parent)
     , m_desriptions(desc)
     , m_parser(new EventParser(this))

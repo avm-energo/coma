@@ -43,7 +43,7 @@ void ConfigStorage::nameDataReceive(const u32 id, const QString &name)
 {
     if (id == 0)
         qWarning() << "Invalid S2 config id: " << id;
-    else if (name.isEmpty())
+    else if ((name.isEmpty()) || name == STRINF)
         qWarning() << "Empty S2 name for item with id: " << id;
     else
     {

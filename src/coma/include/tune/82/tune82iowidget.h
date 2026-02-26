@@ -1,9 +1,10 @@
 #pragma once
 
-#include <QTimer>
-#include <QWidget>
 #include <device/current_device.h>
 #include <tune/82/verification_offset.h>
+
+#include <QTimer>
+#include <QWidget>
 
 class Mip;
 
@@ -24,4 +25,8 @@ private:
 
 public:
     explicit Tune82IoWidget(Device::CurrentDevice *device, QWidget *parent = nullptr);
+    ~Tune82IoWidget();
+
+signals:
+    void cancel();
 };

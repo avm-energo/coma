@@ -1,10 +1,10 @@
 #pragma once
 
-#include <device/device_list.h>
 #include <avm-gen/error.h>
 #include <avm-gen/stdfunc.h>
-#include <interfaces/types/serial_settings.h>
 #include <comawidgets/udialog.h>
+#include <device/device_list.h>
+#include <interfaces/types/serial_settings.h>
 
 class BaseInterface;
 
@@ -52,7 +52,7 @@ public:
     void setModuleType(MType type);
     void setNominalCurrent(float inom);
     QWidget *widget();
-    MipDataStruct takeOneMeasurement(bool &ok);
+    bool takeOneMeasurement(MipDataStruct &mipData);
 
 private:
     BaseInterface *m_iface;

@@ -2,15 +2,15 @@
 
 #include <avm-gen/settings.h>
 #include <avm-gen/stdfunc.h>
-#include <interfaces/conn/async_connection.h>
-#include <interfaces/ifaces/ethernet.h>
-#include <interfaces/parsers/iec104parser.h>
-#include <interfaces/types/serial_settings.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/lblfunc.h>
 #include <avm-widgets/pbfunc.h>
 #include <avm-widgets/waitwidget.h>
 #include <avm-widgets/wdfunc.h>
+#include <interfaces/conn/async_connection.h>
+#include <interfaces/ifaces/ethernet.h>
+#include <interfaces/parsers/iec104parser.h>
+#include <interfaces/types/serial_settings.h>
 
 #include <QEventLoop>
 #include <QGroupBox>
@@ -30,12 +30,7 @@ Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
 
 Mip::~Mip() noexcept
 {
-    if (m_iface != nullptr)
-    {
-        m_iface->close();
-        // ждём, пока отработает парсер
-        StdFunc::Wait();
-    }
+    // stop();
 }
 
 void Mip::updateData(const DataTypes::FloatStruct &fl)
@@ -154,7 +149,6 @@ bool Mip::start()
 void Mip::stop()
 {
     m_updateTimer->stop();
-    m_updateTimer->deleteLater();
     m_updater->setUpdatesEnabled(false);
     if (m_iface != nullptr)
     {
@@ -284,26 +278,41 @@ QWidget *Mip::widget()
     return m_widget;
 }
 
-// MipDataStruct Mip::takeOneMeasurement(float i2nom, bool &ok)
-MipDataStruct Mip::takeOneMeasurement(bool &ok)
+bool Mip::takeOneMeasurement(MipDataStruct &mipData)
 {
     // setNominalCurrent(i2nom);
     if (start())
     {
+        bool busy = true;
+        bool ok = false;
         QTimer timeoutTimer;
-        timeoutTimer.setSingleShot(false);
+        timeoutTimer.setSingleShot(true);
         timeoutTimer.setInterval(2000); // 2 sec - timeout
         QEventLoop el;
-        connect(this, &Mip::oneMeasurementReceived, &el, &QEventLoop::quit);
-        connect(&timeoutTimer, &QTimer::timeout, &el, &QEventLoop::quit);
+        connect(this, &Mip::oneMeasurementReceived,
+            [&]()
+            {
+                stop();
+                mipData = m_mipData;
+                ok = true;
+                el.quit();
+            });
+        connect(&timeoutTimer, &QTimer::timeout,
+            [&]()
+            {
+                stop();
+                EMessageBox::warning(m_parent, "Нет связи с МИП");
+                ok = false;
+                el.quit();
+            });
+
+        timeoutTimer.start();
         el.exec();
-        stop();
-        ok = true;
+        return ok;
     }
     else
     {
         EMessageBox::warning(m_parent, "Нет связи с МИП");
-        ok = false;
+        return false;
     }
-    return m_mipData;
 }

@@ -1,7 +1,7 @@
 #include "tune/82/tune82iowidget.h"
 
-#include <tune/mip.h>
 #include <avm-widgets/lblfunc.h>
+#include <tune/mip.h>
 
 #include <QGroupBox>
 #include <QPushButton>
@@ -18,6 +18,12 @@ Tune82IoWidget::Tune82IoWidget(Device::CurrentDevice *device, QWidget *parent)
     m_timer->setInterval(1000);
     connect(m_timer, &QTimer::timeout, this, &Tune82IoWidget::updateData);
     setupUI();
+}
+
+Tune82IoWidget::~Tune82IoWidget()
+{
+    // if (m_mip)
+    //     m_mip->stop();
 }
 
 void Tune82IoWidget::setupUI()
@@ -71,7 +77,8 @@ void Tune82IoWidget::setupUI()
             startBtn->setEnabled(false);
             cancelBtn->setEnabled(true);
         });
-    connect(cancelBtn, &QPushButton::clicked, this, //
+    connect(cancelBtn, &QPushButton::clicked, this, &Tune82IoWidget::cancel);
+    connect(this, &Tune82IoWidget::cancel, this, //
         [this, startBtn, cancelBtn]
         {
             m_timer->stop();
@@ -94,10 +101,12 @@ void Tune82IoWidget::updateData()
     bool ok;
     float i2nom = 1.0;
     QCoreApplication::processEvents();
-    // auto mipData = m_mip->takeOneMeasurement(i2nom);
-    auto mipData = m_mip->takeOneMeasurement(ok);
-    if (!ok)
-        this->close();
+    MipDataStruct mipData;
+    if (!m_mip->takeOneMeasurement(mipData))
+    {
+        emit cancel();
+        return;
+    }
     QCoreApplication::processEvents();
     updateUI(mipData);
     QCoreApplication::processEvents();

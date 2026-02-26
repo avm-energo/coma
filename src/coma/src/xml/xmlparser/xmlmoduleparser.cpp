@@ -1,11 +1,11 @@
 #include "xml/xmlparser/xmlmoduleparser.h"
 
-#include <common/appconfig.h>
-#include <device/current_device.h>
 #include <avm-gen/files.h>
 #include <avm-gen/stdfunc.h>
 #include <avm-gen/xml/xmlbase.h>
 #include <avm-gen/xml/xmlparse.h>
+#include <common/appconfig.h>
+#include <device/current_device.h>
 #include <xml/xmltags.h>
 
 Xml::ModuleParser::ModuleParser(QObject *parent) : m_ifaceType(Interface::IfaceType::Unknown) { }
@@ -175,6 +175,8 @@ void Xml::ModuleParser::parseSection(const QDomNode &sectionNode)
                     auto count = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::count);
                     count = (count == 0) ? 1 : count;
                     auto tooltip = XmlParse::parseString(mwidgetNode, tags::tooltip);
+                    if (tooltip == STRINF)
+                        tooltip.clear();
                     auto type = XmlParse::parseNumFromNode<u32>(mwidgetNode, tags::type);
                     auto decimals = XmlParse::parseNumFromNode<u32>(
                         mwidgetNode, tags::decimals, 3); // 3 decimals by default for float widgets
@@ -210,6 +212,8 @@ void Xml::ModuleParser::parseAlarmStateAll(const QDomNode &alarmStateAllNode)
 {
     auto index = XmlParse::parseNumFromNode<u32>(alarmStateAllNode, tags::addr);
     auto desc = XmlParse::parseString(alarmStateAllNode, tags::string);
+    if (desc == STRINF)
+        desc.clear();
     auto type = parseAlarmType(XmlParse::parseString(alarmStateAllNode, tags::type));
     emit alarmStateAllDataSending(type, index, desc);
 }
@@ -218,6 +222,8 @@ void Xml::ModuleParser::parseAlarm(const QDomNode &alarmNode, const AlarmType &t
 {
     auto addr = XmlParse::parseNumFromNode<u32>(alarmNode, tags::addr);
     auto desc = XmlParse::parseString(alarmNode, tags::string);
+    if (desc == STRINF)
+        desc.clear();
     auto order = XmlParse::parseNumFromNode<u32>(alarmNode, tags::order, U16MAX);
     order = (order == 0) ? U16MAX : order; // if an order is not set force to set it to the lowest priority
     auto hlValues = XmlParse::parseNumArray<u32>(alarmNode, tags::highlights);

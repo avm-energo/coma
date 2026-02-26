@@ -1,5 +1,7 @@
 #include "s2/s2datafactory.h"
 
+#include "avm-gen/strings.h"
+
 namespace detail
 {
 
@@ -174,66 +176,67 @@ DataItem DataFactory::create(const quint32 id, const QString &str) const
 {
     using namespace detail;
     auto type = getType(id);
+    QString strnc = (str == STRINF) ? "" : str;
     switch (type.hash())
     {
     case ctti::unnamed_type_id<BYTE>().hash():
-        return DataItem { helper<BYTE>(str) };
+        return DataItem { helper<BYTE>(strnc) };
     case ctti::unnamed_type_id<WORD>().hash():
-        return DataItem { helper<WORD>(str) };
+        return DataItem { helper<WORD>(strnc) };
     case ctti::unnamed_type_id<DWORD>().hash():
-        return DataItem { helper<DWORD>(str) };
+        return DataItem { helper<DWORD>(strnc) };
     case ctti::unnamed_type_id<INT32>().hash():
-        return DataItem { helper<INT32>(str) };
+        return DataItem { helper<INT32>(strnc) };
     case ctti::unnamed_type_id<BYTE_3t>().hash():
-        return DataItem { helper<BYTE_3t>(str) };
+        return DataItem { helper<BYTE_3t>(strnc) };
     case ctti::unnamed_type_id<WORD_3t>().hash():
-        return DataItem { helper<WORD_3t>(str) };
+        return DataItem { helper<WORD_3t>(strnc) };
     case ctti::unnamed_type_id<BYTE_4t>().hash():
-        return DataItem { helper<BYTE_4t>(str) };
+        return DataItem { helper<BYTE_4t>(strnc) };
     case ctti::unnamed_type_id<WORD_4t>().hash():
-        return DataItem { helper<WORD_4t>(str) };
+        return DataItem { helper<WORD_4t>(strnc) };
     case ctti::unnamed_type_id<DWORD_4t>().hash():
-        return DataItem { helper<DWORD_4t>(str) };
+        return DataItem { helper<DWORD_4t>(strnc) };
     case ctti::unnamed_type_id<BYTE_6t>().hash():
-        return DataItem { helper<BYTE_6t>(str) };
+        return DataItem { helper<BYTE_6t>(strnc) };
     case ctti::unnamed_type_id<WORD_6t>().hash():
-        return DataItem { helper<WORD_6t>(str) };
+        return DataItem { helper<WORD_6t>(strnc) };
     case ctti::unnamed_type_id<DWORD_6t>().hash():
-        return DataItem { helper<DWORD_6t>(str) };
+        return DataItem { helper<DWORD_6t>(strnc) };
     case ctti::unnamed_type_id<BYTE_8t>().hash():
-        return DataItem { helper<BYTE_8t>(str) };
+        return DataItem { helper<BYTE_8t>(strnc) };
     case ctti::unnamed_type_id<WORD_8t>().hash():
-        return DataItem { helper<WORD_8t>(str) };
+        return DataItem { helper<WORD_8t>(strnc) };
     case ctti::unnamed_type_id<DWORD_8t>().hash():
-        return DataItem { helper<DWORD_8t>(str) };
+        return DataItem { helper<DWORD_8t>(strnc) };
     case ctti::unnamed_type_id<BYTE_16t>().hash():
-        return DataItem { helper<BYTE_16t>(str) };
+        return DataItem { helper<BYTE_16t>(strnc) };
     case ctti::unnamed_type_id<WORD_16t>().hash():
-        return DataItem { helper<WORD_16t>(str) };
+        return DataItem { helper<WORD_16t>(strnc) };
     case ctti::unnamed_type_id<DWORD_16t>().hash():
-        return DataItem { helper<DWORD_16t>(str) };
+        return DataItem { helper<DWORD_16t>(strnc) };
     case ctti::unnamed_type_id<BYTE_32t>().hash():
-        return DataItem { helper<BYTE_32t>(str) };
+        return DataItem { helper<BYTE_32t>(strnc) };
     case ctti::unnamed_type_id<WORD_32t>().hash():
-        return DataItem { helper<WORD_32t>(str) };
+        return DataItem { helper<WORD_32t>(strnc) };
     case ctti::unnamed_type_id<DWORD_32t>().hash():
-        return DataItem { helper<DWORD_32t>(str) };
+        return DataItem { helper<DWORD_32t>(strnc) };
     case ctti::unnamed_type_id<FLOAT>().hash():
-        return DataItem { helper<FLOAT>(str) };
+        return DataItem { helper<FLOAT>(strnc) };
     case ctti::unnamed_type_id<FLOAT_2t>().hash():
-        return DataItem { helper<FLOAT_2t>(str) };
+        return DataItem { helper<FLOAT_2t>(strnc) };
     case ctti::unnamed_type_id<FLOAT_3t>().hash():
-        return DataItem { helper<FLOAT_3t>(str) };
+        return DataItem { helper<FLOAT_3t>(strnc) };
     case ctti::unnamed_type_id<FLOAT_4t>().hash():
-        return DataItem { helper<FLOAT_4t>(str) };
+        return DataItem { helper<FLOAT_4t>(strnc) };
     case ctti::unnamed_type_id<FLOAT_6t>().hash():
-        return DataItem { helper<FLOAT_6t>(str) };
+        return DataItem { helper<FLOAT_6t>(strnc) };
     case ctti::unnamed_type_id<FLOAT_8t>().hash():
-        return DataItem { helper<FLOAT_8t>(str) };
+        return DataItem { helper<FLOAT_8t>(strnc) };
     case ctti::unnamed_type_id<GasDensity_3t>().hash():
-        return DataItem { helper<GasDensity_3t>(str) };
+        return DataItem { helper<GasDensity_3t>(strnc) };
     case ctti::unnamed_type_id<CONFMAST>().hash():
-        return DataItem { helper<CONFMAST>(str) };
+        return DataItem { helper<CONFMAST>(strnc) };
     default:
         qDebug() << "Unknown type id: " << id;
         return DataItem {};

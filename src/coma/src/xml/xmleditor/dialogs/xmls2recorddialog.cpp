@@ -1,7 +1,7 @@
-#include <avm-widgets/wdfunc.h>
 #include <avm-gen/integers.h>
 #include <avm-gen/settings.h>
 #include <avm-gen/xml/xmlparse.h>
+#include <avm-widgets/wdfunc.h>
 #include <xml/xmleditor/dialogs/xmls2recorddialog.h>
 #include <xml/xmleditor/models/xmldatamodel.h>
 #include <xml/xmltags.h>
@@ -337,7 +337,8 @@ void XmlS2RecordDialog::parseConfigTab(const QDomNode &tabNode)
 {
     int index = XmlParse::parseNumFromNode<u32>(tabNode, tags::id);
     QString desc = XmlParse::parseString(tabNode, tags::name);
-    m_s2TabsMap[desc] = index;
+    if (desc != STRINF)
+        m_s2TabsMap[desc] = index;
 }
 
 void XmlS2RecordDialog::loadModelData(const QStringList &response)

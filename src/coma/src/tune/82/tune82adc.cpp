@@ -1,11 +1,11 @@
 #include "tune/82/tune82adc.h"
 
+#include <avm-gen/colors.h>
+#include <avm-gen/stdfunc.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/graphfunc.h>
 #include <avm-widgets/lblfunc.h>
 #include <avm-widgets/waitwidget.h>
-#include <avm-gen/colors.h>
-#include <avm-gen/stdfunc.h>
 #include <tune/82/verification_offset.h>
 
 #include <QMessageBox>
@@ -256,9 +256,5 @@ Error::Msg Tune82ADC::checkTune()
 
 bool Tune82ADC::getOneMip()
 {
-    bool ok;
-    // auto inom = config["I2nom"].value<S2::FLOAT_6t>();
-    // m_mipdata = m_mip->takeOneMeasurement(inom.at(3), ok);
-    m_mipdata = m_mip->takeOneMeasurement(ok);
-    return ok;
+    return m_mip->takeOneMeasurement(m_mipdata);
 }

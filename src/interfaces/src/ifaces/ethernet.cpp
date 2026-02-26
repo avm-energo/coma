@@ -24,7 +24,7 @@ bool Ethernet::connect()
         if (getState() != Interface::State::Disconnect)
         {
             setState(Interface::State::Run);
-            qInfo("Связь с устройством установлена");
+            qDebug("Связь с устройством установлена");
             emit started();
             return true;
         }
@@ -64,7 +64,7 @@ QByteArray Ethernet::read(bool &status)
         status = true;
     }
     else
-        QCoreApplication::processEvents();
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
     return data;
 }
 

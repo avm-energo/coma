@@ -1,5 +1,7 @@
 #include "device/configstorage.h"
 
+#include "avm-gen/strings.h"
+
 namespace Device
 {
 
@@ -43,7 +45,7 @@ void ConfigStorage::tabDataReceive(const u32 id, const XmlDataTypes::SectionTabS
 {
     if (id == 0)
         qWarning() << "Invalid tab id: " << id;
-    else if (sectionTab.name == "")
+    else if (sectionTab.name == STRINF)
         qWarning() << "Empty tab name, tab id: " << id;
     else
         m_settings.appendTab(id, sectionTab);

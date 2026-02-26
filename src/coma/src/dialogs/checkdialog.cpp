@@ -256,7 +256,7 @@ QString CheckDialog::getFormatted(const MWidget &widget, //
     if (!(widget.subItemList == STRLISTINF) && number < widget.subItemList.count())
         return form.arg(widget.subItemList.at(number));
     else
-        return (widget.count > 1) ? form.arg(start + number) : form;
+        return ((widget.count > 1) && form.contains("%1")) ? form.arg(start + number) : form;
 }
 
 QVBoxLayout *CheckDialog::setupGroup(const SGroup &arg, UWidget *uwidget)

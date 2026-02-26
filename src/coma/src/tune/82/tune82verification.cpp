@@ -1,7 +1,7 @@
 #include "tune/82/tune82verification.h"
 
-#include <avm-widgets/emessagebox.h>
 #include <avm-gen/stdfunc.h>
+#include <avm-widgets/emessagebox.h>
 #include <interfaces/conn/sync_connection.h>
 #include <tune/82/verification_offset.h>
 #include <tune/mip.h>
@@ -166,7 +166,6 @@ void Tune82Verification::reportInit()
 
 Error::Msg Tune82Verification::verification()
 {
-    bool ok;
     float i2nom = 0.0;
 
     MipDataStruct mipData { 0 };
@@ -195,8 +194,7 @@ Error::Msg Tune82Verification::verification()
             return Error::Msg::GeneralError;
 
         StdFunc::Wait(1000);
-        mipData = m_mip->takeOneMeasurement(ok);
-        if (!ok)
+        if (!m_mip->takeOneMeasurement(mipData))
             return Error::Msg::GeneralError;
         m_bd1->readBlockFromModule();
         deviceData = *(m_bd1->data());
