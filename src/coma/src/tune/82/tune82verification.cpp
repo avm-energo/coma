@@ -133,17 +133,17 @@ void Tune82Verification::writeOffsetDataToReport(const VerificationOffset &offse
     writeReportData(QString("PhiUab.%1").arg(iter), QString::number(offset.phiUab, 'f', 3));
     writeReportData(QString("PhiUbc.%1").arg(iter), QString::number(offset.phiUbc, 'f', 3));
     writeReportData(QString("OffsetF.%1").arg(iter), QString::number(offset.offsetF, 'f', 3));
-    writeReportData(QString("OffsetUA.%1").arg(iter), QString::number(offset.offsetU[0], 'f', 3));
-    writeReportData(QString("OffsetUB.%1").arg(iter), QString::number(offset.offsetU[1], 'f', 3));
-    writeReportData(QString("OffsetUC.%1").arg(iter), QString::number(offset.offsetU[2], 'f', 3));
-    writeReportData(QString("OffsetIA.%1").arg(iter), QString::number(offset.offsetI[0], 'f', 3));
-    writeReportData(QString("OffsetIB.%1").arg(iter), QString::number(offset.offsetI[1], 'f', 3));
-    writeReportData(QString("OffsetIC.%1").arg(iter), QString::number(offset.offsetI[2], 'f', 3));
-    writeReportData(QString("OffsetPhiloadA.%1").arg(iter), QString::number(offset.offsetPhiLoad[0], 'f', 3));
-    writeReportData(QString("OffsetPhiloadB.%1").arg(iter), QString::number(offset.offsetPhiLoad[1], 'f', 3));
-    writeReportData(QString("OffsetPhiloadC.%1").arg(iter), QString::number(offset.offsetPhiLoad[2], 'f', 3));
-    writeReportData(QString("OffsetPhiUAB.%1").arg(iter), QString::number(offset.offsetPhiUab, 'f', 3));
-    writeReportData(QString("OffsetPhiUBC.%1").arg(iter), QString::number(offset.offsetPhiUbc, 'f', 3));
+    writeReportData(QString("OffsetUA.%1").arg(iter), QString::number(offset.errorU[0], 'f', 3));
+    writeReportData(QString("OffsetUB.%1").arg(iter), QString::number(offset.errorU[1], 'f', 3));
+    writeReportData(QString("OffsetUC.%1").arg(iter), QString::number(offset.errorU[2], 'f', 3));
+    writeReportData(QString("OffsetIA.%1").arg(iter), QString::number(offset.errorI[0], 'f', 3));
+    writeReportData(QString("OffsetIB.%1").arg(iter), QString::number(offset.errorI[1], 'f', 3));
+    writeReportData(QString("OffsetIC.%1").arg(iter), QString::number(offset.errorI[2], 'f', 3));
+    writeReportData(QString("OffsetPhiloadA.%1").arg(iter), QString::number(offset.errorPhiLoad[0], 'f', 3));
+    writeReportData(QString("OffsetPhiloadB.%1").arg(iter), QString::number(offset.errorPhiLoad[1], 'f', 3));
+    writeReportData(QString("OffsetPhiloadC.%1").arg(iter), QString::number(offset.errorPhiLoad[2], 'f', 3));
+    writeReportData(QString("OffsetPhiUAB.%1").arg(iter), QString::number(offset.errorPhiUab, 'f', 3));
+    writeReportData(QString("OffsetPhiUBC.%1").arg(iter), QString::number(offset.errorPhiUbc, 'f', 3));
 }
 
 void Tune82Verification::reportInit()
@@ -200,7 +200,7 @@ Error::Msg Tune82Verification::verification()
         deviceData = *(m_bd1->data());
 
         QCoreApplication::processEvents();
-        offsetData.update(mipData, deviceData);
+        offsetData.update(mipData, deviceData, c_settings[iter].voltage, c_settings[iter].current);
         if (checkMeasuredDataForCorrectValues(mipData, retomData) != Error::Msg::NoError)
         {
             if (EMessageBox::next(this, "Проверьте правильность задания значений на РЕТОМ"))

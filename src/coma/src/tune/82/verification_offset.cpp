@@ -16,24 +16,26 @@ float calculatePhi(const float phiA, const float phiB) noexcept
         return (y * -1.0);
 }
 
-float VerificationOffset::calculateOffset(const float deviceMeasure, const float mipMeasure) noexcept
+float VerificationOffset::calculateErrors(const float deviceMeasure, const float mipMeasure, const float range) noexcept
 {
-    return (100 * std::fabs((deviceMeasure / mipMeasure) - 1));
+    return StdFunc::FloatIsWithinLimits(range, 0.0, 0.1) ? (100 * std::fabs((deviceMeasure / mipMeasure) - 1))
+                                                         : (100 * std::fabs((deviceMeasure - mipMeasure) / range));
 }
 
-void VerificationOffset::update(const MipDataStruct &mipData, const Bd182::BlockData &deviceData) noexcept
+void VerificationOffset::update(
+    const MipDataStruct &mipData, const Bd182::BlockData &deviceData, const float rangeU, const float rangeI) noexcept
 {
     phiUab = calculatePhi(deviceData.phi_next_f[0], deviceData.phi_next_f[1]);
     phiUbc = calculatePhi(deviceData.phi_next_f[1], deviceData.phi_next_f[2]);
     phiUca = calculatePhi(deviceData.phi_next_f[2], deviceData.phi_next_f[0]);
-    offsetPhiUab = std::fabs(mipData.phiUab - phiUab);
-    offsetPhiUbc = std::fabs(mipData.phiUbc - phiUbc);
-    offsetF = calculateOffset(deviceData.Frequency, mipData.freqUPhase[0]);
+    errorPhiUab = std::fabs(mipData.phiUab - phiUab);
+    errorPhiUbc = std::fabs(mipData.phiUbc - phiUbc);
+    offsetF = calculateErrors(deviceData.Frequency, mipData.freqUPhase[0]);
     for (std::size_t i = 0; i < phasesCount; ++i)
     {
         phiLoad[i] = calculatePhi(deviceData.phi_next_f[i], deviceData.phi_next_f[i + 3]);
-        offsetPhiLoad[i] = std::fabs(mipData.phiLoadPhase[i] - phiLoad[i]);
-        offsetU[i] = calculateOffset(deviceData.IUefNat_filt[i], mipData.uPhase[i]);
-        offsetI[i] = calculateOffset(deviceData.IUefNat_filt[i + 3], mipData.iPhase[i]);
+        errorPhiLoad[i] = std::fabs(mipData.phiLoadPhase[i] - phiLoad[i]);
+        errorU[i] = calculateErrors(deviceData.IUefNat_filt[i], mipData.uPhase[i], rangeU);
+        errorI[i] = calculateErrors(deviceData.IUefNat_filt[i + 3], mipData.iPhase[i], rangeI);
     }
 }

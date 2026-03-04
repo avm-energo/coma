@@ -113,7 +113,7 @@ void Tune82IoWidget::updateData()
     m_bd1->readBlockFromModule();
     QCoreApplication::processEvents();
     auto deviceData = *(m_bd1->data());
-    m_calcValues.update(mipData, deviceData);
+    m_calcValues.update(mipData, deviceData, 60.0, i2nom);
     QCoreApplication::processEvents();
     updateUI(deviceData);
 }

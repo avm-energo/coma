@@ -22,11 +22,11 @@ struct VerificationOffset
 {
     float phiLoad[phasesCount];
     float phiUab, phiUbc, phiUca, offsetF;
-    float offsetU[phasesCount];
-    float offsetI[phasesCount];
-    float offsetPhiLoad[phasesCount];
-    float offsetPhiUab, offsetPhiUbc;
+    float errorU[phasesCount];
+    float errorI[phasesCount];
+    float errorPhiLoad[phasesCount];
+    float errorPhiUab, errorPhiUbc;
 
-    float calculateOffset(const float deviceMeasure, const float mipMeasure) noexcept;
-    void update(const MipDataStruct &mipData, const Bd182::BlockData &deviceData) noexcept;
+    float calculateErrors(const float deviceMeasure, const float mipMeasure, const float range = 0.0) noexcept;
+    void update(const MipDataStruct &mipData, const Bd182::BlockData &deviceData, const float rangeU, const float rangeI) noexcept;
 };
