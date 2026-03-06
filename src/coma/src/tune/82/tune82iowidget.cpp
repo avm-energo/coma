@@ -12,18 +12,24 @@ Tune82IoWidget::Tune82IoWidget(Device::CurrentDevice *device, QWidget *parent)
     , m_typeM(static_cast<Device::MezzanineBoard>(device->getMezzType()))
     , m_bd1(new Bd182(m_typeM, this))
     , m_mip(new Mip(false, m_typeM, this))
-    , m_timer(new QTimer(this))
+    , m_timeoutTimer(new QTimer(this))
 {
     m_bd1->setup(device->getUID(), device->sync());
-    m_timer->setInterval(1000);
-    connect(m_timer, &QTimer::timeout, this, &Tune82IoWidget::updateData);
+    m_timeoutTimer->setInterval(5000);
+    m_timeoutTimer->setSingleShot(true);
+    connect(m_timeoutTimer, &QTimer::timeout, this, &Tune82IoWidget::cancel);
     setupUI();
+    connect(m_mip, &Mip::oneMeasurementReceived, this, &Tune82IoWidget::updateData);
 }
 
 Tune82IoWidget::~Tune82IoWidget()
 {
-    // if (m_mip)
-    //     m_mip->stop();
+    m_timeoutTimer->stop();
+    if(m_mip)
+    {
+        if(m_mip->isStarted())
+            m_mip->stop();
+    }
 }
 
 void Tune82IoWidget::setupUI()
@@ -73,7 +79,8 @@ void Tune82IoWidget::setupUI()
     connect(startBtn, &QPushButton::clicked, this, //
         [this, startBtn, cancelBtn]
         {
-            m_timer->start();
+            m_mip->start();
+            m_timeoutTimer->start();
             startBtn->setEnabled(false);
             cancelBtn->setEnabled(true);
         });
@@ -81,7 +88,7 @@ void Tune82IoWidget::setupUI()
     connect(this, &Tune82IoWidget::cancel, this, //
         [this, startBtn, cancelBtn]
         {
-            m_timer->stop();
+            m_mip->stop();
             startBtn->setEnabled(true);
             cancelBtn->setEnabled(false);
         });
@@ -98,15 +105,9 @@ void Tune82IoWidget::setupUI()
 
 void Tune82IoWidget::updateData()
 {
-    bool ok;
     float i2nom = 1.0;
     QCoreApplication::processEvents();
-    MipDataStruct mipData;
-    if (!m_mip->takeOneMeasurement(mipData))
-    {
-        emit cancel();
-        return;
-    }
+    MipDataStruct mipData = m_mip->getData();
     QCoreApplication::processEvents();
     updateUI(mipData);
     QCoreApplication::processEvents();
@@ -116,6 +117,7 @@ void Tune82IoWidget::updateData()
     m_calcValues.update(mipData, deviceData, 60.0, i2nom);
     QCoreApplication::processEvents();
     updateUI(deviceData);
+    m_timeoutTimer->start();
 }
 
 void Tune82IoWidget::updateUI(const MipDataStruct &mipData)

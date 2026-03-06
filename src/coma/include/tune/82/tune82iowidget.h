@@ -13,7 +13,7 @@ class Tune82IoWidget final : public QWidget
     Q_OBJECT
 private:
     Device::MezzanineBoard m_typeM;
-    QTimer *m_timer;
+    QTimer *m_timeoutTimer;
     Bd182 *m_bd1;
     Mip *m_mip;
     VerificationOffset m_calcValues;

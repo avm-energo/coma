@@ -200,7 +200,7 @@ Error::Msg Tune82Verification::verification()
         deviceData = *(m_bd1->data());
 
         QCoreApplication::processEvents();
-        offsetData.update(mipData, deviceData, c_settings[iter].voltage, c_settings[iter].current);
+        offsetData.update(mipData, deviceData, c_settings[iter].voltage, i2nom);
         if (checkMeasuredDataForCorrectValues(mipData, retomData) != Error::Msg::NoError)
         {
             if (EMessageBox::next(this, "Проверьте правильность задания значений на РЕТОМ"))

@@ -48,6 +48,7 @@ public:
     void updateData(const DataTypes::FloatStruct &fl);
     MipDataStruct getData();
     bool start();
+    bool isStarted();
     Error::Msg check();
     void setModuleType(MType type);
     void setNominalCurrent(float inom);
@@ -62,6 +63,8 @@ private:
     QWidget *m_widget;
     QWidget *m_parent;
     bool m_withGUI;
+    bool m_result;
+    bool m_started;
     ModuleDataUpdater *m_updater;
     QTimer *m_updateTimer;
 
@@ -71,7 +74,11 @@ private:
 signals:
     void finished();
     void oneMeasurementReceived();
+    void timeoutReached();
 
 public slots:
     void stop();
+
+private slots:
+    void timeoutReachedSlot();
 };

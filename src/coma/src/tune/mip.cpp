@@ -26,11 +26,12 @@ Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
     , m_withGUI(withGUI)
     , m_moduleType(moduleType)
 {
+    m_result = false;
+    m_started = false;
 }
 
 Mip::~Mip() noexcept
 {
-    // stop();
 }
 
 void Mip::updateData(const DataTypes::FloatStruct &fl)
@@ -42,13 +43,13 @@ void Mip::updateData(const DataTypes::FloatStruct &fl)
         *(mipdata + fl.sigAdr) = fl.sigVal;
         // Last information object received
         if (fl.sigAdr == size - 1)
+        {
+            m_result = true;
             emit oneMeasurementReceived();
+        }
     }
     if (m_withGUI)
-    {
         LBLFunc::setText(m_widget, QString::number(fl.sigAdr), WDFunc::stringFloatValueWithCheck(fl.sigVal, 3));
-        // m_widget->updateFloatData(fl);
-    }
 }
 
 MipDataStruct Mip::getData()
@@ -143,7 +144,13 @@ bool Mip::start()
         setupWidget();
         m_widget->show();
     }
+    m_started = true;
     return true;
+}
+
+bool Mip::isStarted()
+{
+    return m_started;
 }
 
 void Mip::stop()
@@ -157,6 +164,14 @@ void Mip::stop()
         StdFunc::Wait();
         emit finished();
     }
+    m_started = false;
+}
+
+void Mip::timeoutReachedSlot()
+{
+    m_result = false;
+    EMessageBox::warning(m_parent, "Нет связи с МИП");
+    emit timeoutReached();
 }
 
 bool Mip::initConnection(IEC104Settings *settings)
@@ -186,6 +201,8 @@ bool Mip::initConnection(IEC104Settings *settings)
     QObject::connect(m_iface, &BaseInterface::finished, ifaceThread, &QThread::quit);
     QObject::connect(m_iface, &BaseInterface::finished, parserThread, &QThread::quit);
     QObject::connect(ifaceThread, &QThread::finished, m_iface, &QObject::deleteLater);
+    QObject::connect(ifaceThread, &QThread::finished, m_updater, &QObject::deleteLater);
+    QObject::connect(ifaceThread, &QThread::finished, conn, &QObject::deleteLater);
     QObject::connect(parserThread, &QThread::finished, parser, &QObject::deleteLater);
     QObject::connect(ifaceThread, &QThread::finished, &QObject::deleteLater);
     QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
@@ -280,35 +297,22 @@ QWidget *Mip::widget()
 
 bool Mip::takeOneMeasurement(MipDataStruct &mipData)
 {
-    // setNominalCurrent(i2nom);
     if (start())
     {
-        bool busy = true;
         bool ok = false;
         QTimer timeoutTimer;
         timeoutTimer.setSingleShot(true);
-        timeoutTimer.setInterval(2000); // 2 sec - timeout
+        timeoutTimer.setInterval(5000); // 2 sec - timeout
         QEventLoop el;
-        connect(this, &Mip::oneMeasurementReceived,
-            [&]()
-            {
-                stop();
-                mipData = m_mipData;
-                ok = true;
-                el.quit();
-            });
-        connect(&timeoutTimer, &QTimer::timeout,
-            [&]()
-            {
-                stop();
-                EMessageBox::warning(m_parent, "Нет связи с МИП");
-                ok = false;
-                el.quit();
-            });
-
+        connect(this, &Mip::oneMeasurementReceived, &el, &QEventLoop::quit);
+        connect(&timeoutTimer, &QTimer::timeout, this, &Mip::timeoutReachedSlot);
+        connect(this, &Mip::timeoutReached, &el, &QEventLoop::quit);
         timeoutTimer.start();
         el.exec();
-        return ok;
+        stop();
+        if(m_result)
+            mipData = m_mipData;
+        return m_result;
     }
     else
     {
