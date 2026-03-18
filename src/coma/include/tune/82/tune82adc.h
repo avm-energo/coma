@@ -42,7 +42,7 @@ private:
     Error::Msg calcInterChannelCorrelation();
     Error::Msg calcIUcoef1();
     Error::Msg calcIcoef5();
-    Error::Msg showPreWarning();
+    Error::Msg showPreWarning(bool isOnePhase = true);
     Error::Msg saveNewBac();
     Error::Msg checkTune();
     bool getOneMip();

@@ -123,6 +123,8 @@ Error::Msg Tune82ADC::calcPhaseCorrection()
 
 Error::Msg Tune82ADC::calcInterChannelCorrelation()
 {
+    showPreWarning(false);
+    StdFunc::Wait(1000);
     m_bd1->readBlockFromModule();
     float fTmp = 0;
     for (int i : { 0, 3 })
@@ -206,17 +208,19 @@ Error::Msg Tune82ADC::calcIcoef5()
     return Error::NoError;
 }
 
-Error::Msg Tune82ADC::showPreWarning()
+Error::Msg Tune82ADC::showPreWarning(bool isOnePhase)
 {
+    QString tmps = (isOnePhase) ? "2. Задайте на РЕТОМ режим токов и напряжений с углами сдвига "
+                                  "во всех фазах токов и напряжений 0 градусов,"
+                                : "2. Задайте на РЕТОМ трехфазный режим токов и напряжений с углами сдвига "
+                                  "в фазах А токов и напряжений 0 градусов, в фазах В - 240, в фазах С - 120 градусов,";
+    tmps += "Токи по 1 А, напряжения - по 60 В.";
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QWidget *w = new QWidget(this);
     lyout->addWidget(GraphFunc::newIcon(this, ":/tunes/tune82.png"));
     lyout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
-    lyout->addWidget(LBLFunc::New(this,
-        "2. Задайте на РЕТОМ трехфазный режим токов и напряжений с углами сдвига "
-        "в фазах А токов и напряжений 0 градусов, в фазах В - 240, в фазах С - 120 градусов,"
-        "НЕ МЕНЯЯ ЗНАЧЕНИЙ НАПРЯЖЕНИЙ И ТОКОВ! Токи по 1 А, напряжения - по 60 В."));
+    lyout->addWidget(LBLFunc::New(this, tmps));
     w->setLayout(lyout);
 
     if (!EMessageBox::next(this, w))
