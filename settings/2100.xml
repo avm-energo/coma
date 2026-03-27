@@ -11,134 +11,134 @@
             <critical desc="Критичные">
                 <item>
                     <addr>1201</addr>
-                    <string>Достигнута уставка setminmin по каналу 0 (база)</string>
-                </item>
-                <item>
-                    <addr>1202</addr>
                     <string>Достигнута уставка setminmin по каналу 1 (база)</string>
                 </item>
                 <item>
-                    <addr>1203</addr>
+                    <addr>1202</addr>
                     <string>Достигнута уставка setminmin по каналу 2 (база)</string>
                 </item>
                 <item>
-                    <addr>1204</addr>
+                    <addr>1203</addr>
                     <string>Достигнута уставка setminmin по каналу 3 (база)</string>
                 </item>
                 <item>
-                    <addr>1205</addr>
+                    <addr>1204</addr>
                     <string>Достигнута уставка setminmin по каналу 4 (база)</string>
                 </item>
                 <item>
-                    <addr>1206</addr>
+                    <addr>1205</addr>
                     <string>Достигнута уставка setminmin по каналу 5 (база)</string>
                 </item>
                 <item>
-                    <addr>1207</addr>
+                    <addr>1206</addr>
                     <string>Достигнута уставка setminmin по каналу 6 (база)</string>
                 </item>
                 <item>
-                    <addr>1208</addr>
+                    <addr>1207</addr>
                     <string>Достигнута уставка setminmin по каналу 7 (база)</string>
                 </item>
                 <item>
-                    <addr>1225</addr>
-                    <string>Достигнута уставка setmaxmax по каналу 0 (база)</string>
+                    <addr>1208</addr>
+                    <string>Достигнута уставка setminmin по каналу 8 (база)</string>
                 </item>
                 <item>
-                    <addr>1226</addr>
+                    <addr>1225</addr>
                     <string>Достигнута уставка setmaxmax по каналу 1 (база)</string>
                 </item>
                 <item>
-                    <addr>1227</addr>
+                    <addr>1226</addr>
                     <string>Достигнута уставка setmaxmax по каналу 2 (база)</string>
                 </item>
                 <item>
-                    <addr>1228</addr>
+                    <addr>1227</addr>
                     <string>Достигнута уставка setmaxmax по каналу 3 (база)</string>
                 </item>
                 <item>
-                    <addr>1229</addr>
+                    <addr>1228</addr>
                     <string>Достигнута уставка setmaxmax по каналу 4 (база)</string>
                 </item>
                 <item>
-                    <addr>1230</addr>
+                    <addr>1229</addr>
                     <string>Достигнута уставка setmaxmax по каналу 5 (база)</string>
                 </item>
                 <item>
-                    <addr>1231</addr>
+                    <addr>1230</addr>
                     <string>Достигнута уставка setmaxmax по каналу 6 (база)</string>
                 </item>
                 <item>
-                    <addr>1232</addr>
+                    <addr>1231</addr>
                     <string>Достигнута уставка setmaxmax по каналу 7 (база)</string>
+                </item>
+                <item>
+                    <addr>1232</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 8 (база)</string>
                 </item>
             </critical>
             <info desc="Информационные"/>
             <warning desc="Предупреждения">
                 <item>
                     <addr>1209</addr>
-                    <string>Достигнута уставка setmin по каналу 0 (база)</string>
-                </item>
-                <item>
-                    <addr>1210</addr>
                     <string>Достигнута уставка setmin по каналу 1 (база)</string>
                 </item>
                 <item>
-                    <addr>1211</addr>
+                    <addr>1210</addr>
                     <string>Достигнута уставка setmin по каналу 2 (база)</string>
                 </item>
                 <item>
-                    <addr>1212</addr>
+                    <addr>1211</addr>
                     <string>Достигнута уставка setmin по каналу 3 (база)</string>
                 </item>
                 <item>
-                    <addr>1213</addr>
+                    <addr>1212</addr>
                     <string>Достигнута уставка setmin по каналу 4 (база)</string>
                 </item>
                 <item>
-                    <addr>1214</addr>
+                    <addr>1213</addr>
                     <string>Достигнута уставка setmin по каналу 5 (база)</string>
                 </item>
                 <item>
-                    <addr>1215</addr>
+                    <addr>1214</addr>
                     <string>Достигнута уставка setmin по каналу 6 (база)</string>
                 </item>
                 <item>
-                    <addr>1216</addr>
+                    <addr>1215</addr>
                     <string>Достигнута уставка setmin по каналу 7 (база)</string>
                 </item>
                 <item>
-                    <addr>1217</addr>
-                    <string>Достигнута уставка setmax по каналу 0 (база)</string>
+                    <addr>1216</addr>
+                    <string>Достигнута уставка setmin по каналу 8 (база)</string>
                 </item>
                 <item>
-                    <addr>1218</addr>
+                    <addr>1217</addr>
                     <string>Достигнута уставка setmax по каналу 1 (база)</string>
                 </item>
                 <item>
-                    <addr>1219</addr>
+                    <addr>1218</addr>
                     <string>Достигнута уставка setmax по каналу 2 (база)</string>
                 </item>
                 <item>
-                    <addr>1220</addr>
+                    <addr>1219</addr>
                     <string>Достигнута уставка setmax по каналу 3 (база)</string>
                 </item>
                 <item>
-                    <addr>1221</addr>
+                    <addr>1220</addr>
                     <string>Достигнута уставка setmax по каналу 4 (база)</string>
                 </item>
                 <item>
-                    <addr>1222</addr>
+                    <addr>1221</addr>
                     <string>Достигнута уставка setmax по каналу 5 (база)</string>
                 </item>
                 <item>
-                    <addr>1223</addr>
+                    <addr>1222</addr>
                     <string>Достигнута уставка setmax по каналу 6 (база)</string>
+				</item>
+                <item>
+                    <addr>1223</addr>
+                    <string>Достигнута уставка setmax по каналу 7 (база)</string>
                 </item>
                 <item>
                     <addr>1224</addr>
-                    <string>Достигнута уставка setmax по каналу 7 (база)</string>
+                    <string>Достигнута уставка setmax по каналу 8 (база)</string>
                 </item>
             </warning>
         </alarms>

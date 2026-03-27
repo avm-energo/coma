@@ -2,10 +2,10 @@
 
 #include <avm-gen/error.h>
 #include <avm-gen/files.h>
-#include <s2/s2util.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/filefunc.h>
 #include <avm-widgets/pbfunc.h>
+#include <s2/s2util.h>
 
 #include <QDebug>
 #include <QVBoxLayout>
@@ -86,8 +86,8 @@ void FWUploadDialog::loadFirmware()
 
 void FWUploadDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
 {
-    if (!updatesEnabled())
-        return;
+    // if (!updatesEnabled())
+    //     return;
 
     if (response.type == DataTypes::GeneralResponseTypes::Ok)
     {

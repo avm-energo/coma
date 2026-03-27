@@ -10,134 +10,134 @@
             <critical desc="Критичные">
                 <item>
                     <addr>2201</addr>
-                    <string>Достигнута уставка setminmin по каналу 0 (мезонин)</string>
-                </item>
-                <item>
-                    <addr>2202</addr>
                     <string>Достигнута уставка setminmin по каналу 1 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2203</addr>
+                    <addr>2202</addr>
                     <string>Достигнута уставка setminmin по каналу 2 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2204</addr>
+                    <addr>2203</addr>
                     <string>Достигнута уставка setminmin по каналу 3 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2205</addr>
+                    <addr>2204</addr>
                     <string>Достигнута уставка setminmin по каналу 4 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2206</addr>
+                    <addr>2205</addr>
                     <string>Достигнута уставка setminmin по каналу 5 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2207</addr>
+                    <addr>2206</addr>
                     <string>Достигнута уставка setminmin по каналу 6 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2208</addr>
+                    <addr>2207</addr>
                     <string>Достигнута уставка setminmin по каналу 7 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2225</addr>
-                    <string>Достигнута уставка setmaxmax по каналу 0 (мезонин)</string>
+                    <addr>2208</addr>
+                    <string>Достигнута уставка setminmin по каналу 8 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2226</addr>
+                    <addr>2225</addr>
                     <string>Достигнута уставка setmaxmax по каналу 1 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2227</addr>
+                    <addr>2226</addr>
                     <string>Достигнута уставка setmaxmax по каналу 2 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2228</addr>
+                    <addr>2227</addr>
                     <string>Достигнута уставка setmaxmax по каналу 3 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2229</addr>
+                    <addr>2228</addr>
                     <string>Достигнута уставка setmaxmax по каналу 4 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2230</addr>
+                    <addr>2229</addr>
                     <string>Достигнута уставка setmaxmax по каналу 5 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2231</addr>
+                    <addr>2230</addr>
                     <string>Достигнута уставка setmaxmax по каналу 6 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2232</addr>
+                    <addr>2231</addr>
                     <string>Достигнута уставка setmaxmax по каналу 7 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>2232</addr>
+                    <string>Достигнута уставка setmaxmax по каналу 8 (мезонин)</string>
                 </item>
             </critical>
             <info desc="Информационные"/>
             <warning desc="Предупреждения">
                 <item>
                     <addr>2209</addr>
-                    <string>Достигнута уставка setmin по каналу 0 (мезонин)</string>
-                </item>
-                <item>
-                    <addr>2210</addr>
                     <string>Достигнута уставка setmin по каналу 1 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2211</addr>
+                    <addr>2210</addr>
                     <string>Достигнута уставка setmin по каналу 2 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2212</addr>
+                    <addr>2211</addr>
                     <string>Достигнута уставка setmin по каналу 3 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2213</addr>
+                    <addr>2212</addr>
                     <string>Достигнута уставка setmin по каналу 4 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2214</addr>
+                    <addr>2213</addr>
                     <string>Достигнута уставка setmin по каналу 5 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2215</addr>
+                    <addr>2214</addr>
                     <string>Достигнута уставка setmin по каналу 6 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2216</addr>
+                    <addr>2215</addr>
                     <string>Достигнута уставка setmin по каналу 7 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2217</addr>
-                    <string>Достигнута уставка setmax по каналу 0 (мезонин)</string>
+                    <addr>2216</addr>
+                    <string>Достигнута уставка setmin по каналу 8 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2218</addr>
+                    <addr>2217</addr>
                     <string>Достигнута уставка setmax по каналу 1 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2219</addr>
+                    <addr>2218</addr>
                     <string>Достигнута уставка setmax по каналу 2 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2220</addr>
+                    <addr>2219</addr>
                     <string>Достигнута уставка setmax по каналу 3 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2221</addr>
+                    <addr>2220</addr>
                     <string>Достигнута уставка setmax по каналу 4 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2222</addr>
+                    <addr>2221</addr>
                     <string>Достигнута уставка setmax по каналу 5 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2223</addr>
+                    <addr>2222</addr>
                     <string>Достигнута уставка setmax по каналу 6 (мезонин)</string>
                 </item>
                 <item>
-                    <addr>2224</addr>
+                    <addr>2223</addr>
                     <string>Достигнута уставка setmax по каналу 7 (мезонин)</string>
+                </item>
+                <item>
+                    <addr>2224</addr>
+                    <string>Достигнута уставка setmax по каналу 8 (мезонин)</string>
                 </item>
             </warning>
         </alarms>

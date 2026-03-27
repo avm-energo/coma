@@ -20,9 +20,7 @@ add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}
   ${gen_IMPORTED_LOCATION_${CMAKE_BUILD_TYPE}}
-  oscillograms
-  widgets
-  dialogs
+  coma
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Xml
   Qt${QT_VERSION_MAJOR}::Widgets

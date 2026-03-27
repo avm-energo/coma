@@ -168,10 +168,10 @@ using DetailCountMap
 using BsiExtItemList = std::vector<BsiExtItem>; ///< Хранит узлы <item> секции <bsi-ext>
 
 /// \brief Class for storing device's settings.
-class Settings final
+class XmlSettings final
 {
 public:
-    explicit Settings() = default;
+    explicit XmlSettings() = default;
     /// \brief Очистка настроек модуля.
     void clear() noexcept;
     /// \brief Добавление свойства
@@ -253,7 +253,7 @@ private:
 
 namespace Device
 {
-using XmlSettings = Device::XmlDataTypes::Settings;
+using XmlSettings = Device::XmlDataTypes::XmlSettings;
 typedef XmlDataTypes::SignalMap::value_type SigMapValue;
 } // namespace Device
 

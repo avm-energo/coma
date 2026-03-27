@@ -1,10 +1,11 @@
 #pragma once
 
-#include <QObject>
-#include <QtTest>
 #include <device/configstorage.h>
 #include <s2/s2datamanager.h>
 #include <xml/xmlparser/xmlmoduleparser.h>
+
+#include <QObject>
+#include <QtTest>
 
 using namespace Device::XmlDataTypes;
 
@@ -35,9 +36,7 @@ private slots:
     void initTestCase();
 
     /// \brief Вызывается перед каждой тестовой функцией
-    void init()
-    {
-    }
+    void init() { }
 
     /// \brief Вызывается после каждой тестовой функции
     void cleanup()

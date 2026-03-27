@@ -13,7 +13,7 @@ namespace addr
     constexpr quint16 timeReg = 4600;
 }
 
-class AsyncConnection final : public QObject
+class AsyncConnection : public QObject
 {
     Q_OBJECT
 private:

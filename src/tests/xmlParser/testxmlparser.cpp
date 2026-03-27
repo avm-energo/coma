@@ -1,8 +1,7 @@
 #include "testdata.h"
 #include "testmodule.h"
-
+#include <avm-gen/stdfunc.h>
 #include <device/bsi.h>
-#include <gen/stdfunc.h>
 
 // void printModuleSettings(const ModuleSettings &mSettings)
 //{

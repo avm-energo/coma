@@ -163,6 +163,12 @@ public:
     QWidget *blockButtonsUI();
     void setEnabled(bool isEnabled);
 
+    QList<ValueGroupStr> m_valuesDesc;
+    QString m_deviceUID;
+    Interface::SyncConnection *m_conn;
+    bool m_widgetIsSet;
+    QWidget *m_widget, *m_widgetCopy;
+
 public slots:
     void setDefBlockAndUpdate();
     void readAndUpdate();
@@ -175,12 +181,7 @@ public slots:
 
 private:
     int m_valueNumberCounter;
-    bool m_widgetIsSet;
     bool m_isBottomButtonsWidgetCreated;
-    QWidget *m_widget, *m_widgetCopy;
     BlockStruct m_block, m_defBlock;
     QWidget *m_bottomButtonsWidget;
-    QList<ValueGroupStr> m_valuesDesc;
-    QString m_deviceUID;
-    Interface::SyncConnection *m_conn;
 };

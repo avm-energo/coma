@@ -24,6 +24,6 @@ public:
 
     friend bool operator==(UsbHidSettings &lhs, UsbHidSettings &rhs);
     friend bool operator!=(UsbHidSettings &lhs, UsbHidSettings &rhs);
-    friend QDebug operator<<(QDebug debug, UsbHidSettings *settings);
+    friend QDebug operator<<(QDebug debug, const UsbHidSettings &settings);
 };
 // Q_DECLARE_METATYPE(UsbHidSettings)

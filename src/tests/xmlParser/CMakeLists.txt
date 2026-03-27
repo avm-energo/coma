@@ -20,4 +20,4 @@ add_executable(${PROJECT_NAME}
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}
-  device xml Qt${QT_VERSION_MAJOR}::Test)
+  coma Qt${QT_VERSION_MAJOR}::Test)

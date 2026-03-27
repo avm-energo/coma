@@ -1,5 +1,4 @@
-#ifndef TESTPROTOCOM_H
-#define TESTPROTOCOM_H
+#pragma once
 
 #include <QObject>
 #include <QtTest>
@@ -10,21 +9,13 @@ public:
     explicit TestFiles(QObject *parent = nullptr);
 private slots:
     // вызывается перед первой тестовой функцией
-    void initTestCase()
-    {
-    }
+    void initTestCase() { }
     // вызывается перед каждой тестовой функцией
-    void init()
-    {
-    }
+    void init() { }
     // вызывается после каждой тестовой функции
-    void cleanup()
-    {
-    }
+    void cleanup() { }
     // вызывается после последней тестовой функции
-    void cleanupTestCase()
-    {
-    }
+    void cleanupTestCase() { }
     void testOsc();
     void testOsc85();
 
@@ -32,5 +23,3 @@ private slots:
 signals:
 private:
 };
-
-#endif // TESTPROTOCOM_H

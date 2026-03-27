@@ -4,14 +4,14 @@ project(coma VERSION 3.4.4)
 
 set(SOFTDEVELOPER "AVM-Energo")
 
+option(BUILD_TESTING "Enable testing" OFF)
+option(BUILD_SHARED_LIBS "Generate shared libraries" ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(BUILD_SHARED_LIBS ON)
-set(BUILD_TESTING OFF)
 set(HIDAPI_INSTALL_TARGETS ON)
 set(HIDAPI_WITH_TESTS OFF)
 
@@ -38,11 +38,6 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
 
 if(SYSTEM_NAME STREQUAL "windows")
     message(STATUS "MSVC version: ${MSVC_VERSION}, toolset version: ${MSVC_TOOLSET_VERSION}")
-endif()
-
-# Including ctest
-if(BUILD_TESTING)
-  include(CTest)
 endif()
 
 # Building libraries and targets
@@ -96,7 +91,11 @@ add_subdirectory(src/interfaces)
 
 # Step 2: Build tests
 if(BUILD_TESTING)
+  message(STATUS "Will build tests")
+  enable_testing()
   add_subdirectory(src/tests)
+else()
+  message(STATUS "Tests are disabled")
 endif()
 
 # Step 3: Build executable targets

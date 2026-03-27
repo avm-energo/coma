@@ -1,11 +1,10 @@
 #include "testprotocom.h"
 
-#include <QSignalSpy>
-#include <gen/stdfunc.h>
+#include <avm-gen/stdfunc.h>
 
-TestProtocom::TestProtocom(QObject *parent) : QObject(parent)
-{
-}
+#include <QSignalSpy>
+
+TestProtocom::TestProtocom(QObject *parent) : QObject(parent) { }
 
 void TestProtocom::testFindDevices()
 {

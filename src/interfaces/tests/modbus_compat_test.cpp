@@ -1,9 +1,9 @@
 #include "interfaces_test_obj.h"
+#include <avm-gen/datatypes.h>
+#include <avm-gen/stdfunc.h>
+#include <interfaces/utils/modbus_convertations.h>
 
 #include <bitset>
-#include <gen/datatypes.h>
-#include <gen/stdfunc.h>
-#include <interfaces/utils/modbus_convertations.h>
 
 /* * * * * * * * * * * * * * * * * * * * * * * *
  * Тесты на совместимость старого кода с новым *

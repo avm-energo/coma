@@ -3,7 +3,7 @@
 namespace Device::XmlDataTypes
 {
 
-void Settings::clear() noexcept
+void XmlSettings::clear() noexcept
 {
     m_featuresMap.clear();
     m_countMap.clear();
@@ -22,38 +22,38 @@ void Settings::clear() noexcept
     m_haveWorkJournal = false;
 }
 
-void Settings::appendFeature(const QString &key, const QString &value)
+void XmlSettings::appendFeature(const QString &key, const QString &value)
 {
     m_featuresMap[key] = value;
 }
 
-void Settings::appendSignal(const u32 id, const Signal sig)
+void XmlSettings::appendSignal(const u32 id, const Signal sig)
 {
     m_signals.insert({ id, sig });
 }
 
-void Settings::appendTab(const u32 id, const SectionTabStruct &sectionTab)
+void XmlSettings::appendTab(const u32 id, const SectionTabStruct &sectionTab)
 {
     m_tabs.insert(id, sectionTab);
 }
 
-void Settings::appendSection(const Section &section)
+void XmlSettings::appendSection(const Section &section)
 {
     m_sections.push_back(section);
 }
 
-void Settings::appendAlarmStateAll(const AlarmType type, const u32 index, const QString &desc)
+void XmlSettings::appendAlarmStateAll(const AlarmType type, const u32 index, const QString &desc)
 {
     m_stateAllCfg.push_back(AlarmStateAllRecord { index, type, desc });
 }
 
-void Settings::appendAlarm(const AlarmType type, const u32 addr, const QString &desc, const u32 order)
+void XmlSettings::appendAlarm(const AlarmType type, const u32 addr, const QString &desc, const u32 order)
 {
     AlarmOne oneAlarm { addr, desc };
     m_alarms[type].insert(order, oneAlarm);
 }
 
-void Settings::appendHighlight(const AlarmType type, const u32 key, const QList<u32> &values)
+void XmlSettings::appendHighlight(const AlarmType type, const u32 key, const QList<u32> &values)
 {
     if (type == AlarmType::Critical)
     {
@@ -67,65 +67,65 @@ void Settings::appendHighlight(const AlarmType type, const u32 key, const QList<
     }
 }
 
-void Settings::appendWorkJournal(const u32 id, const QString &desc)
+void XmlSettings::appendWorkJournal(const u32 id, const QString &desc)
 {
     m_haveWorkJournal = true;
     m_workJournals.insert(id, desc);
 }
 
-void Settings::appendMeasJournal(const u32 index, const QString &header, const BinaryType type, bool visib)
+void XmlSettings::appendMeasJournal(const u32 index, const QString &header, const BinaryType type, bool visib)
 {
     m_haveMeasJournal = true;
     m_measJournals.push_back(MeasJournal { index, type, visib, std::move(header) });
 }
 
-void Settings::appendHiddenTab(const HiddenTab &hiddenTab)
+void XmlSettings::appendHiddenTab(const HiddenTab &hiddenTab)
 {
     m_hiddenSettings.push_back(hiddenTab);
 }
 
-void Settings::appendBsiExtItem(const u32 addr, const BinaryType type, bool visib, const QString &desc)
+void XmlSettings::appendBsiExtItem(const u32 addr, const BinaryType type, bool visib, const QString &desc)
 {
     m_haveBsiExt = true;
     m_bsiExtSettings.push_back(BsiExtItem { addr, type, visib, std::move(desc) });
 }
 
-const FeaturesMap &Settings::getFeatures() const
+const FeaturesMap &XmlSettings::getFeatures() const
 {
     return m_featuresMap;
 }
 
-const DetailCountMap &Settings::getDetailConfigCount() const
+const DetailCountMap &XmlSettings::getDetailConfigCount() const
 {
     return m_countMap;
 }
 
-const SignalMap &Settings::getSignals() const
+const SignalMap &XmlSettings::getSignals() const
 {
     return m_signals;
 }
 
-const TabsMap &Settings::getTabs() const
+const TabsMap &XmlSettings::getTabs() const
 {
     return m_tabs;
 }
 
-const SectionList &Settings::getSections() const
+const SectionList &XmlSettings::getSections() const
 {
     return m_sections;
 }
 
-const AlarmStateAllConfig &Settings::getStateAllConfig() const
+const AlarmStateAllConfig &XmlSettings::getStateAllConfig() const
 {
     return m_stateAllCfg;
 }
 
-const AlarmMap &Settings::getAlarms() const
+const AlarmMap &XmlSettings::getAlarms() const
 {
     return m_alarms;
 }
 
-const HighlightMap &Settings::getHighlights(const AlarmType type) const
+const HighlightMap &XmlSettings::getHighlights(const AlarmType type) const
 {
     if (type == AlarmType::Critical)
         return m_critHighlight;
@@ -133,42 +133,42 @@ const HighlightMap &Settings::getHighlights(const AlarmType type) const
         return m_warnHighlight;
 }
 
-const WorkJourMap &Settings::getWorkJours() const
+const WorkJourMap &XmlSettings::getWorkJours() const
 {
     return m_workJournals;
 }
 
-const MeasJourList &Settings::getMeasJours() const
+const MeasJourList &XmlSettings::getMeasJours() const
 {
     return m_measJournals;
 }
 
-const HiddenSettings &Settings::getHiddenSettings() const
+const HiddenSettings &XmlSettings::getHiddenSettings() const
 {
     return m_hiddenSettings;
 }
 
-const BsiExtItemList &Settings::getBsiExtSettings() const
+const BsiExtItemList &XmlSettings::getBsiExtSettings() const
 {
     return m_bsiExtSettings;
 }
 
-bool Settings::HaveBSIExt() const
+bool XmlSettings::HaveBSIExt() const
 {
     return m_haveBsiExt;
 }
 
-bool Settings::HaveMeasJournal() const
+bool XmlSettings::HaveMeasJournal() const
 {
     return m_haveMeasJournal;
 }
 
-bool Settings::HaveWorkJournal() const
+bool XmlSettings::HaveWorkJournal() const
 {
     return m_haveWorkJournal;
 }
 
-bool Settings::HaveTrue() const
+bool XmlSettings::HaveTrue() const
 {
     return true;
 }

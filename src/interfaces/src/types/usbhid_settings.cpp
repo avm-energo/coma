@@ -71,12 +71,12 @@ UsbHidSettings::UsbHidSettings(unsigned short dev, unsigned short pid, const QSt
 //     return true;
 // }
 
-QDebug operator<<(QDebug debug, UsbHidSettings *settings)
+QDebug operator<<(QDebug debug, const UsbHidSettings &settings)
 {
-    debug.nospace() << QString::number(settings->get<u16>("vendor_id"), 16) << ":"
-                    << QString::number(settings->get<u16>("product_id"), 16) << ":" << QString(settings->get("serial"));
+    debug.nospace() << QString::number(settings.get<u16>("vendor_id"), 16) << ":"
+                    << QString::number(settings.get<u16>("product_id"), 16) << ":" << QString(settings.get("serial"));
 #ifdef QT_DEBUG
-    debug.nospace() << ":" << QString(settings->get("path"));
+    debug.nospace() << ":" << QString(settings.get("path"));
 #endif
     return debug.maybeSpace();
 }

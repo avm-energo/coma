@@ -3,9 +3,7 @@
 #include <oscillograms/oscmanager.h>
 #include <oscillograms/swjmanager.h>
 
-TestFiles::TestFiles(QObject *parent) : QObject(parent)
-{
-}
+TestFiles::TestFiles(QObject *parent) : QObject(parent) { }
 
 void TestFiles::testOsc()
 {
@@ -16,13 +14,15 @@ void TestFiles::testOsc()
     {
         std::visit( //
             overloaded {
-                [](S2::OscHeader &record) {
+                [](S2::OscHeader &record)
+                {
                     QCOMPARE(record.len, 498);
                     QCOMPARE(record.step, 20.0);
                     QCOMPARE(record.time, 5832358505620324140);
                 },                                //
                 [](auto &&arg) { Q_UNUSED(arg) }, //
-                [](std::unique_ptr<TrendViewModel> &model) {
+                [](std::unique_ptr<TrendViewModel> &model)
+                {
                     QCOMPARE(model->mainPoints().size(), 498);
                     QCOMPARE(model->length(), 498);
                 } //
@@ -40,13 +40,15 @@ void TestFiles::testOsc85()
     {
         std::visit( //
             overloaded {
-                [](S2::OscHeader &record) {
+                [](S2::OscHeader &record)
+                {
                     QCOMPARE(record.len, 1947);
                     QCOMPARE(record.step, 0.0792380943894);
                     QCOMPARE(record.time, 6730917119207093248);
                 },                                //
                 [](auto &&arg) { Q_UNUSED(arg) }, //
-                [](std::unique_ptr<TrendViewModel> &model) {
+                [](std::unique_ptr<TrendViewModel> &model)
+                {
                     QCOMPARE(model->mainPoints().size(), 1947);
                     QCOMPARE(model->length(), 1947);
                 } //
@@ -69,12 +71,13 @@ void TestFiles::testSwj()
     }
     QCOMPARE(fileVector.size(), 3);
 
-    auto checkModel = [](SwjModel &model) {
-        auto commonModel = model.commonModel.get();
+    auto checkModel = [](SwjModel &model)
+    {
+        auto commonModel = model.commonModel;
         QVERIFY(commonModel);
         QCOMPARE(commonModel->columnCount(), 2);
         QCOMPARE(commonModel->rowCount(), 9);
-        auto detailModel = model.detailModel.get();
+        auto detailModel = model.detailModel;
         QVERIFY(detailModel);
         QCOMPARE(detailModel->columnCount(), 4);
         QCOMPARE(detailModel->rowCount(), 11);
@@ -82,18 +85,21 @@ void TestFiles::testSwj()
 
     for (auto &item : fileVector)
     {
-        std::visit(overloaded {
-                       [](S2::OscHeader &record) {
-                           QCOMPARE(record.len, 4096);
-                           QCOMPARE(record.step, 0.0792380943894);
-                           QCOMPARE(record.time, 6730912496293968896);
-                       },          //
-                       checkModel, //
-                       [](std::unique_ptr<TrendViewModel> &model) {
-                           QCOMPARE(model->mainPoints().size(), 4096);
-                           QCOMPARE(model->length(), 4096);
-                       } //
-                   },
+        std::visit(
+            overloaded {
+                [](S2::OscHeader &record)
+                {
+                    QCOMPARE(record.len, 4096);
+                    QCOMPARE(record.step, 0.0792380943894);
+                    QCOMPARE(record.time, 6730912496293968896);
+                },          //
+                checkModel, //
+                [](TrendViewModel *model)
+                {
+                    QCOMPARE(model->mainPoints().size(), 4096);
+                    QCOMPARE(model->length(), 4096);
+                } //
+            },
             item);
     }
 }

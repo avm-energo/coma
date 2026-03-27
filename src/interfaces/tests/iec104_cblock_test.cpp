@@ -1,6 +1,5 @@
 #include "interfaces_test_obj.h"
-
-#include <gen/stdfunc.h>
+#include <avm-gen/stdfunc.h>
 #include <interfaces/types/iec104/control_block.h>
 
 void InterfacesTestObject::iec104ControlBlockTest01()
