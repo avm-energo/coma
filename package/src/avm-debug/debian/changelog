@@ -1,3 +1,16 @@
+avm-debug (3.4.5) unstable; urgency=low
+
+  [+] some HW & SW fields for 82 report
+  [^] gen 1.11.0, widgets 2.4.0, qxlsx 2.0.1
+  [-] weird debug messages
+  [*] MIP cancelling button now works normally
+  [*] error rate calculations for 82
+  [*] proper phases in DPsi calibration
+  [*] tests corrected
+  [*] 0021 & 2100 channel numbers corrections
+
+ -- AVM-Energo <support@avmenergo.ru>  Mon, 30 Mar 2026 18:52:15 +0300
+
 avm-debug (3.4.4) unstable; urgency=low
 
   [*] 2 decimals for AVM-KOT's 4-20 metrology

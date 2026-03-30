@@ -470,7 +470,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
-                <string>Значение аварийной уставки по мин. значению</string>
+                <string>Значение аварийной уставки по мин. значению, инж. ед.</string>
                 <count>8</count>
                 <min>-999999</min>
                 <max>999999</max>
@@ -484,7 +484,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
-                <string>Значение предупредительной уставки по мин. значению</string>
+                <string>Значение предупредительной уставки по мин. значению, инж. ед.</string>
                 <count>8</count>
                 <min>-999999</min>
                 <max>999999</max>
@@ -498,7 +498,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
-                <string>Значение предупредительной уставки по макс. значению</string>
+                <string>Значение предупредительной уставки по макс. значению, инж. ед.</string>
                 <count>8</count>
                 <min>-999999</min>
                 <max>999999</max>
@@ -512,7 +512,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
-                <string>Значение аварийной уставки по макс. значению</string>
+                <string>Значение аварийной уставки по макс. значению, инж. ед.</string>
                 <count>8</count>
                 <min>-999999</min>
                 <max>999999</max>
@@ -735,7 +735,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
-                <string>Значение аварийной уставки по мин. значению</string>
+                <string>Значение аварийной уставки по мин. значению, инж. ед.</string>
                 <count>8</count>
                 <min>-999999</min>
                 <max>999999</max>
@@ -749,7 +749,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
-                <string>Значение предупредительной уставки по мин. значению</string>
+                <string>Значение предупредительной уставки по мин. значению, инж. ед.</string>
                 <count>8</count>
                 <min>-999999</min>
                 <max>999999</max>
@@ -763,7 +763,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>201</group>
-                <string>Значение предупредительной уставки по макс. значению</string>
+                <string>Значение предупредительной уставки по макс. значению, инж. ед.</string>
                 <count>8</count>
                 <min>-999999</min>
                 <max>999999</max>
@@ -777,7 +777,7 @@
             <widget>
                 <type>DoubleSpinBoxGroup</type>
                 <group>202</group>
-                <string>Значение аварийной уставки по макс. значению</string>
+                <string>Значение аварийной уставки по макс. значению, инж. ед.</string>
                 <count>8</count>
                 <min>-999999</min>
                 <max>999999</max>
