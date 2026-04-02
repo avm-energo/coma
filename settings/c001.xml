@@ -74,7 +74,21 @@
                 </item>
             </warning>
         </alarms>
-        <config desc="Конфигурация">
+		<bsi-ext desc="BSI Ext">
+			<item>
+				<addr>40</addr>
+				<desc>Наименование ПО</desc>
+				<type>string32</type>
+				<visibility>true</visibility>
+			</item>
+			<item>
+				<addr>41</addr>
+				<desc>Версия загрузчика</desc>
+				<type>version32</type>
+				<visibility>true</visibility>
+			</item>
+		</bsi-ext>
+		<config desc="Конфигурация">
             <record>
                 <id>1</id>
                 <defaultValue>192</defaultValue>
