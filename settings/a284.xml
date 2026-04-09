@@ -1346,10 +1346,16 @@
                     </mwidget>
                 </sgroup>
                 <sgroup header="Состояние дискретных выходов" tab="3">
-                    <mwidget desc="Выход%1" view="bitset">
+                    <mwidget desc="%1" view="bitset">
                         <start-addr>4520</start-addr>
                         <count>3</count>
-                        <toolTip>Дискретный выход DO%1</toolTip>
+                        <toolTip>%1</toolTip>
+                        <string-array>
+                            <item></item>
+                            <item>Предупредительная сигнализация DO0</item>
+                            <item>Аварийная сигнализация DO1</item>
+                            <item>Состояние устройства DO2</item>
+                        </string-array>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Температура" tab="2">

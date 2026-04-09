@@ -19,7 +19,7 @@ Tune84Dialog::Tune84Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
     addTuneDialog({ "Регулировка каналов тока", new Tune84ADC(ADCI, device, this) });
     addTuneDialog({ "Настройка температурной коррекции +60 °С", new Tune84Temp60(TUNING60, device, this) });
     addTuneDialog({ "Настройка температурной коррекции -20 °С", new Tune84Temp60(TUNING20, device, this) });
-    BacA284 *bac = new BacA284(this);
+    Bac2A284 *bac = new Bac2A284(this);
     bac->setup(m_device->getUID(), m_device->sync());
     addWidgetToTabWidget(bac->widget(), "Регулировка");
     SetupUI(true);

@@ -1,17 +1,17 @@
 #include "tune/abstracttunedialog.h"
 
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/hexpbfunc.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/pbfunc.h>
-#include <avm-widgets/waitwidget.h>
-#include <avm-widgets/wdfunc.h>
 #include <avm-gen/datatypes.h>
 #include <avm-gen/error.h>
 #include <avm-gen/files.h>
 #include <avm-gen/settings.h>
 #include <avm-gen/stdfunc.h>
 #include <avm-gen/timefunc.h>
+#include <avm-widgets/emessagebox.h>
+#include <avm-widgets/hexpbfunc.h>
+#include <avm-widgets/lblfunc.h>
+#include <avm-widgets/pbfunc.h>
+#include <avm-widgets/waitwidget.h>
+#include <avm-widgets/wdfunc.h>
 #include <tune/generaltunedialog.h>
 #include <tune/tunesequencefile.h>
 
@@ -457,10 +457,10 @@ Error::Msg AbstractTuneDialog::writeTuneCoefs(bool isUserChoosingRequired)
         hlyout->addWidget(PBFunc::New(this, "", "Отмена",
             [this]()
             {
-        for (QMap<int, DataBlock *>::Iterator it = m_absBac.begin(); it != m_absBac.end(); ++it)
-        {
-            it.value()->deleteWidgetCopy();
-        }
+                for (QMap<int, DataBlock *>::Iterator it = m_absBac.begin(); it != m_absBac.end(); ++it)
+                {
+                    it.value()->deleteWidgetCopy();
+                }
                 CancelTune();
                 emit generalEventReceived();
             }));
@@ -519,13 +519,13 @@ Error::Msg AbstractTuneDialog::saveWorkConfig()
     auto status = m_sync->readFileSync(S2::FilesEnum::Config, ba);
     if (status != Error::Msg::NoError)
         return Error::Msg::ReadError;
-    return Files::SaveToFile(Settings::workDir() + m_device->getUID() + ".cf", ba);
+    return Files::SaveToFile(Settings::dataDir() + m_device->getUID() + ".cf", ba);
 }
 
 Error::Msg AbstractTuneDialog::loadWorkConfig()
 {
     QByteArray ba;
-    auto res = Files::LoadFromFile(Settings::workDir() + m_device->getUID() + ".cf", ba);
+    auto res = Files::LoadFromFile(Settings::dataDir() + m_device->getUID() + ".cf", ba);
     if (res != Error::Msg::NoError)
         return res;
     else

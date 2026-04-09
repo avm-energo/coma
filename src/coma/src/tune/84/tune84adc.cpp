@@ -15,8 +15,8 @@ using namespace Interface;
 
 Tune84ADC::Tune84ADC(TuneTypes tuneType, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(device, parent)
-    , m_bac(new BacA284(this))
-    , m_bac2(new Bac2A284(this))
+    , m_bac(new Bac2A284(this))
+    , m_bac2(new BacA284(this))
     , m_bda(new BdaA284(this))
     , m_bdain(new BdaIn(this))
     , m_bd0(new Bd0(this))

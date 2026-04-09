@@ -45,14 +45,17 @@ void Iec104QueryExecutor::closeConnection() noexcept
 
 void Iec104QueryExecutor::writeToInterface(const QByteArray &request, bool isCounted) noexcept
 {
-    emit sendDataToInterface(request);
-    if (isCounted)
+    if (!request.isEmpty())
     {
-        m_timeoutTimer.start();
-        ++(m_ctrlBlock->m_sent);
-        checkControlBlock();
+        emit sendDataToInterface(request);
+        if (isCounted)
+        {
+            m_timeoutTimer.start();
+            ++(m_ctrlBlock->m_sent);
+            checkControlBlock();
+        }
+        writeToLog(request, Direction::ToDevice);
     }
-    writeToLog(request, Direction::ToDevice);
 }
 
 void Iec104QueryExecutor::exec()

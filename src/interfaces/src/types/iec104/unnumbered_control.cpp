@@ -5,8 +5,7 @@
 namespace Iec104
 {
 
-tl::expected<std::uint32_t, ApciError> //
-UnnumberedControl::getValue(const ControlFunc func, const ControlArg arg) noexcept
+std::uint32_t UnnumberedControl::getValue(const ControlFunc func, const ControlArg arg)
 {
     if (arg == ControlArg::Activate)
     {
@@ -19,7 +18,7 @@ UnnumberedControl::getValue(const ControlFunc func, const ControlArg arg) noexce
         case ControlFunc::TestFrame:
             return testFrameActivate();
         default:
-            return tl::unexpected(ApciError::InvalidControlFunc);
+            throw ApciError(ApciError::InvalidControlFunc);
         }
     }
     else if (arg == ControlArg::Confirm)
@@ -33,15 +32,14 @@ UnnumberedControl::getValue(const ControlFunc func, const ControlArg arg) noexce
         case ControlFunc::TestFrame:
             return testFrameConfirm();
         default:
-            return tl::unexpected(ApciError::InvalidControlFunc);
+            throw ApciError(ApciError::InvalidControlFunc);
         }
     }
     else
-        return tl::unexpected(ApciError::InvalidControlArg);
+        throw ApciError(ApciError::InvalidControlArg);
 }
 
-tl::expected<std::pair<ControlFunc, ControlArg>, ApciError> //
-UnnumberedControl::fromValue(const std::uint32_t value) noexcept
+std::pair<ControlFunc, ControlArg> UnnumberedControl::fromValue(const std::uint32_t value)
 {
     switch (value)
     {
@@ -59,8 +57,22 @@ UnnumberedControl::fromValue(const std::uint32_t value) noexcept
         return std::pair { ControlFunc::TestFrame, ControlArg::Confirm };
     default:
         qWarning() << "Undefined value, not U-format frame received";
-        return tl::unexpected(ApciError::InvalidControlValue);
+        throw ApciError(ApciError::InvalidControlValue);
+        ;
     }
+}
+
+void pringApciError(ApciError e)
+{
+    const QMap<ApciError, QString> apciErMap = { { ApciError::InvalidControlFunc, "Неправильная функция управления" },
+        { ApciError::InvalidControlArg, "Неправильный аргумент управления" },
+        { ApciError::InvalidControlValue, "Неправильное значение управления" },
+        { ApciError::InvalidFrameFormat, "Некорректный формат фрейма" },
+        { ApciError::InvalidDataLength, "Некорректная длина данных" },
+        { ApciError::InvalidAsduSize, "Некорректная длина ASDU" },
+        { ApciError::InvalidStartByte, "Неправильный стартовый байт" } };
+
+    qDebug() << "Ошибка разбора APCI: " << apciErMap[e];
 }
 
 } // namespace Iec104

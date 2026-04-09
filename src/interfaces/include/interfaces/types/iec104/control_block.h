@@ -1,8 +1,9 @@
 #pragma once
 
-#include <QByteArray>
 #include <avm-gen/error.h>
 #include <interfaces/types/iec104/unnumbered_control.h>
+
+#include <QByteArray>
 #include <memory>
 
 namespace Iec104
@@ -28,7 +29,7 @@ private:
     /// \brief Converting saved data to S-format (supervisory control format).
     std::uint32_t toNumberedSupervisoryFunction() const noexcept;
     /// \brief Converting saved data to U-format (unnumbered control format).
-    tl::expected<std::uint32_t, ApciError> toUnnumberedControlFunction() const noexcept;
+    std::uint32_t toUnnumberedControlFunction() const ;
 
 public:
     std::uint16_t m_sent, m_received;
@@ -43,11 +44,15 @@ public:
     ControlBlock(const ControlBlock &rhs) noexcept;
     /// \brief Assignment operator.
     const ControlBlock &operator=(const ControlBlock &rhs) noexcept;
+    /// \brief Condition operator.
+    friend bool operator==(const ControlBlock &lhs, const ControlBlock &rhs) noexcept;
+    /// \brief Not condition operator.
+    friend bool operator!=(const ControlBlock &lhs, const ControlBlock &rhs) noexcept;
 
     /// \brief Converting the stored control block data to a protocol representation.
-    tl::expected<std::uint32_t, ApciError> data() const noexcept;
+    std::uint32_t data() const ;
     /// \brief Converting the received byte array to a control block object.
-    static tl::expected<ControlBlock, ApciError> fromData(const std::uint32_t data) noexcept;
+    static ControlBlock fromData(const std::uint32_t data) ;
 };
 
 } // namespace Iec104

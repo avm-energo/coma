@@ -1,7 +1,7 @@
 #pragma once
 
 #include <datablocks/bd0.h>
-#include <datablocks/kiv/bac.h>
+#include <datablocks/kiv/bac2.h>
 #include <datablocks/kiv/bdain.h>
 #include <tune/abstracttunedialog.h>
 #include <tune/tunetypes.h>
@@ -23,7 +23,7 @@ private:
         float yet;
     };
 
-    BacA284 *m_bac;
+    Bac2A284 *m_bac;
     BdaIn *m_bdain;
     Bd0 *m_bd0;
     MidTuneStruct m_midTuneStruct;

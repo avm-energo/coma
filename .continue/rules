@@ -1,0 +1,14 @@
+# Project Architecture
+
+This is a Qt C++ application with:
+
+- Main program files are in '/src/AVM-Energo' & '/src/AVM-Debug'
+- General classes in '/src/coma'
+- Interfaces classes in '/src/interfaces'
+- Tests are in 'src/tests'
+
+## Coding Standards
+
+- Use C++ for all new files
+- Follow the existing naming conventions
+- Write tests for all new features

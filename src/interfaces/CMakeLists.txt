@@ -41,7 +41,6 @@ endif()
     Qt${QT_VERSION_MAJOR}::SerialPort
     avm-gen
     coma
-    expected
   )
 
 if(SYSTEM_NAME STREQUAL "windows")

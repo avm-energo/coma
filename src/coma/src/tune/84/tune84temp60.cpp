@@ -16,7 +16,7 @@ using namespace Interface;
 
 Tune84Temp60::Tune84Temp60(TuneTypes tuneType, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(device, parent)
-    , m_bac(new BacA284(this))
+    , m_bac(new Bac2A284(this))
     , m_bdain(new BdaIn(this))
     , m_bd0(new Bd0(this))
     , m_tuneType(tuneType)

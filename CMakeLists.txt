@@ -50,13 +50,6 @@ else()
   include(avm-widgets)
 endif()
 
-find_package(expected QUIET)
-if(${expected_FOUND})
-  message(STATUS "Found package expected")
-else()
-  include(expected)
-endif()
-
 find_package(hidapi QUIET)
 if(${hidapi_FOUND})
   message(STATUS "Found package hidapi")

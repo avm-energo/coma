@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cstdint>
 #include <avm-gen/std_ext.h>
-#include <tl/expected.hpp>
+
+#include <cstdint>
 
 namespace Iec104
 {
@@ -101,12 +101,11 @@ struct UnnumberedControl
     }
 
     /// \brief Run-time calculation the value of unnumbered control function.
-    static tl::expected<std::uint32_t, ApciError> //
-    getValue(const ControlFunc func, const ControlArg arg) noexcept;
+    static std::uint32_t getValue(const ControlFunc func, const ControlArg arg);
 
     /// \brief Converting the passed value to a pair of control function and argument.
-    static tl::expected<std::pair<ControlFunc, ControlArg>, ApciError> //
-    fromValue(const std::uint32_t value) noexcept;
+    static std::pair<ControlFunc, ControlArg> fromValue(const std::uint32_t value);
 };
 
+void pringApciError(ApciError e);
 } // namespace Iec104

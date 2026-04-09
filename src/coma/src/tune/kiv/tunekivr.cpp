@@ -12,7 +12,7 @@
 
 TuneKIVR::TuneKIVR(Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(device, parent)
-    , m_bac(new Bac2A284(this))
+    , m_bac(new BacA284(this))
     , m_bda(new BdaA284(this))
 {
     m_bac->setup(m_device->getUID(), m_sync);

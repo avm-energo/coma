@@ -1,6 +1,6 @@
 #pragma once
 
-#include <datablocks/kiv/bac2.h>
+#include <datablocks/kiv/bac.h>
 #include <datablocks/kiv/bda.h>
 #include <datablocks/kiv/bdain.h>
 #include <tune/abstracttunedialog.h>
@@ -12,7 +12,7 @@ public:
     TuneKIVR(Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
-    Bac2A284 *m_bac;
+    BacA284 *m_bac;
     BdaA284 *m_bda;
     double m_pt100_80;
     int m_curTuneStep;

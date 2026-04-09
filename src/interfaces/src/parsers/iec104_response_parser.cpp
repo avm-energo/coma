@@ -22,12 +22,6 @@ void Iec104ResponseParser::updateControlBlock(const SharedControlBlock &newContr
     m_ctrlBlock = newControlBlock;
 }
 
-void Iec104ResponseParser::apciParseErrorHandle(const Iec104::ApciError err) noexcept
-{
-    /// TODO: So naive realization
-    qWarning() << "Parsing APCI error: " << std_ext::to_underlying(err);
-}
-
 bool Iec104ResponseParser::isCompleteResponse()
 {
     if (std::size_t(m_responseBuffer.size()) >= apciSize)
@@ -43,11 +37,11 @@ Error::Msg Iec104ResponseParser::validate()
 
 Error::Msg Iec104ResponseParser::validate(const QByteArray &response) noexcept
 {
-    auto parseProduct = APCI::fromByteArray(response.left(apciSize));
-    // Parse APCI check
-    if (parseProduct.has_value())
+    try
     {
-        m_currentAPCI = *parseProduct;
+        auto parseProduct = APCI::fromByteArray(response.left(apciSize));
+        // Parse APCI check
+        m_currentAPCI = parseProduct;
         // Size check
         if (m_currentAPCI.m_ctrlBlock.m_format == FrameFormat::Information)
         {
@@ -56,9 +50,8 @@ Error::Msg Iec104ResponseParser::validate(const QByteArray &response) noexcept
         }
         return validate(); // returns no error
     }
-    else
+    catch (...)
     {
-        apciParseErrorHandle(parseProduct.error());
         return Error::WrongFormatError;
     }
 }

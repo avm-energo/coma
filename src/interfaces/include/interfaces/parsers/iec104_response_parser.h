@@ -20,8 +20,6 @@ private:
     /// \brief Используется для разбиения буффера входных данных на
     /// массив байт каждого ответа от устройства.
     void splitBuffer() noexcept;
-    /// \brief Функция для обработки ошибок парсинга APCI входящих ответов.
-    void apciParseErrorHandle(const Iec104::ApciError err) noexcept;
 
     /// \brief Парсинг данных в I-формате.
     void parseInfoFormat(const QByteArray &response) noexcept;

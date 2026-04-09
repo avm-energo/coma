@@ -25,14 +25,14 @@
 
 #include "datablocks/datablock.h"
 
+#include <avm-gen/files.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/filefunc.h>
 #include <avm-widgets/hexpbfunc.h>
 #include <avm-widgets/lefunc.h>
 #include <avm-widgets/wdfunc.h>
-#include <avm-gen/files.h>
-#include <avm-gen/settings.h>
-#include <avm-gen/stdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 
 #include <QDialogButtonBox>
@@ -203,17 +203,17 @@ void DataBlock::updateWidget(QWidget *w)
     {
         for (auto &valueDesc : group.values)
         {
-            std::visit(                                                                            //
-                overloaded {                                                                       //
-                    [&](float *arg)                                                                //
-                    {                                                                              //
-                        LEFunc::setData(                                                           //
+            std::visit(                                                                     //
+                overloaded {                                                                //
+                    [&](float *arg)                                                         //
+                    {                                                                       //
+                        LEFunc::setData(                                                    //
                             w, valueDesc.valueId, WDFunc::stringFloatValueWithCheck(*arg)); //
-                    },                                                                             //
-                    [&](quint32 *arg)                                                              //
-                    {                                                                              //
+                    },                                                                      //
+                    [&](quint32 *arg)                                                       //
+                    {                                                                       //
                         LEFunc::setData(w, valueDesc.valueId, QString::number(*arg));       //
-                    } },                                                                           //
+                    } },                                                                    //
                 valueDesc.value);
         }
     }
@@ -231,7 +231,7 @@ void DataBlock::updateGeneralWidget()
 
 void DataBlock::updateCopy()
 {
-    if(!m_widgetCopy)
+    if (!m_widgetCopy)
     {
         qDebug() << "Copy widget is not set!";
         return;
@@ -363,13 +363,13 @@ Error::Msg DataBlock::loadFromFileAndWriteToModule(const QString &filename)
 
 Error::Msg DataBlock::readFromFile()
 {
-    return loadFromFileAndWriteToModule(Settings::workDir() + cpuIDFilenameStr());
+    return loadFromFileAndWriteToModule(Settings::dataDir() + cpuIDFilenameStr());
 }
 
 Error::Msg DataBlock::saveToFile()
 {
     QByteArray ba(static_cast<char *>(m_block.block), m_block.blocksize);
-    QString filestr = Settings::workDir() + cpuIDFilenameStr();
+    QString filestr = Settings::dataDir() + cpuIDFilenameStr();
     return Files::SaveToFile(filestr, ba);
 }
 
@@ -386,7 +386,7 @@ void DataBlock::saveToFileUserChoose()
 
 void DataBlock::deleteWidgetCopy()
 {
-    if(m_widgetCopy)
+    if (m_widgetCopy)
         delete m_widgetCopy;
 }
 

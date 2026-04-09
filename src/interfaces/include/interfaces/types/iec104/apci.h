@@ -1,9 +1,10 @@
 #pragma once
 
-#include <QByteArray>
-#include <QVariant>
 #include <avm-gen/stdfunc.h>
 #include <interfaces/types/iec104/control_block.h>
+
+#include <QByteArray>
+#include <QVariant>
 
 namespace Iec104
 {
@@ -25,14 +26,16 @@ public:
     APCI(APCI &&rhs) noexcept;
     /// \brief Assignment operator.
     const APCI &operator=(const APCI &rhs) noexcept;
+    /// \brief Not condition operator.
+    friend bool operator!=(const APCI &lhs, const APCI &rhs) noexcept;
 
     /// \brief Updating the control block inside the APCI unit.
     void updateControlBlock(const ControlBlock controlBlock) noexcept;
 
     /// \brief Converting the APCI object to a byte array.
-    tl::expected<QByteArray, ApciError> toByteArray() const noexcept;
+    QByteArray toByteArray() const ;
     /// \brief Converting the received byte array to an APCI object.
-    static tl::expected<APCI, ApciError> fromByteArray(const QByteArray &data) noexcept;
+    static APCI fromByteArray(const QByteArray &data) ;
 };
 
 } // namespace Iec104

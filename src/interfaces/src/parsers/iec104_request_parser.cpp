@@ -143,52 +143,117 @@ void Iec104RequestParser::exceptionalAction(const CommandStruct &command) noexce
 
 QByteArray Iec104RequestParser::createGroupRequest(const quint32 groupNum)
 {
-    ASDU asdu(m_baseStationAddress);
-    asdu.setRequestData(groupNum);
-    auto request = asdu.toByteArray();
-    APCI apci(*m_ctrlBlock, request.size());
-    apci.m_ctrlBlock.m_format = FrameFormat::Information;
-    request.prepend(apci.toByteArray().value_or(QByteArray {}));
-    emit currentCommand(Iec104::Command::RequestGroup);
-    return request;
+    try
+    {
+        ASDU asdu(m_baseStationAddress);
+        asdu.setRequestData(groupNum);
+        auto request = asdu.toByteArray();
+        APCI apci(*m_ctrlBlock, request.size());
+        apci.m_ctrlBlock.m_format = FrameFormat::Information;
+        request.prepend(apci.toByteArray());
+        emit currentCommand(Iec104::Command::RequestGroup);
+        return request;
+    }
+    catch (const ApciError &e)
+    {
+        pringApciError(e);
+        return QByteArray();
+    }
+    catch (const std::exception &e)
+    {
+        qDebug() << "Unhandled exception: " << e.what();
+        return QByteArray();
+    }
 }
 
 QByteArray Iec104RequestParser::createStartMessage() const noexcept
 {
-    APCI apci;
-    apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
-    apci.m_ctrlBlock.m_func = ControlFunc::StartDataTransfer;
-    apci.m_ctrlBlock.m_arg = ControlArg::Activate;
-    auto bytes = apci.toByteArray();
-    return bytes.value_or(QByteArray {});
+    try
+    {
+        APCI apci;
+        apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
+        apci.m_ctrlBlock.m_func = ControlFunc::StartDataTransfer;
+        apci.m_ctrlBlock.m_arg = ControlArg::Activate;
+        auto bytes = apci.toByteArray();
+        return bytes;
+    }
+    catch (const ApciError &e)
+    {
+        pringApciError(e);
+        return QByteArray();
+    }
+    catch (const std::exception &e)
+    {
+        qDebug() << "Unhandled exception: " << e.what();
+        return QByteArray();
+    }
 }
 
 QByteArray Iec104RequestParser::createStopMessage() const noexcept
 {
-    APCI apci;
-    apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
-    apci.m_ctrlBlock.m_func = ControlFunc::StopDataTransfer;
-    apci.m_ctrlBlock.m_arg = ControlArg::Activate;
-    auto bytes = apci.toByteArray();
-    return bytes.value_or(QByteArray {});
+    try
+    {
+        APCI apci;
+        apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
+        apci.m_ctrlBlock.m_func = ControlFunc::StopDataTransfer;
+        apci.m_ctrlBlock.m_arg = ControlArg::Activate;
+        auto bytes = apci.toByteArray();
+        return bytes;
+    }
+    catch (const ApciError &e)
+    {
+        pringApciError(e);
+        return QByteArray();
+    }
+    catch (const std::exception &e)
+    {
+        qDebug() << "Unhandled exception: " << e.what();
+        return QByteArray();
+    }
 }
 
 QByteArray Iec104RequestParser::createTestMessage(Iec104::ControlArg arg) const noexcept
 {
-    APCI apci;
-    apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
-    apci.m_ctrlBlock.m_func = ControlFunc::TestFrame;
-    apci.m_ctrlBlock.m_arg = arg;
-    auto bytes = apci.toByteArray();
-    return bytes.value_or(QByteArray {});
+    try
+    {
+        APCI apci;
+        apci.m_ctrlBlock.m_format = FrameFormat::Unnumbered;
+        apci.m_ctrlBlock.m_func = ControlFunc::TestFrame;
+        apci.m_ctrlBlock.m_arg = arg;
+        auto bytes = apci.toByteArray();
+        return bytes;
+    }
+    catch (const ApciError &e)
+    {
+        pringApciError(e);
+        return QByteArray();
+    }
+    catch (const std::exception &e)
+    {
+        qDebug() << "Unhandled exception: " << e.what();
+        return QByteArray();
+    }
 }
 
 QByteArray Iec104RequestParser::createSupervisoryMessage() const noexcept
 {
-    APCI apci(*m_ctrlBlock);
-    apci.m_ctrlBlock.m_format = FrameFormat::Supervisory;
-    auto bytes = apci.toByteArray();
-    return bytes.value_or(QByteArray {});
+    try
+    {
+        APCI apci(*m_ctrlBlock);
+        apci.m_ctrlBlock.m_format = FrameFormat::Supervisory;
+        auto bytes = apci.toByteArray();
+        return bytes;
+    }
+    catch (const ApciError &e)
+    {
+        pringApciError(e);
+        return QByteArray();
+    }
+    catch (const std::exception &e)
+    {
+        qDebug() << "Unhandled exception: " << e.what();
+        return QByteArray();
+    }
 }
 
 } // namespace Interface
