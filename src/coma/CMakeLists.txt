@@ -5,6 +5,7 @@ project(coma LANGUAGES CXX)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Concurrent REQUIRED)
 
 include(githash)
+include(magic_enum)
 
 # Collecting sources
 set(COMA_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -34,6 +35,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   qcustomplot
   avm-qxlsx
   Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
+  magic_enum::magic_enum
 )
 
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <avm-gen/datatypes.h>
+#include <avm-widgets/viewtypewidget.h>
 #include <interfaces/types/protocol_settings.h>
 #include <s2/dataitem.h>
 
@@ -21,7 +22,7 @@ struct Signal final
 };
 
 /// \brief Перечисление для хранения типа отображения мультивиджета.
-enum class ViewType : u8
+enum class MWidgetViewType : u8
 {
     Float = 0,    ///< отображение чисел с плавающей точкой
     Bitset,       ///< отображение битового поля
@@ -35,14 +36,14 @@ enum class ViewType : u8
 /// \brief Структура для хранения информации узла <mwidget> из XML.
 struct MWidget final
 {
-    QString desc;                    ///< атрибут "desc"
-    u32 startAddr;                   ///< узел <start-addr>
-    u32 count = 1;                   ///< узел <count>
-    QString tooltip = "";            ///< узел <toolTip>
-    ViewType view = ViewType::Float; ///< атрибут "view"
-    u32 decimals = 0;                ///< "decimals" attribute
-    QStringList subItemList = {};    ///< узел <string-array>
-    u32 type;                        ///< узел <type> - тип отображения виджета (alarm = red | yellow | green)
+    QString desc;                                  ///< атрибут "desc"
+    u32 startAddr;                                 ///< узел <start-addr>
+    u32 count = 1;                                 ///< узел <count>
+    QString tooltip = "";                          ///< узел <toolTip>
+    MWidgetViewType view = MWidgetViewType::Float; ///< атрибут "view"
+    u32 decimals = 0;                              ///< "decimals" attribute
+    QStringList subItemList = {};                  ///< узел <string-array>
+    u32 type; ///< узел <type> - тип отображения виджета (alarm = red | yellow | green)
 };
 
 /// \brief Структура для хранения информации узла <sgroup> из XML.
@@ -92,13 +93,13 @@ struct MeasJournal final
 /// \brief Структура для хранения информации узла <mwidget> из <hidden/tab>.
 struct HiddenWidget final
 {
-    QString name;    ///< узел <name>
-    QString title;   ///< атрибут "title"
-    u32 address;     ///< узел <addr>
-    u16 index;       ///< узел <index>
-    BinaryType type; ///< узел <type>
-    ViewType view;   ///< атрибут "view"
-    bool visibility; ///< узел <visibility>
+    QString name;         ///< узел <name>
+    QString title;        ///< атрибут "title"
+    u32 address;          ///< узел <addr>
+    u16 index;            ///< узел <index>
+    BinaryType type;      ///< узел <type>
+    MWidgetViewType view; ///< атрибут "view"
+    bool visibility;      ///< узел <visibility>
 };
 
 /// \brief Структура для хранения информации узла <tab> из <hidden>.
@@ -145,6 +146,24 @@ struct BsiExtItem
     QString desc;    ///< узел <desc>
 };
 
+/// \brief Запись из секции <bsi> XML-конфигурации.
+struct BsiRecord
+{
+    QString name;                       ///< узел <name> - objectName лейбла со значением
+    QString desc;                       ///< узел <desc> - текст лейбла-подписи
+    ViewType::ViewTypes type; ///< узел <representation>
+    u32 offset;                         ///< узел <offset> - индекс в массиве BlockStartupInfo
+};
+
+/// \brief Запись из секции <bsi-ext> XML-конфигурации.
+struct BsiExtRecord
+{
+    QString name;                       ///< узел <name> - objectName лейбла со значением
+    QString desc;                       ///< узел <desc> - текст лейбла-подписи
+    ViewType::ViewTypes type; ///< узел <representation>
+    u32 offset;                         ///< узел <offset> - индекс в массиве BlockStartupInfoExtended
+};
+
 struct SectionTabStruct
 {
     QString name;
@@ -165,7 +184,9 @@ using MeasJourList = std::vector<MeasJournal>; ///< Хранит узлы <item>
 using HiddenSettings = std::vector<HiddenTab>; ///< Хранит узлы <tab> секции <hidden>.
 using DetailCountMap
     = QHash<u16, u16>; ///< Хранит количество элементов для конфигурационных параметров, имеющих одинаковые id.
-using BsiExtItemList = std::vector<BsiExtItem>; ///< Хранит узлы <item> секции <bsi-ext>
+using BsiExtItemList = std::vector<BsiExtItem>;   ///< Хранит узлы <item> секции <bsi-ext>
+using BsiSettings = std::vector<BsiRecord>;       ///< Хранит узлы <record> секции <bsi>
+using BsiExtSettings = std::vector<BsiExtRecord>; ///< Хранит узлы <record> секции <bsi-ext>
 
 /// \brief Class for storing device's settings.
 class XmlSettings final
@@ -196,6 +217,10 @@ public:
     void appendHiddenTab(const HiddenTab &hiddenTab);
     /// \brief Добавление элемента BSI Ext.
     void appendBsiExtItem(const u32 addr, const BinaryType type, bool visib, const QString &desc);
+    /// \brief Добавление записи BSI.
+    void appendBsi(const QString &name, const QString &desc, ViewType::ViewTypes type, u32 offset);
+    /// \brief Добавление записи BSI Ext.
+    void appendBsiExt(const QString &name, const QString &desc, ViewType::ViewTypes type, u32 offset);
 
     /// \brief Constant getter for features map
     [[nodiscard]] const FeaturesMap &getFeatures() const;
@@ -221,6 +246,10 @@ public:
     [[nodiscard]] const HiddenSettings &getHiddenSettings() const;
     /// \brief Constant getter for BSI Ext settings.
     [[nodiscard]] const BsiExtItemList &getBsiExtSettings() const;
+    /// \brief Constant getter for BSI settings.
+    [[nodiscard]] const BsiSettings &getBsi() const;
+    /// \brief Constant getter for BSI Ext records.
+    [[nodiscard]] const BsiExtSettings &getBsiExt() const;
 
     /// Havings
 
@@ -246,6 +275,8 @@ private:
     MeasJourList m_measJournals;
     HiddenSettings m_hiddenSettings;
     BsiExtItemList m_bsiExtSettings;
+    BsiSettings m_bsi;
+    BsiExtSettings m_bsiExt;
     bool m_haveBsiExt, m_haveMeasJournal, m_haveWorkJournal;
 };
 

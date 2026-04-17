@@ -2,6 +2,9 @@
 
 #include <xml/xmleditor/models/baseeditormodel.h>
 
+#include <QString>
+#include <map>
+
 /// \brief Класс со статическими методами для создания диалоговых окон.
 class XmlDialogFabric
 {
@@ -13,6 +16,15 @@ private:
 
 public:
     XmlDialogFabric() = delete;
+
+    /// \brief Заголовочные суффиксы диалогов XML-редактора по типу модели.
+    /// \details Соответствуют строкам, добавляемым в m_title в каждом XmlDialog-потомке.
+    ///          Используются для построения списка вариантов создания элементов <resources>.
+    static const std::map<ModelType, QString> s_dialogTitles;
+
+    /// \brief Типы моделей, разрешённые как дочерние узлы <resources>.
+    /// \details Порядок фиксирован для стабильного UI (combobox сохраняет этот порядок).
+    static const QList<ModelType> s_resourceCreatableTypes;
 
     /// \brief Создать и отобразить диалог создания нового элемента.
     static void createDialog(BaseEditorModel *model, QWidget *parent = nullptr);

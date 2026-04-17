@@ -212,7 +212,7 @@ void CheckDialog::addSignals(const QList<SGroup> &groups, UWidget *widget)
                     {
                         auto &signal = element.second;
                         auto start = widget.startAddr;
-                        auto end = (widget.view == ViewType::Bitset) ? (start + 1) : (start + widget.count);
+                        auto end = (widget.view == MWidgetViewType::Bitset) ? (start + 1) : (start + widget.count);
                         auto acceptStart = signal.startAddr;
                         auto acceptEnd = acceptStart + signal.count;
                         return ((start >= acceptStart && start < acceptEnd) && (end > acceptStart && end <= acceptEnd));
@@ -265,28 +265,28 @@ QVBoxLayout *CheckDialog::setupGroup(const SGroup &arg, UWidget *uwidget)
     for (auto &&mwidget : arg.widgets)
     {
         // Float
-        if (mwidget.view == ViewType::Float)
+        if (mwidget.view == MWidgetViewType::Float)
         {
             auto widgetLayout = setupFloatWidget(mwidget, arg.widgets.size());
             if (widgetLayout != nullptr)
                 groupLayout->addLayout(widgetLayout);
         }
         // Bitset
-        else if (mwidget.view == ViewType::Bitset)
+        else if (mwidget.view == MWidgetViewType::Bitset)
         {
             auto widgetLayout = setupBitsetWidget(mwidget, uwidget);
             if (widgetLayout != nullptr)
                 groupLayout->addLayout(widgetLayout);
         }
-        else if (mwidget.view == ViewType::SinglePoint)
+        else if (mwidget.view == MWidgetViewType::SinglePoint)
         {
             auto widgetLayout = setupSinglePointWidget(mwidget, uwidget);
             if (widgetLayout != nullptr)
                 groupLayout->addLayout(widgetLayout);
         }
-        else if ((mwidget.view == ViewType::Command) || (mwidget.view == ViewType::CommandWValue))
+        else if ((mwidget.view == MWidgetViewType::Command) || (mwidget.view == MWidgetViewType::CommandWValue))
         {
-            auto widgetLayout = setupCommandWidget(mwidget, arg.widgets.size(), mwidget.view == ViewType::Command);
+            auto widgetLayout = setupCommandWidget(mwidget, arg.widgets.size(), mwidget.view == MWidgetViewType::Command);
             if (widgetLayout != nullptr)
                 groupLayout->addLayout(widgetLayout);
         }

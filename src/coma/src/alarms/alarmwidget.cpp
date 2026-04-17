@@ -1,9 +1,9 @@
 #include "alarms/alarmwidget.h"
 
 #include <alarms/alarmbutton.h>
-#include <device/current_device.h>
 #include <avm-gen/settings.h>
 #include <avm-widgets/graphfunc.h>
+#include <device/current_device.h>
 
 #include <QDialogButtonBox>
 #include <QTimer>
@@ -34,7 +34,7 @@ void AlarmWidget::configure(Device::CurrentDevice *device)
     const auto &sigMap = moduleSettings.getSignals();
 
     auto alarmStateAll = new AlarmStateAll(device);
-    alarmStateAll->update(device->bsi().Hth);
+    alarmStateAll->update(device->bsi().data(Device::BsiIndexes::Hth));
     QObject::connect(device, &Device::CurrentDevice::healthChanged, alarmStateAll, &AlarmStateAll::update);
     addAlarm(alarmStateAll, "Состояние устройства");
     for (const auto &[type, title] : alarmSettings)

@@ -31,6 +31,8 @@ constexpr auto records = "records";
 constexpr auto hidden = "hidden";
 constexpr auto hidden_tab = "hidden-tab";
 constexpr auto bsi_ext = "bsi-ext";
+constexpr auto bsi = "bsi";
+constexpr auto representation = "representation";
 
 // Specified tags
 constexpr auto sig = "signal";
@@ -84,4 +86,11 @@ constexpr auto widget = "widget";
 constexpr auto view = "view";
 constexpr auto index = "index";
 constexpr auto dtype = "dtype";
+
+// Include mechanism tags
+constexpr auto include = "include";
+constexpr auto includes = "includes";
+constexpr auto fragment = "fragment";
+constexpr auto src = "src";
+constexpr auto offset = "offset";
 }

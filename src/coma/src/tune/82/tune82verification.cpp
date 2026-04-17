@@ -156,12 +156,12 @@ void Tune82Verification::reportInit()
     writeReportData("Day", QDateTime::currentDateTime().toString("dd"));
     writeReportData("Month", QDateTime::currentDateTime().toString("MM"));
     writeReportData("Yr", QDateTime::currentDateTime().toString("yy"));
-    writeReportData("Serial", QString::number(m_device->bsi().SerialNum, 16));
-    writeReportData("SerialB", QString::number(m_device->bsi().SerialNumB, 16));
-    writeReportData("SerialM", QString::number(m_device->bsi().SerialNumM, 16));
-    writeReportData("HardwareB", StdFunc::VerToStr(m_device->bsi().HwverB));
-    writeReportData("HardwareM", StdFunc::VerToStr(m_device->bsi().HwverM));
-    writeReportData("Software", StdFunc::VerToStr(m_device->bsi().Fwver));
+    writeReportData("Serial", QString::number(m_device->bsi().data(Device::BsiIndexes::SerialNum), 16));
+    writeReportData("SerialB", QString::number(m_device->bsi().data(Device::BsiIndexes::SerialNumB), 16));
+    writeReportData("SerialM", QString::number(m_device->bsi().data(Device::BsiIndexes::SerialNumM), 16));
+    writeReportData("HardwareB", StdFunc::VerToStr(m_device->bsi().data(Device::BsiIndexes::HwverB)));
+    writeReportData("HardwareM", StdFunc::VerToStr(m_device->bsi().data(Device::BsiIndexes::HwverM)));
+    writeReportData("Software", StdFunc::VerToStr(m_device->bsi().data(Device::BsiIndexes::Fwver)));
 }
 
 Error::Msg Tune82Verification::verification()

@@ -15,7 +15,6 @@ CurrentDevice::CurrentDevice(AsyncConnection *conn)
     , m_cfgStorage(this)
     , m_s2manager(this)
     , m_fileProvider(this)
-    , m_bsiCounter(0)
     , m_isInitStage(true)
 {
     m_async->connection(this, &CurrentDevice::updateBSI);
@@ -38,19 +37,19 @@ SyncConnection *CurrentDevice::sync() noexcept
     return &m_sync;
 }
 
-const BlockStartupInfo &CurrentDevice::bsi() const noexcept
+const Bsi &CurrentDevice::bsi() const noexcept
 {
     return m_bsi;
 }
 
-BlockStartupInfoExtended *CurrentDevice::bsiExt() noexcept
+BlockStartupInfoExtended &CurrentDevice::bsiExt() noexcept
 {
-    return &m_bsiExt;
+    return m_bsiExt;
 }
 
 Health CurrentDevice::health() const noexcept
 {
-    return Health(m_bsi.Hth);
+    return Health(m_bsi.data(BsiIndexes::Hth));
 }
 
 ConfigStorage *CurrentDevice::getConfigStorage() noexcept
@@ -70,17 +69,17 @@ FileProvider *CurrentDevice::getFileProvider() noexcept
 
 u16 CurrentDevice::getBaseType() const noexcept
 {
-    return m_bsi.MTypeB;
+    return static_cast<u16>(m_bsi.data(BsiIndexes::MTypeB));
 }
 
 u16 CurrentDevice::getMezzType() const noexcept
 {
-    return m_bsi.MTypeM;
+    return static_cast<u16>(m_bsi.data(BsiIndexes::MTypeM));
 }
 
 u16 CurrentDevice::getDeviceType() const noexcept
 {
-    return u16((m_bsi.MTypeB << 8) + m_bsi.MTypeM);
+    return u16((m_bsi.data(BsiIndexes::MTypeB) << 8) + m_bsi.data(BsiIndexes::MTypeM));
 }
 
 QString CurrentDevice::getDeviceName() const noexcept
@@ -88,8 +87,8 @@ QString CurrentDevice::getDeviceName() const noexcept
     auto search = BoxModules.find(static_cast<Model>(getDeviceType()));
     if (search == BoxModules.cend())
     {
-        auto bSearch = BaseBoards.find(static_cast<BaseBoard>(m_bsi.MTypeB));
-        auto mSearch = MezzanineBoards.find(static_cast<MezzanineBoard>(m_bsi.MTypeM));
+        auto bSearch = BaseBoards.find(static_cast<BaseBoard>(m_bsi.data(BsiIndexes::MTypeB)));
+        auto mSearch = MezzanineBoards.find(static_cast<MezzanineBoard>(m_bsi.data(BsiIndexes::MTypeM)));
         if (bSearch == BaseBoards.cend())
             return "undefined device";
         else if (mSearch == MezzanineBoards.cend())
@@ -103,23 +102,24 @@ QString CurrentDevice::getDeviceName() const noexcept
 
 QString CurrentDevice::getUID() const noexcept
 {
-    return QString::number(m_bsi.UIDHigh, 16) + QString::number(m_bsi.UIDMid, 16) + QString::number(m_bsi.UIDLow, 16);
+    return QString::number(m_bsi.data(BsiIndexes::UIDHigh), 16) + QString::number(m_bsi.data(BsiIndexes::UIDMid), 16)
+        + QString::number(m_bsi.data(BsiIndexes::UIDLow), 16);
 }
 
 u32 CurrentDevice::getSerialNumber() const noexcept
 {
-    return m_bsi.SerialNum;
+    return m_bsi.data(BsiIndexes::SerialNum);
 }
 
 bool CurrentDevice::isOutdatedFirmware(const u32 configVersion) const noexcept
 {
-    return m_bsi.Fwver < configVersion;
+    return m_bsi.data(BsiIndexes::Fwver) < configVersion;
 }
 
 void CurrentDevice::initBSI() noexcept
 {
     m_isInitStage = true;
-    m_async->reqBSI();
+    m_async->reqBitStrings(Device::bsiStartReg, Device::bsiCountRegs);
 }
 
 void CurrentDevice::internalProtocolUpdate() noexcept
@@ -130,21 +130,17 @@ void CurrentDevice::internalProtocolUpdate() noexcept
 
 void CurrentDevice::updateBSI(const DataTypes::BitStringStruct &value)
 {
-    using namespace Interface;
-    constexpr auto bsiMembers = sizeof(BlockStartupInfo) / sizeof(u32);
     if (value.sigAdr >= Device::bsiStartReg && value.sigAdr <= Device::bsiCountRegs)
     {
-        u32 &item = *(reinterpret_cast<u32 *>(&m_bsi) + (value.sigAdr - Device::bsiStartReg));
-        item = value.sigVal;
-        ++m_bsiCounter;
-        if (m_bsiCounter == bsiMembers)
+        m_bsi.setData(value.sigAdr - Device::bsiStartReg, value.sigVal);
+        if (m_bsi.isFilled())
         {
+            m_bsi.clearBsiFill();
             initBSIEvent(Error::Msg::NoError);
-            m_bsiCounter = 0;
             compareAndUpdate();
         }
     }
-    else
+    else if (value.sigAdr >= m_bsiExt.startAddr() && value.sigAdr <= m_bsiExt.endAddr())
         m_bsiExt.updateData(value);
 }
 
@@ -152,18 +148,19 @@ void CurrentDevice::configFileLoadFinished()
 {
     if (getConfigStorage()->getDeviceSettings().HaveBSIExt())
     {
-        bsiExt()->updateStructure(getConfigStorage()->getDeviceSettings().getBsiExtSettings());
+        bsiExt().updateStructure(getConfigStorage()->getDeviceSettings().getBsiExt());
     }
 }
 
 void CurrentDevice::compareAndUpdate() noexcept
 {
-    if (m_bsi.Hth != m_previous.Hth)
-        emit healthChanged(m_bsi.Hth);
-    if ((m_bsi.MTypeB != m_previous.MTypeB) || (m_bsi.MTypeM != m_previous.MTypeM))
+    if (m_bsi.data(BsiIndexes::Hth) != m_previous.data(BsiIndexes::Hth))
+        emit healthChanged(m_bsi.data(BsiIndexes::Hth));
+    if (m_bsi.data(BsiIndexes::MTypeB) != m_previous.data(BsiIndexes::MTypeB)
+        || m_bsi.data(BsiIndexes::MTypeM) != m_previous.data(BsiIndexes::MTypeM))
         emit typeChanged(QString::number(getDeviceType(), 16));
-    if (m_bsi.SerialNum != m_previous.SerialNum)
-        emit serialChanged(m_bsi.SerialNum);
+    if (m_bsi.data(BsiIndexes::SerialNum) != m_previous.data(BsiIndexes::SerialNum))
+        emit serialChanged(m_bsi.data(BsiIndexes::SerialNum));
 
     m_previous = m_bsi;
     emit bsiReceived();

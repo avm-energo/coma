@@ -26,4 +26,10 @@ public:
     static XmlModel *createRootModel(QDomNode &root, QObject *parent = nullptr);
     /// \brief Creates the master XML model.
     static MasterModel *createMasterModel(QObject *parent = nullptr);
+
+    /// \brief Создаёт «пустую» дочернюю модель указанного типа без исходной DOM-ноды.
+    /// \details Используется при создании нового дочернего элемента в редакторе
+    ///          (в частности, для <resources>), когда ещё нет исходного XML-узла.
+    ///          Возвращённая модель содержит одну строку с ".." и установленные заголовки.
+    static XmlModel *createEmptyChildModel(ModelType type, QObject *parent = nullptr);
 };

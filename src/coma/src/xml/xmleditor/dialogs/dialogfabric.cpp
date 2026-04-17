@@ -9,7 +9,9 @@
 #include <xml/xmleditor/dialogs/xmlconfigdialog.h>
 #include <xml/xmleditor/dialogs/xmlhiddentabdialog.h>
 #include <xml/xmleditor/dialogs/xmlhiddenwidgetdialog.h>
+#include <xml/xmleditor/dialogs/xmlincludedialog.h>
 #include <xml/xmleditor/dialogs/xmlmeasjourdialog.h>
+#include <xml/xmleditor/dialogs/xmlresmembercreatedialog.h>
 #include <xml/xmleditor/dialogs/xmlmodbusdialog.h>
 #include <xml/xmleditor/dialogs/xmlmwidgetdialog.h>
 #include <xml/xmleditor/dialogs/xmlprotocomdialog.h>
@@ -28,6 +30,49 @@ namespace Helper
 constexpr auto edit = 0;   ///< Константа для указания редактирования.
 constexpr auto remove = 1; ///< Константа для указания удаления.
 }
+
+const std::map<ModelType, QString> XmlDialogFabric::s_dialogTitles {
+    { ModelType::Master, "модуля" },                                        //
+    { ModelType::Resources, "корневого элемента" },                         //
+    { ModelType::Signals, "группы сигналов" },                              //
+    { ModelType::SectionTabs, "вкладки" },                                  //
+    { ModelType::Sections, "раздела" },                                     //
+    { ModelType::Section, "группы" },                                       //
+    { ModelType::SGroup, "описания мульти-виджета" },                       //
+    { ModelType::AlarmStateAll, "сигнализации" },                           //
+    { ModelType::AlarmsCrit, "сигнализации" },                              //
+    { ModelType::AlarmsWarn, "сигнализации" },                              //
+    { ModelType::AlarmsInfo, "сигнализации" },                              //
+    { ModelType::WorkJours, "события рабочего журнала" },                   //
+    { ModelType::MeasJours, "элемента журнала измерений" },                 //
+    { ModelType::Modbus, "элемента Modbus" },                               //
+    { ModelType::Protocom, "элемента Protocom" },                           //
+    { ModelType::IEC60870, "элемента IEC60870" },                           //
+    { ModelType::Config, "конфига" },                                       //
+    { ModelType::Hidden, "вкладки раздела \"Секретные операции\"" },        //
+    { ModelType::HiddenTab, "виджета раздела \"Секретные операции\"" },     //
+    { ModelType::BsiExt, "элемента BSI Ext" },                              //
+    { ModelType::S2Tabs, "вкладки" },                                       //
+    { ModelType::S2Records, "описания S2 записи" },                         //
+    { ModelType::Includes, "ссылки на внешний XML-файл" },                  //
+};
+
+// Для узла <resources> разрешено создание контейнеров-ресурсов, но не
+// вложенных типов (Section, SGroup, AlarmsCrit/Warn/Info и т.п.), не типов
+// S2-редактора и не служебных (Master, Resources, None).
+const QList<ModelType> XmlDialogFabric::s_resourceCreatableTypes {
+    ModelType::Signals,      //
+    ModelType::SectionTabs,  //
+    ModelType::Sections,     //
+    ModelType::AlarmStateAll,//
+    ModelType::Modbus,       //
+    ModelType::Protocom,     //
+    ModelType::IEC60870,     //
+    ModelType::Config,       //
+    ModelType::Hidden,       //
+    ModelType::BsiExt,       //
+    ModelType::Includes,     //
+};
 
 void XmlDialogFabric::createOrEditDialog(BaseEditorModel *model, int row, QWidget *parent)
 {
@@ -94,9 +139,12 @@ void XmlDialogFabric::createOrEditDialog(BaseEditorModel *model, int row, QWidge
         case ModelType::S2Records:
             dialog = new XmlS2RecordDialog(parent);
             break;
+        case ModelType::Includes:
+            dialog = new XmlIncludeDialog(parent);
+            break;
         case ModelType::Resources:
             if (row == createId)
-                EMessageBox::warning(parent, "В данном разделе запрещено создание новых элементов");
+                dialog = new XmlResMemberCreateDialog(parent);
             else
                 dialog = new XmlResDialog(parent);
             break;

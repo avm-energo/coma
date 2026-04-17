@@ -1,5 +1,6 @@
 #include "xml/xmleditor/models/xmlcontainermodel.h"
 
+#include <xml/xmleditor/models/modelfabric.h>
 #include <xml/xmleditor/models/xmldatamodel.h>
 #include <xml/xmleditor/models/xmlhidedatamodel.h>
 #include <xml/xmltags.h>
@@ -57,6 +58,26 @@ void XmlContainerModel::parseNode(QDomNode &node, int &row)
 
 void XmlContainerModel::create(const QStringList &saved, int *row)
 {
+    // Создание нового дочернего узла под <resources>: saved[0] - имя тега,
+    // saved[1] - описание (может быть пустым).
+    if (m_type == ModelType::Resources)
+    {
+        if (saved.isEmpty())
+            return;
+        const auto typeIt = XmlModel::s_types.find(saved.first());
+        if (typeIt == XmlModel::s_types.cend())
+            return;
+        BaseEditorModel::create(saved, row);
+        if (*row >= 0)
+        {
+            ChildModelNode node { nullptr, typeIt->second };
+            node.m_model = ModelFabric::createEmptyChildModel(typeIt->second, this);
+            if (node.m_model != nullptr)
+                setData(index(*row, 0), QVariant::fromValue(node), ModelNodeRole);
+        }
+        emit modelChanged();
+        return;
+    }
     // Создание дочерних элементов доступно для узлов <sections> и <section>
     if (m_type == ModelType::Sections || m_type == ModelType::Section || m_type == ModelType::Hidden)
     {

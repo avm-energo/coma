@@ -1,6 +1,9 @@
 #pragma once
 
 #include "xml/xmlparser/xmlparser.h"
+
+#include <QDir>
+#include <QSet>
 // #include <interfaces/types/common_types.h>
 
 namespace Device
@@ -45,6 +48,8 @@ signals:
     void configNameSending(const QString &tabName);
     void hiddenTabDataSending(const Xml::HiddenTab &hiddenTab);
     void bsiExtItemDataSending(const u32 addr, const Xml::BinaryType type, const bool visib, const QString &desc);
+    void bsiRecordDataSending(const QString &name, const QString &desc, const ViewType::ViewTypes type, u32 offset);
+    void bsiExtRecordDataSending(const QString &name, const QString &desc, const ViewType::ViewTypes type, u32 offset);
 
 private:
     /// \brief Возвращает имя файла по типам базовой и мезонинной плат.
@@ -61,7 +66,7 @@ private:
     /// \brief Парсинг типа группы сигналов.
     SignalType parseSignalType(const QDomNode &signalNode);
     /// \brief Парсинг типа отображения мультивиджета.
-    ViewType parseViewType(const QString &viewString);
+    MWidgetViewType parseViewType(const QString &viewString);
     /// \brief Парсинг типа отображаемых/отправляемых данных.
     BinaryType parseBinaryType(const QString &typeStr);
     /// \brief Парсинг типа сигнализации в узле <state-all>.
@@ -109,12 +114,31 @@ private:
     void parseConfig(const QDomNode &configNode);
     /// \brief Парсинг узлов <tab> внутри <hidden>.
     void parseHiddenTab(const QDomNode &hiddenTabNode);
-    /// \brief Парсинг узлов <item> внутри <bsi-ext>.
+    /// \brief Парсинг узлов <item> внутри <bsi-ext> (устаревший формат).
     void parseBsiExtItem(const QDomNode &bsiExtItemNode);
+    /// \brief Парсинг секции <bsi-ext> в формате <record>.
+    void parseBsiExt(const QDomNode &bsiExtNode);
+    /// \brief Парсинг узла <record> внутри <bsi-ext>.
+    void parseBsiExtRecord(const QDomNode &recordNode);
+    /// \brief Парсинг секции <bsi>.
+    void parseBsi(const QDomNode &bsiNode);
+    /// \brief Парсинг узла <record> внутри <bsi>.
+    void parseBsiRecord(const QDomNode &recordNode);
+    /// \brief Парсинг символического имени представления BSI-записи.
+    ViewType::ViewTypes parseBsiViewType(const QString &str);
     /// \brief parse overlay config-tab tag
     void parseOverlayConfigTab(const QDomNode &tabNode);
     /// \brief parse overlay record tag
     void parseOverlayRecord(const QDomNode &recordNode);
+
+    /// \brief Максимальная глубина вложенности <include> для защиты от циклов.
+    static constexpr int kMaxIncludeDepth = 8;
+    /// \brief Рекурсивно раскрывает узлы <include src="..."/> в дереве parent.
+    /// \details Загружает указанный файл, берёт дочерние узлы его корневого
+    ///          элемента (рекомендуется <fragment>, но допускается любой) и
+    ///          вставляет их в позицию <include>. Разрешает src относительно
+    ///          baseDir; поддерживает защиту от циклов и ограничение глубины.
+    void expandIncludes(QDomElement parent, const QDir &baseDir, QSet<QString> &visited, int depth);
 };
 
 }

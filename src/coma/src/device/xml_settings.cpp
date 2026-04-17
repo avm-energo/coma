@@ -17,6 +17,9 @@ void XmlSettings::clear() noexcept
     m_critHighlight.clear();
     m_warnHighlight.clear();
     m_hiddenSettings.clear();
+    m_bsiExtSettings.clear();
+    m_bsi.clear();
+    m_bsiExt.clear();
     m_haveBsiExt = false;
     m_haveMeasJournal = false;
     m_haveWorkJournal = false;
@@ -90,6 +93,17 @@ void XmlSettings::appendBsiExtItem(const u32 addr, const BinaryType type, bool v
     m_bsiExtSettings.push_back(BsiExtItem { addr, type, visib, std::move(desc) });
 }
 
+void XmlSettings::appendBsi(const QString &name, const QString &desc, ViewType::ViewTypes type, u32 offset)
+{
+    m_bsi.push_back(BsiRecord { name, desc, type, offset });
+}
+
+void XmlSettings::appendBsiExt(const QString &name, const QString &desc, ViewType::ViewTypes type, u32 offset)
+{
+    m_haveBsiExt = true;
+    m_bsiExt.push_back(BsiExtRecord { name, desc, type, offset });
+}
+
 const FeaturesMap &XmlSettings::getFeatures() const
 {
     return m_featuresMap;
@@ -151,6 +165,16 @@ const HiddenSettings &XmlSettings::getHiddenSettings() const
 const BsiExtItemList &XmlSettings::getBsiExtSettings() const
 {
     return m_bsiExtSettings;
+}
+
+const BsiSettings &XmlSettings::getBsi() const
+{
+    return m_bsi;
+}
+
+const BsiExtSettings &XmlSettings::getBsiExt() const
+{
+    return m_bsiExt;
 }
 
 bool XmlSettings::HaveBSIExt() const

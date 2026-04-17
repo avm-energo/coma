@@ -90,7 +90,7 @@ Error::Msg SyncConnection::reqBSI()
             if (count == Device::bsiCountRegs)
                 busy = false;
         });
-    m_connection->reqBSI();
+    m_connection->reqBitStrings(Device::bsiStartReg, Device::bsiCountRegs);
     eventLoop();
     QObject::disconnect(conn);
     return m_responseResult;

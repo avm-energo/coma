@@ -147,6 +147,12 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::name, data(index(row, 1)));
             } };
+    case ModelType::Includes:
+        return { tags::includes, tags::include, //
+            [this](auto &doc, auto &item, auto &row)
+            {
+                setAttribute(doc, item, tags::src, data(index(row, 0)));
+            } };
     default:
         qWarning() << "Model settings not found!";
         return { "undefined", "undefined", //
@@ -240,6 +246,9 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     case ModelType::S2Tabs:                                       //
         parseTag(node, tags::id, row, 0, "", true);               // ID
         parseTag(node, tags::name, row, 1);                       // Наименование
+        break;                                                    //
+    case ModelType::Includes:                                     //
+        parseAttribute(node, tags::src, row, 0);                  // Путь к файлу
         break;                                                    //
     default:
         qWarning() << "Can't parse undefined tag of XML model!";

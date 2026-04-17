@@ -1,6 +1,6 @@
+#include <avm-gen/std_ext.h>
 #include <common/names.h>
 #include <device/bsi.h>
-#include <avm-gen/std_ext.h>
 #include <interfaces/conn/sync_connection.h>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/exec/query_executor_fabric.h>
@@ -92,7 +92,7 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectionSettings &c
     connect(m_currentConnection, &AsyncConnection::cancel, m_context.m_executor, &DefaultQueryExecutor::cancelQuery,
         Qt::QueuedConnection);
 
-    m_currentConnection->reqBSI();
+    m_currentConnection->reqBitStrings(Device::bsiStartReg, Device::bsiCountRegs);
     if (!m_context.run(m_currentConnection))
     {
         m_currentConnection->deleteLater();
@@ -197,7 +197,7 @@ void ConnectionManager::interfaceReconnected()
 {
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
     m_currentConnection->getQueue().activate();
-    m_currentConnection->reqBSI();
+    m_currentConnection->reqBitStrings(Device::bsiStartReg, Device::bsiCountRegs);
     m_context.m_executor->start();
     m_currentConnection->getQueue().deactivate();
 }

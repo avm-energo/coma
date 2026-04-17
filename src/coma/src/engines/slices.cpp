@@ -1,8 +1,8 @@
-#include <engines/slices.h>
 #include <avm-gen/files.h>
 #include <avm-gen/files/ziputil.h>
 #include <avm-gen/settings.h>
 #include <avm-gen/stdfunc.h>
+#include <engines/slices.h>
 #include <interfaces/types/common_types.h>
 
 #include <QEventLoop>
@@ -115,14 +115,15 @@ QByteArray Slices::getStartup()
 
 QByteArray Slices::getBsi()
 {
-    setDummyRangeAndValue(BsiLoad, sizeof(m_curDev->bsi()));
-    return StdFunc::toByteArray(m_curDev->bsi());
+    auto &bsi = m_curDev->bsi();
+    setDummyRangeAndValue(BsiLoad, m_curDev->bsi().size());
+    return bsi.toByteArray();
 }
 
 QByteArray Slices::getBsiExt()
 {
-    setDummyRangeAndValue(BsiLoadExt, sizeof(m_curDev->bsiExt()));
-    return m_curDev->bsiExt()->toByteArray();
+    setDummyRangeAndValue(BsiLoadExt, m_curDev->bsiExt().size());
+    return m_curDev->bsiExt().toByteArray();
 }
 
 QByteArray Slices::getOscs()

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Общая секция <bsi-ext> для модулей. Подключается через
+    <include src="bsi-ext-base.xml"/> внутри <resources>.
+    Каждая <record> описывает строку расширенной вкладки InfoDialog:
+      <name>           - objectName лейбла со значением
+      <desc>           - текст лейбла-подписи слева
+      <representation> - символическое имя форматирования значения; см.
+                         enum class BsiExtRepresentation в xml_settings.h
+                         и InfoDialog::fillBsiExt.
+-->
+<fragment>
+    <bsi-ext>
+        <record>
+            <name>namepo</name>
+            <desc>Наименование
+программы:</desc>
+            <representation>NamePo</representation>
+            <offset>0</offset>
+        </record>
+        <record>
+            <name>verloader</name>
+            <desc>Версия Loader:</desc>
+            <representation>VerLoader</representation>
+            <offset>1</offset>
+        </record>
+    </bsi-ext>
+</fragment>

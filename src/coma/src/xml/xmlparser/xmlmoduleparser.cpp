@@ -1,12 +1,18 @@
 #include "xml/xmlparser/xmlmoduleparser.h"
 
 #include <avm-gen/files.h>
+#include <avm-gen/settings.h>
 #include <avm-gen/stdfunc.h>
 #include <avm-gen/xml/xmlbase.h>
 #include <avm-gen/xml/xmlparse.h>
 #include <common/appconfig.h>
+#include <ctti/nameof.hpp>
 #include <device/current_device.h>
+#include <magic_enum/magic_enum.hpp>
 #include <xml/xmltags.h>
+
+#include <QFile>
+#include <QFileInfo>
 
 Xml::ModuleParser::ModuleParser(QObject *parent) : m_ifaceType(Interface::IfaceType::Unknown) { }
 
@@ -87,22 +93,22 @@ Xml::SignalType Xml::ModuleParser::parseSignalType(const QDomNode &signalNode)
     return Xml::SignalType::Float;
 }
 
-Xml::ViewType Xml::ModuleParser::parseViewType(const QString &viewString)
+Xml::MWidgetViewType Xml::ModuleParser::parseViewType(const QString &viewString)
 {
     if (viewString.contains("bitset", Qt::CaseInsensitive))
-        return Xml::ViewType::Bitset;
+        return Xml::MWidgetViewType::Bitset;
     else if (viewString.contains("LineEdit", Qt::CaseInsensitive))
-        return Xml::ViewType::LineEdit;
+        return Xml::MWidgetViewType::LineEdit;
     else if (viewString.contains("Version", Qt::CaseInsensitive))
-        return Xml::ViewType::Version;
+        return Xml::MWidgetViewType::Version;
     else if (viewString.contains("SinglePoint", Qt::CaseInsensitive))
-        return Xml::ViewType::SinglePoint;
+        return Xml::MWidgetViewType::SinglePoint;
     else if (viewString.contains("command", Qt::CaseInsensitive))
-        return Xml::ViewType::Command;
+        return Xml::MWidgetViewType::Command;
     else if (viewString.contains("commandvalue", Qt::CaseInsensitive))
-        return Xml::ViewType::CommandWValue;
+        return Xml::MWidgetViewType::CommandWValue;
     else
-        return Xml::ViewType::Float;
+        return Xml::MWidgetViewType::Float;
 }
 
 Xml::BinaryType Xml::ModuleParser::parseBinaryType(const QString &typeStr)
@@ -350,6 +356,66 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
     emit hiddenTabDataSending(Xml::HiddenTab { tabTitle, tabPrefix, tabFlag, widgets });
 }
 
+ViewType::ViewTypes Xml::ModuleParser::parseBsiViewType(const QString &str)
+{
+    auto viewTypeEnumValue = magic_enum::enum_cast<ViewType::ViewTypes>(str.toStdString());
+    if (viewTypeEnumValue.has_value())
+        return viewTypeEnumValue.value();
+    return ViewType::ViewTypes::Unknown;
+}
+
+void Xml::ModuleParser::parseBsiExtRecord(const QDomNode &recordNode)
+{
+    auto name = XmlParse::parseString(recordNode, tags::name);
+    auto desc = XmlParse::parseString(recordNode, tags::desc);
+    auto reprStr = XmlParse::parseString(recordNode, tags::representation);
+    auto offset = XmlParse::parseNumFromNode<u32>(recordNode, tags::offset);
+    if (name == STRINF)
+        name.clear();
+    if (desc == STRINF)
+        desc.clear();
+    const auto viewType = parseBsiViewType(reprStr);
+    if (viewType == ViewType::ViewTypes::Unknown)
+    {
+        qWarning() << "BSI Ext: неизвестное представление" << reprStr << "для записи" << name;
+        return;
+    }
+    emit bsiExtRecordDataSending(name, desc, viewType, offset);
+}
+
+void Xml::ModuleParser::parseBsiExt(const QDomNode &bsiExtNode)
+{
+    XmlParse::callForEachChild(bsiExtNode, [this](const QDomNode &recordNode) { //
+        parseBsiExtRecord(recordNode);
+    });
+}
+
+void Xml::ModuleParser::parseBsiRecord(const QDomNode &recordNode)
+{
+    auto name = XmlParse::parseString(recordNode, tags::name);
+    auto desc = XmlParse::parseString(recordNode, tags::desc);
+    auto reprStr = XmlParse::parseString(recordNode, tags::representation);
+    auto offset = XmlParse::parseNumFromNode<u32>(recordNode, tags::offset);
+    if (name == STRINF)
+        name.clear();
+    if (desc == STRINF)
+        desc.clear();
+    const auto viewType = parseBsiViewType(reprStr);
+    if (viewType == ViewType::ViewTypes::Unknown)
+    {
+        qWarning() << "BSI: неизвестное представление" << reprStr << "для записи" << name;
+        return;
+    }
+    emit bsiRecordDataSending(name, desc, viewType, offset);
+}
+
+void Xml::ModuleParser::parseBsi(const QDomNode &bsiNode)
+{
+    XmlParse::callForEachChild(bsiNode, [this](const QDomNode &recordNode) { //
+        parseBsiRecord(recordNode);
+    });
+}
+
 void Xml::ModuleParser::parseBsiExtItem(const QDomNode &bsiExtItemNode)
 {
     auto address = XmlParse::parseNumFromNode<u32>(bsiExtItemNode, tags::addr);
@@ -400,7 +466,9 @@ void Xml::ModuleParser::parseDetector(const QDomNode &node)
     else if (tag == tags::hidden)
         XmlParse::callForEachChild(node, [this](const QDomNode &hiddenTabNode) { parseHiddenTab(hiddenTabNode); });
     else if (tag == tags::bsi_ext)
-        XmlParse::callForEachChild(node, [this](const QDomNode &bsiExtItemNode) { parseBsiExtItem(bsiExtItemNode); });
+        parseBsiExt(node);
+    else if (tag == tags::bsi)
+        parseBsi(node);
     else if (tag == tags::alarms)
         parseAlarms(node);
     else if (tag == tags::journals)
@@ -449,6 +517,108 @@ void Xml::ModuleParser::parseOverlay(const QDomElement &overlayNode)
         overlayNode, tags::records, [this](const QDomNode &recordNode) { parseOverlayRecord(recordNode); });
 }
 
+void Xml::ModuleParser::expandIncludes(QDomElement parent, const QDir &baseDir, QSet<QString> &visited, int depth)
+{
+    if (parent.isNull())
+        return;
+    if (depth > kMaxIncludeDepth)
+    {
+        emit parseError(QString("Превышена максимальная глубина <include> (%1)").arg(kMaxIncludeDepth));
+        return;
+    }
+
+    auto child = parent.firstChildElement();
+    while (!child.isNull())
+    {
+        const auto next = child.nextSiblingElement();
+        if (child.tagName() == tags::includes)
+        {
+            // Recursively expand <include> entries within, then hoist any
+            // remaining children into the grandparent so <includes> is
+            // transparent to downstream parsing.
+            expandIncludes(child, baseDir, visited, depth + 1);
+            auto node = child.firstChild();
+            while (!node.isNull())
+            {
+                const auto toMove = node;
+                node = node.nextSibling();
+                parent.insertBefore(toMove, child);
+            }
+            parent.removeChild(child);
+        }
+        else if (child.tagName() == tags::include)
+        {
+            const auto srcAttr = child.attribute(tags::src);
+            if (srcAttr.isEmpty())
+            {
+                emit parseError("В узле <include> отсутствует атрибут src");
+                parent.removeChild(child);
+                child = next;
+                continue;
+            }
+            // Resolve src relative to including file's directory; fall back to configDir.
+            QString resolved = baseDir.absoluteFilePath(srcAttr);
+            if (!QFileInfo::exists(resolved))
+                resolved = QDir(Settings::configDir()).absoluteFilePath(srcAttr);
+            const QString canonical = QFileInfo(resolved).canonicalFilePath();
+            if (canonical.isEmpty())
+            {
+                emit parseError(QString("Include-файл не найден: %1").arg(srcAttr));
+                parent.removeChild(child);
+                child = next;
+                continue;
+            }
+            if (visited.contains(canonical))
+            {
+                emit parseError(QString("Циклический <include>: %1").arg(canonical));
+                parent.removeChild(child);
+                child = next;
+                continue;
+            }
+
+            QFile file(canonical);
+            QDomDocument sub;
+            if (!file.open(QIODevice::ReadOnly) || !sub.setContent(&file))
+            {
+                emit parseError(QString("Не удалось прочитать include-файл: %1").arg(canonical));
+                parent.removeChild(child);
+                child = next;
+                continue;
+            }
+
+            visited.insert(canonical);
+            auto subRoot = sub.documentElement();
+            // Recursively expand includes within the sub-document first,
+            // resolving nested src relative to the sub-file's directory.
+            expandIncludes(subRoot, QFileInfo(canonical).absoluteDir(), visited, depth + 1);
+
+            // If root is <fragment>, splice its children; otherwise splice the root itself.
+            auto ownerDoc = parent.ownerDocument();
+            if (subRoot.tagName() == tags::fragment)
+            {
+                auto node = subRoot.firstChild();
+                while (!node.isNull())
+                {
+                    const auto toInsert = node;
+                    node = node.nextSibling();
+                    parent.insertBefore(ownerDoc.importNode(toInsert, true), child);
+                }
+            }
+            else
+            {
+                parent.insertBefore(ownerDoc.importNode(subRoot, true), child);
+            }
+            parent.removeChild(child);
+            visited.remove(canonical);
+        }
+        else
+        {
+            expandIncludes(child, baseDir, visited, depth + 1);
+        }
+        child = next;
+    }
+}
+
 void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList &nodes)
 {
     if (Files::isFileExist(filename))
@@ -456,6 +626,12 @@ void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList
         auto moduleNode = XmlBase::getXMLFirstElementFromFile(filename, tags::module);
         if (!moduleNode.isNull())
         {
+            QSet<QString> visited;
+            const auto thisPath = QFileInfo(filename).canonicalFilePath();
+            if (!thisPath.isEmpty())
+                visited.insert(thisPath);
+            expandIncludes(moduleNode, QFileInfo(filename).absoluteDir(), visited, 0);
+
             auto featuresNode = moduleNode.firstChildElement(tags::features);
             if (!featuresNode.isNull())
                 XmlParse::parseNode(
@@ -486,6 +662,12 @@ void Xml::ModuleParser::parseDocument(const QStringList &filenames, const Device
             {
                 if (isCorrectDevice(moduleNode, device))
                 {
+                    QSet<QString> visited;
+                    const auto thisPath = QFileInfo(filename).canonicalFilePath();
+                    if (!thisPath.isEmpty())
+                        visited.insert(thisPath);
+                    expandIncludes(moduleNode, QFileInfo(filename).absoluteDir(), visited, 0);
+
                     auto featuresNode = moduleNode.firstChildElement(tags::features);
                     if (!featuresNode.isNull())
                         XmlParse::callForEachChild(

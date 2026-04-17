@@ -1,8 +1,8 @@
 #include "alarms/alarmstateall.h"
 
-#include <device/current_device.h>
 #include <avm-widgets/graphfunc.h>
 #include <avm-widgets/lblfunc.h>
+#include <device/current_device.h>
 
 #include <QBoxLayout>
 #include <QPushButton>
@@ -45,7 +45,7 @@ void AlarmStateAll::generateDefaultConfig()
 
 void AlarmStateAll::reqUpdate()
 {
-    engine()->currentConnection()->reqBSI();
+    engine()->currentConnection()->reqBitStrings(Device::bsiStartReg, Device::bsiCountRegs);
 }
 
 void AlarmStateAll::setupUI()

@@ -38,24 +38,24 @@ void HiddenDialog::generateDefaultSettings()
         HiddenTab { "Базовая плата", "base", 1,                                //
             {
                 HiddenWidget { "basetype", "Тип платы", 1, 1,                  //
-                    BinaryType::uint32, ViewType::LineEdit, true },
+                    BinaryType::uint32, MWidgetViewType::LineEdit, true },
                 HiddenWidget { "baseserial", "Серийный номер платы", 10, 2,    //
-                    BinaryType::uint32, ViewType::LineEdit, true },
+                    BinaryType::uint32, MWidgetViewType::LineEdit, true },
                 HiddenWidget { "baseversion", "Версия платы", 3, 3,            //
-                    BinaryType::uint32, ViewType::Version, true },
+                    BinaryType::uint32, MWidgetViewType::Version, true },
                 HiddenWidget { "moduleserial", "Серийный номер модуля", 13, 4, //
-                    BinaryType::uint32, ViewType::LineEdit, true }             //
+                    BinaryType::uint32, MWidgetViewType::LineEdit, true }             //
             } },                                                               //
         HiddenTab { "Мезонинная плата", "mezz", 2,                             //
             {
                 HiddenWidget { "mezztype", "Тип платы", 2, 5,                  //
-                    BinaryType::uint32, ViewType::LineEdit, true },
+                    BinaryType::uint32, MWidgetViewType::LineEdit, true },
                 HiddenWidget { "mezzserial", "Серийный номер платы", 11, 6,    //
-                    BinaryType::uint32, ViewType::LineEdit, true },
+                    BinaryType::uint32, MWidgetViewType::LineEdit, true },
                 HiddenWidget { "mezzversion", "Версия платы", 12, 7,           //
-                    BinaryType::uint32, ViewType::Version, true },
+                    BinaryType::uint32, MWidgetViewType::Version, true },
                 HiddenWidget { "reserved", "Резерв", 4, 8,                     //
-                    BinaryType::uint32, ViewType::LineEdit, false }            //
+                    BinaryType::uint32, MWidgetViewType::LineEdit, false }            //
             } } //
     };
 }
@@ -163,7 +163,7 @@ QGroupBox *HiddenDialog::setupGroupBox(const HiddenTab &hiddenTab)
         if (widget.visibility)
         {
             auto title = widget.title + ':';
-            if (widget.view == ViewType::Version)
+            if (widget.view == MWidgetViewType::Version)
             {
                 auto hlyout = new QHBoxLayout;
                 hlyout->addWidget(LEFunc::newLBL(this, title, widget.name + 'm', false));
@@ -211,7 +211,7 @@ bool HiddenDialog::isTabEnabled(const HiddenTab &tabSettings) const noexcept
 
 void HiddenDialog::updateWidget(const bool enabled, const HiddenWidget &widget)
 {
-    if (widget.view == ViewType::Version)
+    if (widget.view == MWidgetViewType::Version)
     {
         WDFunc::setEnabled(this, widget.name + 'm', enabled);
         WDFunc::setEnabled(this, widget.name + 'l', enabled);
@@ -277,7 +277,7 @@ void HiddenDialog::updateBitStringData(const DataTypes::BitStringStruct &bs)
 
 void HiddenDialog::fillWidget(const quint32 value, const HiddenWidget &widgetData)
 {
-    if (widgetData.view == ViewType::Version)
+    if (widgetData.view == MWidgetViewType::Version)
     {
         QString tmps = QString::number(static_cast<quint8>((value & 0xFF000000) >> 24), 16);
         LEFunc::setData(this, widgetData.name + 'm', tmps, "^[a-fA-F0-9]$");
@@ -297,7 +297,7 @@ quint32 HiddenDialog::getDataFrom(const HiddenWidget &widgetData)
     {
         QString tmps;
         // Version fill back
-        if (widgetData.view == ViewType::Version)
+        if (widgetData.view == MWidgetViewType::Version)
         {
             LEFunc::data(this, widgetData.name + 'm', tmps);
             quint32 number = static_cast<quint32>(tmps.toInt()) << 24;

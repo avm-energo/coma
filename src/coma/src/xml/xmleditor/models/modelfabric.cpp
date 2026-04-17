@@ -40,6 +40,7 @@ void ModelFabric::createChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         case ModelType::HiddenTab:
         case ModelType::BsiExt:
         case ModelType::S2Tabs:
+        case ModelType::Includes:
             mNode.m_model = new XmlDataModel(rows, cols, mNode.m_type, parent);
             break;
         default:
@@ -91,6 +92,53 @@ MasterModel *ModelFabric::createMasterModel(QObject *parent)
     auto masterModel = new MasterModel(parent);
     masterModel->setHorizontalHeaderLabels({ "Устройство", "Type B", "Type M", "Версия", "Файл" });
     return masterModel;
+}
+
+XmlModel *ModelFabric::createEmptyChildModel(ModelType type, QObject *parent)
+{
+    auto iter = XmlModel::s_headers.find(type);
+    if (iter == XmlModel::s_headers.cend())
+        return nullptr;
+    const auto labels = iter->second;
+    const int cols = labels.count();
+    XmlModel *model = nullptr;
+    switch (type)
+    {
+    case ModelType::SGroup:
+    case ModelType::S2Records:
+        model = new XmlHideDataModel(1, cols, type, parent);
+        break;
+    case ModelType::Alarms:
+    case ModelType::Sections:
+    case ModelType::Section:
+    case ModelType::Journals:
+    case ModelType::Hidden:
+        model = new XmlContainerModel(1, cols, type, parent);
+        break;
+    case ModelType::Signals:
+    case ModelType::SectionTabs:
+    case ModelType::AlarmStateAll:
+    case ModelType::AlarmsCrit:
+    case ModelType::AlarmsWarn:
+    case ModelType::AlarmsInfo:
+    case ModelType::WorkJours:
+    case ModelType::MeasJours:
+    case ModelType::Modbus:
+    case ModelType::Protocom:
+    case ModelType::IEC60870:
+    case ModelType::Config:
+    case ModelType::HiddenTab:
+    case ModelType::BsiExt:
+    case ModelType::S2Tabs:
+    case ModelType::Includes:
+        model = new XmlDataModel(1, cols, type, parent);
+        break;
+    default:
+        return nullptr;
+    }
+    model->setHorizontalHeaderLabels(labels);
+    model->setData(model->index(0, 0), QString(".."));
+    return model;
 }
 
 int ModelFabric::elementsCount(QDomNode &node)

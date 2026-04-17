@@ -1,87 +1,87 @@
 #include "dialogs/infodialog.h"
 
-#include <device/current_device.h>
 #include <avm-gen/colors.h>
 #include <avm-gen/error.h>
 #include <avm-gen/stdfunc.h>
 #include <avm-widgets/etabwidget.h>
 #include <avm-widgets/lblfunc.h>
+#include <avm-widgets/viewtypewidget.h>
+#include <device/configstorage.h>
+#include <device/current_device.h>
 
 #include <QMessageBox>
+#include <QTabWidget>
 #include <QVBoxLayout>
 
 InfoDialog::InfoDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
-    auto conn = m_device->async();
-    auto bsiExt = m_device->bsiExt();
-    connect(bsiExt, &Device::BlockStartupInfoExtended::wasUpdated, this, &InfoDialog::syncExt);
+    auto &bsiExt = m_device->bsiExt();
+    connect(&bsiExt, &Device::BlockStartupInfoExtended::wasUpdated, this, &InfoDialog::syncExt);
     connect(m_device, &Device::CurrentDevice::bsiReceived, this, &InfoDialog::sync);
-    connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSI);
+    connect(this, &InfoDialog::fetchBsi, this, &InfoDialog::reqBsi);
     if (m_device->getConfigStorage()->getDeviceSettings().HaveBSIExt())
-        connect(this, &InfoDialog::fetchBsi, conn, &AsyncConnection::reqBSIExt);
+        connect(this, &InfoDialog::fetchBsi, this, &InfoDialog::reqBsiExt);
 }
 
 void InfoDialog::setupUI()
 {
-    const QList<QPair<QString, QString>> dialogPage {
-        { m_device->getDeviceName(), "Тип устройства:" },   //
-        { "namepo", "Наименование\nпрограммы:" },           //
-        { "snle", "Серийный номер\nустройства:" },          //
-        { "fwverle", "Версия ПО:" },                        //
-        { "verloader", "Верcия Loader:" },                  //
-        { "cfcrcle", "КС конфигурации:" },                  //
-        { "rstle", "Последний сброс:" },                    //
-        { "rstcountle", "Кол-во сбросов:" },                //
-        { "cpuidle", "ИД процессора:" },                    //
-        { "typeble", "Тип\nбазовой платы:" },               //
-        { "snble", "Серийный номер\nбазовой платы:" },      //
-        { "hwble", "Аппаратная версия\nбазовой платы:" },   //
-        { "typemle", "Тип\nмезонинной платы:" },            //
-        { "snmle", "Серийный номер\nмезонинной платы:" },   //
-        { "hwmle", "Аппаратная версия\nмезонинной платы:" } //
-    };
+    const auto &bsiRecords = m_device->getConfigStorage()->getDeviceSettings().getBsi();
+    const auto &bsiExtRecords = m_device->getConfigStorage()->getDeviceSettings().getBsiExt();
 
-    auto mainLayout = new QHBoxLayout;
-    auto slyout = new QGridLayout;
-    for (int i = 0; i < dialogPage.size(); ++i)
+    auto tabWidget = new QTabWidget(this);
+
+    // Tab "Основная" — BSI
+    auto bsiTab = new QWidget(tabWidget);
+    auto bsiLayout = new QHBoxLayout(bsiTab);
+    auto bsiGrid = new QGridLayout;
+    bsiGrid->addWidget(LBLFunc::New(bsiTab, "Устройство:"), 0, 0, 1, 1, Qt::AlignRight);
+    bsiGrid->addWidget(ViewType::ViewTypeFunc::New(bsiTab, "devicename", ViewType::ViewTypes::String), 0, 1, 1, 1);
+    for (int i = 0; i < int(bsiRecords.size()); ++i)
     {
-        slyout->addWidget(LBLFunc::New(this, dialogPage.at(i).second), i, 0, 1, 1, Qt::AlignRight);
-        slyout->addWidget(LBLFunc::New(this, "", dialogPage.at(i).first), i, 1, 1, 1);
+        const auto &rec = bsiRecords[i];
+        bsiGrid->addWidget(LBLFunc::New(bsiTab, rec.desc), i + 1, 0, 1, 1, Qt::AlignRight);
+        bsiGrid->addWidget(ViewType::ViewTypeFunc::New(bsiTab, rec.name, rec.type), i + 1, 1, 1, 1);
     }
-    mainLayout->addLayout(slyout, 3);
-    mainLayout->addStretch(4);
+    bsiLayout->addLayout(bsiGrid, 3);
+    bsiLayout->addStretch(4);
+    tabWidget->addTab(bsiTab, "Основная");
+
+    // Tab "Расширенная" — BSI Ext
+    if (!bsiExtRecords.empty())
+    {
+        auto bsiExtTab = new QWidget(tabWidget);
+        auto bsiExtLayout = new QHBoxLayout(bsiExtTab);
+        auto bsiExtGrid = new QGridLayout;
+        for (int i = 0; i < int(bsiExtRecords.size()); ++i)
+        {
+            const auto &rec = bsiExtRecords[i];
+            bsiExtGrid->addWidget(LBLFunc::New(bsiExtTab, rec.desc), i, 0, 1, 1, Qt::AlignRight);
+            bsiExtGrid->addWidget(ViewType::ViewTypeFunc::New(bsiExtTab, rec.name, rec.type), i, 1, 1, 1);
+        }
+        bsiExtLayout->addLayout(bsiExtGrid, 3);
+        bsiExtLayout->addStretch(4);
+        tabWidget->addTab(bsiExtTab, "Расширенная");
+    }
+
+    auto mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(tabWidget);
     setLayout(mainLayout);
 }
 
 void InfoDialog::fillBsi()
 {
     const auto &bsi = m_device->bsi();
-    LBLFunc::setText(this, m_device->getDeviceName(), m_device->getDeviceName());
-    LBLFunc::setText(this, "snle", QString::number(bsi.SerialNum, 16));
-    LBLFunc::setText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
-    LBLFunc::setText(this, "cfcrcle", "0x" + QString::number(static_cast<uint>(bsi.Cfcrc), 16));
-    LBLFunc::setText(this, "rstle", "0x" + QString::number(bsi.Rst, 16));
-    LBLFunc::setText(this, "rstcountle", QString::number(bsi.RstCount));
-    LBLFunc::setText(this, "cpuidle",
-        QString::number(bsi.UIDHigh, 16) + QString::number(bsi.UIDMid, 16) + QString::number(bsi.UIDLow, 16));
-    LBLFunc::setText(this, "typeble", QString::number(bsi.MTypeB, 16));
-    LBLFunc::setText(this, "snble", QString::number(bsi.SerialNumB, 16));
-    LBLFunc::setText(this, "hwble", StdFunc::VerToStr(bsi.HwverB));
-    LBLFunc::setText(this, "typemle", QString::number(bsi.MTypeM, 16));
-    LBLFunc::setText(this, "snmle", QString::number(bsi.SerialNumM, 16));
-    LBLFunc::setText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
+    const auto &records = m_device->getConfigStorage()->getDeviceSettings().getBsi();
+    ViewType::ViewTypeFunc::setData(this, "devicename", m_device->getDeviceName());
+    for (const auto &rec : records)
+        ViewType::ViewTypeFunc::setData(this, rec.name, bsi.data(rec.offset));
 }
 
-void InfoDialog::fillBsiExt()
+void InfoDialog::fillBsiExt(u32 addr)
 {
-    /// TODO: Необходимо вынести все значения из BSI Ext в отдельную вкладку,
-    /// в качестве имени использовать адрес значения, выводить всю BSI Ext информацию
-    const auto &bsiExt = *m_device->bsiExt();
-    LBLFunc::setText(this, "verloader", StdFunc::VerToStr(bsiExt[41]));
-    auto namepo = bsiExt[40];
-    const char *str = reinterpret_cast<const char *>(&namepo);
-    std::string string(str, sizeof(namepo));
-    LBLFunc::setText(this, "namepo", QString::fromStdString(string));
+    const Device::BlockStartupInfoExtended &bsiExt = m_device->bsiExt();
+    const auto &records = m_device->getConfigStorage()->getDeviceSettings().getBsiExt();
+    ViewType::ViewTypeFunc::setData(this, records.data()->name, bsiExt[records.data()->offset]);
 }
 
 void InfoDialog::uponInterfaceSetting()
@@ -96,10 +96,21 @@ void InfoDialog::sync()
         fillBsi();
 }
 
-void InfoDialog::syncExt()
+void InfoDialog::syncExt(u32 addr)
 {
     if (updatesEnabled())
-        fillBsiExt();
+        fillBsiExt(addr);
+}
+
+void InfoDialog::reqBsi()
+{
+    m_device->async()->reqBitStrings(Device::bsiStartReg, Device::bsiCountRegs);
+}
+
+void InfoDialog::reqBsiExt()
+{
+    auto &bsiExt = m_device->bsiExt();
+    m_device->async()->reqBitStrings(bsiExt.startAddr(), bsiExt.endAddr() - bsiExt.startAddr());
 }
 
 void InfoDialog::reqUpdate()

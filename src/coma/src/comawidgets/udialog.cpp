@@ -1,7 +1,7 @@
+#include <avm-gen/error.h>
 #include <avm-widgets/emessagebox.h>
 #include <comawidgets/udialog.h>
 #include <device/current_device.h>
-#include <avm-gen/error.h>
 
 UDialog::UDialog(Device::CurrentDevice *device, QWidget *parent) : UWidget(device, parent)
 {
@@ -30,7 +30,7 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
     {
         QString msg {};
         auto errorCode = Error::Msg(response.data);
-        if (errorCode == Error::Msg::FlashError && !(m_device->bsi().Cfcrc))
+        if (errorCode == Error::Msg::FlashError && !(m_device->bsi().data(Device::BsiIndexes::Cfcrc)))
             msg = tr("Запрошенный файл отсутствует");
         else
             msg = Error::MsgStr.value(errorCode, "Неизвестная ошибка");
@@ -88,7 +88,7 @@ QString UDialog::getFilenameForDevice() const
     Q_ASSERT(m_device != nullptr);
     const auto &bsi = m_device->bsi();
     return QString("%1%2-%3")
-        .arg(bsi.MTypeB, 2, 16, QChar('0'))
-        .arg(bsi.MTypeM, 2, 16, QChar('0'))
-        .arg(bsi.SerialNum, 8, 16, QChar('0'));
+        .arg(bsi.data(Device::BsiIndexes::MTypeB), 2, 16, QChar('0'))
+        .arg(bsi.data(Device::BsiIndexes::MTypeM), 2, 16, QChar('0'))
+        .arg(bsi.data(Device::BsiIndexes::SerialNum), 8, 16, QChar('0'));
 }

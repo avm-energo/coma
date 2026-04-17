@@ -78,6 +78,10 @@ bool ConfigLoader::loadDeviceData() noexcept
         cfgStorage, &Device::ConfigStorage::hiddenTabDataReceive);               //
     QObject::connect(moduleParser, &Xml::ModuleParser::bsiExtItemDataSending,    //
         cfgStorage, &Device::ConfigStorage::bsiExtItemDataReceive);              //
+    QObject::connect(moduleParser, &Xml::ModuleParser::bsiRecordDataSending,        //
+        cfgStorage, &Device::ConfigStorage::bsiRecordDataReceive);                  //
+    QObject::connect(moduleParser, &Xml::ModuleParser::bsiExtRecordDataSending,    //
+        cfgStorage, &Device::ConfigStorage::bsiExtRecordDataReceive);               //
     QObject::connect(moduleParser, &Xml::ModuleParser::parseError,               //
         this, &Xml::ConfigLoader::parseErrorHandle);                             //
     QObject::connect(moduleParser, &Xml::XmlParser::nameDataSending,             //
