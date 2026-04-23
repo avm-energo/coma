@@ -76,9 +76,14 @@ void TuneSequenceFile::addItemToTuneDescrVector(const QString &descr, float &val
 
 void TuneSequenceFile::loadItemsFromFile()
 {
+    bool ok;
     for (std::map<QString, std::unique_ptr<float>>::iterator it = s_tuneDescrMap.begin(); it != s_tuneDescrMap.end();
         ++it)
-        *it->second = StdFunc::ToFloat(TuneSequenceFile::value(it->first, 0.0).toString());
+    {
+        float tmpf = StdFunc::ToFloat(TuneSequenceFile::value(it->first, 0.0).toString(), ok);
+        if (ok)
+            *it->second = tmpf;
+    }
 }
 
 void TuneSequenceFile::saveItemsToFile()

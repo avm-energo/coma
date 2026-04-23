@@ -32,26 +32,31 @@ void InfoDialog::setupUI()
 
     // Tab "Основная" — BSI
     auto bsiTab = new QWidget(tabWidget);
-    auto bsiLayout = new QHBoxLayout(bsiTab);
+    auto bsiLayout = new QVBoxLayout(bsiTab);
     auto bsiGrid = new QGridLayout;
+    bsiGrid->setColumnStretch(0, 40);
+    bsiGrid->setColumnStretch(1, 20);
     bsiGrid->addWidget(LBLFunc::New(bsiTab, "Устройство:"), 0, 0, 1, 1, Qt::AlignRight);
-    bsiGrid->addWidget(ViewType::ViewTypeFunc::New(bsiTab, "devicename", ViewType::ViewTypes::String), 0, 1, 1, 1);
+    bsiGrid->addWidget(
+        ViewType::ViewTypeFunc::New(bsiTab, "devicename", ViewType::ViewTypes::String), 0, 1, 1, 1, Qt::AlignLeft);
     for (int i = 0; i < int(bsiRecords.size()); ++i)
     {
         const auto &rec = bsiRecords[i];
-        bsiGrid->addWidget(LBLFunc::New(bsiTab, rec.desc), i + 1, 0, 1, 1, Qt::AlignRight);
-        bsiGrid->addWidget(ViewType::ViewTypeFunc::New(bsiTab, rec.name, rec.type), i + 1, 1, 1, 1);
+        bsiGrid->addWidget(LBLFunc::New(bsiTab, rec.desc), i + 1, 0, 1, 1);
+        bsiGrid->addWidget(ViewType::ViewTypeFunc::New(bsiTab, rec.name, rec.type), i + 1, 1, 1, 1, Qt::AlignLeft);
     }
     bsiLayout->addLayout(bsiGrid, 3);
-    bsiLayout->addStretch(4);
+    bsiLayout->addStretch(400);
     tabWidget->addTab(bsiTab, "Основная");
 
     // Tab "Расширенная" — BSI Ext
     if (!bsiExtRecords.empty())
     {
         auto bsiExtTab = new QWidget(tabWidget);
-        auto bsiExtLayout = new QHBoxLayout(bsiExtTab);
+        auto bsiExtLayout = new QVBoxLayout(bsiExtTab);
         auto bsiExtGrid = new QGridLayout;
+        bsiExtGrid->setColumnStretch(0, 40);
+        bsiExtGrid->setColumnStretch(1, 20);
         for (int i = 0; i < int(bsiExtRecords.size()); ++i)
         {
             const auto &rec = bsiExtRecords[i];
@@ -59,7 +64,7 @@ void InfoDialog::setupUI()
             bsiExtGrid->addWidget(ViewType::ViewTypeFunc::New(bsiExtTab, rec.name, rec.type), i, 1, 1, 1);
         }
         bsiExtLayout->addLayout(bsiExtGrid, 3);
-        bsiExtLayout->addStretch(4);
+        bsiExtLayout->addStretch(400);
         tabWidget->addTab(bsiExtTab, "Расширенная");
     }
 
@@ -104,13 +109,13 @@ void InfoDialog::syncExt(u32 addr)
 
 void InfoDialog::reqBsi()
 {
-    m_device->async()->reqBitStrings(Device::bsiStartReg, Device::bsiCountRegs);
+    m_device->async()->reqBSI();
 }
 
 void InfoDialog::reqBsiExt()
 {
     auto &bsiExt = m_device->bsiExt();
-    m_device->async()->reqBitStrings(bsiExt.startAddr(), bsiExt.endAddr() - bsiExt.startAddr());
+    m_device->async()->reqBSIExt(bsiExt.endAddr() - bsiExt.startAddr());
 }
 
 void InfoDialog::reqUpdate()

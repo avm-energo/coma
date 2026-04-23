@@ -47,12 +47,27 @@ void AsyncConnection::reqFloats(quint32 addr, quint32 count)
 
 void AsyncConnection::reqBitStrings(quint32 addr, quint32 count)
 {
-    setToQueue(CommandStruct { Commands::C_ReqBitStrings, addr, count });
+    if (addr == Device::bsiStartReg)
+        reqBSI();
+    else if (addr == Device::bsiExtStartReg)
+        reqBSIExt(count);
+    else
+        setToQueue(CommandStruct { Commands::C_ReqBitStrings, addr, count });
 }
 
 void AsyncConnection::reqStartup(quint32 sigAdr, quint32 sigCount)
 {
     setToQueue(CommandStruct { Commands::C_ReqStartup, sigAdr, sigCount });
+}
+
+void AsyncConnection::reqBSI()
+{
+    setToQueue(CommandStruct { Commands::C_ReqBSI, Device::bsiStartReg, Device::bsiCountRegs });
+}
+
+void AsyncConnection::reqBSIExt(u32 count)
+{
+    setToQueue(CommandStruct { Commands::C_ReqBSIExt, Device::bsiExtStartReg, count });
 }
 
 void AsyncConnection::reqFile(quint32 id, FileFormat format, quint32 expectedSize)

@@ -119,7 +119,7 @@ bool CurrentDevice::isOutdatedFirmware(const u32 configVersion) const noexcept
 void CurrentDevice::initBSI() noexcept
 {
     m_isInitStage = true;
-    m_async->reqBitStrings(Device::bsiStartReg, Device::bsiCountRegs);
+    m_async->reqBSI();
 }
 
 void CurrentDevice::internalProtocolUpdate() noexcept

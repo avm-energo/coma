@@ -6,7 +6,7 @@
       <name>           - objectName лейбла со значением (находится по нему в LBLFunc::setText)
       <desc>           - текст лейбла-подписи слева
       <representation> - символическое имя форматирования значения; см.
-                         enum class BsiRepresentation в xml_settings.h
+                         enum class ViewTypes в viewtypewidget.h в библиотеке avm-widgets
       <offset>         - индекс в массиве BlockStartupInfo (enum BsiIndexes в bsi.h)
 -->
 <fragment>
@@ -14,86 +14,80 @@
         <record>
             <name>devicename</name>
             <desc>Тип устройства:</desc>
-            <representation>DeviceName</representation>
+            <representation>String</representation>
             <offset>0</offset>
         </record>
         <record>
             <name>snle</name>
             <desc>Серийный номер
 устройства:</desc>
-            <representation>SerialNumHex</representation>
+            <representation>SerialNumber</representation>
             <offset>12</offset>
         </record>
         <record>
             <name>fwverle</name>
             <desc>Версия ПО:</desc>
-            <representation>FwVer</representation>
+            <representation>Version</representation>
             <offset>3</offset>
         </record>
         <record>
             <name>cfcrcle</name>
             <desc>КС конфигурации:</desc>
-            <representation>CfCrcHex</representation>
+            <representation>SerialNumber</representation>
             <offset>13</offset>
         </record>
         <record>
             <name>rstle</name>
             <desc>Последний сброс:</desc>
-            <representation>RstHex</representation>
+            <representation>SerialNumber</representation>
             <offset>4</offset>
         </record>
         <record>
             <name>rstcountle</name>
             <desc>Кол-во сбросов:</desc>
-            <representation>RstCount</representation>
+            <representation>String</representation>
             <offset>5</offset>
         </record>
         <record>
             <name>cpuidle</name>
             <desc>ИД процессора:</desc>
-            <representation>CpuId</representation>
+            <representation>SerialNumber</representation>
             <offset>6</offset>
         </record>
         <record>
             <name>typeble</name>
-            <desc>Тип
-базовой платы:</desc>
-            <representation>MTypeBHex</representation>
+            <desc>Тип базовой платы:</desc>
+            <representation>SerialNumber</representation>
             <offset>0</offset>
         </record>
         <record>
             <name>snble</name>
-            <desc>Серийный номер
-базовой платы:</desc>
-            <representation>SerialNumBHex</representation>
+            <desc>Серийный номер базовой платы:</desc>
+            <representation>SerialNumber</representation>
             <offset>9</offset>
         </record>
         <record>
             <name>hwble</name>
-            <desc>Аппаратная версия
-базовой платы:</desc>
-            <representation>HwVerB</representation>
+            <desc>Аппаратная версия базовой платы:</desc>
+            <representation>Version</representation>
             <offset>2</offset>
         </record>
         <record>
             <name>typemle</name>
-            <desc>Тип
-мезонинной платы:</desc>
-            <representation>MTypeMHex</representation>
+            <desc>Тип мезонинной платы:</desc>
+            <representation>SerialNumber</representation>
             <offset>1</offset>
         </record>
         <record>
             <name>snmle</name>
-            <desc>Серийный номер
-мезонинной платы:</desc>
-            <representation>SerialNumMHex</representation>
+            <desc>Серийный номер мезонинной платы:</desc>
+            <representation>SerialNumber</representation>
             <offset>10</offset>
         </record>
         <record>
             <name>hwmle</name>
-            <desc>Аппаратная версия
-мезонинной платы:</desc>
-            <representation>HwVerM</representation>
+            <desc>Аппаратная версия мезонинной платы:</desc>
+            <representation>Version</representation>
             <offset>11</offset>
         </record>
     </bsi>

@@ -257,8 +257,10 @@ void DataBlock::updateFromWidget()
                     using T = std::remove_pointer_t<decltype(arg)>;
                     if constexpr (std::is_same_v<T, float>)
                     {
-                        float tmpf = StdFunc::ToFloat(LEFunc::data(m_widget, valueDesc.valueId));
-                        *arg = tmpf;
+                        bool ok;
+                        float tmpf = StdFunc::ToFloat(LEFunc::data(m_widget, valueDesc.valueId), ok);
+                        if (ok)
+                            *arg = tmpf;
                     }
                     else if constexpr (std::is_same_v<T, quint32>)
                     {

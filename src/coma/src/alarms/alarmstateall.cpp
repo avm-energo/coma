@@ -45,7 +45,7 @@ void AlarmStateAll::generateDefaultConfig()
 
 void AlarmStateAll::reqUpdate()
 {
-    engine()->currentConnection()->reqBitStrings(Device::bsiStartReg, Device::bsiCountRegs);
+    engine()->currentConnection()->reqBSI();
 }
 
 void AlarmStateAll::setupUI()

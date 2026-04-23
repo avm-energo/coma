@@ -6,22 +6,21 @@
       <name>           - objectName лейбла со значением
       <desc>           - текст лейбла-подписи слева
       <representation> - символическое имя форматирования значения; см.
-                         enum class BsiExtRepresentation в xml_settings.h
+                         enum class ViewTypes в библиотеке avm-widgets
                          и InfoDialog::fillBsiExt.
 -->
 <fragment>
     <bsi-ext>
         <record>
             <name>namepo</name>
-            <desc>Наименование
-программы:</desc>
-            <representation>NamePo</representation>
+            <desc>Наименование программы:</desc>
+            <representation>String</representation>
             <offset>0</offset>
         </record>
         <record>
             <name>verloader</name>
             <desc>Версия Loader:</desc>
-            <representation>VerLoader</representation>
+            <representation>Version</representation>
             <offset>1</offset>
         </record>
     </bsi-ext>

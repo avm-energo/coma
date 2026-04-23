@@ -32,6 +32,8 @@ public:
 
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
+    void reqBSI();
+    void reqBSIExt(u32 count);
     void reqFile(quint32 id, FileFormat format = FileFormat::Binary, quint32 expectedSize = 0);
     void writeFile(quint32 id, const QByteArray &ba);
     void writeConfiguration(const QByteArray &ba);
