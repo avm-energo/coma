@@ -1,7 +1,7 @@
 #include "xml/xmleditor/dialogs/xmldialog.h"
 
+#include <avm-gen/std_ext.h>
 #include <avm-widgets/emessagebox.h>
-#include <gen/std_ext.h>
 
 #include <QGuiApplication>
 #include <QScreen>

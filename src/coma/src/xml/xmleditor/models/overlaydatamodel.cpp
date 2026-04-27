@@ -1,5 +1,5 @@
-#include <gen/integers.h>
-#include <gen/xml/xmlparse.h>
+#include <avm-gen/integers.h>
+#include <avm-gen/xml/xmlparse.h>
 #include <xml/xmleditor/models/overlaydatamodel.h>
 #include <xml/xmltags.h>
 

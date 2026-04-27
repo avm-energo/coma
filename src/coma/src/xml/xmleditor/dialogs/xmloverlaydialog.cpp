@@ -1,11 +1,11 @@
+#include <avm-gen/integers.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/xml/xmlparse.h>
 #include <avm-widgets/cbfunc.h>
 #include <avm-widgets/chbfunc.h>
 #include <avm-widgets/lefunc.h>
 #include <avm-widgets/spbfunc.h>
 #include <avm-widgets/wdfunc.h>
-#include <gen/integers.h>
-#include <gen/settings.h>
-#include <gen/xml/xmlparse.h>
 #include <xml/xmleditor/dialogs/xmloverlaydialog.h>
 #include <xml/xmleditor/models/xmldatamodel.h>
 #include <xml/xmltags.h>

@@ -15,8 +15,8 @@ struct ChildModelNode
 };
 Q_DECLARE_METATYPE(ChildModelNode);
 
-using XmlTagDescriptions = QMap<QString, QString>; // a map with xml tags to header names accordance
-using XmlTagValues = QMap<QString, QVariant>;      // a map with xml values by tags
+// using XmlTagDescriptions = QMap<QString, QString>; // a map with xml tags to header names accordance
+// using XmlTagValues = QMap<QString, QVariant>; // a map with xml values by tags
 
 /// \brief Base abstract XML model class.
 class XmlModel : public BaseEditorModel
@@ -50,7 +50,7 @@ public:
     };
 
     static const std::map<QString, ModelType> s_types;       ///< Types Map with enumeration, key = name of group type
-    const std::map<ModelType, XmlTagDescriptions> s_headers; ///< Settings Map, key = group type enumeration
+    static const std::map<ModelType, QStringList> s_headers; ///< Settings Map, key = group type enumeration
 
     /// \brief Base XML model class ctor.
     explicit XmlModel(int rows, int cols, ModelType type, QObject *parent = nullptr);

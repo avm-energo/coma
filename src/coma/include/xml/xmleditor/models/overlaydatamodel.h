@@ -1,6 +1,7 @@
 #pragma once
 
-#include <gen/integers.h>
+#include <avm-gen/integers.h>
+#include <xml/xmleditor/models/xmlhidedatamodel.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 
 /// \brief Class for storing hiding data.

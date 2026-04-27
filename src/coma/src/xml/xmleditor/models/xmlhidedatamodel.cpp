@@ -7,29 +7,6 @@
 // constexpr int SGroupDataRole = 0x0106;
 // constexpr int S2RecordDataRole = 0x0107;
 
-/// \brief Structure, that stores a hiding data for 'sgroup' node.
-struct SGroupHideData
-{
-    int count = 1;
-    QString tooltip = "";
-    QString view = "float";
-    u32 decimals = 0;
-    QStringList array = {};
-    int type = 0;
-};
-Q_DECLARE_METATYPE(SGroupHideData)
-
-/// \brief Structure, that stores a hiding data for 'record' node from 's2files.xml'.
-/// \details Contains data of 'widget' node.
-struct S2RecordHideData
-{
-    int min = 0, max = 0, decimals = 0, group = 0, count = 1, parent = 0;
-    bool isEnabled = false;
-    QString classname = "", type = "", string = "", tooltip = "", field = "";
-    QStringList array = {};
-};
-Q_DECLARE_METATYPE(S2RecordHideData)
-
 XmlHideDataModel::XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent)
     : XmlModel(rows, cols, type, parent)
 {
