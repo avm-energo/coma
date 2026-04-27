@@ -880,6 +880,66 @@
                 <type>uint32</type>
                 <desc>bsi</desc>
             </group>
+            <group>
+                <signal-id>2</signal-id>
+                <reg-type>4</reg-type>
+                <type>uint32</type>
+                <desc>bsi_ext</desc>
+            </group>
+            <group>
+                <signal-id>3</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>general</desc>
+            </group>
+            <group>
+                <signal-id>5</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>curval1</desc>
+            </group>
+            <group>
+                <signal-id>6</signal-id>
+                <reg-type>1</reg-type>
+                <type>bool</type>
+                <desc>alarms</desc>
+            </group>
+            <group>
+                <signal-id>7</signal-id>
+                <reg-type>1</reg-type>
+                <type>bool</type>
+                <desc>digital_inputs</desc>
+            </group>
+            <group>
+                <signal-id>8</signal-id>
+                <reg-type>1</reg-type>
+                <type>bool</type>
+                <desc>DI</desc>
+            </group>
+            <group>
+                <signal-id>9</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>maxmin_temp</desc>
+            </group>
+            <group>
+                <signal-id>10</signal-id>
+                <reg-type>16</reg-type>
+                <type>uint32</type>
+                <desc>clear_maxmin</desc>
+            </group>
+            <group>
+                <signal-id>11</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>analog_inputs</desc>
+            </group>
+            <group>
+                <signal-id>12</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>temperature</desc>
+            </group>
         </modbus>
         <protocom desc="Протокол Protocom">
             <group>
@@ -1155,7 +1215,7 @@
                 <start-addr>1100</start-addr>
                 <count>15</count>
                 <id>6</id>
-                <type>BitString</type>
+                <type>SinglePoint</type>
             </signal>
             <signal>
                 <start-addr>1200</start-addr>
