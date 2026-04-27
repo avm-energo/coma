@@ -1,41 +1,14 @@
-#include "xml/xmleditor/models/xmlhidedatamodel.h"
-
-#include <avm-gen/integers.h>
-#include <avm-gen/xml/xmlparse.h>
+#include <gen/integers.h>
+#include <gen/xml/xmlparse.h>
+#include <xml/xmleditor/models/overlaydatamodel.h>
 #include <xml/xmltags.h>
 
-// constexpr int SGroupDataRole = 0x0106;
-// constexpr int S2RecordDataRole = 0x0107;
-
-/// \brief Structure, that stores a hiding data for 'sgroup' node.
-struct SGroupHideData
-{
-    int count = 1;
-    QString tooltip = "";
-    QString view = "float";
-    u32 decimals = 0;
-    QStringList array = {};
-    int type = 0;
-};
-Q_DECLARE_METATYPE(SGroupHideData)
-
-/// \brief Structure, that stores a hiding data for 'record' node from 's2files.xml'.
-/// \details Contains data of 'widget' node.
-struct S2RecordHideData
-{
-    int min = 0, max = 0, decimals = 0, group = 0, count = 1, parent = 0;
-    bool isEnabled = false;
-    QString classname = "", type = "", string = "", tooltip = "", field = "";
-    QStringList array = {};
-};
-Q_DECLARE_METATYPE(S2RecordHideData)
-
-XmlHideDataModel::XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent)
+OverlayDataModel::OverlayDataModel(int rows, int cols, ModelType type, QObject *parent)
     : XmlModel(rows, cols, type, parent)
 {
 }
 
-QStringList XmlHideDataModel::getRowData(const int row)
+QStringList OverlayDataModel::getRowData(const int row)
 {
     // Собираем открытые данные
     QStringList retList = BaseEditorModel::getRowData(row);
@@ -65,7 +38,7 @@ QStringList XmlHideDataModel::getRowData(const int row)
     return retList;
 }
 
-void XmlHideDataModel::create(const QStringList &saved, int *row)
+void OverlayDataModel::create(const QStringList &saved, int *row)
 {
     switch (m_type)
     {
@@ -94,7 +67,7 @@ void XmlHideDataModel::create(const QStringList &saved, int *row)
     }
 }
 
-void XmlHideDataModel::update(const QStringList &saved, const int row)
+void OverlayDataModel::update(const QStringList &saved, const int row)
 {
     switch (m_type)
     {
@@ -123,7 +96,7 @@ void XmlHideDataModel::update(const QStringList &saved, const int row)
     }
 }
 
-void XmlHideDataModel::parseNode(QDomNode &node, int &row)
+void OverlayDataModel::parseNode(QDomNode &node, int &row)
 {
     QString dtypeText;
     switch (m_type)
@@ -146,7 +119,7 @@ void XmlHideDataModel::parseNode(QDomNode &node, int &row)
     }
 }
 
-QDomElement XmlHideDataModel::toNode(QDomDocument &doc)
+QDomElement OverlayDataModel::toNode(QDomDocument &doc)
 {
     switch (m_type)
     {
@@ -159,7 +132,7 @@ QDomElement XmlHideDataModel::toNode(QDomDocument &doc)
     }
 }
 
-void XmlHideDataModel::parseInteger(const QDomNode &source, const QString &nodeName, int &dest)
+void OverlayDataModel::parseInteger(const QDomNode &source, const QString &nodeName, int &dest)
 {
     auto state = false;
     auto search = source.firstChildElement(nodeName);
@@ -172,7 +145,7 @@ void XmlHideDataModel::parseInteger(const QDomNode &source, const QString &nodeN
     }
 }
 
-void XmlHideDataModel::parseInteger(const QDomNode &source, const QString &nodeName, u32 &dest, u32 defValue)
+void OverlayDataModel::parseInteger(const QDomNode &source, const QString &nodeName, u32 &dest, u32 defValue)
 {
     auto state = false;
     auto search = source.firstChildElement(nodeName);
@@ -189,14 +162,14 @@ void XmlHideDataModel::parseInteger(const QDomNode &source, const QString &nodeN
     dest = defValue;
 }
 
-void XmlHideDataModel::parseText(const QDomNode &source, const QString &nodeName, QString &dest)
+void OverlayDataModel::parseText(const QDomNode &source, const QString &nodeName, QString &dest)
 {
     auto search = source.firstChildElement(nodeName);
     if (!search.isNull())
         dest = search.firstChild().toText().data();
 }
 
-void XmlHideDataModel::parseStringArray(const QDomNode &source, QStringList &dest)
+void OverlayDataModel::parseStringArray(const QDomNode &source, QStringList &dest)
 {
     auto strArrayNode = source.firstChildElement(tags::str_array);
     if (!strArrayNode.isNull())
@@ -214,7 +187,7 @@ void XmlHideDataModel::parseStringArray(const QDomNode &source, QStringList &des
     }
 }
 
-SGroupHideData XmlHideDataModel::parseSGroupData(QDomNode &node)
+SGroupHideData OverlayDataModel::parseSGroupData(QDomNode &node)
 {
     SGroupHideData retVal;
     parseInteger(node, tags::count, retVal.count);                 // Парсим тег count
@@ -228,7 +201,7 @@ SGroupHideData XmlHideDataModel::parseSGroupData(QDomNode &node)
     return retVal;
 }
 
-SGroupHideData XmlHideDataModel::convertToSGroupData(const QStringList &input)
+SGroupHideData OverlayDataModel::convertToSGroupData(const QStringList &input)
 {
     Q_ASSERT(input.count() == 6);
     SGroupHideData hiding;
@@ -249,7 +222,7 @@ SGroupHideData XmlHideDataModel::convertToSGroupData(const QStringList &input)
     return hiding;
 }
 
-QStringList XmlHideDataModel::convertFromSGroupData(const SGroupHideData &input)
+QStringList OverlayDataModel::convertFromSGroupData(const SGroupHideData &input)
 {
     QStringList retList;
     retList.append(QString::number(input.count));
@@ -261,7 +234,7 @@ QStringList XmlHideDataModel::convertFromSGroupData(const SGroupHideData &input)
     return retList;
 }
 
-QDomElement XmlHideDataModel::makeSGroupNode(QDomDocument &doc)
+QDomElement OverlayDataModel::makeSGroupNode(QDomDocument &doc)
 {
     auto sgroupNode = makeElement(doc, tags::sgroup);
     for (auto row = 0; row < rowCount(); row++)
@@ -302,7 +275,7 @@ QDomElement XmlHideDataModel::makeSGroupNode(QDomDocument &doc)
     return sgroupNode;
 }
 
-S2RecordHideData XmlHideDataModel::parseS2RecordData(QDomNode &node)
+S2RecordHideData OverlayDataModel::parseS2RecordData(QDomNode &node)
 {
     S2RecordHideData retVal;
     auto widgetNode = node.firstChildElement(tags::widget);
@@ -326,7 +299,7 @@ S2RecordHideData XmlHideDataModel::parseS2RecordData(QDomNode &node)
     return retVal;
 }
 
-QDomElement XmlHideDataModel::makeS2RecordsNode(QDomDocument &doc)
+QDomElement OverlayDataModel::makeS2RecordsNode(QDomDocument &doc)
 {
     auto s2recordsNode = makeElement(doc, tags::records);
     for (auto row = 0; row < rowCount(); row++)
@@ -387,7 +360,7 @@ QDomElement XmlHideDataModel::makeS2RecordsNode(QDomDocument &doc)
     return s2recordsNode;
 }
 
-QStringList XmlHideDataModel::convertFromS2RecordData(const S2RecordHideData &input)
+QStringList OverlayDataModel::convertFromS2RecordData(const S2RecordHideData &input)
 {
     QStringList retList;
     retList.append(input.isEnabled ? "1" : "0");
@@ -406,7 +379,7 @@ QStringList XmlHideDataModel::convertFromS2RecordData(const S2RecordHideData &in
     return retList;
 }
 
-S2RecordHideData XmlHideDataModel::convertToS2RecordData(const QStringList &input)
+S2RecordHideData OverlayDataModel::convertToS2RecordData(const QStringList &input)
 {
     Q_ASSERT(input.count() == 13);
     S2RecordHideData retVal;

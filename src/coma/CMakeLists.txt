@@ -15,7 +15,11 @@ file(GLOB_RECURSE files_h   ${COMA_INCLUDE_PATH}/*.h)
 file(GLOB_RECURSE files_cpp ${COMA_SRC_PATH}/*.cpp)
 
 # Create library target
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
+
+target_link_libraries(coma PRIVATE Qt6::Core)
 
 # Including directories for library
 target_include_directories(${PROJECT_NAME} PUBLIC

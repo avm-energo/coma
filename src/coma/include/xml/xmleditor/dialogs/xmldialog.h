@@ -1,6 +1,7 @@
 #pragma once
 
 #include <avm-widgets/ecombobox.h>
+#include <avm-widgets/edoublespinbox.h>
 #include <xml/xmleditor/models/baseeditormodel.h>
 
 #include <QCheckBox>
@@ -28,7 +29,7 @@ class XmlDialog : public QDialog
 {
     Q_OBJECT
 private:
-    using Widget = std::variant<QLineEdit *, QComboBox *, QSpinBox *, QCheckBox *, EComboBox *>;
+    using Widget = std::variant<QLineEdit *, QComboBox *, QSpinBox *, QCheckBox *, EComboBox *, EDoubleSpinBox *>;
 
 protected:
     QString m_title;
@@ -86,6 +87,7 @@ public slots:
     /// \brief Перегрузка слота, вызываемого при изменении данных в диалоговом окне.
     /// \see dataChanged.
     void dataChanged(int data);
+    void dataChanged(double value);
 
     void dataChanged(Qt::CheckState state);
 

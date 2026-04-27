@@ -15,6 +15,9 @@ struct ChildModelNode
 };
 Q_DECLARE_METATYPE(ChildModelNode);
 
+using XmlTagDescriptions = QMap<QString, QString>; // a map with xml tags to header names accordance
+using XmlTagValues = QMap<QString, QVariant>;      // a map with xml values by tags
+
 /// \brief Base abstract XML model class.
 class XmlModel : public BaseEditorModel
 {
@@ -39,8 +42,15 @@ protected:
     void parseAttribute(QDomNode &node, const QString &attrName, int row, int col, const QString &defValue = "");
 
 public:
+    enum DataRoles
+    {
+        SGroupDataRole = 0x0106,   ///< Role for hiding data SGroupHideData.
+        S2RecordDataRole = 0x0107, /// < Role for hiding data S2RecordHideData.
+        OverlayRecordDataRole = 0x0108
+    };
+
     static const std::map<QString, ModelType> s_types;       ///< Types Map with enumeration, key = name of group type
-    static const std::map<ModelType, QStringList> s_headers; ///< Settings Map, key = group type enumeration
+    const std::map<ModelType, XmlTagDescriptions> s_headers; ///< Settings Map, key = group type enumeration
 
     /// \brief Base XML model class ctor.
     explicit XmlModel(int rows, int cols, ModelType type, QObject *parent = nullptr);

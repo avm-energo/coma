@@ -16,6 +16,7 @@ void ModelFabric::createChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         {
         case ModelType::SGroup:
         case ModelType::S2Records:
+        case ModelType::Overlay:
             mNode.m_model = new XmlHideDataModel(rows, cols, mNode.m_type, parent);
             break;
         case ModelType::Alarms:

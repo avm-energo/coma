@@ -1,13 +1,10 @@
 #pragma once
 
-#include <avm-gen/integers.h>
+#include <gen/integers.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 
-struct SGroupHideData;
-struct S2RecordHideData;
-
 /// \brief Class for storing hiding data.
-class XmlHideDataModel final : public XmlModel
+class OverlayDataModel final : public XmlModel
 {
 private:
     enum DataRoles
@@ -57,7 +54,7 @@ private:
     S2RecordHideData convertToS2RecordData(const QStringList &input);
 
 public:
-    explicit XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
+    explicit OverlayDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
 
     /// \brief Parsing input XML nodes of file in model items.
     void parseNode(QDomNode &node, int &row) override;
