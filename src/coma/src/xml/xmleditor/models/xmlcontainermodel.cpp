@@ -10,6 +10,34 @@ XmlContainerModel::XmlContainerModel(int rows, int cols, ModelType type, QObject
 {
 }
 
+void XmlContainerModel::parseDataNode(QDomNode &child, int &row)
+{
+    if (m_type == ModelType::Overlay)
+    {
+        auto childNodeName = child.nodeName();
+        ModelType childType = ModelType::None;
+        if (childNodeName == tags::records)
+            childType = ModelType::OverlayRecords;
+        else
+        {
+            auto it = XmlModel::s_types.find(childNodeName);
+            if (it != XmlModel::s_types.cend())
+                childType = it->second;
+        }
+        if (childType != ModelType::None)
+        {
+            ChildModelNode modelNode { nullptr, childType };
+            ModelFabric::createChildModel(modelNode, child, this);
+            auto itemIndex = index(row, 0);
+            setData(itemIndex, QVariant::fromValue(modelNode), ModelNodeRole);
+        }
+        parseNode(child, row);
+        row++;
+    }
+    else
+        XmlModel::parseDataNode(child, row);
+}
+
 QString XmlContainerModel::getModelTagName() const
 {
     static const std::map<ModelType, QString> tagByModelType = {
@@ -20,6 +48,7 @@ QString XmlContainerModel::getModelTagName() const
         { ModelType::Section, tags::section },   //
         { ModelType::Hidden, tags::hidden },     //
         { ModelType::S2Files, tags::s2files },   //
+        { ModelType::Overlay, tags::overlay },   //
     };
     auto search = tagByModelType.find(m_type);
     if (search != tagByModelType.cend())
@@ -78,8 +107,9 @@ void XmlContainerModel::create(const QStringList &saved, int *row)
         emit modelChanged();
         return;
     }
-    // Создание дочерних элементов доступно для узлов <sections> и <section>
-    if (m_type == ModelType::Sections || m_type == ModelType::Section || m_type == ModelType::Hidden)
+    // Создание дочерних элементов доступно для узлов <sections>, <section>, <hidden>, <overlay>
+    if (m_type == ModelType::Sections || m_type == ModelType::Section //
+        || m_type == ModelType::Hidden || m_type == ModelType::Overlay)
     {
         BaseEditorModel::create(saved, row);
         if (*row >= 0)
@@ -90,7 +120,6 @@ void XmlContainerModel::create(const QStringList &saved, int *row)
             {
                 node.m_type = ModelType::Section;
                 labels = XmlModel::s_headers.find(node.m_type)->second;
-                // Так как узел <sections> содержит узлы <section>
                 node.m_model = new XmlContainerModel(1, labels.count(), node.m_type, this);
             }
             else if (m_type == ModelType::Hidden)
@@ -99,11 +128,16 @@ void XmlContainerModel::create(const QStringList &saved, int *row)
                 labels = XmlModel::s_headers.find(node.m_type)->second;
                 node.m_model = new XmlDataModel(1, labels.count(), node.m_type, this);
             }
+            else if (m_type == ModelType::Overlay)
+            {
+                node.m_type = ModelType::OverlayRecords;
+                labels = XmlModel::s_headers.find(node.m_type)->second;
+                node.m_model = new XmlHideDataModel(1, labels.count(), node.m_type, this);
+            }
             else
             {
                 node.m_type = ModelType::SGroup;
                 labels = XmlModel::s_headers.find(node.m_type)->second;
-                // Узел <section> содержит узлы <sgroup>
                 node.m_model = new XmlHideDataModel(1, labels.count(), node.m_type, this);
             }
             node.m_model->setHorizontalHeaderLabels(labels);

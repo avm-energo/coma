@@ -42,6 +42,7 @@ const std::map<ModelType, QStringList> XmlModel::s_headers {
             "Тип",
         } },                                                                                                       //
     { ModelType::Sections, { "ID раздела", "Название", "Приоритет", "Для наладки" } },                             //
+    { ModelType::Section, { "Название", "ID вкладки", "Приоритет" } },                                            //
     { ModelType::SectionTabs, { "ID вкладки", "Название", "Раздел", "Для наладки" } },                             //
     { ModelType::SGroup, { "Название", "Вкладка", "Приоритет", "Для наладки" } },                                  //
     { ModelType::Alarms, { "XML", "Описание" } },                                                                  //
@@ -55,15 +56,16 @@ const std::map<ModelType, QStringList> XmlModel::s_headers {
     { ModelType::Modbus, { "ID сигнала", "Тип регистра", "Возвращаемый тип", "Описание" } },                       //
     { ModelType::Protocom, { "Блок", "ID сигнала" } },                                                             //
     { ModelType::IEC60870, { "ID сигнала", "Тип сигнала", "Тип передачи", "Группа" } },                            //
-    { ModelType::Config, { "ID виджета", "Значение по умолчанию", "Изм. количество", "Приоритет", "Видимость" } }, //
+    { ModelType::Config, { "Параметр", "Значение по умолчанию", "Изм. количество", "Приоритет", "Видимость" } },   //
     { ModelType::Hidden, { "Название", "Префикс", "Флаг" } },                                                      //
     { ModelType::HiddenTab, { "Индекс", "Название", "Виджет", "Тип", "Данные", "Адрес", "Видимость" } },           //
     { ModelType::BsiExt, { "Адрес", "Описание", "Тип", "Видимость" } },                                            //
     { ModelType::S2Files, { "XML", "Описание" } },                                                                 //
     { ModelType::S2Tabs, { "ID вкладки", "Название" } },                                                           //
     { ModelType::S2Records, { "ID элемента", "Название", "Тип", "Для наладки" } },                                 //
-    { ModelType::Includes, { "Путь к файлу" } },                                                                   //
-    { ModelType::Overlay, { "ID элемента" } },                                                                     //
+    { ModelType::Includes, { "Путь к файлу" } },                                                                    //
+    { ModelType::Overlay, { "XML" } },                                                                              //
+    { ModelType::OverlayRecords, { "ID элемента", "Имя", "Тип", "Для наладки" } },                                 //
 };
 
 XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : BaseEditorModel(rows, cols, type, parent) { }

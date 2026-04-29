@@ -2,6 +2,8 @@
 
 #include <xml/xmleditor/models/xmlmodel.h>
 
+#include <QMap>
+
 /// \brief Class of XML model that stores data strings as items.
 class XmlDataModel final : public XmlModel
 {
@@ -11,6 +13,7 @@ private:
     /// \brief Parsing <highlights> node from alarm DOM nodes (<crit> and <warn> only).
     void parseAlarmHighlights(QDomNode &node, int row, int col);
 
+
 public:
     explicit XmlDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);
 
@@ -18,4 +21,8 @@ public:
     virtual void parseNode(QDomNode &node, int &row) override;
     /// \brief Creates XML DOM node representation of current model.
     virtual QDomElement toNode(QDomDocument &doc) override;
+
+    /// \brief Lazily loads and caches the id→name map from s2files.xml <records>.
+    /// Reloads automatically when Settings::configDir() changes.
+    static const QMap<int, QString>& s2RecordsNameMap();
 };

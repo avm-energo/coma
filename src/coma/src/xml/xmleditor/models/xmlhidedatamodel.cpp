@@ -4,6 +4,8 @@
 #include <avm-gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
+#include <limits>
+
 // constexpr int SGroupDataRole = 0x0106;
 // constexpr int S2RecordDataRole = 0x0107;
 
@@ -33,6 +35,13 @@ QStringList XmlHideDataModel::getRowData(const int row)
             auto hiding = data(index(row, 0), S2RecordDataRole);
             if (hiding.isValid() && hiding.canConvert<S2RecordHideData>())
                 retList.append(convertFromS2RecordData(hiding.value<S2RecordHideData>()));
+            break;
+        }
+        case ModelType::OverlayRecords:
+        {
+            auto hiding = data(index(row, 0), OverlayRecordDataRole);
+            if (hiding.isValid() && hiding.canConvert<OverlayRecordHideData>())
+                retList.append(convertFromOverlayRecordData(hiding.value<OverlayRecordHideData>()));
             break;
         }
         default:
@@ -66,6 +75,16 @@ void XmlHideDataModel::create(const QStringList &saved, int *row)
         }
         emit modelChanged();
         break;
+    case ModelType::OverlayRecords:
+        Q_ASSERT(saved.count() == 20);
+        BaseEditorModel::create(saved.mid(0, 4), row);
+        if (*row >= 0 && *row < rowCount())
+        {
+            auto value = convertToOverlayRecordData(saved.mid(4));
+            setData(index(*row, 0), QVariant::fromValue(value), OverlayRecordDataRole);
+        }
+        emit modelChanged();
+        break;
     default:
         break;
     }
@@ -95,6 +114,16 @@ void XmlHideDataModel::update(const QStringList &saved, const int row)
         }
         emit modelChanged();
         break;
+    case ModelType::OverlayRecords:
+        Q_ASSERT(saved.count() == 20);
+        BaseEditorModel::update(saved.mid(0, 4), row);
+        if (row >= 0 && row < rowCount())
+        {
+            auto value = convertToOverlayRecordData(saved.mid(4));
+            setData(index(row, 0), QVariant::fromValue(value), OverlayRecordDataRole);
+        }
+        emit modelChanged();
+        break;
     default:
         break;
     }
@@ -118,6 +147,14 @@ void XmlHideDataModel::parseNode(QDomNode &node, int &row)
         setData(index(row, 3), (dtypeText == "Yes") ? "1" : "0");
         setData(index(row, 0), QVariant::fromValue(parseS2RecordData(node)), S2RecordDataRole);
         break;
+    case ModelType::OverlayRecords:
+        parseTag(node, tags::id, row, 0, "", true);  // ID (обязательный)
+        parseTag(node, tags::name, row, 1);          // Имя (если присутствует в XML)
+        parseTag(node, tags::type, row, 2, "DWORD"); // Тип данных (если присутствует)
+        dtypeText = XmlParse::parseString(node, tags::dtype);
+        setData(index(row, 3), (dtypeText == "Yes") ? "1" : "0");
+        setData(index(row, 0), QVariant::fromValue(parseOverlayRecordData(node)), OverlayRecordDataRole);
+        break;
     default:
         break;
     }
@@ -131,6 +168,8 @@ QDomElement XmlHideDataModel::toNode(QDomDocument &doc)
         return makeSGroupNode(doc);
     case ModelType::S2Records:
         return makeS2RecordsNode(doc);
+    case ModelType::OverlayRecords:
+        return makeOverlayRecordsNode(doc);
     default:
         return makeElement(doc, "undefined");
     }
@@ -381,6 +420,100 @@ QStringList XmlHideDataModel::convertFromS2RecordData(const S2RecordHideData &in
     retList.append(input.field);
     retList.append(input.array.join(','));
     return retList;
+}
+
+OverlayRecordHideData XmlHideDataModel::parseOverlayRecordData(QDomNode &node)
+{
+    OverlayRecordHideData retVal;
+    retVal.overrideName = XmlParse::isNodeExist(node, tags::name);
+    retVal.overrideDtype = XmlParse::isNodeExist(node, tags::dtype);
+    retVal.overrideType = XmlParse::isNodeExist(node, tags::type);
+    retVal.widget = parseS2RecordData(node);
+    return retVal;
+}
+
+QDomElement XmlHideDataModel::makeOverlayRecordsNode(QDomDocument &doc)
+{
+    auto recordsNode = makeElement(doc, tags::records);
+    for (auto row = 0; row < rowCount(); row++)
+    {
+        if (data(index(row, 0)).value<QString>() == "..")
+            continue;
+
+        auto record = makeElement(doc, tags::record);
+        makeElement(doc, record, tags::id, data(index(row, 0)));
+
+        auto hideVar = data(index(row, 0), OverlayRecordDataRole);
+        OverlayRecordHideData hide;
+        if (hideVar.isValid() && hideVar.canConvert<OverlayRecordHideData>())
+            hide = hideVar.value<OverlayRecordHideData>();
+
+        if (hide.overrideName)
+            makeElement(doc, record, tags::name, data(index(row, 1)));
+        if (hide.overrideDtype && data(index(row, 3)).toString() != "0")
+            makeElement(doc, record, tags::dtype, "Yes");
+        if (hide.overrideType)
+            makeElement(doc, record, tags::type, data(index(row, 2)));
+
+        if (hide.widget.isEnabled)
+        {
+            auto widget = makeElement(doc, tags::widget);
+            if (!hide.widget.classname.isEmpty())
+                setAttribute(doc, widget, tags::class_, hide.widget.classname);
+            if (!hide.widget.type.isEmpty() && hide.widget.type != "None")
+                makeElement(doc, widget, tags::type, hide.widget.type);
+            makeElement(doc, widget, tags::group, QString::number(hide.widget.group));
+            if (!hide.widget.string.isEmpty())
+                makeElement(doc, widget, tags::string, hide.widget.string);
+            if (!hide.widget.tooltip.isEmpty())
+                makeElement(doc, widget, tags::tooltip, hide.widget.tooltip);
+            if (hide.widget.classname.contains("ModbusItem", Qt::CaseInsensitive) && hide.widget.parent > 0)
+                makeElement(doc, widget, tags::parent, QString::number(hide.widget.parent));
+            if (hide.widget.count > 1)
+                makeElement(doc, widget, tags::count, QString::number(hide.widget.count));
+            if (hide.widget.type.contains("DoubleSpinBoxGroup", Qt::CaseInsensitive) //
+                || hide.widget.type.contains("QDoubleSpinBox", Qt::CaseInsensitive))
+            {
+                makeElement(doc, widget, tags::min, QString::number(hide.widget.min));
+                makeElement(doc, widget, tags::max, QString::number(hide.widget.max));
+                makeElement(doc, widget, tags::decimals, QString::number(hide.widget.decimals));
+            }
+            if (hide.widget.type.contains("QComboBox", Qt::CaseInsensitive) && !hide.widget.field.isEmpty())
+                makeElement(doc, widget, tags::field, hide.widget.field);
+            if (!(hide.widget.array.isEmpty()
+                    || (hide.widget.array.size() == 1 && hide.widget.array.first().isEmpty())))
+            {
+                auto strArray = makeElement(doc, tags::str_array);
+                for (const auto &str : std::as_const(hide.widget.array))
+                    makeElement(doc, strArray, tags::item, str);
+                widget.appendChild(strArray);
+            }
+            record.appendChild(widget);
+        }
+        recordsNode.appendChild(record);
+    }
+    return recordsNode;
+}
+
+QStringList XmlHideDataModel::convertFromOverlayRecordData(const OverlayRecordHideData &input)
+{
+    QStringList retList;
+    retList.append(input.overrideName ? "1" : "0");
+    retList.append(input.overrideDtype ? "1" : "0");
+    retList.append(input.overrideType ? "1" : "0");
+    retList.append(convertFromS2RecordData(input.widget));
+    return retList;
+}
+
+OverlayRecordHideData XmlHideDataModel::convertToOverlayRecordData(const QStringList &input)
+{
+    Q_ASSERT(input.count() == 16);
+    OverlayRecordHideData retVal;
+    retVal.overrideName = (input[0] == "1");
+    retVal.overrideDtype = (input[1] == "1");
+    retVal.overrideType = (input[2] == "1");
+    retVal.widget = convertToS2RecordData(input.mid(3));
+    return retVal;
 }
 
 S2RecordHideData XmlHideDataModel::convertToS2RecordData(const QStringList &input)

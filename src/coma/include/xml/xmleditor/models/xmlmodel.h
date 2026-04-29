@@ -28,7 +28,7 @@ protected:
     /// of given node is in static types map, then for this item will be creating new
     /// XML model with help static members of ModelFabric class.
     /// \see parseNode, setDataNode
-    void parseDataNode(QDomNode &child, int &row);
+    virtual void parseDataNode(QDomNode &child, int &row);
 
     /// \brief Parses given tag from given XML DOM node in XML model at given index.
     /// \details Frequently called by implementations of parseNode virtual function.

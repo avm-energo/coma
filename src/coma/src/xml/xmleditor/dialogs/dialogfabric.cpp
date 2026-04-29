@@ -1,6 +1,5 @@
 #include "xml/xmleditor/dialogs/dialogfabric.h"
 
-#include "xml/xmleditor/dialogs/xmloverlaydialog.h"
 #include <avm-widgets/emessagebox.h>
 #include <xml/xmleditor/dialogs/moduledialog.h>
 #include <xml/xmleditor/dialogs/xml104dialog.h>
@@ -11,6 +10,7 @@
 #include <xml/xmleditor/dialogs/xmlhiddentabdialog.h>
 #include <xml/xmleditor/dialogs/xmlhiddenwidgetdialog.h>
 #include <xml/xmleditor/dialogs/xmlincludedialog.h>
+#include <xml/xmleditor/dialogs/xmloverlayrecorddialog.h>
 #include <xml/xmleditor/dialogs/xmlmeasjourdialog.h>
 #include <xml/xmleditor/dialogs/xmlmodbusdialog.h>
 #include <xml/xmleditor/dialogs/xmlmwidgetdialog.h>
@@ -54,8 +54,10 @@ const std::map<ModelType, QString> XmlDialogFabric::s_dialogTitles {
     { ModelType::HiddenTab, "виджета раздела \"Секретные операции\"" }, //
     { ModelType::BsiExt, "элемента BSI Ext" },                          //
     { ModelType::S2Tabs, "вкладки" },                                   //
-    { ModelType::S2Records, "описания S2 записи" },                     //
-    { ModelType::Includes, "ссылки на внешний XML-файл" },              //
+    { ModelType::S2Records, "описания S2 записи" },          //
+    { ModelType::Includes, "ссылки на внешний XML-файл" },   //
+    { ModelType::Overlay, "оверлея" },                       //
+    { ModelType::OverlayRecords, "записи оверлея" },         //
 };
 
 // Для узла <resources> разрешено создание контейнеров-ресурсов, но не
@@ -73,6 +75,7 @@ const QList<ModelType> XmlDialogFabric::s_resourceCreatableTypes {
     ModelType::Hidden,        //
     ModelType::BsiExt,        //
     ModelType::Includes,      //
+    ModelType::Overlay,       //
 };
 
 void XmlDialogFabric::createOrEditDialog(BaseEditorModel *model, int row, QWidget *parent)
@@ -143,8 +146,14 @@ void XmlDialogFabric::createOrEditDialog(BaseEditorModel *model, int row, QWidge
         case ModelType::Includes:
             dialog = new XmlIncludeDialog(parent);
             break;
+        case ModelType::OverlayRecords:
+            dialog = new XmlOverlayRecordDialog(parent);
+            break;
         case ModelType::Overlay:
-            dialog = new XmlOverlayDialog(parent);
+            if (row == createId)
+                EMessageBox::warning(parent, "В данном разделе запрещено создание новых элементов");
+            else
+                dialog = new XmlResDialog(parent);
             break;
         case ModelType::Resources:
             if (row == createId)

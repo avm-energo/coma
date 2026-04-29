@@ -26,6 +26,17 @@ struct S2RecordHideData
 };
 Q_DECLARE_METATYPE(S2RecordHideData)
 
+/// \brief Structure, that stores hiding data for overlay 'record' node.
+/// \details Tracks which fields are overridden; widget.isEnabled means override widget.
+struct OverlayRecordHideData
+{
+    bool overrideName = false;
+    bool overrideDtype = false;
+    bool overrideType = false;
+    S2RecordHideData widget;
+};
+Q_DECLARE_METATYPE(OverlayRecordHideData)
+
 /// \brief Class for storing hiding data.
 class XmlHideDataModel final : public XmlModel
 {
@@ -75,6 +86,19 @@ private:
     /// \brief Converting input string list to the S2RecordHideData structure.
     /// \ingroup S2Records
     S2RecordHideData convertToS2RecordData(const QStringList &input);
+
+    /// \brief Parsing XML DOM node to OverlayRecordHideData structure.
+    /// \ingroup OverlayRecords
+    OverlayRecordHideData parseOverlayRecordData(QDomNode &node);
+    /// \brief Creates <records> node for overlay by the model data.
+    /// \ingroup OverlayRecords
+    QDomElement makeOverlayRecordsNode(QDomDocument &doc);
+    /// \brief Converting input OverlayRecordHideData structure to the string list.
+    /// \ingroup OverlayRecords
+    QStringList convertFromOverlayRecordData(const OverlayRecordHideData &input);
+    /// \brief Converting input string list to the OverlayRecordHideData structure.
+    /// \ingroup OverlayRecords
+    OverlayRecordHideData convertToOverlayRecordData(const QStringList &input);
 
 public:
     explicit XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);

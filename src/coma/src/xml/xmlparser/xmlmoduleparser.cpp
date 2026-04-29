@@ -481,7 +481,7 @@ void Xml::ModuleParser::parseDetector(const QDomNode &node)
     }
     else
     {
-        if (tag != tags::iec && tag != tags::modbus && tag != tags::protocom)
+        if (tag != tags::iec && tag != tags::modbus && tag != tags::protocom && tag != tags::overlay)
             qWarning() << "Undefined XML tag: " << tag;
     }
 }
@@ -639,6 +639,8 @@ void Xml::ModuleParser::parseDocument(const QString &filename, const QStringList
             auto resources = moduleNode.firstChildElement(tags::res);
             parseResources(resources, nodes);
             auto overlay = moduleNode.firstChildElement(tags::overlay);
+            if (overlay.isNull())
+                overlay = resources.firstChildElement(tags::overlay);
             parseOverlay(overlay);
         }
         else
@@ -675,6 +677,8 @@ void Xml::ModuleParser::parseDocument(const QStringList &filenames, const Device
                     auto resources = moduleNode.firstChildElement(tags::res);
                     parseResources(resources);
                     auto overlay = moduleNode.firstChildElement(tags::overlay);
+                    if (overlay.isNull())
+                        overlay = resources.firstChildElement(tags::overlay);
                     parseOverlay(overlay);
                 }
                 else

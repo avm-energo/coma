@@ -15,6 +15,8 @@ public:
 
     /// \brief Parsing input XML nodes of file in model items.
     void parseNode(QDomNode &node, int &row) override;
+    /// \brief Overrides parseDataNode to remap <records> to OverlayRecords when inside <overlay>.
+    void parseDataNode(QDomNode &child, int &row) override;
     /// \brief Slot for inserting a new item in the model.
     void create(const QStringList &saved, int *row) override;
     /// \brief Creates XML DOM node representation of current model.

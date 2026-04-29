@@ -1,6 +1,17 @@
 #include "xml/xmleditor/dialogs/xmlconfigdialog.h"
 
+#include <xml/xmleditor/models/xmldatamodel.h>
+
+#include <QComboBox>
+
 XmlConfigDialog::XmlConfigDialog(QWidget *parent) : XmlDialog(parent) { }
+
+void XmlConfigDialog::loadS2RecordsData(QComboBox *combo)
+{
+    const auto &names = XmlDataModel::s2RecordsNameMap();
+    for (auto it = names.cbegin(); it != names.cend(); ++it)
+        combo->addItem(it.value());
+}
 
 void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
 {
@@ -14,15 +25,11 @@ void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)
     auto visibLayout = new QHBoxLayout;
     m_title += "конфига";
 
-    // Виджеты для ID конфига
-    auto idLabel = new QLabel("S2 ID: ", this);
-    auto idInput = new QSpinBox(this);
-    idInput->setMinimum(idMin);
-    idInput->setMaximum(idMax);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    QObject::connect(idInput, &QSpinBox::textChanged, this, qOverload<const QString &>(&XmlConfigDialog::dataChanged));
-#endif
-    QObject::connect(idInput, qOverload<int>(&QSpinBox::valueChanged), //
+    // Виджеты для выбора параметра конфига
+    auto idLabel = new QLabel("Параметр: ", this);
+    auto idInput = new QComboBox(this);
+    loadS2RecordsData(idInput);
+    QObject::connect(idInput, qOverload<int>(&QComboBox::currentIndexChanged), //
         this, qOverload<int>(&XmlConfigDialog::dataChanged));
     idLayout->addWidget(idLabel);
     idLayout->addWidget(idInput);

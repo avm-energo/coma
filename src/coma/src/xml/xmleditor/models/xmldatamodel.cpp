@@ -1,7 +1,14 @@
 #include "xml/xmleditor/models/xmldatamodel.h"
 
+#include <avm-gen/settings.h>
+#include <avm-gen/strings.h>
 #include <avm-gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
+
+#include <QDir>
+#include <QDomDocument>
+#include <QFile>
+#include <QMap>
 
 XmlDataModel::XmlDataModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent) { }
 
@@ -109,7 +116,13 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
         return { tags::config, tags::record, //
             [this](auto &doc, auto &item, auto &row)
             {
-                makeElement(doc, item, tags::id, data(index(row, 0)));
+                const auto &names = s2RecordsNameMap();
+                auto nameOrId = data(index(row, 0)).toString();
+                auto id = names.key(nameOrId, -1);
+                if (id >= 0)
+                    makeElement(doc, item, tags::id, id);
+                else
+                    makeElement(doc, item, tags::id, nameOrId); // fallback: numeric id stored as string
                 makeElement(doc, item, tags::def_val, data(index(row, 1)));
                 QVariant countData(data(index(row, 2)));
                 if ((!countData.value<QString>().isEmpty()) && (countData.value<int>() > 1))
@@ -149,10 +162,7 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             } };
     case ModelType::Includes:
         return { tags::includes, tags::include, //
-            [this](auto &doc, auto &item, auto &row)
-            {
-                setAttribute(doc, item, tags::src, data(index(row, 0)));
-            } };
+            [this](auto &doc, auto &item, auto &row) { setAttribute(doc, item, tags::src, data(index(row, 0))); } };
     default:
         qWarning() << "Model settings not found!";
         return { "undefined", "undefined", //
@@ -222,34 +232,41 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
         parseTag(node, tags::sig_group, row, 3);                  // Группа
         break;                                                    //
     case ModelType::Config:                                       //
-        parseTag(node, tags::id, row, 0, "", true);               // ID
-        parseTag(node, tags::def_val, row, 1);                    // Значение по умолчанию
-        parseTag(node, tags::count, row, 2, "");                  // new count
-        parseTag(node, tags::order, row, 3, "");                  // Приоритет
-        parseTag(node, tags::visibility, row, 4, "true");         // Видимость
-        break;                                                    //
-    case ModelType::HiddenTab:                                    //
-        parseTag(node, tags::index, row, 0, "1", true);           // Индекс данных в структуре
-        parseAttribute(node, tags::title, row, 1, "");            // Отображаемое название
-        parseTag(node, tags::name, row, 2, "");                   // Имя виджета в системе Qt
-        parseAttribute(node, tags::view, row, 3, "LineEdit");     // Тип виджета для отображения
-        parseTag(node, tags::type, row, 4, "uint32");             // Тип данных, хранимые в виджете
-        parseTag(node, tags::addr, row, 5, "1", true);            // Адрес в блоке устройства
-        parseTag(node, tags::visibility, row, 6, "true");         // Видимость
-        break;                                                    //
-    case ModelType::BsiExt:                                       //
-        parseTag(node, tags::addr, row, 0, "40", true);           // Адрес сигнала
-        parseTag(node, tags::desc, row, 1, "");                   // Описание сигнала
-        parseTag(node, tags::type, row, 2, "uint32");             // Тип данных сигнала
-        parseTag(node, tags::visibility, row, 3, "true");         // Видимость
-        break;                                                    //
-    case ModelType::S2Tabs:                                       //
-        parseTag(node, tags::id, row, 0, "", true);               // ID
-        parseTag(node, tags::name, row, 1);                       // Наименование
-        break;                                                    //
-    case ModelType::Includes:                                     //
-        parseAttribute(node, tags::src, row, 0);                  // Путь к файлу
-        break;                                                    //
+        parseTag(node, tags::id, row, 0, "", true);               // ID (stored temporarily as int)
+        {
+            const auto &names = s2RecordsNameMap();
+            auto id = data(index(row, 0)).toInt();
+            auto nameIt = names.find(id);
+            if (nameIt != names.cend())
+                setData(index(row, 0), nameIt.value());       // replace id with human-readable name
+        }
+        parseTag(node, tags::def_val, row, 1);                // Значение по умолчанию
+        parseTag(node, tags::count, row, 2, "");              // new count
+        parseTag(node, tags::order, row, 3, "");              // Приоритет
+        parseTag(node, tags::visibility, row, 4, "true");     // Видимость
+        break;                                                //
+    case ModelType::HiddenTab:                                //
+        parseTag(node, tags::index, row, 0, "1", true);       // Индекс данных в структуре
+        parseAttribute(node, tags::title, row, 1, "");        // Отображаемое название
+        parseTag(node, tags::name, row, 2, "");               // Имя виджета в системе Qt
+        parseAttribute(node, tags::view, row, 3, "LineEdit"); // Тип виджета для отображения
+        parseTag(node, tags::type, row, 4, "uint32");         // Тип данных, хранимые в виджете
+        parseTag(node, tags::addr, row, 5, "1", true);        // Адрес в блоке устройства
+        parseTag(node, tags::visibility, row, 6, "true");     // Видимость
+        break;                                                //
+    case ModelType::BsiExt:                                   //
+        parseTag(node, tags::addr, row, 0, "40", true);       // Адрес сигнала
+        parseTag(node, tags::desc, row, 1, "");               // Описание сигнала
+        parseTag(node, tags::type, row, 2, "uint32");         // Тип данных сигнала
+        parseTag(node, tags::visibility, row, 3, "true");     // Видимость
+        break;                                                //
+    case ModelType::S2Tabs:                                   //
+        parseTag(node, tags::id, row, 0, "", true);           // ID
+        parseTag(node, tags::name, row, 1);                   // Наименование
+        break;                                                //
+    case ModelType::Includes:                                 //
+        parseAttribute(node, tags::src, row, 0);              // Путь к файлу
+        break;                                                //
     default:
         qWarning() << "Can't parse undefined tag of XML model!";
         break;
@@ -293,4 +310,48 @@ QDomElement XmlDataModel::toNode(QDomDocument &doc)
         node.appendChild(item);
     }
     return node;
+}
+
+const QMap<int, QString> &XmlDataModel::s2RecordsNameMap()
+{
+    static QMap<int, QString> map;
+    static QString loadedFrom;
+    auto configDir = Settings::configDir();
+    if (loadedFrom != configDir)
+    {
+        QFile file(QDir(configDir).filePath("s2files.xml"));
+        if (file.open(QIODevice::ReadOnly))
+        {
+            map.clear();
+            QDomDocument doc;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
+            QString errMsg;
+            auto line = 0, column = 0;
+            if (doc.setContent(&file, &errMsg, &line, &column))
+#else
+            QDomDocument::ParseResult result = doc.setContent(&file);
+            if (result.errorMessage.isEmpty())
+#endif
+            {
+                XmlParse::parseNode(doc.documentElement(), tags::records,
+                    [&](const QDomNode &node)
+                    {
+                        int id = XmlParse::parseNumFromNode<int>(node, tags::id);
+                        QString name = XmlParse::parseString(node, tags::name);
+                        if (id > 0 && name != STRINF)
+                            map[id] = name;
+                    });
+            }
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
+            else
+                qWarning() << errMsg;
+#else
+            else
+                qWarning() << result.errorMessage;
+#endif
+            file.close();
+            loadedFrom = configDir;
+        }
+    }
+    return map;
 }

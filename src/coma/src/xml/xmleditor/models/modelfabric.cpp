@@ -16,7 +16,7 @@ void ModelFabric::createChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         {
         case ModelType::SGroup:
         case ModelType::S2Records:
-        case ModelType::Overlay:
+        case ModelType::OverlayRecords:
             mNode.m_model = new XmlHideDataModel(rows, cols, mNode.m_type, parent);
             break;
         case ModelType::Alarms:
@@ -24,6 +24,7 @@ void ModelFabric::createChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         case ModelType::Section:
         case ModelType::Journals:
         case ModelType::Hidden:
+        case ModelType::Overlay:
             mNode.m_model = new XmlContainerModel(rows, cols, mNode.m_type, parent);
             break;
         case ModelType::Signals:
@@ -107,6 +108,7 @@ XmlModel *ModelFabric::createEmptyChildModel(ModelType type, QObject *parent)
     {
     case ModelType::SGroup:
     case ModelType::S2Records:
+    case ModelType::OverlayRecords:
         model = new XmlHideDataModel(1, cols, type, parent);
         break;
     case ModelType::Alarms:
@@ -116,6 +118,21 @@ XmlModel *ModelFabric::createEmptyChildModel(ModelType type, QObject *parent)
     case ModelType::Hidden:
         model = new XmlContainerModel(1, cols, type, parent);
         break;
+    case ModelType::Overlay:
+    {
+        // Pre-populate with a <records> child so the overlay is immediately navigable
+        auto *overlayModel = new XmlContainerModel(2, cols, type, parent);
+        overlayModel->setHorizontalHeaderLabels(labels);
+        overlayModel->setData(overlayModel->index(0, 0), QString(".."));
+        auto *recordsModel = createEmptyChildModel(ModelType::OverlayRecords, overlayModel);
+        if (recordsModel != nullptr)
+        {
+            ChildModelNode recordsNode { recordsModel, ModelType::OverlayRecords };
+            overlayModel->setData(overlayModel->index(1, 0), QVariant::fromValue(recordsNode), ModelNodeRole);
+            overlayModel->setData(overlayModel->index(1, 0), QString(tags::records));
+        }
+        return overlayModel;
+    }
     case ModelType::Signals:
     case ModelType::SectionTabs:
     case ModelType::AlarmStateAll:
