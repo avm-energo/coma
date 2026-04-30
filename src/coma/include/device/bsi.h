@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QObject>
-
 #include <avm-gen/integers.h>
 
+#include <QObject>
+#include <QVariant>
 #include <array>
 #include <bitset>
 
