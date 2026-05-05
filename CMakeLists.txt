@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(pks-service VERSION 3.4.4)
+project(pks-service VERSION 3.4.5)
 
 set(SOFTDEVELOPER "AVM-Energo")
 
@@ -105,7 +105,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::SerialPort
   limereport
-  QXlsx
+  avm-qxlsx
   avm-gen
   )
 

@@ -6,8 +6,8 @@
 #include "../gen/modulebsi.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
-#include <gen/settings.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QFileDialog>

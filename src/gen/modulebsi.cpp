@@ -4,7 +4,7 @@
 #include "../widgets/emessagebox.h"
 #include "commands.h"
 #include "error.h"
-#include <gen/stdfunc.h>
+#include <avm-gen/stdfunc.h>
 
 quint32 ModuleBSI::MType = 0;
 ModuleBSI::Bsi ModuleBSI::ModuleBsi;

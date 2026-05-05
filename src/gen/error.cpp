@@ -1,6 +1,6 @@
 #include "error.h"
 
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QDateTime>
 #include <QFile>

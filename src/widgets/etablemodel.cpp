@@ -1,6 +1,6 @@
 #include "etablemodel.h"
 
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 // ######################################## Переопределение методов QAbstractTableModel
 // ####################################
 

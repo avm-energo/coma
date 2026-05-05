@@ -1,10 +1,11 @@
-#include <QVBoxLayout>
 #include "keypressdialog.h"
-#include <gen/stdfunc.h>
-#include "../widgets/wd_func.h"
 
-KeyPressDialog::KeyPressDialog(const QString &PswPhrase, QWidget *parent) :
-    QDialog(parent)
+#include "../widgets/wd_func.h"
+#include <avm-gen/stdfunc.h>
+
+#include <QVBoxLayout>
+
+KeyPressDialog::KeyPressDialog(const QString &PswPhrase, QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
@@ -14,7 +15,8 @@ KeyPressDialog::KeyPressDialog(const QString &PswPhrase, QWidget *parent) :
 void KeyPressDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
-    vlyout->addWidget(WDFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "", "pswlbl"));
+    vlyout->addWidget(
+        WDFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "", "pswlbl"));
     vlyout->addWidget(WDFunc::NewPswLE(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
 }

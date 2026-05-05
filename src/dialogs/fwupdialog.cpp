@@ -6,7 +6,7 @@
 #include "../gen/maindef.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/etableview.h"
-#include <gen/stdfunc.h>
+#include <avm-gen/stdfunc.h>
 
 #include <QCheckBox>
 #include <QComboBox>

@@ -1,7 +1,7 @@
 #include "report.h"
 
 #include "error.h"
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QStandardItem>
 

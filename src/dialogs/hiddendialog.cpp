@@ -6,7 +6,7 @@
 #include "../widgets/egroupbox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QCoreApplication>
 #include <QElapsedTimer>

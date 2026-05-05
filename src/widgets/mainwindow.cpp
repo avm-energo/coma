@@ -17,8 +17,8 @@
 #include "../widgets/wd_func.h"
 #include "config.h"
 #include <QtSerialPort/QSerialPortInfo>
-#include <gen/settings.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
 
 #include <QApplication>
 #include <QCursor>

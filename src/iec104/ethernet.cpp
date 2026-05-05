@@ -2,8 +2,8 @@
 
 #include "../gen/error.h"
 #include "config.h"
-#include <gen/settings.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QThread>

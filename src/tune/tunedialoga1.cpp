@@ -9,8 +9,8 @@
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 #include "config.h"
-#include <gen/settings.h>
-#include <gen/stdfunc.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QElapsedTimer>

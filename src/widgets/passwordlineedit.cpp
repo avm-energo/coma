@@ -1,7 +1,7 @@
 #include "passwordlineedit.h"
 
 #include "wd_func.h"
-#include <gen/settings.h>
+#include <avm-gen/settings.h>
 
 #include <QHBoxLayout>
 #include <QPushButton>
