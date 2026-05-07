@@ -3,7 +3,7 @@
 #include "../dialogs/keypressdialog.h"
 #include "../gen/commands.h"
 #include "../gen/error.h"
-#include "../gen/files.h"
+#include "../gen/pkdnfiles.h"
 #include "../gen/maindef.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
@@ -358,7 +358,7 @@ int EAbstractTuneDialog::SaveAllTuneCoefs()
         QByteArray ba;
         ba.resize(it.value().BacBlockSize);
         memcpy(&(ba.data()[0]), it.value().BacBlock, it.value().BacBlockSize);
-        if (Files::SaveToFile(Settings::workDir() + "temptune.tn" + tunenum, ba, it.value().BacBlockSize)
+        if (PkdnFiles::SaveToFile(Settings::workDir() + "temptune.tn" + tunenum, ba, it.value().BacBlockSize)
             != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
     }
@@ -382,20 +382,20 @@ void EAbstractTuneDialog::SaveToFileEx(int bacnum)
     QByteArray ba;
     ba.resize(AbsBac[bacnum].BacBlockSize);
     memcpy(&(ba.data()[0]), AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
-    res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.tn" + tunenum + ")", "tn" + tunenum), ba,
+    res = PkdnFiles::SaveToFile(PkdnFiles::ChooseFileForSave(this, "Tune files (*.tn" + tunenum + ")", "tn" + tunenum), ba,
         AbsBac[bacnum].BacBlockSize);
     switch (res)
     {
-    case Files::ER_NOERROR:
+    case PkdnFiles::ER_NOERROR:
         EMessageBox::information(this, "Внимание", "Файл коэффициентов записан успешно!");
         break;
-    case Files::ER_FILEWRITE:
+    case PkdnFiles::ER_FILEWRITE:
         EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
         break;
-    case Files::ER_FILENAMEEMP:
+    case PkdnFiles::ER_FILENAMEEMP:
         EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
         break;
-    case Files::ER_FILEOPEN:
+    case PkdnFiles::ER_FILEOPEN:
         EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:
@@ -437,8 +437,8 @@ void EAbstractTuneDialog::LoadFromFile()
         EMessageBox::error(this, "Ошибка", "Блок Bac с индексом " + tunenum + " не найден!");
         return;
     }
-    int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.tn" + tunenum + ")"), ba);
-    if (res != Files::ER_NOERROR)
+    int res = PkdnFiles::LoadFromFile(PkdnFiles::ChooseFileForOpen(this, "Tune files (*.tn" + tunenum + ")"), ba);
+    if (res != PkdnFiles::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка при загрузке файла");
         return;

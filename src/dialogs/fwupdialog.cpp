@@ -2,8 +2,7 @@
 
 #include "../gen/commands.h"
 #include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/maindef.h"
+#include "../gen/pkdnfiles.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/etableview.h"
 #include <avm-gen/stdfunc.h>
@@ -64,8 +63,8 @@ int fwupdialog::LoadFW()
     // tmpi = sizeof(PV_file.Type)+sizeof(PV_file.File.FileDatHeader);
     QVector<S2::DataRec> S2DR;
 
-    int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Program Version (*.hex)"), ba);
-    if (res != Files::ER_NOERROR)
+    int res = PkdnFiles::LoadFromFile(PkdnFiles::ChooseFileForOpen(this, "Program Version (*.hex)"), ba);
+    if (res != PkdnFiles::ER_NOERROR)
     {
         WARNMSG("Ошибка файла ПО");
         return Error::ER_GENERALERROR;

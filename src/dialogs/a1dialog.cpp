@@ -6,7 +6,7 @@
 #include "../gen/colors.h"
 #include "../gen/commands.h"
 #include "../gen/error.h"
-#include "../gen/files.h"
+#include "../gen/pkdnfiles.h"
 #include "../gen/maindef.h"
 #include "../gen/timefunc.h"
 #include "../widgets/egroupbox.h"
@@ -283,7 +283,7 @@ void A1Dialog::GenerateReport()
     report->SetVar("OuterInsp", ReportHeader.OuterInsp);
     report->SetVar("WindingsInsp", ReportHeader.WindingsInsp);
     report->SetVar("PovDateTime", ReportHeader.PovDateTime);
-    QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
+    QString filename = PkdnFiles::ChooseFileForSave(this, "*.pdf", "pdf");
     if (!filename.isEmpty())
     {
         report->Generate(filename);
@@ -302,8 +302,8 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
     Autonomous = true;
     QByteArray ba;
     PovDevStruct PovDev;
-    int res = Files::LoadFromFile(filename, ba);
-    if (res != Files::ER_NOERROR)
+    int res = PkdnFiles::LoadFromFile(filename, ba);
+    if (res != PkdnFiles::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка загрузки файла");
         return;

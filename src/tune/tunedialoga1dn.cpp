@@ -3,7 +3,7 @@
 #include "../gen/colors.h"
 #include "../gen/commands.h"
 #include "../gen/error.h"
-#include "../gen/files.h"
+#include "../gen/pkdnfiles.h"
 #include "../gen/maindef.h"
 #include "../gen/modulebsi.h"
 #include "../widgets/egroupbox.h"
@@ -732,7 +732,7 @@ void TuneDialogA1DN::GenerateReport()
         report->SetVar("Freq", ReportHeader.Freq);
     report->SetVar("OuterInsp", ReportHeader.OuterInsp);
     report->SetVar("PovDateTime", ReportHeader.PovDateTime);
-    QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
+    QString filename = PkdnFiles::ChooseFileForSave(this, "*.pdf", "pdf");
     if (!filename.isEmpty())
     {
         if (report->Generate(filename) == Error::ER_NOERROR)

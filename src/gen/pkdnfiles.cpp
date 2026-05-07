@@ -1,4 +1,4 @@
-#include "files.h"
+#include "pkdnfiles.h"
 
 #include "error.h"
 #include "modulebsi.h"
@@ -8,9 +8,9 @@
 #include <QFile>
 #include <QFileDialog>
 
-Files::Files() { }
+PkdnFiles::PkdnFiles() { }
 
-QString Files::ChooseFileForOpen(QWidget *parent, QString mask)
+QString PkdnFiles::ChooseFileForOpen(QWidget *parent, QString mask)
 {
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -23,7 +23,7 @@ QString Files::ChooseFileForOpen(QWidget *parent, QString mask)
     return filename;
 }
 
-int Files::LoadFromFile(const QString &filename, QByteArray &ba)
+int PkdnFiles::LoadFromFile(const QString &filename, QByteArray &ba)
 {
     if (filename.isEmpty())
     {
@@ -45,7 +45,7 @@ int Files::LoadFromFile(const QString &filename, QByteArray &ba)
 // Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)"; QString ext - расширение по умолчанию
 // Output: QString filename
 
-QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext)
+QString PkdnFiles::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext)
 {
     QString MTypeM = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == 0)
         ? "00"
@@ -63,7 +63,7 @@ QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QSt
     return filename;
 }
 
-int Files::SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes)
+int PkdnFiles::SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes)
 {
     if (filename.isEmpty())
         return ER_FILENAMEEMP; // Пустое имя файла

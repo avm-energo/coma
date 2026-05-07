@@ -2,7 +2,7 @@
 
 #include "../gen/commands.h"
 #include "../gen/error.h"
-#include "../gen/files.h"
+#include "../gen/pkdnfiles.h"
 #include "../gen/modulebsi.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
@@ -78,19 +78,19 @@ void AbstractConfDialog::SaveConfToFile()
     BaLength += static_cast<quint8>(ba.data()[6]) * 65536;
     BaLength += static_cast<quint8>(ba.data()[7]) * 16777216;
     BaLength += sizeof(S2::S2FileHeader); // FileHeader
-    int res = Files::SaveToFile(Files::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba, BaLength);
+    int res = PkdnFiles::SaveToFile(PkdnFiles::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba, BaLength);
     switch (res)
     {
-    case Files::ER_NOERROR:
+    case PkdnFiles::ER_NOERROR:
         EMessageBox::information(this, "Внимание", "Записано успешно!");
         break;
-    case Files::ER_FILEWRITE:
+    case PkdnFiles::ER_FILEWRITE:
         ERMSG("Ошибка при записи файла!");
         break;
-    case Files::ER_FILENAMEEMP:
+    case PkdnFiles::ER_FILENAMEEMP:
         ERMSG("Пустое имя файла!");
         break;
-    case Files::ER_FILEOPEN:
+    case PkdnFiles::ER_FILEOPEN:
         ERMSG("Ошибка открытия файла!");
         break;
     default:
@@ -101,8 +101,8 @@ void AbstractConfDialog::SaveConfToFile()
 void AbstractConfDialog::LoadConfFromFile()
 {
     QByteArray ba;
-    int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Config files (*.cf)"), ba);
-    if (res != Files::ER_NOERROR)
+    int res = PkdnFiles::LoadFromFile(PkdnFiles::ChooseFileForOpen(this, "Config files (*.cf)"), ba);
+    if (res != PkdnFiles::ER_NOERROR)
     {
         WARNMSG("Ошибка при загрузке файла конфигурации");
         return;
