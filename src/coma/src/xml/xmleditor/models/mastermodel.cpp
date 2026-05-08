@@ -12,7 +12,7 @@ QDomElement MasterModel::toNode(QDomDocument &doc, const int &row)
 {
     // Создаём основной узел
     auto name = data(index(row, 0), FilenameDataRole).toString();
-    if (name.contains("s2files"))
+    if (name.contains("s2files") || name.contains("bsi"))
         return QDomElement {};
     else
     {
@@ -108,6 +108,16 @@ void MasterModel::parseXmlNode(const QDomNode &node, const QString &filename, co
     if (filename.contains("s2files"))
     {
         setData(index(row, 0), "S2 Files");
+        setData(index(row, 1), "-");
+        setData(index(row, 2), "-");
+        setData(index(row, 3), "No version");
+    }
+    else if (node.nodeName() == QLatin1String(tags::fragment))
+    {
+        auto displayName = filename;
+        if (displayName.endsWith(".xml"))
+            displayName.chop(4);
+        setData(index(row, 0), displayName);
         setData(index(row, 1), "-");
         setData(index(row, 2), "-");
         setData(index(row, 3), "No version");

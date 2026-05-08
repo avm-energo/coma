@@ -34,7 +34,9 @@ enum class ModelType : quint16
     S2Records,
     Includes,
     Overlay,
-    OverlayRecords
+    OverlayRecords,
+    BsiRecords,
+    BsiExtRecords
 };
 
 /// \brief Base class for models that used in XML editor.

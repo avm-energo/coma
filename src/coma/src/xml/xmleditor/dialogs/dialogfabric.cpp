@@ -6,6 +6,7 @@
 #include <xml/xmleditor/dialogs/xmlalarmdialog.h>
 #include <xml/xmleditor/dialogs/xmlalarmstatealldialog.h>
 #include <xml/xmleditor/dialogs/xmlbsiextdialog.h>
+#include <xml/xmleditor/dialogs/xmlbsirecorddialog.h>
 #include <xml/xmleditor/dialogs/xmlconfigdialog.h>
 #include <xml/xmleditor/dialogs/xmlhiddentabdialog.h>
 #include <xml/xmleditor/dialogs/xmlhiddenwidgetdialog.h>
@@ -53,6 +54,8 @@ const std::map<ModelType, QString> XmlDialogFabric::s_dialogTitles {
     { ModelType::Hidden, "вкладки раздела \"Секретные операции\"" },    //
     { ModelType::HiddenTab, "виджета раздела \"Секретные операции\"" }, //
     { ModelType::BsiExt, "элемента BSI Ext" },                          //
+    { ModelType::BsiRecords, "записи BSI" },                            //
+    { ModelType::BsiExtRecords, "записи BSI Ext" },                     //
     { ModelType::S2Tabs, "вкладки" },                                   //
     { ModelType::S2Records, "описания S2 записи" },          //
     { ModelType::Includes, "ссылки на внешний XML-файл" },   //
@@ -139,6 +142,10 @@ void XmlDialogFabric::createOrEditDialog(BaseEditorModel *model, int row, QWidge
             break;
         case ModelType::BsiExt:
             dialog = new XmlBsiExtDialog(parent);
+            break;
+        case ModelType::BsiRecords:
+        case ModelType::BsiExtRecords:
+            dialog = new XmlBsiRecordDialog(parent);
             break;
         case ModelType::S2Records:
             dialog = new XmlS2RecordDialog(parent);

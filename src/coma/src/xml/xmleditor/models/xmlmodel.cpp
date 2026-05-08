@@ -30,6 +30,7 @@ const std::map<QString, ModelType> XmlModel::s_types {
     { tags::records, ModelType::S2Records },       //
     { tags::includes, ModelType::Includes },       //
     { tags::overlay, ModelType::Overlay },         //
+    { tags::bsi, ModelType::BsiRecords },          //
 };
 
 const std::map<ModelType, QStringList> XmlModel::s_headers {
@@ -66,6 +67,8 @@ const std::map<ModelType, QStringList> XmlModel::s_headers {
     { ModelType::Includes, { "Путь к файлу" } },                                                                    //
     { ModelType::Overlay, { "XML" } },                                                                              //
     { ModelType::OverlayRecords, { "ID элемента", "Имя", "Тип", "Для наладки" } },                                 //
+    { ModelType::BsiRecords, { "Имя поля", "Описание", "Тип вывода", "Смещение" } },                                //
+    { ModelType::BsiExtRecords, { "Имя поля", "Описание", "Тип вывода", "Смещение" } },                             //
 };
 
 XmlModel::XmlModel(int rows, int cols, ModelType type, QObject *parent) : BaseEditorModel(rows, cols, type, parent) { }

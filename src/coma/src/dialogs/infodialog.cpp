@@ -34,16 +34,20 @@ void InfoDialog::setupUI()
     auto bsiTab = new QWidget(tabWidget);
     auto bsiLayout = new QVBoxLayout(bsiTab);
     auto bsiGrid = new QGridLayout;
-    bsiGrid->setColumnStretch(0, 40);
-    bsiGrid->setColumnStretch(1, 20);
-    bsiGrid->addWidget(LBLFunc::New(bsiTab, "Устройство:"), 0, 0, 1, 1, Qt::AlignRight);
+    bsiGrid->setColumnStretch(0, 1);
+    bsiGrid->setColumnStretch(1, 1);
+    auto devLbl = LBLFunc::New(bsiTab, "Устройство:");
+    devLbl->setWordWrap(false);
+    bsiGrid->addWidget(devLbl, 0, 0, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
     bsiGrid->addWidget(
-        ViewType::ViewTypeFunc::New(bsiTab, "devicename", ViewType::ViewTypes::String), 0, 1, 1, 1, Qt::AlignLeft);
+        ViewType::ViewTypeFunc::New(bsiTab, "devicename", ViewType::ViewTypes::String), 0, 1, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
     for (int i = 0; i < int(bsiRecords.size()); ++i)
     {
         const auto &rec = bsiRecords[i];
-        bsiGrid->addWidget(LBLFunc::New(bsiTab, rec.desc), i + 1, 0, 1, 1);
-        bsiGrid->addWidget(ViewType::ViewTypeFunc::New(bsiTab, rec.name, rec.type), i + 1, 1, 1, 1, Qt::AlignLeft);
+        auto lbl = LBLFunc::New(bsiTab, rec.desc);
+        lbl->setWordWrap(false);
+        bsiGrid->addWidget(lbl, i + 1, 0, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
+        bsiGrid->addWidget(ViewType::ViewTypeFunc::New(bsiTab, rec.name, rec.type), i + 1, 1, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
     }
     bsiLayout->addLayout(bsiGrid, 3);
     bsiLayout->addStretch(400);
@@ -55,13 +59,15 @@ void InfoDialog::setupUI()
         auto bsiExtTab = new QWidget(tabWidget);
         auto bsiExtLayout = new QVBoxLayout(bsiExtTab);
         auto bsiExtGrid = new QGridLayout;
-        bsiExtGrid->setColumnStretch(0, 40);
-        bsiExtGrid->setColumnStretch(1, 20);
+        bsiExtGrid->setColumnStretch(0, 1);
+        bsiExtGrid->setColumnStretch(1, 1);
         for (int i = 0; i < int(bsiExtRecords.size()); ++i)
         {
             const auto &rec = bsiExtRecords[i];
-            bsiExtGrid->addWidget(LBLFunc::New(bsiExtTab, rec.desc), i, 0, 1, 1, Qt::AlignRight);
-            bsiExtGrid->addWidget(ViewType::ViewTypeFunc::New(bsiExtTab, rec.name, rec.type), i, 1, 1, 1);
+            auto lbl = LBLFunc::New(bsiExtTab, rec.desc);
+            lbl->setWordWrap(false);
+            bsiExtGrid->addWidget(lbl, i, 0, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
+            bsiExtGrid->addWidget(ViewType::ViewTypeFunc::New(bsiExtTab, rec.name, rec.type), i, 1, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
         }
         bsiExtLayout->addLayout(bsiExtGrid, 3);
         bsiExtLayout->addStretch(400);
@@ -84,9 +90,13 @@ void InfoDialog::fillBsi()
 
 void InfoDialog::fillBsiExt(u32 addr)
 {
+    u32 realAddr = addr - Device::bsiExtStartReg;
     const Device::BlockStartupInfoExtended &bsiExt = m_device->bsiExt();
     const auto &records = m_device->getConfigStorage()->getDeviceSettings().getBsiExt();
-    ViewType::ViewTypeFunc::setData(this, records.data()->name, bsiExt[records.data()->offset]);
+    auto search = std::find_if(records.begin(), records.end(),
+        [realAddr](const Device::XmlDataTypes::BsiExtRecord &setting) { return (setting.offset == realAddr); });
+    if (search != records.end())
+        ViewType::ViewTypeFunc::setData(this, search->name, bsiExt[search->offset]);
 }
 
 void InfoDialog::uponInterfaceSetting()
@@ -115,7 +125,7 @@ void InfoDialog::reqBsi()
 void InfoDialog::reqBsiExt()
 {
     auto &bsiExt = m_device->bsiExt();
-    m_device->async()->reqBSIExt(bsiExt.endAddr() - bsiExt.startAddr());
+    m_device->async()->reqBSIExt(bsiExt.endAddr() - bsiExt.startAddr() + 1);
 }
 
 void InfoDialog::reqUpdate()

@@ -163,6 +163,24 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
     case ModelType::Includes:
         return { tags::includes, tags::include, //
             [this](auto &doc, auto &item, auto &row) { setAttribute(doc, item, tags::src, data(index(row, 0))); } };
+    case ModelType::BsiRecords:
+        return { tags::bsi, tags::record, //
+            [this](auto &doc, auto &item, auto &row)
+            {
+                makeElement(doc, item, tags::name, data(index(row, 0)));
+                makeElement(doc, item, tags::desc, data(index(row, 1)));
+                makeElement(doc, item, tags::representation, data(index(row, 2)));
+                makeElement(doc, item, tags::offset, data(index(row, 3)));
+            } };
+    case ModelType::BsiExtRecords:
+        return { tags::bsi_ext, tags::record, //
+            [this](auto &doc, auto &item, auto &row)
+            {
+                makeElement(doc, item, tags::name, data(index(row, 0)));
+                makeElement(doc, item, tags::desc, data(index(row, 1)));
+                makeElement(doc, item, tags::representation, data(index(row, 2)));
+                makeElement(doc, item, tags::offset, data(index(row, 3)));
+            } };
     default:
         qWarning() << "Model settings not found!";
         return { "undefined", "undefined", //
@@ -267,6 +285,13 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     case ModelType::Includes:                                 //
         parseAttribute(node, tags::src, row, 0);              // Путь к файлу
         break;                                                //
+    case ModelType::BsiRecords:                               //
+    case ModelType::BsiExtRecords:                            //
+        parseTag(node, tags::name, row, 0);                   // Имя поля
+        parseTag(node, tags::desc, row, 1);                   // Описание
+        parseTag(node, tags::representation, row, 2, "String"); // Тип вывода
+        parseTag(node, tags::offset, row, 3, "0", true);      // Смещение
+        break;                                                //
     default:
         qWarning() << "Can't parse undefined tag of XML model!";
         break;
@@ -308,6 +333,12 @@ QDomElement XmlDataModel::toNode(QDomDocument &doc)
         auto fillNode = std::get<2>(prefs);
         fillNode(doc, item, row);
         node.appendChild(item);
+    }
+    if (m_type == ModelType::BsiRecords || m_type == ModelType::BsiExtRecords)
+    {
+        auto fragment = makeElement(doc, tags::fragment);
+        fragment.appendChild(node);
+        return fragment;
     }
     return node;
 }

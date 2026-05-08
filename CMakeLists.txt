@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(coma VERSION 3.4.5)
+project(coma VERSION 3.6.0)
 
 set(SOFTDEVELOPER "AVM-Energo")
 
