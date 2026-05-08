@@ -3,6 +3,7 @@
 #define Name "ПКС-Сервис"
 #define GroupName "ПКС-Сервис"
 #define EngName "pks-service"
+#define Edition "full"
 #define Publisher "AVM-Energo"
 #define URL "https://www.avmenergo.ru"
 #define ExeName "pks-service.exe"
@@ -33,7 +34,7 @@ SetupIconFile=..\coma.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-OutputBaseFilename={#EngName}-{#AppVersion}
+OutputBaseFilename={#EngName}-{#Edition}-{#AppVersion}
 OutputDir={#OUTPUT_DIR}
 VersionInfoVersion={#AppVersion}
 LicenseFile="..\license.txt"
