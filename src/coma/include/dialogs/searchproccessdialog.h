@@ -8,6 +8,7 @@
 class QTimer;
 class QTableView;
 class QProgressBar;
+class InterfaceSerialDialog;
 
 struct SearchParams
 {
@@ -27,6 +28,7 @@ private:
     QTimer *timeoutTimer;
     QTableView *tableView;
     QProgressBar *progressBar;
+    InterfaceSerialDialog *m_targetDialog{nullptr};
 
     QByteArray response;
     quint8 expectedResponseSize;
@@ -69,9 +71,14 @@ private:
     /// \brief Обновляет состояние прогресс-бара.
     void updateProgressBar();
 
+    void showContextMenu(const QPoint &pos);
+    void addToRS485TableView(const QModelIndex &sourceIndex);
+
 public:
     /// \brief Конструктор.
-    explicit SearchProccessDialog(const SearchParams &data, QWidget *parent = nullptr);
+    explicit SearchProccessDialog(const SearchParams &data,
+        InterfaceSerialDialog *targetDialog = nullptr,
+        QWidget *parent = nullptr);
     /// \brief Функция для запуска поиска устройств.
     void search();
 

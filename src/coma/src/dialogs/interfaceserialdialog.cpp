@@ -57,7 +57,7 @@ void InterfaceSerialDialog::setupUI()
     auto searchButton = PBFunc::New(this, "", "Поиск устройств", this,
         [this]
         {
-            auto searchDialog = new SearchModbusDevicesDialog(this);
+            auto searchDialog = new SearchModbusDevicesDialog(this, this);
             searchDialog->exec();
         });
     secondRow->addWidget(editButton);
@@ -286,4 +286,50 @@ void InterfaceSerialDialog::acceptedInterface()
     if (!updateModel())
         qDebug() << Error::GeneralError;
     dialog->close();
+}
+
+QStringList InterfaceSerialDialog::getConnectionNames() const
+{
+    QStringList names;
+    Settings::pushGroup("RS485");
+    auto rslist = Settings::groups();
+    for (const auto &item : std::as_const(rslist)) {
+        names << item;
+    }
+    Settings::popGroup();
+    return names;
+}
+
+void InterfaceSerialDialog::removeConnection(const QString &name)
+{
+    Settings::pushGroup("RS485");
+    Settings::remove(name);
+    Settings::popGroup();
+    updateModel();
+}
+
+void InterfaceSerialDialog::addConnectionFromSearch(const QMap<QString, QVariant> &deviceData)
+{
+    if (checkSize()) return;
+
+    QString name = deviceData.value("name").toString();
+
+    Settings::pushGroup("RS485");
+    if (Settings::groupExist(name))
+    {
+        Settings::popGroup();
+        return;
+    }
+
+    Settings::pushGroup(name);
+    Settings::set("serialPort", deviceData.value("port").toString());
+    Settings::set("serialSpeed", deviceData.value("baud").toString());
+    Settings::set("serialParity", deviceData.value("parity").toString());
+    Settings::set("serialStop", deviceData.value("stopBits").toString());
+    Settings::set("modbusAddress", deviceData.value("address").toInt());
+    Settings::popGroup(); // name
+    Settings::popGroup(); // RS485
+
+    updateModel();
+    return;
 }

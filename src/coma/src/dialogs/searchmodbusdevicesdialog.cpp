@@ -13,7 +13,10 @@
 #include <QSerialPortInfo>
 #include <QVBoxLayout>
 
-SearchModbusDevicesDialog::SearchModbusDevicesDialog(QWidget *parent) : QDialog(parent)
+SearchModbusDevicesDialog::SearchModbusDevicesDialog(InterfaceSerialDialog *targetDialog,
+    QWidget *parent) :
+    QDialog(parent)
+    , m_targetDialog(targetDialog)
 {
     data.bauds.reserve(widgets.baud.size());
     data.parities.reserve(3);
@@ -253,7 +256,7 @@ void SearchModbusDevicesDialog::runSearch()
     getData();
     if (validate())
     {
-        auto proccessDlg = new SearchProccessDialog(data, this);
+        auto proccessDlg = new SearchProccessDialog(data, m_targetDialog, this);
         proccessDlg->show();
         proccessDlg->search();
     }

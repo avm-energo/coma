@@ -24,6 +24,7 @@ private:
     } widgets;
 
     SearchParams data;
+    InterfaceSerialDialog *m_targetDialog {nullptr};
 
     QGroupBox *createComGroupBox();
     QGroupBox *createTimeoutGroupBox();
@@ -39,5 +40,5 @@ private:
     void runSearch();
 
 public:
-    SearchModbusDevicesDialog(QWidget *parent = nullptr);
+    SearchModbusDevicesDialog(InterfaceSerialDialog *targetDialog, QWidget *parent = nullptr);
 };

@@ -1,4 +1,5 @@
 #include "dialogs/searchproccessdialog.h"
+#include "dialogs/interfaceserialdialog.h"
 
 #include <avm-gen/stdfunc.h>
 #include <avm-gen/utils/crc16.h>
@@ -13,8 +14,12 @@
 #include <QStandardItemModel>
 #include <QThread>
 #include <QTimer>
+#include <QMenu>
+#include <QInputDialog>
 
-SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *parent)
+SearchProccessDialog::SearchProccessDialog(const SearchParams &data,
+    InterfaceSerialDialog *targetDialog,
+    QWidget *parent)
     : QDialog(parent)
     , params(data)
     , timeoutTimer(new QTimer(this))
@@ -27,11 +32,11 @@ SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *pa
     , responseError(false)
     , portError(false)
     , stop(false)
+    , m_targetDialog(targetDialog)
 {
     timeoutTimer->setSingleShot(true);
     timeoutTimer->setInterval(params.timeout);
     QObject::connect(timeoutTimer, &QTimer::timeout, this, [this] { timeout = true; });
-
     setObjectName("rsSearchProccessDialog");
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_ShowModal);
@@ -44,9 +49,14 @@ void SearchProccessDialog::setupUI()
     auto mainLayout = new QVBoxLayout;
     auto tableViewModel = new QStandardItemModel(this);
     QStringList headers { "Порт", "Адрес", "Скорость", "Чётность", "Стоп бит", "Статус" };
+
     tableViewModel->setHorizontalHeaderLabels(headers);
     tableView = TVFunc::New(this, "devicesTable", tableViewModel);
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(tableView, &QTableView::customContextMenuRequested, this,
+        &SearchProccessDialog::showContextMenu);
+
     mainLayout->addWidget(tableView);
     progressBar = new QProgressBar(this);
     progressBar->setOrientation(Qt::Horizontal);
@@ -330,4 +340,71 @@ void SearchProccessDialog::done(int r)
     }
     else
         QDialog::done(r);
+}
+
+void SearchProccessDialog::showContextMenu(const QPoint &pos)
+{
+    // Получаем индекс под курсором (pos относительно viewport)
+    QModelIndex index = tableView->indexAt(pos);
+    if (!index.isValid()) return;
+
+    auto model = tableView->model();
+    QModelIndex statusIndex = model->index(index.row(), 5);
+    QString status = model->data(statusIndex, Qt::DisplayRole).toString();
+
+    if (status != "Ok") return;
+
+    QMenu menu(this);
+    QAction *addAction = menu.addAction("Добавить в другую таблицу");
+
+    QAction *selectedAction = menu.exec(tableView->viewport()->mapToGlobal(pos));
+
+    if (selectedAction == addAction)
+    {
+        addToRS485TableView(index);
+    }
+}
+
+void SearchProccessDialog::addToRS485TableView(const QModelIndex &sourceIndex)
+{
+    if (!m_targetDialog)
+    {
+        EMessageBox::error(this, "Диалог с соединениями не найден!");
+        return;
+    }
+
+    QString connectionName = QInputDialog::getText(
+        this,
+        "Имя подключения",
+        "Введите имя для нового соединения:",
+        QLineEdit::Normal,
+        ""
+    );
+
+    if (m_targetDialog->getConnectionNames().size() >= MAXREGISTRYINTERFACECOUNT)
+    {
+        bool ok;
+        QString toRemove = QInputDialog::getItem(
+            this,
+            "Лимит подключений",
+            "Достигнут лимит (5).\nВыберите подключение для удаления:",
+            m_targetDialog->getConnectionNames(),
+            0, false, &ok
+            );
+
+        if (!ok || toRemove.isEmpty()) return;
+        m_targetDialog->removeConnection(toRemove);
+    }
+
+    auto *srcModel = tableView->model();
+    QMap<QString, QVariant> deviceData;
+    deviceData["name"]      = connectionName;
+    deviceData["port"]      = srcModel->data(srcModel->index(sourceIndex.row(), 0));
+    deviceData["address"]   = srcModel->data(srcModel->index(sourceIndex.row(), 1));
+    deviceData["baud"]      = srcModel->data(srcModel->index(sourceIndex.row(), 2));
+    deviceData["parity"]    = srcModel->data(srcModel->index(sourceIndex.row(), 3));
+    deviceData["stopBits"]  = srcModel->data(srcModel->index(sourceIndex.row(), 4));
+
+    m_targetDialog->addConnectionFromSearch(deviceData);
+    EMessageBox::information(this, "Устройство успешно добавлено!");
 }
