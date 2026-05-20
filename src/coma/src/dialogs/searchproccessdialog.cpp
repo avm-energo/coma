@@ -346,20 +346,28 @@ void SearchProccessDialog::showContextMenu(const QPoint &pos)
 {
     // Получаем индекс под курсором (pos относительно viewport)
     QModelIndex index = tableView->indexAt(pos);
-    if (!index.isValid()) return;
+    if (!index.isValid())
+    {
+        qDebug() << "Невалидный индекс под курсором: " << index;
+        return;
+    }
 
     auto model = tableView->model();
     QModelIndex statusIndex = model->index(index.row(), 5);
     QString status = model->data(statusIndex, Qt::DisplayRole).toString();
 
-    if (status != "Ok") return;
+    // TODO: Добавить логи и проверить почему появляется
+    // Response error
+    if (status != "Ok" && status != "Response error")
+    {
+        qDebug() << "Невалидный статус для добавления порта: " << status;
+        return;
+    }
 
     QMenu menu(this);
     QAction *addAction = menu.addAction("Добавить в другую таблицу");
 
-    QAction *selectedAction = menu.exec(tableView->viewport()->mapToGlobal(pos));
-
-    if (selectedAction == addAction)
+    if (menu.exec(tableView->viewport()->mapToGlobal(pos)) == addAction)
     {
         addToRS485TableView(index);
     }
@@ -407,4 +415,7 @@ void SearchProccessDialog::addToRS485TableView(const QModelIndex &sourceIndex)
 
     m_targetDialog->addConnectionFromSearch(deviceData);
     EMessageBox::information(this, "Устройство успешно добавлено!");
+
+    emit deviceAddedSuccessfully();
+    close();
 }

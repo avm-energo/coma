@@ -257,6 +257,7 @@ void SearchModbusDevicesDialog::runSearch()
     if (validate())
     {
         auto proccessDlg = new SearchProccessDialog(data, m_targetDialog, this);
+        connect(proccessDlg, &SearchProccessDialog::deviceAddedSuccessfully, this, [this]() { close(); });
         proccessDlg->show();
         proccessDlg->search();
     }

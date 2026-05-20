@@ -23,6 +23,8 @@ struct SearchParams
 
 class SearchProccessDialog final : public QDialog
 {
+    Q_OBJECT
+
 private:
     SearchParams params;
     QTimer *timeoutTimer;
@@ -81,6 +83,9 @@ public:
         QWidget *parent = nullptr);
     /// \brief Функция для запуска поиска устройств.
     void search();
+
+signals:
+    void deviceAddedSuccessfully();
 
 private slots:
     virtual void done(int r) override;

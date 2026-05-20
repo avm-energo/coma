@@ -331,5 +331,4 @@ void InterfaceSerialDialog::addConnectionFromSearch(const QMap<QString, QVariant
     Settings::popGroup(); // RS485
 
     updateModel();
-    return;
 }
