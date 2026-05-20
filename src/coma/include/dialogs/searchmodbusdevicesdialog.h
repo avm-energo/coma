@@ -21,9 +21,9 @@ private:
         std::array<QCheckBox *, 7> baud;
         QCheckBox *parityNone, *parityOdd, *parityEven;
         QCheckBox *stopBitOne, *stopBitTwo;
-    } widgets;
+    } m_widgets;
 
-    SearchParams data;
+    SearchParams m_data;
     InterfaceSerialDialog *m_targetDialog {nullptr};
 
     QGroupBox *createComGroupBox();
