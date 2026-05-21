@@ -1,6 +1,7 @@
 #include "dialogs/searchproccessdialog.h"
-#include "dialogs/interfaceserialdialog.h"
 
+#include "const.h"
+#include "dialogs/interfaceserialdialog.h"
 #include <avm-gen/stdfunc.h>
 #include <avm-gen/utils/crc16.h>
 #include <avm-widgets/emessagebox.h>
@@ -9,13 +10,13 @@
 #include <QCoreApplication>
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QInputDialog>
+#include <QMenu>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QThread>
 #include <QTimer>
-#include <QMenu>
-#include <QInputDialog>
 
 SearchProccessDialog::SearchProccessDialog(
     const SearchParams &data, InterfaceSerialDialog *targetDialog, QWidget *parent)
@@ -128,7 +129,7 @@ bool SearchProccessDialog::analyzeResponse(const QByteArray &actualResponse)
         {
             auto crcBytes = actualResponse.right(sizeof(quint16));
             auto dataBytes = actualResponse.left(actualResponse.size() - sizeof(quint16));
-            quint16 actualCrc = ((crcBytes[0] << 8) | crcBytes[1]);
+            quint16 actualCrc = ((static_cast<quint8>(crcBytes[0]) << 8) | static_cast<quint8>(crcBytes[1]));
             utils::CRC16 expectedCrc(dataBytes);
             if (expectedCrc == actualCrc)
                 return true;
@@ -206,22 +207,22 @@ void SearchProccessDialog::updateTable(quint32 row)
     auto statusIndex = model->index(row, 5);
     if (m_portError)
     {
-        model->setData(statusIndex, "Error", Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS458::Error, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
     else if (m_timeout)
     {
-        model->setData(statusIndex, "Timeout", Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS458::Timeout, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
     else if (m_responseError)
     {
-        model->setData(statusIndex, "Response error", Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS458::ResponseError, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
     else if (m_responseReceived)
     {
-        model->setData(statusIndex, "Ok", Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS458::Ok, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnyes.svg"), Qt::DecorationRole);
     }
 
@@ -345,27 +346,16 @@ void SearchProccessDialog::showContextMenu(const QPoint &pos)
 {
     // Получаем индекс под курсором (pos относительно viewport)
     QModelIndex index = m_tableView->indexAt(pos);
-    if (!index.isValid())
-    {
-        qDebug() << "Невалидный индекс под курсором: " << index;
-        return;
-    }
 
     auto model = m_tableView->model();
     QModelIndex statusIndex = model->index(index.row(), 5);
     QString status = model->data(statusIndex, Qt::DisplayRole).toString();
 
-    // TODO: Добавить логи и проверить почему появляется
-    // Response error
-    if (status != "Ok" && status != "Response error")
-    {
-        // TODO: сделать, чтобы action был просто неактивен
-        qDebug() << "Невалидный статус для добавления порта: " << status;
-        return;
-    }
-
+    // TODO: Добавить логи и проверить почему появляется Response error
     QMenu menu(this);
     QAction *addAction = menu.addAction("Добавить в таблицу подключений");
+    addAction->setEnabled(
+        index.isValid() && (status == StatusIndexRS458::Ok || status == StatusIndexRS458::ResponseError));
 
     if (menu.exec(m_tableView->viewport()->mapToGlobal(pos)) == addAction)
     {
@@ -400,13 +390,13 @@ void SearchProccessDialog::addToRS485TableView(const QModelIndex &sourceIndex)
 
     auto *srcModel = m_tableView->model();
     QMap<QString, QVariant> deviceData;
-    // TODO: выделить в отдельное пространство имен
-    deviceData["name"]      = connectionName;
-    deviceData["port"]      = srcModel->data(srcModel->index(sourceIndex.row(), 0));
-    deviceData["address"]   = srcModel->data(srcModel->index(sourceIndex.row(), 1));
-    deviceData["baud"]      = srcModel->data(srcModel->index(sourceIndex.row(), 2));
-    deviceData["parity"]    = srcModel->data(srcModel->index(sourceIndex.row(), 3));
-    deviceData["stopBits"]  = srcModel->data(srcModel->index(sourceIndex.row(), 4));
+
+    deviceData[DeviceDataKeysRS485::Name] = connectionName;
+    deviceData[DeviceDataKeysRS485::Port] = srcModel->data(srcModel->index(sourceIndex.row(), 0));
+    deviceData[DeviceDataKeysRS485::Address] = srcModel->data(srcModel->index(sourceIndex.row(), 1));
+    deviceData[DeviceDataKeysRS485::Baud] = srcModel->data(srcModel->index(sourceIndex.row(), 2));
+    deviceData[DeviceDataKeysRS485::Parity] = srcModel->data(srcModel->index(sourceIndex.row(), 3));
+    deviceData[DeviceDataKeysRS485::StopBits] = srcModel->data(srcModel->index(sourceIndex.row(), 4));
 
     m_targetDialog->addConnectionFromSearch(deviceData);
     EMessageBox::information(this, "Устройство успешно добавлено!");

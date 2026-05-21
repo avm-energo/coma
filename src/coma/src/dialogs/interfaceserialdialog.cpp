@@ -1,10 +1,9 @@
 #include "dialogs/interfaceserialdialog.h"
 
-#include <dialogs/searchmodbusdevicesdialog.h>
+#include "const.h"
 #include <avm-gen/error.h>
 #include <avm-gen/settings.h>
 #include <avm-gen/stdfunc.h>
-#include <interfaces/types/serial_settings.h>
 #include <avm-widgets/cbfunc.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/lblfunc.h>
@@ -12,6 +11,8 @@
 #include <avm-widgets/pbfunc.h>
 #include <avm-widgets/spbfunc.h>
 #include <avm-widgets/tvfunc.h>
+#include <dialogs/searchmodbusdevicesdialog.h>
+#include <interfaces/types/serial_settings.h>
 
 #include <QSerialPortInfo>
 #include <QStandardItemModel>
@@ -312,7 +313,7 @@ void InterfaceSerialDialog::addConnectionFromSearch(const QMap<QString, QVariant
 {
     if (checkSize()) return;
 
-    QString name = deviceData.value("name").toString();
+    QString name = deviceData.value(DeviceDataKeysRS485::Name).toString();
 
     Settings::pushGroup("RS485");
     if (Settings::groupExist(name))
@@ -322,11 +323,11 @@ void InterfaceSerialDialog::addConnectionFromSearch(const QMap<QString, QVariant
     }
 
     Settings::pushGroup(name);
-    Settings::set("serialPort", deviceData.value("port").toString());
-    Settings::set("serialSpeed", deviceData.value("baud").toString());
-    Settings::set("serialParity", deviceData.value("parity").toString());
-    Settings::set("serialStop", deviceData.value("stopBits").toString());
-    Settings::set("modbusAddress", deviceData.value("address").toInt());
+    Settings::set("serialPort", deviceData.value(DeviceDataKeysRS485::Port).toString());
+    Settings::set("serialSpeed", deviceData.value(DeviceDataKeysRS485::Baud).toString());
+    Settings::set("serialParity", deviceData.value(DeviceDataKeysRS485::Parity).toString());
+    Settings::set("serialStop", deviceData.value(DeviceDataKeysRS485::StopBits).toString());
+    Settings::set("modbusAddress", deviceData.value(DeviceDataKeysRS485::Address).toInt());
     Settings::popGroup(); // name
     Settings::popGroup(); // RS485
 
