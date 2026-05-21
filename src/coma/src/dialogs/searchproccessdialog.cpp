@@ -351,7 +351,6 @@ void SearchProccessDialog::showContextMenu(const QPoint &pos)
     QModelIndex statusIndex = model->index(index.row(), 5);
     QString status = model->data(statusIndex, Qt::DisplayRole).toString();
 
-    // TODO: Добавить логи и проверить почему появляется Response error
     QMenu menu(this);
     QAction *addAction = menu.addAction("Добавить в таблицу подключений");
     addAction->setEnabled(
