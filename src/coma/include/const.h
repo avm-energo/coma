@@ -10,7 +10,7 @@ inline constexpr const char *Parity = "parity";
 inline constexpr const char *StopBits = "stopBits";
 }
 
-namespace StatusIndexRS458
+namespace StatusIndexRS485
 {
 inline constexpr const char *Ok = "Ok";
 inline constexpr const char *Error = "Error";

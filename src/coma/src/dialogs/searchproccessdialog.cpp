@@ -207,22 +207,22 @@ void SearchProccessDialog::updateTable(quint32 row)
     auto statusIndex = model->index(row, 5);
     if (m_portError)
     {
-        model->setData(statusIndex, StatusIndexRS458::Error, Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::Error, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
     else if (m_timeout)
     {
-        model->setData(statusIndex, StatusIndexRS458::Timeout, Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::Timeout, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
     else if (m_responseError)
     {
-        model->setData(statusIndex, StatusIndexRS458::ResponseError, Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::ResponseError, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
     else if (m_responseReceived)
     {
-        model->setData(statusIndex, StatusIndexRS458::Ok, Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::Ok, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnyes.svg"), Qt::DecorationRole);
     }
 
@@ -354,7 +354,7 @@ void SearchProccessDialog::showContextMenu(const QPoint &pos)
     QMenu menu(this);
     QAction *addAction = menu.addAction("Добавить в таблицу подключений");
     addAction->setEnabled(
-        index.isValid() && (status == StatusIndexRS458::Ok || status == StatusIndexRS458::ResponseError));
+        index.isValid() && (status == StatusIndexRS485::Ok || status == StatusIndexRS485::ResponseError));
 
     if (menu.exec(m_tableView->viewport()->mapToGlobal(pos)) == addAction)
     {
