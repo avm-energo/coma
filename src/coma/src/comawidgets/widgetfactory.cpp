@@ -405,7 +405,7 @@ static QWidget *createModbusView(QWidget *parent)
     tableView->setItemDelegateForColumn(9, spinBoxDelegate);
 
     QStandardItemModel *model = new QStandardItemModel(tableView);
-    const QStringList header { "датчик", "скорость", "чётность", "стопБиты", "период опроса", "адрес", "данные",
+    const QStringList header { "датчик", "скорость", "четность", "стопБиты", "период опроса", "адрес", "данные",
         "функция", "регистр", "количество" };
     model->setHorizontalHeaderLabels(header);
     tableView->setModel(model);

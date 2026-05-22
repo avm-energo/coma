@@ -48,7 +48,7 @@ void SearchProccessDialog::setupUI()
 {
     auto mainLayout = new QVBoxLayout;
     auto tableViewModel = new QStandardItemModel(this);
-    QStringList headers { "Порт", "Адрес", "Скорость", "Чётность", "Стоп бит", "Статус" };
+    QStringList headers { "Порт", "Адрес", "Скорость", "Четность", "Стоп бит", "Статус" };
 
     tableViewModel->setHorizontalHeaderLabels(headers);
     m_tableView = TVFunc::New(this, "devicesTable", tableViewModel);
@@ -61,6 +61,7 @@ void SearchProccessDialog::setupUI()
     m_progressBar = new QProgressBar(this);
     m_progressBar->setOrientation(Qt::Horizontal);
     mainLayout->addWidget(m_progressBar);
+
     auto stopButton = new QPushButton("Остановить поиск", this);
     QObject::connect(stopButton, &QPushButton::clicked, this,
         [this]()
@@ -79,6 +80,7 @@ void SearchProccessDialog::setupUI()
 void SearchProccessDialog::errorHandler(const QSerialPort::SerialPortError error)
 {
     m_timeoutTimer->stop();
+
     switch (error)
     {
     case QSerialPort::SerialPortError::NoError:
@@ -103,6 +105,7 @@ void SearchProccessDialog::receiveResponse(QSerialPort *port)
             m_response.append(port->readAll());
             QCoreApplication::processEvents();
         }
+
         if (m_response.size() >= m_expectedResponseSize)
         {
             m_timeoutTimer->stop();
@@ -125,16 +128,19 @@ bool SearchProccessDialog::analyzeResponse(const QByteArray &actualResponse)
         const auto addr = static_cast<quint8>(actualResponse[0]);
         const auto funcCode = static_cast<quint8>(actualResponse[1]);
         const auto size = static_cast<quint8>(actualResponse[2]);
+
         if (addr == m_currentAddress && funcCode == 0x04 && size == (0x1e * 2))
         {
             auto crcBytes = actualResponse.right(sizeof(quint16));
             auto dataBytes = actualResponse.left(actualResponse.size() - sizeof(quint16));
             quint16 actualCrc = ((static_cast<quint8>(crcBytes[0]) << 8) | static_cast<quint8>(crcBytes[1]));
             utils::CRC16 expectedCrc(dataBytes);
+
             if (expectedCrc == actualCrc)
                 return true;
         }
     }
+
     return false;
 }
 
@@ -146,6 +152,7 @@ QByteArray SearchProccessDialog::createRequest()
     utils::CRC16 crc(request);
     request.append(crc.toByteArray());
     m_expectedResponseSize = (0x1e * 2) + 5;
+
     return request;
 }
 
@@ -153,6 +160,7 @@ void SearchProccessDialog::createModelItem(quint32 row, int addr, int baud, //
     QSerialPort::Parity parity, QSerialPort::StopBits stopBit)
 {
     auto model = static_cast<QStandardItemModel *>(m_tableView->model());
+
     if (model)
     {
         QList<QStandardItem *> items {
@@ -162,16 +170,17 @@ void SearchProccessDialog::createModelItem(quint32 row, int addr, int baud, //
         };
 
         if (parity == QSerialPort::Parity::NoParity)
-            items.append(new QStandardItem("Нет"));
+            items.append(new QStandardItem(ParityRS485::noParity));
         else if (parity == QSerialPort::Parity::OddParity)
-            items.append(new QStandardItem("Нечёт"));
+            items.append(new QStandardItem(ParityRS485::oddParity));
         else
-            items.append(new QStandardItem("Чёт"));
+            items.append(new QStandardItem(ParityRS485::evenParity));
 
         if (stopBit == QSerialPort::StopBits::OneStop)
             items.append(new QStandardItem("1"));
         else
             items.append(new QStandardItem("2"));
+
         items.append(new QStandardItem("Wait..."));
         model->appendRow(items);
         m_tableView->scrollTo(model->index(row, 0));
@@ -187,8 +196,10 @@ void SearchProccessDialog::sendRequest(QSerialPort *port)
         auto request = createRequest();
         port->write(request);
         m_timeoutTimer->start();
+
         while (!m_timeout && !m_responseReceived && !m_responseError && !m_portError && !m_stop)
             QCoreApplication::processEvents();
+
         if (m_portError)
             m_timeout = false;
     }
@@ -207,22 +218,22 @@ void SearchProccessDialog::updateTable(quint32 row)
     auto statusIndex = model->index(row, 5);
     if (m_portError)
     {
-        model->setData(statusIndex, StatusIndexRS485::Error, Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::error, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
     else if (m_timeout)
     {
-        model->setData(statusIndex, StatusIndexRS485::Timeout, Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::timeout, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
     else if (m_responseError)
     {
-        model->setData(statusIndex, StatusIndexRS485::ResponseError, Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::responseError, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
     else if (m_responseReceived)
     {
-        model->setData(statusIndex, StatusIndexRS485::Ok, Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::ok, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnyes.svg"), Qt::DecorationRole);
     }
 
@@ -248,6 +259,7 @@ void SearchProccessDialog::setMaxProgressBar()
     auto size = m_params.bauds.size() * m_params.parities.size() //
         * m_params.stopBits.size()                               //
         * (m_params.endAddr - m_params.startAddr + 1);           //
+
     m_progressBar->setMinimum(0);
     m_progressBar->setValue(0);
     m_progressBar->setMaximum(size);
@@ -287,6 +299,7 @@ void SearchProccessDialog::search()
                 port->setBaudRate(baud);
                 port->setParity(parity);
                 port->setStopBits(stopBit);
+
                 auto openStatus = port->open(QIODevice::ReadWrite);
                 for (auto addr = m_params.startAddr; addr <= m_params.endAddr; addr++)
                 {
@@ -299,10 +312,12 @@ void SearchProccessDialog::search()
 
                     m_currentAddress = static_cast<quint8>(addr);
                     createModelItem(row, addr, baud, parity, stopBit);
+
                     if (openStatus)
                         sendRequest(port);
                     else
                         m_portError = true;
+
                     updateTable(row);
                     updateProgressBar();
                     row++;
@@ -315,6 +330,7 @@ void SearchProccessDialog::search()
                         return;
                     }
                 }
+
                 port->flush();
                 port->close();
                 QCoreApplication::processEvents();
@@ -354,7 +370,7 @@ void SearchProccessDialog::showContextMenu(const QPoint &pos)
     QMenu menu(this);
     QAction *addAction = menu.addAction("Добавить в таблицу подключений");
     addAction->setEnabled(
-        index.isValid() && (status == StatusIndexRS485::Ok || status == StatusIndexRS485::ResponseError));
+        index.isValid() && (status == StatusIndexRS485::ok || status == StatusIndexRS485::responseError));
 
     if (menu.exec(m_tableView->viewport()->mapToGlobal(pos)) == addAction)
     {
@@ -390,12 +406,12 @@ void SearchProccessDialog::addToRS485TableView(const QModelIndex &sourceIndex)
     auto *srcModel = m_tableView->model();
     QMap<QString, QVariant> deviceData;
 
-    deviceData[DeviceDataKeysRS485::Name] = connectionName;
-    deviceData[DeviceDataKeysRS485::Port] = srcModel->data(srcModel->index(sourceIndex.row(), 0));
-    deviceData[DeviceDataKeysRS485::Address] = srcModel->data(srcModel->index(sourceIndex.row(), 1));
-    deviceData[DeviceDataKeysRS485::Baud] = srcModel->data(srcModel->index(sourceIndex.row(), 2));
-    deviceData[DeviceDataKeysRS485::Parity] = srcModel->data(srcModel->index(sourceIndex.row(), 3));
-    deviceData[DeviceDataKeysRS485::StopBits] = srcModel->data(srcModel->index(sourceIndex.row(), 4));
+    deviceData[SerialKeysRS485::name] = connectionName;
+    deviceData[SerialKeysRS485::port] = srcModel->data(srcModel->index(sourceIndex.row(), 0));
+    deviceData[SerialKeysRS485::address] = srcModel->data(srcModel->index(sourceIndex.row(), 1));
+    deviceData[SerialKeysRS485::baud] = srcModel->data(srcModel->index(sourceIndex.row(), 2));
+    deviceData[SerialKeysRS485::parity] = srcModel->data(srcModel->index(sourceIndex.row(), 3));
+    deviceData[SerialKeysRS485::stopBits] = srcModel->data(srcModel->index(sourceIndex.row(), 4));
 
     m_targetDialog->addConnectionFromSearch(deviceData);
     EMessageBox::information(this, "Устройство успешно добавлено!");

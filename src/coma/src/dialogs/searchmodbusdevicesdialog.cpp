@@ -1,4 +1,5 @@
 #include "dialogs/searchmodbusdevicesdialog.h"
+#include "const.h"
 
 #include <avm-widgets/cbfunc.h>
 #include <avm-widgets/chbfunc.h>
@@ -33,15 +34,18 @@ QGroupBox *SearchModbusDevicesDialog::createComGroupBox()
     QStringList comPorts;
     auto portList = QSerialPortInfo::availablePorts();
     comPorts.reserve(portList.size());
-    for (const auto &portInfo : portList)
+
+    for (const auto &portInfo : std::as_const(portList))
         comPorts << portInfo.portName();
 
     auto comGroupBox = new QGroupBox("Порт", this);
     auto comGroupBoxLayout = new QVBoxLayout;
     auto portSelect = CBFunc::New(comGroupBox, "portSelect", comPorts);
+
     m_widgets.port = portSelect;
     comGroupBoxLayout->addWidget(portSelect);
     comGroupBox->setLayout(comGroupBoxLayout);
+
     return comGroupBox;
 }
 
@@ -50,11 +54,13 @@ QGroupBox *SearchModbusDevicesDialog::createTimeoutGroupBox()
     auto timeoutGroupBox = new QGroupBox("Таймаут", this);
     auto timeoutGroupBoxLayout = new QHBoxLayout;
     auto timeoutSelect = SPBFunc::New(timeoutGroupBox, "timeoutSelect", 500, 5000, 0);
-    m_widgets.timeout = timeoutSelect;
     auto msLabel = LBLFunc::New(timeoutGroupBox, "мс.");
+
+    m_widgets.timeout = timeoutSelect;
     timeoutGroupBoxLayout->addWidget(timeoutSelect, Qt::AlignRight);
     timeoutGroupBoxLayout->addWidget(msLabel, Qt::AlignLeft);
     timeoutGroupBox->setLayout(timeoutGroupBoxLayout);
+
     return timeoutGroupBox;
 }
 
@@ -65,12 +71,15 @@ QGroupBox *SearchModbusDevicesDialog::createAddressGroupBox()
     auto firstItemLayout = new QHBoxLayout;
     auto startAddrLabel = LBLFunc::New(addrGroupBox, "Начало:");
     auto startAddrSelect = SPBFunc::New(addrGroupBox, "startAddrSelect", 1, 254, 0);
+
     m_widgets.startAddr = startAddrSelect;
     firstItemLayout->addWidget(startAddrLabel);
     firstItemLayout->addWidget(startAddrSelect);
+
     auto secondItemLayout = new QHBoxLayout;
     auto endAddrLabel = LBLFunc::New(addrGroupBox, "Конец:");
     auto endAddrSelect = SPBFunc::New(addrGroupBox, "endAddrSelect", 1, 254, 0);
+
     endAddrSelect->setValue(254);
     m_widgets.endAddr = endAddrSelect;
     secondItemLayout->addWidget(endAddrLabel);
@@ -78,6 +87,7 @@ QGroupBox *SearchModbusDevicesDialog::createAddressGroupBox()
     addrGroupBoxLayout->addLayout(firstItemLayout);
     addrGroupBoxLayout->addLayout(secondItemLayout);
     addrGroupBox->setLayout(addrGroupBoxLayout);
+
     return addrGroupBox;
 }
 
@@ -87,27 +97,35 @@ QGroupBox *SearchModbusDevicesDialog::createBaudGroupBox()
     auto baudGroupBoxLayout = new QVBoxLayout;
     auto baudGridLayout = new QGridLayout;
     std::size_t index = 0;
+
     auto baudCheckBox1 = ChBFunc::New(baudGroupBox, "baudCheckBox1", "2400");
     baudGridLayout->addWidget(baudCheckBox1, 0, 0, 1, 1);
     m_widgets.baud[index++] = baudCheckBox1;
     auto baudCheckBox2 = ChBFunc::New(baudGroupBox, "baudCheckBox2", "4800");
+
     baudGridLayout->addWidget(baudCheckBox2, 0, 1, 1, 1);
     m_widgets.baud[index++] = baudCheckBox2;
+
     auto baudCheckBox3 = ChBFunc::New(baudGroupBox, "baudCheckBox3", "9600");
     baudGridLayout->addWidget(baudCheckBox3, 0, 2, 1, 1);
     m_widgets.baud[index++] = baudCheckBox3;
+
     auto baudCheckBox4 = ChBFunc::New(baudGroupBox, "baudCheckBox4", "19200");
     baudGridLayout->addWidget(baudCheckBox4, 1, 0, 1, 1);
     m_widgets.baud[index++] = baudCheckBox4;
+
     auto baudCheckBox5 = ChBFunc::New(baudGroupBox, "baudCheckBox5", "38400");
     baudGridLayout->addWidget(baudCheckBox5, 1, 1, 1, 1);
     m_widgets.baud[index++] = baudCheckBox5;
+
     auto baudCheckBox6 = ChBFunc::New(baudGroupBox, "baudCheckBox6", "57600");
     baudGridLayout->addWidget(baudCheckBox6, 1, 2, 1, 1);
     m_widgets.baud[index++] = baudCheckBox6;
+
     auto baudCheckBox7 = ChBFunc::New(baudGroupBox, "baudCheckBox7", "115200");
     baudGridLayout->addWidget(baudCheckBox7, 2, 0, 1, 1);
     m_widgets.baud[index] = baudCheckBox7;
+
     auto buttonsLayout = new QHBoxLayout;
     auto selectAllButton = PBFunc::New(baudGroupBox, "selectAllBaudButton", //
         "Выбрать все", this,
@@ -117,6 +135,7 @@ QGroupBox *SearchModbusDevicesDialog::createBaudGroupBox()
                 checkBox->setCheckState(Qt::CheckState::Checked);
         });
     buttonsLayout->addWidget(selectAllButton);
+
     auto clearAllButton = PBFunc::New(baudGroupBox, "clearAllBaudButton", //
         "Очистить все", this,
         [this]
@@ -128,25 +147,30 @@ QGroupBox *SearchModbusDevicesDialog::createBaudGroupBox()
     baudGroupBoxLayout->addLayout(baudGridLayout);
     baudGroupBoxLayout->addLayout(buttonsLayout);
     baudGroupBox->setLayout(baudGroupBoxLayout);
+
     return baudGroupBox;
 }
 
 QGroupBox *SearchModbusDevicesDialog::createParityGroupBox()
 {
-    auto parityGroupBox = new QGroupBox("Чётность", this);
+    auto parityGroupBox = new QGroupBox("Четность", this);
     auto parityGroupBoxLayout = new QVBoxLayout;
     auto parityMainLayout = new QHBoxLayout;
-    auto parityCheckBox1 = ChBFunc::New(parityGroupBox, "parityCheckBox1", "Нет");
+    auto parityCheckBox1 = ChBFunc::New(parityGroupBox, "parityCheckBox1", ParityRS485::noParity);
+
     parityMainLayout->addWidget(parityCheckBox1);
     m_widgets.parityNone = parityCheckBox1;
-    auto parityCheckBox2 = ChBFunc::New(parityGroupBox, "parityCheckBox2", "Нечёт");
+
+    auto parityCheckBox2 = ChBFunc::New(parityGroupBox, "parityCheckBox2", ParityRS485::oddParity);
     parityMainLayout->addWidget(parityCheckBox2);
     m_widgets.parityOdd = parityCheckBox2;
-    auto parityCheckBox3 = ChBFunc::New(parityGroupBox, "parityCheckBox3", "Чёт");
+
+    auto parityCheckBox3 = ChBFunc::New(parityGroupBox, "parityCheckBox3", ParityRS485::evenParity);
     parityMainLayout->addWidget(parityCheckBox3);
     m_widgets.parityEven = parityCheckBox3;
     parityGroupBoxLayout->addLayout(parityMainLayout);
     parityGroupBox->setLayout(parityGroupBoxLayout);
+
     return parityGroupBox;
 }
 
@@ -156,13 +180,16 @@ QGroupBox *SearchModbusDevicesDialog::createStopbitsGroupBox()
     auto stopbitsGroupBoxLayout = new QVBoxLayout;
     auto stopbitsMainLayout = new QHBoxLayout;
     auto stopbitCheckBox1 = ChBFunc::New(stopbitsGroupBox, "stopbitCheckBox1", "1");
+
     stopbitsMainLayout->addWidget(stopbitCheckBox1);
     m_widgets.stopBitOne = stopbitCheckBox1;
+
     auto stopbitCheckBox2 = ChBFunc::New(stopbitsGroupBox, "stopbitCheckBox2", "2");
     stopbitsMainLayout->addWidget(stopbitCheckBox2);
     m_widgets.stopBitTwo = stopbitCheckBox2;
     stopbitsGroupBoxLayout->addLayout(stopbitsMainLayout);
     stopbitsGroupBox->setLayout(stopbitsGroupBoxLayout);
+
     return stopbitsGroupBox;
 }
 
@@ -173,8 +200,10 @@ QHBoxLayout *SearchModbusDevicesDialog::createControlLayout()
         "Поиск", this, [this] { runSearch(); });
     auto cancelButton = PBFunc::New(this, "cancelButton",       //
         "Отмена", this, [this] { close(); });
+
     controlLayout->addWidget(runSearchButton);
     controlLayout->addWidget(cancelButton);
+
     return controlLayout;
 }
 
@@ -182,8 +211,10 @@ void SearchModbusDevicesDialog::setupUI()
 {
     auto mainLayout = new QVBoxLayout;
     auto firstRow = new QHBoxLayout;
+
     firstRow->addWidget(createComGroupBox());
     firstRow->addWidget(createTimeoutGroupBox());
+
     auto secondRow = new QVBoxLayout;
     secondRow->addWidget(createAddressGroupBox());
     secondRow->addWidget(createBaudGroupBox());
@@ -206,6 +237,7 @@ void SearchModbusDevicesDialog::getData()
     m_data.timeout = static_cast<int>(m_widgets.timeout->value());
     m_data.startAddr = static_cast<int>(m_widgets.startAddr->value());
     m_data.endAddr = static_cast<int>(m_widgets.endAddr->value());
+
     for (auto &checkBox : m_widgets.baud)
         if (checkBox->isChecked())
             m_data.bauds.push_back(static_cast<qint32>(checkBox->text().toInt()));
