@@ -1,6 +1,6 @@
 #include "dialogs/searchmodbusdevicesdialog.h"
 #include "const.h"
-#include "utils.h"
+#include "interfaces/utils/utils.h"
 
 #include <avm-widgets/cbfunc.h>
 #include <avm-widgets/chbfunc.h>
@@ -97,35 +97,16 @@ QGroupBox *SearchModbusDevicesDialog::createBaudGroupBox()
     auto baudGroupBox = new QGroupBox("Скорости", this);
     auto baudGroupBoxLayout = new QVBoxLayout;
     auto baudGridLayout = new QGridLayout;
-    std::size_t index = 0;
+    std::size_t index = 0, rows = 3;
 
-    auto baudCheckBox1 = ChBFunc::New(baudGroupBox, "baudCheckBox1", Utils::braudToString(QSerialPort::Baud2400));
-    baudGridLayout->addWidget(baudCheckBox1, 0, 0, 1, 1);
-    m_widgets.baud[index++] = baudCheckBox1;
-    auto baudCheckBox2 = ChBFunc::New(baudGroupBox, "baudCheckBox2", Utils::braudToString(QSerialPort::Baud4800));
+    QStringList bauds = SerialUtils::allBaudValuesRS485();
 
-    baudGridLayout->addWidget(baudCheckBox2, 0, 1, 1, 1);
-    m_widgets.baud[index++] = baudCheckBox2;
-
-    auto baudCheckBox3 = ChBFunc::New(baudGroupBox, "baudCheckBox3", Utils::braudToString(QSerialPort::Baud9600));
-    baudGridLayout->addWidget(baudCheckBox3, 0, 2, 1, 1);
-    m_widgets.baud[index++] = baudCheckBox3;
-
-    auto baudCheckBox4 = ChBFunc::New(baudGroupBox, "baudCheckBox4", Utils::braudToString(QSerialPort::Baud19200));
-    baudGridLayout->addWidget(baudCheckBox4, 1, 0, 1, 1);
-    m_widgets.baud[index++] = baudCheckBox4;
-
-    auto baudCheckBox5 = ChBFunc::New(baudGroupBox, "baudCheckBox5", Utils::braudToString(QSerialPort::Baud38400));
-    baudGridLayout->addWidget(baudCheckBox5, 1, 1, 1, 1);
-    m_widgets.baud[index++] = baudCheckBox5;
-
-    auto baudCheckBox6 = ChBFunc::New(baudGroupBox, "baudCheckBox6", Utils::braudToString(QSerialPort::Baud57600));
-    baudGridLayout->addWidget(baudCheckBox6, 1, 2, 1, 1);
-    m_widgets.baud[index++] = baudCheckBox6;
-
-    auto baudCheckBox7 = ChBFunc::New(baudGroupBox, "baudCheckBox7", Utils::braudToString(QSerialPort::Baud115200));
-    baudGridLayout->addWidget(baudCheckBox7, 2, 0, 1, 1);
-    m_widgets.baud[index] = baudCheckBox7;
+    for (const auto &baud : bauds)
+    {
+        auto baudCheckBox = ChBFunc::New(baudGroupBox, QString("baudCheckBox%1").arg(index), baud);
+        baudGridLayout->addWidget(baudCheckBox, index/rows, index%rows, 1, 1);
+        m_widgets.baud[index++] = baudCheckBox;
+    }
 
     auto buttonsLayout = new QHBoxLayout;
     auto selectAllButton = PBFunc::New(baudGroupBox, "selectAllBaudButton", //
@@ -180,12 +161,12 @@ QGroupBox *SearchModbusDevicesDialog::createStopbitsGroupBox()
     auto stopbitsGroupBox = new QGroupBox("Стоп-биты", this);
     auto stopbitsGroupBoxLayout = new QVBoxLayout;
     auto stopbitsMainLayout = new QHBoxLayout;
-    auto stopbitCheckBox1 = ChBFunc::New(stopbitsGroupBox, "stopbitCheckBox1", Utils::stopBitsToString(QSerialPort::StopBits::OneStop));
+    auto stopbitCheckBox1 = ChBFunc::New(stopbitsGroupBox, "stopbitCheckBox1", SerialUtils::stopBitsToString(QSerialPort::StopBits::OneStop));
 
     stopbitsMainLayout->addWidget(stopbitCheckBox1);
     m_widgets.stopBitOne = stopbitCheckBox1;
 
-    auto stopbitCheckBox2 = ChBFunc::New(stopbitsGroupBox, "stopbitCheckBox2", Utils::stopBitsToString(QSerialPort::StopBits::TwoStop));
+    auto stopbitCheckBox2 = ChBFunc::New(stopbitsGroupBox, "stopbitCheckBox2", SerialUtils::stopBitsToString(QSerialPort::StopBits::TwoStop));
     stopbitsMainLayout->addWidget(stopbitCheckBox2);
     m_widgets.stopBitTwo = stopbitCheckBox2;
     stopbitsGroupBoxLayout->addLayout(stopbitsMainLayout);

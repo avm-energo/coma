@@ -1,7 +1,7 @@
 #include "dialogs/searchproccessdialog.h"
 
 #include "const.h"
-#include "utils.h"
+#include "interfaces/utils/utils.h"
 #include "dialogs/interfaceserialdialog.h"
 #include <avm-gen/stdfunc.h>
 #include <avm-gen/utils/crc16.h>
@@ -178,9 +178,9 @@ void SearchProccessDialog::createModelItem(quint32 row, int addr, int baud, //
             items.append(new QStandardItem(ParityRS485::evenParity));
 
         if (stopBit == QSerialPort::StopBits::OneStop)
-            items.append(new QStandardItem(Utils::stopBitsToString(QSerialPort::StopBits::OneStop)));
+            items.append(new QStandardItem(SerialUtils::stopBitsToString(QSerialPort::StopBits::OneStop)));
         else
-            items.append(new QStandardItem(Utils::stopBitsToString(QSerialPort::StopBits::TwoStop)));
+            items.append(new QStandardItem(SerialUtils::stopBitsToString(QSerialPort::StopBits::TwoStop)));
 
         items.append(new QStandardItem("Wait..."));
         model->appendRow(items);

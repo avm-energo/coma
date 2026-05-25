@@ -1,7 +1,7 @@
 #include "dialogs/interfaceserialdialog.h"
 
 #include "const.h"
-#include "utils.h"
+#include "interfaces/utils/utils.h"
 #include <avm-gen/error.h>
 #include <avm-gen/settings.h>
 #include <avm-gen/stdfunc.h>
@@ -143,7 +143,7 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
     portcb->setCurrentIndex(portIndex >= 0 ? portIndex : 0); // проверить и выставить порт по умолчанию
     layout->addWidget(portcb, count++, 1, 1, 1);
 
-    QStringList sl = Utils::allBaudValuesRS485();
+    QStringList sl = SerialUtils::allBaudValuesRS485();
     layout->addWidget(LBLFunc::New(dialog, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
 
     auto speedcb = CBFunc::New(dialog, "speedcb", sl);
@@ -231,7 +231,7 @@ void InterfaceSerialDialog::addInterface()
     layout->addWidget(LBLFunc::New(dialog, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
     layout->addWidget(CBFunc::New(dialog, "portcb", ports), count++, 1, 1, 1);
 
-    QStringList sl = Utils::allBaudValuesRS485();
+    QStringList sl = SerialUtils::allBaudValuesRS485();
     layout->addWidget(LBLFunc::New(dialog, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
     layout->addWidget(CBFunc::New(dialog, "speedcb", sl), count++, 1, 1, 1);
 
@@ -242,8 +242,8 @@ void InterfaceSerialDialog::addInterface()
     layout->addWidget(CBFunc::New(dialog, "paritycb", sl), count++, 1, 1, 1);
     layout->addWidget(LBLFunc::New(dialog, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
 
-    sl = QStringList({ Utils::stopBitsToString(QSerialPort::StopBits::OneStop),
-                       Utils::stopBitsToString(QSerialPort::StopBits::TwoStop) });
+    sl = QStringList({ SerialUtils::stopBitsToString(QSerialPort::StopBits::OneStop),
+                       SerialUtils::stopBitsToString(QSerialPort::StopBits::TwoStop) });
     layout->addWidget(CBFunc::New(dialog, "stopbitcb", sl), count++, 1, 1, 1);
     layout->addWidget(LBLFunc::New(dialog, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
     layout->addWidget(SPBFunc::New(dialog, "addressspb", 0, 255, 0), count++, 1, 1, 1);

@@ -4,9 +4,9 @@
 #include <QStringList>
 #include <QSerialPort>
 
-namespace Utils
+namespace SerialUtils
 {
-QString braudToString(QSerialPort::BaudRate rate);
+QString baudToString(QSerialPort::BaudRate rate);
 const QStringList& allBaudValuesRS485();
 
 QString stopBitsToString(QSerialPort::StopBits bit);

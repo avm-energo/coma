@@ -1,6 +1,6 @@
-#include "utils.h"
+#include "interfaces/utils/utils.h"
 
-namespace Utils
+namespace SerialUtils
 {
 QString braudToString(QSerialPort::BaudRate rate)
 {
