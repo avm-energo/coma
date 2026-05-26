@@ -6,8 +6,6 @@
 
 namespace SerialUtils
 {
-QString baudToString(QSerialPort::BaudRate rate);
 const QStringList& allBaudValuesRS485();
-
 QString stopBitsToString(QSerialPort::StopBits bit);
 }
