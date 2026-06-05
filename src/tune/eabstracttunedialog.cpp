@@ -4,7 +4,6 @@
 #include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/pkdnfiles.h"
-#include "../gen/maindef.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/waitwidget.h"

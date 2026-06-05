@@ -6,8 +6,8 @@
 #include "../gen/colors.h"
 #include "../gen/commands.h"
 #include "../gen/error.h"
-#include "../gen/pkdnfiles.h"
 #include "../gen/maindef.h"
+#include "../gen/pkdnfiles.h"
 #include "../gen/timefunc.h"
 #include "../widgets/egroupbox.h"
 #include "../widgets/emessagebox.h"
@@ -64,19 +64,19 @@ void A1Dialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     setStyleSheet(uconfWSS);
     QGridLayout *glyout = new QGridLayout;
-    EGroupBox *gb = new EGroupBox("Конфигурация");
-    glyout->addWidget(WDFunc::NewLBL(this, "Варианты использования:"), 0, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLBLT(this, "1", "tunevar1", valuesLBLSS, ""), 0, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "2", "tunevar2", valuesLBLSS, ""), 0, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "3", "tunevar3", valuesLBLSS, ""), 0, 3, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef1", valuesLBLSS, ""), 1, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef2", valuesLBLSS, ""), 1, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef3", valuesLBLSS, ""), 1, 3, 1, 1);
-    glyout->setColumnStretch(0, 10);
-    gb->setLayout(glyout);
-    lyout->addWidget(gb);
-    glyout = new QGridLayout;
-    gb = new EGroupBox("Измерения в первичном масштабе");
+    // EGroupBox *gb = new EGroupBox("Конфигурация");
+    // glyout->addWidget(WDFunc::NewLBL(this, "Варианты использования:"), 0, 0, 1, 1, Qt::AlignRight);
+    // glyout->addWidget(WDFunc::NewLBLT(this, "1", "tunevar1", valuesLBLSS, ""), 0, 1, 1, 1);
+    // glyout->addWidget(WDFunc::NewLBLT(this, "2", "tunevar2", valuesLBLSS, ""), 0, 2, 1, 1);
+    // glyout->addWidget(WDFunc::NewLBLT(this, "3", "tunevar3", valuesLBLSS, ""), 0, 3, 1, 1);
+    // glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef1", valuesLBLSS, ""), 1, 1, 1, 1);
+    // glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef2", valuesLBLSS, ""), 1, 2, 1, 1);
+    // glyout->addWidget(WDFunc::NewLBLT(this, "", "tunevarcoef3", valuesLBLSS, ""), 1, 3, 1, 1);
+    // glyout->setColumnStretch(0, 10);
+    // gb->setLayout(glyout);
+    // lyout->addWidget(gb);
+    // glyout = new QGridLayout;
+    EGroupBox *gb = new EGroupBox("Измерения в первичном масштабе");
     glyout->addWidget(WDFunc::NewLBL(this, "U1, кВ"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1", valuesLBLSS, ""), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "U2, кВ"), 0, 2, 1, 1, Qt::AlignRight);

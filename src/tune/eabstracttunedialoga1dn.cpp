@@ -136,6 +136,13 @@ bool EAbstractTuneDialogA1DN::SetTuneParameters()
         DBGMSG;
         return false;
     }
+    QString tmps = WDFunc::CBData(this, "SecVoltage");
+    if (!tmps.isEmpty())
+    {
+        m_nomSecVoltage = (tmps == "100") ? static_cast<float>(100) : static_cast<float>(100) / sqrt(3);
+        m_isSecVoltageIs100 = (tmps == "100");
+    }
+
     if (((m_DNType == DNT_OWN) && (m_kdn > m_kdnet)) || ((m_DNType == DNT_FOREIGN) && (m_kdn < m_kdnet)))
     {
         QString tmps = (m_DNType == DNT_OWN) ? "своего" : "внешнего";
@@ -157,12 +164,6 @@ bool EAbstractTuneDialogA1DN::SetTuneParameters()
         WDFunc::LENumber(this, "dnfnumle", Bac_block2.DNFNum);
     else
         WDFunc::LENumber(this, "dnfnumle", Bac_block3.DNFNum);
-    QString tmps = WDFunc::CBData(this, "SecVoltage");
-    if (!tmps.isEmpty())
-    {
-        m_nomSecVoltage = (tmps == "100") ? static_cast<float>(100) : static_cast<float>(100) / sqrt(3);
-        m_isSecVoltageIs100 = (tmps == "100");
-    }
     Accepted = true;
     return true;
 }

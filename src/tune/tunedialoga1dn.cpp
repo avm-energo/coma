@@ -3,9 +3,9 @@
 #include "../gen/colors.h"
 #include "../gen/commands.h"
 #include "../gen/error.h"
-#include "../gen/pkdnfiles.h"
 #include "../gen/maindef.h"
 #include "../gen/modulebsi.h"
+#include "../gen/pkdnfiles.h"
 #include "../widgets/egroupbox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
@@ -282,7 +282,7 @@ QWidget *TuneDialogA1DN::CommonUI()
     lyout->addWidget(WDFunc::NewLBL(this, "Номинальные коэффициенты деления своего ДН (0 - ступень отсутствует):"), 0);
     hlyout = new QHBoxLayout;
     for (int i = 0; i < 3; ++i)
-        hlyout->addWidget(WDFunc::NewSPB(this, "K_DNSPB." + QString::number(i), 1, 10000, 0, UCONFWCLR));
+        hlyout->addWidget(WDFunc::NewSPB(this, "K_DNSPB." + QString::number(i), 1, 10000, 2, UCONFWCLR));
     lyout->addLayout(hlyout);
     // hlyout = new QHBoxLayout;
     // lyout->addWidget(
