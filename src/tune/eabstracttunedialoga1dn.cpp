@@ -143,7 +143,11 @@ bool EAbstractTuneDialogA1DN::SetTuneParameters()
         m_isSecVoltageIs100 = (tmps == "100");
     }
 
-    if (((m_DNType == DNT_OWN) && (m_kdn > m_kdnet)) || ((m_DNType == DNT_FOREIGN) && (m_kdn < m_kdnet)))
+    float maxVoltage = 180.7;
+    float maxAmpl
+        = (m_mode == MODE_ALTERNATIVE) ? maxVoltage / m_nomSecVoltage / sqrt(2) : maxVoltage / m_nomSecVoltage;
+    float kdnet_allowed = maxAmpl * m_kdnet;
+    if (((m_DNType == DNT_OWN) && (m_kdn > kdnet_allowed)) || ((m_DNType == DNT_FOREIGN) && (m_kdn < kdnet_allowed)))
     {
         QString tmps = (m_DNType == DNT_OWN) ? "своего" : "внешнего";
         QString tmps2 = (m_DNType == DNT_OWN) ? "больше" : "меньше";

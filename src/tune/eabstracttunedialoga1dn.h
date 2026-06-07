@@ -133,7 +133,7 @@ public:
     ReportHeaderStructure ReportHeader;
     PovDevStruct PovDev;
     DdStruct Dd_Block[TUNEA1LEVELS];
-    int m_voltageType, m_DNType;
+    int m_voltageType, m_DNType; // m_voltageType == 0 => alternative, 1 => direct
     //    int Index;
     float CurrentS; // текущее значение нагрузки
     int m_povType;  // тип поверяемого оборудования (по какому ГОСТу)
