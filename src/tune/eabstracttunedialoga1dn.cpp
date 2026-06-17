@@ -50,18 +50,18 @@ void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
     {
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(this, "Коэффициент деления для данного варианта: "));
-        hlyout->addWidget(WDFunc::NewSPB(this, "kdnspb", 5, 99999, 0), 10);
+        hlyout->addWidget(WDFunc::NewSPB(this, "kdnspb", 5, 99999, 2), 10);
         lyout->addLayout(hlyout);
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(this, "Коэффициент деления эталона: "));
-        hlyout->addWidget(WDFunc::NewSPB(this, "kdnetspb", 5, 99999, 0), 10);
+        hlyout->addWidget(WDFunc::NewSPB(this, "kdnetspb", 5, 99999, 2), 10);
         lyout->addLayout(hlyout);
     }
     else
     {
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(this, "Коэффициент деления поверяемого ТН(ДН): "));
-        hlyout->addWidget(WDFunc::NewSPB(this, "kdnetspb", 5, 99999, 0), 10);
+        hlyout->addWidget(WDFunc::NewSPB(this, "kdnetspb", 5, 99999, 2), 10);
         lyout->addLayout(hlyout);
     }
     hlyout = new QHBoxLayout;
