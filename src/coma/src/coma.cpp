@@ -21,6 +21,13 @@
  */
 
 #include <alarms/alarmwidget.h>
+#include <avm-gen/errorqueue.h>
+#include <avm-gen/files.h>
+#include <avm-gen/logger.h>
+#include <avm-gen/settings.h>
+#include <avm-gen/stdfunc.h>
+#include <avm-gen/timefunc.h>
+#include <avm-widgets/animatedpopup.h>
 #include <avm-widgets/emessagebox.h>
 #include <avm-widgets/epopup.h>
 #include <avm-widgets/filefunc.h>
@@ -43,12 +50,6 @@
 #include <dialogs/reconnectdialog.h>
 #include <dialogs/settingsdialog.h>
 #include <dialogs/slicegetdialog.h>
-#include <avm-gen/errorqueue.h>
-#include <avm-gen/files.h>
-#include <avm-gen/logger.h>
-#include <avm-gen/settings.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-gen/timefunc.h>
 #include <interfaces/types/serial_settings.h>
 #include <journals/journalviewer.h>
 #include <oscillograms/dialogs/switchjournaldialog.h>
@@ -85,6 +86,7 @@ Coma::Coma(QWidget *parent)
     connect(this, &Coma::settingsChanged, m_connectionManager, &ConnectionManager::settingsChanged);
     EMessageBox::setHash(
         Settings::get("passwordHash", "d93fdd6d1fb5afcca939fa650b62541d09dbcb766f41c39352dc75f348fb35dc"));
+    AnimatedPopup::setParent(this);
 }
 
 Coma::~Coma() { }
