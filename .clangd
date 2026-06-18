@@ -1,0 +1,23 @@
+CompileFlags:
+  # Qt Creator generates .qtc_clangd/compile_commands.json with full project coverage.
+  # The regular compile_commands.json only has dependency files.
+  CompilationDatabase: build/Desktop-Debug/.qtc_clangd
+
+  # Strip Qt Creator-specific flags that clangd doesn't need
+  Remove:
+    - -fcolor-diagnostics
+    - -fno-direct-access-external-data
+    - -fmessage-length=0
+    - -fdiagnostics-show-note-include-stack
+    - -fretain-comments-from-system-headers
+    - -fmacro-backtrace-limit=0
+    - -ferror-limit=*
+    - -fsyntax-only
+    - -Wno-documentation-unknown-command
+    - -Wno-unknown-warning-option
+    - -Wno-unknown-pragmas
+    - -DQ_CREATOR_RUN
+    - "-DQT_ANNOTATE_FUNCTION*"
+
+Diagnostics:
+  UnusedIncludes: None

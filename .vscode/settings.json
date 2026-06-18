@@ -1,0 +1,18 @@
+{
+    // Disable Microsoft IntelliSense — clangd handles everything
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "C_Cpp.autocomplete": "disabled",
+    "C_Cpp.errorSquiggles": "disabled",
+
+    // clangd: compile_commands.json is in .qtc_clangd (full project coverage)
+    "clangd.arguments": [
+        "--background-index",
+        "--clang-tidy",
+        "--header-insertion=never",
+        "--log=error"
+    ],
+
+    // CMake Tools: point to existing build directory
+    "cmake.buildDirectory": "${workspaceFolder}/build/Desktop-Debug",
+    "cmake.configureOnOpen": false
+}
