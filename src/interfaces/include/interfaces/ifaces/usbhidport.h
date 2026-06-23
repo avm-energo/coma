@@ -12,6 +12,10 @@ class UsbHidPort final : public BaseInterface
 private:
     hid_device *m_hidDevice;
     UsbHidSettings *m_settings;
+    QTimer *m_pollTimer = nullptr;
+    QQueue<QByteArray> m_readBuffer; // Очередь для пакетов
+
+    void checkForData();
 
 public:
     explicit UsbHidPort(UsbHidSettings *settings, QObject *parent = nullptr);
@@ -25,4 +29,5 @@ private:
     bool write(const QByteArray &ba) override;
     bool writeDataToPort(QByteArray &command);
     void hidErrorHandle();
+    void startTPolling();
 };

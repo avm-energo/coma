@@ -37,18 +37,15 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
 
         if (m_strategy == Strategy::Sync)
         {
-            auto ifaceThread = new QThread;
             auto parserThread = new QThread;
             // Старт
-            QObject::connect(ifaceThread, &QThread::started, m_iface, &BaseInterface::poll);
+            // QObject::connect(ifaceThread, &QThread::started, m_iface, &BaseInterface::poll);
+            QObject::connect(m_iface, &BaseInterface::readyRead, m_iface, &BaseInterface::poll);
             QObject::connect(parserThread, &QThread::started, m_executor, &DefaultQueryExecutor::exec);
             // Остановка
-            QObject::connect(m_iface, &BaseInterface::finished, ifaceThread, &QThread::quit);
             QObject::connect(m_iface, &BaseInterface::finished, parserThread, &QThread::quit);
             QObject::connect(m_executor, &DefaultQueryExecutor::finished, parserThread, &QThread::quit);
-            QObject::connect(ifaceThread, &QThread::finished, m_iface, &QObject::deleteLater);
             QObject::connect(parserThread, &QThread::finished, m_executor, &QObject::deleteLater);
-            QObject::connect(ifaceThread, &QThread::finished, &QObject::deleteLater);
             QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
             // Если интерфейс успешно запустился
             QObject::connect(iface, &BaseInterface::started, m_iface,
@@ -56,12 +53,9 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
                 {
                     qDebug() << m_iface->metaObject()->className() << " connected";
                     executor->moveToThread(parserThread);
-                    iface->moveToThread(ifaceThread);
                     parserThread->start();
-                    ifaceThread->start();
                     executor->start();
                 });
-            m_syncThreads.first = ifaceThread;
             m_syncThreads.second = parserThread;
         }
         else

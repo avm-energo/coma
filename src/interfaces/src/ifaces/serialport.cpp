@@ -16,6 +16,7 @@ SerialPort::SerialPort(SerialSettings *settings, QObject *parent)
     m_port->setFlowControl(QSerialPort::NoFlowControl);
     m_port->setReadBufferSize(1024);
     QObject::connect(m_port, &QSerialPort::errorOccurred, this, &SerialPort::errorOccurred);
+    QObject::connect(m_port, &QSerialPort::readyRead, this, &BaseInterface::readyRead);
 }
 
 bool SerialPort::connect()
@@ -45,22 +46,18 @@ void SerialPort::disconnect()
 QByteArray SerialPort::read(bool &status)
 {
     QByteArray data;
-    bool readyRead = true;                        // enabling read flag
-    if (!m_port->bytesAvailable())                // if no data
-        readyRead = m_port->waitForReadyRead(10); // wait data (timeout 10 ms)
-    if (readyRead)
+
+    m_dataGuard.lock(); // Нужен ли мьютекс?
+    if (m_port->bytesAvailable())
+        status = true;
+
+    while (m_port->bytesAvailable())
     {
-        m_dataGuard.lock();                       // lock port
-        while (m_port->bytesAvailable())
-        {
-            data += m_port->readAll();            // read data
-            QThread::msleep(2);
-        }
-        m_dataGuard.unlock();                     // unlock port
+        data += m_port->readAll();
+        m_port->waitForReadyRead(20);
     }
-    if (data.isEmpty())
-        QCoreApplication::processEvents();
-    status = true;
+    m_dataGuard.unlock();
+
     return data;
 }
 

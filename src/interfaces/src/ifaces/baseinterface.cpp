@@ -56,37 +56,20 @@ void BaseInterface::writeLog(const Error::Msg msg)
 }
 
 void BaseInterface::poll()
-{
-    Interface::State state;
-    bool status;
-    do
-    {
-        state = getState();
-        if (state == Interface::State::Disconnect)
-            break;
-        else if (state == Interface::State::Run)
-        {
-            status = true;
-            auto data = read(status); // read data
-            if (!data.isEmpty() && status)
-            {
-                writeLog(data.toHex(), Interface::Direction::FromDevice);
-                emit dataReceived(data);
-                emit executorWakeUp();
-            }
-        }
-        else
-        {
-            QCoreApplication::processEvents();
-            state = getState();
-        }
-    } while (state != Interface::State::Disconnect);
+{   
+    Interface::State state = getState();
+    if (state != Interface::State::Run)
+        return;
 
-    // Finish thread
-    disconnect();
-    m_log.writeLog(Logger::MessageTypes::Info, QString(metaObject()->className()) + " is finished\n");
-    emit finished();
-    QCoreApplication::processEvents();
+    bool status = true;
+    QByteArray data = read(status);
+
+    if (!data.isEmpty() && status)
+    {
+        writeLog(data.toHex(), Interface::Direction::FromDevice);
+        emit dataReceived(data);
+        emit executorWakeUp();
+    }
 }
 
 void BaseInterface::writeData(const QByteArray &ba)
@@ -114,8 +97,14 @@ void BaseInterface::writeData(const QByteArray &ba)
 
 void BaseInterface::close()
 {
+    // После дисконекта не работает кнопка Соединения
     setState(Interface::State::Disconnect);
     emit clearQueries();
+
+    disconnect();
+    emit finished(); // Проверить насколько безопасно перемещать сюда из poll
+
+    m_log.writeLog(Logger::MessageTypes::Info, QString(metaObject()->className()) + " is finished\n");
 }
 
 void BaseInterface::reconnect()
