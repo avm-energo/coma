@@ -52,7 +52,6 @@ QByteArray Ethernet::read(bool &status)
 {
     QByteArray data;
 
-    m_dataGuard.lock(); // Нужен ли мьютекс?
     if (m_socket->bytesAvailable())
         status = true;
 
@@ -60,7 +59,6 @@ QByteArray Ethernet::read(bool &status)
     {
         data += m_socket->readAll();
     }
-    m_dataGuard.unlock();
 
     return data;
 }

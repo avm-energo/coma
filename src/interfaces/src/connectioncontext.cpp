@@ -39,7 +39,6 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
         {
             auto parserThread = new QThread;
             // Старт
-            // QObject::connect(ifaceThread, &QThread::started, m_iface, &BaseInterface::poll);
             QObject::connect(m_iface, &BaseInterface::readyRead, m_iface, &BaseInterface::poll);
             QObject::connect(parserThread, &QThread::started, m_executor, &DefaultQueryExecutor::exec);
             // Остановка
@@ -56,7 +55,6 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
                     parserThread->start();
                     executor->start();
                 });
-            m_syncThreads.second = parserThread;
         }
         else
         {
@@ -93,7 +91,7 @@ bool ConnectionContext::run(AsyncConnection *connection)
             m_iface->close();
             m_iface->deleteLater();
             m_executor->deleteLater();
-            m_syncThreads.second->deleteLater();
+            m_parcerThreads->deleteLater();
             return false;
         }
         return true;
@@ -110,7 +108,6 @@ void ConnectionContext::reset()
     if (isValid())
     {
         QEventLoop waiter;
-        QObject::connect(m_iface, &BaseInterface::finished, &waiter, &QEventLoop::quit);
         QObject::connect(m_executor, &DefaultQueryExecutor::finished, &waiter, &QEventLoop::quit);
         m_executor->stop();
         m_executor->wakeUp();

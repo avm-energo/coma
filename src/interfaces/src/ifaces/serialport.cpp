@@ -47,7 +47,6 @@ QByteArray SerialPort::read(bool &status)
 {
     QByteArray data;
 
-    m_dataGuard.lock(); // Нужен ли мьютекс?
     if (m_port->bytesAvailable())
         status = true;
 
@@ -56,7 +55,6 @@ QByteArray SerialPort::read(bool &status)
         data += m_port->readAll();
         m_port->waitForReadyRead(20);
     }
-    m_dataGuard.unlock();
 
     return data;
 }
