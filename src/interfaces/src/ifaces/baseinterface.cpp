@@ -102,7 +102,7 @@ void BaseInterface::close()
     emit clearQueries();
 
     disconnect();
-    emit finished(); // Проверить насколько безопасно перемещать сюда из poll
+    // emit finished(); // Проверить насколько безопасно перемещать сюда из poll
 
     m_log.writeLog(Logger::MessageTypes::Info, QString(metaObject()->className()) + " is finished\n");
 }

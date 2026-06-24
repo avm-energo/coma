@@ -72,9 +72,6 @@ void UsbHidPort::disconnect()
         hid_close(m_hidDevice);
         m_hidDevice = nullptr;
     }
-
-    emit clearQueries();
-    emit finished();
 }
 
 QByteArray UsbHidPort::read(bool &status)

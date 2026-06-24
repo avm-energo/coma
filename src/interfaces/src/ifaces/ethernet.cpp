@@ -59,7 +59,6 @@ QByteArray Ethernet::read(bool &status)
     while (m_socket->bytesAvailable())
     {
         data += m_socket->readAll();
-        // m_socket->waitForReadyRead(20); // Нужен ли тут таймаут?
     }
     m_dataGuard.unlock();
 
