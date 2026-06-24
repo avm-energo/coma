@@ -66,7 +66,7 @@ void UsbHidPort::disconnect()
     // 2. Чистим очередь
     m_readBuffer.clear();
 
-    // 3. Закрываем порт (теперь это 100% безопасно, так как мы в главном потоке)
+    // 3. Закрываем порт
     if (m_hidDevice)
     {
         hid_close(m_hidDevice);
@@ -137,7 +137,6 @@ void UsbHidPort::startTPolling()
     if (!m_pollTimer)
     {
         m_pollTimer = new QTimer(this);
-        // Соединяем таймер с нашим методом проверки
         QObject::connect(m_pollTimer, &QTimer::timeout, this, &UsbHidPort::checkForData);
     }
     // Запускаем опрос каждые 10 мс (для HID этого более чем достаточно)
@@ -154,20 +153,20 @@ void UsbHidPort::checkForData()
     auto dataPtr = reinterpret_cast<unsigned char *>(buffer.data());
 
     // Читаем циклом, чтобы забрать ВСЕ пакеты, накопившиеся в буфере драйвера
-    while (true)
+    for (int readBytes = hid_read_timeout(m_hidDevice, dataPtr, maxLength, 0); readBytes != 0;
+        readBytes = hid_read_timeout(m_hidDevice, dataPtr, maxLength, 0))
     {
-        // Таймаут 0 означает: "Проверь буфер и сразу верни управление, не жди"
-        int readBytes = hid_read_timeout(m_hidDevice, dataPtr, maxLength, 0);
+        if (readBytes == hidApiErrorCode)
+        {
+            writeLog(Error::Msg::ReadError);
+            hidErrorHandle();
+            emit error(InterfaceError::ReadError);
 
-        if (readBytes > 0)
-        {
-            buffer.resize(readBytes);
-            m_readBuffer.enqueue(buffer);
-            emit readyRead(); // Будим BaseInterface::poll()
+            break;
         }
-        else
-        {
-            break; // Данных больше нет (readBytes == 0) или ошибка (< 0)
-        }
+
+        buffer.resize(readBytes);
+        m_readBuffer.enqueue(buffer);
+        emit readyRead();
     }
 }

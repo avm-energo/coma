@@ -93,7 +93,7 @@ bool ConnectionContext::run(AsyncConnection *connection)
             m_iface->close();
             m_iface->deleteLater();
             m_executor->deleteLater();
-            m_syncThreads.first->deleteLater();
+            m_syncThreads.first->deleteLater(); // SEGFAULT
             m_syncThreads.second->deleteLater();
             return false;
         }
