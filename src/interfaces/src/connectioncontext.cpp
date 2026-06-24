@@ -116,7 +116,6 @@ void ConnectionContext::reset()
         m_executor->wakeUp();
         waiter.exec();
         m_iface->close();
-        waiter.exec();
         m_iface = nullptr;
         m_executor = nullptr;
     }

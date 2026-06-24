@@ -97,13 +97,11 @@ void BaseInterface::writeData(const QByteArray &ba)
 
 void BaseInterface::close()
 {
-    // После дисконекта не работает кнопка Соединения
     setState(Interface::State::Disconnect);
     emit clearQueries();
 
     disconnect();
-    // emit finished(); // Проверить насколько безопасно перемещать сюда из poll
-
+    emit finished(); // Проверить насколько безопасно перемещать сюда из poll
     m_log.writeLog(Logger::MessageTypes::Info, QString(metaObject()->className()) + " is finished\n");
 }
 
