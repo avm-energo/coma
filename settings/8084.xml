@@ -627,9 +627,11 @@
             <section header="Текущие данные">
                 <sgroup header="Общие" tab="1">
                     <mwidget desc="Температура микроконтроллера, °С" view="float">
+                        <toolTip>Температура микроконтроллера, °С</toolTip>
                         <start-addr>101</start-addr>
                     </mwidget>
                     <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <toolTip>Напряжение на батарейке, В</toolTip>
                         <start-addr>102</start-addr>
                     </mwidget>
                 </sgroup>
@@ -663,6 +665,7 @@
                         <toolTip>Частота, Гц</toolTip>
                     </mwidget>
                     <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <toolTip>Напряжение на батарейке, В</toolTip>
                         <start-addr>102</start-addr>
                     </mwidget>
                 </sgroup>

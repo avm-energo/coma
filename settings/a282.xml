@@ -1114,9 +1114,11 @@
             <section header="Текущие данные">
                 <sgroup header="Общие" tab="1">
                     <mwidget desc="Температура микроконтроллера, °С" view="float">
+                        <toolTip>Температура микроконтроллера, °С</toolTip>
                         <start-addr>101</start-addr>
                     </mwidget>
                     <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <toolTip>Напряжение на батарейке, В</toolTip>
                         <start-addr>102</start-addr>
                     </mwidget>
                 </sgroup>
@@ -1408,18 +1410,21 @@
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3420</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3546</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3670</start-addr>
                         <count>61</count>
                     </mwidget>
@@ -1530,18 +1535,21 @@
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3020</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3146</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3270</start-addr>
                         <count>61</count>
                     </mwidget>

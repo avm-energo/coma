@@ -1163,6 +1163,7 @@
                         <toolTip>Коэффициент мощности средний (по S и P)</toolTip>
                     </mwidget>
                     <mwidget desc="Частота в сети, Гц" view="float">
+                        <toolTip>Частота в сети, Гц</toolTip>
                         <start-addr>1028</start-addr>
                     </mwidget>
                 </sgroup>
