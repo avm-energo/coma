@@ -1230,6 +1230,7 @@
                         <toolTip>Температура микроконтроллера, °С</toolTip>
                     </mwidget>
                     <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <toolTip>Напряжение на батарейке, В</toolTip>
                         <start-addr>102</start-addr>
                     </mwidget>
                     <mwidget desc="Частота, Гц" view="float">
