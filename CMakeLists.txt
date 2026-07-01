@@ -80,6 +80,7 @@ endif()
 add_subdirectory(src/coma)
 add_subdirectory(src/ctti)
 add_subdirectory(src/interfaces)
+add_subdirectory(src/abatcher)
 
 # Step 2: Build tests
 if(BUILD_TESTING)
@@ -93,6 +94,7 @@ endif()
 # Step 3: Build executable targets
 add_subdirectory(src/avm-debug)
 add_subdirectory(src/avm-service)
+add_subdirectory(src/avm-autobatch/)
 
 set(VERSION_IN ${CMAKE_CURRENT_SOURCE_DIR}/VERSION.in)
 set(VERSION_OUT ${CMAKE_CURRENT_SOURCE_DIR}/package/src/VERSION)
