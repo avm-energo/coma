@@ -1,5 +1,8 @@
 project(avm-autobatcher VERSION ${CMAKE_PROJECT_VERSION})
 
+# Find required Qt components
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+
 configure_file(
   ${CMAKE_SOURCE_DIR}/cconfig.h.in
   ${CMAKE_CURRENT_BINARY_DIR}/config.h
@@ -23,13 +26,18 @@ add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${CMAKE_PROJECT_VERSION})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC coma)
+# Link against coma, abatcher library, and Qt Widgets
+target_link_libraries(${PROJECT_NAME} PUBLIC 
+  coma
+  abatcher
+  Qt${QT_VERSION_MAJOR}::Widgets
+)
 
 # Getting appdata directory path
 if(SYSTEM_NAME STREQUAL "windows")
