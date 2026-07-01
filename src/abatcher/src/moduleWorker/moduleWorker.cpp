@@ -1,14 +1,24 @@
 #include "moduleWorker/moduleWorker.h"
+#include "avm-widgets/emessagebox.h"
+#include "interfaces/ifaces/usbhidport.h"
 
 #include <QVBoxLayout>
 
 ModuleWorker::ModuleWorker(bool isDry, UsbHidSettings *usb, QWidget *parent)
     : m_isDry(isDry)
-    , m_usb(usb)
+    , m_usb(new UsbHidPort(usb, this))
     , QWidget(parent)
 {
     createCloseButton();
     setupUI();
+
+    if (!connectToUSB())
+    {
+        EMessageBox::error(this, "Ошибка подключения устройства");
+        return;
+    }
+
+    // Нужна ли обработка сигнала BaseInterface::reconnected?
 }
 
 ModuleWorker::~ModuleWorker() { }
@@ -27,4 +37,7 @@ void ModuleWorker::createCloseButton()
     connect(m_closeButton, &QPushButton::clicked, this, &ModuleWorker::finishWork);
 }
 
-void ModuleWorker::connectToUSB() { }
+bool ModuleWorker::connectToUSB()
+{ 
+    return m_usb->connect();
+}

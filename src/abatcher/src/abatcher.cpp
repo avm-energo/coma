@@ -1,5 +1,6 @@
 #include "abatcher.h"
 
+#include "interfaces/types/usbhid_settings.h"
 #include "moduleWorker/moduleWorker.h"
 #include <avm-gen/settings.h>
 #include <avm-widgets/animatedpopup.h>
@@ -115,15 +116,18 @@ void Abatcher::createStartPushButton()
             QItemSelectionModel *selectionModel = m_usbCons->selectionModel();
             QModelIndexList selectedRows = selectionModel->selectedRows();
 
-            if (selectedRows.isEmpty())
-            {
-                EMessageBox::error(this, "Устройство не выбрано");
-                return;
-            }
+            // if (selectedRows.isEmpty())
+            // {
+            //     EMessageBox::error(this, "Устройство не выбрано");
+            //     return;
+            // }
 
-            QModelIndex currentRow = selectedRows.first();
+            // QModelIndex currentRow = selectedRows.first();
 
-            UsbHidSettings *usb;
+            UsbHidSettings *usb = new UsbHidSettings(this);
+            // usb->set("vendor_id", 1);
+            // usb->set("product_id", 2);
+            // usb->set("serial", "3");
             // currentRow.siblingAtColumn(0);
 
             ModuleWorker *mw = new ModuleWorker(isDry, usb, this);
@@ -133,15 +137,10 @@ void Abatcher::createStartPushButton()
             connect(mw, &ModuleWorker::finishWork, this,
                 [this, mw]
                 {
-                    showMainWidget();
+                    m_widgets->setCurrentIndex(0);
 
                     m_widgets->removeWidget(mw);
                     delete mw;
                 });
         });
-}
-
-void Abatcher::showMainWidget()
-{
-    m_widgets->setCurrentIndex(0);
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <interfaces/types/usbhidportinfo.h>
+#include <interfaces/ifaces/usbhidport.h>
 
 #include <QPushButton>
 #include <QWidget>
@@ -15,13 +15,13 @@ public:
 
 private:
     bool m_isDry = false;
-    UsbHidSettings *m_usb = nullptr;
+    UsbHidPort *m_usb = nullptr;
 
     QPushButton *m_closeButton = nullptr;
 
     void setupUI();
     void createCloseButton();
-    void connectToUSB();
+    bool connectToUSB();
 
 signals:
     void finishWork();
