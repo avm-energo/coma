@@ -49,6 +49,8 @@ AbstractTuneDialog::AbstractTuneDialog(Device::CurrentDevice *device, QWidget *p
 
 void AbstractTuneDialog::setupUI()
 {
+    setModal(true);
+
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     hlyout->addWidget(tuneUI());

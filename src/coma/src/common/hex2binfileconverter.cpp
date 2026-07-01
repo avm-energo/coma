@@ -37,8 +37,6 @@ void Hex2BinFileConverter::start()
             }
         }
     }
-    else
-        EMessageBox::warning(m_parent, "Ошибка открытия файла");
 }
 
 QByteArray Hex2BinFileConverter::readFile(const QString &filepath)
