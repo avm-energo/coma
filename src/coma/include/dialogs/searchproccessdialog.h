@@ -8,6 +8,7 @@
 class QTimer;
 class QTableView;
 class QProgressBar;
+class InterfaceSerialDialog;
 
 struct SearchParams
 {
@@ -22,21 +23,24 @@ struct SearchParams
 
 class SearchProccessDialog final : public QDialog
 {
+    Q_OBJECT
+
 private:
-    SearchParams params;
-    QTimer *timeoutTimer;
-    QTableView *tableView;
-    QProgressBar *progressBar;
+    SearchParams m_params;
+    QTimer *m_timeoutTimer;
+    QTableView *m_tableView;
+    QProgressBar *m_progressBar;
+    InterfaceSerialDialog *m_targetDialog{nullptr};
 
-    QByteArray response;
-    quint8 expectedResponseSize;
-    quint8 currentAddress;
+    QByteArray m_response;
+    quint8 m_expectedResponseSize;
+    quint8 m_currentAddress;
 
-    bool timeout;
-    bool responseReceived;
-    bool responseError;
-    bool portError;
-    bool stop;
+    bool m_timeout;
+    bool m_responseReceived;
+    bool m_responseError;
+    bool m_portError;
+    bool m_stop;
 
     /// \brief Функция для построения UI диалогового окна.
     void setupUI();
@@ -69,11 +73,19 @@ private:
     /// \brief Обновляет состояние прогресс-бара.
     void updateProgressBar();
 
+    void showContextMenu(const QPoint &pos);
+    void addToRS485TableView(const QModelIndex &sourceIndex);
+
 public:
     /// \brief Конструктор.
-    explicit SearchProccessDialog(const SearchParams &data, QWidget *parent = nullptr);
+    explicit SearchProccessDialog(const SearchParams &data,
+        InterfaceSerialDialog *targetDialog = nullptr,
+        QWidget *parent = nullptr);
     /// \brief Функция для запуска поиска устройств.
     void search();
+
+signals:
+    void deviceAddedSuccessfully();
 
 private slots:
     virtual void done(int r) override;
