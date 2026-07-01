@@ -21,6 +21,7 @@
 #include <QSettings>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
+#include <qsizegrip.h>
 
 InterfaceEthernetDialog::InterfaceEthernetDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
@@ -140,24 +141,44 @@ void InterfaceEthernetDialog::scanInterface()
     auto *button = qobject_cast<QPushButton *>(sender());
     Q_ASSERT(button);
     connect(this, &InterfaceEthernetDialog::modelUpdated, button, &QPushButton::show);
-    bool ok = false;
-    QString text = QInputDialog::getText(
-        this, tr("Scanner"), tr("Ip address and mask:"), QLineEdit::Normal, "172.16.29.0/24", &ok);
-    QPair<QHostAddress, int> subnet = QHostAddress::parseSubnet(text);
-    if (!ok || text.isEmpty() || (subnet.second == -1))
+
+    QInputDialog dialog(this);
+    dialog.setWindowTitle(tr("Сканер"));
+    dialog.setLabelText(tr("Введите IP адрес и маску"));
+    dialog.setTextValue("172.16.29.0/24");
+    dialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    dialog.setSizeGripEnabled(false);
+    dialog.setStyleSheet("QSizeGrip { width: 0px; height: 0px; }");
+
+    bool ok = dialog.exec() == QDialog::Accepted;
+    QString text = ok ? dialog.textValue() : QString();
+    if (!ok || text.isEmpty())
         return;
-    button->hide();
+
+    QPair<QHostAddress, int> subnet = QHostAddress::parseSubnet(text);
+    if (subnet.second == -1)
+    {
+        EMessageBox::error(this, "Ошибка ввода адреса или маски");
+        return;
+    }
+
     m_hosts.clear();
 
     qDebug() << subnet.first << subnet.second;
     int addr_count = std::pow(2, 32 - subnet.second);
 
     m_progress = new QProgressDialog(this);
-    m_progress->setLabelText(tr("Scanning ping"));
+    m_progress->setLabelText(tr("Сканирование адресов"));
     m_progress->setMinimumDuration(0);
-    m_progress->setRange(0, addr_count - 1);
+    m_progress->setRange(0, addr_count);
+    m_progress->setModal(true);
+    m_progress->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    m_progress->setSizeGripEnabled(false);
+    m_progress->setValue(0);
 
-    connect(this, &InterfaceEthernetDialog::pingFinished, &InterfaceEthernetDialog::handlePingFinish);
+    connect(this, &InterfaceEthernetDialog::pingFinished, this, &InterfaceEthernetDialog::handlePingFinish,
+        Qt::UniqueConnection);
+
     for (int i = 0; i < addr_count; ++i)
     {
         createPingTask(subnet.first.toIPv4Address() + i);
@@ -207,6 +228,13 @@ void InterfaceEthernetDialog::handlePing()
 {
     QFutureWatcher<quint32> *watcher = static_cast<QFutureWatcher<quint32> *>(sender());
     Q_ASSERT(watcher);
+
+    if (watcher->isCanceled())
+    {
+        watcher->deleteLater();
+        return;
+    }
+
     if (watcher->result())
     {
         quint32 ip_addr = watcher->result();
@@ -218,6 +246,9 @@ void InterfaceEthernetDialog::handlePing()
 
 void InterfaceEthernetDialog::handlePingFinish()
 {
+    if (m_progress && m_progress->wasCanceled())
+        return;
+
     createPortTask();
 }
 
@@ -233,7 +264,7 @@ void InterfaceEthernetDialog::handlePortFinish()
     for (const auto &host : std::as_const(m_hosts))
     {
         QList<QStandardItem *> row { new QStandardItem("AVM"), new QStandardItem(QHostAddress(host).toString()),
-            new QStandardItem("205") };
+            new QStandardItem("2404"), new QStandardItem("205") };
         mdl->appendRow(row);
     }
     emit modelUpdated();
@@ -243,35 +274,57 @@ void InterfaceEthernetDialog::createPingTask(quint32 ip)
 {
     QFutureWatcher<quint32> *watcher = new QFutureWatcher<quint32>(this);
 
+    connect(m_progress, &QProgressDialog::canceled, watcher, &QFutureWatcher<quint32>::cancel);
     connect(watcher, &QFutureWatcher<quint32>::finished, this, &InterfaceEthernetDialog::handlePing);
+    connect(watcher, &QFutureWatcher<quint32>::finished, watcher, &QObject::deleteLater);
     connect(watcher, &QFutureWatcher<quint32>::canceled, &QObject::deleteLater);
     connect(watcher, &QFutureWatcher<quint32>::finished, this,
         [this]
         {
-            m_progress->setValue(m_progress->value() + 1);
-            if (m_progress->value() == -1)
+            if (m_progress && m_progress->wasCanceled())
+                return;
+
+            int newValue = m_progress->value() + 1;
+            m_progress->setValue(newValue);
+
+            if (newValue == m_progress->maximum())
+            {
                 emit pingFinished();
+            }
         });
+
     QFuture<quint32> future = QtConcurrent::run(&StdFunc::Ping, ip);
     watcher->setFuture(future);
 }
 
 void InterfaceEthernetDialog::createPortTask()
 {
-    QFutureWatcher<QList<quint32>> *watcher = new QFutureWatcher<QList<quint32>>;
+    QFutureWatcher<QList<quint32>> *watcher = new QFutureWatcher<QList<quint32>>(this);
     quint16 port = 2404;
-    m_progress->setLabelText(tr("Port scanning"));
-    connect(watcher, &QFutureWatcher<QList<quint32>>::progressRangeChanged, m_progress, &QProgressDialog::setRange);
+    m_progress->setLabelText(tr("Сканирование портов"));
+    m_progress->setRange(0, m_hosts.size());
+    m_progress->setValue(0);
+
+    connect(m_progress, &QProgressDialog::canceled, watcher, &QFutureWatcher<QList<quint32>>::cancel);
     connect(watcher, &QFutureWatcher<QList<quint32>>::progressValueChanged, m_progress, &QProgressDialog::setValue);
-    QFuture<QList<quint32>> future;
-    future = QtConcurrent::mappedReduced(m_hosts,
+    connect(watcher, &QFutureWatcher<QList<quint32>>::finished, this,
+        [this, watcher]()
+        {
+            if (watcher->isCanceled() || (m_progress && m_progress->wasCanceled()))
+            {
+                watcher->deleteLater();
+                return;
+            }
+
+            m_hosts = watcher->result();
+            watcher->deleteLater();
+            handlePortFinish();
+        });
+
+    QFuture<QList<quint32>> future = QtConcurrent::mappedReduced(m_hosts,
         std::bind(qOverload<quint32, quint16>(&StdFunc::CheckPort), std::placeholders::_1, port),
         &StdFunc::joinItem<quint32>);
     watcher->setFuture(future);
-    future.waitForFinished();
-    m_hosts = future.result();
-    watcher->deleteLater();
-    handlePortFinish();
 }
 
 bool InterfaceEthernetDialog::updateModel()
