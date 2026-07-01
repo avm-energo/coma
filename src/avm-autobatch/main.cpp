@@ -1,4 +1,4 @@
-#include "../abatcher/include/abatcher.h"
+#include "abatcher.h"
 
 #include <QApplication>
 #include <QIcon>
