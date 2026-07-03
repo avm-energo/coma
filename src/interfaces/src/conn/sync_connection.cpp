@@ -100,7 +100,16 @@ Error::Msg SyncConnection::reqBSI()
             if (bs.sigAdr >= Device::bsiStartReg && bs.sigAdr < Device::bsiStartReg + Device::bsiCountRegs)
                 ++count;
             if (count == Device::bsiCountRegs)
+            {
+                // Успешное завершение по счётчику регистров должно перекрывать любой более ранний,
+                // не связанный с этим вызовом результат (например, Cancelled от отмены совсем другого
+                // запроса, случившейся раньше — m_responseResult не сбрасывается в reset() и остаётся
+                // "протухшим" до следующего явного присвоения). Без этого reqBSI() мог реально успешно
+                // дочитать BSI (m_device->bsi() уже обновлён отдельным постоянным соединением
+                // CurrentDevice::updateBSI), но вернуть наверх ошибочный статус от постороннего события.
+                m_responseResult = Error::Msg::NoError;
                 busy = false;
+            }
         });
     m_connection->reqBSI();
     eventLoop();
@@ -177,6 +186,11 @@ Error::Msg SyncConnection::writeConfigurationSync(const QByteArray &ba)
     return writeFileSync(S2::FilesEnum::Config, ba);
 }
 
+Error::Msg SyncConnection::writeFirmwareSync(const QByteArray &ba)
+{
+    return writeFileSync(S2::FilesEnum::Firmware, ba);
+}
+
 Error::Msg SyncConnection::readS2FileSync(S2::FilesEnum filenum)
 {
     reset();
@@ -216,6 +230,28 @@ Error::Msg SyncConnection::readS2BFileSync(S2::FilesEnum filenum, S2::S2BFile &f
         return Error::Msg::ReadError;
     file = m_s2bFile;
     return Error::Msg::NoError;
+}
+
+Error::Msg SyncConnection::reqStartupSync(quint32 addr, quint32 count, QList<float> &values)
+{
+    reset();
+    values = QList<float>(count, 0.f);
+    quint32 received = 0;
+    auto conn = m_connection->connection(this,
+        [&, &busy = m_busy](const DataTypes::FloatStruct &fl)
+        {
+            if (fl.sigAdr >= addr && fl.sigAdr < addr + count)
+            {
+                values[fl.sigAdr - addr] = fl.sigVal;
+                if (++received == count)
+                    busy = false;
+            }
+        });
+    m_connection->reqStartup(addr, count);
+    eventLoop();
+    QObject::disconnect(conn);
+
+    return (received < count) ? Error::Msg::Timeout : Error::Msg::NoError;
 }
 
 Error::Msg SyncConnection::reqTimeSync(void *block, quint32 blocksize)

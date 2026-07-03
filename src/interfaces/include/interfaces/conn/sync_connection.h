@@ -3,6 +3,7 @@
 #include <libavm-gen/error.h>
 #include <interfaces/types/common_types.h>
 
+#include <QList>
 #include <QTimer>
 
 namespace Interface
@@ -31,10 +32,12 @@ public:
     Error::Msg writeBlockSync(quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize);
     Error::Msg writeFileSync(S2::FilesEnum filenum, const QByteArray &ba);
     Error::Msg writeConfigurationSync(const QByteArray &ba);
+    Error::Msg writeFirmwareSync(const QByteArray &ba);
     Error::Msg readS2FileSync(S2::FilesEnum filenum);
     Error::Msg readFileSync(S2::FilesEnum filenum, QByteArray &ba);
     Error::Msg readS2BFileSync(S2::FilesEnum filenum, S2::S2BFile &file);
     Error::Msg reqTimeSync(void *block, quint32 blocksize);
+    Error::Msg reqStartupSync(quint32 addr, quint32 count, QList<float> &values);
 
 signals:
     void setRange(qint64);

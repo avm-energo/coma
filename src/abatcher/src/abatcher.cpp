@@ -28,7 +28,7 @@ Abatcher::Abatcher(QWidget *parent) : QMainWindow(parent)
 }
 Abatcher::~Abatcher() { }
 
-void Abatcher::setupUI() 
+void Abatcher::setupUI()
 {
     QString caption(QCoreApplication::applicationName());
     caption.append(" v").append(QCoreApplication::applicationVersion());
@@ -76,7 +76,7 @@ void Abatcher::createUSBConnectionsWindow()
     m_usbCons->setSelectionMode(QAbstractItemView::SingleSelection);
 
     m_usbModel = new QStandardItemModel(this);
-    m_usbModel->setHorizontalHeaderLabels({"VID", "PID", "Serial"});
+    m_usbModel->setHorizontalHeaderLabels({ "VID", "PID", "Serial" });
 
     m_usbCons->setModel(m_usbModel);
     m_usbCons->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -96,11 +96,9 @@ void Abatcher::updateUSBConnectionWindow()
 
     for (const auto &row : std::as_const(usbDevices))
     {
-        m_usbModel->appendRow({
-            new QStandardItem(QString::number(row->get<u16>(MemKeys::USB::vendor_id), 16)),
+        m_usbModel->appendRow({ new QStandardItem(QString::number(row->get<u16>(MemKeys::USB::vendor_id), 16)),
             new QStandardItem(QString::number(row->get<u16>(MemKeys::USB::product_id), 16)),
-            new QStandardItem(row->get<QString>(MemKeys::USB::serial))
-        });
+            new QStandardItem(row->get<QString>(MemKeys::USB::serial)) });
     }
 }
 
@@ -135,6 +133,14 @@ void Abatcher::startModuleWorker()
     usb->set(MemKeys::USB::serial, mdl->data(mdl->index(row, 2)).toString());
     usb->set(MemKeys::timeout, Settings::get(SettingsKeys::USB::protocomTimeout, 5000));
     usb->set(MemKeys::reconnectInterval, Settings::get(SettingsKeys::USB::protocomReconnect, 100));
+    // Без этого maxErrors/silentInterval остаются на дефолте BaseSettings (0), из-за чего ЛЮБАЯ
+    // единичная ошибка чтения/записи интерфейса (например, кратковременная нестабильность модуля сразу
+    // после перезагрузки при обновлении ВПО) немедленно запускает полный реконнект и отменяет уже
+    // выполняющиеся запросы (см. ConnectionManager::handleInterfaceErrors/reconnectEvent) — тот же набор
+    // ключей, что уже использует АВМ-Сервис в AbstractInterfaceDialog.
+    usb->set(MemKeys::maxErrors, Settings::get("errorCount", 5));
+    usb->set(MemKeys::maxTimeouts, Settings::get("timeoutCount", 5));
+    usb->set(MemKeys::silentInterval, Settings::get("silentInterval", 10000));
 
     ModuleWorker *mw = new ModuleWorker(isDry, usb, this);
     m_widgets->addWidget(mw);

@@ -41,13 +41,17 @@ private:
     quint16 m_timeoutCounter, m_timeoutMax;
     quint16 m_errorCounter, m_errorMax;
 
-    void reconnect();
     void setup(const BaseSettings *settings) noexcept;
 
 public:
     explicit ConnectionManager(QObject *parent = nullptr);
     AsyncConnection *createConnection(const ConnectionSettings &connectionData);
     void setReconnectMode(const ReconnectMode newMode) noexcept;
+    /// \brief Принудительно запускает переподключение к устройству, не дожидаясь ошибки интерфейса
+    /// или таймаута запроса. Нужен для команд, после которых устройство заведомо ненадолго пропадает
+    /// с шины (например, переход на новое ВПО, см. C_StartFirmwareUpgrade) — физическое отключение по
+    /// USB в таком случае не всегда доходит до менеджера соединений как явная ошибка интерфейса.
+    void reconnect();
 
 signals:
     /// \brief Сигнал, который вызывается, если соединение к устройству провалилось.

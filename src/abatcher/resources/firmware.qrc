@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/firmware">
+        <file alias="kiv/AVM-KIV_v5_0_22.hex">firmware/kiv/AVM-KIV_v5_0_22.hex</file>
+    </qresource>
+</RCC>
