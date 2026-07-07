@@ -1,7 +1,7 @@
 #pragma once
 
 #include <dialogs/dialogcreator.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/stdfunc.h>
 #include <common/comahelper.h>
 
 #include <QListWidget>

@@ -1,6 +1,6 @@
 #include "device/bsi.h"
 
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/stdfunc.h>
 Device::Bsi::Bsi()
 {
     clearBsi();

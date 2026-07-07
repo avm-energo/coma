@@ -4,9 +4,9 @@
 #include <dialogs/interfaceethernetdialog.h>
 #include <dialogs/interfaceserialdialog.h>
 #include <dialogs/interfaceusbdialog.h>
-#include <avm-gen/error.h>
-#include <avm-widgets/cbfunc.h>
-#include <avm-widgets/lblfunc.h>
+#include <libavm-gen/error.h>
+#include <libavm-widgets/cbfunc.h>
+#include <libavm-widgets/lblfunc.h>
 
 #include <QCoreApplication>
 #include <QDebug>

@@ -1,6 +1,6 @@
 #include "oscillograms/viewmodels/trendviewmodel85.h"
 
-#include <avm-gen/colors.h>
+#include <libavm-gen/colors.h>
 
 TrendViewModel85::TrendViewModel85(int pointsnum) : TrendViewModel(pointsnum) { }
 

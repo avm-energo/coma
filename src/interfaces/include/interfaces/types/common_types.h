@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/datatypes.h>
+#include <libavm-gen/datatypes.h>
 #include <s2/dataitem.h>
 #include <s2/filestruct.h>
 #include <s2/s2datatypes.h>

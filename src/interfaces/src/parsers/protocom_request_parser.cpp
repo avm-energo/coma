@@ -1,7 +1,7 @@
 #include "interfaces/parsers/protocom_request_parser.h"
 
-#include <avm-gen/files.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/stdfunc.h>
 
 namespace Interface
 {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <device/current_device.h>
-#include <avm-gen/error.h>
-#include <avm-gen/files.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/files.h>
 
 #include <QDir>
 #include <QMutex>

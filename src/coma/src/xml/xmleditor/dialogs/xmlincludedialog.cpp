@@ -1,7 +1,7 @@
 #include "xml/xmleditor/dialogs/xmlincludedialog.h"
 
-#include <avm-gen/settings.h>
-#include <avm-widgets/filefunc.h>
+#include <libavm-gen/settings.h>
+#include <libavm-widgets/filefunc.h>
 
 #include <QDir>
 #include <QFileInfo>

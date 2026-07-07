@@ -21,21 +21,21 @@
  */
 
 #include <alarms/alarmwidget.h>
-#include <avm-gen/errorqueue.h>
-#include <avm-gen/files.h>
-#include <avm-gen/logger.h>
-#include <avm-gen/settings.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-gen/timefunc.h>
-#include <avm-widgets/animatedpopup.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/epopup.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/graphfunc.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/styleloader.h>
-#include <avm-widgets/waitwidget.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-gen/errorqueue.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/logger.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-gen/timefunc.h>
+#include <libavm-widgets/animatedpopup.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/epopup.h>
+#include <libavm-widgets/filefunc.h>
+#include <libavm-widgets/graphfunc.h>
+#include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/styleloader.h>
+#include <libavm-widgets/waitwidget.h>
+#include <libavm-widgets/wdfunc.h>
 #include <comawidgets/gasdensitywidget.h>
 #include <comawidgets/splashscreen.h>
 #include <common/appconfig.h>

@@ -1,6 +1,6 @@
 #include "xml/xmleditor/dialogs/xmlresmembercreatedialog.h"
 
-#include <avm-widgets/cbfunc.h>
+#include <libavm-widgets/cbfunc.h>
 #include <xml/xmleditor/dialogs/dialogfabric.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 

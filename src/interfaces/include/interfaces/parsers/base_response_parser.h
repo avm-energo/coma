@@ -1,7 +1,7 @@
 #pragma once
 
-#include <avm-gen/error.h>
-#include <avm-gen/logger.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/logger.h>
 #include <interfaces/types/common_types.h>
 #include <s2/s2util.h>
 

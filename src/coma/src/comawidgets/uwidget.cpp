@@ -1,12 +1,12 @@
 #include "comawidgets/uwidget.h"
 
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/epopup.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/epopup.h>
+#include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/wdfunc.h>
 #include <device/current_device.h>
-#include <avm-gen/colors.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/colors.h>
+#include <libavm-gen/stdfunc.h>
 
 #include <QCoreApplication>
 #include <QDebug>

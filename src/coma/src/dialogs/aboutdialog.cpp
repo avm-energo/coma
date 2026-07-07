@@ -1,8 +1,8 @@
 #include "dialogs/aboutdialog.h"
 
-#include <avm-widgets/graphfunc.h>
-#include <avm-widgets/hexpbfunc.h>
-#include <avm-widgets/lblfunc.h>
+#include <libavm-widgets/graphfunc.h>
+#include <libavm-widgets/hexpbfunc.h>
+#include <libavm-widgets/lblfunc.h>
 
 #include <QVBoxLayout>
 

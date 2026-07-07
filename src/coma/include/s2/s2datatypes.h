@@ -1,7 +1,7 @@
 #pragma once
 
-#include <avm-gen/std_ext.h>
-#include <avm-gen/timefunc.h>
+#include <libavm-gen/std_ext.h>
+#include <libavm-gen/timefunc.h>
 #include <s2/filestruct.h>
 #include <s2/modbusitem.h>
 

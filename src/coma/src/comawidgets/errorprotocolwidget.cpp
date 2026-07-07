@@ -1,8 +1,8 @@
 #include "comawidgets/errorprotocolwidget.h"
 
 #include <common/appconfig.h>
-#include <avm-gen/colors.h>
-#include <avm-gen/error.h>
+#include <libavm-gen/colors.h>
+#include <libavm-gen/error.h>
 #include <models/errorprotocolmodel.h>
 
 #include <QHeaderView>

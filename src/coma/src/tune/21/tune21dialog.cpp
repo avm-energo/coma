@@ -1,11 +1,11 @@
 #include "tune/21/tune21dialog.h"
 
-#include <avm-gen/colors.h>
-#include <avm-gen/error.h>
-#include <avm-gen/files.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/colors.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/stdfunc.h>
 #include <tune/21/tune21one.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/wdfunc.h>
 
 Tune21Dialog::Tune21Dialog(
     Device::BoardTypes bt, bool isMezExist, u8 &firstStepNumber, Device::CurrentDevice *device, QWidget *parent)

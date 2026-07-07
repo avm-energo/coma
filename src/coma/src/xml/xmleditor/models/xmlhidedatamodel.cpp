@@ -1,7 +1,7 @@
 #include "xml/xmleditor/models/xmlhidedatamodel.h"
 
-#include <avm-gen/integers.h>
-#include <avm-gen/xml/xmlparse.h>
+#include <libavm-gen/integers.h>
+#include <libavm-gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
 #include <limits>

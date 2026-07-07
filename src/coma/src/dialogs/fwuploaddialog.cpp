@@ -1,10 +1,10 @@
 #include "dialogs/fwuploaddialog.h"
 
-#include <avm-gen/error.h>
-#include <avm-gen/files.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/pbfunc.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/files.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/filefunc.h>
+#include <libavm-widgets/pbfunc.h>
 #include <s2/s2util.h>
 
 #include <QDebug>

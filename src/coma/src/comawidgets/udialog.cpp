@@ -1,5 +1,5 @@
-#include <avm-gen/error.h>
-#include <avm-widgets/emessagebox.h>
+#include <libavm-gen/error.h>
+#include <libavm-widgets/emessagebox.h>
 #include <comawidgets/udialog.h>
 #include <device/current_device.h>
 

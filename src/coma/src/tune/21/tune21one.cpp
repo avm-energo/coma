@@ -1,13 +1,13 @@
 #include "tune/21/tune21one.h"
 
-#include <avm-gen/colors.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/colors.h>
+#include <libavm-gen/stdfunc.h>
 #include <tune/tunetypes.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/graphfunc.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/waitwidget.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/graphfunc.h>
+#include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/waitwidget.h>
+#include <libavm-widgets/wdfunc.h>
 
 #include <QVBoxLayout>
 

@@ -1,7 +1,7 @@
 #include "journals/eventparser.h"
 
-#include <avm-gen/stdfunc.h>
-#include <avm-gen/timefunc.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-gen/timefunc.h>
 
 namespace journals
 {

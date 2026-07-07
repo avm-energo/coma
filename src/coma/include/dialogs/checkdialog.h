@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-widgets/elabel.h>
+#include <libavm-widgets/elabel.h>
 #include <comawidgets/udialog.h>
 #include <device/xml_settings.h>
 

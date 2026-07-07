@@ -1,14 +1,15 @@
 #include "dialogs/checkdialog.h"
 
-#include <avm-gen/colors.h>
-#include <avm-gen/error.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-gen/strings.h>
-#include <avm-widgets/chbfunc.h>
-#include <avm-widgets/graphfunc.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/pbfunc.h>
+#include "libavm-widgets/emessagebox.h"
+#include <libavm-gen/colors.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-gen/strings.h>
 #include <device/current_device.h>
+#include <libavm-widgets/chbfunc.h>
+#include <libavm-widgets/graphfunc.h>
+#include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/pbfunc.h>
 
 #include <QGroupBox>
 #include <QTabWidget>
@@ -286,7 +287,8 @@ QVBoxLayout *CheckDialog::setupGroup(const SGroup &arg, UWidget *uwidget)
         }
         else if ((mwidget.view == MWidgetViewType::Command) || (mwidget.view == MWidgetViewType::CommandWValue))
         {
-            auto widgetLayout = setupCommandWidget(mwidget, arg.widgets.size(), mwidget.view == MWidgetViewType::Command);
+            auto widgetLayout
+                = setupCommandWidget(mwidget, arg.widgets.size(), mwidget.view == MWidgetViewType::Command);
             if (widgetLayout != nullptr)
                 groupLayout->addLayout(widgetLayout);
         }
@@ -309,6 +311,8 @@ QGridLayout *CheckDialog::setupFloatWidget(const MWidget &mwidget, const int wCo
         auto textLabel = new ELabel(getFormatted(mwidget, mwidget.desc, i), this);
         layout->addWidget(textLabel);
         auto valueLabel = new ELabel(this);
+        valueLabel->setCopyable(true);
+        connect(valueLabel, &ELabel::copied, [this]() { EMessageBox::information(this, "Значение скопировано"); });
         if (!mwidget.tooltip.isEmpty())
             valueLabel->setToolTip(getFormatted(mwidget, mwidget.tooltip, i));
 

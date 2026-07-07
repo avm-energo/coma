@@ -1,14 +1,14 @@
 #include "tune/84/tune84dialog.h"
 
-#include <avm-gen/colors.h>
-#include <avm-gen/error.h>
-#include <avm-gen/files.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/colors.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/stdfunc.h>
 #include <tune/84/tune84adc.h>
 #include <tune/84/tune84check.h>
 #include <tune/84/tune84temp60.h>
 #include <tune/tunetypes.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/wdfunc.h>
 
 Tune84Dialog::Tune84Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {

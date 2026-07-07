@@ -1,7 +1,7 @@
 #include "tune/82/tune82verification.h"
 
-#include <avm-gen/stdfunc.h>
-#include <avm-widgets/emessagebox.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-widgets/emessagebox.h>
 #include <interfaces/conn/sync_connection.h>
 #include <tune/82/verification_offset.h>
 #include <tune/mip.h>

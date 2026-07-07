@@ -2,7 +2,7 @@
 
 #include <QTimeZone>
 #include <device/xml_settings.h>
-#include <avm-gen/binary_file.h>
+#include <libavm-gen/binary_file.h>
 
 namespace journals
 {

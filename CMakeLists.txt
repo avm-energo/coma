@@ -43,8 +43,8 @@ endif()
 # Building libraries and targets
 # Step 1: Build dependencies
 
-find_package(avm-widgets QUIET)
-if(${avm-widgets_FOUND})
+find_package(libavm-widgets QUIET)
+if(${libavm-widgets_FOUND})
   message(STATUS "Found package avm-widgets")
 else()
   include(avm-widgets)

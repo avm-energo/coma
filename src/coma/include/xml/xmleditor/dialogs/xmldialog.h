@@ -1,7 +1,7 @@
 #pragma once
 
-#include <avm-widgets/ecombobox.h>
-#include <avm-widgets/edoublespinbox.h>
+#include <libavm-widgets/ecombobox.h>
+#include <libavm-widgets/edoublespinbox.h>
 #include <xml/xmleditor/models/baseeditormodel.h>
 
 #include <QCheckBox>

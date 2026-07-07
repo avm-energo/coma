@@ -1,7 +1,7 @@
 #pragma once
 
-#include <avm-gen/error.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/stdfunc.h>
 #include <comawidgets/udialog.h>
 #include <device/device_list.h>
 #include <interfaces/types/serial_settings.h>

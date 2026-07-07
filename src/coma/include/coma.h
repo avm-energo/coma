@@ -1,7 +1,7 @@
 #pragma once
 
 #include "journals/basejournal.h"
-#include <avm-widgets/estatusbar.h>
+#include <libavm-widgets/estatusbar.h>
 #include <common/comahelper.h>
 #include <dialogs/dialogmanager.h>
 #include <interfaces/connectionmanager.h>

@@ -25,14 +25,14 @@
 
 #include "datablocks/datablock.h"
 
-#include <avm-gen/files.h>
-#include <avm-gen/settings.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/hexpbfunc.h>
-#include <avm-widgets/lefunc.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/filefunc.h>
+#include <libavm-widgets/hexpbfunc.h>
+#include <libavm-widgets/lefunc.h>
+#include <libavm-widgets/wdfunc.h>
 #include <interfaces/conn/sync_connection.h>
 
 #include <QDialogButtonBox>

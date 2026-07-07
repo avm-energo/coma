@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QVariant>
-#include <avm-gen/uint24.h>
+#include <libavm-gen/uint24.h>
 
 // Обмен с модулями
 // Канал связи с модулем

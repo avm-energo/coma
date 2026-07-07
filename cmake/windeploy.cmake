@@ -5,7 +5,7 @@ install(CODE "set(EXECUTABLES \"$<TARGET_FILE:${PROJECT_NAME}>\")")
 
 # Using windeployqt for installation Qt dependencies
 get_filename_component(QT_BIN_DIR ${QT_QMAKE_EXECUTABLE} DIRECTORY)
-set(DEPENDENCY_PATHS "${CMAKE_INSTALL_PREFIX}/bin" "${avm-gen_BINARY_DIR}" "${avm-widgets_BINARY_DIR}" "${QT_BIN_DIR}")
+set(DEPENDENCY_PATHS "${CMAKE_INSTALL_PREFIX}/bin" "${libavm-gen_BINARY_DIR}" "${libavm-widgets_BINARY_DIR}" "${QT_BIN_DIR}")
 
 # Transfer the values into the install script
 install(CODE "set(DEPENDENCY_PATHS \"${DEPENDENCY_PATHS}\")")

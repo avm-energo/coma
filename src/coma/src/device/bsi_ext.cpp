@@ -1,6 +1,6 @@
 #include "device/bsi_ext.h"
 
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/stdfunc.h>
 
 #include <algorithm>
 

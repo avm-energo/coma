@@ -1,6 +1,6 @@
 #include "dialogs/relaydialog.h"
 
-#include <avm-widgets/lblfunc.h>
+#include <libavm-widgets/lblfunc.h>
 
 #include <QPushButton>
 #include <QVBoxLayout>

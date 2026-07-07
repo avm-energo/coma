@@ -1,12 +1,12 @@
 #pragma once
 
-#include <avm-widgets/cbfunc.h>
-#include <avm-widgets/chbfunc.h>
-#include <avm-widgets/ipctrl.h>
-#include <avm-widgets/spbfunc.h>
+#include <libavm-widgets/cbfunc.h>
+#include <libavm-widgets/chbfunc.h>
+#include <libavm-widgets/ipctrl.h>
+#include <libavm-widgets/spbfunc.h>
 #include <comawidgets/gasdensitywidget.h>
 #include <device/current_device.h>
-#include <avm-gen/std_ext.h>
+#include <libavm-gen/std_ext.h>
 #include <s2/delegate_common.h>
 
 #include <QLineEdit>

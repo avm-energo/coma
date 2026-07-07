@@ -1,8 +1,8 @@
 #pragma once
 
 #include <alarms/basealarm.h>
-#include <avm-widgets/elabel.h>
-#include <avm-gen/datatypes.h>
+#include <libavm-widgets/elabel.h>
+#include <libavm-gen/datatypes.h>
 
 #include <QList>
 #include <QPair>

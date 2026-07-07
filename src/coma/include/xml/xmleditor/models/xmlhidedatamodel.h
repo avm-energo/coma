@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/integers.h>
+#include <libavm-gen/integers.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 
 /// \brief Structure, that stores a hiding data for 'sgroup' node.

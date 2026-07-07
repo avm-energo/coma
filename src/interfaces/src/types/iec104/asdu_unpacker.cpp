@@ -1,8 +1,8 @@
 #include "interfaces/types/iec104/asdu_unpacker.h"
 
-#include <avm-gen/datatypes.h>
-#include <avm-gen/std_ext.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/datatypes.h>
+#include <libavm-gen/std_ext.h>
+#include <libavm-gen/stdfunc.h>
 
 namespace Iec104
 {

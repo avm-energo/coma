@@ -3,7 +3,7 @@
 #include <interfaces/conn/async_connection.h>
 #include <journals/basejournal.h>
 #include <s2/s2datatypes.h>
-#include <avm-widgets/eprogressindicator.h>
+#include <libavm-widgets/eprogressindicator.h>
 
 #include <QDialog>
 #include <QProgressDialog>

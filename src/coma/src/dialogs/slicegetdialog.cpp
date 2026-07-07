@@ -1,11 +1,11 @@
 #include <dialogs/slicegetdialog.h>
 #include <engines/engines.h>
-#include <avm-gen/threadpool.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/pbfunc.h>
-#include <avm-widgets/prbfunc.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-gen/threadpool.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/filefunc.h>
+#include <libavm-widgets/pbfunc.h>
+#include <libavm-widgets/prbfunc.h>
+#include <libavm-widgets/wdfunc.h>
 
 #include <QLayout>
 

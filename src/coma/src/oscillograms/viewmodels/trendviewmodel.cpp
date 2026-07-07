@@ -1,5 +1,5 @@
 #include <oscillograms/viewmodels/trendviewmodel.h>
-#include <avm-widgets/epopup.h>
+#include <libavm-widgets/epopup.h>
 
 #include <QDebug>
 #include <xlsxdocument.h>

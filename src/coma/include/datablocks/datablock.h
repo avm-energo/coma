@@ -1,7 +1,7 @@
 #pragma once
 
-#include <avm-gen/datatypes.h>
-#include <avm-gen/error.h>
+#include <libavm-gen/datatypes.h>
+#include <libavm-gen/error.h>
 
 #include <QHBoxLayout>
 #include <QScrollArea>

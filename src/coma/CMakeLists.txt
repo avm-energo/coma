@@ -31,13 +31,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${limereport_SOURCE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
-  avm-gen
-  avm-widgets
+  libavm-gen
+  libavm-widgets
   ctti::ctti
   interfaces
   limereport
   qcustomplot
-  avm-qxlsx
+  libavm-qxlsx
   Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
   magic_enum::magic_enum
 )

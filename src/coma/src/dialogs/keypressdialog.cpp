@@ -1,9 +1,9 @@
 #include "dialogs/keypressdialog.h"
 
-#include <avm-gen/error.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/lefunc.h>
-#include <avm-widgets/passwordlineedit.h>
+#include <libavm-gen/error.h>
+#include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/lefunc.h>
+#include <libavm-widgets/passwordlineedit.h>
 
 #include <QCryptographicHash>
 #include <QDebug>

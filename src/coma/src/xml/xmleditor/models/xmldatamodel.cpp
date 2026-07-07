@@ -1,8 +1,8 @@
 #include "xml/xmleditor/models/xmldatamodel.h"
 
-#include <avm-gen/settings.h>
-#include <avm-gen/strings.h>
-#include <avm-gen/xml/xmlparse.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/strings.h>
+#include <libavm-gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
 #include <QDir>

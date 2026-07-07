@@ -2,7 +2,7 @@
 
 #include <QByteArray>
 #include <QObject>
-#include <avm-gen/uint24.h>
+#include <libavm-gen/uint24.h>
 #include <limits>
 
 namespace Iec104

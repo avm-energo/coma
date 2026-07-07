@@ -1,7 +1,7 @@
 #pragma once
 
-#include <avm-gen/datatypes.h>
-#include <avm-widgets/viewtypewidget.h>
+#include <libavm-gen/datatypes.h>
+#include <libavm-widgets/viewtypewidget.h>
 #include <interfaces/types/protocol_settings.h>
 #include <s2/dataitem.h>
 

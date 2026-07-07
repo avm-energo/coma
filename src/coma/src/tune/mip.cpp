@@ -1,12 +1,12 @@
 #include "tune/mip.h"
 
-#include <avm-gen/settings.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/pbfunc.h>
-#include <avm-widgets/waitwidget.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/pbfunc.h>
+#include <libavm-widgets/waitwidget.h>
+#include <libavm-widgets/wdfunc.h>
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/ifaces/ethernet.h>
 #include <interfaces/parsers/iec104parser.h>

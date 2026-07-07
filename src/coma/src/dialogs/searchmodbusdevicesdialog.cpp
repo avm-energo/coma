@@ -2,12 +2,12 @@
 #include "const.h"
 #include "interfaces/utils/utils.h"
 
-#include <avm-widgets/cbfunc.h>
-#include <avm-widgets/chbfunc.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/pbfunc.h>
-#include <avm-widgets/spbfunc.h>
+#include <libavm-widgets/cbfunc.h>
+#include <libavm-widgets/chbfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/pbfunc.h>
+#include <libavm-widgets/spbfunc.h>
 
 #include <QGridLayout>
 #include <QGroupBox>

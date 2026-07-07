@@ -2,11 +2,11 @@
 
 #include <QtSvg/QSvgRenderer>
 #include <device/current_device.h>
-#include <avm-widgets/chbfunc.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/lefunc.h>
-#include <avm-widgets/pbfunc.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/chbfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/lefunc.h>
+#include <libavm-widgets/pbfunc.h>
+#include <libavm-widgets/wdfunc.h>
 
 #include <QBoxLayout>
 #include <QGroupBox>

@@ -1,7 +1,7 @@
-#include <avm-gen/files.h>
-#include <avm-gen/files/ziputil.h>
-#include <avm-gen/settings.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/files/ziputil.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/stdfunc.h>
 #include <engines/slices.h>
 #include <interfaces/types/common_types.h>
 

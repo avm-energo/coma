@@ -1,11 +1,11 @@
 #include "dialogs/infodialog.h"
 
-#include <avm-gen/colors.h>
-#include <avm-gen/error.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-widgets/etabwidget.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/viewtypewidget.h>
+#include <libavm-gen/colors.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-widgets/etabwidget.h>
+#include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/viewtypewidget.h>
 #include <device/configstorage.h>
 #include <device/current_device.h>
 

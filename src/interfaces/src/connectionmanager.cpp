@@ -1,4 +1,4 @@
-#include <avm-gen/std_ext.h>
+#include <libavm-gen/std_ext.h>
 #include <common/names.h>
 #include <device/bsi.h>
 #include <interfaces/conn/sync_connection.h>

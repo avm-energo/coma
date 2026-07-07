@@ -3,10 +3,10 @@
 #include "const.h"
 #include "interfaces/utils/utils.h"
 #include "dialogs/interfaceserialdialog.h"
-#include <avm-gen/stdfunc.h>
-#include <avm-gen/utils/crc16.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/tvfunc.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-gen/utils/crc16.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/tvfunc.h>
 
 #include <QCoreApplication>
 #include <QHBoxLayout>

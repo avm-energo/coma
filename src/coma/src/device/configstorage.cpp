@@ -1,6 +1,6 @@
 #include "device/configstorage.h"
 
-#include "avm-gen/strings.h"
+#include <libavm-gen/strings.h>
 
 namespace Device
 {

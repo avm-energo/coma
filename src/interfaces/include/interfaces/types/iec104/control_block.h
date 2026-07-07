@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/error.h>
+#include <libavm-gen/error.h>
 #include <interfaces/types/iec104/unnumbered_control.h>
 
 #include <QByteArray>

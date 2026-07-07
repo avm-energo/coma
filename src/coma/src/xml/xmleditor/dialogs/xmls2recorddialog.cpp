@@ -1,7 +1,7 @@
-#include <avm-gen/integers.h>
-#include <avm-gen/settings.h>
-#include <avm-gen/xml/xmlparse.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-gen/integers.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/xml/xmlparse.h>
+#include <libavm-widgets/wdfunc.h>
 #include <xml/xmleditor/dialogs/xmls2recorddialog.h>
 #include <xml/xmleditor/models/xmldatamodel.h>
 #include <xml/xmltags.h>

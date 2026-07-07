@@ -1,17 +1,17 @@
 #include "tune/82/tune82dialog.h"
 
-#include <avm-gen/colors.h>
-#include <avm-gen/error.h>
-#include <avm-gen/files.h>
-#include <avm-gen/settings.h>
+#include <libavm-gen/colors.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/settings.h>
 #include <tune/82/tune82adc.h>
 #include <tune/82/tune82check.h>
 #include <tune/82/tune82iowidget.h>
 #include <tune/82/tune82verification.h>
 #include <tune/tunereporter.h>
 #include <tune/tunetypes.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/wdfunc.h>
 
 Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {

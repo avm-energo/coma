@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/std_ext.h>
+#include <libavm-gen/std_ext.h>
 #include <oscillograms/filemanager.h>
 #include <oscillograms/oscmanager.h>
 

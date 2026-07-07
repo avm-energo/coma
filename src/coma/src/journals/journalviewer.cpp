@@ -1,10 +1,10 @@
 #include "journals/journalviewer.h"
 
-#include <avm-widgets/cbfunc.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/pbfunc.h>
-#include <avm-gen/files.h>
+#include <libavm-widgets/cbfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/filefunc.h>
+#include <libavm-widgets/pbfunc.h>
+#include <libavm-gen/files.h>
 #include <journals/measjournal.h>
 #include <journals/sysjournal.h>
 #include <journals/workjournal.h>

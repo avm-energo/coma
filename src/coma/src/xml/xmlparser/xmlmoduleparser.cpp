@@ -1,10 +1,10 @@
 #include "xml/xmlparser/xmlmoduleparser.h"
 
-#include <avm-gen/files.h>
-#include <avm-gen/settings.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-gen/xml/xmlbase.h>
-#include <avm-gen/xml/xmlparse.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-gen/xml/xmlbase.h>
+#include <libavm-gen/xml/xmlparse.h>
 #include <common/appconfig.h>
 #include <ctti/nameof.hpp>
 #include <device/current_device.h>

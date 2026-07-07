@@ -1,8 +1,8 @@
 #include "interfaces/conn/sync_connection.h"
 
 #include "device/bsi.h"
-#include <avm-gen/std_ext.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/std_ext.h>
+#include <libavm-gen/stdfunc.h>
 #include <interfaces/conn/async_connection.h>
 
 #include <QCoreApplication>
