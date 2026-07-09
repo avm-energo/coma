@@ -1,18 +1,18 @@
 #include "moduleWorker/moduleWorker.h"
 
-#include "avm-widgets/emessagebox.h"
 #include "interfaces/types/connection_settings.h"
-#include <avm-gen/files.h>
-#include <avm-gen/files/ziputil.h>
-#include <avm-gen/std_ext.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/prbfunc.h>
+#include "libavm-widgets/emessagebox.h"
 #include <datablocks/21/bac.h>
 #include <datablocks/82/bac.h>
 #include <datablocks/kiv/bac.h>
 #include <datablocks/kiv/bac2.h>
 #include <device/device_list.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/files/ziputil.h>
+#include <libavm-gen/std_ext.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-widgets/filefunc.h>
+#include <libavm-widgets/prbfunc.h>
 #include <s2/hexparser.h>
 #include <s2/s2configuration.h>
 #include <s2/s2datatypes.h>
