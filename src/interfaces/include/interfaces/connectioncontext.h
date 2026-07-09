@@ -25,8 +25,6 @@ class ConnectionContext
     friend class ConnectionManager;
 
 private:
-    // QPointer обнуляется при удалении объекта, поэтому isValid()
-    // не пропустит обращение к уже удалённым интерфейсу или исполнителю
     QPointer<BaseInterface> m_iface;
     QPointer<DefaultQueryExecutor> m_executor;
     Strategy m_strategy;
