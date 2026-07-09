@@ -1,9 +1,9 @@
 #pragma once
 
-#include <avm-gen/error.h>
 #include <device/current_device.h>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/ifaces/usbhidport.h>
+#include <libavm-gen/error.h>
 #include <s2/filestruct.h>
 
 #include <QCheckBox>

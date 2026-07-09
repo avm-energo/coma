@@ -2,12 +2,12 @@
 
 #include "interfaces/types/usbhid_settings.h"
 #include "moduleWorker/moduleWorker.h"
-#include <avm-gen/settings.h>
-#include <avm-widgets/animatedpopup.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/styleloader.h>
 #include <common/names.h>
 #include <interfaces/types/usbhidportinfo.h>
+#include <libavm-gen/settings.h>
+#include <libavm-widgets/animatedpopup.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/styleloader.h>
 
 #include <QCheckBox>
 #include <QCoreApplication>

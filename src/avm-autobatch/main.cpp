@@ -1,10 +1,9 @@
 #include "abatcher.h"
-
-#include <avm-gen/settings.h>
-#include <config.h>
+#include <libavm-gen/settings.h>
 
 #include <QApplication>
 #include <QIcon>
+#include <config.h>
 
 int main(int argc, char *argv[])
 {
