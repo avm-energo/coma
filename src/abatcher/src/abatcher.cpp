@@ -33,7 +33,7 @@ void Abatcher::setupUI()
     QString caption(QCoreApplication::applicationName());
     caption.append(" v").append(QCoreApplication::applicationVersion());
     setWindowTitle(caption);
-    setMinimumSize(QSize(600, 700));
+    setFixedSize(QSize(600, 700));
 
     auto wdgt = new QWidget(this);
     auto lyout = new QVBoxLayout(wdgt);
@@ -90,6 +90,9 @@ void Abatcher::createUSBConnectionsWindow()
 
 void Abatcher::updateUSBConnectionWindow()
 {
+    // TODO: добавить сохранение выделения строки, после обновления
+    // таблицы выделение сбрасывается.
+
     m_usbModel->removeRows(0, m_usbModel->rowCount());
 
     auto usbDevices = UsbHidPortInfo::devicesFound();

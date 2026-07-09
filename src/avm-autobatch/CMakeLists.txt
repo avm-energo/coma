@@ -1,7 +1,7 @@
 project(avm-autobatcher VERSION 0.0.1)
 
 # Find required Qt components
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS REQUIRED)
 
 configure_file(
   ${CMAKE_SOURCE_DIR}/cconfig.h.in
@@ -22,7 +22,7 @@ file(GLOB_RECURSE files_cpp ${PROJECT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 
 add_executable(${PROJECT_NAME}
-  ${files_cpp} ${files_h} ../coma.rc ../../images/images.qrc
+  ${files_cpp} ${files_h} ../../images/images.qrc
   ../abatcher/resources/firmware.qrc
   ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc)
 
@@ -35,9 +35,7 @@ endif()
 
 # Link against coma, abatcher library, and Qt Widgets
 target_link_libraries(${PROJECT_NAME} PUBLIC 
-  coma
   abatcher
-  Qt${QT_VERSION_MAJOR}::Widgets
 )
 
 # Getting appdata directory path
