@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QPointer>
 #include <QThread>
 #include <QThreadPool>
 #include <interfaces/ifaces/baseinterface.h>
@@ -24,8 +25,10 @@ class ConnectionContext
     friend class ConnectionManager;
 
 private:
-    BaseInterface *m_iface;
-    DefaultQueryExecutor *m_executor;
+    // QPointer обнуляется при удалении объекта, поэтому isValid()
+    // не пропустит обращение к уже удалённым интерфейсу или исполнителю
+    QPointer<BaseInterface> m_iface;
+    QPointer<DefaultQueryExecutor> m_executor;
     Strategy m_strategy;
     std::pair<QThread *, QThread *> m_syncThreads;
     QThreadPool *m_threadPool;

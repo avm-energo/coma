@@ -3,10 +3,12 @@
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/exec/default_query_executor.h>
 
+#include <QPointer>
+
 namespace Interface
 {
 
-ConnectionContext::ConnectionContext() noexcept : m_iface(nullptr), m_executor(nullptr), m_strategy(Strategy::None) { }
+ConnectionContext::ConnectionContext() noexcept : m_strategy(Strategy::None) { }
 
 bool ConnectionContext::isValid() const noexcept
 {
@@ -52,9 +54,14 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
             QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
             // Если интерфейс успешно запустился
             QObject::connect(iface, &BaseInterface::started, m_iface,
-                [=]
+                [iface = QPointer<BaseInterface>(iface), executor = QPointer<DefaultQueryExecutor>(executor),
+                    ifaceThread = QPointer<QThread>(ifaceThread), parserThread = QPointer<QThread>(parserThread)]
                 {
-                    qDebug() << m_iface->metaObject()->className() << " connected";
+                    // При неудачном подключении объекты контекста удаляются через
+                    // deleteLater, но сигнал started может прийти позже их удаления.
+                    if (!iface || !executor || !ifaceThread || !parserThread)
+                        return;
+                    qDebug() << iface->metaObject()->className() << " connected";
                     executor->moveToThread(parserThread);
                     iface->moveToThread(ifaceThread);
                     parserThread->start();
@@ -101,6 +108,11 @@ bool ConnectionContext::run(AsyncConnection *connection)
             m_executor->deleteLater();
             m_syncThreads.first->deleteLater();
             m_syncThreads.second->deleteLater();
+            // Сбрасываем указатели, чтобы контекст не хранил удалённые объекты
+            m_iface = nullptr;
+            m_executor = nullptr;
+            m_syncThreads = { nullptr, nullptr };
+            m_strategy = Strategy::None;
             return false;
         }
         return true;
@@ -122,8 +134,12 @@ void ConnectionContext::reset()
         m_executor->stop();
         m_executor->wakeUp();
         waiter.exec();
-        m_iface->close();
-        waiter.exec();
+        // Интерфейс мог быть удалён, пока ждали завершения исполнителя
+        if (m_iface)
+        {
+            m_iface->close();
+            waiter.exec();
+        }
         m_iface = nullptr;
         m_executor = nullptr;
     }
