@@ -117,6 +117,9 @@ void ConnectionManager::setReconnectMode(const ReconnectMode newMode) noexcept
 
 void ConnectionManager::reconnect()
 {
+    // Контекст мог быть сброшен, если соединение уже разорвано
+    if (!m_context.isValid())
+        return;
     if (!m_isReconnectOccurred)
         qCritical() << "Произошла ошибка соединения";
     emit reconnectInterface();
@@ -195,6 +198,10 @@ void ConnectionManager::fastCheckBSI(const DataTypes::BitStringStruct &data)
 
 void ConnectionManager::interfaceReconnected()
 {
+    // Сигнал reconnected приходит через очередь событий и может быть
+    // доставлен уже после разрыва соединения и сброса контекста
+    if (m_currentConnection == nullptr || !m_context.isValid())
+        return;
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
     m_currentConnection->getQueue().activate();
     m_currentConnection->reqBSI();
