@@ -1,7 +1,7 @@
 #include "interfaces/ifaces/usbhidport.h"
 
-#include <avm-gen/threadpool.h>
 #include <hidapi/hidapi.h>
+#include <libavm-gen/threadpool.h>
 
 #include <QDebug>
 

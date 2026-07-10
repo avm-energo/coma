@@ -51,11 +51,11 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
             // Если интерфейс успешно запустился
             QObject::connect(iface, &BaseInterface::started, m_iface,
                 [iface = QPointer<BaseInterface>(iface), executor = QPointer<DefaultQueryExecutor>(executor),
-                    ifaceThread = QPointer<QThread>(ifaceThread), parserThread = QPointer<QThread>(parserThread)]
+                    parserThread = QPointer<QThread>(parserThread)]
                 {
                     // При неудачном подключении объекты контекста удаляются через
                     // deleteLater, но сигнал started может прийти позже их удаления.
-                    if (!iface || !executor || !ifaceThread || !parserThread)
+                    if (!iface || !executor || !parserThread)
                         return;
                     qDebug() << iface->metaObject()->className() << " connected";
                     executor->moveToThread(parserThread);
@@ -98,13 +98,6 @@ bool ConnectionContext::run(AsyncConnection *connection)
             m_iface->close();
             m_iface->deleteLater();
             m_executor->deleteLater();
-            m_syncThreads.first->deleteLater();
-            m_syncThreads.second->deleteLater();
-            // Сбрасываем указатели, чтобы контекст не хранил удалённые объекты
-            m_iface = nullptr;
-            m_executor = nullptr;
-            m_syncThreads = { nullptr, nullptr };
-            m_strategy = Strategy::None;
             m_parcerThreads->deleteLater();
             return false;
         }
@@ -126,12 +119,6 @@ void ConnectionContext::reset()
         m_executor->stop();
         m_executor->wakeUp();
         waiter.exec();
-        // Интерфейс мог быть удалён, пока ждали завершения исполнителя
-        if (m_iface)
-        {
-            m_iface->close();
-            waiter.exec();
-        }
         m_iface->close();
         m_iface = nullptr;
         m_executor = nullptr;
