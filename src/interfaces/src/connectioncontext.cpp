@@ -39,18 +39,14 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
 
         if (m_strategy == Strategy::Sync)
         {
-            auto ifaceThread = new QThread;
             auto parserThread = new QThread;
             // Старт
-            QObject::connect(ifaceThread, &QThread::started, m_iface, &BaseInterface::poll);
+            QObject::connect(m_iface, &BaseInterface::readyRead, m_iface, &BaseInterface::poll);
             QObject::connect(parserThread, &QThread::started, m_executor, &DefaultQueryExecutor::exec);
             // Остановка
-            QObject::connect(m_iface, &BaseInterface::finished, ifaceThread, &QThread::quit);
             QObject::connect(m_iface, &BaseInterface::finished, parserThread, &QThread::quit);
             QObject::connect(m_executor, &DefaultQueryExecutor::finished, parserThread, &QThread::quit);
-            QObject::connect(ifaceThread, &QThread::finished, m_iface, &QObject::deleteLater);
             QObject::connect(parserThread, &QThread::finished, m_executor, &QObject::deleteLater);
-            QObject::connect(ifaceThread, &QThread::finished, &QObject::deleteLater);
             QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
             // Если интерфейс успешно запустился
             QObject::connect(iface, &BaseInterface::started, m_iface,
@@ -63,13 +59,9 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
                         return;
                     qDebug() << iface->metaObject()->className() << " connected";
                     executor->moveToThread(parserThread);
-                    iface->moveToThread(ifaceThread);
                     parserThread->start();
-                    ifaceThread->start();
                     executor->start();
                 });
-            m_syncThreads.first = ifaceThread;
-            m_syncThreads.second = parserThread;
         }
         else
         {
@@ -113,6 +105,7 @@ bool ConnectionContext::run(AsyncConnection *connection)
             m_executor = nullptr;
             m_syncThreads = { nullptr, nullptr };
             m_strategy = Strategy::None;
+            m_parcerThreads->deleteLater();
             return false;
         }
         return true;
@@ -129,7 +122,6 @@ void ConnectionContext::reset()
     if (isValid())
     {
         QEventLoop waiter;
-        QObject::connect(m_iface, &BaseInterface::finished, &waiter, &QEventLoop::quit);
         QObject::connect(m_executor, &DefaultQueryExecutor::finished, &waiter, &QEventLoop::quit);
         m_executor->stop();
         m_executor->wakeUp();
@@ -140,6 +132,7 @@ void ConnectionContext::reset()
             m_iface->close();
             waiter.exec();
         }
+        m_iface->close();
         m_iface = nullptr;
         m_executor = nullptr;
     }

@@ -26,7 +26,7 @@ ui_*.h
 *.obj
 Makefile*
 *build-*
-build/
+*build/
 *.lib
 lib
 

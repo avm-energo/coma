@@ -13,6 +13,7 @@ Ethernet::Ethernet(IEC104Settings *settings, QObject *parent)
         this, &Ethernet::handleSocketState, Qt::DirectConnection);
     QObject::connect(m_socket, &QAbstractSocket::errorOccurred, //
         this, &Ethernet::handleSocketError, Qt::DirectConnection);
+    QObject::connect(m_socket, &QTcpSocket::readyRead, this, &BaseInterface::readyRead);
 }
 
 bool Ethernet::connect()
@@ -50,21 +51,15 @@ void Ethernet::disconnect()
 QByteArray Ethernet::read(bool &status)
 {
     QByteArray data;
-    if (!m_socket->isOpen() || !m_socket->isReadable())
-    {
-        status = false;
-        m_log.writeLog(Logger::Critical, "Ethernet reading data from the closed socket");
-        return data;
-    }
+
     if (m_socket->bytesAvailable())
-    {
-        m_dataGuard.lock();         // lock port
-        data = m_socket->readAll(); // read data
-        m_dataGuard.unlock();       // unlock port
         status = true;
+
+    while (m_socket->bytesAvailable())
+    {
+        data += m_socket->readAll();
     }
-    else
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+
     return data;
 }
 

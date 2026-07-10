@@ -28,7 +28,7 @@ private:
     QPointer<BaseInterface> m_iface;
     QPointer<DefaultQueryExecutor> m_executor;
     Strategy m_strategy;
-    std::pair<QThread *, QThread *> m_syncThreads;
+    QThread *m_parcerThreads;
     QThreadPool *m_threadPool;
 
 public:

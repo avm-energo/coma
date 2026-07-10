@@ -34,6 +34,7 @@ signals:
     void stateChanged(Interface::State);
     void clearQueries();
     void executorWakeUp();
+    void readyRead();
 
 protected:
     std::atomic<Interface::State> m_state;
