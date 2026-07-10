@@ -456,6 +456,8 @@ QGridLayout *CheckDialog::setupCommandWidget(const Device::XmlDataTypes::MWidget
         layout->addWidget(PBFunc::New(this, "", buttonText,
             [&, realAddr, type]()
             {
+                if (!checkPassword())
+                    return;
                 bool cbdata = false;
                 DataTypes::SingleCommand cmd;
                 cmd.addr = realAddr;
