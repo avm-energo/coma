@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fragment>
+    <bsi-ext>
+        <record>
+            <name>namepo</name>
+            <desc>Наименование программы:</desc>
+            <representation>SerialNumber</representation>
+            <offset>0</offset>
+        </record>
+        <record>
+            <name>verloader</name>
+            <desc>Версия Loader:</desc>
+            <representation>Version</representation>
+            <offset>1</offset>
+        </record>
+    </bsi-ext>
+</fragment>

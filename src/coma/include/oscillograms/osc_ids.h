@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/integers.h>
+#include <libavm-gen/integers.h>
 
 // Oscillogram / SwitchJournal Part
 

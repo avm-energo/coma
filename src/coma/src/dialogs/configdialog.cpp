@@ -1,15 +1,15 @@
 #include "dialogs/configdialog.h"
 
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/filefunc.h>
+#include <libavm-widgets/wdfunc.h>
 #include <common/appconfig.h>
 #include <device/current_device.h>
 #include <dialogs/keypressdialog.h>
-#include <avm-gen/error.h>
-#include <avm-gen/files.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-gen/timefunc.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-gen/timefunc.h>
 
 #include <QDebug>
 #include <QGridLayout>

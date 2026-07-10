@@ -14,11 +14,13 @@ private:
     void reqUpdate() override;
 
     void fillBsi();
-    void fillBsiExt();
+    void fillBsiExt(u32 addr);
 
 private slots:
     void sync();
-    void syncExt();
+    void syncExt(u32 addr);
+    void reqBsi();
+    void reqBsiExt();
 
 signals:
     void fetchBsi();

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(coma VERSION 3.4.5)
+project(coma VERSION 3.6.0)
 
 set(SOFTDEVELOPER "AVM-Energo")
 
@@ -43,8 +43,8 @@ endif()
 # Building libraries and targets
 # Step 1: Build dependencies
 
-find_package(avm-widgets QUIET)
-if(${avm-widgets_FOUND})
+find_package(libavm-widgets QUIET)
+if(${libavm-widgets_FOUND})
   message(STATUS "Found package avm-widgets")
 else()
   include(avm-widgets)

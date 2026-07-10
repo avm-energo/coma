@@ -39,7 +39,7 @@ endif()
   target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Network
     Qt${QT_VERSION_MAJOR}::SerialPort
-    avm-gen
+    libavm-gen
     coma
   )
 
@@ -72,7 +72,7 @@ if(BUILD_TESTING)
     interfaces
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Test
-    avm-gen
+    libavm-gen
 )
 
 if(SYSTEM_NAME STREQUAL "windows")
@@ -92,6 +92,6 @@ endif()
   if(SYSTEM_NAME STREQUAL "windows")
     get_filename_component(hidapi_BIN_DIR ${hidapi_BINARY_DIR} ABSOLUTE)
     set_tests_properties(${PROJECT_NAME}_tests PROPERTIES ENVIRONMENT
-      "PATH=${hidapi_BIN_DIR}\;$<TARGET_FILE_DIR:Qt${QT_VERSION_MAJOR}::Core>\;$<TARGET_FILE_DIR:avm-gen>\;")
+      "PATH=${hidapi_BIN_DIR}\;$<TARGET_FILE_DIR:Qt${QT_VERSION_MAJOR}::Core>\;$<TARGET_FILE_DIR:libavm-gen>\;")
   endif()
 endif()

@@ -1,7 +1,14 @@
 #include "xml/xmleditor/models/xmldatamodel.h"
 
-#include <avm-gen/xml/xmlparse.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/strings.h>
+#include <libavm-gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
+
+#include <QDir>
+#include <QDomDocument>
+#include <QFile>
+#include <QMap>
 
 XmlDataModel::XmlDataModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent) { }
 
@@ -109,7 +116,13 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
         return { tags::config, tags::record, //
             [this](auto &doc, auto &item, auto &row)
             {
-                makeElement(doc, item, tags::id, data(index(row, 0)));
+                const auto &names = s2RecordsNameMap();
+                auto nameOrId = data(index(row, 0)).toString();
+                auto id = names.key(nameOrId, -1);
+                if (id >= 0)
+                    makeElement(doc, item, tags::id, id);
+                else
+                    makeElement(doc, item, tags::id, nameOrId); // fallback: numeric id stored as string
                 makeElement(doc, item, tags::def_val, data(index(row, 1)));
                 QVariant countData(data(index(row, 2)));
                 if ((!countData.value<QString>().isEmpty()) && (countData.value<int>() > 1))
@@ -146,6 +159,27 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
             {
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::name, data(index(row, 1)));
+            } };
+    case ModelType::Includes:
+        return { tags::includes, tags::include, //
+            [this](auto &doc, auto &item, auto &row) { setAttribute(doc, item, tags::src, data(index(row, 0))); } };
+    case ModelType::BsiRecords:
+        return { tags::bsi, tags::record, //
+            [this](auto &doc, auto &item, auto &row)
+            {
+                makeElement(doc, item, tags::name, data(index(row, 0)));
+                makeElement(doc, item, tags::desc, data(index(row, 1)));
+                makeElement(doc, item, tags::representation, data(index(row, 2)));
+                makeElement(doc, item, tags::offset, data(index(row, 3)));
+            } };
+    case ModelType::BsiExtRecords:
+        return { tags::bsi_ext, tags::record, //
+            [this](auto &doc, auto &item, auto &row)
+            {
+                makeElement(doc, item, tags::name, data(index(row, 0)));
+                makeElement(doc, item, tags::desc, data(index(row, 1)));
+                makeElement(doc, item, tags::representation, data(index(row, 2)));
+                makeElement(doc, item, tags::offset, data(index(row, 3)));
             } };
     default:
         qWarning() << "Model settings not found!";
@@ -216,31 +250,48 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
         parseTag(node, tags::sig_group, row, 3);                  // Группа
         break;                                                    //
     case ModelType::Config:                                       //
-        parseTag(node, tags::id, row, 0, "", true);               // ID
-        parseTag(node, tags::def_val, row, 1);                    // Значение по умолчанию
-        parseTag(node, tags::count, row, 2, "");                  // new count
-        parseTag(node, tags::order, row, 3, "");                  // Приоритет
-        parseTag(node, tags::visibility, row, 4, "true");         // Видимость
-        break;                                                    //
-    case ModelType::HiddenTab:                                    //
-        parseTag(node, tags::index, row, 0, "1", true);           // Индекс данных в структуре
-        parseAttribute(node, tags::title, row, 1, "");            // Отображаемое название
-        parseTag(node, tags::name, row, 2, "");                   // Имя виджета в системе Qt
-        parseAttribute(node, tags::view, row, 3, "LineEdit");     // Тип виджета для отображения
-        parseTag(node, tags::type, row, 4, "uint32");             // Тип данных, хранимые в виджете
-        parseTag(node, tags::addr, row, 5, "1", true);            // Адрес в блоке устройства
-        parseTag(node, tags::visibility, row, 6, "true");         // Видимость
-        break;                                                    //
-    case ModelType::BsiExt:                                       //
-        parseTag(node, tags::addr, row, 0, "40", true);           // Адрес сигнала
-        parseTag(node, tags::desc, row, 1, "");                   // Описание сигнала
-        parseTag(node, tags::type, row, 2, "uint32");             // Тип данных сигнала
-        parseTag(node, tags::visibility, row, 3, "true");         // Видимость
-        break;                                                    //
-    case ModelType::S2Tabs:                                       //
-        parseTag(node, tags::id, row, 0, "", true);               // ID
-        parseTag(node, tags::name, row, 1);                       // Наименование
-        break;                                                    //
+        parseTag(node, tags::id, row, 0, "", true);               // ID (stored temporarily as int)
+        {
+            const auto &names = s2RecordsNameMap();
+            auto id = data(index(row, 0)).toInt();
+            auto nameIt = names.find(id);
+            if (nameIt != names.cend())
+                setData(index(row, 0), nameIt.value());       // replace id with human-readable name
+        }
+        parseTag(node, tags::def_val, row, 1);                // Значение по умолчанию
+        parseTag(node, tags::count, row, 2, "");              // new count
+        parseTag(node, tags::order, row, 3, "");              // Приоритет
+        parseTag(node, tags::visibility, row, 4, "true");     // Видимость
+        break;                                                //
+    case ModelType::HiddenTab:                                //
+        parseTag(node, tags::index, row, 0, "1", true);       // Индекс данных в структуре
+        parseAttribute(node, tags::title, row, 1, "");        // Отображаемое название
+        parseTag(node, tags::name, row, 2, "");               // Имя виджета в системе Qt
+        parseAttribute(node, tags::view, row, 3, "LineEdit"); // Тип виджета для отображения
+        parseTag(node, tags::type, row, 4, "uint32");         // Тип данных, хранимые в виджете
+        parseTag(node, tags::addr, row, 5, "1", true);        // Адрес в блоке устройства
+        parseTag(node, tags::visibility, row, 6, "true");     // Видимость
+        break;                                                //
+    case ModelType::BsiExt:                                   //
+        parseTag(node, tags::addr, row, 0, "40", true);       // Адрес сигнала
+        parseTag(node, tags::desc, row, 1, "");               // Описание сигнала
+        parseTag(node, tags::type, row, 2, "uint32");         // Тип данных сигнала
+        parseTag(node, tags::visibility, row, 3, "true");     // Видимость
+        break;                                                //
+    case ModelType::S2Tabs:                                   //
+        parseTag(node, tags::id, row, 0, "", true);           // ID
+        parseTag(node, tags::name, row, 1);                   // Наименование
+        break;                                                //
+    case ModelType::Includes:                                 //
+        parseAttribute(node, tags::src, row, 0);              // Путь к файлу
+        break;                                                //
+    case ModelType::BsiRecords:                               //
+    case ModelType::BsiExtRecords:                            //
+        parseTag(node, tags::name, row, 0);                   // Имя поля
+        parseTag(node, tags::desc, row, 1);                   // Описание
+        parseTag(node, tags::representation, row, 2, "String"); // Тип вывода
+        parseTag(node, tags::offset, row, 3, "0", true);      // Смещение
+        break;                                                //
     default:
         qWarning() << "Can't parse undefined tag of XML model!";
         break;
@@ -283,5 +334,55 @@ QDomElement XmlDataModel::toNode(QDomDocument &doc)
         fillNode(doc, item, row);
         node.appendChild(item);
     }
+    if (m_type == ModelType::BsiRecords || m_type == ModelType::BsiExtRecords)
+    {
+        auto fragment = makeElement(doc, tags::fragment);
+        fragment.appendChild(node);
+        return fragment;
+    }
     return node;
+}
+
+const QMap<int, QString> &XmlDataModel::s2RecordsNameMap()
+{
+    static QMap<int, QString> map;
+    static QString loadedFrom;
+    auto configDir = Settings::configDir();
+    if (loadedFrom != configDir)
+    {
+        QFile file(QDir(configDir).filePath("s2files.xml"));
+        if (file.open(QIODevice::ReadOnly))
+        {
+            map.clear();
+            QDomDocument doc;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
+            QString errMsg;
+            auto line = 0, column = 0;
+            if (doc.setContent(&file, &errMsg, &line, &column))
+#else
+            QDomDocument::ParseResult result = doc.setContent(&file);
+            if (result.errorMessage.isEmpty())
+#endif
+            {
+                XmlParse::parseNode(doc.documentElement(), tags::records,
+                    [&](const QDomNode &node)
+                    {
+                        int id = XmlParse::parseNumFromNode<int>(node, tags::id);
+                        QString name = XmlParse::parseString(node, tags::name);
+                        if (id > 0 && name != STRINF)
+                            map[id] = name;
+                    });
+            }
+#if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
+            else
+                qWarning() << errMsg;
+#else
+            else
+                qWarning() << result.errorMessage;
+#endif
+            file.close();
+            loadedFrom = configDir;
+        }
+    }
+    return map;
 }

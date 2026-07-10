@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/error.h>
+#include <libavm-gen/error.h>
 #include <s2/hexparser.h>
 #include <comawidgets/udialog.h>
 

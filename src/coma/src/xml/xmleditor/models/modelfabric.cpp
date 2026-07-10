@@ -16,6 +16,7 @@ void ModelFabric::createChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         {
         case ModelType::SGroup:
         case ModelType::S2Records:
+        case ModelType::OverlayRecords:
             mNode.m_model = new XmlHideDataModel(rows, cols, mNode.m_type, parent);
             break;
         case ModelType::Alarms:
@@ -23,6 +24,7 @@ void ModelFabric::createChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         case ModelType::Section:
         case ModelType::Journals:
         case ModelType::Hidden:
+        case ModelType::Overlay:
             mNode.m_model = new XmlContainerModel(rows, cols, mNode.m_type, parent);
             break;
         case ModelType::Signals:
@@ -40,6 +42,9 @@ void ModelFabric::createChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         case ModelType::HiddenTab:
         case ModelType::BsiExt:
         case ModelType::S2Tabs:
+        case ModelType::Includes:
+        case ModelType::BsiRecords:
+        case ModelType::BsiExtRecords:
             mNode.m_model = new XmlDataModel(rows, cols, mNode.m_type, parent);
             break;
         default:
@@ -72,12 +77,34 @@ XmlModel *ModelFabric::createRootModel(QDomNode &root, QObject *parent)
         {
             type = ModelType::S2Files;
         }
+        else if (rootName == tags::fragment)
+        {
+            auto bsiNode = root.firstChildElement(tags::bsi);
+            if (!bsiNode.isNull())
+            {
+                type = ModelType::BsiRecords;
+                root = bsiNode;
+            }
+            else
+            {
+                auto bsiExtNode = root.firstChildElement(tags::bsi_ext);
+                if (!bsiExtNode.isNull())
+                {
+                    type = ModelType::BsiExtRecords;
+                    root = bsiExtNode;
+                }
+            }
+        }
         auto iter = XmlModel::s_headers.find(type);
         if (iter != XmlModel::s_headers.cend())
         {
             auto labels = iter->second;
             int cols = labels.count(), rows = elementsCount(root);
-            auto model = new XmlContainerModel(rows, cols, type, parent);
+            XmlModel *model = nullptr;
+            if (type == ModelType::BsiRecords || type == ModelType::BsiExtRecords)
+                model = new XmlDataModel(rows, cols, type, parent);
+            else
+                model = new XmlContainerModel(rows, cols, type, parent);
             model->setHorizontalHeaderLabels(labels);
             model->setDataNode(false, root);
             return model;
@@ -91,6 +118,71 @@ MasterModel *ModelFabric::createMasterModel(QObject *parent)
     auto masterModel = new MasterModel(parent);
     masterModel->setHorizontalHeaderLabels({ "Устройство", "Type B", "Type M", "Версия", "Файл" });
     return masterModel;
+}
+
+XmlModel *ModelFabric::createEmptyChildModel(ModelType type, QObject *parent)
+{
+    auto iter = XmlModel::s_headers.find(type);
+    if (iter == XmlModel::s_headers.cend())
+        return nullptr;
+    const auto labels = iter->second;
+    const int cols = labels.count();
+    XmlModel *model = nullptr;
+    switch (type)
+    {
+    case ModelType::SGroup:
+    case ModelType::S2Records:
+    case ModelType::OverlayRecords:
+        model = new XmlHideDataModel(1, cols, type, parent);
+        break;
+    case ModelType::Alarms:
+    case ModelType::Sections:
+    case ModelType::Section:
+    case ModelType::Journals:
+    case ModelType::Hidden:
+        model = new XmlContainerModel(1, cols, type, parent);
+        break;
+    case ModelType::Overlay:
+    {
+        // Pre-populate with a <records> child so the overlay is immediately navigable
+        auto *overlayModel = new XmlContainerModel(2, cols, type, parent);
+        overlayModel->setHorizontalHeaderLabels(labels);
+        overlayModel->setData(overlayModel->index(0, 0), QString(".."));
+        auto *recordsModel = createEmptyChildModel(ModelType::OverlayRecords, overlayModel);
+        if (recordsModel != nullptr)
+        {
+            ChildModelNode recordsNode { recordsModel, ModelType::OverlayRecords };
+            overlayModel->setData(overlayModel->index(1, 0), QVariant::fromValue(recordsNode), ModelNodeRole);
+            overlayModel->setData(overlayModel->index(1, 0), QString(tags::records));
+        }
+        return overlayModel;
+    }
+    case ModelType::Signals:
+    case ModelType::SectionTabs:
+    case ModelType::AlarmStateAll:
+    case ModelType::AlarmsCrit:
+    case ModelType::AlarmsWarn:
+    case ModelType::AlarmsInfo:
+    case ModelType::WorkJours:
+    case ModelType::MeasJours:
+    case ModelType::Modbus:
+    case ModelType::Protocom:
+    case ModelType::IEC60870:
+    case ModelType::Config:
+    case ModelType::HiddenTab:
+    case ModelType::BsiExt:
+    case ModelType::S2Tabs:
+    case ModelType::Includes:
+    case ModelType::BsiRecords:
+    case ModelType::BsiExtRecords:
+        model = new XmlDataModel(1, cols, type, parent);
+        break;
+    default:
+        return nullptr;
+    }
+    model->setHorizontalHeaderLabels(labels);
+    model->setData(model->index(0, 0), QString(".."));
+    return model;
 }
 
 int ModelFabric::elementsCount(QDomNode &node)

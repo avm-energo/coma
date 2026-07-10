@@ -1,6 +1,6 @@
 #include "xml/xmleditor/dialogs/xml104dialog.h"
 
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/wdfunc.h>
 
 #include <QHash>
 #include <cstdint>

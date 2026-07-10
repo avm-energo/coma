@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ctti/type_id.hpp>
-#include <avm-gen/integers.h>
+#include <libavm-gen/integers.h>
 
 #include <QMap>
 #include <QString>

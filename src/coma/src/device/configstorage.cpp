@@ -1,6 +1,6 @@
 #include "device/configstorage.h"
 
-#include "avm-gen/strings.h"
+#include <libavm-gen/strings.h>
 
 namespace Device
 {
@@ -88,6 +88,18 @@ void ConfigStorage::bsiExtItemDataReceive(const u32 addr, //
     const XmlDataTypes::BinaryType type, bool visib, const QString &desc)
 {
     m_settings.appendBsiExtItem(addr, type, visib, desc);
+}
+
+void ConfigStorage::bsiRecordDataReceive(
+    const QString &name, const QString &desc, const ViewType::ViewTypes type, u32 offset)
+{
+    m_settings.appendBsi(name, desc, type, offset);
+}
+
+void ConfigStorage::bsiExtRecordDataReceive(
+    const QString &name, const QString &desc, const ViewType::ViewTypes type, u32 offset)
+{
+    m_settings.appendBsiExt(name, desc, type, offset);
 }
 
 void ConfigStorage::protocolGroupReceive(const Protocol::AbstractGroup &group)

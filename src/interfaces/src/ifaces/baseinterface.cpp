@@ -1,6 +1,6 @@
 #include "interfaces/ifaces/baseinterface.h"
 
-#include <avm-gen/settings.h>
+#include <libavm-gen/settings.h>
 
 #include <QCoreApplication>
 #include <QElapsedTimer>

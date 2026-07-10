@@ -1,9 +1,9 @@
 #include "startup/abstractstartupdialog.h"
 
-#include <avm-gen/stdfunc.h>
-#include <avm-gen/pch.h>
-#include <avm-widgets/epopup.h>
-#include <avm-widgets/spbfunc.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-gen/pch.h>
+#include <libavm-widgets/epopup.h>
+#include <libavm-widgets/spbfunc.h>
 
 #include <QDialogButtonBox>
 #include <QMessageBox>

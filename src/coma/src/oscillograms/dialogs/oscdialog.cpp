@@ -1,16 +1,16 @@
 #include <device/current_device.h>
-#include <avm-gen/datatypes.h>
-#include <avm-gen/files.h>
-#include <avm-gen/settings.h>
-#include <avm-gen/timefunc.h>
+#include <libavm-gen/datatypes.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/timefunc.h>
 #include <models/etablemodel.h>
 #include <oscillograms/dialogs/oscdialog.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <s2/s2util.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/etableview.h>
-#include <avm-widgets/pbfunc.h>
-#include <avm-widgets/pushbuttondelegate.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/etableview.h>
+#include <libavm-widgets/pbfunc.h>
+#include <libavm-widgets/pushbuttondelegate.h>
 
 #include <QLayout>
 

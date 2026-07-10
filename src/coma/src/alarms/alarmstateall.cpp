@@ -1,8 +1,8 @@
 #include "alarms/alarmstateall.h"
 
+#include <libavm-widgets/graphfunc.h>
+#include <libavm-widgets/lblfunc.h>
 #include <device/current_device.h>
-#include <avm-widgets/graphfunc.h>
-#include <avm-widgets/lblfunc.h>
 
 #include <QBoxLayout>
 #include <QPushButton>

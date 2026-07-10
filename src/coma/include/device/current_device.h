@@ -24,12 +24,11 @@ private:
 
     AsyncConnection *m_async;
     SyncConnection m_sync;
-    BlockStartupInfo m_bsi, m_previous;
+    Bsi m_bsi, m_previous;
     BlockStartupInfoExtended m_bsiExt;
     ConfigStorage m_cfgStorage;
     S2DataManager m_s2manager;
     FileProvider m_fileProvider;
-    u32 m_bsiCounter;
     bool m_isInitStage;
 
     /// \brief Приватный конструктор.
@@ -55,9 +54,9 @@ public:
     /// \brief Возвращает синхронное соединение для текущего устройства.
     [[nodiscard]] SyncConnection *sync() noexcept;
     /// \brief Возвращает BSI текущего устройства.
-    [[nodiscard]] const BlockStartupInfo &bsi() const noexcept;
+    [[nodiscard]] const Bsi &bsi() const noexcept;
     /// \brief Возвращает BSI Extended текущего устройства.
-    [[nodiscard]] BlockStartupInfoExtended *bsiExt() noexcept; /// TODO: MAKE IT CONSTANT
+    [[nodiscard]] BlockStartupInfoExtended &bsiExt() noexcept;
     /// \brief Возвращает блок состояния текущего устройства.
     [[nodiscard]] Health health() const noexcept;
 

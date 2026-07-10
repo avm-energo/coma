@@ -56,3 +56,7 @@ CMakeLists.txt.user*
 # Doxygen
 /doc/doxy-doc/*
 .xandai_history
+
+.vscode
+.continue
+.clangd

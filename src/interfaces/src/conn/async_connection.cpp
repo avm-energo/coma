@@ -2,7 +2,7 @@
 
 #include "device/bsi.h"
 #include "device/bsi_ext.h"
-#include <avm-gen/std_ext.h>
+#include <libavm-gen/std_ext.h>
 #include <s2/s2util.h>
 
 namespace Interface
@@ -50,7 +50,7 @@ void AsyncConnection::reqBitStrings(quint32 addr, quint32 count)
     if (addr == Device::bsiStartReg)
         reqBSI();
     else if (addr == Device::bsiExtStartReg)
-        reqBSIExt();
+        reqBSIExt(count);
     else
         setToQueue(CommandStruct { Commands::C_ReqBitStrings, addr, count });
 }
@@ -65,9 +65,9 @@ void AsyncConnection::reqBSI()
     setToQueue(CommandStruct { Commands::C_ReqBSI, Device::bsiStartReg, Device::bsiCountRegs });
 }
 
-void AsyncConnection::reqBSIExt()
+void AsyncConnection::reqBSIExt(u32 count)
 {
-    setToQueue(CommandStruct { Commands::C_ReqBSIExt, Device::bsiExtStartReg, Device::bsiExtCountRegs });
+    setToQueue(CommandStruct { Commands::C_ReqBSIExt, Device::bsiExtStartReg, count });
 }
 
 void AsyncConnection::reqFile(quint32 id, FileFormat format, quint32 expectedSize)

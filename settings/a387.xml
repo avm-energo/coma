@@ -1530,36 +1530,42 @@
             <section header="Вибрации" order="4">
                 <sgroup header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час" tab="210">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6070</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час" tab="210">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6064</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час" tab="210">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6058</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Среднеквадратичные значения виброперемещений, мкм" tab="200">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6052</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Среднеквадратичные значения виброскоростей, мм/с" tab="200">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6046</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Среднеквадратичные значения виброускорений, м/с2" tab="200">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6040</start-addr>
                         <count>6</count>
                     </mwidget>
@@ -1811,6 +1817,7 @@
                         <toolTip>Температура микроконтроллера, °С</toolTip>
                     </mwidget>
                     <mwidget desc="Напряжение на батарейке, В" view="float">
+                        <toolTip>Напряжение на батарейке, В</toolTip>
                         <start-addr>102</start-addr>
                     </mwidget>
                 </sgroup>
@@ -1946,18 +1953,21 @@
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3420</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3546</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3672</start-addr>
                         <count>61</count>
                     </mwidget>
@@ -2068,18 +2078,21 @@
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы A" tab="311">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3020</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы В" tab="312">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3146</start-addr>
                         <count>61</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Данные по гармоническому составу сигналов фазы C" tab="313">
                     <mwidget desc="Гм %1" view="float">
+                        <toolTip>Гм %1</toolTip>
                         <start-addr>3272</start-addr>
                         <count>61</count>
                     </mwidget>

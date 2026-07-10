@@ -1,12 +1,12 @@
 #include "xml/xmlparser/xmlparser.h"
 
-#include <avm-widgets/basespinboxgroup.h>
-#include <avm-widgets/checkboxgroup.h>
-#include <avm-widgets/ipctrl.h>
+#include <libavm-widgets/basespinboxgroup.h>
+#include <libavm-widgets/checkboxgroup.h>
+#include <libavm-widgets/ipctrl.h>
 #include <comawidgets/gasdensitywidget.h>
 #include <common/appconfig.h>
-#include <avm-gen/floats.h>
-#include <avm-gen/xml/xmlparse.h>
+#include <libavm-gen/floats.h>
+#include <libavm-gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
 #include <QTableView>

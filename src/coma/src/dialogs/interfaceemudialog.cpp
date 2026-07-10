@@ -1,12 +1,12 @@
 #include "dialogs/interfaceemudialog.h"
 
-#include <avm-gen/error.h>
-#include <avm-gen/settings.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/lefunc.h>
-#include <avm-widgets/pbfunc.h>
-#include <avm-widgets/tvfunc.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/lefunc.h>
+#include <libavm-widgets/pbfunc.h>
+#include <libavm-widgets/tvfunc.h>
 
 #include <QCoreApplication>
 #include <QMessageBox>

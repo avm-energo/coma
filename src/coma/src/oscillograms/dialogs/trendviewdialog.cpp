@@ -25,17 +25,17 @@
  *          dlg->show();
  */
 
-#include <avm-gen/error.h>
-#include <avm-gen/files.h>
-#include <avm-gen/pch.h>
-#include <avm-gen/settings.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/pch.h>
+#include <libavm-gen/settings.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/osc_ids.h>
 #include <oscillograms/oscmanager.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/signalchoosewidget.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/filefunc.h>
+#include <libavm-widgets/signalchoosewidget.h>
+#include <libavm-widgets/wdfunc.h>
 
 #include <QAction>
 #include <QPen>

@@ -828,36 +828,42 @@
             <section header="Вибрации">
                 <sgroup header="Скорость изменения среднеквадратичного значения виброперемещения, мкм/час" tab="3">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6070</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Скорость изменения среднеквадратичного значения виброскорости, мм/с/час" tab="3">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6064</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Скорость изменения среднеквадратичного значения виброускорения, м/с2/час" tab="3">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6058</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Среднеквадратичные значения виброперемещений, мкм" tab="2">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6052</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Среднеквадратичные значения виброскоростей, мм/с" tab="2">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6046</start-addr>
                         <count>6</count>
                     </mwidget>
                 </sgroup>
                 <sgroup header="Среднеквадратичные значения виброускорений, м/с2" tab="2">
                     <mwidget desc="Датчик №%1" view="float">
+                        <toolTip>Датчик №%1</toolTip>
                         <start-addr>6040</start-addr>
                         <count>6</count>
                     </mwidget>

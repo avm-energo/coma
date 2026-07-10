@@ -1,7 +1,7 @@
 #pragma once
 
-#include <avm-gen/std_ext.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/std_ext.h>
+#include <libavm-gen/stdfunc.h>
 #include <oscillograms/filemanager.h>
 
 #include <optional>

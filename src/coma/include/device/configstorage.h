@@ -47,6 +47,10 @@ public slots:
     void hiddenTabDataReceive(const XmlDataTypes::HiddenTab &hiddenTab);
     /// \brief Slot for saving module's BSI Ext elements.
     void bsiExtItemDataReceive(const u32 addr, const XmlDataTypes::BinaryType type, bool visib, const QString &desc);
+    /// \brief Slot for saving module's BSI records.
+    void bsiRecordDataReceive(const QString &name, const QString &desc, const ViewType::ViewTypes type, u32 offset);
+    /// \brief Slot for saving module's BSI Ext records.
+    void bsiExtRecordDataReceive(const QString &name, const QString &desc, const ViewType::ViewTypes type, u32 offset);
     /// \brief Slot for saving module's protocol groups.
     void protocolGroupReceive(const Protocol::AbstractGroup &group);
 };

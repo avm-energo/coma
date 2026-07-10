@@ -1,18 +1,18 @@
 #include "oscillograms/dialogs/switchjournaldialog.h"
 
 #include <device/current_device.h>
-#include <avm-gen/files.h>
-#include <avm-gen/settings.h>
-#include <avm-gen/timefunc.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/timefunc.h>
 #include <models/etablemodel.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/swjmanager.h>
 #include <s2/s2util.h>
-#include <avm-widgets/etableview.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/pbfunc.h>
-#include <avm-widgets/pushbuttondelegate.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/etableview.h>
+#include <libavm-widgets/filefunc.h>
+#include <libavm-widgets/pbfunc.h>
+#include <libavm-widgets/pushbuttondelegate.h>
+#include <libavm-widgets/wdfunc.h>
 
 #include <QHeaderView>
 #include <QLayout>

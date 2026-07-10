@@ -1,7 +1,7 @@
 #pragma once
 
-#include <avm-gen/integers.h>
-#include <avm-gen/singleton.h>
+#include <libavm-gen/integers.h>
+#include <libavm-gen/singleton.h>
 #include <s2/delegate_common.h>
 
 #include <QObject>

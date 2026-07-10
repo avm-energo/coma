@@ -1,8 +1,8 @@
 #include "journals/journaltabwidget.h"
 
-#include <avm-gen/files.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
+#include <libavm-gen/files.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/filefunc.h>
 
 #include <QPushButton>
 #include <QVBoxLayout>

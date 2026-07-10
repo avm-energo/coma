@@ -10,6 +10,9 @@ public:
     ~InterfaceSerialDialog() noexcept;
     void setupUI() override;
     bool updateModel() override;
+    QStringList getConnectionNames() const;
+    void removeConnection(const QString &name);
+    void addConnectionFromSearch(const QMap<QString, QVariant> &deviceData);
 
 private:
     void setInterface(QModelIndex index) override;

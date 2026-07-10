@@ -1,37 +1,43 @@
 #include "dialogs/searchproccessdialog.h"
 
-#include <avm-gen/stdfunc.h>
-#include <avm-gen/utils/crc16.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/tvfunc.h>
+#include "const.h"
+#include "interfaces/utils/utils.h"
+#include "dialogs/interfaceserialdialog.h"
+#include <libavm-gen/stdfunc.h>
+#include <libavm-gen/utils/crc16.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/tvfunc.h>
 
 #include <QCoreApplication>
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QInputDialog>
+#include <QMenu>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QThread>
 #include <QTimer>
 
-SearchProccessDialog::SearchProccessDialog(const SearchParams &data, QWidget *parent)
+SearchProccessDialog::SearchProccessDialog(
+    const SearchParams &data, InterfaceSerialDialog *targetDialog, QWidget *parent)
     : QDialog(parent)
-    , params(data)
-    , timeoutTimer(new QTimer(this))
-    , tableView(nullptr)
-    , progressBar(nullptr)
-    , expectedResponseSize(0)
-    , currentAddress(0)
-    , timeout(false)
-    , responseReceived(false)
-    , responseError(false)
-    , portError(false)
-    , stop(false)
+    , m_params(data)
+    , m_timeoutTimer(new QTimer(this))
+    , m_tableView(nullptr)
+    , m_progressBar(nullptr)
+    , m_expectedResponseSize(0)
+    , m_currentAddress(0)
+    , m_timeout(false)
+    , m_responseReceived(false)
+    , m_responseError(false)
+    , m_portError(false)
+    , m_stop(false)
+    , m_targetDialog(targetDialog)
 {
-    timeoutTimer->setSingleShot(true);
-    timeoutTimer->setInterval(params.timeout);
-    QObject::connect(timeoutTimer, &QTimer::timeout, this, [this] { timeout = true; });
-
+    m_timeoutTimer->setSingleShot(true);
+    m_timeoutTimer->setInterval(m_params.timeout);
+    QObject::connect(m_timeoutTimer, &QTimer::timeout, this, [this] { m_timeout = true; });
     setObjectName("rsSearchProccessDialog");
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_ShowModal);
@@ -43,21 +49,27 @@ void SearchProccessDialog::setupUI()
 {
     auto mainLayout = new QVBoxLayout;
     auto tableViewModel = new QStandardItemModel(this);
-    QStringList headers { "Порт", "Адрес", "Скорость", "Чётность", "Стоп бит", "Статус" };
+    QStringList headers { "Порт", "Адрес", "Скорость", "Четность", "Стоп бит", "Статус" };
+
     tableViewModel->setHorizontalHeaderLabels(headers);
-    tableView = TVFunc::New(this, "devicesTable", tableViewModel);
-    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    mainLayout->addWidget(tableView);
-    progressBar = new QProgressBar(this);
-    progressBar->setOrientation(Qt::Horizontal);
-    mainLayout->addWidget(progressBar);
+    m_tableView = TVFunc::New(this, "devicesTable", tableViewModel);
+    m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(
+        m_tableView, &QTableView::customContextMenuRequested, this, &SearchProccessDialog::showContextMenu);
+
+    mainLayout->addWidget(m_tableView);
+    m_progressBar = new QProgressBar(this);
+    m_progressBar->setOrientation(Qt::Horizontal);
+    mainLayout->addWidget(m_progressBar);
+
     auto stopButton = new QPushButton("Остановить поиск", this);
     QObject::connect(stopButton, &QPushButton::clicked, this,
         [this]()
         {
-            if (!stop)
+            if (!m_stop)
             {
-                stop = true;
+                m_stop = true;
                 EMessageBox::information(this, "Поиск остановлен!");
             }
         });
@@ -68,17 +80,18 @@ void SearchProccessDialog::setupUI()
 
 void SearchProccessDialog::errorHandler(const QSerialPort::SerialPortError error)
 {
-    timeoutTimer->stop();
+    m_timeoutTimer->stop();
+
     switch (error)
     {
     case QSerialPort::SerialPortError::NoError:
         // ignore no error
         break;
     case QSerialPort::SerialPortError::TimeoutError:
-        timeout = true;
+        m_timeout = true;
         break;
     default:
-        portError = true;
+        m_portError = true;
         qWarning() << QVariant::fromValue(error).toString();
         break;
     }
@@ -88,23 +101,24 @@ void SearchProccessDialog::receiveResponse(QSerialPort *port)
 {
     if (port->isOpen())
     {
-        while (port->bytesAvailable() && !timeout && !stop)
+        while (port->bytesAvailable() && !m_timeout && !m_stop)
         {
-            response.append(port->readAll());
+            m_response.append(port->readAll());
             QCoreApplication::processEvents();
         }
-        if (response.size() >= expectedResponseSize)
+
+        if (m_response.size() >= m_expectedResponseSize)
         {
-            timeoutTimer->stop();
+            m_timeoutTimer->stop();
             // Анализируем ответ от устройства
-            if (analyzeResponse(response))
-                responseReceived = true;
+            if (analyzeResponse(m_response))
+                m_responseReceived = true;
             else
-                responseError = true;
+                m_responseError = true;
         }
     }
     else
-        portError = true;
+        m_portError = true;
 }
 
 bool SearchProccessDialog::analyzeResponse(const QByteArray &actualResponse)
@@ -115,16 +129,19 @@ bool SearchProccessDialog::analyzeResponse(const QByteArray &actualResponse)
         const auto addr = static_cast<quint8>(actualResponse[0]);
         const auto funcCode = static_cast<quint8>(actualResponse[1]);
         const auto size = static_cast<quint8>(actualResponse[2]);
-        if (addr == currentAddress && funcCode == 0x04 && size == (0x1e * 2))
+
+        if (addr == m_currentAddress && funcCode == 0x04 && size == (0x1e * 2))
         {
             auto crcBytes = actualResponse.right(sizeof(quint16));
             auto dataBytes = actualResponse.left(actualResponse.size() - sizeof(quint16));
-            quint16 actualCrc = ((crcBytes[0] << 8) | crcBytes[1]);
+            quint16 actualCrc = ((static_cast<quint8>(crcBytes[0]) << 8) | static_cast<quint8>(crcBytes[1]));
             utils::CRC16 expectedCrc(dataBytes);
+
             if (expectedCrc == actualCrc)
                 return true;
         }
     }
+
     return false;
 }
 
@@ -132,120 +149,126 @@ QByteArray SearchProccessDialog::createRequest()
 {
     constexpr char body[] = { 0x04, 0x00, 0x01, 0x00, 0x1e };
     auto request = QByteArray::fromRawData(&body[0], sizeof(body));
-    request = request.prepend(currentAddress);
+    request = request.prepend(m_currentAddress);
     utils::CRC16 crc(request);
     request.append(crc.toByteArray());
-    expectedResponseSize = (0x1e * 2) + 5;
+    m_expectedResponseSize = (0x1e * 2) + 5;
+
     return request;
 }
 
 void SearchProccessDialog::createModelItem(quint32 row, int addr, int baud, //
     QSerialPort::Parity parity, QSerialPort::StopBits stopBit)
 {
-    auto model = static_cast<QStandardItemModel *>(tableView->model());
+    auto model = static_cast<QStandardItemModel *>(m_tableView->model());
+
     if (model)
     {
         QList<QStandardItem *> items {
-            new QStandardItem(params.port),           //
+            new QStandardItem(m_params.port),         //
             new QStandardItem(QString::number(addr)), //
             new QStandardItem(QString::number(baud)), //
         };
 
         if (parity == QSerialPort::Parity::NoParity)
-            items.append(new QStandardItem("Нет"));
+            items.append(new QStandardItem(ParityRS485::noParity));
         else if (parity == QSerialPort::Parity::OddParity)
-            items.append(new QStandardItem("Нечёт"));
+            items.append(new QStandardItem(ParityRS485::oddParity));
         else
-            items.append(new QStandardItem("Чёт"));
+            items.append(new QStandardItem(ParityRS485::evenParity));
 
         if (stopBit == QSerialPort::StopBits::OneStop)
-            items.append(new QStandardItem("1"));
+            items.append(new QStandardItem(SerialUtils::stopBitsToString(QSerialPort::StopBits::OneStop)));
         else
-            items.append(new QStandardItem("2"));
+            items.append(new QStandardItem(SerialUtils::stopBitsToString(QSerialPort::StopBits::TwoStop)));
+
         items.append(new QStandardItem("Wait..."));
         model->appendRow(items);
-        tableView->scrollTo(model->index(row, 0));
+        m_tableView->scrollTo(model->index(row, 0));
     }
     QCoreApplication::processEvents();
 }
 
 void SearchProccessDialog::sendRequest(QSerialPort *port)
 {
-    response.clear();
+    m_response.clear();
     if (port->isOpen())
     {
         auto request = createRequest();
         port->write(request);
-        timeoutTimer->start();
-        while (!timeout && !responseReceived && !responseError && !portError && !stop)
+        m_timeoutTimer->start();
+
+        while (!m_timeout && !m_responseReceived && !m_responseError && !m_portError && !m_stop)
             QCoreApplication::processEvents();
-        if (portError)
-            timeout = false;
+
+        if (m_portError)
+            m_timeout = false;
     }
     else
-        portError = true;
+        m_portError = true;
     QCoreApplication::processEvents();
 }
 
 void SearchProccessDialog::updateTable(quint32 row)
 {
-    auto model = static_cast<QStandardItemModel *>(tableView->model());
+    auto model = static_cast<QStandardItemModel *>(m_tableView->model());
     QColor red(0xf96f6f);
     QColor yellow(0xfffd99);
     QColor green(0x029939);
 
     auto statusIndex = model->index(row, 5);
-    if (portError)
+    if (m_portError)
     {
-        model->setData(statusIndex, "Error", Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::error, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
-    else if (timeout)
+    else if (m_timeout)
     {
-        model->setData(statusIndex, "Timeout", Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::timeout, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
-    else if (responseError)
+    else if (m_responseError)
     {
-        model->setData(statusIndex, "Response error", Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::responseError, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnno.svg"), Qt::DecorationRole);
     }
-    else if (responseReceived)
+    else if (m_responseReceived)
     {
-        model->setData(statusIndex, "Ok", Qt::DisplayRole);
+        model->setData(statusIndex, StatusIndexRS485::ok, Qt::DisplayRole);
         model->setData(statusIndex, QIcon(":/icons/tnyes.svg"), Qt::DecorationRole);
     }
 
     for (int col = 0; col < model->columnCount(); col++)
     {
         auto itemIndex = model->index(row, col);
-        if (portError || timeout)
+        if (m_portError || m_timeout)
             model->setData(itemIndex, red, Qt::BackgroundRole);
-        else if (responseError)
+        else if (m_responseError)
             model->setData(itemIndex, yellow, Qt::BackgroundRole);
-        else if (responseReceived)
+        else if (m_responseReceived)
             model->setData(itemIndex, green, Qt::BackgroundRole);
     }
 
-    timeout = false;
-    responseError = false;
-    responseReceived = false;
+    m_timeout = false;
+    m_responseError = false;
+    m_responseReceived = false;
     QCoreApplication::processEvents();
 }
 
 void SearchProccessDialog::setMaxProgressBar()
 {
-    auto size = params.bauds.size() * params.parities.size() //
-        * params.stopBits.size()                             //
-        * (params.endAddr - params.startAddr + 1);           //
-    progressBar->setMinimum(0);
-    progressBar->setValue(0);
-    progressBar->setMaximum(size);
+    auto size = m_params.bauds.size() * m_params.parities.size() //
+        * m_params.stopBits.size()                               //
+        * (m_params.endAddr - m_params.startAddr + 1);           //
+
+    m_progressBar->setMinimum(0);
+    m_progressBar->setValue(0);
+    m_progressBar->setMaximum(size);
 }
 
 void SearchProccessDialog::updateProgressBar()
 {
-    progressBar->setValue(progressBar->value() + 1);
+    m_progressBar->setValue(m_progressBar->value() + 1);
 }
 
 void SearchProccessDialog::searchFinish(QSerialPort *port)
@@ -253,13 +276,13 @@ void SearchProccessDialog::searchFinish(QSerialPort *port)
     port->flush();
     port->close();
     port->deleteLater();
-    progressBar->setValue(progressBar->maximum());
+    m_progressBar->setValue(m_progressBar->maximum());
 }
 
 void SearchProccessDialog::search()
 {
     constexpr auto bufferSize = 1024;
-    auto port = new QSerialPort(params.port, this);
+    auto port = new QSerialPort(m_params.port, this);
     QObject::connect(port, &QSerialPort::errorOccurred, this, &SearchProccessDialog::errorHandler);
     QObject::connect(port, &QIODevice::readyRead, this, [this, port] { receiveResponse(port); });
     port->setFlowControl(QSerialPort::FlowControl::NoFlowControl);
@@ -268,43 +291,47 @@ void SearchProccessDialog::search()
 
     quint32 row = 0;
     setMaxProgressBar();
-    for (const auto baud : params.bauds)
+    for (const auto baud : m_params.bauds)
     {
-        for (const auto parity : params.parities)
+        for (const auto parity : m_params.parities)
         {
-            for (const auto stopBit : params.stopBits)
+            for (const auto stopBit : m_params.stopBits)
             {
                 port->setBaudRate(baud);
                 port->setParity(parity);
                 port->setStopBits(stopBit);
+
                 auto openStatus = port->open(QIODevice::ReadWrite);
-                for (auto addr = params.startAddr; addr <= params.endAddr; addr++)
+                for (auto addr = m_params.startAddr; addr <= m_params.endAddr; addr++)
                 {
                     // При закрытии окна или остановке поиска через кнопку
-                    if (stop)
+                    if (m_stop)
                     {
                         searchFinish(port);
                         return;
                     }
 
-                    currentAddress = static_cast<quint8>(addr);
+                    m_currentAddress = static_cast<quint8>(addr);
                     createModelItem(row, addr, baud, parity, stopBit);
+
                     if (openStatus)
                         sendRequest(port);
                     else
-                        portError = true;
+                        m_portError = true;
+
                     updateTable(row);
                     updateProgressBar();
                     row++;
 
                     // При неожиданной ошибке порта закрываем соединение
-                    if (portError)
+                    if (m_portError)
                     {
                         searchFinish(port);
                         EMessageBox::error(this, "Произошла ошибка COM-порта!");
                         return;
                     }
                 }
+
                 port->flush();
                 port->close();
                 QCoreApplication::processEvents();
@@ -312,7 +339,7 @@ void SearchProccessDialog::search()
         }
     }
     // Поиск закончился
-    stop = true;
+    m_stop = true;
     port->deleteLater();
     EMessageBox::information(this, "Сканирование завершено!");
 }
@@ -320,14 +347,76 @@ void SearchProccessDialog::search()
 void SearchProccessDialog::done(int r)
 {
     // Если поиск не закончился
-    if (!stop)
+    if (!m_stop)
     {
-        stop = true;
+        m_stop = true;
         auto closeTimer = new QTimer(this);
         closeTimer->setSingleShot(true);
         QObject::connect(closeTimer, &QTimer::timeout, this, [this, r](const auto) { QDialog::done(r); });
-        closeTimer->start(params.timeout);
+        closeTimer->start(m_params.timeout);
     }
     else
         QDialog::done(r);
+}
+
+void SearchProccessDialog::showContextMenu(const QPoint &pos)
+{
+    // Получаем индекс под курсором (pos относительно viewport)
+    QModelIndex index = m_tableView->indexAt(pos);
+
+    auto model = m_tableView->model();
+    QModelIndex statusIndex = model->index(index.row(), 5);
+    QString status = model->data(statusIndex, Qt::DisplayRole).toString();
+
+    QMenu menu(this);
+    QAction *addAction = menu.addAction("Добавить в таблицу подключений");
+    addAction->setEnabled(
+        index.isValid() && (status == StatusIndexRS485::ok || status == StatusIndexRS485::responseError));
+
+    if (menu.exec(m_tableView->viewport()->mapToGlobal(pos)) == addAction)
+    {
+        addToRS485TableView(index);
+    }
+}
+
+void SearchProccessDialog::addToRS485TableView(const QModelIndex &sourceIndex)
+{
+    if (!m_targetDialog)
+    {
+        qDebug() << "Диалог с соединениями не найден!";
+        return;
+    }
+
+    QList<QString> connections = m_targetDialog->getConnectionNames();
+
+    if (connections.size() >= MAXREGISTRYINTERFACECOUNT)
+    {
+        bool ok;
+        QString toRemove = QInputDialog::getItem(this, "Лимит подключений",
+            "Достигнут лимит (5).\nВыберите подключение для удаления:", connections, 0, false, &ok);
+
+        if (!ok || toRemove.isEmpty())
+            return;
+
+        m_targetDialog->removeConnection(toRemove);
+    }
+
+    QString connectionName
+        = QInputDialog::getText(this, "Имя подключения", "Введите имя для нового соединения:", QLineEdit::Normal, "");
+
+    auto *srcModel = m_tableView->model();
+    QMap<QString, QVariant> deviceData;
+
+    deviceData[SerialKeysRS485::name] = connectionName;
+    deviceData[SerialKeysRS485::port] = srcModel->data(srcModel->index(sourceIndex.row(), 0));
+    deviceData[SerialKeysRS485::address] = srcModel->data(srcModel->index(sourceIndex.row(), 1));
+    deviceData[SerialKeysRS485::baud] = srcModel->data(srcModel->index(sourceIndex.row(), 2));
+    deviceData[SerialKeysRS485::parity] = srcModel->data(srcModel->index(sourceIndex.row(), 3));
+    deviceData[SerialKeysRS485::stopBits] = srcModel->data(srcModel->index(sourceIndex.row(), 4));
+
+    m_targetDialog->addConnectionFromSearch(deviceData);
+    EMessageBox::information(this, "Устройство успешно добавлено!");
+
+    emit deviceAddedSuccessfully();
+    close();
 }

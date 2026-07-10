@@ -1,12 +1,12 @@
 #include "tune/82/tune82check.h"
 
 #include <datablocks/82/bda.h>
-#include <avm-gen/files.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/stdfunc.h>
 #include <tune/mip.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/graphfunc.h>
-#include <avm-widgets/lblfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/graphfunc.h>
+#include <libavm-widgets/lblfunc.h>
 
 #include <QDialog>
 #include <QEventLoop>

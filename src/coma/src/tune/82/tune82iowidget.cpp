@@ -1,6 +1,6 @@
 #include "tune/82/tune82iowidget.h"
 
-#include <avm-widgets/lblfunc.h>
+#include <libavm-widgets/lblfunc.h>
 #include <tune/mip.h>
 
 #include <QGroupBox>

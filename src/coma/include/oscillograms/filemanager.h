@@ -1,7 +1,7 @@
 #pragma once
 
-#include <avm-gen/datatypes.h>
-#include <avm-gen/timefunc.h>
+#include <libavm-gen/datatypes.h>
+#include <libavm-gen/timefunc.h>
 #include <oscillograms/osc_ids.h>
 #include <oscillograms/viewmodels/trendviewmodels.h>
 #include <s2/s2datatypes.h>

@@ -2,7 +2,7 @@ include(FetchContent)
 
 FetchContent_Declare(qxlsx
   GIT_REPOSITORY    https://github.com/avm-energo/qxlsx.git
-  GIT_TAG           v2.0.1
+  GIT_TAG           main
   SOURCE_SUBDIR     QXlsx
 )
 

@@ -1,6 +1,6 @@
 #include "s2/s2datafactory.h"
 
-#include "avm-gen/strings.h"
+#include <libavm-gen/strings.h>
 
 namespace detail
 {

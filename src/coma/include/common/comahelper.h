@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/messagehandler.h>
+#include <libavm-gen/messagehandler.h>
 
 #include <QAction>
 #include <QWidget>

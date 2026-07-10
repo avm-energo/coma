@@ -1,14 +1,14 @@
 #include "tune/85/tune85dialog.h"
 
-#include <avm-gen/colors.h>
-#include <avm-gen/error.h>
-#include <avm-gen/files.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/colors.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/stdfunc.h>
 #include <tune/85/tune85adc.h>
 #include <tune/85/tune85check.h>
 #include <tune/85/tune85temp60.h>
 #include <tune/tunetypes.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/wdfunc.h>
 
 Tune85Dialog::Tune85Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {

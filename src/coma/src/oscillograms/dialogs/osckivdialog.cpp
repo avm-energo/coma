@@ -1,16 +1,16 @@
 #include <device/current_device.h>
-#include <avm-gen/files.h>
-#include <avm-gen/stdfunc.h>
-#include <avm-gen/timefunc.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-gen/timefunc.h>
 #include <oscillograms/dialogs/osckivdialog.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/osc_ids.h>
-#include <avm-widgets/cbfunc.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/lblfunc.h>
-#include <avm-widgets/pbfunc.h>
-#include <avm-widgets/spbfunc.h>
+#include <libavm-widgets/cbfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/filefunc.h>
+#include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/pbfunc.h>
+#include <libavm-widgets/spbfunc.h>
 
 #include <limits>
 

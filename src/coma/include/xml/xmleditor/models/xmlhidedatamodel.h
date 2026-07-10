@@ -1,15 +1,53 @@
 #pragma once
 
-#include <avm-gen/integers.h>
+#include <libavm-gen/integers.h>
 #include <xml/xmleditor/models/xmlmodel.h>
 
-struct SGroupHideData;
-struct S2RecordHideData;
+/// \brief Structure, that stores a hiding data for 'sgroup' node.
+struct SGroupHideData
+{
+    int count = 1;
+    QString tooltip = "";
+    QString view = "float";
+    u32 decimals = 0;
+    QStringList array = {};
+    int type = 0;
+};
+Q_DECLARE_METATYPE(SGroupHideData)
+
+/// \brief Structure, that stores a hiding data for 'record' node from 's2files.xml'.
+/// \details Contains data of 'widget' node.
+struct S2RecordHideData
+{
+    int min = 0, max = 0, decimals = 0, group = 0, count = 1, parent = 0;
+    bool isEnabled = false;
+    QString classname = "", type = "", string = "", tooltip = "", field = "";
+    QStringList array = {};
+};
+Q_DECLARE_METATYPE(S2RecordHideData)
+
+/// \brief Structure, that stores hiding data for overlay 'record' node.
+/// \details Tracks which fields are overridden; widget.isEnabled means override widget.
+struct OverlayRecordHideData
+{
+    bool overrideName = false;
+    bool overrideDtype = false;
+    bool overrideType = false;
+    S2RecordHideData widget;
+};
+Q_DECLARE_METATYPE(OverlayRecordHideData)
 
 /// \brief Class for storing hiding data.
 class XmlHideDataModel final : public XmlModel
 {
 private:
+    enum DataRoles
+    {
+        SGroupDataRole = 0x0106,   ///< Role for hiding data SGroupHideData.
+        S2RecordDataRole = 0x0107, /// < Role for hiding data S2RecordHideData.
+        OverlayRecordDataRole = 0x0108
+    };
+
     /// \brief Parsing node with specified name to the integer variable.
     /// \ingroup Internal parsing
     void parseInteger(const QDomNode &source, const QString &nodeName, int &dest);
@@ -48,6 +86,19 @@ private:
     /// \brief Converting input string list to the S2RecordHideData structure.
     /// \ingroup S2Records
     S2RecordHideData convertToS2RecordData(const QStringList &input);
+
+    /// \brief Parsing XML DOM node to OverlayRecordHideData structure.
+    /// \ingroup OverlayRecords
+    OverlayRecordHideData parseOverlayRecordData(QDomNode &node);
+    /// \brief Creates <records> node for overlay by the model data.
+    /// \ingroup OverlayRecords
+    QDomElement makeOverlayRecordsNode(QDomDocument &doc);
+    /// \brief Converting input OverlayRecordHideData structure to the string list.
+    /// \ingroup OverlayRecords
+    QStringList convertFromOverlayRecordData(const OverlayRecordHideData &input);
+    /// \brief Converting input string list to the OverlayRecordHideData structure.
+    /// \ingroup OverlayRecords
+    OverlayRecordHideData convertToOverlayRecordData(const QStringList &input);
 
 public:
     explicit XmlHideDataModel(int rows, int cols, ModelType type, QObject *parent = nullptr);

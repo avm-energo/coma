@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/integers.h>
+#include <libavm-gen/integers.h>
 #include <string_view>
 #include <unordered_map>
 

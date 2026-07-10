@@ -5,6 +5,7 @@ project(coma LANGUAGES CXX)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Concurrent REQUIRED)
 
 include(githash)
+include(magic_enum)
 
 # Collecting sources
 set(COMA_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -14,7 +15,11 @@ file(GLOB_RECURSE files_h   ${COMA_INCLUDE_PATH}/*.h)
 file(GLOB_RECURSE files_cpp ${COMA_SRC_PATH}/*.cpp)
 
 # Create library target
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
 add_library(${PROJECT_NAME} STATIC ${files_cpp} ${files_h})
+
+target_link_libraries(coma PRIVATE Qt6::Core)
 
 # Including directories for library
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -26,14 +31,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${limereport_SOURCE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
-  avm-gen
-  avm-widgets
+  libavm-gen
+  libavm-widgets
   ctti::ctti
   interfaces
   limereport
   qcustomplot
-  avm-qxlsx
+  libavm-qxlsx
   Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
+  magic_enum::magic_enum
 )
 
 

@@ -1,7 +1,7 @@
-#include <avm-gen/strings.h>
-#include <avm-widgets/checkboxgroup.h>
-#include <avm-widgets/flowlayout.h>
-#include <avm-widgets/ipctrl.h>
+#include <libavm-gen/strings.h>
+#include <libavm-widgets/checkboxgroup.h>
+#include <libavm-widgets/flowlayout.h>
+#include <libavm-widgets/ipctrl.h>
 #include <comawidgets/widgetfactory.h>
 #include <ctti/type_id.hpp>
 #include <interfaces/types/modbus_types.h>
@@ -405,7 +405,7 @@ static QWidget *createModbusView(QWidget *parent)
     tableView->setItemDelegateForColumn(9, spinBoxDelegate);
 
     QStandardItemModel *model = new QStandardItemModel(tableView);
-    const QStringList header { "датчик", "скорость", "чётность", "стопБиты", "период опроса", "адрес", "данные",
+    const QStringList header { "датчик", "скорость", "четность", "стопБиты", "период опроса", "адрес", "данные",
         "функция", "регистр", "количество" };
     model->setHorizontalHeaderLabels(header);
     tableView->setModel(model);

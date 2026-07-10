@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/error.h>
+#include <libavm-gen/error.h>
 #include <interfaces/types/protocol_settings.h>
 #include <interfaces/utils/request_queue.h>
 #include <interfaces/utils/slot_trait.h>
@@ -33,7 +33,7 @@ public:
     // commands to send
     void reqStartup(quint32 sigAdr = 0, quint32 sigCount = 0);
     void reqBSI();
-    void reqBSIExt();
+    void reqBSIExt(u32 count);
     void reqFile(quint32 id, FileFormat format = FileFormat::Binary, quint32 expectedSize = 0);
     void writeFile(quint32 id, const QByteArray &ba);
     void writeConfiguration(const QByteArray &ba);

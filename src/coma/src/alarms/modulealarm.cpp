@@ -1,7 +1,7 @@
 #include "alarms/modulealarm.h"
 
-#include <avm-widgets/graphfunc.h>
-#include <avm-widgets/lblfunc.h>
+#include <libavm-widgets/graphfunc.h>
+#include <libavm-widgets/lblfunc.h>
 
 #include <QPushButton>
 #include <QScrollArea>

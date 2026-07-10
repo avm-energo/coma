@@ -21,9 +21,10 @@ private:
         std::array<QCheckBox *, 7> baud;
         QCheckBox *parityNone, *parityOdd, *parityEven;
         QCheckBox *stopBitOne, *stopBitTwo;
-    } widgets;
+    } m_widgets;
 
-    SearchParams data;
+    SearchParams m_data;
+    InterfaceSerialDialog *m_targetDialog {nullptr};
 
     QGroupBox *createComGroupBox();
     QGroupBox *createTimeoutGroupBox();
@@ -39,5 +40,5 @@ private:
     void runSearch();
 
 public:
-    SearchModbusDevicesDialog(QWidget *parent = nullptr);
+    SearchModbusDevicesDialog(InterfaceSerialDialog *targetDialog, QWidget *parent = nullptr);
 };

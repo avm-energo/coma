@@ -1,15 +1,15 @@
 #include "tune/kiv/tunekivdialog.h"
 
-#include <avm-gen/colors.h>
-#include <avm-gen/error.h>
-#include <avm-gen/files.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/colors.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/files.h>
+#include <libavm-gen/stdfunc.h>
 #include <tune/kiv/tunekivadc.h>
 #include <tune/kiv/tunekivcheck.h>
 #include <tune/kiv/tunekivr.h>
 #include <tune/kiv/tunekivtemp60.h>
 #include <tune/tunetypes.h>
-#include <avm-widgets/wdfunc.h>
+#include <libavm-widgets/wdfunc.h>
 
 TuneKIVDialog::TuneKIVDialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {

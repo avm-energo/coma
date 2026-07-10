@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/stdfunc.h>
 #include <interfaces/types/iec104/control_block.h>
 
 #include <QByteArray>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QStandardItemModel>
-#include <avm-gen/error.h>
+#include <libavm-gen/error.h>
 
 namespace LimeReport
 {

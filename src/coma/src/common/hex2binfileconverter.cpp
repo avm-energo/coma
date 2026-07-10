@@ -1,8 +1,8 @@
-#include <avm-gen/files.h>
+#include <libavm-gen/files.h>
 #include <common/hex2binfileconverter.h>
 #include <s2/s2util.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/filefunc.h>
 
 #include <QDir>
 
@@ -37,8 +37,6 @@ void Hex2BinFileConverter::start()
             }
         }
     }
-    else
-        EMessageBox::warning(m_parent, "Ошибка открытия файла");
 }
 
 QByteArray Hex2BinFileConverter::readFile(const QString &filepath)

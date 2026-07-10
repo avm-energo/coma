@@ -1,8 +1,8 @@
 include(FetchContent)
 
-FetchContent_Declare(avm-gen
-  GIT_REPOSITORY    https://github.com/avm-energo/avm-gen.git
-  GIT_TAG           v1.11.0
+FetchContent_Declare(libavm-gen
+  GIT_REPOSITORY    https://git.avmenergo.ru/avm-energo/libavm-gen.git
+  GIT_TAG           main
 )
 
-FetchContent_MakeAvailable(avm-gen)
+FetchContent_MakeAvailable(libavm-gen)

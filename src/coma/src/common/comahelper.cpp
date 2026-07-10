@@ -2,8 +2,8 @@
 #include <common/comahelper.h>
 #include <common/constants.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
-#include <avm-widgets/filefunc.h>
-#include <avm-widgets/graphfunc.h>
+#include <libavm-widgets/filefunc.h>
+#include <libavm-widgets/graphfunc.h>
 
 #include <QFile>
 #include <QFont>

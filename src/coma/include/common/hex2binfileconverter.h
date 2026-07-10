@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QWidget>
-#include <avm-gen/error.h>
+#include <libavm-gen/error.h>
 #include <s2/hexparser.h>
 
 class Hex2BinFileConverter : public QObject

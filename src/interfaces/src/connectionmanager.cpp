@@ -1,6 +1,6 @@
+#include <libavm-gen/std_ext.h>
 #include <common/names.h>
 #include <device/bsi.h>
-#include <avm-gen/std_ext.h>
 #include <interfaces/conn/sync_connection.h>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/exec/query_executor_fabric.h>

@@ -1,9 +1,9 @@
 #include "oscillograms/swjpackconvertor.h"
 
-#include <avm-gen/timefunc.h>
+#include <libavm-gen/timefunc.h>
 #include <oscillograms/swjmanager.h>
-#include <avm-widgets/emessagebox.h>
-#include <avm-widgets/filefunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/filefunc.h>
 
 #include <QDir>
 #include <xlsxdocument.h>
