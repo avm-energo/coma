@@ -36,6 +36,10 @@ public:
     void setupMenubar();
     QWidget *least();
     static QPoint comaCenter();
+    /// \brief Hides the main window content and shows \a tuneWidget in its place.
+    void showTuneWidget(QWidget *tuneWidget);
+    /// \brief Returns from the tune widget back to the main window content.
+    void hideTuneWidget();
 
 public slots:
     void disconnectAndClear();
@@ -73,6 +77,7 @@ private:
     OscManager m_oscManager;
     XmlEditor *m_xmlEditor;
     File::Vector m_fileVector;
+    QStackedWidget *m_centralStack;
 
     void initInterfaceConnection();
     void setProgressBarSize(int prbnum, int size);
@@ -82,6 +87,8 @@ private:
     void keyPressEvent(QKeyEvent *event) override;
     void loadXML();
     void prepareDialogs();
+    /// \brief Removes and deletes any tune widgets embedded into the central stack.
+    void clearTuneWidgets();
 
 signals:
     void settingsChanged(const QString &name, const QVariant &value);

@@ -6,6 +6,8 @@
 
 #include <QDomDocument>
 
+#include <functional>
+
 class TuneReporter;
 
 class GeneralTuneDialog : public UDialog
@@ -15,7 +17,9 @@ public:
     struct TuneDialogStruct
     {
         QString caption;
-        AbstractTuneDialog *dialog;
+        std::function<AbstractTuneDialog *()> factory;
+        u8 step = 0;
+        AbstractTuneDialog *dialog = nullptr; // создаётся лениво, при первом нажатии кнопки шага
     };
 
     u8 m_tuneStartStep, m_tuneStepCount;
@@ -25,7 +29,7 @@ public:
     void SetupUI(bool noReport);
     virtual void prepareReport();
     int addWidgetToTabWidget(QWidget *w, const QString &caption);
-    void addTuneDialog(const TuneDialogStruct &dlgStruct);
+    void addTuneDialog(const QString &caption, std::function<AbstractTuneDialog *()> factory);
     u8 getTuneStepsCount();
 
 protected:

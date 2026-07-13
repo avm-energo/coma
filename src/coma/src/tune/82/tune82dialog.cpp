@@ -33,9 +33,10 @@ Tune82Dialog::Tune82Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
         EMessageBox::warning(this, "Undefined mezzanine board");
         return;
     }
-    addTuneDialog({ "Проверка правильности измерения входных сигналов", new Tune82Check(device, this) });
-    addTuneDialog({ step2Caption, new Tune82ADC(device, this) });
-    addTuneDialog({ "Поверка", new Tune82Verification(device, this) });
+    addTuneDialog("Проверка правильности измерения входных сигналов",
+        [device, this]() { return new Tune82Check(device, this); });
+    addTuneDialog(step2Caption, [device, this]() { return new Tune82ADC(device, this); });
+    addTuneDialog("Поверка", [device, this]() { return new Tune82Verification(device, this); });
 
     Bac82 *bac = new Bac82(this);
     bac->setup(m_device->getUID(), m_device->sync());
