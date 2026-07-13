@@ -120,6 +120,12 @@ void SettingsDialog::setupGeneralTab() noexcept
     workspaceLayout->addLayout(timezoneLayout);
     workspaceLayout->addWidget(GraphFunc::newHLine(m_workspace));
 
+    // Длительность отображения всплывающих уведомлений
+    auto popupLifetimeWidget
+        = LEFunc::newLBL(m_workspace, "Длительность отображения уведомлений, мс", SettingsKeys::popupLifetime, true);
+    workspaceLayout->addWidget(popupLifetimeWidget);
+    workspaceLayout->addWidget(GraphFunc::newHLine(m_workspace));
+
     if (AppConfiguration::app() == AppConfiguration::Debug)
     {
         // Изменение пароля
@@ -254,6 +260,7 @@ void SettingsDialog::fill()
     LEFunc::setData(this, SettingsKeys::alarmsInterval, Settings::get(SettingsKeys::alarmsInterval, 10000));
     ChBFunc::setData(this, SettingsKeys::alarmsEnabled, Settings::get(SettingsKeys::alarmsEnabled, true));
     LEFunc::setData(this, SettingsKeys::silentInterval, Settings::get(SettingsKeys::silentInterval, 10000));
+    LEFunc::setData(this, SettingsKeys::popupLifetime, Settings::get(SettingsKeys::popupLifetime, 5000));
     LEFunc::setData(this, SettingsKeys::timeoutCount, Settings::get(SettingsKeys::timeoutCount, 5));
     LEFunc::setData(this, SettingsKeys::errorCount, Settings::get(SettingsKeys::errorCount, 5));
     LEFunc::setData(this, SettingsKeys::tuneCount, Settings::get(SettingsKeys::tuneCount, 20));
@@ -326,6 +333,7 @@ void SettingsDialog::acceptSettings()
         emit alarmOperationUpdate(tmpb);
     }
     set(SettingsKeys::silentInterval, LEFunc::data(this, SettingsKeys::silentInterval));
+    set(SettingsKeys::popupLifetime, LEFunc::data(this, SettingsKeys::popupLifetime));
     set(SettingsKeys::timeoutCount, LEFunc::data(this, SettingsKeys::timeoutCount));
     set(SettingsKeys::errorCount, LEFunc::data(this, SettingsKeys::errorCount));
 
