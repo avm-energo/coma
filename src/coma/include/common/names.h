@@ -75,6 +75,7 @@ constexpr auto timeout = "timeout";
 constexpr auto reconnectInterval = "reconnectInterval";
 constexpr auto silentInterval = "silentInterval";
 constexpr auto maxErrors = "maxErrors";
+constexpr auto maxTimeouts = "maxTimeouts";
 }
 
 // QMap<SettingsKey, MemKey>

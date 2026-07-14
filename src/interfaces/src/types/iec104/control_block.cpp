@@ -135,4 +135,10 @@ ControlBlock ControlBlock::fromData(const std::uint32_t data)
     }
 }
 
+void ControlBlock::resetCounters()
+{
+    m_sent = 0;
+    m_received = 0;
+}
+
 } // namespace Iec104

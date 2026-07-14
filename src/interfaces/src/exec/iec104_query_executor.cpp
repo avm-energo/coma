@@ -68,6 +68,7 @@ void Iec104QueryExecutor::exec()
 void Iec104QueryExecutor::start()
 {
     auto startMessage { getRequestParser()->createStartMessage() };
+    m_ctrlBlock->resetCounters();
     writeToInterface(startMessage, false);
     setState(ExecutorState::Pending);
 }

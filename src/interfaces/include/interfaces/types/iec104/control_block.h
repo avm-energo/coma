@@ -53,6 +53,8 @@ public:
     std::uint32_t data() const ;
     /// \brief Converting the received byte array to a control block object.
     static ControlBlock fromData(const std::uint32_t data) ;
+
+    void resetCounters();
 };
 
 } // namespace Iec104
