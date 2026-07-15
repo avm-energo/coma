@@ -15,6 +15,8 @@ private:
 
     Protocol::Iec104Group getGroupByAddress(const quint32 addr) const noexcept;
     QByteArray createGroupRequest(const quint32 groupNum);
+    QByteArray buildFileFrame(
+        const Iec104::MessageDataType type, const quint8 fileNum, const quint8 section, const quint8 qualifier);
 
 public:
     explicit Iec104RequestParser(QObject *parent = nullptr);
@@ -26,6 +28,8 @@ public:
     QByteArray parse(const CommandStruct &cmd) override;
     QByteArray getNextContinueCommand() noexcept override;
     void exceptionalAction(const CommandStruct &command) noexcept override;
+    /// \brief Строит ответное сообщение для продолжения передачи файла по запросу от устройства.
+    QByteArray createFileReply(const Iec104::FileReplyAction action, const quint8 fileNum, const quint8 section) noexcept;
 
     QByteArray createStartMessage() const noexcept;
     QByteArray createStopMessage() const noexcept;

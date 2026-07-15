@@ -152,6 +152,9 @@ public:
     void setRequestData(const uint24 address, const bool data) noexcept;
     /// \brief Requesting an interrogate group.
     void setRequestData(const std::uint8_t group) noexcept;
+    /// \brief Building a file transfer control ASDU (select/call file, call section, ack).
+    void setFileTransferData(
+        const MessageDataType type, const std::uint8_t fileNum, const std::uint8_t section, const std::uint8_t qualifier) noexcept;
 
     /// \brief Converting the ASDU object to a byte array.
     QByteArray toByteArray() const noexcept;

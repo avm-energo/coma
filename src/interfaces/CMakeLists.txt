@@ -62,7 +62,8 @@ if(BUILD_TESTING)
     "${INTERFACES_TESTS_DIR}/interfaces_test_obj.cpp"
     "${INTERFACES_TESTS_DIR}/modbus_compat_test.cpp"
     "${INTERFACES_TESTS_DIR}/iec104_apci_asdu_test.cpp"
-    "${INTERFACES_TESTS_DIR}/iec104_cblock_test.cpp")
+    "${INTERFACES_TESTS_DIR}/iec104_cblock_test.cpp"
+    "${INTERFACES_TESTS_DIR}/iec104_file_transfer_test.cpp")
 
   # interfaces_tests target
   add_executable(${PROJECT_NAME}_tests ${INTERFACES_TESTS_SOURCES})

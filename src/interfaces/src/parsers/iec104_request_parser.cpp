@@ -72,18 +72,20 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
         m_request = createGroupRequest(0x00);
         break;
     }
-    case Commands::C_WriteTime:
+    case Commands::C_WriteTime: 
     {
         // Commands104::CommandStruct inp { Commands104::CM104_COM51, time, 0, {} };
         break;
     }
     case Commands::C_ReqFile:
     {
-        [[maybe_unused]] auto filenum = static_cast<S2::FilesEnum>(cmd.arg1.value<quint32>());
-        [[maybe_unused]] auto format = static_cast<DataTypes::FileFormat>(cmd.arg2.value<quint32>());
-        // Datatypes::FileFormat format
-        // auto cmd104 = (format) ? Commands104::CM104_REQCONFIGFILE : Commands104::CM104_REQFILE;
-        // Commands104::CommandStruct inp { cmd104, filenum, 0, {} };
+        const auto id = cmd.arg1.value<quint32>();
+        if (id > std::numeric_limits<quint8>::max())
+        {
+            qDebug() << "IEC104: file id" << id << "is out of range for file transfer";
+            break;
+        }
+        m_request = createFileReply(Iec104::FileReplyAction::Select, static_cast<quint8>(id), 0);
         break;
     }
     case Commands::C_WriteFile:
@@ -164,6 +166,50 @@ QByteArray Iec104RequestParser::createGroupRequest(const quint32 groupNum)
         qDebug() << "Unhandled exception: " << e.what();
         return QByteArray();
     }
+}
+
+QByteArray Iec104RequestParser::buildFileFrame(
+    const Iec104::MessageDataType type, const quint8 fileNum, const quint8 section, const quint8 qualifier)
+{
+    try
+    {
+        ASDU asdu(m_baseStationAddress);
+        asdu.setFileTransferData(type, fileNum, section, qualifier);
+        auto request = asdu.toByteArray();
+        APCI apci(*m_ctrlBlock, request.size());
+        apci.m_ctrlBlock.m_format = FrameFormat::Information;
+        request.prepend(apci.toByteArray());
+        return request;
+    }
+    catch (const ApciError &e)
+    {
+        pringApciError(e);
+        return QByteArray();
+    }
+    catch (const std::exception &e)
+    {
+        qDebug() << "Unhandled exception: " << e.what();
+        return QByteArray();
+    }
+}
+
+QByteArray Iec104RequestParser::createFileReply(
+    const Iec104::FileReplyAction action, const quint8 fileNum, const quint8 section) noexcept
+{
+    switch (action)
+    {
+    case Iec104::FileReplyAction::Select:
+        return buildFileFrame(MessageDataType::F_SC_NA_1, fileNum, 0, 0x01);
+    case Iec104::FileReplyAction::CallFile:
+        return buildFileFrame(MessageDataType::F_SC_NA_1, fileNum, 0, 0x02);
+    case Iec104::FileReplyAction::CallSection:
+        return buildFileFrame(MessageDataType::F_SC_NA_1, fileNum, section, 0x06);
+    case Iec104::FileReplyAction::ConfirmSection:
+        return buildFileFrame(MessageDataType::F_AF_NA_1, fileNum, section, 0x03);
+    case Iec104::FileReplyAction::ConfirmFile:
+        return buildFileFrame(MessageDataType::F_AF_NA_1, fileNum, section, 0x01);
+    }
+    return QByteArray();
 }
 
 QByteArray Iec104RequestParser::createStartMessage() const noexcept

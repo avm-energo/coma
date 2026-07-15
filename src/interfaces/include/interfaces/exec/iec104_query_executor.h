@@ -68,6 +68,8 @@ private slots:
     void checkUnnumberedFormat(const Iec104::ControlFunc func, const Iec104::ControlArg arg) noexcept;
     /// \brief Слот для обработки сигнала от парсера ответов, когда запрошенные данные получены.
     void requestedDataReceived() noexcept;
+    /// \brief Слот для отправки следующего шага реактивного протокола передачи файла устройству.
+    void sendFileReply(const Iec104::FileReplyAction action, const quint8 fileNum, const quint8 section) noexcept;
 };
 
 } // namespace Interface

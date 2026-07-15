@@ -19,6 +19,7 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, BaseSettings *se
     , m_responseParser(nullptr)
 {
     setTimeout(settings->get(MemKeys::timeout));
+    m_log.setLogLevel(settings->get("logLevel"));
     connect(settings, &BaseSettings::settingHasBeenChanged, this, &DefaultQueryExecutor::settingsChanged);
 }
 
@@ -155,6 +156,8 @@ void DefaultQueryExecutor::settingsChanged(const QString &key, const QVariant &v
 {
     if (key == KeysMap.key(MemKeys::timeout))
         setTimeout(value.toInt());
+    else if (key == "logLevel")
+        m_log.setLogLevel(value.toString());
 }
 
 void DefaultQueryExecutor::exec()

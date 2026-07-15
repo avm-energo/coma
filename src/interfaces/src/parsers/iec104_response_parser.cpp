@@ -11,6 +11,7 @@ Iec104ResponseParser::Iec104ResponseParser(QObject *parent)
     : BaseResponseParser(parent)
     , m_currentCommand(Command::None)
     , m_unpacker(this)
+    , m_sectionNum(0)
 {
     connect(&m_unpacker, &ASDUUnpacker::unpacked,   //
         this, &BaseResponseParser::responseParsed); //
@@ -136,8 +137,89 @@ void Iec104ResponseParser::parseInfoFormat(const QByteArray &response) noexcept
     ++m_ctrlBlock->m_received;
     emit needToCheckControlBlock();
     auto asdu = ASDU::fromByteArray(response.mid(apciSize, m_currentAPCI.m_asduSize));
-    m_unpacker.unpack(asdu);
-    verify(asdu);
+    if (isFileTransferType(asdu.m_msgType))
+        handleFileTransferAsdu(asdu);
+    else
+    {
+        m_unpacker.unpack(asdu);
+        verify(asdu);
+    }
+}
+
+bool Iec104ResponseParser::isFileTransferType(const MessageDataType type) noexcept
+{
+    switch (type)
+    {
+    case MessageDataType::F_FR_NA_1:
+    case MessageDataType::F_SR_NA_1:
+    case MessageDataType::F_SG_NA_1:
+    case MessageDataType::F_LS_NA_1:
+        return true;
+    default:
+        return false;
+    }
+}
+
+void Iec104ResponseParser::handleFileTransferAsdu(const ASDU &asdu) noexcept
+{
+    // Формат m_data (после 6-байтного заголовка ASDU): [обj.адрес x3][filenum][0x00][...],
+    // см. Iec104RequestParser::buildFileFrame и легаси IEC104Parser::ASDUFilePrefix.
+    if (asdu.m_data.size() < 4)
+        return;
+    const auto fileNum = std::uint8_t(asdu.m_data[3]);
+    switch (asdu.m_msgType)
+    {
+    case MessageDataType::F_FR_NA_1: // File ready - файл готов, в ответе передан его размер
+    {
+        if (asdu.m_data.size() < 8)
+            return;
+        m_longDataBuffer.clear();
+        m_sectionNum = 1;
+        const quint32 fileSize = std::uint8_t(asdu.m_data[5]) //
+            | (std::uint8_t(asdu.m_data[6]) << 8)             //
+            | (std::uint8_t(asdu.m_data[7]) << 16);
+        emit responseParsed(DataTypes::GeneralResponseStruct { DataTypes::GeneralResponseTypes::DataSize, fileSize });
+        emit fileReplyNeeded(FileReplyAction::CallFile, fileNum, 0);
+        break;
+    }
+    case MessageDataType::F_SR_NA_1: // Section ready - секция готова
+        emit fileReplyNeeded(FileReplyAction::CallSection, fileNum, m_sectionNum);
+        break;
+    case MessageDataType::F_SG_NA_1: // Segment - сегмент данных секции
+    {
+        if (asdu.m_data.size() < 7)
+            return;
+        const auto segSize = std::uint8_t(asdu.m_data[6]);
+        if (segSize && asdu.m_data.size() >= (7 + segSize))
+        {
+            m_longDataBuffer.append(asdu.m_data.mid(7, segSize));
+            emit responseParsed(DataTypes::GeneralResponseStruct { //
+                DataTypes::GeneralResponseTypes::DataCount, static_cast<quint64>(m_longDataBuffer.size()) });
+        }
+        break;
+    }
+    case MessageDataType::F_LS_NA_1: // Last section/segment - конец секции или файла
+    {
+        if (asdu.m_data.size() < 7)
+            return;
+        const auto qualifier = std::uint8_t(asdu.m_data[6]);
+        if (qualifier == 0x03) // конец не последней секции - подтверждаем и переходим к следующей
+        {
+            emit fileReplyNeeded(FileReplyAction::ConfirmSection, fileNum, m_sectionNum);
+            ++m_sectionNum;
+        }
+        else if (qualifier == 0x01) // конец последней секции - файл получен целиком
+        {
+            emit fileReplyNeeded(FileReplyAction::ConfirmFile, fileNum, m_sectionNum);
+            fileReceived(m_longDataBuffer, S2::FilesEnum(fileNum), m_request.arg2.value<DataTypes::FileFormat>());
+            m_longDataBuffer.clear();
+            emit requestedDataReceived();
+        }
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 void Iec104ResponseParser::parseSupervisoryFormat() noexcept

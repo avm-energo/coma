@@ -16,6 +16,7 @@ private:
     Iec104::APCI m_currentAPCI;
     Iec104::Command m_currentCommand;
     Iec104::ASDUUnpacker m_unpacker;
+    quint8 m_sectionNum;
 
     /// \brief Используется для разбиения буффера входных данных на
     /// массив байт каждого ответа от устройства.
@@ -27,6 +28,10 @@ private:
     void parseSupervisoryFormat() noexcept;
     /// \brief Парсинг данных в U-формате.
     void parseUnnumberedFormat() noexcept;
+    /// \brief Обработка ASDU передачи файла (F_FR_NA_1..F_LS_NA_1).
+    void handleFileTransferAsdu(const Iec104::ASDU &asdu) noexcept;
+    /// \brief Проверка, относится ли тип ASDU к передаче файла.
+    static bool isFileTransferType(const Iec104::MessageDataType type) noexcept;
 
     Error::Msg validate() override;
     Error::Msg validate(const QByteArray &response) noexcept;
@@ -56,6 +61,9 @@ signals:
     /// \brief Сигнал для информирования исполнителя запросов
     /// о том, что запрошенные данные получены.
     void requestedDataReceived();
+    /// \brief Сигнал для запроса у исполнителя отправки следующего
+    /// шага реактивного протокола передачи файла устройству.
+    void fileReplyNeeded(const Iec104::FileReplyAction action, const quint8 fileNum, const quint8 section);
 };
 
 } // namespace Interface

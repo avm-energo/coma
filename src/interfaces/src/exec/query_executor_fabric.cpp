@@ -66,6 +66,9 @@ DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queu
     // Обработка состояния, когда запрошенные данные получены
     QObject::connect(responseParser, &Iec104ResponseParser::requestedDataReceived, //
         executor, &Iec104QueryExecutor::requestedDataReceived);                    //
+    // Отправка следующего шага реактивного протокола передачи файла (журналов)
+    QObject::connect(responseParser, &Iec104ResponseParser::fileReplyNeeded, //
+        executor, &Iec104QueryExecutor::sendFileReply);                     //
     executor->setParsers(requestParser, responseParser);
     return executor;
 }

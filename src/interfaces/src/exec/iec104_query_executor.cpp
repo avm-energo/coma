@@ -151,4 +151,10 @@ void Iec104QueryExecutor::requestedDataReceived() noexcept
     run(); // execute next query from queue
 }
 
+void Iec104QueryExecutor::sendFileReply(const FileReplyAction action, const quint8 fileNum, const quint8 section) noexcept
+{
+    auto reply = getRequestParser()->createFileReply(action, fileNum, section);
+    writeToInterface(reply);
+}
+
 } // namespace Interface

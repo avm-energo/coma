@@ -26,4 +26,16 @@ enum class Command : std::uint8_t
     None = std::numeric_limits<std::uint8_t>::max()
 };
 
+/// \brief Reactive reply to send in response to a file transfer step received from the device.
+enum class FileReplyAction : std::uint8_t
+{
+    Select,        ///< Select file - начало передачи.
+    CallFile,      ///< Call file - подтверждение готовности файла, запрос содержимого.
+    CallSection,   ///< Call section - запрос секции файла.
+    ConfirmSection, ///< Confirm section - подтверждение приёма несекции (не последней) файла.
+    ConfirmFile     ///< Confirm file - подтверждение приёма файла целиком.
+};
+
 }
+
+Q_DECLARE_METATYPE(Iec104::FileReplyAction)

@@ -36,4 +36,8 @@ private slots:
 
     void iec104AsduTest01();
     void iec104AsduUnpackerTest01();
+
+    void iec104AsduFileTransferDataTest01();
+    void iec104RequestParserFileReplyTest01();
+    void iec104ResponseParserFileTransferTest01();
 };
