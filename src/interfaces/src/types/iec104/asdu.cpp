@@ -60,6 +60,12 @@ void ASDU::setRequestData(const std::uint8_t group) noexcept
 void ASDU::setFileTransferData(
     const MessageDataType type, const std::uint8_t fileNum, const std::uint8_t section, const std::uint8_t qualifier) noexcept
 {
+    setFileTransferData(type, fileNum, section, QByteArray(1, static_cast<char>(qualifier)));
+}
+
+void ASDU::setFileTransferData(
+    const MessageDataType type, const std::uint8_t fileNum, const std::uint8_t section, const QByteArray &tail) noexcept
+{
     m_msgType = type;
     m_qualifier = StructureQualifier::Sequence;
     m_elements = 1;
@@ -71,7 +77,7 @@ void ASDU::setFileTransferData(
     m_data.append(static_cast<char>(fileNum));
     m_data.append('\x00');
     m_data.append(static_cast<char>(section));
-    m_data.append(static_cast<char>(qualifier));
+    m_data.append(tail);
 }
 
 QByteArray ASDU::toByteArray() const noexcept
@@ -105,6 +111,13 @@ QByteArray ASDU::toByteArray() const noexcept
 ASDU ASDU::fromByteArray(const QByteArray &data) noexcept
 {
     ASDU retVal;
+    if (data.size() < asduHeaderSize)
+    {
+        // Пустой/битый ASDU (например, обрывок данных на переподключении) - не разбираем,
+        // чтобы не читать за пределами буфера; m_data остаётся пустым, m_msgType - "неизвестный".
+        retVal.m_msgType = static_cast<MessageDataType>(0);
+        return retVal;
+    }
     retVal.m_msgType = static_cast<MessageDataType>(data[0]);
     retVal.m_qualifier = static_cast<StructureQualifier>(data[1] >> 7);
     retVal.m_elements = (data[1] & maxElements);

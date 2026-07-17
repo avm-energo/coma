@@ -155,6 +155,10 @@ public:
     /// \brief Building a file transfer control ASDU (select/call file, call section, ack).
     void setFileTransferData(
         const MessageDataType type, const std::uint8_t fileNum, const std::uint8_t section, const std::uint8_t qualifier) noexcept;
+    /// \brief Building a file transfer ASDU with an arbitrary tail
+    /// (file/section size, segment data, last-section qualifier + checksum).
+    void setFileTransferData(
+        const MessageDataType type, const std::uint8_t fileNum, const std::uint8_t section, const QByteArray &tail) noexcept;
 
     /// \brief Converting the ASDU object to a byte array.
     QByteArray toByteArray() const noexcept;

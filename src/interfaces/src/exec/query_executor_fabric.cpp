@@ -69,6 +69,12 @@ DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queu
     // Отправка следующего шага реактивного протокола передачи файла (журналов)
     QObject::connect(responseParser, &Iec104ResponseParser::fileReplyNeeded, //
         executor, &Iec104QueryExecutor::sendFileReply);                     //
+    // Отправка следующего шага реактивного протокола записи файла (конфигурация, прошивка)
+    QObject::connect(responseParser, &Iec104ResponseParser::fileWriteReplyNeeded, //
+        executor, &Iec104QueryExecutor::sendFileWriteReply);                      //
+    // Проактивный запрос переподключения сразу после подтверждённой записи файла в устройство
+    QObject::connect(responseParser, &Iec104ResponseParser::writeCompleted, //
+        executor, &Iec104QueryExecutor::reconnectRequested);                //
     executor->setParsers(requestParser, responseParser);
     return executor;
 }

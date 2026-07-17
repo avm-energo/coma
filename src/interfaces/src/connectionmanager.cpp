@@ -17,6 +17,7 @@ ConnectionManager::ConnectionManager(QObject *parent)
     : QObject(parent)
     , m_currentConnection(nullptr)
     , m_silentTimer(new QTimer(this))
+    , m_writeCooldownTimer(new QTimer(this))
     , m_reconnectMode(ReconnectMode::Loud)
     , m_isReconnectOccurred(false)
     , m_isInitial(true)
@@ -27,6 +28,16 @@ ConnectionManager::ConnectionManager(QObject *parent)
 {
     m_silentTimer->setSingleShot(true);
     connect(m_silentTimer, &QTimer::timeout, this, [this] { emit reconnectUI(); });
+    m_writeCooldownTimer->setSingleShot(true);
+    // После записи файла (конфигурация/ВПО) устройство может ненадолго "пропасть"
+    // (см. AsyncConnection::silentReconnectMode) - на это время не даём новым командам
+    // встать в очередь, чтобы не ловить гонку с переподключением.
+    connect(m_writeCooldownTimer, &QTimer::timeout, this,
+        [this]
+        {
+            if (m_currentConnection != nullptr)
+                m_currentConnection->getQueue().activate();
+        });
 }
 
 AsyncConnection *ConnectionManager::createConnection(const ConnectionSettings &connectionData)
@@ -36,7 +47,15 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectionSettings &c
     m_currentConnection = new AsyncConnection(this);
     connect(
         m_currentConnection, &AsyncConnection::silentReconnectMode, this, //
-        [this] { setReconnectMode(ReconnectMode::Silent); }, Qt::DirectConnection);
+        [this]
+        {
+            setReconnectMode(ReconnectMode::Silent);
+            // Не даём новым командам (в частности повторной записи) встать в очередь,
+            // пока устройство не "отлежится" после записи файла - см. m_writeCooldownTimer.
+            m_currentConnection->getQueue().deactivate();
+            m_writeCooldownTimer->start(m_silentTimer->interval());
+        },
+        Qt::DirectConnection);
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
 
     std::visit([this](auto &settings) { setup(settings); }, connectionData.settings);
@@ -85,6 +104,10 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectionSettings &c
         this, &ConnectionManager::handleInterfaceErrors, Qt::QueuedConnection);
     connect(m_context.m_executor, &DefaultQueryExecutor::timeout, //
         this, &ConnectionManager::handleQueryExecutorTimeout);
+    // Проактивный реконнект (например, сразу после подтверждённой записи файла в устройство),
+    // не дожидаясь реактивного обнаружения по счётчикам тайм-аутов/ошибок
+    connect(m_context.m_executor, &DefaultQueryExecutor::reconnectRequested, //
+        this, &ConnectionManager::reconnect);
     connect(this, &ConnectionManager::reconnectInterface,         //
         m_context.m_iface, &BaseInterface::reconnect, Qt::QueuedConnection);
     connect(this, &ConnectionManager::reconnectInterface,         //
@@ -135,6 +158,7 @@ void ConnectionManager::reconnect()
 
 void ConnectionManager::breakConnection()
 {
+    m_writeCooldownTimer->stop();
     m_context.reset();
     m_currentConnection = nullptr;
     m_isInitial = true;

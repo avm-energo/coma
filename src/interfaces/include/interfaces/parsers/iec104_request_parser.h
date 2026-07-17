@@ -17,6 +17,8 @@ private:
     QByteArray createGroupRequest(const quint32 groupNum);
     QByteArray buildFileFrame(
         const Iec104::MessageDataType type, const quint8 fileNum, const quint8 section, const quint8 qualifier);
+    QByteArray buildFileFrame(
+        const Iec104::MessageDataType type, const quint8 fileNum, const quint8 section, const QByteArray &tail);
 
 public:
     explicit Iec104RequestParser(QObject *parent = nullptr);
@@ -30,6 +32,15 @@ public:
     void exceptionalAction(const CommandStruct &command) noexcept override;
     /// \brief Строит ответное сообщение для продолжения передачи файла по запросу от устройства.
     QByteArray createFileReply(const Iec104::FileReplyAction action, const quint8 fileNum, const quint8 section) noexcept;
+
+    /// \brief Строит сообщение "файл готов" (начало передачи файла на запись).
+    QByteArray createFileReadyMessage(const quint8 fileNum, const quint32 fileSize) noexcept;
+    /// \brief Строит сообщение "секция готова" в ответ на запрос файла устройством.
+    QByteArray createSectionReadyMessage(const quint32 fileSize) noexcept;
+    /// \brief Строит поток сегментов файла (плюс завершающий "конец секции") в ответ на запрос устройства.
+    QList<QByteArray> createSegmentBurst(const QByteArray &payload) noexcept;
+    /// \brief Строит завершающее сообщение файла в ответ на подтверждение секции устройством.
+    QByteArray createFileFinalMessage(const QByteArray &payload) noexcept;
 
     QByteArray createStartMessage() const noexcept;
     QByteArray createStopMessage() const noexcept;

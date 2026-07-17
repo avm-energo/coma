@@ -70,6 +70,11 @@ void Iec104QueryExecutor::start()
     auto startMessage { getRequestParser()->createStartMessage() };
     m_ctrlBlock->resetCounters();
     writeToInterface(startMessage, false);
+    // STARTDT_ACT не считается I-кадром (isCounted=false), поэтому writeToInterface не
+    // взводит таймер тайм-аута сам. Взводим явно - иначе, если устройство не ответит
+    // STARTDT_CON (например, ещё не готово после записи файла), исполнитель зависает в
+    // Pending навсегда: реагировать на отсутствие ответа больше нечему.
+    m_timeoutTimer.start();
     setState(ExecutorState::Pending);
 }
 
@@ -155,6 +160,23 @@ void Iec104QueryExecutor::sendFileReply(const FileReplyAction action, const quin
 {
     auto reply = getRequestParser()->createFileReply(action, fileNum, section);
     writeToInterface(reply);
+}
+
+void Iec104QueryExecutor::sendFileWriteReply(const FileWriteReplyAction action, const QByteArray &payload) noexcept
+{
+    switch (action)
+    {
+    case FileWriteReplyAction::SectionReady:
+        writeToInterface(getRequestParser()->createSectionReadyMessage(static_cast<quint32>(payload.size())));
+        break;
+    case FileWriteReplyAction::SendSegments:
+        for (const auto &frame : getRequestParser()->createSegmentBurst(payload))
+            writeToInterface(frame);
+        break;
+    case FileWriteReplyAction::FileFinal:
+        writeToInterface(getRequestParser()->createFileFinalMessage(payload));
+        break;
+    }
 }
 
 } // namespace Interface

@@ -16,7 +16,6 @@ private:
     Iec104::APCI m_currentAPCI;
     Iec104::Command m_currentCommand;
     Iec104::ASDUUnpacker m_unpacker;
-    quint8 m_sectionNum;
 
     /// \brief Используется для разбиения буффера входных данных на
     /// массив байт каждого ответа от устройства.
@@ -64,6 +63,14 @@ signals:
     /// \brief Сигнал для запроса у исполнителя отправки следующего
     /// шага реактивного протокола передачи файла устройству.
     void fileReplyNeeded(const Iec104::FileReplyAction action, const quint8 fileNum, const quint8 section);
+    /// \brief Сигнал для запроса у исполнителя отправки следующего
+    /// шага реактивного протокола записи файла в устройство.
+    void fileWriteReplyNeeded(const Iec104::FileWriteReplyAction action, const QByteArray &payload);
+    /// \brief Сигнал о том, что запись файла в устройство подтверждена целиком.
+    /// \details Устройство может перезагружать канал связи после применения записанного
+    /// файла (конфигурация, ВПО) - сигнал используется, чтобы сразу инициировать
+    /// переподключение, не дожидаясь реактивного обнаружения по тайм-аутам.
+    void writeCompleted();
 };
 
 } // namespace Interface

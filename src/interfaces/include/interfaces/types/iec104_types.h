@@ -36,6 +36,15 @@ enum class FileReplyAction : std::uint8_t
     ConfirmFile     ///< Confirm file - подтверждение приёма файла целиком.
 };
 
+/// \brief Reactive reply to send in response to a write-file step requested by the device.
+enum class FileWriteReplyAction : std::uint8_t
+{
+    SectionReady, ///< Section ready - ответ на запрос файла устройством, передаём размер.
+    SendSegments, ///< Send segments - ответ на запрос сегментов устройством, шлём весь поток данных.
+    FileFinal     ///< File final - ответ на подтверждение секции устройством, завершаем файл.
+};
+
 }
 
 Q_DECLARE_METATYPE(Iec104::FileReplyAction)
+Q_DECLARE_METATYPE(Iec104::FileWriteReplyAction)

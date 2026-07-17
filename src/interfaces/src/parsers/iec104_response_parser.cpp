@@ -11,7 +11,6 @@ Iec104ResponseParser::Iec104ResponseParser(QObject *parent)
     : BaseResponseParser(parent)
     , m_currentCommand(Command::None)
     , m_unpacker(this)
-    , m_sectionNum(0)
 {
     connect(&m_unpacker, &ASDUUnpacker::unpacked,   //
         this, &BaseResponseParser::responseParsed); //
@@ -25,6 +24,23 @@ void Iec104ResponseParser::updateControlBlock(const SharedControlBlock &newContr
 
 bool Iec104ResponseParser::isCompleteResponse()
 {
+    // APCI всегда начинается с байта 0x68. Если буфер рассинхронизировался (например,
+    // предыдущая итерация отрезала кадр неверного размера), первый байт перестаёт быть
+    // 0x68, и второй байт больше не является настоящей длиной кадра - без этой проверки
+    // splitBuffer() резал бы буфер по случайным "длинам" бесконечно, никогда не
+    // восстанавливаясь, пока буфер не очистят снаружи (например, при реконнекте).
+    constexpr char apciStartByte = 0x68;
+    qsizetype garbageSkipped = 0;
+    while (!m_responseBuffer.isEmpty() && m_responseBuffer[0] != apciStartByte)
+    {
+        m_responseBuffer.remove(0, 1);
+        ++garbageSkipped;
+    }
+    if (garbageSkipped > 0)
+        emit needToLog(
+            QString("Response buffer desync detected, skipped %1 garbage byte(s) to resync").arg(garbageSkipped),
+            Logger::Critical);
+
     if (std::size_t(m_responseBuffer.size()) >= apciSize)
         if (m_responseBuffer.size() >= (std::uint8_t(m_responseBuffer[1]) + 2))
             return true;
@@ -61,6 +77,13 @@ void Iec104ResponseParser::verify(const Iec104::ASDU &asdu) noexcept
 {
     /// TODO: shitty code
     static bool confirm = false, terminate = false;
+    emit needToLog(
+        QString("DIAG verify: m_currentCommand=%1 cause=0x%2 confirm=%3 terminate=%4")
+            .arg(static_cast<int>(m_currentCommand))
+            .arg(static_cast<int>(asdu.m_cause), 2, 16, QChar('0'))
+            .arg(confirm)
+            .arg(terminate),
+        Logger::Debug);
     switch (m_currentCommand)
     {
     case Command::RequestGroup:
@@ -106,7 +129,7 @@ void Iec104ResponseParser::parse()
     splitBuffer();
     for (const auto &response : m_responses)
     {
-        emit needToLog(QString("<- %1").arg(QString(response.toHex())), Logger::Debug);
+        emit needToLog(QString("-> %1").arg(QString(response.toHex())), Logger::Debug);
         auto validationResult = validate(response);
         if (validationResult == Error::Msg::NoError)
         {
@@ -154,6 +177,8 @@ bool Iec104ResponseParser::isFileTransferType(const MessageDataType type) noexce
     case MessageDataType::F_SR_NA_1:
     case MessageDataType::F_SG_NA_1:
     case MessageDataType::F_LS_NA_1:
+    case MessageDataType::F_SC_NA_1:
+    case MessageDataType::F_AF_NA_1:
         return true;
     default:
         return false;
@@ -174,7 +199,6 @@ void Iec104ResponseParser::handleFileTransferAsdu(const ASDU &asdu) noexcept
         if (asdu.m_data.size() < 8)
             return;
         m_longDataBuffer.clear();
-        m_sectionNum = 1;
         const quint32 fileSize = std::uint8_t(asdu.m_data[5]) //
             | (std::uint8_t(asdu.m_data[6]) << 8)             //
             | (std::uint8_t(asdu.m_data[7]) << 16);
@@ -183,8 +207,15 @@ void Iec104ResponseParser::handleFileTransferAsdu(const ASDU &asdu) noexcept
         break;
     }
     case MessageDataType::F_SR_NA_1: // Section ready - секция готова
-        emit fileReplyNeeded(FileReplyAction::CallSection, fileNum, m_sectionNum);
+    {
+        if (asdu.m_data.size() < 6)
+            return;
+        // Номер секции всегда берём из текущего сообщения устройства, а не храним свой
+        // счётчик - иначе при "двойном" F_LS (см. ниже) ответ будет ссылаться на устаревшую секцию.
+        const auto section = std::uint8_t(asdu.m_data[5]);
+        emit fileReplyNeeded(FileReplyAction::CallSection, fileNum, section);
         break;
+    }
     case MessageDataType::F_SG_NA_1: // Segment - сегмент данных секции
     {
         if (asdu.m_data.size() < 7)
@@ -202,18 +233,44 @@ void Iec104ResponseParser::handleFileTransferAsdu(const ASDU &asdu) noexcept
     {
         if (asdu.m_data.size() < 7)
             return;
+        const auto section = std::uint8_t(asdu.m_data[5]);
         const auto qualifier = std::uint8_t(asdu.m_data[6]);
-        if (qualifier == 0x03) // конец не последней секции - подтверждаем и переходим к следующей
-        {
-            emit fileReplyNeeded(FileReplyAction::ConfirmSection, fileNum, m_sectionNum);
-            ++m_sectionNum;
-        }
+        if (qualifier == 0x03) // конец не последней секции - подтверждаем именно эту секцию
+            emit fileReplyNeeded(FileReplyAction::ConfirmSection, fileNum, section);
         else if (qualifier == 0x01) // конец последней секции - файл получен целиком
         {
-            emit fileReplyNeeded(FileReplyAction::ConfirmFile, fileNum, m_sectionNum);
+            emit fileReplyNeeded(FileReplyAction::ConfirmFile, fileNum, section);
             fileReceived(m_longDataBuffer, S2::FilesEnum(fileNum), m_request.arg2.value<DataTypes::FileFormat>());
             m_longDataBuffer.clear();
             emit requestedDataReceived();
+        }
+        break;
+    }
+    case MessageDataType::F_SC_NA_1: // Call - запрос от устройства при записи файла
+    {
+        if (asdu.m_data.size() < 7)
+            return;
+        const auto qualifier = std::uint8_t(asdu.m_data[6]);
+        const auto payload = m_request.arg2.value<QByteArray>();
+        if (qualifier == 0x02) // запрос файла (размера)
+            emit fileWriteReplyNeeded(FileWriteReplyAction::SectionReady, payload);
+        else if (qualifier == 0x06) // запрос сегментов
+            emit fileWriteReplyNeeded(FileWriteReplyAction::SendSegments, payload);
+        break;
+    }
+    case MessageDataType::F_AF_NA_1: // Ack - подтверждение от устройства при записи файла
+    {
+        if (asdu.m_data.size() < 7)
+            return;
+        const auto qualifier = std::uint8_t(asdu.m_data[6]);
+        if (qualifier == 0x03) // секция принята - завершаем файл
+            emit fileWriteReplyNeeded(FileWriteReplyAction::FileFinal, m_request.arg2.value<QByteArray>());
+        else if (qualifier == 0x01) // файл принят целиком - готово
+        {
+            const auto size = static_cast<quint64>(m_request.arg2.value<QByteArray>().size());
+            emit responseParsed(DataTypes::GeneralResponseStruct { DataTypes::GeneralResponseTypes::Ok, size });
+            emit requestedDataReceived();
+            emit writeCompleted();
         }
         break;
     }
@@ -235,6 +292,11 @@ void Iec104ResponseParser::parseUnnumberedFormat() noexcept
 
 void Iec104ResponseParser::receiveCurrentCommand(const Iec104::Command currCommand) noexcept
 {
+    emit needToLog(
+        QString("DIAG receiveCurrentCommand: %1 -> %2")
+            .arg(static_cast<int>(m_currentCommand))
+            .arg(static_cast<int>(currCommand)),
+        Logger::Debug);
     m_currentCommand = currCommand;
 }
 

@@ -39,19 +39,19 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
 
         if (m_strategy == Strategy::Sync)
         {
-            auto parserThread = new QThread;
+            m_parcerThreads = new QThread;
             // Старт
             QObject::connect(m_iface, &BaseInterface::readyRead, m_iface, &BaseInterface::poll);
-            QObject::connect(parserThread, &QThread::started, m_executor, &DefaultQueryExecutor::exec);
+            QObject::connect(m_parcerThreads, &QThread::started, m_executor, &DefaultQueryExecutor::exec);
             // Остановка
-            QObject::connect(m_iface, &BaseInterface::finished, parserThread, &QThread::quit);
-            QObject::connect(m_executor, &DefaultQueryExecutor::finished, parserThread, &QThread::quit);
-            QObject::connect(parserThread, &QThread::finished, m_executor, &QObject::deleteLater);
-            QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
+            QObject::connect(m_iface, &BaseInterface::finished, m_parcerThreads, &QThread::quit);
+            QObject::connect(m_executor, &DefaultQueryExecutor::finished, m_parcerThreads, &QThread::quit);
+            QObject::connect(m_parcerThreads, &QThread::finished, m_executor, &QObject::deleteLater);
+            QObject::connect(m_parcerThreads, &QThread::finished, &QObject::deleteLater);
             // Если интерфейс успешно запустился
             QObject::connect(iface, &BaseInterface::started, m_iface,
                 [iface = QPointer<BaseInterface>(iface), executor = QPointer<DefaultQueryExecutor>(executor),
-                    parserThread = QPointer<QThread>(parserThread)]
+                    parserThread = QPointer<QThread>(m_parcerThreads)]
                 {
                     // При неудачном подключении объекты контекста удаляются через
                     // deleteLater, но сигнал started может прийти позже их удаления.
@@ -98,7 +98,8 @@ bool ConnectionContext::run(AsyncConnection *connection)
             m_iface->close();
             m_iface->deleteLater();
             m_executor->deleteLater();
-            m_parcerThreads->deleteLater();
+            if (m_parcerThreads != nullptr)
+                m_parcerThreads->deleteLater();
             return false;
         }
         return true;

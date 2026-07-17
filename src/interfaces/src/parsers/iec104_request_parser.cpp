@@ -90,9 +90,14 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
     }
     case Commands::C_WriteFile:
     {
-        [[maybe_unused]] auto filenum = static_cast<S2::FilesEnum>(cmd.arg1.value<quint32>());
-        [[maybe_unused]] auto file = cmd.arg2.value<QByteArray>();
-        // Commands104::CommandStruct inp { Commands104::CM104_WRITEFILE, filenum, 0, true, file };
+        const auto id = cmd.arg1.value<quint32>();
+        if (id > std::numeric_limits<quint8>::max() || !cmd.arg2.canConvert<QByteArray>())
+        {
+            qDebug() << "IEC104: invalid write file request, id" << id;
+            break;
+        }
+        const auto file = cmd.arg2.value<QByteArray>();
+        m_request = createFileReadyMessage(static_cast<quint8>(id), static_cast<quint32>(file.size()));
         break;
     }
     case Commands::C_WriteUserValues:
@@ -171,10 +176,16 @@ QByteArray Iec104RequestParser::createGroupRequest(const quint32 groupNum)
 QByteArray Iec104RequestParser::buildFileFrame(
     const Iec104::MessageDataType type, const quint8 fileNum, const quint8 section, const quint8 qualifier)
 {
+    return buildFileFrame(type, fileNum, section, QByteArray(1, static_cast<char>(qualifier)));
+}
+
+QByteArray Iec104RequestParser::buildFileFrame(
+    const Iec104::MessageDataType type, const quint8 fileNum, const quint8 section, const QByteArray &tail)
+{
     try
     {
         ASDU asdu(m_baseStationAddress);
-        asdu.setFileTransferData(type, fileNum, section, qualifier);
+        asdu.setFileTransferData(type, fileNum, section, tail);
         auto request = asdu.toByteArray();
         APCI apci(*m_ctrlBlock, request.size());
         apci.m_ctrlBlock.m_format = FrameFormat::Information;
@@ -210,6 +221,55 @@ QByteArray Iec104RequestParser::createFileReply(
         return buildFileFrame(MessageDataType::F_AF_NA_1, fileNum, section, 0x01);
     }
     return QByteArray();
+}
+
+QByteArray Iec104RequestParser::createFileReadyMessage(const quint8 fileNum, const quint32 fileSize) noexcept
+{
+    // Секция "съедается" первым байтом размера файла - см. легаси IEC104Parser::fileReady (cmd.chop(1)).
+    QByteArray tail;
+    tail.append(static_cast<char>((fileSize >> 8) & 0xFF));
+    tail.append(static_cast<char>((fileSize >> 16) & 0xFF));
+    return buildFileFrame(MessageDataType::F_FR_NA_1, fileNum, static_cast<quint8>(fileSize & 0xFF), tail);
+}
+
+QByteArray Iec104RequestParser::createSectionReadyMessage(const quint32 fileSize) noexcept
+{
+    // fileNum и номер секции захардкожены в 0x01 - см. легаси IEC104Parser::sectionReady.
+    QByteArray tail;
+    tail.append(static_cast<char>(fileSize & 0xFF));
+    tail.append(static_cast<char>((fileSize >> 8) & 0xFF));
+    tail.append(static_cast<char>((fileSize >> 16) & 0xFF));
+    return buildFileFrame(MessageDataType::F_SR_NA_1, 0x01, 0x01, tail);
+}
+
+QList<QByteArray> Iec104RequestParser::createSegmentBurst(const QByteArray &payload) noexcept
+{
+    constexpr int segmentSize = 230;
+    QList<QByteArray> frames;
+    for (int pos = 0; pos < payload.size(); pos += segmentSize)
+    {
+        const auto chunk = payload.mid(pos, segmentSize);
+        QByteArray tail(1, static_cast<char>(chunk.size()));
+        tail.append(chunk);
+        frames.append(buildFileFrame(MessageDataType::F_SG_NA_1, 0x01, 0x01, tail));
+    }
+    quint8 checksum = 0;
+    for (const auto byte : payload)
+        checksum += static_cast<quint8>(byte);
+    QByteArray lsTail(1, static_cast<char>(0x03));
+    lsTail.append(static_cast<char>(checksum));
+    frames.append(buildFileFrame(MessageDataType::F_LS_NA_1, 0x01, 0x01, lsTail));
+    return frames;
+}
+
+QByteArray Iec104RequestParser::createFileFinalMessage(const QByteArray &payload) noexcept
+{
+    quint8 checksum = 0;
+    for (const auto byte : payload)
+        checksum += static_cast<quint8>(byte);
+    QByteArray tail(1, static_cast<char>(0x01));
+    tail.append(static_cast<char>(checksum));
+    return buildFileFrame(MessageDataType::F_LS_NA_1, 0x01, 0x01, tail);
 }
 
 QByteArray Iec104RequestParser::createStartMessage() const noexcept
