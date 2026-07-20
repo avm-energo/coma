@@ -1,6 +1,6 @@
 #include "tune/84/tune84check.h"
 
-#include <datablocks/kiv/bda.h>
+#include <datablocks/84/bda.h>
 #include <libavm-gen/files.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-widgets/emessagebox.h>
@@ -68,7 +68,7 @@ Error::Msg Tune84Check::showScheme()
 
 Error::Msg Tune84Check::check()
 {
-    BdaA284 *bda = new BdaA284(this);
+    Bda84 *bda = new Bda84(this);
     bda->setup(m_device->getUID(), m_sync);
     bda->readAndUpdate();
 #ifndef NO_LIMITS
