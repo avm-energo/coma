@@ -14,15 +14,15 @@ Tune84Dialog::Tune84Dialog(Device::CurrentDevice *device, QWidget *parent) : Gen
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    addTuneDialog("Проверка правильности измерения входных сигналов",
-        [device, this]() { return new Tune84Check(device, this); });
+    addTuneDialog(
+        "Проверка правильности измерения входных сигналов", [device, this]() { return new Tune84Check(device, this); });
     addTuneDialog("Регулировка каналов напряжения", [device, this]() { return new Tune84ADC(ADCU, device, this); });
     addTuneDialog("Регулировка каналов тока", [device, this]() { return new Tune84ADC(ADCI, device, this); });
     addTuneDialog("Настройка температурной коррекции +60 °С",
         [device, this]() { return new Tune84Temp60(TUNING60, device, this); });
     addTuneDialog("Настройка температурной коррекции -20 °С",
         [device, this]() { return new Tune84Temp60(TUNING20, device, this); });
-    Bac2A284 *bac = new Bac2A284(this);
+    Bac284 *bac = new Bac284(this);
     bac->setup(m_device->getUID(), m_device->sync());
     addWidgetToTabWidget(bac->widget(), "Регулировка");
     SetupUI(true);
