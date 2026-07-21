@@ -274,7 +274,7 @@ void SettingsDialog::fill()
     LEFunc::setData(this, SettingsKeys::Mip::mipBsAddress, Settings::get(SettingsKeys::Mip::mipBsAddress, 1));
     LEFunc::setData(this, SettingsKeys::USB::protocomTimeout, Settings::get(SettingsKeys::USB::protocomTimeout, 5000));
     LEFunc::setData(
-        this, SettingsKeys::USB::protocomReconnect, Settings::get(SettingsKeys::USB::protocomReconnect, 100));
+        this, SettingsKeys::USB::protocomReconnect, Settings::get(SettingsKeys::USB::protocomReconnect, 1000));
     LEFunc::setData(
         this, SettingsKeys::Serial::modbusTimeout, Settings::get(SettingsKeys::Serial::modbusTimeout, 3000));
     LEFunc::setData(
