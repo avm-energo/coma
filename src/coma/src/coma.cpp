@@ -106,7 +106,9 @@ void Coma::setupUI()
     lyout->addLayout(hlyout);
     lyout->addWidget(least());
     wdgt->setLayout(lyout);
-    setCentralWidget(wdgt);
+    m_centralStack = new QStackedWidget(this);
+    m_centralStack->addWidget(wdgt); // индекс 0 - основной контент главного окна
+    setCentralWidget(m_centralStack);
     setupMenubar();
     StyleLoader::setStyle(Settings::get("theme", "Light"));
 }
@@ -494,10 +496,36 @@ void Coma::disconnectAndClear()
     if (m_currentDevice && (m_currentDevice->async()->getConnectionState() != Interface::State::Disconnect))
     {
         m_alarmW->clear();
+        clearTuneWidgets();
         m_dlgManager->clearDialogs();
         m_connectionManager->breakConnection();
         m_currentDevice = nullptr;
     }
+}
+
+void Coma::showTuneWidget(QWidget *tuneWidget)
+{
+    if (tuneWidget == nullptr)
+        return;
+    if (m_centralStack->indexOf(tuneWidget) == -1)
+        m_centralStack->addWidget(tuneWidget);
+    m_centralStack->setCurrentWidget(tuneWidget);
+}
+
+void Coma::hideTuneWidget()
+{
+    m_centralStack->setCurrentIndex(0);
+}
+
+void Coma::clearTuneWidgets()
+{
+    while (m_centralStack->count() > 1)
+    {
+        auto *w = m_centralStack->widget(1);
+        m_centralStack->removeWidget(w);
+        w->deleteLater();
+    }
+    m_centralStack->setCurrentIndex(0);
 }
 
 void Coma::keyPressEvent(QKeyEvent *event)
