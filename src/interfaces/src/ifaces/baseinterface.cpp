@@ -2,7 +2,6 @@
 
 #include <libavm-gen/settings.h>
 
-#include <QCoreApplication>
 #include <QElapsedTimer>
 
 BaseInterface::BaseInterface(const QString &logFilename, BaseSettings *settings, QObject *parent)
@@ -109,20 +108,30 @@ void BaseInterface::reconnect()
 {
     // Если устройство уже находится в состоянии переподключения,
     // то повторно заходить в цикл не следует.
+    if (getState() == Interface::State::Reconnect)
+        return;
+
+    setState(Interface::State::Reconnect);
+
+    // Дожидаемся сигнала disconnected() от текущего соединения и только после него
+    // планируем первую попытку connect(), выдерживая интервал между переподключениями.
+    QObject::connect(this, &BaseInterface::disconnected, this,
+        [this]() {
+            if (getState() == Interface::State::Reconnect)
+                QTimer::singleShot(m_reconnectInterval, this, &BaseInterface::attemptConnect);
+        },
+        Qt::SingleShotConnection);
+
+    disconnect(); // Закрываем текущее соединение
+}
+
+void BaseInterface::attemptConnect()
+{
     if (getState() != Interface::State::Reconnect)
-    {
-        setState(Interface::State::Reconnect);
-        while (getState() == Interface::State::Reconnect)
-        {
-            disconnect();                       // Закрываем текущее соединение
-            StdFunc::Wait(m_reconnectInterval); // Интервал между закрытием подключения и попыткой переподключиться
-            if (connect())                      // Пытаемся подключиться к интерфейсу заново
-                break;
-            QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-        }
-        if (getState() == Interface::State::Run)
-        {
-            emit reconnected();
-        }
-    }
+        return;
+
+    if (connect()) // Пытаемся подключиться к интерфейсу заново
+        emit reconnected();
+    else
+        QTimer::singleShot(m_reconnectInterval, this, &BaseInterface::attemptConnect);
 }

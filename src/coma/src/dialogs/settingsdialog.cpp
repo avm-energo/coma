@@ -205,6 +205,11 @@ void SettingsDialog::setupConnectionTab() noexcept
     widget->setToolTip(reconnectIntervalTooltip);
     iec104Layout->addWidget(widget);
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
+    widget = LEFunc::newLBL(m_workspace, "Таймаут отключения, мс", SettingsKeys::Iec104::iec104DisconnectTimeout, true);
+    widget->setToolTip("<p><font size=\"4\">Время ожидания корректного закрытия соединения "
+                       "перед принудительным обрывом сокета.</font></p>");
+    iec104Layout->addWidget(widget);
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
     widget = LEFunc::newLBL(m_workspace, "t0, с", SettingsKeys::Iec104::iec104T0, true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут при установке соединения.</font></p>");
     iec104Layout->addWidget(widget);
@@ -278,6 +283,8 @@ void SettingsDialog::fill()
         this, SettingsKeys::Iec104::iec104Timeout, Settings::get(SettingsKeys::Iec104::iec104Timeout, 1000));
     LEFunc::setData(
         this, SettingsKeys::Iec104::iec104Reconnect, Settings::get(SettingsKeys::Iec104::iec104Reconnect, 1000));
+    LEFunc::setData(this, SettingsKeys::Iec104::iec104DisconnectTimeout,
+        Settings::get(SettingsKeys::Iec104::iec104DisconnectTimeout, 5000));
     LEFunc::setData(this, SettingsKeys::Iec104::iec104T0, Settings::get(SettingsKeys::Iec104::iec104T0, 30));
     LEFunc::setData(this, SettingsKeys::Iec104::iec104T1, Settings::get(SettingsKeys::Iec104::iec104T1, 15));
     LEFunc::setData(this, SettingsKeys::Iec104::iec104T2, Settings::get(SettingsKeys::Iec104::iec104T2, 10));
@@ -343,6 +350,8 @@ void SettingsDialog::acceptSettings()
     set(SettingsKeys::Serial::modbusReconnect, LEFunc::data(this, SettingsKeys::Serial::modbusReconnect));
     set(SettingsKeys::Iec104::iec104Timeout, LEFunc::data(this, SettingsKeys::Iec104::iec104Timeout));
     set(SettingsKeys::Iec104::iec104Reconnect, LEFunc::data(this, SettingsKeys::Iec104::iec104Reconnect));
+    set(SettingsKeys::Iec104::iec104DisconnectTimeout,
+        LEFunc::data(this, SettingsKeys::Iec104::iec104DisconnectTimeout));
     set(SettingsKeys::Iec104::iec104T0, LEFunc::data(this, SettingsKeys::Iec104::iec104T0));
     set(SettingsKeys::Iec104::iec104T1, LEFunc::data(this, SettingsKeys::Iec104::iec104T1));
     set(SettingsKeys::Iec104::iec104T2, LEFunc::data(this, SettingsKeys::Iec104::iec104T2));

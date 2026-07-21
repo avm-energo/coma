@@ -26,6 +26,7 @@ namespace Iec104
     constexpr auto prefix = "iec104";
     constexpr auto iec104Timeout = "iec104Timeout";
     constexpr auto iec104Reconnect = "iec104Reconnect";
+    constexpr auto iec104DisconnectTimeout = "iec104DisconnectTimeout";
     constexpr auto iec104T0 = "iec104T0";
     constexpr auto iec104T1 = "iec104T1";
     constexpr auto iec104T2 = "iec104T2";
