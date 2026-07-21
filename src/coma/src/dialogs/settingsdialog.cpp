@@ -40,12 +40,6 @@ SettingsDialog::~SettingsDialog() noexcept { }
 
 void SettingsDialog::setupUI()
 {
-    int width = 700, height = 550;
-    // Настройки окна (размер, положение)
-    auto center = QGuiApplication::primaryScreen()->geometry().center();
-    setGeometry(center.x() - width / 2, center.y() - height / 2, width, height);
-    setFixedSize(this->size());
-
     auto mainLayout = new QVBoxLayout;
     auto workspaceLayout = new QHBoxLayout;
     connect(m_sidebar, &QListWidget::currentRowChanged, m_workspace, &QStackedWidget::setCurrentIndex);
@@ -59,7 +53,15 @@ void SettingsDialog::setupUI()
     auto saveBtn = new QPushButton("Сохранить настройки");
     connect(saveBtn, &QAbstractButton::clicked, this, &SettingsDialog::acceptSettings);
     mainLayout->addWidget(saveBtn);
+    // SetFixedSize заставляет layout синхронизировать min/max размер окна с контентом
+    // при каждой активации, а не только один раз в момент вызова setFixedSize().
+    mainLayout->setSizeConstraint(QLayout::SetFixedSize);
     setLayout(mainLayout);
+    mainLayout->activate();
+
+    // Настройки окна (положение)
+    auto center = QGuiApplication::primaryScreen()->geometry().center();
+    move(center.x() - width() / 2, center.y() - height() / 2);
 }
 
 QVBoxLayout *SettingsDialog::createWorkspaceLayout(const QString &tabName)
