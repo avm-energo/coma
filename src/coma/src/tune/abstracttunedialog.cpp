@@ -22,11 +22,12 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QVBoxLayout>
+#include <coma.h>
 
 ReportData AbstractTuneDialog::s_reportData {};
 
 AbstractTuneDialog::AbstractTuneDialog(Device::CurrentDevice *device, QWidget *parent)
-    : QDialog(parent)
+    : QWidget(parent)
     , m_device(device)
     , m_config(m_device->getS2Datamanager()->getCurrentConfiguration().m_workingConfig)
     , m_async(m_device->async())
@@ -49,8 +50,6 @@ AbstractTuneDialog::AbstractTuneDialog(Device::CurrentDevice *device, QWidget *p
 
 void AbstractTuneDialog::setupUI()
 {
-    setModal(true);
-
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     hlyout->addWidget(tuneUI());
@@ -118,7 +117,9 @@ QWidget *AbstractTuneDialog::tuneUI()
         [this]()
         {
             emit Finished();
-            this->hide();
+            auto *mainWindow = qobject_cast<Coma *>(WDFunc::getMainWindow());
+            if (mainWindow != nullptr)
+                mainWindow->hideTuneWidget();
         },
         ":/icons/tnyes.svg", "Готово"));
     hlyout->addStretch(300);
@@ -561,5 +562,5 @@ void AbstractTuneDialog::keyPressEvent(QKeyEvent *e)
     }
     if (e->key() == Qt::Key_Escape)
         StdFunc::Cancel();
-    QDialog::keyPressEvent(e);
+    QWidget::keyPressEvent(e);
 }

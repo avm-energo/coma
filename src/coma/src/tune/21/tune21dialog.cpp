@@ -17,7 +17,7 @@ Tune21Dialog::Tune21Dialog(
         = firstStepNumber - 1; // set step number to external variable -1 (if there's more than one board in module)
     QString tmps = "Регулировка ";
     tmps += ((bt == Device::BoardTypes::BASEBOARD) ? "базы" : "мезонина");
-    addTuneDialog({ tmps, new Tune21One(bt, device, this) });
+    addTuneDialog(tmps, [bt, device, this]() { return new Tune21One(bt, device, this); });
     u8 blockNum = (bt == Device::BoardTypes::BASEBOARD) ? 1 : 2;
     Bac21 *bac = new Bac21(blockNum, this);
     bac->setup(m_device->getUID(), m_device->sync());

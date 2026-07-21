@@ -9,6 +9,7 @@
 #include <QByteArray>
 #include <QCloseEvent>
 #include <QDialog>
+#include <QWidget>
 
 #define MAXTUNESIZE 1024         // максимальный размер файла с данными настройки
 
@@ -28,7 +29,7 @@
 
 using ReportData = std::map<QString, QString>;
 
-class AbstractTuneDialog : public QDialog
+class AbstractTuneDialog : public QWidget
 {
     Q_OBJECT
 public:
