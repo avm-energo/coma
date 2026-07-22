@@ -1,7 +1,7 @@
 include(FetchContent)
 
 FetchContent_Declare(qxlsx
-  GIT_REPOSITORY    https://github.com/avm-energo/qxlsx.git
+  GIT_REPOSITORY    https://git.avmenergo.ru/avm-energo/libavm-qxlsx.git
   GIT_TAG           main
   SOURCE_SUBDIR     QXlsx
 )

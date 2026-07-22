@@ -2,9 +2,9 @@
 
 #include <libavm-gen/error.h>
 #include <libavm-gen/settings.h>
-#include <limereport/lrreportengine.h>
 
 #include <QStandardItem>
+#include <lrreportengine.h>
 
 ReportModel::ReportModel(QObject *parent) : QStandardItemModel(parent) { }
 
