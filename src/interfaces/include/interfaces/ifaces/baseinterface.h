@@ -29,6 +29,7 @@ signals:
     void dataReceived(const QByteArray &ba);
     void started();
     void reconnected();
+    void disconnected();
     void finished();
     void error(const InterfaceError error);
     void stateChanged(Interface::State);
@@ -51,6 +52,9 @@ protected:
 
     virtual QByteArray read(bool &status) = 0;
     virtual bool write(const QByteArray &ba) = 0;
+
+private:
+    void attemptConnect();
 
 public slots:
     virtual bool connect() = 0;

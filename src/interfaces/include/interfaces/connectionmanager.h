@@ -33,6 +33,11 @@ private:
     QMetaObject::Connection m_connBSI;
     ReconnectMode m_reconnectMode;
     bool m_isReconnectOccurred, m_isInitial;
+    /// \brief true, пока цепочка BaseInterface::reconnect() физически не завершится
+    /// (успешным connect() или сменой состояния). В отличие от m_isReconnectOccurred,
+    /// не ждёт подтверждения BSI — сбрасывается сразу по interfaceReconnected(),
+    /// чтобы новая ошибка могла запустить свежую попытку, даже если BSI так и не ответил.
+    bool m_isInterfaceReconnecting;
     quint16 m_timeoutCounter, m_timeoutMax;
     quint16 m_errorCounter, m_errorMax;
 
