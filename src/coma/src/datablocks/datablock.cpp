@@ -389,7 +389,14 @@ void DataBlock::saveToFileUserChoose()
 void DataBlock::deleteWidgetCopy()
 {
     if (m_widgetCopy)
+    {
         delete m_widgetCopy;
+        m_widgetCopy = nullptr;
+    }
+    // blockButtonsUI() reparents m_bottomButtonsWidget into m_widgetCopy's layout,
+    // so it was just destroyed along with m_widgetCopy above - drop the stale cache too.
+    m_bottomButtonsWidget = nullptr;
+    m_isBottomButtonsWidgetCreated = false;
 }
 
 void DataBlock::readAndUpdate()
