@@ -100,6 +100,7 @@ private:
     QMap<int, DataBlock *> m_absBac;
     TuneTabWidget *m_tuneTabWidget;
     void readTuneCoefsByBac(int bacnum);
+    void finishTuneWidget();
 
 signals:
     void Finished();

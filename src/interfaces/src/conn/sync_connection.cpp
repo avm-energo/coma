@@ -18,10 +18,15 @@ SyncConnection::SyncConnection(AsyncConnection *connection) noexcept : QObject(c
 
 void SyncConnection::eventLoop() noexcept
 {
-    while (m_busy)
+    while (m_busy && !StdFunc::IsCancelled())
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
         StdFunc::Wait();
+    }
+    if (m_busy && StdFunc::IsCancelled())
+    {
+        m_busy = false;
+        m_responseResult = Error::Msg::Cancelled;
     }
 }
 
