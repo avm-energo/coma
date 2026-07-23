@@ -41,6 +41,11 @@ if(SYSTEM_NAME STREQUAL "windows")
     message(STATUS "MSVC version: ${MSVC_VERSION}, toolset version: ${MSVC_TOOLSET_VERSION}")
 endif()
 
+# tell the MSVC to use multi-processor builds
+if (MSVC)
+    add_compile_options(/MP)
+endif()
+
 # Building libraries and targets
 # Step 1: Build dependencies
 
