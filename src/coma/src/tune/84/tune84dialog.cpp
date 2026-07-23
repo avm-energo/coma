@@ -4,25 +4,22 @@
 #include <libavm-gen/error.h>
 #include <libavm-gen/files.h>
 #include <libavm-gen/stdfunc.h>
+#include <libavm-widgets/wdfunc.h>
 #include <tune/84/tune84adc.h>
 #include <tune/84/tune84check.h>
 #include <tune/84/tune84temp60.h>
 #include <tune/tunetypes.h>
-#include <libavm-widgets/wdfunc.h>
 
 Tune84Dialog::Tune84Dialog(Device::CurrentDevice *device, QWidget *parent) : GeneralTuneDialog(device, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    addTuneDialog("Проверка правильности измерения входных сигналов",
-        [device, this]() { return new Tune84Check(device, this); });
-    addTuneDialog("Регулировка каналов напряжения", [device, this]() { return new Tune84ADC(ADCU, device, this); });
-    addTuneDialog("Регулировка каналов тока", [device, this]() { return new Tune84ADC(ADCI, device, this); });
-    addTuneDialog("Настройка температурной коррекции +60 °С",
-        [device, this]() { return new Tune84Temp60(TUNING60, device, this); });
-    addTuneDialog("Настройка температурной коррекции -20 °С",
-        [device, this]() { return new Tune84Temp60(TUNING20, device, this); });
-    Bac2A284 *bac = new Bac2A284(this);
+    addTuneDialog({ "Проверка правильности измерения входных сигналов", new Tune84Check(device, this) });
+    addTuneDialog({ "Регулировка каналов напряжения", new Tune84ADC(ADCU, device, this) });
+    addTuneDialog({ "Регулировка каналов тока", new Tune84ADC(ADCI, device, this) });
+    addTuneDialog({ "Настройка температурной коррекции +60 °С", new Tune84Temp60(TUNING60, device, this) });
+    addTuneDialog({ "Настройка температурной коррекции -20 °С", new Tune84Temp60(TUNING20, device, this) });
+    Bac284 *bac = new Bac284(this);
     bac->setup(m_device->getUID(), m_device->sync());
     addWidgetToTabWidget(bac->widget(), "Регулировка");
     SetupUI(true);

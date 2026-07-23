@@ -1,10 +1,10 @@
 #pragma once
 
+#include <datablocks/84/bac.h>
+#include <datablocks/84/bac2.h>
+#include <datablocks/84/bda.h>
+#include <datablocks/84/bdain.h>
 #include <datablocks/bd0.h>
-#include <datablocks/kiv/bac2.h>
-#include <datablocks/kiv/bac.h>
-#include <datablocks/kiv/bda.h>
-#include <datablocks/kiv/bdain.h>
 #include <tune/abstracttunedialog.h>
 #include <tune/tunetypes.h>
 
@@ -15,15 +15,15 @@ public:
     Tune84ADC(TuneTypes tuneType, Device::CurrentDevice *device, QWidget *parent = nullptr);
 
 private:
-    Bac2A284 *m_bac;
-    BacA284 *m_bac2;
-    BdaA284 *m_bda;
-    BdaIn *m_bdain;
+    Bac284 *m_bac;
+    Bac84 *m_bac2;
+    Bda84 *m_bda;
+    BdaIn84 *m_bdain;
     Bd0 *m_bd0;
     double m_pt100;
     bool m_isEnergoMonitorDialogCreated;
     int m_curTuneStep;
-    BdaIn::BlockData m_bdainBlockData;
+    BdaIn84::BlockData m_bdainBlockData;
     int m_BacWidgetIndex, m_BdainWidgetIndex, m_Bd0WidgetIndex;
     struct MidTuneStruct
     {

@@ -25,6 +25,7 @@
 
 #include "datablocks/datablock.h"
 
+#include <interfaces/conn/sync_connection.h>
 #include <libavm-gen/files.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>
@@ -33,7 +34,6 @@
 #include <libavm-widgets/hexpbfunc.h>
 #include <libavm-widgets/lefunc.h>
 #include <libavm-widgets/wdfunc.h>
-#include <interfaces/conn/sync_connection.h>
 
 #include <QDialogButtonBox>
 #include <QGroupBox>
@@ -389,7 +389,14 @@ void DataBlock::saveToFileUserChoose()
 void DataBlock::deleteWidgetCopy()
 {
     if (m_widgetCopy)
+    {
         delete m_widgetCopy;
+        m_widgetCopy = nullptr;
+    }
+    // blockButtonsUI() reparents m_bottomButtonsWidget into m_widgetCopy's layout,
+    // so it was just destroyed along with m_widgetCopy above - drop the stale cache too.
+    m_bottomButtonsWidget = nullptr;
+    m_isBottomButtonsWidgetCreated = false;
 }
 
 void DataBlock::readAndUpdate()

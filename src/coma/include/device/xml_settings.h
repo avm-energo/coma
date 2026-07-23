@@ -1,8 +1,8 @@
 #pragma once
 
+#include <interfaces/types/protocol_settings.h>
 #include <libavm-gen/datatypes.h>
 #include <libavm-widgets/viewtypewidget.h>
-#include <interfaces/types/protocol_settings.h>
 #include <s2/dataitem.h>
 
 #include <QHash>
@@ -149,19 +149,19 @@ struct BsiExtItem
 /// \brief Запись из секции <bsi> XML-конфигурации.
 struct BsiRecord
 {
-    QString name;                       ///< узел <name> - objectName лейбла со значением
-    QString desc;                       ///< узел <desc> - текст лейбла-подписи
+    QString name;             ///< узел <name> - objectName лейбла со значением
+    QString desc;             ///< узел <desc> - текст лейбла-подписи
     ViewType::ViewTypes type; ///< узел <representation>
-    u32 offset;                         ///< узел <offset> - индекс в массиве BlockStartupInfo
+    u32 offset;               ///< узел <offset> - индекс в массиве BlockStartupInfo
 };
 
 /// \brief Запись из секции <bsi-ext> XML-конфигурации.
 struct BsiExtRecord
 {
-    QString name;                       ///< узел <name> - objectName лейбла со значением
-    QString desc;                       ///< узел <desc> - текст лейбла-подписи
+    QString name;             ///< узел <name> - objectName лейбла со значением
+    QString desc;             ///< узел <desc> - текст лейбла-подписи
     ViewType::ViewTypes type; ///< узел <representation>
-    u32 offset;                         ///< узел <offset> - индекс в массиве BlockStartupInfoExtended
+    u32 offset;               ///< узел <offset> - индекс в массиве BlockStartupInfoExtended
 };
 
 struct SectionTabStruct
