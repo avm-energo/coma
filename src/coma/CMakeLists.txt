@@ -5,7 +5,7 @@ project(coma LANGUAGES CXX)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Concurrent REQUIRED)
 
 include(githash)
-include(magic_enum)
+include(better_enums)
 
 # Collecting sources
 set(COMA_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -28,6 +28,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${limereport_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${better_enums_SOURCE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
@@ -39,7 +40,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   qcustomplot
   libavm-qxlsx
   Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
-  magic_enum::magic_enum
 )
 
 
