@@ -4,7 +4,6 @@
 
 #include <QDir>
 #include <QSet>
-// #include <interfaces/types/common_types.h>
 
 namespace Device
 {
