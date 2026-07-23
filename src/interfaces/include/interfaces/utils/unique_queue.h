@@ -96,7 +96,10 @@ public:
     {
         [[maybe_unused]] auto result = m_unique.erase(std::ref(m_data.front()));
         if (!result)
+        {
             qDebug() << "Value is not found in the uniQueue";
+            return;
+        }
         m_data.pop();
     }
 

@@ -1,9 +1,9 @@
 #include "interfaces/conn/sync_connection.h"
 
 #include "device/bsi.h"
+#include <interfaces/conn/async_connection.h>
 #include <libavm-gen/std_ext.h>
 #include <libavm-gen/stdfunc.h>
-#include <interfaces/conn/async_connection.h>
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -99,6 +99,7 @@ Error::Msg SyncConnection::reqBSI()
 Error::Msg SyncConnection::reqBlockSync(
     quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize)
 {
+    qDebug() << "SyncConn reqBlockSync: block " << blocknum << "Connection pointer is: " << this;
     reset();
     auto conn = m_connection->connection(this, &SyncConnection::resultReady);
     QMap<DataTypes::DataBlockTypes, Commands> blockmap;
