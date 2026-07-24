@@ -42,7 +42,7 @@ void InterfaceUSBDialog::setInterface(QModelIndex index)
     settings->set(MemKeys::USB::path, mdl->data(mdl->index(row, 3)).toString());
 #endif
     settings->set(MemKeys::timeout, Settings::get(SettingsKeys::USB::protocomTimeout, 5000));
-    settings->set(MemKeys::reconnectInterval, Settings::get(SettingsKeys::USB::protocomReconnect, 100));
+    settings->set(MemKeys::reconnectInterval, Settings::get(SettingsKeys::USB::protocomReconnect, 1000));
     apply(settings);
 
     ConnectionSettings st { QString(), settings };
