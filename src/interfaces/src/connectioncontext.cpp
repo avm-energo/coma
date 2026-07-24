@@ -8,7 +8,9 @@
 namespace Interface
 {
 
-ConnectionContext::ConnectionContext() noexcept : m_strategy(Strategy::None) { }
+ConnectionContext::ConnectionContext() noexcept
+    : m_strategy(Strategy::None), m_parcerThreads(nullptr), m_threadPool(nullptr)
+{ }
 
 bool ConnectionContext::isValid() const noexcept
 {
@@ -40,6 +42,7 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
         if (m_strategy == Strategy::Sync)
         {
             auto parserThread = new QThread;
+            m_parcerThreads = parserThread;
             // Старт
             QObject::connect(m_iface, &BaseInterface::readyRead, m_iface, &BaseInterface::poll);
             QObject::connect(parserThread, &QThread::started, m_executor, &DefaultQueryExecutor::exec);
