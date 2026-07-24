@@ -82,12 +82,16 @@ void DefaultQueryExecutor::setState(const ExecutorState newState) noexcept
 void DefaultQueryExecutor::waitEvent()
 {
     std::unique_lock<std::mutex> locker { m_waitMutex };
-    m_waiter.wait(locker);
+    m_waiter.wait(locker, [this] { return m_wakeRequested; });
+    m_wakeRequested = false;
 }
 
 void DefaultQueryExecutor::wakeUp()
 {
-    std::lock_guard<std::mutex> locker { m_waitMutex };
+    {
+        std::lock_guard<std::mutex> locker { m_waitMutex };
+        m_wakeRequested = true;
+    }
     m_waiter.notify_one();
 }
 
