@@ -68,7 +68,7 @@ void Tune84ADC::setTuneFunctions()
     }
     addTuneFunc("Запись настроечных коэффициентов и восстановление конфигурации...", &Tune84ADC::SendBac);
     addTuneFunc("Восстановление рабочего режима модуля...", &AbstractTuneDialog::setWorkMode);
-    addTuneFunc("Проверка регулировки...", &Tune84ADC::CheckTune);
+    // addTuneFunc("Проверка регулировки...", &Tune84ADC::CheckTune);
 }
 
 Error::Msg Tune84ADC::showPreWarning()

@@ -8,6 +8,8 @@
 #include <QCoreApplication>
 #include <QDebug>
 
+constexpr int connTimeout = 3000;
+
 namespace Interface
 {
 
@@ -18,6 +20,11 @@ SyncConnection::SyncConnection(AsyncConnection *connection) noexcept : QObject(c
 
 void SyncConnection::eventLoop() noexcept
 {
+    QTimer tmr;
+    tmr.setSingleShot(true);
+    tmr.setInterval(connTimeout);
+    connect(&tmr, &QTimer::timeout, this, &SyncConnection::timeout);
+    tmr.start();
     while (m_busy && !StdFunc::IsCancelled())
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
