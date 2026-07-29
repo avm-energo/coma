@@ -42,7 +42,7 @@ Error::Msg Tune84Check::showScheme()
     vlyout->addWidget(GraphFunc::newHLine(this));
     vlyout->addWidget(LBLFunc::New(this,
         "3. Включите питание источника сигналов. Задайте напряжение U1 равным 60,0 В с углом 0 град.,\n"
-        "ток I1 равным 5 А с углом 89,9 град., включите выходы РЕТОМ-51;"));
+        "ток I1 равным 2,9 А с углом 89,9 град., включите выходы РЕТОМ-51;"));
     hlyout->addLayout(vlyout);
     hlyout->addWidget(GraphFunc::newVLine(this));
     vlyout = new QVBoxLayout;
