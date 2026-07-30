@@ -1,17 +1,19 @@
 #include "dialogs/infodialog.h"
 
+#include <device/configstorage.h>
+#include <device/current_device.h>
 #include <libavm-gen/colors.h>
 #include <libavm-gen/error.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-widgets/etabwidget.h>
 #include <libavm-widgets/lblfunc.h>
 #include <libavm-widgets/viewtypewidget.h>
-#include <device/configstorage.h>
-#include <device/current_device.h>
 
 #include <QMessageBox>
 #include <QTabWidget>
 #include <QVBoxLayout>
+
+constexpr auto deviceName = "deviceNameText";
 
 InfoDialog::InfoDialog(Device::CurrentDevice *device, QWidget *parent) : UDialog(device, parent)
 {
@@ -36,18 +38,20 @@ void InfoDialog::setupUI()
     auto bsiGrid = new QGridLayout;
     bsiGrid->setColumnStretch(0, 1);
     bsiGrid->setColumnStretch(1, 1);
+    bsiGrid->setVerticalSpacing(0);
     auto devLbl = LBLFunc::New(bsiTab, "Устройство:");
     devLbl->setWordWrap(false);
     bsiGrid->addWidget(devLbl, 0, 0, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
-    bsiGrid->addWidget(
-        ViewType::ViewTypeFunc::New(bsiTab, "devicename", ViewType::ViewTypes::String), 0, 1, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
+    bsiGrid->addWidget(ViewType::ViewTypeFunc::New(bsiTab, deviceName, ViewType::ViewTypes::String), 0, 1, 1, 1,
+        Qt::AlignLeft | Qt::AlignVCenter);
     for (int i = 0; i < int(bsiRecords.size()); ++i)
     {
         const auto &rec = bsiRecords[i];
         auto lbl = LBLFunc::New(bsiTab, rec.desc);
         lbl->setWordWrap(false);
         bsiGrid->addWidget(lbl, i + 1, 0, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
-        bsiGrid->addWidget(ViewType::ViewTypeFunc::New(bsiTab, rec.name, rec.type), i + 1, 1, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
+        bsiGrid->addWidget(
+            ViewType::ViewTypeFunc::New(bsiTab, rec.name, rec.type), i + 1, 1, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
     }
     bsiLayout->addLayout(bsiGrid, 3);
     bsiLayout->addStretch(400);
@@ -67,7 +71,8 @@ void InfoDialog::setupUI()
             auto lbl = LBLFunc::New(bsiExtTab, rec.desc);
             lbl->setWordWrap(false);
             bsiExtGrid->addWidget(lbl, i, 0, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
-            bsiExtGrid->addWidget(ViewType::ViewTypeFunc::New(bsiExtTab, rec.name, rec.type), i, 1, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
+            bsiExtGrid->addWidget(ViewType::ViewTypeFunc::New(bsiExtTab, rec.name, rec.type), i, 1, 1, 1,
+                Qt::AlignLeft | Qt::AlignVCenter);
         }
         bsiExtLayout->addLayout(bsiExtGrid, 3);
         bsiExtLayout->addStretch(400);
@@ -83,7 +88,7 @@ void InfoDialog::fillBsi()
 {
     const auto &bsi = m_device->bsi();
     const auto &records = m_device->getConfigStorage()->getDeviceSettings().getBsi();
-    ViewType::ViewTypeFunc::setData(this, "devicename", m_device->getDeviceName());
+    ViewType::ViewTypeFunc::setData(this, deviceName, m_device->getDeviceName());
     for (const auto &rec : records)
         ViewType::ViewTypeFunc::setData(this, rec.name, bsi.data(rec.offset));
 }

@@ -24,7 +24,19 @@ public:
 
     explicit UniqueQueue() noexcept = default;
 
-    explicit UniqueQueue(const UniqueQueue<T> &other) noexcept : m_data(other.m_data), m_unique(other.m_unique) { }
+    explicit UniqueQueue(const UniqueQueue<T> &other) noexcept
+    {
+        // m_unique holds references into m_data's own storage, so a member-wise copy of
+        // other.m_unique would leave references pointing at other's elements instead of ours.
+        // Rebuild the index against the freshly copied elements instead.
+        std::queue<T> tmp(other.m_data);
+        while (!tmp.empty())
+        {
+            m_data.push(std::move(tmp.front()));
+            m_unique.insert(std::ref(m_data.back()));
+            tmp.pop();
+        }
+    }
 
     explicit UniqueQueue(UniqueQueue<T> &&other) noexcept
         : m_data(std::move(other.m_data))
@@ -34,14 +46,19 @@ public:
 
     UniqueQueue<T> &operator=(const UniqueQueue<T> &other) noexcept
     {
-        m_data = other.m_data;
-        m_unique = other.m_unique;
+        if (this != &other)
+        {
+            UniqueQueue<T> tmp(other);
+            swap(tmp);
+        }
+        return *this;
     }
 
     UniqueQueue<T> &operator=(UniqueQueue<T> &&other) noexcept
     {
         m_data = std::move(other.m_data);
         m_unique = std::move(other.m_unique);
+        return *this;
     }
 
     inline reference front()
@@ -96,7 +113,9 @@ public:
     {
         [[maybe_unused]] auto result = m_unique.erase(std::ref(m_data.front()));
         if (!result)
-            qDebug() << "Value is not found in the uniQueue";
+            qDebug() << "Value is not found in the uniQueue (data size:" << m_data.size()
+                      << ", index size:" << m_unique.size() << ") - the two are now out of sync,"
+                      << "the stale index entry will silently block future pushes of equal content";
         m_data.pop();
     }
 

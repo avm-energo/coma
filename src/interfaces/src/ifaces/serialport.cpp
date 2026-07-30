@@ -38,8 +38,14 @@ bool SerialPort::connect()
 
 void SerialPort::disconnect()
 {
+    // Закрываем, только если открыт, иначе поймаем ошибку NotOpenError.
+    // В любом случае считаем, что дескриптор закрыт.
+    //
+    // Для Винды возможно нужна пауза.
     if (m_port->isOpen())
         m_port->close();
+
+    emit disconnected();
 }
 
 // blocking read from serial port with timeout implementation

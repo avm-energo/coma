@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(coma VERSION 3.6.0)
+project(coma VERSION 3.6.1)
 
 set(SOFTDEVELOPER "AVM-Energo")
 
@@ -39,6 +39,11 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
 
 if(SYSTEM_NAME STREQUAL "windows")
     message(STATUS "MSVC version: ${MSVC_VERSION}, toolset version: ${MSVC_TOOLSET_VERSION}")
+endif()
+
+# tell the MSVC to use multi-processor builds
+if (MSVC)
+    add_compile_options(/MP)
 endif()
 
 # Building libraries and targets

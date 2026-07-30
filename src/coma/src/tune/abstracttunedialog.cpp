@@ -22,11 +22,12 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QVBoxLayout>
+#include <coma.h>
 
 ReportData AbstractTuneDialog::s_reportData {};
 
 AbstractTuneDialog::AbstractTuneDialog(Device::CurrentDevice *device, QWidget *parent)
-    : QDialog(parent)
+    : QWidget(parent)
     , m_device(device)
     , m_config(m_device->getS2Datamanager()->getCurrentConfiguration().m_workingConfig)
     , m_async(m_device->async())
@@ -49,8 +50,6 @@ AbstractTuneDialog::AbstractTuneDialog(Device::CurrentDevice *device, QWidget *p
 
 void AbstractTuneDialog::setupUI()
 {
-    setModal(true);
-
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     hlyout->addWidget(tuneUI());
@@ -113,14 +112,8 @@ QWidget *AbstractTuneDialog::tuneUI()
     WDFunc::setVisible(w2, "tunemsg" + QString::number(i), false);
     hlyout = new QHBoxLayout;
     hlyout->addStretch(300);
-    hlyout->addWidget(HexPBFunc::New(
-        this, "finishpb",
-        [this]()
-        {
-            emit Finished();
-            this->hide();
-        },
-        ":/icons/tnyes.svg", "Готово"));
+    hlyout->addWidget(
+        HexPBFunc::New(this, "finishpb", [this]() { finishTuneWidget(); }, ":/icons/tnyes.svg", "Готово"));
     hlyout->addStretch(300);
     lyout->addLayout(hlyout);
     //    lyout->addStretch(1);
@@ -291,6 +284,7 @@ void AbstractTuneDialog::startTune()
             loadAllTuneCoefs();
             setWorkMode();
             EMessageBox::error(this, Error::MsgStr[res]);
+            finishTuneWidget();
             return;
 #endif
         }
@@ -303,6 +297,7 @@ void AbstractTuneDialog::startTune()
     WDFunc::setEnabled(this, "finishpb", true);
     EMessageBox::information(this, "Настройка завершена!");
     TuneSequenceFile::saveTuneSequenceFile(m_tuneStep + 1); // +1 to let the next stage run
+    finishTuneWidget();
 }
 
 Error::Msg AbstractTuneDialog::setTuneMode()
@@ -545,6 +540,14 @@ void AbstractTuneDialog::CancelTune()
     emit cancelled();
 }
 
+void AbstractTuneDialog::finishTuneWidget()
+{
+    emit Finished();
+    auto *mainWindow = qobject_cast<Coma *>(WDFunc::getMainWindow());
+    if (mainWindow != nullptr)
+        mainWindow->hideTuneWidget();
+}
+
 // ##################### PROTECTED ####################
 
 void AbstractTuneDialog::closeEvent(QCloseEvent *e)
@@ -558,8 +561,16 @@ void AbstractTuneDialog::keyPressEvent(QKeyEvent *e)
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {
         m_finished = true;
+        // "Готово" разблокирована только когда регулировка полностью завершена -
+        // раньше Enter в этом состоянии срабатывал как клик по умолчательной кнопке QDialog
+        QWidget *finishBtn = findChild<QWidget *>("finishpb");
+        if (finishBtn != nullptr && finishBtn->isEnabled())
+            finishTuneWidget();
     }
     if (e->key() == Qt::Key_Escape)
+    {
         StdFunc::Cancel();
-    QDialog::keyPressEvent(e);
+        finishTuneWidget();
+    }
+    QWidget::keyPressEvent(e);
 }

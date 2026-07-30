@@ -8,16 +8,22 @@
             <offset>13</offset>
         </record>
         <record>
-            <name>cpuidle</name>
-            <desc>ИД процессора:</desc>
-            <representation>String</representation>
+            <name>cpuidlow</name>
+            <desc>ИД процессора (мл. ч.):</desc>
+            <representation>SerialNumber</representation>
             <offset>6</offset>
         </record>
         <record>
-            <name>devicename</name>
-            <desc>Тип устройства:</desc>
+            <name>cpuidmid</name>
+            <desc>ИД процессора (ср. ч.):</desc>
             <representation>SerialNumber</representation>
-            <offset>0</offset>
+            <offset>7</offset>
+        </record>
+        <record>
+            <name>cpuidhigh</name>
+            <desc>ИД процессора (ст. ч.):</desc>
+            <representation>SerialNumber</representation>
+            <offset>8</offset>
         </record>
         <record>
             <name>fwverle</name>
@@ -57,8 +63,7 @@
         </record>
         <record>
             <name>snle</name>
-            <desc>Серийный номер
-устройства:</desc>
+            <desc>Серийный номер устройства:</desc>
             <representation>SerialNumber</representation>
             <offset>12</offset>
         </record>

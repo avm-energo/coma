@@ -40,6 +40,7 @@ protected:
     QTimer m_timeoutTimer;
     std::mutex m_waitMutex;
     std::condition_variable m_waiter;
+    bool m_wakeRequested = false;
     BaseRequestParser *m_requestParser;
     BaseResponseParser *m_responseParser;
     QMetaObject::Connection m_timeoutConnection;

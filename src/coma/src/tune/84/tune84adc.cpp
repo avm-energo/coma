@@ -15,10 +15,10 @@ using namespace Interface;
 
 Tune84ADC::Tune84ADC(TuneTypes tuneType, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(device, parent)
-    , m_bac(new Bac2A284(this))
-    , m_bac2(new BacA284(this))
-    , m_bda(new BdaA284(this))
-    , m_bdain(new BdaIn(this))
+    , m_bac(new Bac284(this))
+    , m_bac2(new Bac84(this))
+    , m_bda(new Bda84(this))
+    , m_bdain(new BdaIn84(this))
     , m_bd0(new Bd0(this))
     , m_tuneType(tuneType)
 {
@@ -68,7 +68,7 @@ void Tune84ADC::setTuneFunctions()
     }
     addTuneFunc("Запись настроечных коэффициентов и восстановление конфигурации...", &Tune84ADC::SendBac);
     addTuneFunc("Восстановление рабочего режима модуля...", &AbstractTuneDialog::setWorkMode);
-    addTuneFunc("Проверка регулировки...", &Tune84ADC::CheckTune);
+    // addTuneFunc("Проверка регулировки...", &Tune84ADC::CheckTune);
 }
 
 Error::Msg Tune84ADC::showPreWarning()

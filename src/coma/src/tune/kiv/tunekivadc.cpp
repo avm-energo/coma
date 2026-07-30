@@ -65,7 +65,7 @@ void TuneKIVADC::setTuneFunctions()
         addTuneFunc("Регулировка канала Tmk0...", &TuneKIVADC::Tmk0);
     }
     addTuneFunc("Запись настроечных коэффициентов и восстановление конфигурации...", &TuneKIVADC::SendBac);
-    addTuneFunc("Проверка регулировки...", &TuneKIVADC::CheckTune);
+    // addTuneFunc("Проверка регулировки...", &TuneKIVADC::CheckTune);
 }
 
 Error::Msg TuneKIVADC::showPreWarning()

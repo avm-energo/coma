@@ -35,16 +35,23 @@ bool Ethernet::connect()
 
 void Ethernet::disconnect()
 {
-    if (m_socket->isOpen())
+    if (m_socket->state() != QAbstractSocket::UnconnectedState)
     {
-        m_socket->disconnectFromHost();
-        /// TODO: сделать настраиваемым значение 5 секунд на отключение
-        if (m_socket->state() == QAbstractSocket::UnconnectedState || m_socket->waitForDisconnected(5000))
+        // Мягко просим отключится + переводим openmode == false
+        m_socket->close();
+
+        if (m_socket->state() == QAbstractSocket::UnconnectedState
+            || m_socket->waitForDisconnected(m_settings->get<int>("disconnectTimeout")))
             m_log.writeLog(Logger::Info, "Socket disconnected");
         else
-            m_log.writeLog(Logger::Warning, "Disconnect from host timeout!");
-        m_socket->close();
+        {
+            m_log.writeLog(
+                Logger::Warning, QString("Disconnect error: %1. Connection will abort").arg(m_socket->errorString()));
+            m_socket->abort();
+        }
     }
+
+    emit disconnected();
 }
 
 // Blocking data reading from the socket

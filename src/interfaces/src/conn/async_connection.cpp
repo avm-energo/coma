@@ -117,6 +117,8 @@ void AsyncConnection::writeTime(const timespec &time)
 
 void AsyncConnection::writeCommand(Commands cmd, QVariant value)
 {
+    qDebug() << "writing command: " << cmd << " with value: " << value;
+    qDebug() << "Connection pointer is: " << this;
     setToQueue(CommandStruct { cmd, value, QVariant() });
     if (cmd == Commands::C_StartFirmwareUpgrade)
         emit silentReconnectMode();
@@ -124,6 +126,8 @@ void AsyncConnection::writeCommand(Commands cmd, QVariant value)
 
 void AsyncConnection::writeCommand(Commands cmd, const QVariantList &list)
 {
+    qDebug() << "writing command: " << cmd << " with list: " << list;
+    qDebug() << "Connection pointer is: " << this;
     setToQueue(CommandStruct { cmd, list, QVariant() });
 }
 

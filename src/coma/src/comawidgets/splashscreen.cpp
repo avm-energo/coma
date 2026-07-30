@@ -55,6 +55,12 @@ void SplashScreen::drawContents(QPainter *painter)
     painter->drawText(rect, Qt::AlignLeft, Prog::limereport);
 
     rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
+    painter->drawText(rect, Qt::AlignLeft, Prog::qcustomplot);
+
+    rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
+    painter->drawText(rect, Qt::AlignLeft, Prog::better_enums);
+
+    rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());
     painter->drawText(rect, Qt::AlignLeft, Prog::icons);
 
     rect.moveBottom(rect.bottom() + 1.7 * painter->font().pixelSize());

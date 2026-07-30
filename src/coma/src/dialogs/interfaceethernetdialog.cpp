@@ -65,6 +65,13 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
     settings->set("bsAddress", mdl->data(mdl->index(row, 3)).toUInt());
     settings->set("timeout", Settings::get("iec104Timeout", 1000));
     settings->set("reconnectInterval", Settings::get("iec104Reconnect", 1000));
+    settings->set("disconnectTimeout", Settings::get("iec104DisconnectTimeout", 5000));
+    settings->set("t0", Settings::get("iec104T0", 30));
+    settings->set("t1", Settings::get("iec104T1", 15));
+    settings->set("t2", Settings::get("iec104T2", 10));
+    settings->set("t3", Settings::get("iec104T3", 20));
+    settings->set("k", Settings::get("iec104K", 12));
+    settings->set("w", Settings::get("iec104W", 8));
     apply(settings);
 
     if (!settings->isValid())

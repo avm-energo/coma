@@ -21,6 +21,7 @@ ConnectionManager::ConnectionManager(QObject *parent)
     , m_reconnectMode(ReconnectMode::Loud)
     , m_isReconnectOccurred(false)
     , m_isInitial(true)
+    , m_isInterfaceReconnecting(false)
     , m_timeoutCounter(0)
     , m_timeoutMax(5)
     , m_errorCounter(0)
@@ -70,7 +71,7 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectionSettings &c
                 connect(this, &ConnectionManager::usbSettingsChanged, executor, &DefaultQueryExecutor::settingsChanged,
                     Qt::QueuedConnection);
                 m_currentConnection->setInterfaceType(IfaceType::USB);
-                m_context.init(interface, executor, Strategy::Sync, Qt::DirectConnection);
+                m_context.init(interface, executor, Strategy::Sync, Qt::QueuedConnection);
             },
             [this](SerialSettings *settings)
             {
@@ -154,6 +155,7 @@ void ConnectionManager::reconnect()
     else
         m_silentTimer->start();
     m_isReconnectOccurred = true;
+    m_isInterfaceReconnecting = true;
 }
 
 void ConnectionManager::breakConnection()
@@ -163,6 +165,7 @@ void ConnectionManager::breakConnection()
     m_currentConnection = nullptr;
     m_isInitial = true;
     m_isReconnectOccurred = false;
+    m_isInterfaceReconnecting = false;
     m_reconnectMode = ReconnectMode::Loud;
     m_errorCounter = 0;
     m_timeoutCounter = 0;
@@ -175,7 +178,7 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
     case InterfaceError::ReadError:
     case InterfaceError::WriteError:
         ++m_errorCounter;
-        if (m_errorCounter > m_errorMax)
+        if (m_errorCounter > m_errorMax && !m_isInterfaceReconnecting)
             reconnect();
         break;
     case InterfaceError::OpenError:
@@ -192,7 +195,7 @@ void ConnectionManager::handleInterfaceErrors(const InterfaceError error)
 void ConnectionManager::handleQueryExecutorTimeout()
 {
     ++m_timeoutCounter;
-    if (m_timeoutCounter > m_timeoutMax)
+    if (m_timeoutCounter > m_timeoutMax && !m_isInterfaceReconnecting)
         reconnect();
 }
 
@@ -228,6 +231,7 @@ void ConnectionManager::interfaceReconnected()
     // доставлен уже после разрыва соединения и сброса контекста
     if (m_currentConnection == nullptr || !m_context.isValid())
         return;
+    m_isInterfaceReconnecting = false;
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
     m_currentConnection->getQueue().activate();
     m_currentConnection->reqBSI();

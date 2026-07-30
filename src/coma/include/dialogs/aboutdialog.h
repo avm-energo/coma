@@ -4,7 +4,7 @@
 
 namespace AboutText
 {
-constexpr auto department = "ООО \"АВМ-Энерго\", 2016-2025";
+constexpr auto department = "ООО \"АВМ-Энерго\", 2016-2026";
 constexpr auto modules = "Modules used:";
 constexpr auto libzlib = "ZLib, version 1.4.1.1 (https://github.com/madler/zlib)";
 constexpr auto libzip = "LibZIP, version 1.11.4 (https://github.com/nih-at/libzip/)";
@@ -12,6 +12,7 @@ constexpr auto hidapi = "HIDAPI library, version 0.10.1 (https://github.com/libu
 constexpr auto qxlsx = "QXlsx library, version 1.4.4 (https://qtexcel.github.io/QXlsx/)";
 constexpr auto limereport = "LimeReport library, version 1.6.8 (https://limereport.ru/)";
 constexpr auto qcustomplot = "QCustomPlot library, version 2.1.1 (https://www.qcustomplot.com/)";
+constexpr auto better_enums = "Better enums header, version 0.11.3 (https://github.com/aantron/better-enums)";
 constexpr auto icons = "Icons are based on the iconset by 0melapics / Freepik";
 constexpr auto fonts = "Font used: FlorenceSans by ShyFoundry (https://shyfoundry.com/home)";
 }
@@ -28,6 +29,7 @@ public:
 private:
     QStringList m_lines { //
         AboutText::department, AboutText::modules, AboutText::libzlib, AboutText::libzip, AboutText::hidapi,
-        AboutText::qxlsx, AboutText::limereport, AboutText::qcustomplot, AboutText::icons, AboutText::fonts
+        AboutText::qxlsx, AboutText::limereport, AboutText::qcustomplot, AboutText::better_enums, AboutText::icons,
+        AboutText::fonts
     };
 };

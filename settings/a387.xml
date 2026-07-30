@@ -2305,5 +2305,9 @@
                 <type>Float</type>
             </signal>
         </signals>
+        <includes desc="">
+            <include src="bsi.xml"/>
+            <include src="bsi-ext-base.xml"/>
+        </includes>
     </resources>
 </module>

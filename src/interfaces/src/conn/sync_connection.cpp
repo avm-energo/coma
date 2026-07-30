@@ -1,12 +1,14 @@
 #include "interfaces/conn/sync_connection.h"
 
 #include "device/bsi.h"
+#include <interfaces/conn/async_connection.h>
 #include <libavm-gen/std_ext.h>
 #include <libavm-gen/stdfunc.h>
-#include <interfaces/conn/async_connection.h>
 
 #include <QCoreApplication>
 #include <QDebug>
+
+constexpr int connTimeout = 3000;
 
 namespace Interface
 {
@@ -18,10 +20,20 @@ SyncConnection::SyncConnection(AsyncConnection *connection) noexcept : QObject(c
 
 void SyncConnection::eventLoop() noexcept
 {
-    while (m_busy)
+    QTimer tmr;
+    tmr.setSingleShot(true);
+    tmr.setInterval(connTimeout);
+    connect(&tmr, &QTimer::timeout, this, &SyncConnection::timeout);
+    tmr.start();
+    while (m_busy && !StdFunc::IsCancelled())
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
         StdFunc::Wait();
+    }
+    if (m_busy && StdFunc::IsCancelled())
+    {
+        m_busy = false;
+        m_responseResult = Error::Msg::Cancelled;
     }
 }
 
@@ -99,6 +111,7 @@ Error::Msg SyncConnection::reqBSI()
 Error::Msg SyncConnection::reqBlockSync(
     quint32 blocknum, DataTypes::DataBlockTypes blocktype, void *block, quint32 blocksize)
 {
+    qDebug() << "SyncConn reqBlockSync: block " << blocknum << "Connection pointer is: " << this;
     reset();
     auto conn = m_connection->connection(this, &SyncConnection::resultReady);
     QMap<DataTypes::DataBlockTypes, Commands> blockmap;

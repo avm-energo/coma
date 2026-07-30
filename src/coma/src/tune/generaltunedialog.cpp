@@ -7,12 +7,14 @@
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/filefunc.h>
 #include <libavm-widgets/hexpbfunc.h>
+#include <libavm-widgets/wdfunc.h>
 
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QPainter>
 #include <QPushButton>
 #include <QSvgRenderer>
+#include <coma.h>
 
 GeneralTuneDialog::GeneralTuneDialog(Device::CurrentDevice *device, QWidget *parent)
     : UDialog(device, parent)
@@ -35,8 +37,19 @@ void GeneralTuneDialog::SetupUI(bool noReport)
     {
         QString tns = "tn" + QString::number(count++);
         lyout->addWidget(HexPBFunc::New(
-            this, "tn" + QString::number(m_tuneStartStep++), [&d]() { d.dialog->show(); }, ":/tunes/" + tns + ".svg",
-            d.caption));
+            this, "tn" + QString::number(m_tuneStartStep++),
+            [&d]()
+            {
+                if (d.dialog == nullptr)
+                {
+                    d.dialog = d.factory();
+                    d.dialog->setTuneStep(d.step);
+                }
+                auto *mainWindow = qobject_cast<Coma *>(WDFunc::getMainWindow());
+                if (mainWindow != nullptr)
+                    mainWindow->showTuneWidget(d.dialog);
+            },
+            ":/tunes/" + tns + ".svg", d.caption));
     }
     if (!noReport)
     {
@@ -60,11 +73,10 @@ int GeneralTuneDialog::addWidgetToTabWidget(QWidget *w, const QString &caption)
     return m_tuneTabWidget->addTabWidget(w, caption);
 }
 
-void GeneralTuneDialog::addTuneDialog(const TuneDialogStruct &dlgStruct)
+void GeneralTuneDialog::addTuneDialog(const QString &caption, std::function<AbstractTuneDialog *()> factory)
 {
     ++m_tuneStepCount;
-    dlgStruct.dialog->setTuneStep(m_tuneStepCount);
-    m_dialogList += dlgStruct;
+    m_dialogList.append({ caption, std::move(factory), m_tuneStepCount, nullptr });
 }
 
 u8 GeneralTuneDialog::getTuneStepsCount()

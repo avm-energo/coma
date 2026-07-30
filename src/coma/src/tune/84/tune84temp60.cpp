@@ -2,11 +2,11 @@
 
 #include <libavm-gen/colors.h>
 #include <libavm-gen/stdfunc.h>
-#include <tune/tunesequencefile.h>
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/graphfunc.h>
 #include <libavm-widgets/lblfunc.h>
 #include <libavm-widgets/waitwidget.h>
+#include <tune/tunesequencefile.h>
 
 #include <QEventLoop>
 #include <QMessageBox>
@@ -16,8 +16,8 @@ using namespace Interface;
 
 Tune84Temp60::Tune84Temp60(TuneTypes tuneType, Device::CurrentDevice *device, QWidget *parent)
     : AbstractTuneDialog(device, parent)
-    , m_bac(new Bac2A284(this))
-    , m_bdain(new BdaIn(this))
+    , m_bac(new Bac284(this))
+    , m_bdain(new BdaIn84(this))
     , m_bd0(new Bd0(this))
     , m_tuneType(tuneType)
 {

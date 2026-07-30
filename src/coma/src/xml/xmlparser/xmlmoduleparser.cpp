@@ -1,14 +1,13 @@
 #include "xml/xmlparser/xmlmoduleparser.h"
 
+#include <common/appconfig.h>
+#include <ctti/nameof.hpp>
+#include <device/current_device.h>
 #include <libavm-gen/files.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-gen/xml/xmlbase.h>
 #include <libavm-gen/xml/xmlparse.h>
-#include <common/appconfig.h>
-#include <ctti/nameof.hpp>
-#include <device/current_device.h>
-#include <magic_enum/magic_enum.hpp>
 #include <xml/xmltags.h>
 
 #include <QFile>
@@ -358,10 +357,15 @@ void Xml::ModuleParser::parseHiddenTab(const QDomNode &hiddenTabNode)
 
 ViewType::ViewTypes Xml::ModuleParser::parseBsiViewType(const QString &str)
 {
-    auto viewTypeEnumValue = magic_enum::enum_cast<ViewType::ViewTypes>(str.toStdString());
-    if (viewTypeEnumValue.has_value())
-        return viewTypeEnumValue.value();
-    return ViewType::ViewTypes::Unknown;
+    try
+    {
+        ViewType::ViewTypes viewTypeEnumValue = ViewType::ViewTypes::_from_string(str.toStdString().c_str());
+        return viewTypeEnumValue;
+    }
+    catch (std::runtime_error &e)
+    {
+        return ViewType::ViewTypes::Unknown;
+    }
 }
 
 void Xml::ModuleParser::parseBsiExtRecord(const QDomNode &recordNode)
@@ -375,7 +379,7 @@ void Xml::ModuleParser::parseBsiExtRecord(const QDomNode &recordNode)
     if (desc == STRINF)
         desc.clear();
     const auto viewType = parseBsiViewType(reprStr);
-    if (viewType == ViewType::ViewTypes::Unknown)
+    if (viewType == +ViewType::ViewTypes::Unknown)
     {
         qWarning() << "BSI Ext: неизвестное представление" << reprStr << "для записи" << name;
         return;
@@ -401,7 +405,7 @@ void Xml::ModuleParser::parseBsiRecord(const QDomNode &recordNode)
     if (desc == STRINF)
         desc.clear();
     const auto viewType = parseBsiViewType(reprStr);
-    if (viewType == ViewType::ViewTypes::Unknown)
+    if (viewType == +ViewType::ViewTypes::Unknown)
     {
         qWarning() << "BSI: неизвестное представление" << reprStr << "для записи" << name;
         return;

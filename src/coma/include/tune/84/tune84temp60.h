@@ -1,8 +1,8 @@
 #pragma once
 
+#include <datablocks/84/bac2.h>
+#include <datablocks/84/bdain.h>
 #include <datablocks/bd0.h>
-#include <datablocks/kiv/bac2.h>
-#include <datablocks/kiv/bdain.h>
 #include <tune/abstracttunedialog.h>
 #include <tune/tunetypes.h>
 
@@ -29,8 +29,8 @@ private:
         float *parameter;
     };
 
-    Bac2A284 *m_bac;
-    BdaIn *m_bdain;
+    Bac284 *m_bac;
+    BdaIn84 *m_bdain;
     Bd0 *m_bd0;
     MidTuneStruct m_midTuneStruct;
     TuneTypes m_tuneType;

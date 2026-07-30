@@ -70,8 +70,11 @@ void UsbHidPort::disconnect()
     if (m_hidDevice)
     {
         hid_close(m_hidDevice);
+        // нужно время, чтобы ОС реально закрыло дескриптор
         m_hidDevice = nullptr;
     }
+
+    emit disconnected();
 }
 
 QByteArray UsbHidPort::read(bool &status)

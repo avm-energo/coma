@@ -28,8 +28,8 @@ private:
     QPointer<BaseInterface> m_iface;
     QPointer<DefaultQueryExecutor> m_executor;
     Strategy m_strategy;
-    QThread *m_parcerThreads { nullptr };
-    QThreadPool *m_threadPool { nullptr };
+    QPointer<QThread> m_parcerThreads;
+    QThreadPool *m_threadPool;
 
 public:
     explicit ConnectionContext() noexcept;
