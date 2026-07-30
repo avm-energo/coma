@@ -1,6 +1,7 @@
 #include "tune/kiv/tunekivadc.h"
 
 #include <libavm-gen/colors.h>
+#include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/graphfunc.h>
@@ -126,6 +127,7 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     showRetomDialog(coef);
     if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
+    showWWFor(3);
     showTWTab(m_BdainWidgetIndex);
     emit setProgressSize(m_tuneRequestCount);
     for (int i = 0; i < 6; ++i)
@@ -269,6 +271,10 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
     w->setLayout(hlyout);
     if (!EMessageBox::next(this, w))
         CancelTune();
+    if (m_tuneType == ADCU)
+    {
+        showWWFor(10);
+    }
     return Error::Msg::NoError;
 }
 
@@ -365,6 +371,23 @@ Error::Msg TuneKIVADC::showEnergomonitorInputDialog()
     connect(popup, &EEditablePopup::cancelled, [] { return Error::GeneralError; });
     popup->execPopup();
     return Error::Msg::NoError;
+}
+
+void TuneKIVADC::showWWFor(quint32 sec)
+{
+    // WaitWidget *ww = new WaitWidget(Settings::configDir() + "images/02-catbeat.gif");
+    WaitWidget *ww = new WaitWidget();
+    ww->setObjectName("ww");
+    WaitWidget::ww_struct wws = { true, false, WaitWidget::WW_TIME,
+        sec };                    // isallowedtostop = true, isIncrement = false, format: mm:ss, 30 minutes
+    ww->init(wws);
+    ww->setMessage("Пожалуйста, подождите");
+    StdFunc::SetCancelDisabled(); // to prevent cancellation of the main algorythm while breaking waiting
+    QEventLoop loop;
+    connect(ww, &WaitWidget::finished, &loop, &QEventLoop::quit);
+    ww->start();
+    loop.exec();
+    StdFunc::SetCancelEnabled();
 }
 
 void TuneKIVADC::CalcTuneCoefs()
