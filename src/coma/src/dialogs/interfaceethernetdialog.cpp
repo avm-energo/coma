@@ -26,6 +26,7 @@
 InterfaceEthernetDialog::InterfaceEthernetDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
     setWindowTitle("Ethernet соединения");
+    setMinimumSize(QSize(400, 350));
 }
 
 InterfaceEthernetDialog::~InterfaceEthernetDialog() noexcept { }
@@ -91,8 +92,11 @@ void InterfaceEthernetDialog::addInterface()
 
     auto dialog = new QDialog(this);
     QVBoxLayout *mainLayout = new QVBoxLayout;
+
     dialog->setObjectName("ethCreateDialog");
     dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setWindowFlag(Qt::FramelessWindowHint);
+
     QHBoxLayout *hlayout = new QHBoxLayout;
     QLabel *lbl = new QLabel(tr("Имя:"), dialog);
     hlayout->addWidget(lbl);
@@ -141,6 +145,7 @@ void InterfaceEthernetDialog::addInterface()
     mainLayout->addLayout(hlayout);
     dialog->setLayout(mainLayout);
     dialog->adjustSize();
+    dialog->setSizeGripEnabled(false);
     dialog->exec();
 }
 

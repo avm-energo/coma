@@ -22,6 +22,7 @@
 InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
     setWindowTitle("RS485 соединения");
+    setMinimumSize(QSize(500, 500));
 }
 
 InterfaceSerialDialog::~InterfaceSerialDialog() noexcept { }
@@ -128,6 +129,7 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
     auto dialog = new QDialog(this);
     dialog->setObjectName("rsCreateDialog");
     dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setWindowFlag(Qt::FramelessWindowHint);
 
     auto layout = new QGridLayout;
     int count = 0;
@@ -203,6 +205,7 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
     layout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
     dialog->setLayout(layout);
     dialog->adjustSize();
+    dialog->setSizeGripEnabled(false);
     dialog->exec();
 }
 
@@ -223,6 +226,7 @@ void InterfaceSerialDialog::addInterface()
     auto dialog = new QDialog(this);
     dialog->setObjectName("rsCreateDialog");
     dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setWindowFlag(Qt::FramelessWindowHint);
 
     auto layout = new QGridLayout;
     int count = 0;
@@ -255,6 +259,7 @@ void InterfaceSerialDialog::addInterface()
 
     dialog->setLayout(layout);
     dialog->adjustSize();
+    dialog->setSizeGripEnabled(false);
     dialog->exec();
 }
 

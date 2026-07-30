@@ -25,6 +25,7 @@ SearchModbusDevicesDialog::SearchModbusDevicesDialog(InterfaceSerialDialog *targ
     m_data.stopBits.reserve(2);
     setObjectName("rsSearchDevicesDialog");
     setAttribute(Qt::WA_DeleteOnClose);
+    setWindowFlag(Qt::FramelessWindowHint);
     setWindowTitle("Поиск устройств");
     setupUI();
 }
@@ -207,6 +208,7 @@ void SearchModbusDevicesDialog::setupUI()
     mainLayout->addLayout(createControlLayout());
     setLayout(mainLayout);
     adjustSize();
+    setSizeGripEnabled(false);
 }
 
 void SearchModbusDevicesDialog::getData()

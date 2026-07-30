@@ -19,7 +19,8 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent), m_idialog(nullp
 #ifdef ENABLE_EMULATOR
     intersl.push_back("Emulator");
 #endif
-    setMinimumWidth(150);
+    setFixedSize(QSize(200, 150));
+    setWindowFlag(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_DeleteOnClose);
     settings.beginGroup("settings");
 
@@ -40,7 +41,6 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent), m_idialog(nullp
     connect(nextButton, &QAbstractButton::clicked, this, &QDialog::close);
     hlyout->addWidget(nextButton);
     layout->addLayout(hlyout);
-    setWindowTitle("Выбор соединения");
     setLayout(layout);
 }
 

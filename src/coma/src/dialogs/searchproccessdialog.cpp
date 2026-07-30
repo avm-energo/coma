@@ -1,11 +1,12 @@
 #include "dialogs/searchproccessdialog.h"
 
 #include "const.h"
-#include "interfaces/utils/utils.h"
 #include "dialogs/interfaceserialdialog.h"
+#include "interfaces/utils/utils.h"
 #include <libavm-gen/stdfunc.h>
 #include <libavm-gen/utils/crc16.h>
 #include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/pbfunc.h>
 #include <libavm-widgets/tvfunc.h>
 
 #include <QCoreApplication>
@@ -41,6 +42,7 @@ SearchProccessDialog::SearchProccessDialog(
     setObjectName("rsSearchProccessDialog");
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_ShowModal);
+    setWindowFlag(Qt::FramelessWindowHint);
     setWindowTitle("Поиск устройств");
     setupUI();
 }
@@ -73,9 +75,13 @@ void SearchProccessDialog::setupUI()
                 EMessageBox::information(this, "Поиск остановлен!");
             }
         });
+
+    auto closeButton = PBFunc::New(this, "closeButton", "Отмена", this, [this] { close(); });
+
     mainLayout->addWidget(stopButton);
+    mainLayout->addWidget(closeButton);
     setLayout(mainLayout);
-    setMinimumSize(700, 600);
+    setFixedSize(700, 600);
 }
 
 void SearchProccessDialog::errorHandler(const QSerialPort::SerialPortError error)
