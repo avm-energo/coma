@@ -20,7 +20,7 @@ bool Ethernet::connect()
 {
     m_socket->connectToHost(
         m_settings->get("ip"), m_settings->get("port"), QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
-    if (m_socket->waitForConnected(m_settings->get<u16>("t0") * 1000))
+    if (m_socket->waitForConnected(m_settings->get<int>("connectTimeout")))
     {
         if (getState() != Interface::State::Disconnect)
         {
@@ -29,6 +29,12 @@ bool Ethernet::connect()
             emit started();
             return true;
         }
+    }
+    else if (m_socket->error() == QAbstractSocket::SocketTimeoutError)
+    {
+        // handleSocketError игнорирует SocketTimeoutError, но здесь это реальная неудача подключения
+        m_log.writeLog(Logger::Critical, "Connect timeout");
+        emit error(InterfaceError::OpenError);
     }
     return false;
 }
