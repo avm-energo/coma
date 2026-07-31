@@ -63,7 +63,6 @@ private:
     QWidget *BdWidget();
     bool checkBdaIn(int current);
     Error::Msg showEnergomonitorInputDialog();
-    void showWWFor(quint32 sec);
 
 private slots:
     void CalcTuneCoefs();

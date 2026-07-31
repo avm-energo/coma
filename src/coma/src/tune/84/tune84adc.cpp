@@ -126,6 +126,7 @@ Error::Msg Tune84ADC::ADCCoef(int coef)
     showRetomDialog(coef);
     if (StdFunc::IsCancelled())
         return Error::Msg::Cancelled;
+    WaitWidget::showWWFor(3);
     showTWTab(m_BdainWidgetIndex);
     emit setProgressSize(m_tuneRequestCount);
     for (int i = 0; i < 6; ++i)
@@ -306,7 +307,7 @@ Error::Msg Tune84ADC::showRetomDialog(int coef)
     if (!EMessageBox::next(this, w))
         CancelTune();
     if (m_tuneType == ADCU)
-        StdFunc::Wait(1000);
+        WaitWidget::showWWFor(10);
     return Error::Msg::NoError;
 }
 
