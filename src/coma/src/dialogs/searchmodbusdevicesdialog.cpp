@@ -2,6 +2,7 @@
 #include "const.h"
 #include "interfaces/utils/utils.h"
 
+#include <dialogs/interfaceserialdialog.h>
 #include <libavm-widgets/cbfunc.h>
 #include <libavm-widgets/chbfunc.h>
 #include <libavm-widgets/emessagebox.h>
@@ -13,20 +14,17 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QSerialPortInfo>
+#include <QStackedWidget>
 #include <QVBoxLayout>
 
-SearchModbusDevicesDialog::SearchModbusDevicesDialog(InterfaceSerialDialog *targetDialog,
-    QWidget *parent) :
-    QDialog(parent)
+SearchModbusDevicesDialog::SearchModbusDevicesDialog(InterfaceSerialDialog *targetDialog, QWidget *parent)
+    : QWidget(parent)
     , m_targetDialog(targetDialog)
 {
     m_data.bauds.reserve(m_widgets.baud.size());
     m_data.parities.reserve(3);
     m_data.stopBits.reserve(2);
     setObjectName("rsSearchDevicesDialog");
-    setAttribute(Qt::WA_DeleteOnClose);
-    setWindowFlag(Qt::FramelessWindowHint);
-    setWindowTitle("Поиск устройств");
     setupUI();
 }
 
@@ -181,18 +179,16 @@ QHBoxLayout *SearchModbusDevicesDialog::createControlLayout()
     auto controlLayout = new QHBoxLayout;
     auto runSearchButton = PBFunc::New(this, "runSearchButton", //
         "Поиск", this, [this] { runSearch(); });
-    auto cancelButton = PBFunc::New(this, "cancelButton",       //
-        "Отмена", this, [this] { close(); });
 
     controlLayout->addWidget(runSearchButton);
-    controlLayout->addWidget(cancelButton);
 
     return controlLayout;
 }
 
 void SearchModbusDevicesDialog::setupUI()
 {
-    auto mainLayout = new QVBoxLayout;
+    m_paramsWidget = new QWidget(this);
+    auto mainLayout = new QVBoxLayout(m_paramsWidget);
     auto firstRow = new QHBoxLayout;
 
     firstRow->addWidget(createComGroupBox());
@@ -206,9 +202,13 @@ void SearchModbusDevicesDialog::setupUI()
     mainLayout->addLayout(firstRow);
     mainLayout->addLayout(secondRow);
     mainLayout->addLayout(createControlLayout());
-    setLayout(mainLayout);
-    adjustSize();
-    setSizeGripEnabled(false);
+
+    m_stack = new QStackedWidget(this);
+    m_stack->addWidget(m_paramsWidget);
+
+    auto outerLayout = new QVBoxLayout(this);
+    outerLayout->setContentsMargins(0, 0, 0, 0);
+    outerLayout->addWidget(m_stack);
 }
 
 void SearchModbusDevicesDialog::getData()
@@ -270,11 +270,38 @@ bool SearchModbusDevicesDialog::validate()
 void SearchModbusDevicesDialog::runSearch()
 {
     getData();
-    if (validate())
+    if (!validate())
+        return;
+
+    auto *proccessDlg = new SearchProccessDialog(m_data, m_targetDialog, nullptr);
+    m_stack->addWidget(proccessDlg);
+    m_stack->setCurrentWidget(proccessDlg);
+
+    auto backToParams = [this, proccessDlg]
     {
-        auto proccessDlg = new SearchProccessDialog(m_data, m_targetDialog, this);
-        connect(proccessDlg, &SearchProccessDialog::deviceAddedSuccessfully, this, [this]() { close(); });
-        proccessDlg->show();
-        proccessDlg->search();
-    }
+        m_stack->setCurrentWidget(m_paramsWidget);
+        proccessDlg->deleteLater();
+    };
+
+    // Срабатывает, только если "Отмена" нажали уже после того, как поиск сам остановился —
+    // тогда это безопасно сделать сразу же, из обработчика клика.
+    connect(proccessDlg, &SearchProccessDialog::cancelled, this, backToParams);
+
+    // На время search() помечаем целевой диалог как занятый, чтобы Coma::showCentralWidget()
+    // не заменила/удалила его переключением на другое подключение — это разрушило бы виджет,
+    // внутри которого прямо сейчас крутится собственный цикл событий search().
+    if (m_targetDialog)
+        m_targetDialog->setBusy(true);
+
+    // search() блокирует выполнение (сама крутит цикл событий) и не возвращает
+    // управление, пока поиск не остановится — трогать proccessDlg до этого момента нельзя
+    proccessDlg->search();
+
+    if (m_targetDialog)
+        m_targetDialog->setBusy(false);
+
+    // Если "Отмена" нажали, пока поиск ещё шёл, cancelled() выше не сработал синхронно —
+    // реагируем на это здесь, теперь когда search() точно вернула управление.
+    if (proccessDlg->wasCancelled())
+        backToParams();
 }

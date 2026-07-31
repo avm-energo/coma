@@ -2,10 +2,10 @@
 
 #include <dialogs/abstractinterfacedialog.h>
 
-#include <QDialog>
+#include <QMenu>
 #include <QSettings>
 
-class ConnectDialog final : public QDialog
+class ConnectDialog final : public QMenu
 {
     Q_OBJECT
 public:
@@ -15,7 +15,7 @@ signals:
     void accepted(const ConnectionSettings &st);
 
 private slots:
-    void setInterface();
+    void setInterface(const QString &connectionType);
 
 private:
     AbstractInterfaceDialog *m_idialog;

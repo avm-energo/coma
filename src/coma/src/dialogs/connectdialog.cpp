@@ -5,84 +5,83 @@
 #include <dialogs/interfaceserialdialog.h>
 #include <dialogs/interfaceusbdialog.h>
 #include <libavm-gen/error.h>
-#include <libavm-widgets/cbfunc.h>
-#include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/wdfunc.h>
 
-#include <QCoreApplication>
-#include <QDebug>
-#include <QPushButton>
-#include <QVBoxLayout>
+#include <QAction>
+#include <coma.h>
 
-ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent), m_idialog(nullptr)
+ConnectDialog::ConnectDialog(QWidget *parent) : QMenu(parent), m_idialog(nullptr)
 {
+    settings.beginGroup("settings");
+
     QStringList intersl { "USB", "RS485", "Ethernet" };
 #ifdef ENABLE_EMULATOR
     intersl.push_back("Emulator");
 #endif
-    setFixedSize(QSize(200, 150));
-    setWindowFlag(Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_DeleteOnClose);
-    settings.beginGroup("settings");
 
-    auto layout = new QVBoxLayout;
-    layout->addWidget(LBLFunc::New(this, "Выберите интерфейс связи"));
-    auto intercb = CBFunc::New(this, "intercb", intersl);
-    if (settings.contains("LastConnectionType"))
-    {
-        auto lastConnectionType = settings.value("LastConnectionType").toString();
-        intercb->setCurrentIndex(intersl.indexOf(lastConnectionType));
-    }
-    layout->addWidget(intercb);
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    auto nextButton = new QPushButton("Далее");
-    connect(nextButton, &QPushButton::clicked, this, &ConnectDialog::setInterface);
-    hlyout->addWidget(nextButton);
-    nextButton = new QPushButton("Отмена");
-    connect(nextButton, &QAbstractButton::clicked, this, &QDialog::close);
-    hlyout->addWidget(nextButton);
-    layout->addLayout(hlyout);
-    setLayout(layout);
+    for (const auto &connectionType : intersl)
+        connect(addAction(connectionType), &QAction::triggered, this, //
+            [this, connectionType] { setInterface(connectionType); });
 }
 
-void ConnectDialog::setInterface()
+void ConnectDialog::setInterface(const QString &connectionType)
 {
-    auto comboBox = this->findChild<QComboBox *>();
-    if (comboBox)
-    {
-        auto connectionType = comboBox->currentText();
-        settings.setValue("LastConnectionType", connectionType);
-        if (connectionType == "USB")
-            m_idialog = new InterfaceUSBDialog(this);
-        else if (connectionType == "RS485")
-            m_idialog = new InterfaceSerialDialog(this);
-        else if (connectionType == "Ethernet")
-            m_idialog = new InterfaceEthernetDialog(this);
-#ifdef ENABLE_EMULATOR
-        else if (connectionType == "Emulator")
-            m_idialog = new InterfaceEmuDialog(this);
-#endif
-        else
-            m_idialog = nullptr;
-    }
+    settings.setValue("LastConnectionType", connectionType);
 
-    if (!m_idialog)
+    auto *mainWindow = qobject_cast<Coma *>(WDFunc::getMainWindow());
+    if (mainWindow == nullptr)
         return;
 
-    connect(m_idialog, &AbstractInterfaceDialog::accepted, this, &ConnectDialog::accepted);
-    // closing dialogs after selecting device
-    connect(m_idialog, &AbstractInterfaceDialog::accepted, this, //
-        [this](const ConnectionSettings &)
-        {
-            m_idialog->close();
-            close();
-        });
+    // USB/RS485/Ethernet встраиваются прямо в главное окно вместо отдельного модального окна
+    AbstractInterfaceDialog *embedded = nullptr;
+    if (connectionType == "USB")
+        embedded = new InterfaceUSBDialog(nullptr);
+    else if (connectionType == "RS485")
+        embedded = new InterfaceSerialDialog(nullptr);
+    else if (connectionType == "Ethernet")
+        embedded = new InterfaceEthernetDialog(nullptr);
 
-    m_idialog->setupUI();
-    if (m_idialog->updateModel())
+    if (embedded == nullptr)
+        return;
+
+    embedded->setupUI();
+    if (!embedded->updateModel())
     {
-        m_idialog->adjustSize();
-        m_idialog->exec();
+        embedded->deleteLater();
+        return;
     }
-    else
-        m_idialog->deleteLater();
+
+    connect(embedded, &AbstractInterfaceDialog::accepted, mainWindow, &Coma::initConnection);
+    connect(embedded, &AbstractInterfaceDialog::accepted, embedded, //
+        [embedded](const ConnectionSettings &) { embedded->close(); });
+
+    // showCentralWidget() сама подписывается на destroyed(), чтобы вернуть index 0
+    mainWindow->showCentralWidget(embedded);
+    return;
+
+    // Эмулятор не работает?
+
+    // #ifdef ENABLE_EMULATOR
+    //     if (connectionType == "Emulator")
+    //         m_idialog = new InterfaceEmuDialog(this);
+    //     else
+    //         m_idialog = nullptr;
+    // #endif
+
+    //     if (!m_idialog)
+    //         return;
+
+    //     connect(m_idialog, &AbstractInterfaceDialog::accepted, this, &ConnectDialog::accepted);
+    //     // closing dialog after selecting device
+    //     connect(m_idialog, &AbstractInterfaceDialog::accepted, this, //
+    //         [this](const ConnectionSettings &) { m_idialog->close(); });
+
+    //     m_idialog->setupUI();
+    //     if (m_idialog->updateModel())
+    //     {
+    //         m_idialog->adjustSize();
+    //         m_idialog->exec();
+    //     }
+    //     else
+    //         m_idialog->deleteLater();
 }

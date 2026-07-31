@@ -40,10 +40,9 @@ SearchProccessDialog::SearchProccessDialog(
     m_timeoutTimer->setInterval(m_params.timeout);
     QObject::connect(m_timeoutTimer, &QTimer::timeout, this, [this] { m_timeout = true; });
     setObjectName("rsSearchProccessDialog");
-    setAttribute(Qt::WA_DeleteOnClose);
-    setAttribute(Qt::WA_ShowModal);
-    setWindowFlag(Qt::FramelessWindowHint);
-    setWindowTitle("Поиск устройств");
+    // search() блокирует поток и сама крутит цикл событий — без этого закрытие приложения
+    // (крестик окна) не завершится, пока поиск не дойдёт до конца сам по себе.
+    QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, [this] { m_stop = true; });
     setupUI();
 }
 
@@ -76,12 +75,19 @@ void SearchProccessDialog::setupUI()
             }
         });
 
-    auto closeButton = PBFunc::New(this, "closeButton", "Отмена", this, [this] { close(); });
+    auto cancelButton = PBFunc::New(this, "cancelButton", "Назад", this,
+        [this]
+        {
+            bool wasAlreadyStopped = m_stop;
+            m_stop = true;
+            m_cancelled = true;
+            if (wasAlreadyStopped)
+                emit cancelled();
+        });
 
     mainLayout->addWidget(stopButton);
-    mainLayout->addWidget(closeButton);
+    mainLayout->addWidget(cancelButton);
     setLayout(mainLayout);
-    setFixedSize(700, 600);
 }
 
 void SearchProccessDialog::errorHandler(const QSerialPort::SerialPortError error)
@@ -332,6 +338,7 @@ void SearchProccessDialog::search()
                     // При неожиданной ошибке порта закрываем соединение
                     if (m_portError)
                     {
+                        m_stop = true;
                         searchFinish(port);
                         EMessageBox::error(this, "Произошла ошибка COM-порта!");
                         return;
@@ -348,21 +355,6 @@ void SearchProccessDialog::search()
     m_stop = true;
     port->deleteLater();
     EMessageBox::information(this, "Сканирование завершено!");
-}
-
-void SearchProccessDialog::done(int r)
-{
-    // Если поиск не закончился
-    if (!m_stop)
-    {
-        m_stop = true;
-        auto closeTimer = new QTimer(this);
-        closeTimer->setSingleShot(true);
-        QObject::connect(closeTimer, &QTimer::timeout, this, [this, r](const auto) { QDialog::done(r); });
-        closeTimer->start(m_params.timeout);
-    }
-    else
-        QDialog::done(r);
 }
 
 void SearchProccessDialog::showContextMenu(const QPoint &pos)
@@ -424,5 +416,4 @@ void SearchProccessDialog::addToRS485TableView(const QModelIndex &sourceIndex)
     EMessageBox::information(this, "Устройство успешно добавлено!");
 
     emit deviceAddedSuccessfully();
-    close();
 }

@@ -545,7 +545,7 @@ void AbstractTuneDialog::finishTuneWidget()
     emit Finished();
     auto *mainWindow = qobject_cast<Coma *>(WDFunc::getMainWindow());
     if (mainWindow != nullptr)
-        mainWindow->hideTuneWidget();
+        mainWindow->hideCentralWidget();
 }
 
 // ##################### PROTECTED ####################

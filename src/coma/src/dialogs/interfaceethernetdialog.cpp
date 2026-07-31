@@ -23,36 +23,39 @@
 #include <QVBoxLayout>
 #include <qsizegrip.h>
 
+constexpr const int defaultPort = 2404;
+constexpr const int defaultBSAdress = 205;
+
 InterfaceEthernetDialog::InterfaceEthernetDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
-    setWindowTitle("Ethernet соединения");
-    setMinimumSize(QSize(400, 350));
 }
 
 InterfaceEthernetDialog::~InterfaceEthernetDialog() noexcept { }
 
 void InterfaceEthernetDialog::setupUI()
 {
-    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *mainLayout = new QHBoxLayout;
+    QVBoxLayout *tableButtonLayout = new QVBoxLayout;
+    QVBoxLayout *addScanLayout = new QVBoxLayout;
+
     m_tableView = TVFunc::New(this, "", nullptr);
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    lyout->addWidget(m_tableView);
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(PBFunc::New(this, "", tr("Добавить"), this, &InterfaceEthernetDialog::addInterface));
-    hlyout->addWidget(PBFunc::New(this, "", tr("Сканировать"), this, &InterfaceEthernetDialog::scanInterface));
-    hlyout->addWidget(PBFunc::New(this, "", tr("Удалить"), this,
-        [this]
-        {
-            auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
-            Settings::pushGroup("Ethernet");
-            Settings::remove(name);
-            Settings::popGroup();
-            updateModel();
-        }));
-    lyout->addLayout(hlyout);
-    setLayout(lyout);
+    tableButtonLayout->addWidget(m_tableView);
+
+    QPushButton *cancelButton = PBFunc::New(this, "", "Назад", this, &QDialog::close);
+    tableButtonLayout->addWidget(cancelButton);
+
+    mainLayout->addLayout(tableButtonLayout);
+
+    setupAddWidget();
+    addScanLayout->addWidget(m_addWidget);
+
+    mainLayout->addLayout(addScanLayout);
+
+    setLayout(mainLayout);
+
     connect(m_tableView, &QTableView::doubleClicked, this, &InterfaceEthernetDialog::setInterface);
-    AbstractInterfaceDialog::setupUI();
+    // connect del
 }
 
 void InterfaceEthernetDialog::setInterface(QModelIndex index)
@@ -82,72 +85,7 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
     emit accepted(st);
 }
 
-void InterfaceEthernetDialog::addInterface()
-{
-    if (checkSize())
-    {
-        EMessageBox::warning(this, "Превышен лимит соединений!");
-        return;
-    }
-
-    auto dialog = new QDialog(this);
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-
-    dialog->setObjectName("ethCreateDialog");
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->setWindowFlag(Qt::FramelessWindowHint);
-
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    QLabel *lbl = new QLabel(tr("Имя:"), dialog);
-    hlayout->addWidget(lbl);
-    QLineEdit *le = new QLineEdit(dialog);
-    le->setObjectName("namele");
-    hlayout->addWidget(le);
-    mainLayout->addLayout(hlayout);
-    hlayout = new QHBoxLayout;
-    lbl = new QLabel("IP:", dialog);
-    hlayout->addWidget(lbl);
-    for (int i = 0; i < 4; ++i)
-    {
-        auto ipCell = SPBFunc::New(dialog, QString("iple_%1").arg(i), 0, 255, 0);
-        hlayout->addWidget(ipCell);
-        if (i != 3)
-        {
-            lbl = new QLabel(".", this);
-            hlayout->addWidget(lbl);
-        }
-    }
-    mainLayout->addLayout(hlayout);
-    constexpr auto u16min = std::numeric_limits<quint16>::min();
-    constexpr auto u16max = std::numeric_limits<quint16>::max();
-
-    hlayout = new QHBoxLayout;
-    lbl = new QLabel(tr("Порт:"), dialog);
-    hlayout->addWidget(lbl);
-    auto portspb = SPBFunc::New(dialog, "portspb", u16min, u16max, 0);
-    /// TODO: Значение 2404 должно быть настраиваемым значением
-    portspb->setValue(2404);
-    hlayout->addWidget(portspb);
-    mainLayout->addLayout(hlayout);
-
-    hlayout = new QHBoxLayout;
-    lbl = new QLabel(tr("Адрес БС:"), dialog);
-    hlayout->addWidget(lbl);
-    auto bsaddrspb = SPBFunc::New(dialog, "bsaddrspb", u16min, u16max, 0);
-    /// TODO: Значение 205 должно быть настраиваемым значением
-    bsaddrspb->setValue(205);
-    hlayout->addWidget(bsaddrspb);
-    mainLayout->addLayout(hlayout);
-
-    hlayout = new QHBoxLayout;
-    hlayout->addWidget(PBFunc::New(dialog, "", tr("Сохранить"), this, &InterfaceEthernetDialog::acceptedInterface));
-    hlayout->addWidget(PBFunc::New(dialog, "", tr("Отмена"), dialog, [dialog] { dialog->close(); }));
-    mainLayout->addLayout(hlayout);
-    dialog->setLayout(mainLayout);
-    dialog->adjustSize();
-    dialog->setSizeGripEnabled(false);
-    dialog->exec();
-}
+void InterfaceEthernetDialog::addInterface() { }
 
 void InterfaceEthernetDialog::scanInterface()
 {
@@ -200,41 +138,41 @@ void InterfaceEthernetDialog::scanInterface()
 
 void InterfaceEthernetDialog::acceptedInterface()
 {
-    auto dialog = this->findChild<QDialog *>("ethCreateDialog");
-    if (dialog == nullptr)
-        return;
-    QString name = LEFunc::data(dialog, "namele");
-    // check if there's such name in registry
-    Settings::pushGroup("Ethernet");
-    if (Settings::groupExist(name))
+    if (checkSize())
     {
-        EMessageBox::error(this, "Такое имя уже имеется");
-        Settings::popGroup();
+        EMessageBox::warning(this, "Превышен лимит соединений!");
         return;
     }
 
-    QString ipstr =                                                   //
-        QString::number(SPBFunc::data<int>(dialog, "iple_0")) + "." + //
-        QString::number(SPBFunc::data<int>(dialog, "iple_1")) + "." + //
-        QString::number(SPBFunc::data<int>(dialog, "iple_2")) + "." + //
-        QString::number(SPBFunc::data<int>(dialog, "iple_3"));        //
-    auto port = SPBFunc::data<quint16>(dialog, "portspb");
-    auto bsAddress = SPBFunc::data<quint16>(dialog, "bsaddrspb");
+    QString name = LEFunc::data(m_addWidget, "nameConnection");
+
+    Settings::pushGroup("Ethernet");
+
+    QString ipStr = QString("%1.%2.%3.%4")
+                        .arg(QString::number(SPBFunc::data<int>(m_addWidget, "ipCell_0")),
+                            QString::number(SPBFunc::data<int>(m_addWidget, "ipCell_1")),
+                            QString::number(SPBFunc::data<int>(m_addWidget, "ipCell_2")),
+                            QString::number(SPBFunc::data<int>(m_addWidget, "ipCell_3")));
+
+    quint16 port = SPBFunc::data<quint16>(m_addWidget, "port");
+    quint16 bsAddress = SPBFunc::data<quint16>(m_addWidget, "BSAdress");
+
     if (bsAddress == 0)
     {
         EMessageBox::error(this, "Адрес базовой станции не может быть равен нулю");
         Settings::popGroup();
         return;
     }
+
     Settings::pushGroup(name);
-    Settings::set("ipAddress", ipstr);
+    Settings::set("ipAddress", ipStr);
     Settings::set("ipPort", port);
     Settings::set("iec104BsAddress", bsAddress);
     Settings::popGroup();
     Settings::popGroup(); // exit from Ethernet
+
     if (!updateModel())
         qDebug() << Error::GeneralError;
-    dialog->close();
 }
 
 void InterfaceEthernetDialog::handlePing()
@@ -368,5 +306,81 @@ bool InterfaceEthernetDialog::updateModel()
 
     m_tableView->setModel(model);
     m_tableView->resizeColumnsToContents();
+
     return true;
+}
+
+void InterfaceEthernetDialog::deleteInterface()
+{
+    QString name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
+
+    Settings::pushGroup("Ethernet");
+    Settings::remove(name);
+    Settings::popGroup();
+
+    if (!updateModel())
+        qDebug() << Error::GeneralError;
+}
+
+void InterfaceEthernetDialog::setupAddWidget()
+{
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    QHBoxLayout *hLayout = new QHBoxLayout;
+
+    QLabel *nameLabel = new QLabel(tr("Имя:"), m_addWidget);
+    hLayout->addWidget(nameLabel);
+
+    QLineEdit *nameLineEdit = new QLineEdit(m_addWidget);
+    nameLineEdit->setObjectName("nameConnection");
+    hLayout->addWidget(nameLineEdit);
+
+    mainLayout->addLayout(hLayout);
+
+    hLayout = new QHBoxLayout;
+    QLabel *ipLable = new QLabel("IP:", m_addWidget);
+    hLayout->addWidget(ipLable);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        EDoubleSpinBox *ipCell = SPBFunc::New(m_addWidget, QString("ipCell_%1").arg(i), 0, 255, 0);
+        hLayout->addWidget(ipCell);
+        if (i != 3)
+        {
+            QLabel *dotLabel = new QLabel(".", m_addWidget);
+            hLayout->addWidget(dotLabel);
+        }
+    }
+
+    mainLayout->addLayout(hLayout);
+
+    hLayout = new QHBoxLayout;
+    QLabel *portLabel = new QLabel(tr("Порт:"), m_addWidget);
+    hLayout->addWidget(portLabel);
+
+    constexpr auto u16min = std::numeric_limits<quint16>::min();
+    constexpr auto u16max = std::numeric_limits<quint16>::max();
+
+    EDoubleSpinBox *portCell = SPBFunc::New(m_addWidget, "port", u16min, u16max, 0);
+    portCell->setValue(defaultPort);
+    hLayout->addWidget(portCell);
+
+    mainLayout->addLayout(hLayout);
+
+    hLayout = new QHBoxLayout;
+    QLabel *BSAdressLabel = new QLabel(tr("Адрес БС:"), m_addWidget);
+    hLayout->addWidget(BSAdressLabel);
+
+    EDoubleSpinBox *BSAdressCell = SPBFunc::New(m_addWidget, "BSAdress", u16min, u16max, 0);
+    BSAdressCell->setValue(defaultBSAdress);
+    hLayout->addWidget(BSAdressCell);
+
+    mainLayout->addLayout(hLayout);
+
+    hLayout = new QHBoxLayout;
+    hLayout->addWidget(
+        PBFunc::New(m_addWidget, "", tr("Сохранить"), this, &InterfaceEthernetDialog::acceptedInterface));
+
+    mainLayout->addLayout(hLayout);
+
+    m_addWidget->setLayout(mainLayout);
 }

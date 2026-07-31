@@ -41,6 +41,7 @@ private:
     bool m_responseError;
     bool m_portError;
     bool m_stop;
+    bool m_cancelled { false };
 
     /// \brief Функция для построения UI диалогового окна.
     void setupUI();
@@ -83,10 +84,15 @@ public:
         QWidget *parent = nullptr);
     /// \brief Функция для запуска поиска устройств.
     void search();
+    /// \brief true, если поиск был прерван кнопкой "Отмена" (а не просто "Остановить поиск" или завершением).
+    /// \details Действителен только после того, как search() вернула управление.
+    [[nodiscard]] bool wasCancelled() const { return m_cancelled; }
 
 signals:
     void deviceAddedSuccessfully();
-
-private slots:
-    virtual void done(int r) override;
+    /// \brief Emitted when "Отмена" is pressed and the search was already stopped (m_stop was
+    /// already true), i.e. it's safe to tear this widget down right away. If the search is still
+    /// running, this is NOT emitted — the caller must wait for search() to return and check
+    /// wasCancelled() instead.
+    void cancelled();
 };
