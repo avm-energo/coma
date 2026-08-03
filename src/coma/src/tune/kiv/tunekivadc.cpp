@@ -1,6 +1,7 @@
 #include "tune/kiv/tunekivadc.h"
 
 #include <libavm-gen/colors.h>
+#include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/graphfunc.h>
@@ -126,6 +127,7 @@ Error::Msg TuneKIVADC::ADCCoef(int coef)
     showRetomDialog(coef);
     if (StdFunc::IsCancelled())
         return Error::Msg::GeneralError;
+    WaitWidget::showWWFor(3);
     showTWTab(m_BdainWidgetIndex);
     emit setProgressSize(m_tuneRequestCount);
     for (int i = 0; i < 6; ++i)
@@ -269,6 +271,8 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
     w->setLayout(hlyout);
     if (!EMessageBox::next(this, w))
         CancelTune();
+    if (m_tuneType == ADCU)
+        WaitWidget::showWWFor(10);
     return Error::Msg::NoError;
 }
 
