@@ -1,8 +1,8 @@
-#include "dialogs/searchmodbusdevicesdialog.h"
+#include "dialogs/connDialogs/serialDialog/searchmodbusdevicesdialog.h"
 #include "const.h"
 #include "interfaces/utils/utils.h"
 
-#include <dialogs/interfaceserialdialog.h>
+#include <dialogs/connDialogs/serialDialog/interfaceserialdialog.h>
 #include <libavm-widgets/cbfunc.h>
 #include <libavm-widgets/chbfunc.h>
 #include <libavm-widgets/emessagebox.h>

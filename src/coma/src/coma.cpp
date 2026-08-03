@@ -43,9 +43,9 @@
 #include <common/constants.h>
 #include <common/hex2binfileconverter.h>
 #include <device/current_device.h>
-#include <dialogs/abstractinterfacedialog.h>
+#include <dialogs/connDialogs/abstractinterfacedialog.h>
 #include <dialogs/aboutdialog.h>
-#include <dialogs/connectdialog.h>
+#include <dialogs/connDialogs/connectdialog.h>
 #include <dialogs/errordialog.h>
 #include <dialogs/keypressdialog.h>
 #include <dialogs/reconnectdialog.h>
@@ -100,7 +100,7 @@ Coma::~Coma()
     // Отключаем именно по сохранённым QMetaObject::Connection — wildcard-вариант
     // (disconnect(nullptr, nullptr, this, nullptr)) на практике связи от QObject::destroyed
     // не снимает.
-    for (const auto &connection : m_centralWidgetConnections)
+    for (const auto &connection : std::as_const(m_centralWidgetConnections))
         QObject::disconnect(connection);
 }
 

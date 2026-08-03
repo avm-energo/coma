@@ -1,4 +1,4 @@
-#include "dialogs/interfaceemudialog.h"
+#include "dialogs/connDialogs/emuDialog/interfaceemudialog.h"
 
 #include <libavm-gen/error.h>
 #include <libavm-gen/settings.h>

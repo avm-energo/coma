@@ -1,32 +1,28 @@
-#include "dialogs/interfaceethernetdialog.h"
+#include "dialogs/connDialogs/ethernetDialog/interfaceethernetdialog.h"
 
-#include <QtConcurrent/QtConcurrent>
-#include <QtConcurrent/QtConcurrentMap>
 #include <QtNetwork/QHostAddress>
+#include <dialogs/connDialogs/ethernetDialog/scanethernetdevicesdialog.h>
 #include <libavm-gen/error.h>
 #include <libavm-gen/settings.h>
-#include <libavm-gen/stdfunc.h>
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/lefunc.h>
 #include <libavm-widgets/pbfunc.h>
 #include <libavm-widgets/spbfunc.h>
 #include <libavm-widgets/tvfunc.h>
 
-#include <QCoreApplication>
 #include <QDebug>
-#include <QFuture>
-#include <QFutureWatcher>
-#include <QInputDialog>
+#include <QGroupBox>
 #include <QMessageBox>
 #include <QSettings>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
-#include <qsizegrip.h>
 
 constexpr const int defaultPort = 2404;
 constexpr const int defaultBSAdress = 205;
 
-InterfaceEthernetDialog::InterfaceEthernetDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
+InterfaceEthernetDialog::InterfaceEthernetDialog(QWidget *parent)
+    : AbstractInterfaceDialog(parent)
+    , m_addWidget(new QGroupBox("Добавление", this))
 {
 }
 
@@ -35,20 +31,26 @@ InterfaceEthernetDialog::~InterfaceEthernetDialog() noexcept { }
 void InterfaceEthernetDialog::setupUI()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout;
-    QVBoxLayout *tableButtonLayout = new QVBoxLayout;
+    QVBoxLayout *TVLayout = new QVBoxLayout;
+    QHBoxLayout *TVbuttonLayout = new QHBoxLayout;
     QVBoxLayout *addScanLayout = new QVBoxLayout;
 
     m_tableView = TVFunc::New(this, "", nullptr);
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    tableButtonLayout->addWidget(m_tableView);
+    TVLayout->addWidget(m_tableView);
 
+    QPushButton *removeButton = PBFunc::New(this, "", "Удалить", this, &InterfaceEthernetDialog::deleteInterface);
     QPushButton *cancelButton = PBFunc::New(this, "", "Назад", this, &QDialog::close);
-    tableButtonLayout->addWidget(cancelButton);
 
-    mainLayout->addLayout(tableButtonLayout);
+    TVbuttonLayout->addWidget(removeButton);
+    TVbuttonLayout->addWidget(cancelButton);
+    TVLayout->addLayout(TVbuttonLayout);
+
+    mainLayout->addLayout(TVLayout);
 
     setupAddWidget();
     addScanLayout->addWidget(m_addWidget);
+    addScanLayout->addWidget(new ScanEthernetDevicesDialog(this, this));
 
     mainLayout->addLayout(addScanLayout);
 
@@ -87,55 +89,6 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
 
 void InterfaceEthernetDialog::addInterface() { }
 
-void InterfaceEthernetDialog::scanInterface()
-{
-    auto *button = qobject_cast<QPushButton *>(sender());
-    Q_ASSERT(button);
-    connect(this, &InterfaceEthernetDialog::modelUpdated, button, &QPushButton::show);
-
-    QInputDialog dialog(this);
-    dialog.setWindowTitle(tr("Сканер"));
-    dialog.setLabelText(tr("Введите IP адрес и маску"));
-    dialog.setTextValue("172.16.29.0/24");
-    dialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
-    dialog.setSizeGripEnabled(false);
-    dialog.setStyleSheet("QSizeGrip { width: 0px; height: 0px; }");
-
-    bool ok = dialog.exec() == QDialog::Accepted;
-    QString text = ok ? dialog.textValue() : QString();
-    if (!ok || text.isEmpty())
-        return;
-
-    QPair<QHostAddress, int> subnet = QHostAddress::parseSubnet(text);
-    if (subnet.second == -1)
-    {
-        EMessageBox::error(this, "Ошибка ввода адреса или маски");
-        return;
-    }
-
-    m_hosts.clear();
-
-    qDebug() << subnet.first << subnet.second;
-    int addr_count = std::pow(2, 32 - subnet.second);
-
-    m_progress = new QProgressDialog(this);
-    m_progress->setLabelText(tr("Сканирование адресов"));
-    m_progress->setMinimumDuration(0);
-    m_progress->setRange(0, addr_count);
-    m_progress->setModal(true);
-    m_progress->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    m_progress->setSizeGripEnabled(false);
-    m_progress->setValue(0);
-
-    connect(this, &InterfaceEthernetDialog::pingFinished, this, &InterfaceEthernetDialog::handlePingFinish,
-        Qt::UniqueConnection);
-
-    for (int i = 0; i < addr_count; ++i)
-    {
-        createPingTask(subnet.first.toIPv4Address() + i);
-    }
-}
-
 void InterfaceEthernetDialog::acceptedInterface()
 {
     if (checkSize())
@@ -145,6 +98,12 @@ void InterfaceEthernetDialog::acceptedInterface()
     }
 
     QString name = LEFunc::data(m_addWidget, "nameConnection");
+
+    if (Settings::groups("Ethernet").contains(name))
+    {
+        EMessageBox::error(this, "Соединение с таким именем уже существует");
+        return;
+    }
 
     Settings::pushGroup("Ethernet");
 
@@ -175,107 +134,16 @@ void InterfaceEthernetDialog::acceptedInterface()
         qDebug() << Error::GeneralError;
 }
 
-void InterfaceEthernetDialog::handlePing()
+void InterfaceEthernetDialog::displayScanResults(const QList<quint32> &hosts)
 {
-    QFutureWatcher<quint32> *watcher = static_cast<QFutureWatcher<quint32> *>(sender());
-    Q_ASSERT(watcher);
-
-    if (watcher->isCanceled())
-    {
-        watcher->deleteLater();
-        return;
-    }
-
-    if (watcher->result())
-    {
-        quint32 ip_addr = watcher->result();
-        m_hosts.append(ip_addr);
-        qDebug() << QHostAddress(m_hosts.last());
-    }
-    watcher->deleteLater();
-}
-
-void InterfaceEthernetDialog::handlePingFinish()
-{
-    if (m_progress && m_progress->wasCanceled())
-        return;
-
-    createPortTask();
-}
-
-void InterfaceEthernetDialog::handlePortFinish()
-{
-    m_hosts.removeAll(0);
-    for (const auto &host : std::as_const(m_hosts))
-    {
-        qDebug() << QHostAddress(host);
-    }
     QStandardItemModel *mdl = qobject_cast<QStandardItemModel *>(m_tableView->model());
     mdl->removeRows(0, mdl->rowCount());
-    for (const auto &host : std::as_const(m_hosts))
+    for (const auto &host : hosts)
     {
         QList<QStandardItem *> row { new QStandardItem("AVM"), new QStandardItem(QHostAddress(host).toString()),
             new QStandardItem("2404"), new QStandardItem("205") };
         mdl->appendRow(row);
     }
-    emit modelUpdated();
-}
-
-void InterfaceEthernetDialog::createPingTask(quint32 ip)
-{
-    QFutureWatcher<quint32> *watcher = new QFutureWatcher<quint32>(this);
-
-    connect(m_progress, &QProgressDialog::canceled, watcher, &QFutureWatcher<quint32>::cancel);
-    connect(watcher, &QFutureWatcher<quint32>::finished, this, &InterfaceEthernetDialog::handlePing);
-    connect(watcher, &QFutureWatcher<quint32>::finished, watcher, &QObject::deleteLater);
-    connect(watcher, &QFutureWatcher<quint32>::canceled, &QObject::deleteLater);
-    connect(watcher, &QFutureWatcher<quint32>::finished, this,
-        [this]
-        {
-            if (m_progress && m_progress->wasCanceled())
-                return;
-
-            int newValue = m_progress->value() + 1;
-            m_progress->setValue(newValue);
-
-            if (newValue == m_progress->maximum())
-            {
-                emit pingFinished();
-            }
-        });
-
-    QFuture<quint32> future = QtConcurrent::run(&StdFunc::Ping, ip);
-    watcher->setFuture(future);
-}
-
-void InterfaceEthernetDialog::createPortTask()
-{
-    QFutureWatcher<QList<quint32>> *watcher = new QFutureWatcher<QList<quint32>>(this);
-    quint16 port = 2404;
-    m_progress->setLabelText(tr("Сканирование портов"));
-    m_progress->setRange(0, m_hosts.size());
-    m_progress->setValue(0);
-
-    connect(m_progress, &QProgressDialog::canceled, watcher, &QFutureWatcher<QList<quint32>>::cancel);
-    connect(watcher, &QFutureWatcher<QList<quint32>>::progressValueChanged, m_progress, &QProgressDialog::setValue);
-    connect(watcher, &QFutureWatcher<QList<quint32>>::finished, this,
-        [this, watcher]()
-        {
-            if (watcher->isCanceled() || (m_progress && m_progress->wasCanceled()))
-            {
-                watcher->deleteLater();
-                return;
-            }
-
-            m_hosts = watcher->result();
-            watcher->deleteLater();
-            handlePortFinish();
-        });
-
-    QFuture<QList<quint32>> future = QtConcurrent::mappedReduced(m_hosts,
-        std::bind(qOverload<quint32, quint16>(&StdFunc::CheckPort), std::placeholders::_1, port),
-        &StdFunc::joinItem<quint32>);
-    watcher->setFuture(future);
 }
 
 bool InterfaceEthernetDialog::updateModel()
@@ -307,7 +175,32 @@ bool InterfaceEthernetDialog::updateModel()
     m_tableView->setModel(model);
     m_tableView->resizeColumnsToContents();
 
+    connect(m_tableView->selectionModel(), &QItemSelectionModel::currentRowChanged, this,
+        &InterfaceEthernetDialog::rowSelected, Qt::UniqueConnection);
+
     return true;
+}
+
+void InterfaceEthernetDialog::rowSelected(const QModelIndex &current)
+{
+    if (!current.isValid())
+        return;
+
+    const auto *mdl = current.model();
+    int row = current.row();
+
+    QString name = mdl->data(mdl->index(row, 0)).toString();
+    QStringList ipParts = mdl->data(mdl->index(row, 1)).toString().split('.');
+    quint16 port = mdl->data(mdl->index(row, 2)).toUInt();
+    quint16 bsAddress = mdl->data(mdl->index(row, 3)).toUInt();
+
+    LEFunc::setData(m_addWidget, "nameConnection", name);
+
+    for (int i = 0; i < ipParts.size() && i < 4; ++i)
+        SPBFunc::setData(m_addWidget, QString("ipCell_%1").arg(i), ipParts.at(i).toDouble());
+
+    SPBFunc::setData(m_addWidget, "port", port);
+    SPBFunc::setData(m_addWidget, "BSAdress", bsAddress);
 }
 
 void InterfaceEthernetDialog::deleteInterface()
@@ -327,7 +220,7 @@ void InterfaceEthernetDialog::setupAddWidget()
     QVBoxLayout *mainLayout = new QVBoxLayout;
     QHBoxLayout *hLayout = new QHBoxLayout;
 
-    QLabel *nameLabel = new QLabel(tr("Имя:"), m_addWidget);
+    QLabel *nameLabel = new QLabel("Имя:", m_addWidget);
     hLayout->addWidget(nameLabel);
 
     QLineEdit *nameLineEdit = new QLineEdit(m_addWidget);
@@ -354,7 +247,7 @@ void InterfaceEthernetDialog::setupAddWidget()
     mainLayout->addLayout(hLayout);
 
     hLayout = new QHBoxLayout;
-    QLabel *portLabel = new QLabel(tr("Порт:"), m_addWidget);
+    QLabel *portLabel = new QLabel("Порт:", m_addWidget);
     hLayout->addWidget(portLabel);
 
     constexpr auto u16min = std::numeric_limits<quint16>::min();
@@ -367,7 +260,7 @@ void InterfaceEthernetDialog::setupAddWidget()
     mainLayout->addLayout(hLayout);
 
     hLayout = new QHBoxLayout;
-    QLabel *BSAdressLabel = new QLabel(tr("Адрес БС:"), m_addWidget);
+    QLabel *BSAdressLabel = new QLabel("Адрес БС:", m_addWidget);
     hLayout->addWidget(BSAdressLabel);
 
     EDoubleSpinBox *BSAdressCell = SPBFunc::New(m_addWidget, "BSAdress", u16min, u16max, 0);
@@ -378,9 +271,54 @@ void InterfaceEthernetDialog::setupAddWidget()
 
     hLayout = new QHBoxLayout;
     hLayout->addWidget(
-        PBFunc::New(m_addWidget, "", tr("Сохранить"), this, &InterfaceEthernetDialog::acceptedInterface));
+        PBFunc::New(m_addWidget, "", "Сохранить", this, &InterfaceEthernetDialog::acceptedInterface));
+    hLayout->addWidget(
+        PBFunc::New(m_addWidget, "", "Редактировать", this, &InterfaceEthernetDialog::editInterface));
 
     mainLayout->addLayout(hLayout);
 
     m_addWidget->setLayout(mainLayout);
+}
+
+void InterfaceEthernetDialog::editInterface()
+{
+    QModelIndex current = m_tableView->currentIndex();
+    if (!current.isValid())
+    {
+        EMessageBox::warning(this, "Не выделена строка для редактирования");
+        return;
+    }
+
+    QString oldName = current.siblingAtColumn(0).data().toString();
+    QString name = LEFunc::data(m_addWidget, "nameConnection");
+
+    QString ipStr = QString("%1.%2.%3.%4")
+                        .arg(QString::number(SPBFunc::data<int>(m_addWidget, "ipCell_0")),
+                            QString::number(SPBFunc::data<int>(m_addWidget, "ipCell_1")),
+                            QString::number(SPBFunc::data<int>(m_addWidget, "ipCell_2")),
+                            QString::number(SPBFunc::data<int>(m_addWidget, "ipCell_3")));
+
+    quint16 port = SPBFunc::data<quint16>(m_addWidget, "port");
+    quint16 bsAddress = SPBFunc::data<quint16>(m_addWidget, "BSAdress");
+
+    if (bsAddress == 0)
+    {
+        EMessageBox::error(this, "Адрес базовой станции не может быть равен нулю");
+        return;
+    }
+
+    Settings::pushGroup("Ethernet");
+
+    if (name != oldName)
+        Settings::remove(oldName);
+
+    Settings::pushGroup(name);
+    Settings::set("ipAddress", ipStr);
+    Settings::set("ipPort", port);
+    Settings::set("iec104BsAddress", bsAddress);
+    Settings::popGroup();
+    Settings::popGroup(); // exit from Ethernet
+
+    if (!updateModel())
+        qDebug() << Error::GeneralError;
 }

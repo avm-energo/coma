@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include <dialogs/searchproccessdialog.h>
+#include <dialogs/connDialogs/serialDialog/searchproccessdialog.h>
 
 class QCheckBox;
 class QComboBox;

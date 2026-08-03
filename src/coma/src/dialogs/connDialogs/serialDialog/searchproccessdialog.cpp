@@ -1,7 +1,7 @@
-#include "dialogs/searchproccessdialog.h"
+#include "dialogs/connDialogs/serialDialog/searchproccessdialog.h"
 
 #include "const.h"
-#include "dialogs/interfaceserialdialog.h"
+#include "dialogs/connDialogs/serialDialog/interfaceserialdialog.h"
 #include "interfaces/utils/utils.h"
 #include <libavm-gen/stdfunc.h>
 #include <libavm-gen/utils/crc16.h>

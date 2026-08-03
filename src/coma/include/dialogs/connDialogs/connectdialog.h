@@ -1,6 +1,6 @@
 #pragma once
 
-#include <dialogs/abstractinterfacedialog.h>
+#include <dialogs/connDialogs/abstractinterfacedialog.h>
 
 #include <QMenu>
 #include <QSettings>

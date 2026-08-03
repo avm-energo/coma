@@ -1,23 +1,22 @@
 #pragma once
 
-#include <dialogs/abstractinterfacedialog.h>
+#include <dialogs/connDialogs/abstractinterfacedialog.h>
 
-#include <QProgressDialog>
+#include <QList>
 #include <QVBoxLayout>
+
+class QGroupBox;
 
 class InterfaceEthernetDialog final : public AbstractInterfaceDialog
 {
     Q_OBJECT
-
-    QList<quint32> m_hosts;
 
     // ### UI ###
     QHBoxLayout *m_mainLayout = new QHBoxLayout;
     QVBoxLayout *m_tableButtonLayout = new QVBoxLayout;
     QVBoxLayout *m_addScanLayout = new QVBoxLayout;
 
-    QWidget *m_addWidget = new QWidget(this);
-    QWidget *m_scanWidget = new QWidget(this);
+    QGroupBox *m_addWidget;
     // ##########
 
 public:
@@ -27,25 +26,17 @@ public:
     void setupUI() override;
     void setInterface(QModelIndex index) override;
 
+    /// \brief Отображает в таблице подключений найденные сканером устройства
+    /// (имя не сохраняется, порт и адрес БС проставляются по умолчанию).
+    void displayScanResults(const QList<quint32> &hosts);
+
 private:
     void addInterface() override;
-    void scanInterface();
     void acceptedInterface() override;
     bool updateModel() override;
     void deleteInterface();
+    void editInterface();
 
     void setupAddWidget();
-
-    /// Кандидаты для отдельного класса
-    QProgressDialog *m_progress;
-    void handlePing();
-    void handlePingFinish();
-    void handlePortFinish();
-    void createPingTask(quint32 ip);
-    void createPortTask();
-    ///
-
-signals:
-    void pingFinished();
-    void modelUpdated();
+    void rowSelected(const QModelIndex &current);
 };

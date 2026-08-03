@@ -1,9 +1,9 @@
-#include "dialogs/connectdialog.h"
+#include "dialogs/connDialogs/connectdialog.h"
 
-#include <dialogs/interfaceemudialog.h>
-#include <dialogs/interfaceethernetdialog.h>
-#include <dialogs/interfaceserialdialog.h>
-#include <dialogs/interfaceusbdialog.h>
+#include <dialogs/connDialogs/emuDialog/interfaceemudialog.h>
+#include <dialogs/connDialogs/ethernetDialog/interfaceethernetdialog.h>
+#include <dialogs/connDialogs/serialDialog/interfaceserialdialog.h>
+#include <dialogs/connDialogs/usbDialog/interfaceusbdialog.h>
 #include <libavm-gen/error.h>
 #include <libavm-widgets/wdfunc.h>
 

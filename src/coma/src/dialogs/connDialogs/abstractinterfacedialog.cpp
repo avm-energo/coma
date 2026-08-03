@@ -1,4 +1,4 @@
-#include "dialogs/abstractinterfacedialog.h"
+#include "dialogs/connDialogs/abstractinterfacedialog.h"
 
 #include <libavm-gen/settings.h>
 #include <libavm-widgets/pbfunc.h>
