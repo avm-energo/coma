@@ -1,7 +1,7 @@
 #include "interfaces/exec/iec104_query_executor.h"
 
-#include <interfaces/parsers/iec104_request_parser.h>
-#include <interfaces/parsers/iec104_response_parser.h>
+#include <interfaces/parsers/iec104/iec104_request_parser.h>
+#include <interfaces/parsers/iec104/iec104_response_parser.h>
 #include <interfaces/types/serial_settings.h>
 
 namespace Interface

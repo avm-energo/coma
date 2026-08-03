@@ -1,4 +1,4 @@
-#include "interfaces/parsers/protocom_response_parser.h"
+#include "interfaces/parsers/protocom/protocom_response_parser.h"
 
 #include "device/bsi.h"
 

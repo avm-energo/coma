@@ -1,12 +1,12 @@
 #include <common/names.h>
 #include <interfaces/exec/iec104_query_executor.h>
 #include <interfaces/exec/query_executor_fabric.h>
-#include <interfaces/parsers/iec104_request_parser.h>
-#include <interfaces/parsers/iec104_response_parser.h>
-#include <interfaces/parsers/modbus_request_parser.h>
-#include <interfaces/parsers/modbus_response_parser.h>
-#include <interfaces/parsers/protocom_request_parser.h>
-#include <interfaces/parsers/protocom_response_parser.h>
+#include <interfaces/parsers/iec104/iec104_request_parser.h>
+#include <interfaces/parsers/iec104/iec104_response_parser.h>
+#include <interfaces/parsers/modbus/modbus_request_parser.h>
+#include <interfaces/parsers/modbus/modbus_response_parser.h>
+#include <interfaces/parsers/protocom/protocom_request_parser.h>
+#include <interfaces/parsers/protocom/protocom_response_parser.h>
 
 namespace Interface
 {
