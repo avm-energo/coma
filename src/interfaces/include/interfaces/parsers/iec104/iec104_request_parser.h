@@ -37,8 +37,20 @@ public:
     QByteArray createFileReadyMessage(const quint8 fileNum, const quint32 fileSize) noexcept;
     /// \brief Строит сообщение "секция готова" в ответ на запрос файла устройством.
     QByteArray createSectionReadyMessage(const quint32 fileSize) noexcept;
-    /// \brief Строит поток сегментов файла (плюс завершающий "конец секции") в ответ на запрос устройства.
-    QList<QByteArray> createSegmentBurst(const QByteArray &payload) noexcept;
+    /// \brief Разбивает данные файла на куски по 230 байт - чистая функция, без обращения к счётчикам.
+    /// \details Отдельно от построения кадров, чтобы вызывающий код (executor) мог строить и сразу
+    /// отправлять кадры по одному - если построить все кадры заранее пачкой, все они "запекут" в себе
+    /// один и тот же снимок N(S)/N(R), т.к. счётчики продвигаются только при реальной отправке.
+    QList<QByteArray> splitIntoSegments(const QByteArray &payload) const noexcept;
+    /// \brief Строит ОДИН кадр сегмента файла (F_SG_NA_1) из уже готового куска данных.
+    /// \warning Использует текущее состояние счётчиков m_ctrlBlock - вызывать непосредственно перед
+    /// отправкой этого кадра, не заранее.
+    QByteArray buildSegmentFrame(const QByteArray &chunk) noexcept;
+    /// \brief Строит завершающий кадр "последняя секция, последний сегмент" (F_LS_NA_1) с контрольной
+    /// суммой всего файла.
+    /// \warning Как и buildSegmentFrame, использует текущее состояние счётчиков - вызывать непосредственно
+    /// перед отправкой.
+    QByteArray buildLastSectionFrame(const QByteArray &payload) noexcept;
     /// \brief Строит завершающее сообщение файла в ответ на подтверждение секции устройством.
     QByteArray createFileFinalMessage(const QByteArray &payload) noexcept;
 

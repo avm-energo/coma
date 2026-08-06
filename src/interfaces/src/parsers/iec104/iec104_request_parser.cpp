@@ -242,24 +242,30 @@ QByteArray Iec104RequestParser::createSectionReadyMessage(const quint32 fileSize
     return buildFileFrame(MessageDataType::F_SR_NA_1, 0x01, 0x01, tail);
 }
 
-QList<QByteArray> Iec104RequestParser::createSegmentBurst(const QByteArray &payload) noexcept
+QList<QByteArray> Iec104RequestParser::splitIntoSegments(const QByteArray &payload) const noexcept
 {
     constexpr int segmentSize = 230;
-    QList<QByteArray> frames;
+    QList<QByteArray> chunks;
     for (int pos = 0; pos < payload.size(); pos += segmentSize)
-    {
-        const auto chunk = payload.mid(pos, segmentSize);
-        QByteArray tail(1, static_cast<char>(chunk.size()));
-        tail.append(chunk);
-        frames.append(buildFileFrame(MessageDataType::F_SG_NA_1, 0x01, 0x01, tail));
-    }
+        chunks.append(payload.mid(pos, segmentSize));
+    return chunks;
+}
+
+QByteArray Iec104RequestParser::buildSegmentFrame(const QByteArray &chunk) noexcept
+{
+    QByteArray tail(1, static_cast<char>(chunk.size()));
+    tail.append(chunk);
+    return buildFileFrame(MessageDataType::F_SG_NA_1, 0x01, 0x01, tail);
+}
+
+QByteArray Iec104RequestParser::buildLastSectionFrame(const QByteArray &payload) noexcept
+{
     quint8 checksum = 0;
     for (const auto byte : payload)
         checksum += static_cast<quint8>(byte);
     QByteArray lsTail(1, static_cast<char>(0x03));
     lsTail.append(static_cast<char>(checksum));
-    frames.append(buildFileFrame(MessageDataType::F_LS_NA_1, 0x01, 0x01, lsTail));
-    return frames;
+    return buildFileFrame(MessageDataType::F_LS_NA_1, 0x01, 0x01, lsTail);
 }
 
 QByteArray Iec104RequestParser::createFileFinalMessage(const QByteArray &payload) noexcept

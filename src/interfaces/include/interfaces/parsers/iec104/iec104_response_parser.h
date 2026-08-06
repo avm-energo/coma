@@ -54,9 +54,8 @@ signals:
     /// \brief Сигнал для информирования исполнителя
     /// запросов о пришедешей информации в U-формате.
     void unnumberedFormatReceived(const Iec104::ControlFunc func, const Iec104::ControlArg arg);
-    /// \brief Сигнал для информирования исполнителя запросов
-    /// о необходимости проверки контрольного блока APCI.
-    void needToCheckControlBlock();
+    /// \brief Пришел I-пакет.
+    void infoTransferFormatReceived(const RSCounter counters);
     /// \brief Сигнал для информирования исполнителя запросов
     /// о том, что запрошенные данные получены.
     void requestedDataReceived();

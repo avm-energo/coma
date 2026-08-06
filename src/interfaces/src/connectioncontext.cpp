@@ -51,7 +51,12 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
             QObject::connect(m_executor, &DefaultQueryExecutor::finished, m_parcerThreads, &QThread::quit);
             QObject::connect(m_parcerThreads, &QThread::finished, m_executor, &QObject::deleteLater);
             QObject::connect(m_parcerThreads, &QThread::finished, &QObject::deleteLater);
-            // Если интерфейс успешно запустился
+            // Если интерфейс успешно запустился.
+            // Qt::SingleShotConnection - started() срабатывает и на переподключении (BaseInterface::
+            // attemptConnect эмитит и started(), и reconnected() на один и тот же успешный коннект), а
+            // executor->start() на реконнект уже отдельно и полнее вызывает ConnectionManager::
+            // interfaceReconnected (по сигналу reconnected). Без одноразовости оба обработчика
+            // сработали бы на реконнект одновременно - двойной STARTDT act/con.
             QObject::connect(iface, &BaseInterface::started, m_iface,
                 [iface = QPointer<BaseInterface>(iface), executor = QPointer<DefaultQueryExecutor>(executor),
                     parserThread = QPointer<QThread>(m_parcerThreads)]
@@ -64,7 +69,8 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
                     executor->moveToThread(parserThread);
                     parserThread->start();
                     executor->start();
-                });
+                },
+                Qt::SingleShotConnection);
         }
         else
         {

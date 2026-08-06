@@ -136,6 +136,7 @@ void Iec104ResponseParser::parse()
             switch (m_currentAPCI.m_ctrlBlock.m_format)
             {
             case FrameFormat::Information:
+                emit infoTransferFormatReceived(m_currentAPCI.m_ctrlBlock.m_counters);
                 parseInfoFormat(response);
                 break;
             case FrameFormat::Supervisory:
@@ -157,8 +158,6 @@ void Iec104ResponseParser::parse()
 
 void Iec104ResponseParser::parseInfoFormat(const QByteArray &response) noexcept
 {
-    ++m_ctrlBlock->m_received;
-    emit needToCheckControlBlock();
     auto asdu = ASDU::fromByteArray(response.mid(apciSize, m_currentAPCI.m_asduSize));
     if (isFileTransferType(asdu.m_msgType))
         handleFileTransferAsdu(asdu);

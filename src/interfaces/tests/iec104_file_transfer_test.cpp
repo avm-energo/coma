@@ -250,11 +250,16 @@ void InterfacesTestObject::iec104RequestParserWriteBuildersTest01()
     expected = apciAsduSize19 + QByteArrayLiteral("\x79\x01\x0D\x00\xCD\x00\x00\x00\x00\x01\x00\x01\x05\x00\x00");
     QCOMPARE(actual, expected);
 
-    // Поток сегментов для payload "AB": 1 сегмент + завершающий F_LS(qualifier=3, checksum='A'+'B'=0x83)
-    auto frames = parser.createSegmentBurst(QByteArrayLiteral("AB"));
-    QCOMPARE(frames.size(), 2);
-    QCOMPARE(frames.at(0), apciAsduSize19 + QByteArrayLiteral("\x7D\x01\x0D\x00\xCD\x00\x00\x00\x00\x01\x00\x01\x02\x41\x42"));
-    QCOMPARE(frames.at(1), apciAsduSize18 + QByteArrayLiteral("\x7B\x01\x0D\x00\xCD\x00\x00\x00\x00\x01\x00\x01\x03\x83"));
+    // Поток сегментов для payload "AB": 1 сегмент + завершающий F_LS(qualifier=3, checksum='A'+'B'=0x83).
+    // Построение и отправка теперь развязаны (см. splitIntoSegments/buildSegmentFrame/buildLastSectionFrame) -
+    // построение кадров по одному, а не пачкой заранее, чтобы N(S) не "запекался" одинаковым для всех кадров.
+    const QByteArray payloadAB = QByteArrayLiteral("AB");
+    auto chunks = parser.splitIntoSegments(payloadAB);
+    QCOMPARE(chunks.size(), 1);
+    QCOMPARE(parser.buildSegmentFrame(chunks.at(0)),
+        apciAsduSize19 + QByteArrayLiteral("\x7D\x01\x0D\x00\xCD\x00\x00\x00\x00\x01\x00\x01\x02\x41\x42"));
+    QCOMPARE(parser.buildLastSectionFrame(payloadAB),
+        apciAsduSize18 + QByteArrayLiteral("\x7B\x01\x0D\x00\xCD\x00\x00\x00\x00\x01\x00\x01\x03\x83"));
 
     // Завершение файла: F_LS(qualifier=1, checksum=0x83)
     actual = parser.createFileFinalMessage(QByteArrayLiteral("AB"));

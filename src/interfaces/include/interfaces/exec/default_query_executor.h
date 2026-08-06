@@ -105,7 +105,7 @@ public:
     void pause() noexcept;
     /// \brief Функция для окончания работы исполнителя запросов.
     /// \details Переводит состояние исполнителя в ExecutorState::Stopping.
-    void stop() noexcept;
+    virtual void stop() noexcept;
 
     /// \brief Функция, возвращающая последнюю запрошенную команду.
     Commands getLastRequestedCommand() const noexcept;

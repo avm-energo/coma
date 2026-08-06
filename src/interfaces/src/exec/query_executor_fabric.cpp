@@ -57,9 +57,9 @@ DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queu
     // Парсер запросов отправляет данные в парсер ответов для подтверждения получения
     QObject::connect(requestParser, &Iec104RequestParser::currentCommand, //
         responseParser, &Iec104ResponseParser::receiveCurrentCommand);    //
-    // Проверка контрольного блока исполнителем запросов
-    QObject::connect(responseParser, &Iec104ResponseParser::needToCheckControlBlock, //
-        executor, &Iec104QueryExecutor::checkControlBlock);                          //
+    // Обработка счетчиков пришедшего I-пакета
+    QObject::connect(responseParser, &Iec104ResponseParser::infoTransferFormatReceived, //
+        executor, &Iec104QueryExecutor::countersFromIPacket);                           //
     // Проверка посылки U-формата исполнителем запросов
     QObject::connect(responseParser, &Iec104ResponseParser::unnumberedFormatReceived, //
         executor, &Iec104QueryExecutor::checkUnnumberedFormat);                       //

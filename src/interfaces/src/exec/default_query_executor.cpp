@@ -11,6 +11,7 @@ namespace Interface
 DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, BaseSettings *settings, QObject *parent)
     : QObject(parent)
     , m_state(ExecutorState::Starting)
+    , m_lastRequestedCommand(Commands::C_ReqStartup)
     , m_queue(std::ref(queue))
     , m_timeoutTimer(this)
     , m_waitMutex {}
