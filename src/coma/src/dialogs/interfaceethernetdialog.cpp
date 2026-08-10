@@ -66,6 +66,7 @@ void InterfaceEthernetDialog::setInterface(QModelIndex index)
     settings->set("timeout", Settings::get("iec104Timeout", 1000));
     settings->set("reconnectInterval", Settings::get("iec104Reconnect", 1000));
     settings->set("disconnectTimeout", Settings::get("iec104DisconnectTimeout", 5000));
+    settings->set("connectTimeout", Settings::get("iec104ConnectTimeout", 5000));
     settings->set("t0", Settings::get("iec104T0", 30));
     settings->set("t1", Settings::get("iec104T1", 15));
     settings->set("t2", Settings::get("iec104T2", 10));

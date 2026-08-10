@@ -1,7 +1,9 @@
 #include "interfaces/ifaces/ethernet.h"
 
 #include <QDebug>
+#include <QEventLoop>
 #include <QNetworkProxy>
+#include <QTimer>
 
 Ethernet::Ethernet(IEC104Settings *settings, QObject *parent)
     : BaseInterface("Ethernet", settings, parent)
@@ -20,15 +22,38 @@ bool Ethernet::connect()
 {
     m_socket->connectToHost(
         m_settings->get("ip"), m_settings->get("port"), QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
-    if (m_socket->waitForConnected(m_settings->get<u16>("t0") * 1000))
-    {
-        if (getState() != Interface::State::Disconnect)
+
+    // Ждём завершения connectToHost() локальным event loop'ом (не waitForConnected()),
+    // чтобы не блокировать основной цикл событий (GUI) на время подключения.
+    QEventLoop loop;
+    bool timedOut = false;
+    QObject::connect(m_socket, &QAbstractSocket::connected, &loop, &QEventLoop::quit);
+    QObject::connect(m_socket, &QAbstractSocket::errorOccurred, &loop, &QEventLoop::quit);
+    QTimer::singleShot(m_settings->get<int>("connectTimeout"), &loop,
+        [&loop, &timedOut]
         {
-            setState(Interface::State::Run);
-            qDebug("Связь с устройством установлена");
-            emit started();
-            return true;
+            timedOut = true;
+            loop.quit();
+        });
+    loop.exec();
+
+    if (m_socket->state() != QAbstractSocket::ConnectedState)
+    {
+        if (timedOut)
+        {
+            m_log.writeLog(Logger::Critical, "Connect timeout");
+            m_socket->abort();
+            emit error(InterfaceError::OpenError);
         }
+        return false;
+    }
+
+    if (getState() != Interface::State::Disconnect)
+    {
+        setState(Interface::State::Run);
+        qDebug("Связь с устройством установлена");
+        emit started();
+        return true;
     }
     return false;
 }
