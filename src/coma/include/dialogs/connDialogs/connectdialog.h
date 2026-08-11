@@ -2,10 +2,10 @@
 
 #include <dialogs/connDialogs/abstractinterfacedialog.h>
 
-#include <QMenu>
 #include <QSettings>
+#include <QWidget>
 
-class ConnectDialog final : public QMenu
+class ConnectDialog final : public QWidget
 {
     Q_OBJECT
 public:
@@ -13,6 +13,9 @@ public:
 
 signals:
     void accepted(const ConnectionSettings &st);
+
+protected:
+    void hideEvent(QHideEvent *event) override;
 
 private slots:
     void setInterface(const QString &connectionType);

@@ -408,9 +408,10 @@ void Coma::connectDialog()
         action->setEnabled(true);
         return;
     }
-    ConnectDialog connDialog(this);
-    connect(&connDialog, &ConnectDialog::accepted, this, &Coma::initConnection);
-    connDialog.exec(QCursor::pos());
+    auto *connDialog = new ConnectDialog(this);
+    connect(connDialog, &ConnectDialog::accepted, this, &Coma::initConnection);
+    connDialog->move(30, 70);
+    connDialog->show();
     action->setEnabled(true);
 }
 
