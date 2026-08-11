@@ -101,6 +101,10 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
     if (opt.has_value())
     {
         const auto command(opt.value());
+        // setRequest() должен выполняться до parse(): для однопакетных команд,
+        // идущих через writeLongData(), parse() синхронно взводит m_isLastSectionSent
+        // ещё внутри себя, и обнулять его после этого нельзя.
+        m_responseParser->setRequest(command);
         auto request = m_requestParser->parse(command);
         if (m_requestParser->isExceptionalSituation())
             m_requestParser->exceptionalAction(command);
@@ -111,7 +115,6 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
             if (getState() == ExecutorState::RequestParsing)
                 setState(ExecutorState::Pending);
             m_lastRequestedCommand.store(command.command);
-            m_responseParser->setRequest(command);
             writeToInterface(request);
         }
     }
