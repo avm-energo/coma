@@ -6,9 +6,13 @@
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/graphfunc.h>
 #include <libavm-widgets/lblfunc.h>
+#include <libavm-widgets/waitwidget.h>
 #include <libavm-widgets/wdfunc.h>
 
+#include <QCoreApplication>
 #include <QDialog>
+#include <QElapsedTimer>
+#include <QEventLoop>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -68,20 +72,49 @@ Error::Msg Tune84Check::showScheme()
 
 Error::Msg Tune84Check::check()
 {
+    // Паспортная ёмкость и Unom1 нужны здесь как эталонные значения, иначе пересчитанный
+    // из измеренного тока результат уйдёт за допуск и проверка выдаст "Ошибочное значение
+    // коэффициента по току" - как это уже сделано для аналогичного модуля в TuneKIVCheck::check().
+    std::vector<std::pair<QString, S2::valueType>> recordList {
+        { "C_Pasp_ID", S2::FLOAT_3t { 9000, 9000, 9000 } }, //
+        { "Unom1", float(220) }                             //
+    };
+
+    if (sendChangedConfig(recordList) != Error::Msg::NoError)
+    {
+        EMessageBox::error(this, "Ошибка при записи конфигурации");
+        return Error::Msg::GeneralError;
+    }
+
+    WaitWidget *ww = new WaitWidget("", this);
+    ww->setMessage("Пожалуйста, подождите");
+    ww->start();
+    QElapsedTimer *tmr = new QElapsedTimer;
+    tmr->start();
+    while (tmr->elapsed() < TIMEFORBDATOSETINMS)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    ww->stop();
+
     Bda84 *bda = new Bda84(this);
     bda->setup(m_device->getUID(), m_sync);
     bda->readAndUpdate();
+    // Возвращаем исходную (до эталонных значений выше) конфигурацию на устройство в любом случае,
+    // независимо от результата проверки.
+    auto s2file = m_config.toByteArray();
+
+    Error::Msg result = Error::Msg::NoError;
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)
         if (!WDFunc::floatIsWithinLimits("напряжения", bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
-            return Error::Msg::DataError;
+            result = Error::Msg::DataError;
     for (int i = 3; i < 6; ++i)
         if (!WDFunc::floatIsWithinLimits("тока", bda->data()->Ueff_ADC[i], 1220000.0, 60000.0))
-            return Error::Msg::DataError;
+            result = Error::Msg::DataError;
     if (!WDFunc::floatIsWithinLimits("частоты", bda->data()->Frequency, 51.0, 0.05))
-        return Error::Msg::DataError;
+        result = Error::Msg::DataError;
 #endif
-    return Error::Msg::NoError;
+    m_sync->writeFileSync(S2::FilesEnum::Config, s2file);
+    return result;
 }
 
 void Tune84Check::showEvent(QShowEvent *e)
