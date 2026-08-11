@@ -22,6 +22,7 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QVBoxLayout>
+#include <algorithm>
 #include <coma.h>
 
 ReportData AbstractTuneDialog::s_reportData {};
@@ -257,8 +258,14 @@ void AbstractTuneDialog::startTune()
             return;
     }
     StdFunc::ClearCancel();
-    MsgClear();    // очистка экрана с сообщениями
-    setTuneMode(); // задание режима регулировки
+    MsgClear(); // очистка экрана с сообщениями
+    // Если переключение в режим регулировки уже присутствует в последовательности шагов
+    // (например, чтобы оно выполнялось строго после saveWorkConfig), не дублируем его здесь -
+    // иначе saveWorkConfig() сохранит конфигурацию, уже искажённую переходом в режим регулировки.
+    const bool hasOwnModeSwitch = std::any_of(m_tuneFunctions.cbegin(), m_tuneFunctions.cend(),
+        [](const TuneFuncStruct &tf) { return tf.func == &AbstractTuneDialog::setTuneMode; });
+    if (!hasOwnModeSwitch)
+        setTuneMode(); // задание режима регулировки
     for (bStep = 0; bStep < m_tuneFunctions.size(); ++bStep)
     {
         MsgSetVisible(NoMsg, bStep);
