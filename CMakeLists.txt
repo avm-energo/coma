@@ -56,13 +56,6 @@ else()
   include(avm-widgets)
 endif()
 
-find_package(hidapi QUIET)
-if(${hidapi_FOUND})
-  message(STATUS "Found package hidapi")
-else()
-  include(hidapi)
-endif()
-
 find_package(limereport QUIET)
 if(${limereport_FOUND})
   message(STATUS "Found package limereport")

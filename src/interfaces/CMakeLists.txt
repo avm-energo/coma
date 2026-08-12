@@ -29,27 +29,33 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Cl
 endif()
 
 # Linking hidapi library
+find_package(libavm-hidapi QUIET)
+if(${libavm-hidapi_FOUND})
+  message(STATUS "Found package libavm-hidapi")
+else()
   message(STATUS "Using external hidapi")
   include(hidapi)
-  message(STATUS "HidAPI source dir: ${hidapi_SOURCE_DIR}")
-  message(STATUS "HidAPI lib dir: ${hidapi_BINARY_DIR}")
-  target_include_directories(${PROJECT_NAME} PRIVATE ${hidapi_SOURCE_DIR})
+endif()
 
-  # Linking dependencies
-  target_link_libraries(${PROJECT_NAME} PUBLIC
-    Qt${QT_VERSION_MAJOR}::Network
-    Qt${QT_VERSION_MAJOR}::SerialPort
-    libavm-gen
-    coma
-  )
+message(STATUS "HidAPI source dir: ${libavm-hidapi_SOURCE_DIR}")
+message(STATUS "HidAPI lib dir: ${libavm-hidapi_BINARY_DIR}")
+# target_include_directories(${PROJECT_NAME} PRIVATE ${libavm-hidapi_SOURCE_DIR})
+
+# Linking dependencies
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  Qt${QT_VERSION_MAJOR}::Network
+  Qt${QT_VERSION_MAJOR}::SerialPort
+  libavm-gen
+  coma
+)
 
 if(SYSTEM_NAME STREQUAL "windows")
     target_link_libraries(${PROJECT_NAME} PUBLIC
-      hidapi
+      avm-energo::winapi
     )
 elseif(SYSTEM_NAME STREQUAL "linux")
     target_link_libraries(${PROJECT_NAME} PUBLIC
-      hidapi-hidraw
+      avm-energo::hidraw
     )
 endif()
 
@@ -77,11 +83,11 @@ if(BUILD_TESTING)
 
 if(SYSTEM_NAME STREQUAL "windows")
     target_link_libraries(${PROJECT_NAME}_tests PUBLIC
-      hidapi
+      avm-energo::winapi
     )
 elseif(SYSTEM_NAME STREQUAL "linux")
     target_link_libraries(${PROJECT_NAME}_tests PUBLIC
-      hidapi-hidraw
+      avm-energo::hidraw
     )
 endif()
 
@@ -90,8 +96,8 @@ endif()
   add_test(NAME ${PROJECT_NAME}_tests COMMAND ${PROJECT_NAME}_tests)
   # Black magic for ctest using under windows
   if(SYSTEM_NAME STREQUAL "windows")
-    get_filename_component(hidapi_BIN_DIR ${hidapi_BINARY_DIR} ABSOLUTE)
+    get_filename_component(hidapi_BIN_DIR ${libavm-hidapi_BINARY_DIR} ABSOLUTE)
     set_tests_properties(${PROJECT_NAME}_tests PROPERTIES ENVIRONMENT
-      "PATH=${hidapi_BIN_DIR}\;$<TARGET_FILE_DIR:Qt${QT_VERSION_MAJOR}::Core>\;$<TARGET_FILE_DIR:libavm-gen>\;")
+      "PATH=${libavm-hidapi_BIN_DIR}\;$<TARGET_FILE_DIR:Qt${QT_VERSION_MAJOR}::Core>\;$<TARGET_FILE_DIR:libavm-gen>\;")
   endif()
 endif()
