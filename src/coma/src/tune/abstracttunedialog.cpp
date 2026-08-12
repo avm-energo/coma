@@ -519,10 +519,19 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
 
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
+    if (m_device->health().isNoConfig())
+    {
+        m_device->getS2Datamanager()->getCurrentConfiguration().setDefaultConfig();
+        Error::Msg err = m_sync->writeConfigurationSync(m_config.toByteArray());
+        if (err != Error::Msg::NoError)
+            return err;
+    }
+
     QByteArray ba;
     auto status = m_sync->readFileSync(S2::FilesEnum::Config, ba);
     if (status != Error::Msg::NoError)
         return Error::Msg::ReadError;
+
     return Files::SaveToFile(Settings::dataDir() + m_device->getUID() + ".cf", ba);
 }
 

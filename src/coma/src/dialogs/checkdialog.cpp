@@ -486,8 +486,6 @@ bool CheckDialog::clearYellow(quint32 reg)
     m_curAdrIsYellow[reg] = false;
     if (m_curHighlight[reg] == Highlights::YELLOW)
     {
-        if (reg == 2429)
-            qDebug() << "123";
         m_curHighlight[reg] = Highlights::CLEAN;
         return true;
     }
