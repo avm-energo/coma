@@ -220,12 +220,7 @@ Error::Msg Tune84ADC::SendBac()
     m_bac->updateGeneralWidget();
     if (writeTuneCoefs() != Error::Msg::NoError)
         return Error::Msg::WriteError;
-    // Исполнитель запросов на устройстве иногда ещё "дописывает" хвост предыдущего синхронного
-    // обмена (запись блока настроечных коэффициентов) уже после того, как SyncConnection посчитал
-    // его завершённым. Если сразу следом стартовать writeFileSync() для конфигурации, он может
-    // словить запоздалый ответ от ПРЕДЫДУЩЕГО запроса и мгновенно "успешно" завершиться, ничего не
-    // отправив на устройство - из-за чего Unom1 не восстанавливается. Даём каналу время осесть.
-    StdFunc::Wait(500);
+
     if (loadWorkConfig() != Error::Msg::NoError)
         return Error::Msg::ReadError;
     return Error::Msg::NoError;
