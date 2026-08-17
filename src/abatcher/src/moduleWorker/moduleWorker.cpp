@@ -308,7 +308,7 @@ void ModuleWorker::finishDownload()
 
 void ModuleWorker::saveBsi()
 {
-    QByteArray ba = StdFunc::toByteArray(m_device->bsi());
+    QByteArray ba = m_device->bsi().toByteArray();
     PrbFunc::setRange(this, "prbbsi", ba.size());
 
     if (Files::SaveToFile(m_tempDir.path() + "/bsi-old", ba) != Error::Msg::NoError)
@@ -331,7 +331,7 @@ void ModuleWorker::saveBsiExt()
         return;
     }
 
-    QByteArray ba = m_device->bsiExt()->toByteArray();
+    QByteArray ba = m_device->bsiExt().toByteArray();
     PrbFunc::setRange(this, "prbbsiext", ba.size());
 
     if (Files::SaveToFile(m_tempDir.path() + "/bsiext", ba) != Error::Msg::NoError)
@@ -597,7 +597,7 @@ void ModuleWorker::checkFirmwareVersion()
 
     PrbFunc::setRange(this, "prbfwupdate", 1);
 
-    quint32 currentVersion = m_device->bsi().Fwver;
+    quint32 currentVersion = m_device->bsi().data(Device::BsiIndexes::Fwver);
     if (currentVersion == KivReferenceFwVersion)
     {
         qInfo() << QString("Версия ВПО актуальна: %1").arg(StdFunc::VerToStr(currentVersion));
@@ -759,7 +759,7 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
     }
     PrbFunc::setValue(this, "prbfwbsi", 1);
 
-    QByteArray bsiBa = StdFunc::toByteArray(m_device->bsi());
+    QByteArray bsiBa = m_device->bsi().toByteArray();
     if (Files::SaveToFile(m_tempDir.path() + "/bsi", bsiBa) != Error::Msg::NoError)
     {
         qCritical() << "Не удалось сохранить блок Bsi после обновления ВПО";
@@ -769,7 +769,7 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         return;
     }
 
-    if (m_device->bsi().Fwver == KivReferenceFwVersion)
+    if (m_device->bsi().data(Device::BsiIndexes::Fwver) == KivReferenceFwVersion)
     {
         qInfo() << QString("Обновление ВПО с версии %1 на версию %2 проведено успешно").arg(oldVerStr, newVerStr);
         PrbFunc::setValue(this, "prbfwupdate", 1);
@@ -778,7 +778,7 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
     }
 
     qCritical() << QString("Обновление ВПО не удалось: версия после обновления %1, ожидалась %2")
-                       .arg(StdFunc::VerToStr(m_device->bsi().Fwver), newVerStr);
+                       .arg(StdFunc::VerToStr(m_device->bsi().data(Device::BsiIndexes::Fwver)), newVerStr);
     EMessageBox::error(this, "Обновление ВПО не удалось, версия не изменилась на ожидаемую");
     m_isCancelled = true;
     PrbFunc::setValue(this, "prbfwupdate", 1);
