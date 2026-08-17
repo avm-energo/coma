@@ -1,4 +1,4 @@
-project(avm-autobatcher VERSION ${CMAKE_PROJECT_VERSION})
+project(avm-autobatcher VERSION 0.0.1)
 
 # Find required Qt components
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
@@ -50,7 +50,7 @@ else()
 endif()
 
 # Copy settings one time at first build
-set(SVC_CHECK_PATH "${CMAKE_BINARY_DIR}/check-service.txt")
+set(SVC_CHECK_PATH "${CMAKE_BINARY_DIR}/check-autobatcher.txt")
 if(NOT EXISTS ${SVC_CHECK_PATH})
   file(TOUCH ${SVC_CHECK_PATH})
   # Copying XML settings to appdata directory after building

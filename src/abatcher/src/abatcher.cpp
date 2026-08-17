@@ -33,7 +33,7 @@ void Abatcher::setupUI()
     QString caption(QCoreApplication::applicationName());
     caption.append(" v").append(QCoreApplication::applicationVersion());
     setWindowTitle(caption);
-    resize(QSize(1150, 700));
+    setMinimumSize(QSize(600, 700));
 
     auto wdgt = new QWidget(this);
     auto lyout = new QVBoxLayout(wdgt);
@@ -85,6 +85,7 @@ void Abatcher::createUSBConnectionsWindow()
     m_updateTicker->setInterval(3000); // 3 секунд
 
     connect(m_updateTicker, &QTimer::timeout, this, &Abatcher::updateUSBConnectionWindow);
+    connect(m_usbCons, &QTableView::doubleClicked, this, &Abatcher::startModuleWorker);
 }
 
 void Abatcher::updateUSBConnectionWindow()
@@ -108,39 +109,43 @@ void Abatcher::createStartPushButton()
     m_startButton = new QPushButton("Запуск", this);
     m_startButton->setFixedSize(m_startButton->sizeHint());
 
-    connect(m_startButton, &QPushButton::clicked, this,
-        [this]
+    connect(m_startButton, &QPushButton::clicked, this, &Abatcher::startModuleWorker);
+}
+
+void Abatcher::startModuleWorker()
+{
+    bool isDry = m_isDry->isChecked();
+
+    QItemSelectionModel *selectionModel = m_usbCons->selectionModel();
+    QModelIndexList selectedRows = selectionModel->selectedRows();
+
+    if (selectedRows.isEmpty())
+    {
+        EMessageBox::error(this, "Устройство не выбрано");
+        return;
+    }
+
+    QModelIndex currentRow = selectedRows.first();
+    const QAbstractItemModel *mdl = currentRow.model();
+    int row = currentRow.row();
+
+    UsbHidSettings *usb = new UsbHidSettings(this);
+    usb->set(MemKeys::USB::vendor_id, mdl->data(mdl->index(row, 0)).toString().toUInt(nullptr, 16));
+    usb->set(MemKeys::USB::product_id, mdl->data(mdl->index(row, 1)).toString().toUInt(nullptr, 16));
+    usb->set(MemKeys::USB::serial, mdl->data(mdl->index(row, 2)).toString());
+    usb->set(MemKeys::timeout, Settings::get(SettingsKeys::USB::protocomTimeout, 5000));
+    usb->set(MemKeys::reconnectInterval, Settings::get(SettingsKeys::USB::protocomReconnect, 100));
+
+    ModuleWorker *mw = new ModuleWorker(isDry, usb, this);
+    m_widgets->addWidget(mw);
+    m_widgets->setCurrentIndex(1);
+
+    connect(mw, &ModuleWorker::finishWork, this,
+        [this, mw]
         {
-            bool isDry = m_isDry->isChecked();
+            m_widgets->setCurrentIndex(0);
 
-            QItemSelectionModel *selectionModel = m_usbCons->selectionModel();
-            QModelIndexList selectedRows = selectionModel->selectedRows();
-
-            // if (selectedRows.isEmpty())
-            // {
-            //     EMessageBox::error(this, "Устройство не выбрано");
-            //     return;
-            // }
-
-            // QModelIndex currentRow = selectedRows.first();
-
-            UsbHidSettings *usb = new UsbHidSettings(this);
-            // usb->set("vendor_id", 1);
-            // usb->set("product_id", 2);
-            // usb->set("serial", "3");
-            // currentRow.siblingAtColumn(0);
-
-            ModuleWorker *mw = new ModuleWorker(isDry, usb, this);
-            m_widgets->addWidget(mw);
-            m_widgets->setCurrentIndex(1);
-
-            connect(mw, &ModuleWorker::finishWork, this,
-                [this, mw]
-                {
-                    m_widgets->setCurrentIndex(0);
-
-                    m_widgets->removeWidget(mw);
-                    delete mw;
-                });
+            m_widgets->removeWidget(mw);
+            delete mw;
         });
 }

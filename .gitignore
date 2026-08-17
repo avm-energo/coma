@@ -57,6 +57,12 @@ CMakeLists.txt.user*
 /doc/doxy-doc/*
 .xandai_history
 
+<<<<<<< HEAD
 .vscode
 .continue
 .clangd
+=======
+# clangd
+/compile_commands.json
+.cache/
+>>>>>>> 50856d4e (Ready 1-6 and 17)

@@ -33,4 +33,5 @@ private:
     void createUSBConnectionsWindow();
     void updateUSBConnectionWindow();
     void createStartPushButton();
+    void startModuleWorker();
 };
