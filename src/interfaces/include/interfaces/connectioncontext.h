@@ -30,6 +30,7 @@ private:
     Strategy m_strategy;
     QPointer<QThread> m_parcerThreads;
     QThreadPool *m_threadPool;
+    bool m_threadsStarted = false; // см. комментарий в init() у подписки на BaseInterface::started
 
 public:
     explicit ConnectionContext() noexcept;

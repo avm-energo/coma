@@ -70,8 +70,8 @@ private:
     void createConfigCheckProgressBar();
     void checkConfigParams();
     void updateConfigParams();
-    void verifyConfigParams();
-    Error::Msg rereadConfigBlocking();
+    void verifyConfigParams(int attempt);
+    void finishConfigVerify(Error::Msg status, int attempt);
 
 private slots:
     void bsiInitFinished(Error::Msg status);

@@ -183,7 +183,22 @@ Error::Msg SyncConnection::writeFileSync(S2::FilesEnum filenum, const QByteArray
 
 Error::Msg SyncConnection::writeConfigurationSync(const QByteArray &ba)
 {
-    return writeFileSync(S2::FilesEnum::Config, ba);
+    // Не переиспользует writeFileSync() напрямую (в отличие от writeConfigurationSync/writeFirmwareSync
+    // раньше) - AsyncConnection::writeConfiguration() (уже проверенный, рабочий путь записи конфигурации,
+    // используемый ConfigDialog::writeConfig() в АВМ-Сервис) после отправки файла ещё эмитит
+    // silentReconnectMode(), переводящую ConnectionManager в ReconnectMode::Silent - запись конфигурации,
+    // как и запись ВПО, может спровоцировать кратковременный сбой связи с модулем, и это специально
+    // помечает такой возможный реконнект как ожидаемый/тихий, а не "громкую" ошибку. Прямой вызов
+    // m_connection->writeFile() (как в writeFileSync()) этот сигнал не эмитит.
+    reset();
+    auto conn = m_connection->connection(this, &SyncConnection::responseReceived);
+    m_connection->writeConfiguration(ba);
+    eventLoop();
+    QObject::disconnect(conn);
+    if (m_responseResult == Error::Msg::GeneralError)
+        return Error::Msg::FileWriteError;
+    else
+        return m_responseResult;
 }
 
 Error::Msg SyncConnection::writeFirmwareSync(const QByteArray &ba)

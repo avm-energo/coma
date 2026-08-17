@@ -40,6 +40,15 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectionSettings &c
         [this] { setReconnectMode(ReconnectMode::Silent); }, Qt::DirectConnection);
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
 
+    // Все вызывающие места (InterfaceUSBDialog/InterfaceSerialDialog/InterfaceEthernetDialog/
+    // InterfaceEmuDialog в АВМ-Сервис, Mip::start(), Abatcher::startModuleWorker()) создают *Settings
+    // без родителя (`new UsbHidSettings;`) и передают его сюда только по указателю - ни
+    // BaseInterface/UsbHidPort (хранит как m_settings, не владеет), ни сам ConnectionManager нигде
+    // дальше его не удаляют, из-за чего объект настроек утекает на каждую попытку подключения.
+    // Забираем владение здесь, паря к m_currentConnection - тому же объекту, с которым уже связано
+    // время жизни всего дерева текущего соединения (CurrentDevice/S2DataManager/FileProvider и т.д.),
+    // поэтому очистка settings происходит по той же цепочке, что и для остального дерева.
+    std::visit([this](auto &settings) { settings->setParent(m_currentConnection); }, connectionData.settings);
     std::visit([this](auto &settings) { setup(settings); }, connectionData.settings);
     std::visit( // Инициализация контекста для обмена данными
         overloaded {
@@ -138,6 +147,15 @@ void ConnectionManager::reconnect()
 void ConnectionManager::breakConnection()
 {
     m_context.reset();
+    // m_currentConnection владеет всем деревом объектов текущего соединения через Qt parent/child
+    // (Device::CurrentDevice создаётся как QObject(asyncConnection), а через него - S2DataManager,
+    // FileProvider, ConfigStorage и т.д.). Само по себе оно спарено с this (new AsyncConnection(this)
+    // в createConnection()), так что без явного deleteLater() оно не течёт "навсегда", а просто
+    // накапливается как забытый ребёнок ConnectionManager на каждый повторный createConnection() за
+    // время жизни менеджера - deleteLater() нужен, чтобы освободить его сразу, а не откладывать до
+    // уничтожения самого ConnectionManager.
+    if (m_currentConnection != nullptr)
+        m_currentConnection->deleteLater();
     m_currentConnection = nullptr;
     m_isInitial = true;
     m_isReconnectOccurred = false;
