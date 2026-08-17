@@ -63,3 +63,4 @@ CMakeLists.txt.user*
 # clangd
 /compile_commands.json
 .cache/
+compile_commands.json
