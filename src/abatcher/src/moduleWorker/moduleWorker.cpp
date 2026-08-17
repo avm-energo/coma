@@ -25,70 +25,57 @@
 #include <QHBoxLayout>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <array>
 #include <memory>
 #include <vector>
 
 namespace
 {
-// Блок начальных значений реализован только для АВМ-КИВ. Адрес и количество регистров
-// захардкожены по образцу StartupKIVDialog (src/coma/src/startup/startupkivdialog.cpp) —
-// KIVSTARTUPINITREGR и sizeof(CorData)/sizeof(float) там же.
+// Адрес/количество регистров блока начальных значений АВМ-КИВ — см. KIVSTARTUPINITREGR и
+// sizeof(StartupKIVDialog::CorData)/sizeof(float) в startupkivdialog.cpp.
 constexpr quint32 KivStartupRegAddr = 4000;
 constexpr quint32 KivStartupRegCount = 11;
 
-// Анализ/обновление ВПО реализовано только для АВМ-КИВ (по требованию пользователя, 2026-07-03).
-// Эталонный файл ВПО зашит в ресурсы приложения (src/abatcher/resources/firmware.qrc), источник
-// эталонных версий для других типов модулей и общая схема хранения такого эталона пока не определены.
-const QString KivFirmwareResourcePath = ":/firmware/kiv/AVM-KIV_v5_0_22.hex";
+// Эталонный файл ВПО для АВМ-КИВ зашит в ресурсы приложения (resources/firmware.qrc).
+constexpr const char *KivFirmwareResourcePath = ":/firmware/kiv/AVM-KIV_v5_0_22.hex";
 // Версия "5.0-0022" в формате StdFunc::VerToStr/StrToVer, соответствует файлу AVM-KIV_v5_0_22.hex.
 constexpr quint32 KivReferenceFwVersion = (5u << 24) | (0u << 16) | 22u;
 
 // Сколько ждём, пока модуль снова отзовётся после команды перехода на новое ВПО (стирание/запись
 // flash-памяти и перезагрузка), и с какой паузой между повторными попытками достучаться до него.
-constexpr qint64 FwUpgradeReconnectTimeoutMs = 120000;
+constexpr qint64 FwUpgradeReconnectTimeoutMs = 10000;
 constexpr int FwUpgradeRetryIntervalMs = 1000;
 
-// Таймаут перечитывания конфигурации после записи (шаг 15) - ожидание сигнала parseStatus в ответ на
-// FileProvider::request(). Долгая история проб и ошибок (см. doc/abatcher-task.md, баги №1-8) в итоге
-// свелась к тому, что дело было не в модуле и не в соединении, а в собственном блокирующем цикле
-// ожидания (см. verifyConfigParams()) - обычная асинхронная подписка на parseStatus, как в
-// ConfigDialog/avm-debug, отрабатывает за секунды. Таймаут ниже - подстраховка на случай реальной
-// потери ответа, а не расчёт на то, что модулю нужно много времени.
+// Таймаут ожидания parseStatus при перечитывании конфигурации (шаг 15) и число повторных попыток
+// сравнения с эталоном на случай, если модуль ещё не успел применить только что записанные значения.
 constexpr int ConfigVerifyTimeoutMs = 10000;
-// Сколько раз повторяем чтение конфигурации, если значения ещё не совпадают с эталоном (модуль мог не
-// успеть применить их сразу после записи), и с какой паузой между попытками - см. finishConfigVerify().
 constexpr int ConfigVerifyMaxAttempts = 5;
 constexpr int ConfigVerifyRetryDelayMs = 1000;
 
-// Шаги 13-16: анализ и принудительная установка значений заданных по ID конфигурационных
-// параметров. Общего источника/каталога эталонных значений по ID в проекте нет (аналогичный вопрос
-// для эталонного ВПО решили через ресурс приложения, см. выше) — по решению пользователя
-// (2026-07-03) эталонные значения захардкожены прямо здесь.
+// Эталонные значения конфигурационных параметров по ID для шагов 13-16 (общего каталога эталонов
+// в проекте нет, поэтому захардкожены здесь).
 struct ConfigParamRef
 {
     quint32 id;
-    QString name;
-    QString refValue;
+    const char *name;
+    const char *refValue;
 };
 
-const std::vector<ConfigParamRef> ReferenceConfigParams = {
+constexpr std::array<ConfigParamRef, 4> ReferenceConfigParams = { {
     { 1035, "Tevent_pred", "180" },
     { 1036, "Tevent_alarm", "300" },
     { 1037, "Trele_pred", "180" },
     { 1038, "Trele_alarm", "300" },
-};
+} };
 
-// Заполняет конфигурацию эталонными значениями (типы записей берутся из storage конкретного модуля -
-// тот же механизм, что использует XML-парсер для конфигурации по умолчанию, см. S2DataFactory).
-// S2::Configuration нельзя вернуть по значению - копирующий конструктор объявлен explicit.
+// S2::Configuration нельзя вернуть по значению — копирующий конструктор объявлен explicit,
+// поэтому заполняем уже созданный на вызывающей стороне объект.
 void fillReferenceConfig(S2Configuration &refConfig)
 {
     for (const auto &param : ReferenceConfigParams)
-        refConfig.append(param.id, param.refValue);
+        refConfig.append(param.id, QString::fromLatin1(param.refValue));
 }
 
-// Возвращает ID эталонных параметров, которые присутствуют в конфигурации модуля (не для всех типов
-// модулей заданы все параметры) и значение которых не совпадает с эталонным.
 std::vector<quint32> findMismatchedIds(S2DataManager *dataManager, const S2Configuration &refConfig)
 {
     std::vector<quint32> mismatched;
@@ -271,8 +258,8 @@ void ModuleWorker::startDownload()
     m_isCancelled = false;
     m_startButton->setEnabled(false);
     m_cancelButton->setEnabled(true);
-    // "Назад" отключаем на время загрузки: readS2BFileSync крутит цикл событий изнутри,
-    // и клик по "Назад" удалил бы ModuleWorker прямо во время выполнения его же методов
+    // readS2BFileSync крутит цикл событий изнутри — клик "Назад" во время загрузки удалил бы
+    // ModuleWorker прямо во время выполнения его же методов, поэтому кнопка на это время отключена.
     m_closeButton->setEnabled(false);
 
     saveBsi();
@@ -325,7 +312,6 @@ void ModuleWorker::saveBsiExt()
 {
     if (!m_device->getConfigStorage()->getDeviceSettings().HaveBSIExt())
     {
-        // блока BsiExt у этого типа модуля нет — считаем шаг пройденным
         PrbFunc::setRange(this, "prbbsiext", 1);
         PrbFunc::setValue(this, "prbbsiext", 1);
         return;
@@ -360,10 +346,8 @@ void ModuleWorker::requestConfig()
 
 void ModuleWorker::saveConfig(Error::Msg status)
 {
-    // saveConfig() относится только к самому первому скачиванию конфигурации (шаг 5, сохраняется как
-    // config-old) - отключаемся от parseStatus сразу после срабатывания, чтобы повторный запрос
-    // конфигурации на шаге 15 (после принудительной записи эталонных значений, см.
-    // updateConfigParams()/verifyConfigParams()) не привёл к повторному вызову этого слота.
+    // Относится только к первому скачиванию конфигурации (config-old) — отключаемся сразу после
+    // срабатывания, чтобы повторный запрос на шаге 15 не вызвал этот слот ещё раз.
     disconnect(m_device->getS2Datamanager(), &S2DataManager::parseStatus, this, &ModuleWorker::saveConfig);
 
     if (m_isCancelled)
@@ -447,10 +431,8 @@ void ModuleWorker::collectBacBlocks()
 {
     using namespace Device;
 
-    // Состав настроечных блоков (Bac) в XML не описан, поэтому повторяем хардкод из
-    // DialogCreator::createTuneDialogs (АВМ-Наладка, src/coma/src/dialogs/dialogcreator.cpp) —
-    // единственного места в проекте, где раньше выбирался тип регулировочного блока по плате.
-    // Регулировка модулей КТФ/КДВ/КОТ/МПГ там тоже не реализована (TODO), поэтому Bac-блоков для них нет.
+    // Состав Bac-блоков в XML не описан, поэтому повторяем хардкод из
+    // DialogCreator::createTuneDialogs (src/coma/src/dialogs/dialogcreator.cpp).
     const auto &settings = m_device->getConfigStorage()->getDeviceSettings();
     bool isBoxModule = settings.getFeatures()["isBoxModule"] == "1";
     auto boxModel = static_cast<Model>(m_device->getDeviceType());
@@ -665,10 +647,9 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         return;
     }
 
-    // Запись прошивки идёт через USB HID пакетами по 64 байта, т.е. тысячами мелких транзакций —
-    // это может занимать заметное время. Подписываемся на setRange/setValue у SyncConnection (тот же
-    // механизм, что и в saveJournal() для скачивания), чтобы прогресс-бар отражал реальный ход записи,
-    // а не выглядел зависшим.
+    // Запись идёт через USB HID пакетами по 64 байта (~530 КБ — тысячи транзакций), поэтому
+    // подписываемся на setRange/setValue у SyncConnection, как и в saveJournal(), чтобы прогресс-бар
+    // отражал реальный ход записи.
     auto rangeConn = connect(m_device->sync(), &Interface::SyncConnection::setRange, this,
         [this](qint64 max) { PrbFunc::setRange(this, "prbfwupdate", max); });
     auto valueConn = connect(m_device->sync(), &Interface::SyncConnection::setValue, this,
@@ -688,52 +669,38 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         return;
     }
 
-    // C_StartFirmwareUpgrade не укладывается в обычный синхронный запрос-ответ: устройство стирает
-    // и перезаписывает собственную память новым ВПО и перезагружается, пропадая с шины на время,
-    // которое протокольным таймаутом одного запроса не покрывается — поэтому отправляем её асинхронно
-    // (writeCommand, без ожидания прямого ответа), как это делает FwUploadDialog в АВМ-Сервис.
+    // Команда перехода на новое ВПО не укладывается в обычный синхронный запрос-ответ: устройство
+    // стирает себя и перезагружается, пропадая с шины — поэтому отправляем её асинхронно
+    // (writeCommand, без ожидания ответа), как и FwUploadDialog в АВМ-Сервис.
     m_device->async()->writeCommand(Interface::Commands::C_StartFirmwareUpgrade);
 
-    // На реальном модуле после перепрошивки USB HID соединение (открытый хендл hidapi) перестаёт
-    // работать даже после того, как модуль физически появляется на шине снова — простой опрос
-    // reqBSI() по старому соединению ни к чему не приводит, т.к. само физическое отключение по USB не
-    // всегда доходит до ConnectionManager как явная ошибка интерфейса (проверено на реальном модуле).
-    // Поэтому переподключение запускаем сами: ConnectionManager::reconnect() закрывает и заново
-    // открывает интерфейс (hid_close/hid_open) в цикле с паузой reconnectInterval, пока модуль не
-    // отзовётся или пока мы не сдадимся по таймауту ниже.
+    // Старый USB HID хендл сам не оживает после перезагрузки модуля — переподключение (закрытие и
+    // повторное открытие интерфейса) запускаем сами через ConnectionManager::reconnect().
     m_connManager->reconnect();
 
-    // ВАЖНО: пока идёт реконнект, свою SyncConnection::reqBSI() параллельно вызывать нельзя —
-    // DefaultQueryExecutor::reconnectEvent() (вызывается тем же reconnect()) деактивирует очередь
-    // запросов (RequestQueue::deactivate() — входящие запросы в неактивном состоянии игнорируются,
-    // см. request_queue.h), а реактивирует её только ConnectionManager::fastCheckBSI() после того,
-    // как его СОБСТВЕННЫЙ внутренний пробный reqBSI (отправленный из interfaceReconnected()) получит
-    // ответ. Наши параллельные попытки в это окно просто теряются и возвращают Error::Msg::Cancelled —
-    // проверено на реальном модуле (устройство видно через hid_enumerate на каждой попытке, но
-    // reqBSI стабильно возвращает Cancelled). Поэтому сначала дожидаемся сигнала
-    // ConnectionManager::reconnectSuccess (когда очередь снова активна), и только потом сами
-    // один раз запрашиваем полный BSI — fastCheckBSI фиксирует успех уже по первому регистру, а нам
-    // нужен весь блок целиком (включая Fwver) для сравнения версии.
-    bool isReconnected = false;
+    // Пока идёт реконнект, очередь запросов деактивирована (см. RequestQueue/interfaceReconnected()) и
+    // реактивируется только внутренним пробным reqBSI самого ConnectionManager — параллельный
+    // SyncConnection::reqBSI() отсюда в это окно вернул бы Error::Msg::Cancelled. Поэтому ждём сигнал
+    // reconnectSuccess и только потом сами один раз запрашиваем полный BSI (нужен целиком, включая
+    // Fwver, для сравнения версии).
+    m_fwReconnected = false;
     auto reconnectConn = connect(m_connManager, &Interface::ConnectionManager::reconnectSuccess, this,
-        [&isReconnected] { isReconnected = true; });
+        [this] { m_fwReconnected = true; });
 
-    // Заранее неизвестно, сколько секунд займёт переподключение, поэтому вместо счётчика попыток
-    // ("N из 120" выглядит неопрятно и мало что говорит оператору) показываем индикатор "занято" —
-    // тот же приём, что и в ReconnectDialog (АВМ-Сервис) для точно такого же ожидания реконнекта:
-    // QProgressBar с одинаковыми min/max крутится сам по себе, без чисел.
+    // Неизвестно заранее, сколько займёт переподключение — переводим прогресс-бар в режим "занято"
+    // (min == max крутится сам, без чисел), как и ReconnectDialog в АВМ-Сервис.
     PrbFunc::setRange(this, "prbfwupdate", 0);
 
     QElapsedTimer waitTimer;
     waitTimer.start();
-    while (!m_isCancelled && !isReconnected && waitTimer.elapsed() < FwUpgradeReconnectTimeoutMs)
+    while (!m_isCancelled && !m_fwReconnected && waitTimer.elapsed() < FwUpgradeReconnectTimeoutMs)
         StdFunc::Wait(FwUpgradeRetryIntervalMs);
     disconnect(reconnectConn);
 
     if (m_isCancelled)
         return; // отменено пользователем во время ожидания перезагрузки модуля после обновления ВПО
 
-    if (!isReconnected)
+    if (!m_fwReconnected)
     {
         qCritical() << "Модуль не переподключился после обновления ВПО в течение отведённого времени";
         EMessageBox::error(this, "Модуль не переподключился после обновления ВПО в течение отведённого времени");
@@ -742,8 +709,6 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         return;
     }
 
-    // Переподключение подтверждено — переводим бар обратно в обычный (не "занято") режим и сразу
-    // заполняем до конца, показывая завершённый шаг.
     PrbFunc::setRange(this, "prbfwupdate", 1);
     PrbFunc::setValue(this, "prbfwupdate", 1);
 
@@ -861,19 +826,14 @@ void ModuleWorker::updateConfigParams()
 
 void ModuleWorker::verifyConfigParams(int attempt)
 {
-    // Шаг 15-16: перечитать конфигурацию после записи и сравнить с эталоном. Реализовано обычной
-    // асинхронной подпиской на parseStatus + FileProvider::request() - тем же способом, что уже
-    // проверенно быстро (секунды) работает в ConfigDialog/avm-debug (readConfig()/writeConfig()), - а не
-    // через собственный блокирующий цикл ожидания с ручной прокачкой QCoreApplication::processEvents(),
-    // как было реализовано раньше (см. полную историю багов №1-9 в doc/abatcher-task.md - именно
-    // самодельный блокирующий цикл ожидания, а не соединение и не модуль, был первопричиной "зависаний").
+    // Перечитывание конфигурации — обычная асинхронная подписка на parseStatus + FileProvider::request(),
+    // тем же способом, что и ConfigDialog/avm-debug (readConfig()/writeConfig()). Важно не заменять это
+    // на блокирующий цикл ожидания — именно такой цикл раньше приводил к трудноуловимым зависаниям.
     PrbFunc::setRange(this, "prbconfigverify", 1);
 
-    // conn хранится в std::shared_ptr, а не в "голом" new/delete: если ModuleWorker будет уничтожен
-    // до того, как сработает любой из двух путей ниже (например, окно закрыто во время ожидания
-    // ответа), ни один из delete conn; ниже не выполнится, а QMetaObject::Connection без владельца
-    // утёк бы. shared_ptr освобождается сам вместе с лямбдой-получателем, которую Qt уничтожает при
-    // разрыве соединения (в т.ч. при уничтожении context-объекта this), поэтому утечка невозможна.
+    // conn — в std::shared_ptr, а не в "голом" new/delete: если ModuleWorker уничтожится раньше, чем
+    // сработает любой из двух путей ниже, connection всё равно освободится вместе с лямбдой, которую
+    // Qt уничтожает при разрыве соединения — утечки нет.
     auto conn = std::make_shared<QMetaObject::Connection>();
     auto *timeoutTimer = new QTimer(this);
     timeoutTimer->setSingleShot(true);
@@ -920,12 +880,9 @@ void ModuleWorker::finishConfigVerify(Error::Msg status, int attempt)
     fillReferenceConfig(refConfig);
     auto stillMismatched = findMismatchedIds(m_device->getS2Datamanager(), refConfig);
 
-    // На реальном модуле подтверждено (2026-07-06): чтение сразу после записи может вернуть ещё старые
-    // значения - модуль применяет их с небольшой задержкой (тот же эффект, что и известная пауза
-    // StdFunc::Wait(1000) после writeConfigurationSync в Tune82Verification::setupNFiltrValue(),
-    // src/coma/src/tune/82/tune82verification.cpp). В отличие от прежней реализации (баги №1-9),
-    // повтор здесь сделан через QTimer::singleShot (не блокирующий цикл) - несколько попыток с
-    // небольшой паузой, а не бесконечное/многоминутное ожидание.
+    // Модуль применяет только что записанную конфигурацию не мгновенно (тот же эффект, что и
+    // StdFunc::Wait(1000) после writeConfigurationSync в Tune82Verification::setupNFiltrValue()) —
+    // при несовпадении повторяем через QTimer::singleShot вместо блокирующего ожидания.
     if (!stillMismatched.empty() && attempt < ConfigVerifyMaxAttempts)
     {
         qWarning() << QString(
