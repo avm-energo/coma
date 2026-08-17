@@ -1,6 +1,8 @@
 #include "dialogs/connDialogs/ethernetDialog/scanethernetdevicesdialog.h"
 
+#include <common/names.h>
 #include <dialogs/connDialogs/ethernetDialog/interfaceethernetdialog.h>
+#include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/pbfunc.h>
@@ -207,7 +209,7 @@ void ScanEthernetDevicesDialog::createPingTask(quint32 ip)
 void ScanEthernetDevicesDialog::createPortTask()
 {
     QFutureWatcher<QList<quint32>> *watcher = new QFutureWatcher<QList<quint32>>(this);
-    quint16 port = 2404;
+    quint16 port = Settings::get(SettingsKeys::Iec104::iec104DefaultPort, 2404);
     int generation = m_scanGeneration;
 
     connect(this, &ScanEthernetDevicesDialog::cancelRequested, watcher, &QFutureWatcher<QList<quint32>>::cancel);

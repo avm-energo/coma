@@ -1,6 +1,7 @@
 #include "dialogs/connDialogs/ethernetDialog/interfaceethernetdialog.h"
 
 #include <QtNetwork/QHostAddress>
+#include <common/names.h>
 #include <dialogs/connDialogs/ethernetDialog/scanethernetdevicesdialog.h>
 #include <libavm-gen/error.h>
 #include <libavm-gen/settings.h>
@@ -16,9 +17,6 @@
 #include <QSettings>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
-
-constexpr const int defaultPort = 2404;
-constexpr const int defaultBSAdress = 205;
 
 InterfaceEthernetDialog::InterfaceEthernetDialog(QWidget *parent)
     : AbstractInterfaceDialog(parent)
@@ -138,10 +136,12 @@ void InterfaceEthernetDialog::displayScanResults(const QList<quint32> &hosts)
 {
     QStandardItemModel *mdl = qobject_cast<QStandardItemModel *>(m_tableView->model());
     mdl->removeRows(0, mdl->rowCount());
+    QString defaultPort = QString(Settings::get(SettingsKeys::Iec104::iec104DefaultPort, 2404));
+    QString defaultBsAddress = QString(Settings::get(SettingsKeys::Iec104::iec104DefaultBsAddress, 205));
     for (const auto &host : hosts)
     {
         QList<QStandardItem *> row { new QStandardItem("AVM"), new QStandardItem(QHostAddress(host).toString()),
-            new QStandardItem("2404"), new QStandardItem("205") };
+            new QStandardItem(defaultPort), new QStandardItem(defaultBsAddress) };
         mdl->appendRow(row);
     }
 }
@@ -254,7 +254,7 @@ void InterfaceEthernetDialog::setupAddWidget()
     constexpr auto u16max = std::numeric_limits<quint16>::max();
 
     EDoubleSpinBox *portCell = SPBFunc::New(m_addWidget, "port", u16min, u16max, 0);
-    portCell->setValue(defaultPort);
+    portCell->setValue(static_cast<int>(Settings::get(SettingsKeys::Iec104::iec104DefaultPort, 2404)));
     hLayout->addWidget(portCell);
 
     mainLayout->addLayout(hLayout);
@@ -264,7 +264,7 @@ void InterfaceEthernetDialog::setupAddWidget()
     hLayout->addWidget(BSAdressLabel);
 
     EDoubleSpinBox *BSAdressCell = SPBFunc::New(m_addWidget, "BSAdress", u16min, u16max, 0);
-    BSAdressCell->setValue(defaultBSAdress);
+    BSAdressCell->setValue(static_cast<int>(Settings::get(SettingsKeys::Iec104::iec104DefaultBsAddress, 205)));
     hLayout->addWidget(BSAdressCell);
 
     mainLayout->addLayout(hLayout);
