@@ -54,27 +54,17 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
             QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
             // Если интерфейс успешно запустился
             QObject::connect(iface, &BaseInterface::started, m_iface,
-                [iface = QPointer<BaseInterface>(iface), executor = QPointer<DefaultQueryExecutor>(executor),
-                    parserThread = QPointer<QThread>(parserThread), this]
+                [executor = QPointer<DefaultQueryExecutor>(executor), parserThread = QPointer<QThread>(parserThread),
+                    this]
                 {
-                    // При неудачном подключении объекты контекста удаляются через
-                    // deleteLater, но сигнал started может прийти позже их удаления.
-                    if (!iface || !executor || !parserThread)
-                        return;
-                    qDebug() << iface->metaObject()->className() << " connected";
-                    // BaseInterface::started эмитится не только при первом подключении, но и при
-                    // каждом успешном реактивном реконнекте (UsbHidPort::connect() эмитит его
-                    // безусловно на любой успешный connect()). Без этой проверки на реконнекте вся
-                    // нижеследующая настройка потоков/запуск executor'а выполнялась бы ПОВТОРНО, гоняясь
-                    // с уже идущим штатным восстановлением очереди запросов в
-                    // ConnectionManager::interfaceReconnected() (activate/reqBSI/start/deactivate) -
-                    // на реальном модуле АВМ-КИВ эта гонка приводила к тому, что очередь запросов
-                    // оставалась деактивированной навсегда после реконнекта, и все последующие запросы
-                    // (включая перечитывание конфигурации в ModuleWorker после writeConfigurationSync)
-                    // молча пропадали без единого ответа (см. doc/abatcher-task.md, п. 13-16, баг №5/6).
-                    // Поток интерфейса/парсера уже запущены с первого подключения и переоткрытие hid-
-                    // хендла при реконнекте (BaseInterface::reconnect()) не требует их повторного старта -
-                    // так что вся эта настройка нужна ровно один раз за время жизни контекста соединения.
+                    // BaseInterface::started эмитится не только при первом подключении, но и при каждом
+                    // успешном реактивном реконнекте. Без этой проверки настройка потоков/запуск executor'а
+                    // выполнялись бы повторно, гоняясь с восстановлением очереди запросов в
+                    // ConnectionManager::interfaceReconnected() — очередь могла остаться деактивированной
+                    // навсегда, и все последующие запросы молча пропадали бы без ответа. Поток
+                    // интерфейса/парсера уже запущены с первого подключения, переоткрытие hid-хендла при
+                    // реконнекте их повторного старта не требует — вся настройка нужна один раз за время
+                    // жизни контекста соединения.
                     if (m_threadsStarted)
                         return;
                     m_threadsStarted = true;

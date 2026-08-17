@@ -28,18 +28,19 @@ private:
     Interface::ConnectionManager *m_connManager = nullptr;
     Interface::AsyncConnection *m_connection = nullptr;
     Device::CurrentDevice *m_device = nullptr;
-    QTemporaryDir m_tempDir; // хранит скачанные файлы до финальной упаковки в ZIP (см. doc/abatcher-task.md, п.17)
+    QTemporaryDir m_tempDir;
     QString m_zipFileName;
-    QList<DataBlock *> m_bacBlocks; // настроечные блоки (Bac), состав зависит от типа модуля (см. collectBacBlocks)
-    bool m_hasStartup = false; // блок начальных значений реализован только для АВМ-КИВ (см. createStartupProgressBar)
-    bool m_hasFwUpdate = false; // анализ/принудительное обновление ВПО реализовано только для АВМ-КИВ (см. createFwUpdateProgressBar)
+    QList<DataBlock *> m_bacBlocks;
+    bool m_hasStartup = false;
+    bool m_hasFwUpdate = false;
 
     QPushButton *m_closeButton = nullptr;
     QPushButton *m_startButton = nullptr;
     QPushButton *m_cancelButton = nullptr;
-    QWidget *m_progressContainer = nullptr; // сюда добавляются прогресс-бары следующих шагов пакетника
-    QCheckBox *m_measJourCheckBox = nullptr; // позволяет пользователю отказаться от скачивания журнала измерений
+    QWidget *m_progressContainer = nullptr;
+    QCheckBox *m_measJourCheckBox = nullptr;
     bool m_isCancelled = false;
+    bool m_fwReconnected = false;
 
     void setupUI();
     void createCloseButton();
