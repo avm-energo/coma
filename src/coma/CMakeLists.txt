@@ -37,7 +37,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   ctti::ctti
   interfaces
   libavm-limereport
-  qcustomplot
+  libavm-qcustomplot
   libavm-qxlsx
   Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
 )
