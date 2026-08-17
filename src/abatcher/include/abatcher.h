@@ -1,0 +1,1 @@
+class Abatcher : public QMainWindow {}
