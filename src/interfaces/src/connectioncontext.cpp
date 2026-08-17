@@ -23,7 +23,6 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
     m_iface = iface;
     m_executor = executor;
     m_strategy = strategy;
-    m_threadsStarted = false;
 
     if (isValid() && m_strategy != Strategy::None)
     {
@@ -54,21 +53,14 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
             QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
             // Если интерфейс успешно запустился
             QObject::connect(iface, &BaseInterface::started, m_iface,
-                [executor = QPointer<DefaultQueryExecutor>(executor), parserThread = QPointer<QThread>(parserThread),
-                    this]
+                [iface = QPointer<BaseInterface>(iface), executor = QPointer<DefaultQueryExecutor>(executor),
+                    parserThread = QPointer<QThread>(parserThread)]
                 {
-                    // BaseInterface::started эмитится не только при первом подключении, но и при каждом
-                    // успешном реактивном реконнекте. Без этой проверки настройка потоков/запуск executor'а
-                    // выполнялись бы повторно, гоняясь с восстановлением очереди запросов в
-                    // ConnectionManager::interfaceReconnected() — очередь могла остаться деактивированной
-                    // навсегда, и все последующие запросы молча пропадали бы без ответа. Поток
-                    // интерфейса/парсера уже запущены с первого подключения, переоткрытие hid-хендла при
-                    // реконнекте их повторного старта не требует — вся настройка нужна один раз за время
-                    // жизни контекста соединения.
-                    if (m_threadsStarted)
+                    // При неудачном подключении объекты контекста удаляются через
+                    // deleteLater, но сигнал started может прийти позже их удаления.
+                    if (!iface || !executor || !parserThread)
                         return;
-                    m_threadsStarted = true;
-
+                    qDebug() << iface->metaObject()->className() << " connected";
                     executor->moveToThread(parserThread);
                     parserThread->start();
                     executor->start();
