@@ -47,7 +47,7 @@ void InfoDialog::setupUI()
     for (int i = 0; i < int(bsiRecords.size()); ++i)
     {
         const auto &rec = bsiRecords[i];
-        auto lbl = LBLFunc::New(bsiTab, rec.desc);
+        auto lbl = LBLFunc::New(bsiTab, rec.desc.simplified());
         lbl->setWordWrap(false);
         bsiGrid->addWidget(lbl, i + 1, 0, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
         bsiGrid->addWidget(
@@ -68,7 +68,7 @@ void InfoDialog::setupUI()
         for (int i = 0; i < int(bsiExtRecords.size()); ++i)
         {
             const auto &rec = bsiExtRecords[i];
-            auto lbl = LBLFunc::New(bsiExtTab, rec.desc);
+            auto lbl = LBLFunc::New(bsiExtTab, rec.desc.simplified());
             lbl->setWordWrap(false);
             bsiExtGrid->addWidget(lbl, i, 0, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
             bsiExtGrid->addWidget(ViewType::ViewTypeFunc::New(bsiExtTab, rec.name, rec.type), i, 1, 1, 1,

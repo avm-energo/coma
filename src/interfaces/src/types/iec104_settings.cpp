@@ -6,6 +6,7 @@ IEC104Settings::IEC104Settings(QObject *parent) noexcept : BaseSettings(parent)
     set("port", 0);
     set("bsAdress", 0);
     set("disconnectTimeout", 5000); ///< Тайм-аут ожидания корректного отключения от хоста, мс.
+    set("connectTimeout", 5000); ///< Тайм-аут ожидания установки соединения (Ethernet), мс.
     set("t0", 30); ///< Тайм-аут при установке соединения.
     set("t1", 15); ///< Тайм-аут при посылке или тестировании APDU.
     set("t2", 10); ///< Тайм-аут для подтверждения в случае отсутствия сообщения с данными.

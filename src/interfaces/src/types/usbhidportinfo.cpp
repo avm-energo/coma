@@ -1,6 +1,6 @@
 #include "interfaces/types/usbhidportinfo.h"
 
-#include <hidapi/hidapi.h>
+#include <libavm-hidapi/libavm-hidapi.h>
 
 QList<UsbHidSettings *> UsbHidPortInfo::devicesFound(quint16 vid)
 {
