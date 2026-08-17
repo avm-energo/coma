@@ -195,22 +195,27 @@ void Iec104QueryExecutor::sendFileReply(const FileReplyAction action, const quin
     writeToInterface(reply);
 }
 
-void Iec104QueryExecutor::sendFileWriteReply(const FileWriteReplyAction action, const QByteArray &payload) noexcept
+void Iec104QueryExecutor::sendFileWriteReply(
+    const FileWriteReplyAction action, const quint8 fileNum, const quint8 section, const QByteArray &payload) noexcept
 {
+    // payload здесь - это данные ОДНОЙ секции (не всего файла), отрезанные в
+    // Iec104ResponseParser::writeSectionSlice - секции размером более SECTIONSIZE устройство не примет.
+    // Исключение - FileFinal: там payload это файл ЦЕЛИКОМ (см. createFileFinalMessage).
     switch (action)
     {
     case FileWriteReplyAction::SectionReady:
-        writeToInterface(getRequestParser()->createSectionReadyMessage(static_cast<quint32>(payload.size())));
+        writeToInterface(
+            getRequestParser()->createSectionReadyMessage(fileNum, section, static_cast<quint32>(payload.size())));
         break;
     case FileWriteReplyAction::SendSegments:
         // Строим и сразу отправляем кадры по одному, не пачкой - иначе все они "запекут" в себе
         // один и тот же снимок N(S)/N(R), т.к. счётчики продвигаются только реальной отправкой.
         for (const auto &chunk : getRequestParser()->splitIntoSegments(payload))
-            writeToInterface(getRequestParser()->buildSegmentFrame(chunk));
-        writeToInterface(getRequestParser()->buildLastSectionFrame(payload));
+            writeToInterface(getRequestParser()->buildSegmentFrame(fileNum, section, chunk));
+        writeToInterface(getRequestParser()->buildLastSectionFrame(fileNum, section, payload));
         break;
     case FileWriteReplyAction::FileFinal:
-        writeToInterface(getRequestParser()->createFileFinalMessage(payload));
+        writeToInterface(getRequestParser()->createFileFinalMessage(fileNum, section, payload));
         break;
     }
 }

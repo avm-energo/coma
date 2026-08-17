@@ -60,6 +60,9 @@ DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queu
     // Обработка счетчиков пришедшего I-пакета
     QObject::connect(responseParser, &Iec104ResponseParser::infoTransferFormatReceived, //
         executor, &Iec104QueryExecutor::countersFromIPacket);                           //
+    // Обработка счетчиков пришедшего S-пакета
+    QObject::connect(responseParser, &Iec104ResponseParser::SupervisoryFormatReceived, //
+        executor, &Iec104QueryExecutor::countersFromSPacket);
     // Проверка посылки U-формата исполнителем запросов
     QObject::connect(responseParser, &Iec104ResponseParser::unnumberedFormatReceived, //
         executor, &Iec104QueryExecutor::checkUnnumberedFormat);                       //
@@ -72,9 +75,6 @@ DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queu
     // Отправка следующего шага реактивного протокола записи файла (конфигурация, прошивка)
     QObject::connect(responseParser, &Iec104ResponseParser::fileWriteReplyNeeded, //
         executor, &Iec104QueryExecutor::sendFileWriteReply);                      //
-    // Проактивный запрос переподключения сразу после подтверждённой записи файла в устройство
-    QObject::connect(responseParser, &Iec104ResponseParser::writeCompleted, //
-        executor, &Iec104QueryExecutor::reconnectRequested);                //
     executor->setParsers(requestParser, responseParser);
     return executor;
 }

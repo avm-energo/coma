@@ -9,6 +9,10 @@ namespace Interface
 
 using namespace Iec104;
 
+/// \brief Адрес одиночной команды (C_SC_NA_1) запуска обновления ВПО.
+/// \see Av-tuk.core: Com104Handler (M52_104.c, case 802) - тот же адрес, что и Modbus::firmwareAddr.
+constexpr quint32 firmwareUpgradeAddr = 802;
+
 Iec104RequestParser::Iec104RequestParser(QObject *parent) : BaseRequestParser(parent), m_baseStationAddress(0) { }
 
 void Iec104RequestParser::basicProtocolSetup() noexcept
@@ -100,6 +104,11 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
         m_request = createFileReadyMessage(static_cast<quint8>(id), static_cast<quint32>(file.size()));
         break;
     }
+    case Commands::C_StartFirmwareUpgrade:
+    {
+        m_request = createSingleCommand(firmwareUpgradeAddr, true);
+        break;
+    }
     case Commands::C_WriteUserValues:
     {
         // Q_ASSERT(item.canConvert<DataTypes::FloatStruct>());
@@ -146,6 +155,31 @@ void Iec104RequestParser::exceptionalAction(const CommandStruct &command) noexce
 {
     Q_UNUSED(command);
     m_isExceptionalSituation = false;
+}
+
+QByteArray Iec104RequestParser::createSingleCommand(const quint32 address, const bool value)
+{
+    try
+    {
+        ASDU asdu(m_baseStationAddress);
+        asdu.setRequestData(uint24(address), value);
+        auto request = asdu.toByteArray();
+        APCI apci(*m_ctrlBlock, request.size());
+        apci.m_ctrlBlock.m_format = FrameFormat::Information;
+        request.prepend(apci.toByteArray());
+        emit currentCommand(Iec104::Command::Command45);
+        return request;
+    }
+    catch (const ApciError &e)
+    {
+        pringApciError(e);
+        return QByteArray();
+    }
+    catch (const std::exception &e)
+    {
+        qDebug() << "Unhandled exception: " << e.what();
+        return QByteArray();
+    }
 }
 
 QByteArray Iec104RequestParser::createGroupRequest(const quint32 groupNum)
@@ -232,14 +266,17 @@ QByteArray Iec104RequestParser::createFileReadyMessage(const quint8 fileNum, con
     return buildFileFrame(MessageDataType::F_FR_NA_1, fileNum, static_cast<quint8>(fileSize & 0xFF), tail);
 }
 
-QByteArray Iec104RequestParser::createSectionReadyMessage(const quint32 fileSize) noexcept
+QByteArray Iec104RequestParser::createSectionReadyMessage(
+    const quint8 fileNum, const quint8 section, const quint32 sectionSize) noexcept
 {
-    // fileNum и номер секции захардкожены в 0x01 - см. легаси IEC104Parser::sectionReady.
+    // fileNum - реальный номер файла (тот же, что в createFileReadyMessage), не захардкоженная
+    // "легаси" единица - иначе устройство отвечает SCQ/AFQ с ошибкой "несуществующее имя файла"
+    // (ГОСТ 101 §7.2.6.30/32), т.к. ждёт продолжения именно ТОГО файла, что было объявлено.
     QByteArray tail;
-    tail.append(static_cast<char>(fileSize & 0xFF));
-    tail.append(static_cast<char>((fileSize >> 8) & 0xFF));
-    tail.append(static_cast<char>((fileSize >> 16) & 0xFF));
-    return buildFileFrame(MessageDataType::F_SR_NA_1, 0x01, 0x01, tail);
+    tail.append(static_cast<char>(sectionSize & 0xFF));
+    tail.append(static_cast<char>((sectionSize >> 8) & 0xFF));
+    tail.append(static_cast<char>((sectionSize >> 16) & 0xFF));
+    return buildFileFrame(MessageDataType::F_SR_NA_1, fileNum, section, tail);
 }
 
 QList<QByteArray> Iec104RequestParser::splitIntoSegments(const QByteArray &payload) const noexcept
@@ -251,31 +288,34 @@ QList<QByteArray> Iec104RequestParser::splitIntoSegments(const QByteArray &paylo
     return chunks;
 }
 
-QByteArray Iec104RequestParser::buildSegmentFrame(const QByteArray &chunk) noexcept
+QByteArray Iec104RequestParser::buildSegmentFrame(
+    const quint8 fileNum, const quint8 section, const QByteArray &chunk) noexcept
 {
     QByteArray tail(1, static_cast<char>(chunk.size()));
     tail.append(chunk);
-    return buildFileFrame(MessageDataType::F_SG_NA_1, 0x01, 0x01, tail);
+    return buildFileFrame(MessageDataType::F_SG_NA_1, fileNum, section, tail);
 }
 
-QByteArray Iec104RequestParser::buildLastSectionFrame(const QByteArray &payload) noexcept
+QByteArray Iec104RequestParser::buildLastSectionFrame(
+    const quint8 fileNum, const quint8 section, const QByteArray &sectionPayload) noexcept
 {
     quint8 checksum = 0;
-    for (const auto byte : payload)
+    for (const auto byte : sectionPayload)
         checksum += static_cast<quint8>(byte);
     QByteArray lsTail(1, static_cast<char>(0x03));
     lsTail.append(static_cast<char>(checksum));
-    return buildFileFrame(MessageDataType::F_LS_NA_1, 0x01, 0x01, lsTail);
+    return buildFileFrame(MessageDataType::F_LS_NA_1, fileNum, section, lsTail);
 }
 
-QByteArray Iec104RequestParser::createFileFinalMessage(const QByteArray &payload) noexcept
+QByteArray Iec104RequestParser::createFileFinalMessage(
+    const quint8 fileNum, const quint8 section, const QByteArray &fullFilePayload) noexcept
 {
     quint8 checksum = 0;
-    for (const auto byte : payload)
+    for (const auto byte : fullFilePayload)
         checksum += static_cast<quint8>(byte);
     QByteArray tail(1, static_cast<char>(0x01));
     tail.append(static_cast<char>(checksum));
-    return buildFileFrame(MessageDataType::F_LS_NA_1, 0x01, 0x01, tail);
+    return buildFileFrame(MessageDataType::F_LS_NA_1, fileNum, section, tail);
 }
 
 QByteArray Iec104RequestParser::createStartMessage() const noexcept

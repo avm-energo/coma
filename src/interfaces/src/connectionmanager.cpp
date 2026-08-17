@@ -105,8 +105,7 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectionSettings &c
         this, &ConnectionManager::handleInterfaceErrors, Qt::QueuedConnection);
     connect(m_context.m_executor, &DefaultQueryExecutor::timeout, //
         this, &ConnectionManager::handleQueryExecutorTimeout);
-    // Проактивный реконнект (например, сразу после подтверждённой записи файла в устройство),
-    // не дожидаясь реактивного обнаружения по счётчикам тайм-аутов/ошибок
+    // Реконнект по инициативе исполнителя запросов (истечение t1, несовпадение счётчиков I-пакета)
     connect(m_context.m_executor, &DefaultQueryExecutor::reconnectRequested, //
         this, &ConnectionManager::reconnect);
     connect(this, &ConnectionManager::reconnectInterface,         //

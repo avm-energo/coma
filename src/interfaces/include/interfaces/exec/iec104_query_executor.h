@@ -77,7 +77,8 @@ private slots:
     /// \brief Слот для отправки следующего шага реактивного протокола передачи файла устройству.
     void sendFileReply(const Iec104::FileReplyAction action, const quint8 fileNum, const quint8 section) noexcept;
     /// \brief Слот для отправки следующего шага реактивного протокола записи файла в устройство.
-    void sendFileWriteReply(const Iec104::FileWriteReplyAction action, const QByteArray &payload) noexcept;
+    void sendFileWriteReply(const Iec104::FileWriteReplyAction action, const quint8 fileNum, const quint8 section,
+        const QByteArray &payload) noexcept;
     /// \brief Слот для проверки и подтверждения счетчиков с I-пакета.
     void countersFromIPacket(const RSCounter &counters) noexcept;
     /// \brief Слот для проверки и подтверждения счетчиков с S-пакета.

@@ -17,6 +17,25 @@ private:
     Iec104::Command m_currentCommand;
     Iec104::ASDUUnpacker m_unpacker;
 
+    /// \brief ACTCON/ACTTERM получены для ТЕКУЩЕЙ команды (Command45/RequestGroup) - см. verify().
+    /// \details Раньше это были static-локали внутри verify() - общее состояние "утекало" между
+    /// РАЗНЫМИ командами: если у одной команды пришёл только ACTCON (например, устройство ушло в
+    /// ResetSystem() после ACTCON на C_StartFirmwareUpgrade и не успело прислать ACTTERM), "confirm"
+    /// оставался true навсегда и ошибочно "засчитывался" вместе с ACTTERM СЛЕДУЮЩЕЙ, никак не связанной
+    /// команды - например, попап об успешном переходе на новое ПО показывался только после того, как
+    /// пользователь отдельно записывал конфигурацию. Сбрасываются в receiveCurrentCommand() - на старте
+    /// каждой новой команды, а не только по факту confirm+terminate.
+    bool m_actConfirmed = false, m_actTerminated = false;
+
+    /// \brief Номер текущей секции при ЗАПИСИ файла на устройство (1-based).
+    /// \details Устройство принимает секции не больше SECTIONSIZE каждая (см. handleFileTransferAsdu) -
+    /// в отличие от чтения файла, где номер секции присылает само устройство, при записи именно
+    /// мы разбиваем payload на секции и должны сами помнить, на какой из них сейчас находимся.
+    quint8 m_currentWriteSection = 1;
+
+    /// \brief Кусок payload'а, соответствующий текущей секции записи (m_currentWriteSection).
+    QByteArray writeSectionSlice(const QByteArray &payload) const noexcept;
+
     /// \brief Используется для разбиения буффера входных данных на
     /// массив байт каждого ответа от устройства.
     void splitBuffer() noexcept;
@@ -56,6 +75,8 @@ signals:
     void unnumberedFormatReceived(const Iec104::ControlFunc func, const Iec104::ControlArg arg);
     /// \brief Пришел I-пакет.
     void infoTransferFormatReceived(const RSCounter counters);
+    /// \brief Пришел S-пакет.
+    void SupervisoryFormatReceived(const RSCounter counters);
     /// \brief Сигнал для информирования исполнителя запросов
     /// о том, что запрошенные данные получены.
     void requestedDataReceived();
@@ -64,12 +85,14 @@ signals:
     void fileReplyNeeded(const Iec104::FileReplyAction action, const quint8 fileNum, const quint8 section);
     /// \brief Сигнал для запроса у исполнителя отправки следующего
     /// шага реактивного протокола записи файла в устройство.
-    void fileWriteReplyNeeded(const Iec104::FileWriteReplyAction action, const QByteArray &payload);
-    /// \brief Сигнал о том, что запись файла в устройство подтверждена целиком.
-    /// \details Устройство может перезагружать канал связи после применения записанного
-    /// файла (конфигурация, ВПО) - сигнал используется, чтобы сразу инициировать
-    /// переподключение, не дожидаясь реактивного обнаружения по тайм-аутам.
-    void writeCompleted();
+    /// \param fileNum - номер файла, объявленный в исходном C_WriteFile (не жёстко заданная "1" -
+    /// устройство иначе отвечает "несуществующее имя файла", ГОСТ 101 §7.2.6.30/32).
+    /// \param section - номер секции, к которой относится это действие.
+    /// \param payload - данные ИМЕННО этой секции (уже отрезанные от общего файла) для всех действий,
+    /// КРОМЕ FileFinal - там передаётся файл целиком, т.к. контрольная сумма финального F_LS (qualifier=1)
+    /// считается устройством нарастающим итогом по всему файлу, а не только по последней секции.
+    void fileWriteReplyNeeded(const Iec104::FileWriteReplyAction action, const quint8 fileNum, const quint8 section,
+        const QByteArray &payload);
 };
 
 } // namespace Interface

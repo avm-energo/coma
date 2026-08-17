@@ -60,6 +60,8 @@ public:
 
     /// \brief Подтверждение пакетов из пришедшего пакета.
     /// \see Гпункт 5.1 Защита от потерь и дублирования сообщений. рис. 7, 10.
+    /// \warning setAck() сейчас безусловно перезаписывает m_acknowledge, не проверяя, что пришедший N(R) вообще
+    /// осмысленный.
     inline void setAck(const RSCounter &counters)
     {
         m_acknowledge = counters.m_received;

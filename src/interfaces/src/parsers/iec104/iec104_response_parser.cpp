@@ -2,10 +2,16 @@
 
 #include <QDebug>
 
+#include <algorithm>
+
 namespace Interface
 {
 
 using namespace Iec104;
+
+/// \brief Максимальный размер одной секции файла при записи на устройство.
+/// \see Av-tuk.core: M52G/AV-TUK_conf/conf104.h - #define SECTIONSIZE 2048.
+constexpr quint32 writeSectionSize = 2048;
 
 Iec104ResponseParser::Iec104ResponseParser(QObject *parent)
     : BaseResponseParser(parent)
@@ -75,34 +81,45 @@ Error::Msg Iec104ResponseParser::validate(const QByteArray &response) noexcept
 
 void Iec104ResponseParser::verify(const Iec104::ASDU &asdu) noexcept
 {
-    /// TODO: shitty code
-    static bool confirm = false, terminate = false;
-    emit needToLog(
-        QString("DIAG verify: m_currentCommand=%1 cause=0x%2 confirm=%3 terminate=%4")
-            .arg(static_cast<int>(m_currentCommand))
-            .arg(static_cast<int>(asdu.m_cause), 2, 16, QChar('0'))
-            .arg(confirm)
-            .arg(terminate),
-        Logger::Debug);
     switch (m_currentCommand)
     {
+    case Command::Command45: // одиночная команда (C_SC_NA_1) - устройство шлёт ACTCON, см. WRITE_COM45 в Write104.c
+    {
+        // Единственный потребитель Command45 сейчас - C_StartFirmwareUpgrade (адрес 802). Устройство
+        // шлёт ACTCON СИНХРОННО, ДО вызова обработчика команды (см. Write104.c: WriteCom45(...,ACTCON,...)
+        // идёт раньше Func45(...)), а сам обработчик (Com104Handler, case 802) сразу запускает
+        // ResetSystem() - т.е. реальный ребут устройства. ACTTERM формально шлётся следом, но по факту
+        // (см. живой pcap) не успевает уйти до разрыва TCP-соединения - устройство просто рвёт связь
+        // (RST) вместо него. Поэтому, в отличие от RequestGroup, ACTCON здесь - самодостаточный признак
+        // успеха; ждать ACTTERM для этой команды означает ждать вечно и никогда не показать пользователю
+        // попап об успешном переходе на новое ПО.
+        if (asdu.m_cause == CauseOfTransmission::ActivationConfirm)
+        {
+            m_actConfirmed = false;
+            m_actTerminated = false;
+            m_currentCommand = Command::None;
+            processOk();
+            emit requestedDataReceived();
+        }
+        break;
+    }
     case Command::RequestGroup:
     {
         switch (asdu.m_cause)
         {
         case CauseOfTransmission::ActivationConfirm:
-            confirm = true;
+            m_actConfirmed = true;
             break;
         case CauseOfTransmission::ActivationTermination:
-            terminate = true;
+            m_actTerminated = true;
             break;
         default:
             break;
         }
-        if (confirm && terminate)
+        if (m_actConfirmed && m_actTerminated)
         {
-            confirm = false;
-            terminate = false;
+            m_actConfirmed = false;
+            m_actTerminated = false;
             m_currentCommand = Command::None;
             emit requestedDataReceived();
         }
@@ -140,6 +157,7 @@ void Iec104ResponseParser::parse()
                 parseInfoFormat(response);
                 break;
             case FrameFormat::Supervisory:
+                emit SupervisoryFormatReceived(m_currentAPCI.m_ctrlBlock.m_counters);
                 parseSupervisoryFormat();
                 break;
             case FrameFormat::Unnumbered:
@@ -182,6 +200,11 @@ bool Iec104ResponseParser::isFileTransferType(const MessageDataType type) noexce
     default:
         return false;
     }
+}
+
+QByteArray Iec104ResponseParser::writeSectionSlice(const QByteArray &payload) const noexcept
+{
+    return payload.mid((m_currentWriteSection - 1) * writeSectionSize, writeSectionSize);
 }
 
 void Iec104ResponseParser::handleFileTransferAsdu(const ASDU &asdu) noexcept
@@ -249,27 +272,68 @@ void Iec104ResponseParser::handleFileTransferAsdu(const ASDU &asdu) noexcept
     {
         if (asdu.m_data.size() < 7)
             return;
-        const auto qualifier = std::uint8_t(asdu.m_data[6]);
+        // SCQ (Указатель выбора и вызова, ГОСТ 101 §7.2.6.30) = CP8{select[1..4], qualifier[5..8]} -
+        // младший нибл несёт код действия ("select"), старший - НЕЗАВИСИМЫЙ код ошибки (1..5:
+        // область недоступна/ошибка CRC/недопустимая услуга/несуществующее имя файла/секции). При
+        // одной секции старший нибл был всегда 0, поэтому точное сравнение байта целиком "случайно"
+        // работало - начиная со второй секции там появляется код ошибки (например, 0x46 = select
+        // "запрос секции" + qualifier "несуществующее имя файла"), и точное сравнение теряло
+        // сообщение. Сверяем только select; сам код ошибки в старшем нибле пока не обрабатываем.
+        const auto select = std::uint8_t(asdu.m_data[6]) & 0x0F;
+        const auto fileNum = static_cast<quint8>(m_request.arg1.value<quint32>());
         const auto payload = m_request.arg2.value<QByteArray>();
-        if (qualifier == 0x02) // запрос файла (размера)
-            emit fileWriteReplyNeeded(FileWriteReplyAction::SectionReady, payload);
-        else if (qualifier == 0x06) // запрос сегментов
-            emit fileWriteReplyNeeded(FileWriteReplyAction::SendSegments, payload);
+        if (select == 0x02) // запрос файла - начинаем с первой секции
+        {
+            m_currentWriteSection = 1;
+            // Реактивный протокол записи файла не проходит через общий механизм
+            // getNextDataSection/totalWritingBytes (он рассчитан на клиент-ведущую отправку кусками
+            // у Modbus/Protocom) - progress bar для IEC104 ведём вручную по ходу секций.
+            emit responseParsed(
+                DataTypes::GeneralResponseStruct { DataTypes::GeneralResponseTypes::DataSize, quint64(payload.size()) });
+            emit fileWriteReplyNeeded(
+                FileWriteReplyAction::SectionReady, fileNum, m_currentWriteSection, writeSectionSlice(payload));
+        }
+        else if (select == 0x06) // запрос сегментов ТЕКУЩЕЙ секции
+            emit fileWriteReplyNeeded(
+                FileWriteReplyAction::SendSegments, fileNum, m_currentWriteSection, writeSectionSlice(payload));
         break;
     }
     case MessageDataType::F_AF_NA_1: // Ack - подтверждение от устройства при записи файла
     {
         if (asdu.m_data.size() < 7)
             return;
-        const auto qualifier = std::uint8_t(asdu.m_data[6]);
-        if (qualifier == 0x03) // секция принята - завершаем файл
-            emit fileWriteReplyNeeded(FileWriteReplyAction::FileFinal, m_request.arg2.value<QByteArray>());
+        // AFQ (ГОСТ 101 §7.2.6.32) той же структуры, что SCQ (см. комментарий выше) - сверяем
+        // только младший нибл (код подтверждения), не байт целиком.
+        const auto qualifier = std::uint8_t(asdu.m_data[6]) & 0x0F;
+        const auto fileNum = static_cast<quint8>(m_request.arg1.value<quint32>());
+        const auto payload = m_request.arg2.value<QByteArray>();
+        if (qualifier == 0x03) // секция принята
+        {
+            // Байт, реально принятых устройством к этому моменту (текущая секция уже подтверждена).
+            const auto bytesWritten = std::min(quint32(m_currentWriteSection) * writeSectionSize, quint32(payload.size()));
+            emit responseParsed(DataTypes::GeneralResponseStruct { DataTypes::GeneralResponseTypes::DataCount, bytesWritten });
+            // Есть ли ещё данные за пределами уже отправленных секций - если да, переходим
+            // к следующей секции, если нет - шлём финальный F_LS (qualifier=1), секций больше нет.
+            const bool hasMoreSections = quint32(m_currentWriteSection) * writeSectionSize < quint32(payload.size());
+            if (hasMoreSections)
+            {
+                ++m_currentWriteSection;
+                emit fileWriteReplyNeeded(
+                    FileWriteReplyAction::SectionReady, fileNum, m_currentWriteSection, writeSectionSlice(payload));
+            }
+            else
+                // Контрольная сумма финального F_LS (qualifier=1) считается устройством НЕ по последней
+                // секции, а нарастающим итогом по ВСЕМУ файлу (KS_FileGet в File104.c, обнуляется только
+                // при приёме F_FR_NA_1 и копится на каждом сегменте каждой секции) - поэтому сюда, в отличие
+                // от остальных действий, передаём payload целиком, а не срез текущей секции.
+                emit fileWriteReplyNeeded(FileWriteReplyAction::FileFinal, fileNum, m_currentWriteSection, payload);
+        }
         else if (qualifier == 0x01) // файл принят целиком - готово
         {
-            const auto size = static_cast<quint64>(m_request.arg2.value<QByteArray>().size());
+            const auto size = static_cast<quint64>(payload.size());
+            m_currentWriteSection = 1;
             emit responseParsed(DataTypes::GeneralResponseStruct { DataTypes::GeneralResponseTypes::Ok, size });
             emit requestedDataReceived();
-            emit writeCompleted();
         }
         break;
     }
@@ -291,11 +355,11 @@ void Iec104ResponseParser::parseUnnumberedFormat() noexcept
 
 void Iec104ResponseParser::receiveCurrentCommand(const Iec104::Command currCommand) noexcept
 {
-    emit needToLog(
-        QString("DIAG receiveCurrentCommand: %1 -> %2")
-            .arg(static_cast<int>(m_currentCommand))
-            .arg(static_cast<int>(currCommand)),
-        Logger::Debug);
+    // Новая команда - любой ACTCON/ACTTERM, недополученный ПРЕДЫДУЩЕЙ командой (например,
+    // устройство ушло в ResetSystem() сразу после ACTCON, не прислав ACTTERM - см. m_actTerminated),
+    // больше не актуален и не должен "засчитаться" вместе с ACTCON/ACTTERM этой новой команды.
+    m_actConfirmed = false;
+    m_actTerminated = false;
     m_currentCommand = currCommand;
 }
 
