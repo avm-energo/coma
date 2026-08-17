@@ -100,6 +100,11 @@ void Abatcher::updateUSBConnectionWindow()
             new QStandardItem(QString::number(row->get<u16>(MemKeys::USB::product_id), 16)),
             new QStandardItem(row->get<QString>(MemKeys::USB::serial)) });
     }
+    // UsbHidPortInfo::devicesFound() возвращает список без родителя - только данные уже
+    // скопированы в модель выше, сами объекты больше не нужны. Без qDeleteAll() эта утечка
+    // повторяется каждые 3 секунды (m_updateTicker) на каждое найденное USB HID устройство,
+    // пока запущен Абатчер - подтверждено ASan/LeakSanitizer.
+    qDeleteAll(usbDevices);
 }
 
 void Abatcher::createStartPushButton()
@@ -152,6 +157,14 @@ void Abatcher::startModuleWorker()
             m_widgets->setCurrentIndex(0);
 
             m_widgets->removeWidget(mw);
-            delete mw;
+            // deleteLater(), а не delete: finishWork() может дойти сюда реентерабельно из
+            // ModuleWorker::cancelDownload() (Отмена -> finishDownload() реэнейблит "Назад" ->
+            // клик по нему), пока SyncConnection::eventLoop() ещё крутит вложенный
+            // QCoreApplication::processEvents() где-то выше по стеку внутри самого mw
+            // (saveBacBlock()/... ->  *Sync()). Немедленный delete тогда уничтожил бы mw (и
+            // встроенный в CurrentDevice SyncConnection) прямо под этим вложенным циклом -
+            // подтверждено ASan use-after-free в SyncConnection::eventLoop(). deleteLater()
+            // откладывает удаление до возврата в внешний цикл событий, когда стек уже размотан.
+            mw->deleteLater();
         });
 }

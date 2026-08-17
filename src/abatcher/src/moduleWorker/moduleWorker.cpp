@@ -19,12 +19,13 @@
 #include <s2/s2util.h>
 #include <xml/xmlconfigloader.h>
 
-#include <QCoreApplication>
 #include <QDateTime>
 #include <QElapsedTimer>
 #include <QFile>
 #include <QHBoxLayout>
+#include <QTimer>
 #include <QVBoxLayout>
+#include <memory>
 #include <vector>
 
 namespace
@@ -47,23 +48,17 @@ constexpr quint32 KivReferenceFwVersion = (5u << 24) | (0u << 16) | 22u;
 constexpr qint64 FwUpgradeReconnectTimeoutMs = 120000;
 constexpr int FwUpgradeRetryIntervalMs = 1000;
 
-// Сколько ждём и с какой паузой перечитываем конфигурацию после записи (шаг 15), пока значения не
-// совпадут с эталоном. На реальном модуле обнаружено (2026-07-03): чтение конфигурации сразу после
-// успешной writeConfigurationSync возвращает СТАРЫЕ значения — модуль применяет записанную
-// конфигурацию не мгновенно, а с некоторой задержкой (аналогично задержке после C_StartFirmwareUpgrade,
-// см. п. 9-12). Что задержка реальна и не выдумана — косвенно подтверждается независимо в другом месте
-// проекта: Tune82Verification::setupNFiltrValue() (src/coma/src/tune/82/tune82verification.cpp) делает
-// StdFunc::Wait(1000) сразу после своего writeConfigurationSync без объяснения зачем.
-// Первая оценка (15 секунд суммарно, 5 секунд на попытку) на реальном модуле АВМ-КИВ оказалась
-// недостаточной — ни одна из попыток перечитывания не успевала получить ответ вообще (Timeout на
-// каждой попытке, а не "значения ещё старые"). Увеличено с запасом; точное время, которое реально
-// требуется модулю, всё ещё не измерено - при следующей проверке на железе стоит смотреть в лог
-// (см. диагностические qDebug в rereadConfigBlocking/verifyConfigParams) и по факту скорректировать.
-constexpr qint64 ConfigVerifyTimeoutMs = 60000;
-constexpr int ConfigVerifyRetryIntervalMs = 500;
-// Таймаут одной попытки чтения конфигурации (round-trip запроса) - независим от ConfigVerifyTimeoutMs,
-// который ограничивает суммарное время всех повторных попыток.
-constexpr qint64 ConfigRereadRequestTimeoutMs = 10000;
+// Таймаут перечитывания конфигурации после записи (шаг 15) - ожидание сигнала parseStatus в ответ на
+// FileProvider::request(). Долгая история проб и ошибок (см. doc/abatcher-task.md, баги №1-8) в итоге
+// свелась к тому, что дело было не в модуле и не в соединении, а в собственном блокирующем цикле
+// ожидания (см. verifyConfigParams()) - обычная асинхронная подписка на parseStatus, как в
+// ConfigDialog/avm-debug, отрабатывает за секунды. Таймаут ниже - подстраховка на случай реальной
+// потери ответа, а не расчёт на то, что модулю нужно много времени.
+constexpr int ConfigVerifyTimeoutMs = 10000;
+// Сколько раз повторяем чтение конфигурации, если значения ещё не совпадают с эталоном (модуль мог не
+// успеть применить их сразу после записи), и с какой паузой между попытками - см. finishConfigVerify().
+constexpr int ConfigVerifyMaxAttempts = 5;
+constexpr int ConfigVerifyRetryDelayMs = 1000;
 
 // Шаги 13-16: анализ и принудительная установка значений заданных по ID конфигурационных
 // параметров. Общего источника/каталога эталонных значений по ID в проекте нет (аналогичный вопрос
@@ -859,102 +854,58 @@ void ModuleWorker::updateConfigParams()
         finishDownload();
         return;
     }
-    PrbFunc::setValue(this, "prbconfigcheck", 1);
 
-    verifyConfigParams();
+    PrbFunc::setValue(this, "prbconfigcheck", 1);
+    verifyConfigParams(1);
 }
 
-Error::Msg ModuleWorker::rereadConfigBlocking()
+void ModuleWorker::verifyConfigParams(int attempt)
 {
-    // Отдельный от requestConfig()/saveConfig() (шаг 5) разовый запрос конфигурации: тот путь
-    // относится только к самому первому скачиванию (config-old) и отключается от parseStatus сам
-    // после первого срабатывания, см. saveConfig() - поэтому не мешает повторным запросам здесь.
-    //
-    // ВАЖНО: соединение обязательно отключается ПОСЛЕ цикла ожидания, а не только внутри самой лямбды
-    // при успешном срабатывании. Если бы оно оставалось подключённым после таймаута (когда done так и
-    // не стал true), а реальный ответ от модуля пришёл бы позже — лямбда обратилась бы к done/result
-    // уже после возврата из этой функции, т.е. к уничтоженным локальным переменным на стеке
-    // (undefined behavior; именно так объяснялось предыдущее ложное "Не удалось получить конфигурацию
-    // модуля для проверки" при фактически успешном обновлении, см. doc/abatcher-task.md).
-    bool done = false;
-    Error::Msg result = Error::Msg::Timeout;
-    QMetaObject::Connection conn = connect(m_device->getS2Datamanager(), &S2DataManager::parseStatus, this,
-        [&done, &result](Error::Msg status)
+    // Шаг 15-16: перечитать конфигурацию после записи и сравнить с эталоном. Реализовано обычной
+    // асинхронной подпиской на parseStatus + FileProvider::request() - тем же способом, что уже
+    // проверенно быстро (секунды) работает в ConfigDialog/avm-debug (readConfig()/writeConfig()), - а не
+    // через собственный блокирующий цикл ожидания с ручной прокачкой QCoreApplication::processEvents(),
+    // как было реализовано раньше (см. полную историю багов №1-9 в doc/abatcher-task.md - именно
+    // самодельный блокирующий цикл ожидания, а не соединение и не модуль, был первопричиной "зависаний").
+    PrbFunc::setRange(this, "prbconfigverify", 1);
+
+    // conn хранится в std::shared_ptr, а не в "голом" new/delete: если ModuleWorker будет уничтожен
+    // до того, как сработает любой из двух путей ниже (например, окно закрыто во время ожидания
+    // ответа), ни один из delete conn; ниже не выполнится, а QMetaObject::Connection без владельца
+    // утёк бы. shared_ptr освобождается сам вместе с лямбдой-получателем, которую Qt уничтожает при
+    // разрыве соединения (в т.ч. при уничтожении context-объекта this), поэтому утечка невозможна.
+    auto conn = std::make_shared<QMetaObject::Connection>();
+    auto *timeoutTimer = new QTimer(this);
+    timeoutTimer->setSingleShot(true);
+
+    *conn = connect(m_device->getS2Datamanager(), &S2DataManager::parseStatus, this,
+        [this, conn, timeoutTimer, attempt](Error::Msg status)
         {
-            result = status;
-            done = true;
+            timeoutTimer->stop();
+            timeoutTimer->deleteLater();
+            disconnect(*conn);
+            finishConfigVerify(status, attempt);
         });
 
+    connect(timeoutTimer, &QTimer::timeout, this,
+        [this, conn, timeoutTimer, attempt]()
+        {
+            disconnect(*conn);
+            timeoutTimer->deleteLater();
+            finishConfigVerify(Error::Msg::Timeout, attempt);
+        });
+
+    timeoutTimer->start(ConfigVerifyTimeoutMs);
     m_device->getFileProvider()->request(S2::FilesEnum::Config, true);
-
-    QElapsedTimer waitTimer;
-    waitTimer.start();
-    while (!done && !m_isCancelled && waitTimer.elapsed() < ConfigRereadRequestTimeoutMs)
-    {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-        StdFunc::Wait(50);
-    }
-
-    disconnect(conn);
-    qDebug() << QString("rereadConfigBlocking: done=%1 status=%2 elapsedMs=%3")
-                    .arg(done)
-                    .arg(done ? int(result) : -1)
-                    .arg(waitTimer.elapsed());
-    return done ? result : Error::Msg::Timeout;
 }
 
-void ModuleWorker::verifyConfigParams()
+void ModuleWorker::finishConfigVerify(Error::Msg status, int attempt)
 {
-    // Шаг 15-16: перечитать конфигурацию и сравнить с эталоном ещё раз. На реальном модуле сразу
-    // после успешной записи (writeConfigurationSync выше) чтение может вернуть ещё старые значения -
-    // модуль применяет их не мгновенно (см. ConfigVerifyTimeoutMs/ConfigVerifyRetryIntervalMs выше),
-    // поэтому повторяем перечитывание и сравнение до совпадения или истечения таймаута, а не проверяем
-    // результат один раз сразу после записи.
-    PrbFunc::setRange(this, "prbconfigverify", 0); // "занято" на время повторных попыток - см. prbfwupdate
-
-    std::vector<quint32> stillMismatched;
-    Error::Msg status = Error::Msg::NoError;
-    QElapsedTimer waitTimer;
-    waitTimer.start();
-    int attempt = 0;
-
-    do
+    if (m_isCancelled)
     {
-        ++attempt;
-        status = rereadConfigBlocking();
-        if (m_isCancelled)
-        {
-            finishDownload();
-            return;
-        }
-
-        if (status != Error::Msg::NoError)
-        {
-            qWarning() << QString("Проверка конфигурации: попытка %1 не удалась (не получен ответ), прошло %2 мс")
-                              .arg(attempt)
-                              .arg(waitTimer.elapsed());
-            continue;
-        }
-
-        S2Configuration refConfig(m_device->getS2Datamanager()->getStorage());
-        fillReferenceConfig(refConfig);
-        stillMismatched = findMismatchedIds(m_device->getS2Datamanager(), refConfig);
-        if (stillMismatched.empty())
-        {
-            qInfo() << QString("Проверка конфигурации: совпадение с эталоном на попытке %1, прошло %2 мс")
-                           .arg(attempt)
-                           .arg(waitTimer.elapsed());
-            break;
-        }
-
-        qWarning() << QString("Проверка конфигурации: попытка %1 - значения ещё не совпадают с эталоном (%2), прошло %3 мс")
-                          .arg(attempt)
-                          .arg(namesForIds(stillMismatched).join(", "))
-                          .arg(waitTimer.elapsed());
-        StdFunc::Wait(ConfigVerifyRetryIntervalMs);
-    } while (waitTimer.elapsed() < ConfigVerifyTimeoutMs);
-
-    PrbFunc::setRange(this, "prbconfigverify", 1);
+        finishDownload();
+        return;
+    }
 
     if (status != Error::Msg::NoError)
     {
@@ -962,6 +913,27 @@ void ModuleWorker::verifyConfigParams()
         EMessageBox::error(this, "Не удалось получить конфигурацию модуля для проверки после обновления");
         m_isCancelled = true;
         finishDownload();
+        return;
+    }
+
+    S2Configuration refConfig(m_device->getS2Datamanager()->getStorage());
+    fillReferenceConfig(refConfig);
+    auto stillMismatched = findMismatchedIds(m_device->getS2Datamanager(), refConfig);
+
+    // На реальном модуле подтверждено (2026-07-06): чтение сразу после записи может вернуть ещё старые
+    // значения - модуль применяет их с небольшой задержкой (тот же эффект, что и известная пауза
+    // StdFunc::Wait(1000) после writeConfigurationSync в Tune82Verification::setupNFiltrValue(),
+    // src/coma/src/tune/82/tune82verification.cpp). В отличие от прежней реализации (баги №1-9),
+    // повтор здесь сделан через QTimer::singleShot (не блокирующий цикл) - несколько попыток с
+    // небольшой паузой, а не бесконечное/многоминутное ожидание.
+    if (!stillMismatched.empty() && attempt < ConfigVerifyMaxAttempts)
+    {
+        qWarning() << QString(
+            "Проверка конфигурации: попытка %1 - значения ещё не совпадают с эталоном (%2), повтор через %3 мс")
+                          .arg(attempt)
+                          .arg(namesForIds(stillMismatched).join(", "))
+                          .arg(ConfigVerifyRetryDelayMs);
+        QTimer::singleShot(ConfigVerifyRetryDelayMs, this, [this, attempt] { verifyConfigParams(attempt + 1); });
         return;
     }
 
