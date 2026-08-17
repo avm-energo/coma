@@ -13,6 +13,15 @@
 namespace Interface
 {
 
+/// \brief Пауза перед ПРОАКТИВНЫМ реконнектом после записи файла (конфигурация/ВПО).
+/// \details Отдельно от silentInterval (10с - когда "тихий" режим сдаётся и показывает пользователю
+/// громкую ошибку, см. ConnectionManager::reconnect). Здесь же мы УЖЕ знаем (см.
+/// AsyncConnection::silentReconnectMode), что устройство, скорее всего, ушло в ResetSystem() и
+/// какое-то время не отвечает - нет смысла ждать, пока обычный механизм обнаружения обрыва
+/// (таймауты запросов по ~1с, счётчик ошибок до m_errorMax) сам "догадается" об этом ещё за
+/// несколько секунд сверху - вместо этого через writeCooldownMs сами инициируем переподключение.
+constexpr int writeCooldownMs = 5000;
+
 ConnectionManager::ConnectionManager(QObject *parent)
     : QObject(parent)
     , m_currentConnection(nullptr)
@@ -32,12 +41,17 @@ ConnectionManager::ConnectionManager(QObject *parent)
     m_writeCooldownTimer->setSingleShot(true);
     // После записи файла (конфигурация/ВПО) устройство может ненадолго "пропасть"
     // (см. AsyncConnection::silentReconnectMode) - на это время не даём новым командам
-    // встать в очередь, чтобы не ловить гонку с переподключением.
+    // встать в очередь, чтобы не ловить гонку с переподключением. По истечении паузы не просто
+    // возобновляем обычный опрос, а сразу же сами инициируем переподключение (если оно ещё не
+    // идёт своим ходом) - см. writeCooldownMs.
     connect(m_writeCooldownTimer, &QTimer::timeout, this,
         [this]
         {
-            if (m_currentConnection != nullptr)
-                m_currentConnection->getQueue().activate();
+            if (m_currentConnection == nullptr)
+                return;
+            m_currentConnection->getQueue().activate();
+            if (m_reconnectMode == ReconnectMode::Silent && !m_isInterfaceReconnecting)
+                reconnect();
         });
 }
 
@@ -54,7 +68,7 @@ AsyncConnection *ConnectionManager::createConnection(const ConnectionSettings &c
             // Не даём новым командам (в частности повторной записи) встать в очередь,
             // пока устройство не "отлежится" после записи файла - см. m_writeCooldownTimer.
             m_currentConnection->getQueue().deactivate();
-            m_writeCooldownTimer->start(m_silentTimer->interval());
+            m_writeCooldownTimer->start(writeCooldownMs);
         },
         Qt::DirectConnection);
     m_connBSI = m_currentConnection->connection(this, &ConnectionManager::fastCheckBSI);
