@@ -25,7 +25,7 @@
 #include <algorithm>
 #include <coma.h>
 
-ReportData AbstractTuneDialog::s_reportData {};
+ReportData AbstractTuneDialog::s_reportData { };
 
 AbstractTuneDialog::AbstractTuneDialog(Device::CurrentDevice *device, QWidget *parent)
     : QWidget(parent)
@@ -525,6 +525,8 @@ Error::Msg AbstractTuneDialog::saveWorkConfig()
         Error::Msg err = m_sync->writeConfigurationSync(m_config.toByteArray());
         if (err != Error::Msg::NoError)
             return err;
+
+        return Files::SaveToFile(Settings::dataDir() + m_device->getUID() + ".cf", m_config.toByteArray());
     }
 
     QByteArray ba;
