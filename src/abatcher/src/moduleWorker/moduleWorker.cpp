@@ -81,7 +81,8 @@ std::vector<quint32> findMismatchedIds(S2DataManager *dataManager, const S2Confi
     std::vector<quint32> mismatched;
     for (auto &[_, boardConfig] : *dataManager)
         for (const auto &param : ReferenceConfigParams)
-            if (boardConfig.m_workingConfig.contains(param.id) && boardConfig.m_workingConfig[param.id] != refConfig[param.id])
+            if (boardConfig.m_workingConfig.contains(param.id)
+                && boardConfig.m_workingConfig[param.id] != refConfig[param.id])
                 mismatched.push_back(param.id);
     return mismatched;
 }
@@ -264,7 +265,13 @@ void ModuleWorker::startDownload()
 
     saveBsi();
     saveBsiExt();
-    requestConfig();
+    saveConfig();
+    saveJournals();
+    saveBacBlocks();
+    saveStartup();
+    checkAndUpdateFirmwareVersion();
+    checkAndUpdateConfigParams();
+    finishDownload();
 }
 
 void ModuleWorker::cancelDownload()
@@ -330,30 +337,14 @@ void ModuleWorker::saveBsiExt()
     PrbFunc::setValue(this, "prbbsiext", ba.size());
 }
 
-void ModuleWorker::requestConfig()
+void ModuleWorker::saveConfig()
 {
-    connect(m_device->getS2Datamanager(), &S2DataManager::parseStatus, this, &ModuleWorker::saveConfig);
-    connect(m_device->getFileProvider(), &Device::FileProvider::noConfigurationError, this,
-        [this]()
-        {
-            EMessageBox::error(this, "В модуле отсутствует конфигурация");
-            m_isCancelled = true;
-            finishDownload();
-        });
-
-    m_device->getFileProvider()->request(S2::FilesEnum::Config, true);
-}
-
-void ModuleWorker::saveConfig(Error::Msg status)
-{
-    // Относится только к первому скачиванию конфигурации (config-old) — отключаемся сразу после
-    // срабатывания, чтобы повторный запрос на шаге 15 не вызвал этот слот ещё раз.
-    disconnect(m_device->getS2Datamanager(), &S2DataManager::parseStatus, this, &ModuleWorker::saveConfig);
-
     if (m_isCancelled)
         return;
 
-    if (status != Error::Msg::NoError)
+    QByteArray ba;
+    Error::Msg err = m_device->sync()->readFileSync(S2::FilesEnum::Config, ba);
+    if (err != Error::Msg::NoError)
     {
         EMessageBox::error(this, "Не удалось получить конфигурацию модуля");
         m_isCancelled = true;
@@ -361,7 +352,8 @@ void ModuleWorker::saveConfig(Error::Msg status)
         return;
     }
 
-    QByteArray ba = m_device->getS2Datamanager()->getBinaryConfiguration();
+    m_device->getS2Datamanager()->parseS2File(ba);
+
     PrbFunc::setRange(this, "prbconfig", ba.size());
 
     if (Files::SaveToFile(m_tempDir.path() + "/config-old", ba) != Error::Msg::NoError)
@@ -373,21 +365,20 @@ void ModuleWorker::saveConfig(Error::Msg status)
     }
 
     PrbFunc::setValue(this, "prbconfig", ba.size());
-    saveJournals();
 }
 
 void ModuleWorker::saveJournals()
 {
+    if (m_isCancelled)
+        return;
+
     saveJournal("prbsysjour", S2::FilesEnum::JourSys, "sysjour");
 
-    if (!m_isCancelled && m_device->getConfigStorage()->getDeviceSettings().HaveWorkJournal())
+    if (m_device->getConfigStorage()->getDeviceSettings().HaveWorkJournal())
         saveJournal("prbworkjour", S2::FilesEnum::JourWork, "workjour");
 
-    if (!m_isCancelled && m_measJourCheckBox->isChecked()
-        && m_device->getConfigStorage()->getDeviceSettings().HaveMeasJournal())
+    if (m_measJourCheckBox->isChecked() && m_device->getConfigStorage()->getDeviceSettings().HaveMeasJournal())
         saveJournal("prbmeasjour", S2::FilesEnum::JourMeas, "measjour");
-
-    saveBacBlocks();
 }
 
 void ModuleWorker::saveJournal(const QString &prbName, S2::FilesEnum fileNum, const QString &filename)
@@ -471,8 +462,6 @@ void ModuleWorker::saveBacBlocks()
 {
     for (int i = 0; i < m_bacBlocks.size() && !m_isCancelled; ++i)
         saveBacBlock(i);
-
-    saveStartup();
 }
 
 void ModuleWorker::saveBacBlock(int index)
@@ -515,17 +504,8 @@ void ModuleWorker::createStartupProgressBar()
 
 void ModuleWorker::saveStartup()
 {
-    if (m_isCancelled)
-    {
-        finishDownload();
+    if (m_isCancelled || !m_hasStartup)
         return;
-    }
-
-    if (!m_hasStartup)
-    {
-        checkFirmwareVersion();
-        return;
-    }
 
     PrbFunc::setRange(this, "prbstartup", 1);
 
@@ -548,7 +528,6 @@ void ModuleWorker::saveStartup()
     }
 
     PrbFunc::setValue(this, "prbstartup", 1);
-    checkFirmwareVersion();
 }
 
 void ModuleWorker::createFwUpdateProgressBar()
@@ -563,19 +542,10 @@ void ModuleWorker::createFwUpdateProgressBar()
         PrbFunc::newLBL(m_progressContainer, "Чтение Bsi после обновления ВПО", "prbfwbsi"));
 }
 
-void ModuleWorker::checkFirmwareVersion()
+void ModuleWorker::checkAndUpdateFirmwareVersion()
 {
-    if (m_isCancelled)
-    {
-        finishDownload();
+    if (m_isCancelled || !m_hasFwUpdate)
         return;
-    }
-
-    if (!m_hasFwUpdate)
-    {
-        checkConfigParams();
-        return;
-    }
 
     PrbFunc::setRange(this, "prbfwupdate", 1);
 
@@ -584,7 +554,6 @@ void ModuleWorker::checkFirmwareVersion()
     {
         qInfo() << QString("Версия ВПО актуальна: %1").arg(StdFunc::VerToStr(currentVersion));
         PrbFunc::setValue(this, "prbfwupdate", 1);
-        checkConfigParams();
         return;
     }
 
@@ -599,7 +568,6 @@ void ModuleWorker::checkFirmwareVersion()
         qWarning() << msg;
         EMessageBox::warning(this, msg);
         PrbFunc::setValue(this, "prbfwupdate", 1);
-        checkConfigParams();
         return;
     }
 
@@ -684,8 +652,8 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
     // reconnectSuccess и только потом сами один раз запрашиваем полный BSI (нужен целиком, включая
     // Fwver, для сравнения версии).
     m_fwReconnected = false;
-    auto reconnectConn = connect(m_connManager, &Interface::ConnectionManager::reconnectSuccess, this,
-        [this] { m_fwReconnected = true; });
+    auto reconnectConn = connect(
+        m_connManager, &Interface::ConnectionManager::reconnectSuccess, this, [this] { m_fwReconnected = true; });
 
     // Неизвестно заранее, сколько займёт переподключение — переводим прогресс-бар в режим "занято"
     // (min == max крутится сам, без чисел), как и ReconnectDialog в АВМ-Сервис.
@@ -738,7 +706,6 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
     {
         qInfo() << QString("Обновление ВПО с версии %1 на версию %2 проведено успешно").arg(oldVerStr, newVerStr);
         PrbFunc::setValue(this, "prbfwupdate", 1);
-        checkConfigParams();
         return;
     }
 
@@ -752,19 +719,16 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
 
 void ModuleWorker::createConfigCheckProgressBar()
 {
-    m_progressContainer->layout()->addWidget(PrbFunc::newLBL(
-        m_progressContainer, "Анализ и обновление конфигурационных параметров", "prbconfigcheck"));
+    m_progressContainer->layout()->addWidget(
+        PrbFunc::newLBL(m_progressContainer, "Анализ и обновление конфигурационных параметров", "prbconfigcheck"));
     m_progressContainer->layout()->addWidget(
         PrbFunc::newLBL(m_progressContainer, "Проверка конфигурации после обновления", "prbconfigverify"));
 }
 
-void ModuleWorker::checkConfigParams()
+void ModuleWorker::checkAndUpdateConfigParams()
 {
     if (m_isCancelled)
-    {
-        finishDownload();
         return;
-    }
 
     PrbFunc::setRange(this, "prbconfigcheck", 1);
 
@@ -794,7 +758,8 @@ void ModuleWorker::checkConfigParams()
         return;
     }
 
-    qInfo() << QString("Обнаружено несоответствие значений конфигурационных параметров: %1. Отправка эталонных значений.")
+    qInfo() << QString(
+        "Обнаружено несоответствие значений конфигурационных параметров: %1. Отправка эталонных значений.")
                    .arg(namesStr);
     updateConfigParams();
 }
@@ -917,5 +882,4 @@ void ModuleWorker::finishConfigVerify(Error::Msg status, int attempt)
     }
 
     PrbFunc::setValue(this, "prbconfigverify", 1);
-    finishDownload();
 }
