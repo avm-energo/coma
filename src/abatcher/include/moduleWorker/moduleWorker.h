@@ -66,17 +66,17 @@ private:
     void createStartupProgressBar();
     void saveStartup();
     void createFwUpdateProgressBar();
-    void checkFirmwareVersion();
+    void checkAndUpdateFirmwareVersion();
     void updateFirmware(const QString &oldVerStr, const QString &newVerStr);
     void createConfigCheckProgressBar();
-    void checkConfigParams();
+    void checkAndUpdateConfigParams();
     void updateConfigParams();
     void verifyConfigParams(int attempt);
     void finishConfigVerify(Error::Msg status, int attempt);
+    void saveConfig();
 
 private slots:
     void bsiInitFinished(Error::Msg status);
-    void saveConfig(Error::Msg status);
 
 signals:
     void finishWork();

@@ -8,7 +8,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-constexpr int connTimeout = 3000;
+constexpr int connTimeout = 300000;
 
 namespace Interface
 {
