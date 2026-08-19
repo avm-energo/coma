@@ -1,0 +1,46 @@
+stages:
+  - build
+
+# Uses the pre-baked images from the dockers repo (dockers/gitlab-ci/) -
+# see that repo for what's installed in each (Qt6 base+svg+declarative,
+# plus hidapi's udev/usb deps on the Linux images).
+#
+# coma is the flagship app tying together most of this org's libavm-*
+# projects: it pulls in libavm-hidapi, libavm-gen (-> libavm-libzip ->
+# libavm-zlib), libavm-widgets, libavm-limereport, qcustomplot, libavm-qxlsx
+# and better-enums, ALL via CMake FetchContent from git.avmenergo.ru, so the
+# runner needs network access (and credentials, if that remote isn't
+# public) to that host, and builds will take noticeably longer than the
+# smaller libavm-* projects since it's compiling that whole dependency
+# tree from source.
+#
+# `if(MSVC) add_compile_options(/MP)` in the top-level CMakeLists.txt is
+# only a conditional MSVC-specific flag, not a hard MSVC requirement - it's
+# simply skipped when MSVC isn't the compiler, so a mingw build should work.
+# UNTESTED, best-effort - see libavm-gen/libavm-widgets CI for the full
+# mingw rationale.
+#
+# BUILD_SHARED_LIBS already defaults to ON in this project, so unlike the
+# smaller libavm-* libraries this only builds one configuration.
+
+build:linux-debian:
+  stage: build
+  image: vm-debian:5000/debian-qt6:latest
+  script:
+    - cmake -B build -S .
+    - cmake --build build -j"$(nproc)"
+
+build:linux-fedora:
+  stage: build
+  image: vm-debian:5000/fedora-qt6:latest
+  script:
+    - cmake -B build -S .
+    - cmake --build build -j"$(nproc)"
+
+build:windows-mingw:
+  stage: build
+  image: vm-debian:5000/fedora-mingw-qt6:latest
+  script:
+    - cmake -B build -S .
+        -DCMAKE_TOOLCHAIN_FILE="$QT_MINGW_TOOLCHAIN" -DQT_HOST_PATH=/usr
+    - cmake --build build -j"$(nproc)"
