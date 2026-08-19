@@ -71,8 +71,7 @@ private:
     void createConfigCheckProgressBar();
     void checkAndUpdateConfigParams();
     void updateConfigParams();
-    void verifyConfigParams(int attempt);
-    void finishConfigVerify(Error::Msg status, int attempt);
+    void verifyConfigParams();
     void saveConfig();
 
 private slots:

@@ -43,14 +43,8 @@ constexpr quint32 KivReferenceFwVersion = (5u << 24) | (0u << 16) | 22u;
 
 // Сколько ждём, пока модуль снова отзовётся после команды перехода на новое ВПО (стирание/запись
 // flash-памяти и перезагрузка), и с какой паузой между повторными попытками достучаться до него.
-constexpr qint64 FwUpgradeReconnectTimeoutMs = 10000;
+constexpr qint64 FwUpgradeReconnectTimeoutMs = 15000;
 constexpr int FwUpgradeRetryIntervalMs = 1000;
-
-// Таймаут ожидания parseStatus при перечитывании конфигурации (шаг 15) и число повторных попыток
-// сравнения с эталоном на случай, если модуль ещё не успел применить только что записанные значения.
-constexpr int ConfigVerifyTimeoutMs = 10000;
-constexpr int ConfigVerifyMaxAttempts = 5;
-constexpr int ConfigVerifyRetryDelayMs = 1000;
 
 // Эталонные значения конфигурационных параметров по ID для шагов 13-16 (общего каталога эталонов
 // в проекте нет, поэтому захардкожены здесь).
@@ -282,7 +276,6 @@ void ModuleWorker::cancelDownload()
     m_isCancelled = true;
     m_device->async()->cancelQuery();
     EMessageBox::warning(this, "Скачивание отменено");
-    finishDownload();
 }
 
 void ModuleWorker::finishDownload()
@@ -348,7 +341,6 @@ void ModuleWorker::saveConfig()
     {
         EMessageBox::error(this, "Не удалось получить конфигурацию модуля");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
 
@@ -360,7 +352,6 @@ void ModuleWorker::saveConfig()
     {
         EMessageBox::error(this, "Не удалось сохранить конфигурацию");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
 
@@ -514,7 +505,6 @@ void ModuleWorker::saveStartup()
     {
         EMessageBox::error(this, "Не удалось скачать блок начальных значений");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
 
@@ -523,7 +513,6 @@ void ModuleWorker::saveStartup()
     {
         EMessageBox::error(this, "Не удалось сохранить блок начальных значений");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
 
@@ -582,7 +571,6 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         qCritical() << "Не удалось открыть встроенный файл ВПО" << KivFirmwareResourcePath;
         EMessageBox::error(this, "Не удалось открыть встроенный файл ВПО");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
     QByteArray hexData = hexFile.readAll();
@@ -599,7 +587,6 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         qCritical() << "Встроенный файл ВПО повреждён";
         EMessageBox::error(this, "Встроенный файл ВПО повреждён");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
 
@@ -611,7 +598,6 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         qCritical() << "Встроенный файл ВПО имеет некорректный размер";
         EMessageBox::error(this, "Встроенный файл ВПО имеет некорректный размер");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
 
@@ -633,7 +619,6 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         qCritical() << "Не удалось записать ВПО в память модуля";
         EMessageBox::error(this, "Не удалось записать ВПО в память модуля");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
 
@@ -641,6 +626,9 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
     // стирает себя и перезагружается, пропадая с шины — поэтому отправляем её асинхронно
     // (writeCommand, без ожидания ответа), как и FwUploadDialog в АВМ-Сервис.
     m_device->async()->writeCommand(Interface::Commands::C_StartFirmwareUpgrade);
+
+    // Перед реконектом ждем, потому что команда не успеет обработаться
+    StdFunc::Wait(1000);
 
     // Старый USB HID хендл сам не оживает после перезагрузки модуля — переподключение (закрытие и
     // повторное открытие интерфейса) запускаем сами через ConnectionManager::reconnect().
@@ -673,7 +661,6 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         qCritical() << "Модуль не переподключился после обновления ВПО в течение отведённого времени";
         EMessageBox::error(this, "Модуль не переподключился после обновления ВПО в течение отведённого времени");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
 
@@ -687,7 +674,6 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         qCritical() << "Модуль переподключился, но не удалось прочитать блок Bsi после обновления ВПО";
         EMessageBox::error(this, "Модуль переподключился, но не удалось прочитать блок Bsi после обновления ВПО");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
     PrbFunc::setValue(this, "prbfwbsi", 1);
@@ -698,7 +684,6 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         qCritical() << "Не удалось сохранить блок Bsi после обновления ВПО";
         EMessageBox::error(this, "Не удалось сохранить блок Bsi после обновления ВПО");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
 
@@ -714,7 +699,6 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
     EMessageBox::error(this, "Обновление ВПО не удалось, версия не изменилась на ожидаемую");
     m_isCancelled = true;
     PrbFunc::setValue(this, "prbfwupdate", 1);
-    finishDownload();
 }
 
 void ModuleWorker::createConfigCheckProgressBar()
@@ -740,7 +724,6 @@ void ModuleWorker::checkAndUpdateConfigParams()
     {
         qInfo() << "Значения конфигурационных параметров по ID соответствуют эталону";
         PrbFunc::setValue(this, "prbconfigcheck", 1);
-        finishDownload();
         return;
     }
 
@@ -754,7 +737,6 @@ void ModuleWorker::checkAndUpdateConfigParams()
         qWarning() << msg;
         EMessageBox::warning(this, msg);
         PrbFunc::setValue(this, "prbconfigcheck", 1);
-        finishDownload();
         return;
     }
 
@@ -781,83 +763,41 @@ void ModuleWorker::updateConfigParams()
         EMessageBox::error(this, "Не удалось записать конфигурацию в модуль");
         m_isCancelled = true;
         PrbFunc::setValue(this, "prbconfigcheck", 1);
-        finishDownload();
         return;
     }
+
+    // Дожидаемся, пока применится конфиг
+    StdFunc::Wait(5000);
 
     PrbFunc::setValue(this, "prbconfigcheck", 1);
-    verifyConfigParams(1);
+    verifyConfigParams();
 }
 
-void ModuleWorker::verifyConfigParams(int attempt)
+void ModuleWorker::verifyConfigParams()
 {
-    // Перечитывание конфигурации — обычная асинхронная подписка на parseStatus + FileProvider::request(),
-    // тем же способом, что и ConfigDialog/avm-debug (readConfig()/writeConfig()). Важно не заменять это
-    // на блокирующий цикл ожидания — именно такой цикл раньше приводил к трудноуловимым зависаниям.
     PrbFunc::setRange(this, "prbconfigverify", 1);
 
-    // conn — в std::shared_ptr, а не в "голом" new/delete: если ModuleWorker уничтожится раньше, чем
-    // сработает любой из двух путей ниже, connection всё равно освободится вместе с лямбдой, которую
-    // Qt уничтожает при разрыве соединения — утечки нет.
-    auto conn = std::make_shared<QMetaObject::Connection>();
-    auto *timeoutTimer = new QTimer(this);
-    timeoutTimer->setSingleShot(true);
-
-    *conn = connect(m_device->getS2Datamanager(), &S2DataManager::parseStatus, this,
-        [this, conn, timeoutTimer, attempt](Error::Msg status)
-        {
-            timeoutTimer->stop();
-            timeoutTimer->deleteLater();
-            disconnect(*conn);
-            finishConfigVerify(status, attempt);
-        });
-
-    connect(timeoutTimer, &QTimer::timeout, this,
-        [this, conn, timeoutTimer, attempt]()
-        {
-            disconnect(*conn);
-            timeoutTimer->deleteLater();
-            finishConfigVerify(Error::Msg::Timeout, attempt);
-        });
-
-    timeoutTimer->start(ConfigVerifyTimeoutMs);
-    m_device->getFileProvider()->request(S2::FilesEnum::Config, true);
-}
-
-void ModuleWorker::finishConfigVerify(Error::Msg status, int attempt)
-{
-    if (m_isCancelled)
-    {
-        finishDownload();
-        return;
-    }
-
+    // Тот же синхронный путь, что и в saveConfig() (шаг 5): readFileSync() сам крутит цикл событий
+    // внутри (SyncConnection::eventLoop()) и не возвращается, пока не придёт ответ или не истечёт
+    // внутренний таймаут.
+    QByteArray fileBa;
+    Error::Msg status = m_device->sync()->readFileSync(S2::FilesEnum::Config, fileBa);
     if (status != Error::Msg::NoError)
     {
         qCritical() << "Не удалось получить конфигурацию модуля для проверки после обновления";
         EMessageBox::error(this, "Не удалось получить конфигурацию модуля для проверки после обновления");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
+
+    m_device->getS2Datamanager()->parseS2File(fileBa);
+
+    if (m_isCancelled)
+        return;
 
     S2Configuration refConfig(m_device->getS2Datamanager()->getStorage());
     fillReferenceConfig(refConfig);
     auto stillMismatched = findMismatchedIds(m_device->getS2Datamanager(), refConfig);
-
-    // Модуль применяет только что записанную конфигурацию не мгновенно (тот же эффект, что и
-    // StdFunc::Wait(1000) после writeConfigurationSync в Tune82Verification::setupNFiltrValue()) —
-    // при несовпадении повторяем через QTimer::singleShot вместо блокирующего ожидания.
-    if (!stillMismatched.empty() && attempt < ConfigVerifyMaxAttempts)
-    {
-        qWarning() << QString(
-            "Проверка конфигурации: попытка %1 - значения ещё не совпадают с эталоном (%2), повтор через %3 мс")
-                          .arg(attempt)
-                          .arg(namesForIds(stillMismatched).join(", "))
-                          .arg(ConfigVerifyRetryDelayMs);
-        QTimer::singleShot(ConfigVerifyRetryDelayMs, this, [this, attempt] { verifyConfigParams(attempt + 1); });
-        return;
-    }
 
     QByteArray ba = m_device->getS2Datamanager()->getBinaryConfiguration();
     if (Files::SaveToFile(m_tempDir.path() + "/config", ba) != Error::Msg::NoError)
@@ -865,15 +805,10 @@ void ModuleWorker::finishConfigVerify(Error::Msg status, int attempt)
         qCritical() << "Не удалось сохранить конфигурацию после обновления";
         EMessageBox::error(this, "Не удалось сохранить конфигурацию после обновления");
         m_isCancelled = true;
-        finishDownload();
         return;
     }
 
-    if (stillMismatched.empty())
-    {
-        qInfo() << "Обновление конфигурации проведено успешно";
-    }
-    else
+    if (!stillMismatched.empty())
     {
         qCritical() << QString("Обновление конфигурации не удалось: значения параметров не совпадают с эталоном: %1")
                            .arg(namesForIds(stillMismatched).join(", "));
