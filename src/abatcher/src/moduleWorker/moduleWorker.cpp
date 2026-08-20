@@ -26,7 +26,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <array>
-#include <memory>
 #include <vector>
 
 namespace

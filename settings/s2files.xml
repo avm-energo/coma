@@ -2295,7 +2295,7 @@
                 <group>8</group>
                 <string>Задержка на формирование аварийной сигнализации, сек</string>
                 <min>0</min>
-                <max>240</max>
+                <max>1000</max>
                 <decimals>0</decimals>
             </widget>
         </record>

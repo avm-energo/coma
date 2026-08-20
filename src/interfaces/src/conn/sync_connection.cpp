@@ -8,7 +8,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-constexpr int connTimeout = 300000;
+constexpr int connTimeout = 3000;
 
 namespace Interface
 {
@@ -16,15 +16,14 @@ namespace Interface
 SyncConnection::SyncConnection(AsyncConnection *connection) noexcept : QObject(connection), m_connection(connection)
 {
     connect(m_connection, &AsyncConnection::responseError, this, &SyncConnection::responseError);
+    connect(&m_tmr, &QTimer::timeout, this, &SyncConnection::timeout);
+
+    m_tmr.setSingleShot(true);
+    m_tmr.setInterval(connTimeout);
 }
 
 void SyncConnection::eventLoop() noexcept
 {
-    QTimer tmr;
-    tmr.setSingleShot(true);
-    tmr.setInterval(connTimeout);
-    connect(&tmr, &QTimer::timeout, this, &SyncConnection::timeout);
-    tmr.start();
     while (m_busy && !StdFunc::IsCancelled())
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -40,16 +39,24 @@ void SyncConnection::eventLoop() noexcept
 void SyncConnection::reset() noexcept
 {
     m_busy = true;
+    restartTimer();
+}
+
+void SyncConnection::restartTimer() noexcept
+{
+    m_tmr.start();
 }
 
 void SyncConnection::resultReady(const DataTypes::BlockStruct &result)
 {
+    restartTimer();
     m_byteArrayResult = result.data;
     m_busy = false;
 }
 
 void SyncConnection::responseReceived(const DataTypes::GeneralResponseStruct &response)
 {
+    restartTimer();
     if (response.type == DataTypes::GeneralResponseTypes::DataSize)
     {
         emit setRange(response.data);
@@ -67,12 +74,14 @@ void SyncConnection::responseReceived(const DataTypes::GeneralResponseStruct &re
 
 void SyncConnection::fileReceived(const S2::FileStruct &file)
 {
+    restartTimer();
     m_byteArrayResult = file.data;
     m_busy = false;
 }
 
 void SyncConnection::s2bfileReceived(const S2::S2BFile &file)
 {
+    restartTimer();
     m_s2bFile = file;
     m_busy = false;
     m_responseResult = Error::Msg::NoError;
@@ -97,6 +106,7 @@ Error::Msg SyncConnection::reqBSI()
     auto conn = m_connection->connection(this,
         [&, &busy = m_busy](const DataTypes::BitStringStruct &bs)
         {
+            restartTimer();
             if (bs.sigAdr >= Device::bsiStartReg && bs.sigAdr < Device::bsiStartReg + Device::bsiCountRegs)
                 ++count;
             if (count == Device::bsiCountRegs)
@@ -209,7 +219,12 @@ Error::Msg SyncConnection::writeFirmwareSync(const QByteArray &ba)
 Error::Msg SyncConnection::readS2FileSync(S2::FilesEnum filenum)
 {
     reset();
-    auto conn = m_connection->connection(this, [=](const QList<S2::DataItem> &) { m_busy = false; });
+    auto conn = m_connection->connection(this,
+        [=](const QList<S2::DataItem> &)
+        {
+            restartTimer();
+            m_busy = false;
+        });
     m_connection->reqFile(quint32(filenum), DataTypes::FileFormat::DefaultS2);
     eventLoop();
     QObject::disconnect(conn);
@@ -255,6 +270,7 @@ Error::Msg SyncConnection::reqStartupSync(quint32 addr, quint32 count, QList<flo
     auto conn = m_connection->connection(this,
         [&, &busy = m_busy](const DataTypes::FloatStruct &fl)
         {
+            restartTimer();
             if (fl.sigAdr >= addr && fl.sigAdr < addr + count)
             {
                 values[fl.sigAdr - addr] = fl.sigVal;
@@ -279,6 +295,7 @@ Error::Msg SyncConnection::reqTimeSync(void *block, quint32 blocksize)
         conn = m_connection->connection(this,
             [&](const DataTypes::BitStringStruct &bs)
             {
+                restartTimer();
                 *static_cast<DataTypes::BitStringStruct *>(block) = bs;
                 m_busy = false;
             });
@@ -289,6 +306,7 @@ Error::Msg SyncConnection::reqTimeSync(void *block, quint32 blocksize)
         conn = m_connection->connection(this,
             [&](const timespec &ts)
             {
+                restartTimer();
                 *static_cast<timespec *>(block) = ts;
                 m_busy = false;
             });

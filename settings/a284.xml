@@ -659,6 +659,10 @@
                 <sig-group></sig-group>
             </group>
         </iec60870>
+        <includes desc="">
+            <include src="bsi.xml"/>
+            <include src="bsi-ext-base.xml"/>
+        </includes>
         <journals desc="Журналы">
             <meas desc="Журнал измерений">
                 <item>
@@ -1274,8 +1278,8 @@
                         <toolTip>Температура микроконтроллера, °С</toolTip>
                     </mwidget>
                     <mwidget desc="Напряжение на батарейке, В" view="float">
-                        <toolTip>Напряжение на батарейке, В</toolTip>
                         <start-addr>102</start-addr>
+                        <toolTip>Напряжение на батарейке, В</toolTip>
                     </mwidget>
                     <mwidget desc="Частота, Гц" view="float">
                         <start-addr>2400</start-addr>
@@ -1567,9 +1571,5 @@
                 <type>BitString</type>
             </signal>
         </signals>
-        <includes desc="">
-            <include src="bsi.xml"/>
-            <include src="bsi-ext-base.xml"/>
-        </includes>
     </resources>
 </module>

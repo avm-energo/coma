@@ -139,16 +139,11 @@ void Abatcher::startModuleWorker()
     usb->set(MemKeys::USB::vendor_id, mdl->data(mdl->index(row, 0)).toString().toUInt(nullptr, 16));
     usb->set(MemKeys::USB::product_id, mdl->data(mdl->index(row, 1)).toString().toUInt(nullptr, 16));
     usb->set(MemKeys::USB::serial, mdl->data(mdl->index(row, 2)).toString());
-    usb->set(MemKeys::timeout, Settings::get(SettingsKeys::USB::protocomTimeout, 5000));
-    usb->set(MemKeys::reconnectInterval, Settings::get(SettingsKeys::USB::protocomReconnect, 100));
-    // Без этого maxErrors/silentInterval остаются на дефолте BaseSettings (0), из-за чего ЛЮБАЯ
-    // единичная ошибка чтения/записи интерфейса (например, кратковременная нестабильность модуля сразу
-    // после перезагрузки при обновлении ВПО) немедленно запускает полный реконнект и отменяет уже
-    // выполняющиеся запросы (см. ConnectionManager::handleInterfaceErrors/reconnectEvent) — тот же набор
-    // ключей, что уже использует АВМ-Сервис в AbstractInterfaceDialog.
-    usb->set(MemKeys::maxErrors, Settings::get("errorCount", 5));
-    usb->set(MemKeys::maxTimeouts, Settings::get("timeoutCount", 5));
-    usb->set(MemKeys::silentInterval, Settings::get("silentInterval", 10000));
+    usb->set(MemKeys::timeout, 5000);
+    usb->set(MemKeys::reconnectInterval, 100);
+    usb->set(MemKeys::maxErrors, 5);
+    usb->set(MemKeys::maxTimeouts, 5);
+    usb->set(MemKeys::silentInterval, 10000);
 
     ModuleWorker *mw = new ModuleWorker(isDry, usb, this);
     m_widgets->addWidget(mw);
@@ -160,14 +155,6 @@ void Abatcher::startModuleWorker()
             m_widgets->setCurrentIndex(0);
 
             m_widgets->removeWidget(mw);
-            // deleteLater(), а не delete: finishWork() может дойти сюда реентерабельно из
-            // ModuleWorker::cancelDownload() (Отмена -> finishDownload() реэнейблит "Назад" ->
-            // клик по нему), пока SyncConnection::eventLoop() ещё крутит вложенный
-            // QCoreApplication::processEvents() где-то выше по стеку внутри самого mw
-            // (saveBacBlock()/... ->  *Sync()). Немедленный delete тогда уничтожил бы mw (и
-            // встроенный в CurrentDevice SyncConnection) прямо под этим вложенным циклом -
-            // подтверждено ASan use-after-free в SyncConnection::eventLoop(). deleteLater()
-            // откладывает удаление до возврата в внешний цикл событий, когда стек уже размотан.
             mw->deleteLater();
         });
 }

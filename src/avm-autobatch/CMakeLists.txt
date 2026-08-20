@@ -24,6 +24,7 @@ file(GLOB_RECURSE files_h ${PROJECT_SOURCE_DIR}/*.h)
 add_executable(${PROJECT_NAME}
   ${files_cpp} ${files_h} ../../images/images.qrc
   ../abatcher/resources/firmware.qrc
+  ../../settings/settings.qrc
   ${CMAKE_CURRENT_BINARY_DIR}/versioninfo.rc)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
@@ -34,37 +35,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 # Link against coma, abatcher library, and Qt Widgets
-target_link_libraries(${PROJECT_NAME} PUBLIC 
+target_link_libraries(${PROJECT_NAME} PUBLIC
   abatcher
 )
-
-# Getting appdata directory path
-if(SYSTEM_NAME STREQUAL "windows")
-    # On windows
-    set(APPDATA_STR "$ENV{APPDATA}/AVM-Energo/${PROJECT_NAME}")
-    string(REPLACE "\\" "/" APPDATA ${APPDATA_STR})
-else()
-    # On linux
-    set(APPDATA $ENV{HOME}/.config/AVM-Energo/${PROJECT_NAME})
-endif()
-
-# Copy settings one time at first build
-set(SVC_CHECK_PATH "${CMAKE_BINARY_DIR}/check-autobatcher.txt")
-if(NOT EXISTS ${SVC_CHECK_PATH})
-  file(TOUCH ${SVC_CHECK_PATH})
-  # Copying XML settings to appdata directory after building
-  add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD COMMAND
-    ${CMAKE_COMMAND} -E copy_directory
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../settings"
-    ${APPDATA})
-  # Copying reports lrxml files to appdata directory after building
-  add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD COMMAND
-    ${CMAKE_COMMAND} -E copy_directory
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../reports"
-    "${APPDATA}/reports")
-endif()
 
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -77,5 +50,6 @@ install(TARGETS ${PROJECT_NAME}
 if(SYSTEM_NAME STREQUAL "windows")
   include(windeploy)
 elseif(SYSTEM_NAME STREQUAL "linux")
-  set(COMPONENT_NAME "AVMSERVICE")
+  set(COMPONENT_NAME "AVMABATCHER")
+  include(linuxdeploy)
 endif()
