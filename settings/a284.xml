@@ -666,8 +666,8 @@
             </group>
         </iec60870>
         <includes desc="">
-            <include src="bsi-ext-base.xml"/>
             <include src="bsi.xml"/>
+            <include src="bsi-ext-base.xml"/>
         </includes>
         <journals desc="Журналы">
             <meas desc="Журнал измерений">

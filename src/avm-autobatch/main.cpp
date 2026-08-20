@@ -1,4 +1,5 @@
 #include "abatcher.h"
+#include <common/appconfig.h>
 #include <libavm-gen/settings.h>
 
 #include <QApplication>
@@ -8,8 +9,12 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    Settings::initialize(PROGNAME, SOFTDEVELOPER, COMAVERSION);
+    app.setApplicationName(PROGNAME);
+    app.setApplicationVersion(COMAVERSION);
     app.setWindowIcon(QIcon(":/icons/abatcher.ico"));
+
+    AppConfiguration::setApp(AppConfiguration::Service);
+    Settings::setConfigDirOverride(":/settings/");
 
     Abatcher abatcher;
     abatcher.run();
