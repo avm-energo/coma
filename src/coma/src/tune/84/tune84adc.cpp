@@ -44,7 +44,6 @@ void Tune84ADC::setTuneFunctions()
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Отображение предупреждения...", &Tune84ADC::showPreWarning);
     addTuneFunc("Проверка настроечных параметров...", &Tune84ADC::checkTuneCoefs);
-    addTuneFunc("Задание режима конфигурирования модуля...", &AbstractTuneDialog::setTuneMode);
     if (m_tuneType == ADCU)
     {
         addTuneFunc("Регулировка...", &Tune84ADC::ADCCoef1);

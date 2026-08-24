@@ -43,7 +43,6 @@ void TuneKIVADC::setTuneFunctions()
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Отображение предупреждения...", &TuneKIVADC::showPreWarning);
     addTuneFunc("Проверка настроечных параметров...", &TuneKIVADC::checkTuneCoefs);
-    addTuneFunc("Задание режима конфигурирования модуля...", &AbstractTuneDialog::setTuneMode);
     if (m_tuneType == ADCU)
     {
         addTuneFunc("Регулировка...", &TuneKIVADC::ADCCoef1);
