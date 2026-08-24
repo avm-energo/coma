@@ -7,7 +7,6 @@ class QProgressBar;
 class EProgressIndicator;
 class QTimer;
 class QPushButton;
-class QShowEvent;
 
 class ReconnectDialog final : public QDialog
 {
@@ -23,9 +22,6 @@ private:
 
     void setupUI();
     void closeTimerTick();
-
-protected:
-    void showEvent(QShowEvent *event) override;
 
 public:
     explicit ReconnectDialog(QWidget *parent = nullptr);
