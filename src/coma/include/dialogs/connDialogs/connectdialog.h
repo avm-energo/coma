@@ -1,11 +1,11 @@
 #pragma once
 
-#include <dialogs/abstractinterfacedialog.h>
+#include <dialogs/connDialogs/abstractinterfacedialog.h>
 
-#include <QDialog>
 #include <QSettings>
+#include <QWidget>
 
-class ConnectDialog final : public QDialog
+class ConnectDialog final : public QWidget
 {
     Q_OBJECT
 public:
@@ -14,8 +14,11 @@ public:
 signals:
     void accepted(const ConnectionSettings &st);
 
+protected:
+    void hideEvent(QHideEvent *event) override;
+
 private slots:
-    void setInterface();
+    void setInterface(const QString &connectionType);
 
 private:
     AbstractInterfaceDialog *m_idialog;

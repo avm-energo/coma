@@ -17,6 +17,10 @@ public:
     virtual void setupUI();
 
     virtual bool updateModel() = 0;
+    /// \brief Занят ли диалог операцией, которую небезопасно прерывать удалением виджета
+    /// (например, крутит собственный цикл событий). Пока true, Coma::showCentralWidget()
+    /// не заменяет этот диалог другим.
+    virtual bool isBusy() const { return false; }
 
 protected:
     QTableView *m_tableView;

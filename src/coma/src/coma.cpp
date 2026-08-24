@@ -43,8 +43,9 @@
 #include <common/constants.h>
 #include <common/hex2binfileconverter.h>
 #include <device/current_device.h>
+#include <dialogs/connDialogs/abstractinterfacedialog.h>
 #include <dialogs/aboutdialog.h>
-#include <dialogs/connectdialog.h>
+#include <dialogs/connDialogs/connectdialog.h>
 #include <dialogs/errordialog.h>
 #include <dialogs/keypressdialog.h>
 #include <dialogs/reconnectdialog.h>
@@ -63,6 +64,7 @@
 #include <xml/xmleditor/xmleditor.h>
 
 #include <QApplication>
+#include <QCursor>
 #include <QDir>
 #include <QHBoxLayout>
 #include <QMenuBar>
@@ -89,7 +91,18 @@ Coma::Coma(QWidget *parent)
     AnimatedPopup::setParent(this);
 }
 
-Coma::~Coma() { }
+Coma::~Coma()
+{
+    // Разрываем destroyed() -> hideCentralWidget() ДО того, как ниже по цепочке деструкторов
+    // начнут каскадно уничтожаться дети (в т.ч. виджеты, встроенные через showCentralWidget()).
+    // Иначе Qt попытается вызвать слот на объекте, который сам в этот момент частично разрушен,
+    // и упадёт с assertObjectType в отладочной сборке.
+    // Отключаем именно по сохранённым QMetaObject::Connection — wildcard-вариант
+    // (disconnect(nullptr, nullptr, this, nullptr)) на практике связи от QObject::destroyed
+    // не снимает.
+    for (const auto &connection : std::as_const(m_centralWidgetConnections))
+        QObject::disconnect(connection);
+}
 
 void Coma::setupUI()
 {
@@ -104,11 +117,15 @@ void Coma::setupUI()
     m_alarmW = new AlarmWidget(this);
     hlyout->addWidget(m_alarmW, Qt::AlignCenter);
     lyout->addLayout(hlyout);
-    lyout->addWidget(least());
-    wdgt->setLayout(lyout);
+
+    // Тулбар и alarm-виджет остаются вне стека и всегда видны; переключается только
+    // содержимое под ними (стартовый экран least() и встраиваемые диалоги подключения).
     m_centralStack = new QStackedWidget(this);
-    m_centralStack->addWidget(wdgt); // индекс 0 - основной контент главного окна
-    setCentralWidget(m_centralStack);
+    m_centralStack->addWidget(least()); // индекс 0 - основной контент главного окна
+    lyout->addWidget(m_centralStack);
+
+    wdgt->setLayout(lyout);
+    setCentralWidget(wdgt);
     setupMenubar();
     StyleLoader::setStyle(Settings::get("theme", "Light"));
 }
@@ -391,11 +408,11 @@ void Coma::connectDialog()
         action->setEnabled(true);
         return;
     }
-    auto connDialog = new ConnectDialog(this);
+    auto *connDialog = new ConnectDialog(this);
     connect(connDialog, &ConnectDialog::accepted, this, &Coma::initConnection);
-    connect(connDialog, &QDialog::destroyed, this, [=] { action->setEnabled(true); });
-    connDialog->adjustSize();
-    connDialog->exec();
+    connDialog->move(30, 70);
+    connDialog->show();
+    action->setEnabled(true);
 }
 
 void Coma::initConnection(const ConnectionSettings &st)
@@ -496,28 +513,58 @@ void Coma::disconnectAndClear()
     if (m_currentDevice && (m_currentDevice->async()->getConnectionState() != Interface::State::Disconnect))
     {
         m_alarmW->clear();
-        clearTuneWidgets();
+        clearCentralWidgets();
         m_dlgManager->clearDialogs();
         m_connectionManager->breakConnection();
         m_currentDevice = nullptr;
     }
 }
 
-void Coma::showTuneWidget(QWidget *tuneWidget)
+void Coma::showCentralWidget(QWidget *widget)
 {
-    if (tuneWidget == nullptr)
+    if (widget == nullptr)
         return;
-    if (m_centralStack->indexOf(tuneWidget) == -1)
-        m_centralStack->addWidget(tuneWidget);
-    m_centralStack->setCurrentWidget(tuneWidget);
+    if (m_centralStack->indexOf(widget) == -1)
+    {
+        // Диалоги настройки подключения (USB/RS485/Ethernet) создаются заново при каждом выборе
+        // интерфейса в ConnectDialog и, в отличие от диалогов регулировки, никогда не переиспользуются
+        // повторно — без этой очистки предыдущий такой диалог остался бы висеть в стеке до разрыва
+        // соединения (или вовсе навсегда, если до подключения дело не дошло).
+        auto *previousInterfaceDialog = qobject_cast<AbstractInterfaceDialog *>(m_centralStack->currentWidget());
+        if (previousInterfaceDialog != nullptr && qobject_cast<AbstractInterfaceDialog *>(widget) != nullptr)
+        {
+            // Если предыдущий диалог занят (например, крутит свой цикл событий во время поиска
+            // устройств), удалять его сейчас нельзя — это разрушит виджет прямо под ним же самим.
+            if (previousInterfaceDialog->isBusy())
+            {
+                EMessageBox::warning(this, "Дождитесь завершения текущей операции перед переключением");
+                widget->deleteLater();
+                return;
+            }
+            m_centralStack->removeWidget(previousInterfaceDialog);
+            previousInterfaceDialog->deleteLater();
+        }
+
+        m_centralStack->addWidget(widget);
+        // Не используем hideCentralWidget() напрямую: previousInterfaceDialog выше удаляется через
+        // deleteLater(), уже не будучи текущим виджетом, и его отложенное уничтожение не должно
+        // сбрасывать стек на index 0, если тем временем уже показан другой виджет.
+        m_centralWidgetConnections << connect(widget, &QObject::destroyed, this,
+            [this](QObject *obj)
+            {
+                if (m_centralStack->currentWidget() == obj)
+                    hideCentralWidget();
+            });
+    }
+    m_centralStack->setCurrentWidget(widget);
 }
 
-void Coma::hideTuneWidget()
+void Coma::hideCentralWidget()
 {
     m_centralStack->setCurrentIndex(0);
 }
 
-void Coma::clearTuneWidgets()
+void Coma::clearCentralWidgets()
 {
     while (m_centralStack->count() > 1)
     {
