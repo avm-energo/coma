@@ -4,9 +4,12 @@
 #include <libavm-widgets/eprogressindicator.h>
 #include <libavm-widgets/hexpbfunc.h>
 
+#include <QGuiApplication>
 #include <QLabel>
 #include <QProgressBar>
 #include <QPushButton>
+#include <QScreen>
+#include <QShowEvent>
 #include <QTimer>
 #include <QVBoxLayout>
 
@@ -73,6 +76,20 @@ void ReconnectDialog::open()
     m_progressIndicator->startAnimation();
     m_progressBar->setValue(0);
     QDialog::open();
+}
+
+void ReconnectDialog::showEvent(QShowEvent *event)
+{
+    QDialog::showEvent(event);
+
+    // На Windows (в отличие от большинства WM в Linux) диалог не центрируется
+    // над родительским окном автоматически и появляется в углу экрана.
+    if (!event->spontaneous())
+    {
+        const QRect anchorGeometry = parentWidget() ? parentWidget()->frameGeometry()
+                                                      : QGuiApplication::primaryScreen()->geometry();
+        move(anchorGeometry.center() - rect().center());
+    }
 }
 
 void ReconnectDialog::reject()

@@ -20,6 +20,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QWidget(parent, Qt::Popup), m_id
                   " stop:0 #8A2BE2, stop:1 #000080); }");
 
     QStringList intersl { "USB", "RS485", "Ethernet" };
+
 #ifdef ENABLE_EMULATOR
     intersl.push_back("Emulator");
 #endif
@@ -27,6 +28,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QWidget(parent, Qt::Popup), m_id
     auto *lyout = new QVBoxLayout(this);
     lyout->setContentsMargins(3, 3, 3, 3);
     lyout->setSpacing(0);
+
     for (const auto &connectionType : intersl)
     {
         auto *button = new QPushButton(connectionType, this);
