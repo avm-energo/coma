@@ -7,6 +7,7 @@
 #include <libavm-gen/error.h>
 #include <libavm-widgets/wdfunc.h>
 
+#include <QPointer>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <coma.h>
@@ -78,7 +79,11 @@ void ConnectDialog::setInterface(const QString &connectionType)
 
     connect(embedded, &AbstractInterfaceDialog::accepted, mainWindow, &Coma::initConnection);
     connect(embedded, &AbstractInterfaceDialog::accepted, embedded, //
-        [embedded](const ConnectionSettings &) { embedded->close(); });
+        [embedded = QPointer<AbstractInterfaceDialog>(embedded)](const ConnectionSettings &)
+        {
+            if (embedded)
+                embedded->close();
+        });
 
     // showCentralWidget() сама подписывается на destroyed(), чтобы вернуть index 0
     mainWindow->showCentralWidget(embedded);
