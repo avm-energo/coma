@@ -49,7 +49,7 @@ public:
     /// \details Непосредственно перед выполнением тела главного цикла, для установки
     /// соединения с устройством вызывается метод initConnection. После выполнения
     /// главного цикла вызывается метод closeConnection.
-    void exec() override;
+    void exec();
 
     void start() override;
 

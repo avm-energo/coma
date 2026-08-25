@@ -81,6 +81,9 @@ protected:
     /// \brief Функция для записи данных в лог протокола.
     void writeToLog(const QByteArray &ba, const Direction dir = Direction::NoDirection) noexcept;
 
+    /// \brief Функция исполнения запросов.
+    void execByState(const Interface::ExecutorState state);
+
 private slots:
     /// \brief Приватный слот для записи информации в лог от парсера запросов и ответов.
     void logFromParser(const QString &message, const Logger::MessageTypes level);
@@ -90,9 +93,6 @@ public:
     DefaultQueryExecutor() = delete;
     /// \brief Удалённый конструктор копирования.
     DefaultQueryExecutor(const DefaultQueryExecutor &rhs) = delete;
-
-    /// \brief Функция, содержащая главный цикл исполнителя запросов.
-    virtual void exec();
 
     /// \brief Функция для реализации режима "Старт"
     /// \details Для 104 протокола выполняет стартовые запросы и вызов GI
@@ -146,3 +146,10 @@ signals:
 };
 
 } // namespace Interface
+
+// Тип используется как аргумент сигнала stateChanged, который теперь может
+// доставляться через Qt::QueuedConnection между потоками (например, при
+// вызове start()/setState() из потока, отличного от того, куда исполнитель
+// перемещён через moveToThread). Без регистрации метатипа Qt не может
+// поставить аргумент в очередь, и соединение молча не срабатывает.
+Q_DECLARE_METATYPE(Interface::ExecutorState)

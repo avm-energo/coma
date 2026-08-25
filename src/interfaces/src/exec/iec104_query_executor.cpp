@@ -61,7 +61,7 @@ void Iec104QueryExecutor::writeToInterface(const QByteArray &request, bool isCou
 void Iec104QueryExecutor::exec()
 {
     // initConnection();
-    DefaultQueryExecutor::exec();
+    // DefaultQueryExecutor::exec();
     // closeConnection();
 }
 

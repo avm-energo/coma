@@ -18,8 +18,10 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, BaseSettings *se
     , m_requestParser(nullptr)
     , m_responseParser(nullptr)
 {
+    qRegisterMetaType<Interface::ExecutorState>("Interface::ExecutorState");
     setTimeout(settings->get(MemKeys::timeout));
     connect(settings, &BaseSettings::settingHasBeenChanged, this, &DefaultQueryExecutor::settingsChanged);
+    connect(this, &DefaultQueryExecutor::stateChanged, this, &DefaultQueryExecutor::execByState);
 }
 
 void DefaultQueryExecutor::initLogger(const QString &protocolName) noexcept
@@ -97,29 +99,38 @@ void DefaultQueryExecutor::wakeUp()
 
 void DefaultQueryExecutor::parseFromQueue() noexcept
 {
-    auto opt = m_queue.get().getFromQueue();
-    if (opt.has_value())
+    // Цикл нужен, чтобы после пробуждения в waitEvent() снова проверить
+    // очередь: раньше это делал внешний while в exec(), теперь эта функция
+    // вызывается однократно по сигналу stateChanged.
+    for (;;)
     {
-        const auto command(opt.value());
-        auto request = m_requestParser->parse(command);
-        if (m_requestParser->isExceptionalSituation())
-            m_requestParser->exceptionalAction(command);
-        else if (request.isEmpty())
+        auto opt = m_queue.get().getFromQueue();
+        if (opt.has_value())
+        {
+            const auto command(opt.value());
+            auto request = m_requestParser->parse(command);
+            if (m_requestParser->isExceptionalSituation())
+                m_requestParser->exceptionalAction(command);
+            else if (request.isEmpty())
+                return;
+            else
+            {
+                if (getState() == ExecutorState::RequestParsing)
+                    setState(ExecutorState::Pending);
+                m_lastRequestedCommand.store(command.command);
+                m_responseParser->setRequest(command);
+                writeToInterface(request);
+            }
             return;
+        }
         else
         {
-            if (getState() == ExecutorState::RequestParsing)
-                setState(ExecutorState::Pending);
-            m_lastRequestedCommand.store(command.command);
-            m_responseParser->setRequest(command);
-            writeToInterface(request);
+            // Если нет запросов в очереди, то ждём, пока они появятся
+            waitEvent();
+            if (getState() != ExecutorState::RequestParsing)
+                return;
+            // иначе повторно проверяем очередь
         }
-    }
-    else
-    {
-        // Если нет запросов в очереди, то ждём, пока они появятся
-        waitEvent();
-        // m_queue.get().waitFillingQueue();
     }
 }
 
@@ -161,29 +172,6 @@ void DefaultQueryExecutor::settingsChanged(const QString &key, const QVariant &v
         setTimeout(value.toInt());
 }
 
-void DefaultQueryExecutor::exec()
-{
-    auto currentState = getState();
-    while (currentState != ExecutorState::Stopping)
-    {
-        switch (currentState)
-        {
-        case ExecutorState::RequestParsing:
-            parseFromQueue();
-            break;
-        case ExecutorState::Pending:
-            // Ничего не делаем, ждём изменения состояния
-            break;
-        default:
-            break;
-        }
-        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-        currentState = getState();
-    }
-    m_log.writeLog(Logger::Info, "DeviceQueryExecutor is finished\n");
-    emit finished();
-}
-
 void DefaultQueryExecutor::start()
 {
     run();
@@ -191,8 +179,14 @@ void DefaultQueryExecutor::start()
 
 void DefaultQueryExecutor::run() noexcept
 {
-    setState(ExecutorState::RequestParsing);
+    // Очередь активируем ДО смены состояния: setState() теперь синхронно
+    // (через прямое соединение stateChanged->execByState) может уйти в
+    // parseFromQueue() и заблокироваться в waitEvent(), если очередь пуста.
+    // Если бы activate() стоял после setState(), до него в этом случае
+    // выполнение просто не дошло бы, и новые команды, добавленные пока
+    // поток спит, молча терялись бы из-за isActive() == false.
     m_queue.get().activate();
+    setState(ExecutorState::RequestParsing);
 }
 
 void DefaultQueryExecutor::pause() noexcept
@@ -315,6 +309,25 @@ void DefaultQueryExecutor::reconnectEvent()
     cancelQuery();
     pause();
     m_queue.get().clear();
+}
+
+void DefaultQueryExecutor::execByState(const Interface::ExecutorState state)
+{
+    switch (state)
+    {
+    case ExecutorState::RequestParsing:
+        parseFromQueue();
+
+        break;
+    case ExecutorState::Stopping:
+        m_log.writeLog(Logger::Info, "DeviceQueryExecutor is finished\n");
+        emit finished();
+
+        break;
+    default:
+        // В остальных случаях ничего не делаем
+        break;
+    }
 }
 
 } // namespace Interface
