@@ -16,7 +16,6 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, BaseSettings *se
     , m_requestParser(nullptr)
     , m_responseParser(nullptr)
 {
-    qRegisterMetaType<Interface::ExecutorState>("Interface::ExecutorState");
     setTimeout(settings->get(MemKeys::timeout));
     connect(settings, &BaseSettings::settingHasBeenChanged, this, &DefaultQueryExecutor::settingsChanged);
     connect(this, &DefaultQueryExecutor::stateChanged, this, &DefaultQueryExecutor::execByState);
