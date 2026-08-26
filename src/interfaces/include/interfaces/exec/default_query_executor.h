@@ -38,9 +38,6 @@ protected:
     std::reference_wrapper<RequestQueue> m_queue;
     Logger m_log;
     QTimer m_timeoutTimer;
-    std::mutex m_waitMutex;
-    std::condition_variable m_waiter;
-    bool m_wakeRequested = false;
     BaseRequestParser *m_requestParser;
     BaseResponseParser *m_responseParser;
     QMetaObject::Connection m_timeoutConnection;
@@ -67,9 +64,6 @@ protected:
     ExecutorState getState() const noexcept;
     /// \brief Изменяет текущее состояние исполнителя запросов указанным.
     void setState(const ExecutorState newState) noexcept;
-
-    /// \brief Функция, в которой блокируется поток исполнителя для ожидания внешних событий.
-    void waitEvent();
 
     /// \brief Функция, которая использует BaseRequestParser для парсинга
     /// запроса из очереди запросов в бинарное представление конкретного протокола.
@@ -122,7 +116,10 @@ public slots:
     void cancelQuery();
     /// \brief Слот, вызываемый при переподключении текущего интерфейса.
     void reconnectEvent();
-    /// \brief Слот, вызываемый внешним потоком для пробуждения потока исполнителя.
+    /// \brief Слот, вызываемый при появлении новых данных (новая команда в очереди,
+    /// ответ от устройства и т.п.). Если исполнитель в состоянии RequestParsing
+    /// и простаивает, повторно инициирует разбор очереди. Может вызываться из
+    /// любого потока (используется как через Qt::DirectConnection, так и напрямую).
     void wakeUp();
     /// \brief Слот, вызываемый при изменениях настроек
     void settingsChanged(const QString &key, const QVariant &value);

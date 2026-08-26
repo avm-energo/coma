@@ -13,8 +13,6 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, BaseSettings *se
     , m_state(ExecutorState::Starting)
     , m_queue(std::ref(queue))
     , m_timeoutTimer(this)
-    , m_waitMutex {}
-    , m_waiter {}
     , m_requestParser(nullptr)
     , m_responseParser(nullptr)
 {
@@ -81,57 +79,56 @@ void DefaultQueryExecutor::setState(const ExecutorState newState) noexcept
     }
 }
 
-void DefaultQueryExecutor::waitEvent()
-{
-    std::unique_lock<std::mutex> locker { m_waitMutex };
-    m_waiter.wait(locker, [this] { return m_wakeRequested; });
-    m_wakeRequested = false;
-}
-
 void DefaultQueryExecutor::wakeUp()
 {
-    {
-        std::lock_guard<std::mutex> locker { m_waitMutex };
-        m_wakeRequested = true;
-    }
-    m_waiter.notify_one();
+    // wakeUp() дёргают на каждый чих (любой полученный от устройства пакет,
+    // не только новая команда в очереди - см. BaseInterface::poll()), поэтому
+    // запускаем повторный разбор очереди, только если исполнитель реально
+    // простаивает в ожидании следующей команды. Иначе можно было бы отправить
+    // команду, пока предыдущая ещё не отработала.
+    if (getState() != ExecutorState::RequestParsing)
+        return;
+    // Может вызываться из чужого потока (Qt::DirectConnection), поэтому сам
+    // разбор очереди маршалим на поток исполнителя через AutoConnection -
+    // на своём потоке отработает сразу же, с чужого - через очередь событий.
+    QMetaObject::invokeMethod(this, &DefaultQueryExecutor::parseFromQueue, Qt::AutoConnection);
 }
 
 void DefaultQueryExecutor::parseFromQueue() noexcept
 {
-    // Цикл нужен, чтобы после пробуждения в waitEvent() снова проверить
-    // очередь: раньше это делал внешний while в exec(), теперь эта функция
-    // вызывается однократно по сигналу stateChanged.
-    for (;;)
+    // wakeUp() может поставить в очередь событий несколько вызовов этой
+    // функции подряд (например, если executorWakeUp() прилетел пару раз,
+    // пока предыдущий отложенный вызов ещё не обработан). Без этой проверки
+    // второй вызов молча отправил бы следующую команду, не дождавшись ответа
+    // на первую - протокол полудуплексный, это ломает разбор ответа.
+    if (getState() != ExecutorState::RequestParsing)
+        return;
+
+    auto opt = m_queue.get().getFromQueue();
+    if (opt.has_value())
     {
-        auto opt = m_queue.get().getFromQueue();
-        if (opt.has_value())
-        {
-            const auto command(opt.value());
-            auto request = m_requestParser->parse(command);
-            if (m_requestParser->isExceptionalSituation())
-                m_requestParser->exceptionalAction(command);
-            else if (request.isEmpty())
-                return;
-            else
-            {
-                if (getState() == ExecutorState::RequestParsing)
-                    setState(ExecutorState::Pending);
-                m_lastRequestedCommand.store(command.command);
-                m_responseParser->setRequest(command);
-                writeToInterface(request);
-            }
+        const auto command(opt.value());
+        auto request = m_requestParser->parse(command);
+        if (m_requestParser->isExceptionalSituation())
+            m_requestParser->exceptionalAction(command);
+        else if (request.isEmpty())
             return;
-        }
         else
         {
-            // Если нет запросов в очереди, то ждём, пока они появятся
-            waitEvent();
-            if (getState() != ExecutorState::RequestParsing)
-                return;
-            // иначе повторно проверяем очередь
+            // m_requestParser->parse() для команд записи (C_WriteFile и т.п.)
+            // может синхронно перевести состояние в WritingLongData (сигнал
+            // writingLongData). В этом случае состояние трогать нельзя -
+            // иначе long-data режим затрётся обратно на Pending и запись
+            // оборвётся после первой секции.
+            if (getState() == ExecutorState::RequestParsing)
+                setState(ExecutorState::Pending);
+            m_lastRequestedCommand.store(command.command);
+            m_responseParser->setRequest(command);
+            writeToInterface(request);
         }
     }
+    // Если очереди пуста - просто выходим, не блокируя поток. Когда появится
+    // новая команда, её приход разбудит нас через wakeUp().
 }
 
 void DefaultQueryExecutor::writeToInterface(const QByteArray &request, bool isCounted) noexcept
@@ -180,11 +177,10 @@ void DefaultQueryExecutor::start()
 void DefaultQueryExecutor::run() noexcept
 {
     // Очередь активируем ДО смены состояния: setState() теперь синхронно
-    // (через прямое соединение stateChanged->execByState) может уйти в
-    // parseFromQueue() и заблокироваться в waitEvent(), если очередь пуста.
-    // Если бы activate() стоял после setState(), до него в этом случае
-    // выполнение просто не дошло бы, и новые команды, добавленные пока
-    // поток спит, молча терялись бы из-за isActive() == false.
+    // (через прямое соединение stateChanged->execByState) может сразу уйти
+    // в parseFromQueue(). Если бы activate() стоял после setState(), очередь
+    // на этот момент была бы ещё неактивна, и любой конкурентный addToQueue()
+    // (из другого потока, пока мы внутри setState()) молча отбросил бы команду.
     m_queue.get().activate();
     setState(ExecutorState::RequestParsing);
 }
