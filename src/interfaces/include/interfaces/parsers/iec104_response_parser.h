@@ -16,8 +16,6 @@ private:
     Iec104::APCI m_currentAPCI;
     Iec104::Command m_currentCommand;
     Iec104::ASDUUnpacker m_unpacker;
-    bool m_activationConfirmed = false;
-    bool m_activationTerminated = false;
 
     /// \brief Используется для разбиения буффера входных данных на
     /// массив байт каждого ответа от устройства.

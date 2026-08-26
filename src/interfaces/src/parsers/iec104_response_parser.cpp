@@ -58,30 +58,35 @@ Error::Msg Iec104ResponseParser::validate(const QByteArray &response) noexcept
 
 void Iec104ResponseParser::verify(const Iec104::ASDU &asdu) noexcept
 {
-    // Command::None значит, что сейчас не ожидается завершение никакой
-    // команды (например, пришли спонтанные данные) - активацию проверять
-    // не на чем, выходим.
-    if (m_currentCommand == Command::None)
-        return;
-
-    switch (asdu.m_cause)
+    /// TODO: shitty code
+    static bool confirm = false, terminate = false;
+    switch (m_currentCommand)
     {
-    case CauseOfTransmission::ActivationConfirm:
-        m_activationConfirmed = true;
-        break;
-    case CauseOfTransmission::ActivationTermination:
-        m_activationTerminated = true;
-        break;
-    default:
+    case Command::RequestGroup:
+    {
+        switch (asdu.m_cause)
+        {
+        case CauseOfTransmission::ActivationConfirm:
+            confirm = true;
+            break;
+        case CauseOfTransmission::ActivationTermination:
+            terminate = true;
+            break;
+        default:
+            break;
+        }
+        if (confirm && terminate)
+        {
+            confirm = false;
+            terminate = false;
+            m_currentCommand = Command::None;
+            emit requestedDataReceived();
+        }
         break;
     }
-
-    if (m_activationConfirmed && m_activationTerminated)
-    {
-        m_activationConfirmed = false;
-        m_activationTerminated = false;
-        m_currentCommand = Command::None;
-        emit requestedDataReceived();
+    default:
+        /// TODO: don't ignore other commands
+        break;
     }
 }
 
