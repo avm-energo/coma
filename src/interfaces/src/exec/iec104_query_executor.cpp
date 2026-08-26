@@ -35,8 +35,6 @@ Iec104RequestParser *Iec104QueryExecutor::getRequestParser() noexcept
     return reinterpret_cast<Iec104RequestParser *>(m_requestParser);
 }
 
-// void Iec104QueryExecutor::initConnection() noexcept { }
-
 void Iec104QueryExecutor::closeConnection() noexcept
 {
     auto stopMessage { getRequestParser()->createStopMessage() };
@@ -56,13 +54,6 @@ void Iec104QueryExecutor::writeToInterface(const QByteArray &request, bool isCou
         }
         writeToLog(request, Direction::ToDevice);
     }
-}
-
-void Iec104QueryExecutor::exec()
-{
-    // initConnection();
-    // DefaultQueryExecutor::exec();
-    // closeConnection();
 }
 
 void Iec104QueryExecutor::start()

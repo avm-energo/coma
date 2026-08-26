@@ -45,12 +45,6 @@ public:
     /// \brief Удалённый конструктор копирования.
     Iec104QueryExecutor(const DefaultQueryExecutor &rhs) = delete;
 
-    /// \brief Перегрузка главного цикла исполнителя запросов.
-    /// \details Непосредственно перед выполнением тела главного цикла, для установки
-    /// соединения с устройством вызывается метод initConnection. После выполнения
-    /// главного цикла вызывается метод closeConnection.
-    void exec();
-
     void start() override;
 
 public slots:
