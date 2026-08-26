@@ -80,16 +80,6 @@ void DefaultQueryExecutor::setState(const ExecutorState newState) noexcept
 
 void DefaultQueryExecutor::wakeUp()
 {
-    // wakeUp() дёргают на каждый чих (любой полученный от устройства пакет,
-    // не только новая команда в очереди - см. BaseInterface::poll()), поэтому
-    // запускаем повторный разбор очереди, только если исполнитель реально
-    // простаивает в ожидании следующей команды. Иначе можно было бы отправить
-    // команду, пока предыдущая ещё не отработала.
-    if (getState() != ExecutorState::RequestParsing)
-        return;
-    // Может вызываться из чужого потока (Qt::DirectConnection), поэтому сам
-    // разбор очереди маршалим на поток исполнителя через AutoConnection -
-    // на своём потоке отработает сразу же, с чужого - через очередь событий.
     QMetaObject::invokeMethod(this, &DefaultQueryExecutor::parseFromQueue, Qt::AutoConnection);
 }
 
@@ -114,11 +104,6 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
             return;
         else
         {
-            // m_requestParser->parse() для команд записи (C_WriteFile и т.п.)
-            // может синхронно перевести состояние в WritingLongData (сигнал
-            // writingLongData). В этом случае состояние трогать нельзя -
-            // иначе long-data режим затрётся обратно на Pending и запись
-            // оборвётся после первой секции.
             if (getState() == ExecutorState::RequestParsing)
                 setState(ExecutorState::Pending);
             m_lastRequestedCommand.store(command.command);
@@ -126,8 +111,6 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
             writeToInterface(request);
         }
     }
-    // Если очереди пуста - просто выходим, не блокируя поток. Когда появится
-    // новая команда, её приход разбудит нас через wakeUp().
 }
 
 void DefaultQueryExecutor::writeToInterface(const QByteArray &request, bool isCounted) noexcept
@@ -175,13 +158,8 @@ void DefaultQueryExecutor::start()
 
 void DefaultQueryExecutor::run() noexcept
 {
-    // Очередь активируем ДО смены состояния: setState() теперь синхронно
-    // (через прямое соединение stateChanged->execByState) может сразу уйти
-    // в parseFromQueue(). Если бы activate() стоял после setState(), очередь
-    // на этот момент была бы ещё неактивна, и любой конкурентный addToQueue()
-    // (из другого потока, пока мы внутри setState()) молча отбросил бы команду.
-    m_queue.get().activate();
     setState(ExecutorState::RequestParsing);
+    m_queue.get().activate();
 }
 
 void DefaultQueryExecutor::pause() noexcept
