@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QProgressDialog>
-#include <dialogs/abstractinterfacedialog.h>
+#include <dialogs/connDialogs/abstractinterfacedialog.h>
 
 class InterfaceEmuDialog final : public AbstractInterfaceDialog
 {

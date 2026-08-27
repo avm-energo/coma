@@ -1,7 +1,9 @@
-#include "dialogs/interfaceserialdialog.h"
+#include "dialogs/connDialogs/serialDialog/interfaceserialdialog.h"
 
 #include "const.h"
 #include "interfaces/utils/utils.h"
+#include <dialogs/connDialogs/serialDialog/searchmodbusdevicesdialog.h>
+#include <interfaces/types/serial_settings.h>
 #include <libavm-gen/error.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>
@@ -12,63 +14,56 @@
 #include <libavm-widgets/pbfunc.h>
 #include <libavm-widgets/spbfunc.h>
 #include <libavm-widgets/tvfunc.h>
-#include <dialogs/searchmodbusdevicesdialog.h>
-#include <interfaces/types/serial_settings.h>
 
+#include <QHeaderView>
 #include <QSerialPortInfo>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
 
-InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
-{
-    setWindowTitle("RS485 соединения");
-}
+InterfaceSerialDialog::InterfaceSerialDialog(QWidget *parent) : AbstractInterfaceDialog(parent) { }
 
 InterfaceSerialDialog::~InterfaceSerialDialog() noexcept { }
 
+bool InterfaceSerialDialog::isBusy() const
+{
+    return m_busy;
+}
+
+void InterfaceSerialDialog::setBusy(bool busy)
+{
+    m_busy = busy;
+}
+
 void InterfaceSerialDialog::setupUI()
 {
-    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *mainLayout = new QHBoxLayout;
+    QVBoxLayout *buttonLayout = new QVBoxLayout;
+
+    QVBoxLayout *formLayout = new QVBoxLayout(m_formArea);
+    formLayout->setContentsMargins(0, 0, 0, 0);
+
+    QPushButton *addButton = PBFunc::New(this, "", "Добавить", this, &InterfaceSerialDialog::addInterface);
+    QPushButton *removeButton = PBFunc::New(this, "", "Удалить", this, &InterfaceSerialDialog::deleteInterface);
+    QPushButton *editButton = PBFunc::New(this, "", "Редактировать", this, &InterfaceSerialDialog::editInterface);
+    QPushButton *cancelButton = PBFunc::New(this, "", "Назад", this, &QDialog::close);
+
+    buttonLayout->addWidget(addButton);
+    buttonLayout->addWidget(editButton);
+    buttonLayout->addWidget(removeButton);
+    buttonLayout->addWidget(m_formArea, 1);
+    buttonLayout->addWidget(cancelButton);
+    mainLayout->addLayout(buttonLayout, 3);
+
     m_tableView = TVFunc::New(this, "", nullptr);
-    lyout->addWidget(m_tableView);
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    mainLayout->addWidget(m_tableView, 7);
 
-    auto firstRow = new QHBoxLayout;
-    auto addButton = PBFunc::New(this, "newrspb", "Добавить", this, &InterfaceSerialDialog::addInterface);
-    auto removeButton = PBFunc::New(this, "", "Удалить", this,
-        [this]
-        {
-            auto name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
-            Settings::pushGroup("RS485");
-            Settings::remove(name);
-            Settings::popGroup();
-            updateModel();
-        });
-    firstRow->addWidget(addButton);
-    firstRow->addWidget(removeButton);
-    lyout->addLayout(firstRow);
+    mainLayout->addWidget(new SearchModbusDevicesDialog(this, this), 8);
 
-    auto secondRow = new QHBoxLayout;
-    auto editButton = PBFunc::New(this, "", "Редактировать", this,
-        [this]
-        {
-            auto index = m_tableView->currentIndex();
-            editConnection(index);
-            updateModel();
-        });
-    auto searchButton = PBFunc::New(this, "", "Поиск устройств", this,
-        [this]
-        {
-            auto searchDialog = new SearchModbusDevicesDialog(this, this);
-            searchDialog->exec();
-        });
-    secondRow->addWidget(editButton);
-    secondRow->addWidget(searchButton);
-    lyout->addLayout(secondRow);
+    setLayout(mainLayout);
 
-    setLayout(lyout);
     connect(m_tableView, &QTableView::doubleClicked, this, &InterfaceSerialDialog::setInterface);
-    AbstractInterfaceDialog::setupUI();
+    // connect del
 }
 
 void InterfaceSerialDialog::setInterface(QModelIndex index)
@@ -119,59 +114,50 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
     auto stopbit = model->data(model->index(row, 4)).toString();
     auto address = model->data(model->index(row, 5)).toInt();
 
-    // Create dialog
     QStringList ports;
     QList<QSerialPortInfo> portlist = QSerialPortInfo::availablePorts();
     for (const QSerialPortInfo &info : std::as_const(portlist))
         ports << info.portName();
 
-    auto dialog = new QDialog(this);
-    dialog->setObjectName("rsCreateDialog");
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    auto *form = new QWidget(m_formArea);
+    auto *layout = new QVBoxLayout(form);
 
-    auto layout = new QGridLayout;
-    int count = 0;
-    layout->addWidget(LBLFunc::New(dialog, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(LBLFunc::New(form, "Имя:"));
+    auto namele = LEFunc::New(form, "namele", name);
+    layout->addWidget(namele);
 
-    auto namele = LEFunc::New(dialog, "namele", name);
-    layout->addWidget(namele, count++, 1, 1, 1);
-    layout->addWidget(LBLFunc::New(dialog, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
-
-    auto portcb = CBFunc::New(dialog, "portcb", ports);
-
+    layout->addWidget(LBLFunc::New(form, "Порт:"));
+    auto portcb = CBFunc::New(form, "portcb", ports);
     auto portIndex = ports.indexOf(port);                    // найти индекс сохранённого порта
     portcb->setCurrentIndex(portIndex >= 0 ? portIndex : 0); // проверить и выставить порт по умолчанию
-    layout->addWidget(portcb, count++, 1, 1, 1);
+    layout->addWidget(portcb);
 
     QStringList sl = SerialUtils::allBaudValuesRS485();
-    layout->addWidget(LBLFunc::New(dialog, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
-
-    auto speedcb = CBFunc::New(dialog, "speedcb", sl);
+    layout->addWidget(LBLFunc::New(form, "Скорость:"));
+    auto speedcb = CBFunc::New(form, "speedcb", sl);
     speedcb->setCurrentIndex(sl.indexOf(speed));
-    layout->addWidget(speedcb, count++, 1, 1, 1);
+    layout->addWidget(speedcb);
 
     sl = QStringList({ ParityRS485::noParity, ParityRS485::oddParity, ParityRS485::evenParity });
-    layout->addWidget(LBLFunc::New(dialog, "Четность:"), count, 0, 1, 1, Qt::AlignLeft);
-
-    auto paritycb = CBFunc::New(dialog, "paritycb", sl);
+    layout->addWidget(LBLFunc::New(form, "Четность:"));
+    auto paritycb = CBFunc::New(form, "paritycb", sl);
     paritycb->setCurrentIndex(sl.indexOf(parity));
-    layout->addWidget(paritycb, count++, 1, 1, 1);
-    layout->addWidget(LBLFunc::New(dialog, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(paritycb);
 
     sl = QStringList({ "1", "2" });
-    auto stopbitcb = CBFunc::New(dialog, "stopbitcb", sl);
+    layout->addWidget(LBLFunc::New(form, "Стоп бит:"));
+    auto stopbitcb = CBFunc::New(form, "stopbitcb", sl);
     stopbitcb->setCurrentIndex(sl.indexOf(stopbit));
-    layout->addWidget(stopbitcb, count++, 1, 1, 1);
-    layout->addWidget(LBLFunc::New(dialog, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
+    layout->addWidget(stopbitcb);
 
-    auto addressspb = SPBFunc::New(dialog, "addressspb", 0, 255, 0);
+    layout->addWidget(LBLFunc::New(form, "Адрес:"));
+    auto addressspb = SPBFunc::New(form, "addressspb", 0, 255, 0);
     addressspb->setValue(address);
-    layout->addWidget(addressspb, count++, 1, 1, 1);
+    layout->addWidget(addressspb);
 
-    // Logic of working
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(PBFunc::New(dialog, "acceptpb", "Сохранить", dialog,
-        [&]
+    hlyout->addWidget(PBFunc::New(form, "acceptpb", "Сохранить", form,
+        [this, name, namele, portcb, speedcb, paritycb, stopbitcb, addressspb]
         {
             auto newName = namele->text();
             Settings::pushGroup("RS485");
@@ -196,14 +182,12 @@ void InterfaceSerialDialog::editConnection(QModelIndex index)
 
             if (!updateModel())
                 qDebug() << Error::GeneralError;
-            dialog->close();
+            clearForm();
         }));
+    hlyout->addWidget(PBFunc::New(form, "cancelpb", "Отмена", this, [this] { clearForm(); }));
+    layout->addLayout(hlyout);
 
-    hlyout->addWidget(PBFunc::New(dialog, "cancelpb", "Отмена", dialog, [dialog] { dialog->close(); }));
-    layout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
-    dialog->setLayout(layout);
-    dialog->adjustSize();
-    dialog->exec();
+    showForm(form);
 }
 
 void InterfaceSerialDialog::addInterface()
@@ -220,42 +204,35 @@ void InterfaceSerialDialog::addInterface()
     for (const QSerialPortInfo &info : std::as_const(portlist))
         ports << info.portName();
 
-    auto dialog = new QDialog(this);
-    dialog->setObjectName("rsCreateDialog");
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    auto *form = new QWidget(m_formArea);
+    auto *layout = new QVBoxLayout(form);
 
-    auto layout = new QGridLayout;
-    int count = 0;
-    layout->addWidget(LBLFunc::New(dialog, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
-    layout->addWidget(LEFunc::New(dialog, "namele"), count++, 1, 1, 1);
-    layout->addWidget(LBLFunc::New(dialog, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
-    layout->addWidget(CBFunc::New(dialog, "portcb", ports), count++, 1, 1, 1);
+    layout->addWidget(LBLFunc::New(form, "Имя:"));
+    layout->addWidget(LEFunc::New(form, "namele"));
+    layout->addWidget(LBLFunc::New(form, "Порт:"));
+    layout->addWidget(CBFunc::New(form, "portcb", ports));
 
     QStringList sl = SerialUtils::allBaudValuesRS485();
-    layout->addWidget(LBLFunc::New(dialog, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
-    layout->addWidget(CBFunc::New(dialog, "speedcb", sl), count++, 1, 1, 1);
+    layout->addWidget(LBLFunc::New(form, "Скорость:"));
+    layout->addWidget(CBFunc::New(form, "speedcb", sl));
 
-    sl = QStringList({ ParityRS485::noParity,
-                       ParityRS485::oddParity,
-                       ParityRS485::evenParity });
-    layout->addWidget(LBLFunc::New(dialog, "Четность:"), count, 0, 1, 1, Qt::AlignLeft);
-    layout->addWidget(CBFunc::New(dialog, "paritycb", sl), count++, 1, 1, 1);
-    layout->addWidget(LBLFunc::New(dialog, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
+    sl = QStringList({ ParityRS485::noParity, ParityRS485::oddParity, ParityRS485::evenParity });
+    layout->addWidget(LBLFunc::New(form, "Четность:"));
+    layout->addWidget(CBFunc::New(form, "paritycb", sl));
+    layout->addWidget(LBLFunc::New(form, "Стоп бит:"));
 
     sl = QStringList({ SerialUtils::stopBitsToString(QSerialPort::StopBits::OneStop),
-                       SerialUtils::stopBitsToString(QSerialPort::StopBits::TwoStop) });
-    layout->addWidget(CBFunc::New(dialog, "stopbitcb", sl), count++, 1, 1, 1);
-    layout->addWidget(LBLFunc::New(dialog, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
-    layout->addWidget(SPBFunc::New(dialog, "addressspb", 0, 255, 0), count++, 1, 1, 1);
+        SerialUtils::stopBitsToString(QSerialPort::StopBits::TwoStop) });
+    layout->addWidget(CBFunc::New(form, "stopbitcb", sl));
+    layout->addWidget(LBLFunc::New(form, "Адрес:"));
+    layout->addWidget(SPBFunc::New(form, "addressspb", 0, 255, 0));
 
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(PBFunc::New(dialog, "acceptpb", "Сохранить", this, &InterfaceSerialDialog::acceptedInterface));
-    hlyout->addWidget(PBFunc::New(dialog, "cancelpb", "Отмена", dialog, [dialog] { dialog->close(); }));
-    layout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
+    hlyout->addWidget(PBFunc::New(form, "acceptpb", "Сохранить", this, &InterfaceSerialDialog::acceptedInterface));
+    hlyout->addWidget(PBFunc::New(form, "cancelpb", "Отмена", this, [this] { clearForm(); }));
+    layout->addLayout(hlyout);
 
-    dialog->setLayout(layout);
-    dialog->adjustSize();
-    dialog->exec();
+    showForm(form);
 }
 
 bool InterfaceSerialDialog::updateModel()
@@ -290,18 +267,13 @@ bool InterfaceSerialDialog::updateModel()
     }
     Settings::popGroup();
     m_tableView->setModel(tableViewModel);
-    m_tableView->resizeColumnsToContents();
 
     return true;
 }
 
 void InterfaceSerialDialog::acceptedInterface()
 {
-    auto dialog = this->findChild<QDialog *>("rsCreateDialog");
-    if (dialog == nullptr)
-        return;
-
-    QString name = LEFunc::data(dialog, "namele");
+    QString name = LEFunc::data(m_formArea, "namele");
 
     // check if there's such name in registry
     Settings::pushGroup("RS485");
@@ -314,12 +286,12 @@ void InterfaceSerialDialog::acceptedInterface()
 
     int spbdata;
     Settings::pushGroup(name);
-    Settings::set("serialPort", CBFunc::data(dialog, "portcb"));
-    Settings::set("serialSpeed", CBFunc::data(dialog, "speedcb"));
-    Settings::set("serialParity", CBFunc::data(dialog, "paritycb"));
-    Settings::set("serialStop", CBFunc::data(dialog, "stopbitcb"));
+    Settings::set("serialPort", CBFunc::data(m_formArea, "portcb"));
+    Settings::set("serialSpeed", CBFunc::data(m_formArea, "speedcb"));
+    Settings::set("serialParity", CBFunc::data(m_formArea, "paritycb"));
+    Settings::set("serialStop", CBFunc::data(m_formArea, "stopbitcb"));
 
-    if (SPBFunc::data(dialog, "addressspb", spbdata))
+    if (SPBFunc::data(m_formArea, "addressspb", spbdata))
         Settings::set("modbusAddress", spbdata);
 
     Settings::popGroup();
@@ -328,7 +300,26 @@ void InterfaceSerialDialog::acceptedInterface()
     if (!updateModel())
         qDebug() << Error::GeneralError;
 
-    dialog->close();
+    clearForm();
+}
+
+void InterfaceSerialDialog::showForm(QWidget *form)
+{
+    clearForm();
+    auto *layout = static_cast<QVBoxLayout *>(m_formArea->layout());
+    layout->addStretch();
+    layout->addWidget(form);
+    layout->addStretch();
+}
+
+void InterfaceSerialDialog::clearForm()
+{
+    QLayoutItem *item;
+    while ((item = m_formArea->layout()->takeAt(0)) != nullptr)
+    {
+        delete item->widget();
+        delete item;
+    }
 }
 
 QStringList InterfaceSerialDialog::getConnectionNames() const
@@ -337,7 +328,8 @@ QStringList InterfaceSerialDialog::getConnectionNames() const
     Settings::pushGroup("RS485");
     auto rslist = Settings::groups();
 
-    for (const auto &item : std::as_const(rslist)) {
+    for (const auto &item : std::as_const(rslist))
+    {
         names << item;
     }
     Settings::popGroup();
@@ -355,7 +347,8 @@ void InterfaceSerialDialog::removeConnection(const QString &name)
 
 void InterfaceSerialDialog::addConnectionFromSearch(const QMap<QString, QVariant> &deviceData)
 {
-    if (checkSize()) return;
+    if (checkSize())
+        return;
 
     QString name = deviceData.value(SerialKeysRS485::name).toString();
 
@@ -376,4 +369,21 @@ void InterfaceSerialDialog::addConnectionFromSearch(const QMap<QString, QVariant
     Settings::popGroup(); // RS485
 
     updateModel();
+}
+
+void InterfaceSerialDialog::deleteInterface()
+{
+    QString name = m_tableView->currentIndex().siblingAtColumn(0).data().toString();
+
+    Settings::pushGroup("RS485");
+    Settings::remove(name);
+    Settings::popGroup();
+
+    updateModel();
+}
+
+void InterfaceSerialDialog::editInterface()
+{
+    auto index = m_tableView->currentIndex();
+    editConnection(index);
 }

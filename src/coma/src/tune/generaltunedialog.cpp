@@ -47,7 +47,7 @@ void GeneralTuneDialog::SetupUI(bool noReport)
                 }
                 auto *mainWindow = qobject_cast<Coma *>(WDFunc::getMainWindow());
                 if (mainWindow != nullptr)
-                    mainWindow->showTuneWidget(d.dialog);
+                    mainWindow->showCentralWidget(d.dialog);
             },
             ":/tunes/" + tns + ".svg", d.caption));
     }

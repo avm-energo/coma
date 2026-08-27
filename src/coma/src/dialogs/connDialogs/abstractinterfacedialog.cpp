@@ -1,6 +1,7 @@
-#include "dialogs/abstractinterfacedialog.h"
+#include "dialogs/connDialogs/abstractinterfacedialog.h"
 
 #include <libavm-gen/settings.h>
+#include <libavm-widgets/pbfunc.h>
 
 #include <QLayout>
 #include <QPushButton>
@@ -12,8 +13,7 @@ AbstractInterfaceDialog::AbstractInterfaceDialog(QWidget *parent) : QDialog(pare
 
 void AbstractInterfaceDialog::setupUI()
 {
-    QPushButton *pb = new QPushButton("Отмена");
-    connect(pb, &QAbstractButton::clicked, this, &QDialog::close);
+    QPushButton *pb = PBFunc::New(this, "", "Назад", this, &QDialog::close);
     QVBoxLayout *lyout = static_cast<QVBoxLayout *>(layout());
     lyout->addWidget(pb);
 }

@@ -217,6 +217,12 @@ void SettingsDialog::setupConnectionTab() noexcept
                        "с устройством.</font></p>");
     iec104Layout->addWidget(widget);
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
+    iec104Layout->addWidget(
+        LEFunc::newLBL(m_workspace, "Порт по умолчанию", SettingsKeys::Iec104::iec104DefaultPort, true));
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
+    iec104Layout->addWidget(
+        LEFunc::newLBL(m_workspace, "Адрес БС по умолчанию", SettingsKeys::Iec104::iec104DefaultBsAddress, true));
+    iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
     widget = LEFunc::newLBL(m_workspace, "t0, с", SettingsKeys::Iec104::iec104T0, true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут при установке соединения.</font></p>");
     iec104Layout->addWidget(widget);
@@ -292,6 +298,10 @@ void SettingsDialog::fill()
         this, SettingsKeys::Iec104::iec104Reconnect, Settings::get(SettingsKeys::Iec104::iec104Reconnect, 1000));
     LEFunc::setData(this, SettingsKeys::Iec104::iec104DisconnectTimeout,
         Settings::get(SettingsKeys::Iec104::iec104DisconnectTimeout, 5000));
+    LEFunc::setData(this, SettingsKeys::Iec104::iec104DefaultPort,
+        Settings::get(SettingsKeys::Iec104::iec104DefaultPort, 2404));
+    LEFunc::setData(this, SettingsKeys::Iec104::iec104DefaultBsAddress,
+        Settings::get(SettingsKeys::Iec104::iec104DefaultBsAddress, 205));
     LEFunc::setData(this, SettingsKeys::Iec104::iec104ConnectTimeout,
         Settings::get(SettingsKeys::Iec104::iec104ConnectTimeout, 5000));
     LEFunc::setData(this, SettingsKeys::Iec104::iec104T0, Settings::get(SettingsKeys::Iec104::iec104T0, 30));
@@ -361,8 +371,6 @@ void SettingsDialog::acceptSettings()
     set(SettingsKeys::Iec104::iec104Reconnect, LEFunc::data(this, SettingsKeys::Iec104::iec104Reconnect));
     set(SettingsKeys::Iec104::iec104DisconnectTimeout,
         LEFunc::data(this, SettingsKeys::Iec104::iec104DisconnectTimeout));
-    set(SettingsKeys::Iec104::iec104ConnectTimeout,
-        LEFunc::data(this, SettingsKeys::Iec104::iec104ConnectTimeout));
     set(SettingsKeys::Iec104::iec104T0, LEFunc::data(this, SettingsKeys::Iec104::iec104T0));
     set(SettingsKeys::Iec104::iec104T1, LEFunc::data(this, SettingsKeys::Iec104::iec104T1));
     set(SettingsKeys::Iec104::iec104T2, LEFunc::data(this, SettingsKeys::Iec104::iec104T2));

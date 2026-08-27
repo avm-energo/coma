@@ -1,4 +1,4 @@
-#include "dialogs/interfaceusbdialog.h"
+#include "dialogs/connDialogs/usbDialog/interfaceusbdialog.h"
 
 #include <common/names.h>
 #include <libavm-gen/error.h>
@@ -14,6 +14,7 @@
 InterfaceUSBDialog::InterfaceUSBDialog(QWidget *parent) : AbstractInterfaceDialog(parent)
 {
     setWindowTitle("USB соединения");
+    setMinimumSize(QSize(370, 350));
 }
 
 void InterfaceUSBDialog::setupUI()
