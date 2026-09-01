@@ -59,10 +59,10 @@ DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queu
         responseParser, &Iec104ResponseParser::receiveCurrentCommand);    //
     // Обработка счетчиков пришедшего I-пакета
     QObject::connect(responseParser, &Iec104ResponseParser::infoTransferFormatReceived, //
-        executor, &Iec104QueryExecutor::countersFromIPacket);                           //
+        executor, &Iec104QueryExecutor::checkIPacketCounters);                           //
     // Обработка счетчиков пришедшего S-пакета
-    QObject::connect(responseParser, &Iec104ResponseParser::SupervisoryFormatReceived, //
-        executor, &Iec104QueryExecutor::countersFromSPacket);
+    QObject::connect(responseParser, &Iec104ResponseParser::supervisoryFormatReceived, //
+        executor, &Iec104QueryExecutor::checkSPacketCounters);
     // Проверка посылки U-формата исполнителем запросов
     QObject::connect(responseParser, &Iec104ResponseParser::unnumberedFormatReceived, //
         executor, &Iec104QueryExecutor::checkUnnumberedFormat);                       //

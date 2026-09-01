@@ -157,8 +157,7 @@ void Iec104ResponseParser::parse()
                 parseInfoFormat(response);
                 break;
             case FrameFormat::Supervisory:
-                emit SupervisoryFormatReceived(m_currentAPCI.m_ctrlBlock.m_counters);
-                parseSupervisoryFormat();
+                emit supervisoryFormatReceived(m_currentAPCI.m_ctrlBlock.m_counters);
                 break;
             case FrameFormat::Unnumbered:
                 parseUnnumberedFormat();
@@ -340,11 +339,6 @@ void Iec104ResponseParser::handleFileTransferAsdu(const ASDU &asdu) noexcept
     default:
         break;
     }
-}
-
-void Iec104ResponseParser::parseSupervisoryFormat() noexcept
-{
-    /// Need action?
 }
 
 void Iec104ResponseParser::parseUnnumberedFormat() noexcept

@@ -42,8 +42,6 @@ private:
 
     /// \brief Парсинг данных в I-формате.
     void parseInfoFormat(const QByteArray &response) noexcept;
-    /// \brief Парсинг данных в S-формате.
-    void parseSupervisoryFormat() noexcept;
     /// \brief Парсинг данных в U-формате.
     void parseUnnumberedFormat() noexcept;
     /// \brief Обработка ASDU передачи файла (F_FR_NA_1..F_LS_NA_1).
@@ -76,7 +74,7 @@ signals:
     /// \brief Пришел I-пакет.
     void infoTransferFormatReceived(const RSCounter counters);
     /// \brief Пришел S-пакет.
-    void SupervisoryFormatReceived(const RSCounter counters);
+    void supervisoryFormatReceived(const RSCounter counters);
     /// \brief Сигнал для информирования исполнителя запросов
     /// о том, что запрошенные данные получены.
     void requestedDataReceived();

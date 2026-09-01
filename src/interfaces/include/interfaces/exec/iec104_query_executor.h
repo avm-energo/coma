@@ -80,9 +80,9 @@ private slots:
     void sendFileWriteReply(const Iec104::FileWriteReplyAction action, const quint8 fileNum, const quint8 section,
         const QByteArray &payload) noexcept;
     /// \brief Слот для проверки и подтверждения счетчиков с I-пакета.
-    void countersFromIPacket(const RSCounter &counters) noexcept;
+    void checkIPacketCounters(const RSCounter &counters) noexcept;
     /// \brief Слот для проверки и подтверждения счетчиков с S-пакета.
-    void countersFromSPacket(const RSCounter &counters) noexcept;
+    void checkSPacketCounters(const RSCounter &counters) noexcept;
 };
 
 } // namespace Interface

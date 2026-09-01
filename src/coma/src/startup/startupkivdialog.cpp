@@ -175,7 +175,7 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
         connect(setTransOff, &QPushButton::clicked, this,
             [this]()
             {
-                setSuccessMsg("Начальные значения записаны успешно");
+                setSuccessMsg("Команда выполнена успешно");
                 sendCommand(Commands::C_SetTransOff, false);
             });
         layout->addWidget(setTransOff);
@@ -184,7 +184,7 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
         connect(setTransOn, &QPushButton::clicked, this,
             [this]()
             {
-                setSuccessMsg("Начальные значения записаны успешно");
+                setSuccessMsg("Команда выполнена успешно");
                 sendCommand(Commands::C_SetTransOff);
             });
         layout->addWidget(setTransOn);

@@ -9,10 +9,6 @@ namespace Interface
 
 using namespace Iec104;
 
-/// \brief Адрес одиночной команды (C_SC_NA_1) запуска обновления ВПО.
-/// \see Av-tuk.core: Com104Handler (M52_104.c, case 802) - тот же адрес, что и Modbus::firmwareAddr.
-constexpr quint32 firmwareUpgradeAddr = 802;
-
 Iec104RequestParser::Iec104RequestParser(QObject *parent) : BaseRequestParser(parent), m_baseStationAddress(0) { }
 
 void Iec104RequestParser::basicProtocolSetup() noexcept
@@ -106,7 +102,7 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
     }
     case Commands::C_StartFirmwareUpgrade:
     {
-        m_request = createSingleCommand(firmwareUpgradeAddr, true);
+        m_request = createSingleCommand(FirmwareUpgrade, true);
         break;
     }
     case Commands::C_WriteUserValues:

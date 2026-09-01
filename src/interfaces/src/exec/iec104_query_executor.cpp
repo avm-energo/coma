@@ -220,7 +220,7 @@ void Iec104QueryExecutor::sendFileWriteReply(
     }
 }
 
-void Iec104QueryExecutor::countersFromIPacket(const RSCounter &counters) noexcept
+void Iec104QueryExecutor::checkIPacketCounters(const RSCounter &counters) noexcept
 {
     if (!m_ctrlBlock->m_counters.checkSentCounters(counters))
     {
@@ -244,7 +244,7 @@ void Iec104QueryExecutor::countersFromIPacket(const RSCounter &counters) noexcep
     }
 }
 
-void Iec104QueryExecutor::countersFromSPacket(const RSCounter &counters) noexcept
+void Iec104QueryExecutor::checkSPacketCounters(const RSCounter &counters) noexcept
 {
     m_ctrlBlock->m_counters.setAck(counters);
     if (m_ctrlBlock->m_counters.unacknowledgedSentCount() == 0)
