@@ -105,7 +105,7 @@ public:
     void pause() noexcept;
     /// \brief Функция для окончания работы исполнителя запросов.
     /// \details Переводит состояние исполнителя в ExecutorState::Stopping.
-    void stop() noexcept;
+    virtual void stop() noexcept;
 
     /// \brief Функция, возвращающая последнюю запрошенную команду.
     Commands getLastRequestedCommand() const noexcept;
@@ -143,6 +143,11 @@ signals:
     void sendDataToInterface(const QByteArray &data);
     /// \brief Сигнал об ошибке, чтобы не зависать в ожидании ответа
     void responseError(Error::Msg);
+    /// \brief Сигнал для проактивного запроса переподключения к устройству.
+    /// \details Используется вместо ожидания реактивного обнаружения по счётчикам
+    /// тайм-аутов/ошибок, когда исполнитель заранее знает, что устройство может
+    /// стать недоступным (например, сразу после подтверждённой записи файла).
+    void reconnectRequested();
 };
 
 } // namespace Interface

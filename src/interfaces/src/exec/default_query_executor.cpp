@@ -11,6 +11,7 @@ namespace Interface
 DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, BaseSettings *settings, QObject *parent)
     : QObject(parent)
     , m_state(ExecutorState::Starting)
+    , m_lastRequestedCommand(Commands::C_ReqStartup)
     , m_queue(std::ref(queue))
     , m_timeoutTimer(this)
     , m_waitMutex {}
@@ -19,6 +20,7 @@ DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, BaseSettings *se
     , m_responseParser(nullptr)
 {
     setTimeout(settings->get(MemKeys::timeout));
+    m_log.setLogLevel(settings->get("logLevel"));
     connect(settings, &BaseSettings::settingHasBeenChanged, this, &DefaultQueryExecutor::settingsChanged);
 }
 
@@ -162,6 +164,8 @@ void DefaultQueryExecutor::settingsChanged(const QString &key, const QVariant &v
 {
     if (key == KeysMap.key(MemKeys::timeout))
         setTimeout(value.toInt());
+    else if (key == "logLevel")
+        m_log.setLogLevel(value.toString());
 }
 
 void DefaultQueryExecutor::exec()
