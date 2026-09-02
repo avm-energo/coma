@@ -51,9 +51,9 @@ private:
 
     bool connectToUSB();
     void loadXML();
-    void startDownload();
-    void cancelDownload();
-    void finishDownload();
+    void startWork();
+    void cancekWork();
+    void finishWork();
     void saveBsi();
     void saveBsiExt();
     void requestConfig();
@@ -78,5 +78,5 @@ private slots:
     void bsiInitFinished(Error::Msg status);
 
 signals:
-    void finishWork();
+    void finishWorker();
 };

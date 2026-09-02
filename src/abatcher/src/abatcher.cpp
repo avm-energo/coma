@@ -149,7 +149,7 @@ void Abatcher::startModuleWorker()
     m_widgets->addWidget(mw);
     m_widgets->setCurrentIndex(1);
 
-    connect(mw, &ModuleWorker::finishWork, this,
+    connect(mw, &ModuleWorker::finishWorker, this,
         [this, mw]
         {
             m_widgets->setCurrentIndex(0);

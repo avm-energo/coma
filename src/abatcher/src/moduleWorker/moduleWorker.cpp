@@ -36,9 +36,9 @@ constexpr quint32 KivStartupRegAddr = 4000;
 constexpr quint32 KivStartupRegCount = 11;
 
 // Эталонный файл ВПО для АВМ-КИВ зашит в ресурсы приложения (resources/firmware.qrc).
-constexpr const char *KivFirmwareResourcePath = ":/firmware/kiv/AVM-KIV_v5_0_22.hex";
-// Версия "5.0-0022" в формате StdFunc::VerToStr/StrToVer, соответствует файлу AVM-KIV_v5_0_22.hex.
-constexpr quint32 KivReferenceFwVersion = (5u << 24) | (0u << 16) | 22u;
+constexpr const char *KivFirmwareResourcePath = ":/firmware/kiv/AVM-KIV_v5_0_23.hex";
+// Версия "5.0-0023" в формате StdFunc::VerToStr/StrToVer, соответствует файлу AVM-KIV_v5_0_23.hex.
+constexpr quint32 KivReferenceFwVersion = (5u << 24) | (0u << 16) | 23u;
 
 // Сколько ждём, пока модуль снова отзовётся после команды перехода на новое ВПО (стирание/запись
 // flash-памяти и перезагрузка), и с какой паузой между повторными попытками достучаться до него.
@@ -157,22 +157,22 @@ void ModuleWorker::setupUI()
 void ModuleWorker::createCloseButton()
 {
     m_closeButton = new QPushButton("Назад", this);
-    connect(m_closeButton, &QPushButton::clicked, this, &ModuleWorker::finishWork);
+    connect(m_closeButton, &QPushButton::clicked, this, &ModuleWorker::finishWorker);
 }
 
 void ModuleWorker::createStartButton()
 {
     // TODO: в будущем перед стартом здесь будет выбор того, что именно скачивать
-    m_startButton = new QPushButton("Начать скачивание", this);
+    m_startButton = new QPushButton("Начать работу", this);
     m_startButton->setEnabled(false);
-    connect(m_startButton, &QPushButton::clicked, this, &ModuleWorker::startDownload);
+    connect(m_startButton, &QPushButton::clicked, this, &ModuleWorker::startWork);
 }
 
 void ModuleWorker::createCancelButton()
 {
     m_cancelButton = new QPushButton("Отмена", this);
     m_cancelButton->setEnabled(false);
-    connect(m_cancelButton, &QPushButton::clicked, this, &ModuleWorker::cancelDownload);
+    connect(m_cancelButton, &QPushButton::clicked, this, &ModuleWorker::cancekWork);
 }
 
 void ModuleWorker::createProgressBars()
@@ -241,10 +241,14 @@ void ModuleWorker::loadXML()
     cfgLoader->deleteLater();
 }
 
-void ModuleWorker::startDownload()
+void ModuleWorker::startWork()
 {
+    const auto &bsi = m_device->bsi();
     QString filename = FileFunc::chooseFileForSave(this, "Zip files (*.zip)", "zip",
-        QString("bsi_%1").arg(QDateTime::currentDateTime().toString("yyMMdd_hhmmss")));
+        QString("module_%1%2_%3")
+            .arg(bsi.data(Device::BsiIndexes::MTypeB), 2, 16, QChar('0'))
+            .arg(bsi.data(Device::BsiIndexes::MTypeM), 2, 16, QChar('0'))
+            .arg(QDateTime::currentDateTime().toString("yyMMdd_hhmmss")));
     if (filename.isEmpty())
         return;
     m_zipFileName = filename;
@@ -264,20 +268,20 @@ void ModuleWorker::startDownload()
     saveStartup();
     checkAndUpdateFirmwareVersion();
     checkAndUpdateConfigParams();
-    finishDownload();
+    finishWork();
 }
 
-void ModuleWorker::cancelDownload()
+void ModuleWorker::cancekWork()
 {
     if (m_isCancelled)
         return;
 
     m_isCancelled = true;
     m_device->async()->cancelQuery();
-    EMessageBox::warning(this, "Скачивание отменено");
+    EMessageBox::warning(this, "Отменена работы");
 }
 
-void ModuleWorker::finishDownload()
+void ModuleWorker::finishWork()
 {
     m_cancelButton->setEnabled(false);
     m_closeButton->setEnabled(true);

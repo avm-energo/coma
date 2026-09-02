@@ -58,7 +58,7 @@ u32 BlockStartupInfoExtended::size() const
 QByteArray BlockStartupInfoExtended::toByteArray()
 {
     QByteArray ba;
-    for (u32 i = startAddr(); i <= endAddr(); ++i)
+    for (u32 i = m_startReg; i <= m_endReg; ++i)
     {
         ba.append(StdFunc::toByteArray(m_data[i - m_startReg]));
     }
