@@ -59,34 +59,34 @@ void ConnectDialog::setInterface(const QString &connectionType)
         return;
 
     // USB/RS485/Ethernet встраиваются прямо в главное окно вместо отдельного модального окна
-    AbstractInterfaceDialog *embedded = nullptr;
+    AbstractInterfaceDialog *ifaceDialog = nullptr;
     if (connectionType == "USB")
-        embedded = new InterfaceUSBDialog(nullptr);
+        ifaceDialog = new InterfaceUSBDialog(nullptr);
     else if (connectionType == "RS485")
-        embedded = new InterfaceSerialDialog(nullptr);
+        ifaceDialog = new InterfaceSerialDialog(nullptr);
     else if (connectionType == "Ethernet")
-        embedded = new InterfaceEthernetDialog(nullptr);
+        ifaceDialog = new InterfaceEthernetDialog(nullptr);
 
-    if (embedded == nullptr)
+    if (ifaceDialog == nullptr)
         return;
 
-    embedded->setupUI();
-    if (!embedded->updateModel())
+    ifaceDialog->setupUI();
+    if (!ifaceDialog->updateModel())
     {
-        embedded->deleteLater();
+        ifaceDialog->deleteLater();
         return;
     }
 
-    connect(embedded, &AbstractInterfaceDialog::accepted, mainWindow, &Coma::initConnection);
-    connect(embedded, &AbstractInterfaceDialog::accepted, embedded, //
-        [embedded = QPointer<AbstractInterfaceDialog>(embedded)](const ConnectionSettings &)
+    connect(ifaceDialog, &AbstractInterfaceDialog::accepted, mainWindow, &Coma::initConnection);
+    connect(ifaceDialog, &AbstractInterfaceDialog::accepted, ifaceDialog, //
+        [dialog = QPointer<AbstractInterfaceDialog>(ifaceDialog)](const ConnectionSettings &)
         {
-            if (embedded)
-                embedded->close();
+            if (dialog)
+                dialog->close();
         });
 
     // showCentralWidget() сама подписывается на destroyed(), чтобы вернуть index 0
-    mainWindow->showCentralWidget(embedded);
+    mainWindow->showCentralWidget(ifaceDialog);
     return;
 
     // Эмулятор не работает?
