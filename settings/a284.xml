@@ -643,8 +643,8 @@
             <group>
                 <signal-id>19</signal-id>
                 <sig-type>13</sig-type>
-                <trans-type>1</trans-type>
-                <sig-group></sig-group>
+                <trans-type>0</trans-type>
+                <sig-group>8</sig-group>
             </group>
             <group>
                 <signal-id>20</signal-id>
@@ -658,7 +658,17 @@
                 <trans-type>3</trans-type>
                 <sig-group></sig-group>
             </group>
+            <group>
+                <signal-id>23</signal-id>
+                <sig-type>13</sig-type>
+                <trans-type>0</trans-type>
+                <sig-group>8</sig-group>
+            </group>
         </iec60870>
+        <includes desc="">
+            <include src="bsi-ext-base.xml"/>
+            <include src="bsi.xml"/>
+        </includes>
         <journals desc="Журналы">
             <meas desc="Журнал измерений">
                 <item>
@@ -969,12 +979,6 @@
                 <desc>bsi</desc>
             </group>
             <group>
-                <signal-id>20</signal-id>
-                <reg-type>4</reg-type>
-                <type>uint32</type>
-                <desc>bsi_ext</desc>
-            </group>
-            <group>
                 <signal-id>2</signal-id>
                 <reg-type>4</reg-type>
                 <type>float</type>
@@ -1053,40 +1057,38 @@
                 <desc>ErrCfg</desc>
             </group>
             <group>
+                <signal-id>18</signal-id>
+                <reg-type>4</reg-type>
+                <type>uint32</type>
+                <desc>alarmInfo</desc>
+            </group>
+            <group>
+                <signal-id>19</signal-id>
+                <reg-type>4</reg-type>
+                <type>float</type>
+                <desc>Углы между током пина и напряжением</desc>
+            </group>
+            <group>
+                <signal-id>20</signal-id>
+                <reg-type>4</reg-type>
+                <type>uint32</type>
+                <desc>bsi_ext</desc>
+            </group>
+            <group>
                 <signal-id>21</signal-id>
                 <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc>alarmInfo</desc>
             </group>
             <group>
-                <signal-id>18</signal-id>
+                <signal-id>23</signal-id>
                 <reg-type>4</reg-type>
-                <type>uint32</type>
-                <desc>alarmInfo</desc>
+                <type>float</type>
+                <desc>Токи</desc>
             </group>
         </modbus>
         <overlay desc="">
             <records>
-                <record>
-                    <id>1044</id>
-                    <widget>
-                        <group>100</group>
-                        <string>Период фильтрации дискретного входа (мс)</string>
-                        <toolTip>Период фильтрации дискретного входа (мс)</toolTip>
-                    </widget>
-                </record>
-                <record>
-                    <id>1035</id>
-                    <widget>
-                        <group>200</group>
-                    </widget>
-                </record>
-                <record>
-                    <id>1036</id>
-                    <widget>
-                        <group>200</group>
-                    </widget>
-                </record>
                 <record>
                     <id>1013</id>
                     <widget>
@@ -1107,6 +1109,26 @@
                         <group>300</group>
                     </widget>
                 </record>
+                <record>
+                    <id>1035</id>
+                    <widget>
+                        <group>200</group>
+                    </widget>
+                </record>
+                <record>
+                    <id>1036</id>
+                    <widget>
+                        <group>200</group>
+                    </widget>
+                </record>
+                <record>
+                    <id>1044</id>
+                    <widget>
+                        <group>100</group>
+                        <string>Период фильтрации дискретного входа (мс)</string>
+                        <toolTip>Период фильтрации дискретного входа (мс)</toolTip>
+                    </widget>
+                </record>
             </records>
         </overlay>
         <protocom desc="Протокол Protocom">
@@ -1116,7 +1138,7 @@
             </group>
             <group>
                 <block>1</block>
-                <signal-id>22</signal-id>
+                <signal-id>7</signal-id>
             </group>
             <group>
                 <block>2</block>
@@ -1159,6 +1181,10 @@
                 <signal-id>19</signal-id>
             </group>
             <group>
+                <block>49</block>
+                <signal-id>23</signal-id>
+            </group>
+            <group>
                 <block>100</block>
                 <signal-id>13</signal-id>
             </group>
@@ -1192,60 +1218,93 @@
         <sections desc="Разделы">
             <section header="Метрология" order="2">
                 <sgroup header="Метрология" tab="4">
-                    <mwidget desc="Частота, Гц" view="float">
-                        <start-addr>1060</start-addr>
-                        <toolTip>Частота, Гц</toolTip>
-                        <decimals>2</decimals>
-                    </mwidget>
                     <mwidget desc="Напряжение Ua, В" view="float">
-                        <start-addr>1061</start-addr>
+                        <start-addr>1000</start-addr>
                         <toolTip>Напряжение Ua, В</toolTip>
                         <decimals>2</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
                     </mwidget>
                     <mwidget desc="Напряжение Ub, В" view="float">
-                        <start-addr>1062</start-addr>
+                        <start-addr>1001</start-addr>
                         <toolTip>Напряжение Ub, В</toolTip>
                         <decimals>2</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
                     </mwidget>
                     <mwidget desc="Напряжение Uc, В" view="float">
-                        <start-addr>1063</start-addr>
+                        <start-addr>1002</start-addr>
                         <toolTip>Напряжение Uc, В</toolTip>
                         <decimals>2</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
                     </mwidget>
-                    <mwidget desc="Ток Ia, А" view="float">
-                        <start-addr>1064</start-addr>
-                        <toolTip>Ток Ia, А</toolTip>
-                        <decimals>5</decimals>
-                    </mwidget>
-                    <mwidget desc="Ток Ib, А" view="float">
-                        <start-addr>1065</start-addr>
-                        <toolTip>Ток Ib, А</toolTip>
-                        <decimals>5</decimals>
-                    </mwidget>
-                    <mwidget desc="Ток Ic, А" view="float">
-                        <start-addr>1066</start-addr>
-                        <toolTip>Ток Ic, А</toolTip>
-                        <decimals>5</decimals>
+                    <mwidget desc="Частота, Гц" view="float">
+                        <start-addr>2400</start-addr>
+                        <toolTip>Частота, Гц</toolTip>
+                        <decimals>2</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φA, град." view="float">
                         <start-addr>2900</start-addr>
-                        <toolTip>Угол между током пина и напряжением ф.A, град.</toolTip>
+                        <toolTip>Угол между напряжением и током φA, град.</toolTip>
                         <decimals>2</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φB, град." view="float">
                         <start-addr>2901</start-addr>
-                        <toolTip>Угол между током пина и напряжением ф.B, град.</toolTip>
+                        <toolTip>Угол между напряжением и током φB, град.</toolTip>
                         <decimals>2</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φC, град." view="float">
                         <start-addr>2902</start-addr>
-                        <toolTip>Угол между током пина и напряжением ф.C, град.</toolTip>
+                        <toolTip>Угол между напряжением и током φC, град.</toolTip>
                         <decimals>2</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
+                    </mwidget>
+                    <mwidget desc="Ток Ia, А" view="float">
+                        <start-addr>2920</start-addr>
+                        <toolTip>Ток Ia, А</toolTip>
+                        <decimals>5</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
+                    </mwidget>
+                    <mwidget desc="Ток Ib, А" view="float">
+                        <start-addr>2921</start-addr>
+                        <toolTip>Ток Ib, А</toolTip>
+                        <decimals>5</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
+                    </mwidget>
+                    <mwidget desc="Ток Ic, А" view="float">
+                        <start-addr>2922</start-addr>
+                        <toolTip>Ток Ic, А</toolTip>
+                        <decimals>5</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
                     </mwidget>
                     <mwidget desc="Температура Pt100" view="float">
                         <start-addr>4503</start-addr>
                         <toolTip>Температура Pt100</toolTip>
                         <decimals>1</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
                     </mwidget>
                 </sgroup>
             </section>
@@ -1274,8 +1333,8 @@
                         <toolTip>Температура микроконтроллера, °С</toolTip>
                     </mwidget>
                     <mwidget desc="Напряжение на батарейке, В" view="float">
-                        <toolTip>Напряжение на батарейке, В</toolTip>
                         <start-addr>102</start-addr>
+                        <toolTip>Напряжение на батарейке, В</toolTip>
                     </mwidget>
                     <mwidget desc="Частота, Гц" view="float">
                         <start-addr>2400</start-addr>
@@ -1484,7 +1543,7 @@
             </signal>
             <signal>
                 <start-addr>1060</start-addr>
-                <count>26</count>
+                <count>13</count>
                 <id>22</id>
                 <type>Float</type>
             </signal>
@@ -1510,6 +1569,12 @@
                 <start-addr>2900</start-addr>
                 <count>3</count>
                 <id>19</id>
+                <type>Float</type>
+            </signal>
+            <signal>
+                <start-addr>2920</start-addr>
+                <count>3</count>
+                <id>23</id>
                 <type>Float</type>
             </signal>
             <signal>
@@ -1567,9 +1632,5 @@
                 <type>BitString</type>
             </signal>
         </signals>
-        <includes desc="">
-            <include src="bsi.xml"/>
-            <include src="bsi-ext-base.xml"/>
-        </includes>
     </resources>
 </module>
