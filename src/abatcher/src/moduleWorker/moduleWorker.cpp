@@ -299,16 +299,7 @@ void ModuleWorker::finishWork()
 void ModuleWorker::saveBsi()
 {
     QByteArray ba = m_device->bsi().toByteArray();
-    PrbFunc::setRange(this, "prbbsi", ba.size());
-
-    if (Files::SaveToFile(m_tempDir.path() + "/bsi-old", ba) != Error::Msg::NoError)
-    {
-        EMessageBox::error(this, "Не удалось сохранить блок Bsi");
-        m_isCancelled = true;
-        return;
-    }
-
-    PrbFunc::setValue(this, "prbbsi", ba.size());
+    saveToFile(ba, "prbbsi", "bsi-old");
 }
 
 void ModuleWorker::saveBsiExt()
@@ -321,16 +312,7 @@ void ModuleWorker::saveBsiExt()
     }
 
     QByteArray ba = m_device->bsiExt().toByteArray();
-    PrbFunc::setRange(this, "prbbsiext", ba.size());
-
-    if (Files::SaveToFile(m_tempDir.path() + "/bsiext", ba) != Error::Msg::NoError)
-    {
-        EMessageBox::error(this, "Не удалось сохранить блок BsiExt");
-        m_isCancelled = true;
-        return;
-    }
-
-    PrbFunc::setValue(this, "prbbsiext", ba.size());
+    saveToFile(ba, "prbbsiext", "bsiext");
 }
 
 void ModuleWorker::saveConfig()
@@ -348,17 +330,7 @@ void ModuleWorker::saveConfig()
     }
 
     m_device->getS2Datamanager()->parseS2File(ba);
-
-    PrbFunc::setRange(this, "prbconfig", ba.size());
-
-    if (Files::SaveToFile(m_tempDir.path() + "/config-old", ba) != Error::Msg::NoError)
-    {
-        EMessageBox::error(this, "Не удалось сохранить конфигурацию");
-        m_isCancelled = true;
-        return;
-    }
-
-    PrbFunc::setValue(this, "prbconfig", ba.size());
+    saveToFile(ba, "prbconfig", "config-old");
 }
 
 void ModuleWorker::saveJournals()
@@ -670,7 +642,6 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
     PrbFunc::setRange(this, "prbfwupdate", 1);
     PrbFunc::setValue(this, "prbfwupdate", 1);
 
-    PrbFunc::setRange(this, "prbfwbsi", 1);
     Error::Msg bsiStatus = m_device->sync()->reqBSI();
     if (bsiStatus != Error::Msg::NoError)
     {
@@ -679,29 +650,20 @@ void ModuleWorker::updateFirmware(const QString &oldVerStr, const QString &newVe
         m_isCancelled = true;
         return;
     }
-    PrbFunc::setValue(this, "prbfwbsi", 1);
 
     QByteArray bsiBa = m_device->bsi().toByteArray();
-    if (Files::SaveToFile(m_tempDir.path() + "/bsi", bsiBa) != Error::Msg::NoError)
+    Error::Msg err = saveToFile(bsiBa, "prbfwbsi", "bsi");
+    if (err != Error::Msg::NoError)
+        return;
+
+    if (m_device->bsi().data(Device::BsiIndexes::Fwver) != KivReferenceFwVersion)
     {
-        qCritical() << "Не удалось сохранить блок Bsi после обновления ВПО";
-        EMessageBox::error(this, "Не удалось сохранить блок Bsi после обновления ВПО");
+        qCritical() << QString("Обновление ВПО не удалось: версия после обновления %1, ожидалась %2")
+                           .arg(StdFunc::VerToStr(m_device->bsi().data(Device::BsiIndexes::Fwver)), newVerStr);
+        EMessageBox::error(this, "Обновление ВПО не удалось, версия не изменилась на ожидаемую");
         m_isCancelled = true;
-        return;
-    }
-
-    if (m_device->bsi().data(Device::BsiIndexes::Fwver) == KivReferenceFwVersion)
-    {
-        qInfo() << QString("Обновление ВПО с версии %1 на версию %2 проведено успешно").arg(oldVerStr, newVerStr);
         PrbFunc::setValue(this, "prbfwupdate", 1);
-        return;
     }
-
-    qCritical() << QString("Обновление ВПО не удалось: версия после обновления %1, ожидалась %2")
-                       .arg(StdFunc::VerToStr(m_device->bsi().data(Device::BsiIndexes::Fwver)), newVerStr);
-    EMessageBox::error(this, "Обновление ВПО не удалось, версия не изменилась на ожидаемую");
-    m_isCancelled = true;
-    PrbFunc::setValue(this, "prbfwupdate", 1);
 }
 
 void ModuleWorker::createConfigCheckProgressBar()
@@ -778,8 +740,6 @@ void ModuleWorker::updateConfigParams()
 
 void ModuleWorker::verifyConfigParams()
 {
-    PrbFunc::setRange(this, "prbconfigverify", 1);
-
     // Тот же синхронный путь, что и в saveConfig() (шаг 5): readFileSync() сам крутит цикл событий
     // внутри (SyncConnection::eventLoop()) и не возвращается, пока не придёт ответ или не истечёт
     // внутренний таймаут.
@@ -803,13 +763,9 @@ void ModuleWorker::verifyConfigParams()
     auto stillMismatched = findMismatchedIds(m_device->getS2Datamanager(), refConfig);
 
     QByteArray ba = m_device->getS2Datamanager()->getBinaryConfiguration();
-    if (Files::SaveToFile(m_tempDir.path() + "/config", ba) != Error::Msg::NoError)
-    {
-        qCritical() << "Не удалось сохранить конфигурацию после обновления";
-        EMessageBox::error(this, "Не удалось сохранить конфигурацию после обновления");
-        m_isCancelled = true;
+    Error::Msg err = saveToFile(ba, "prbconfigverify", "config");
+    if (err != Error::Msg::NoError)
         return;
-    }
 
     if (!stillMismatched.empty())
     {
@@ -818,6 +774,21 @@ void ModuleWorker::verifyConfigParams()
         EMessageBox::error(this, "Обновление конфигурации не удалось, значения параметров не совпадают с эталоном");
         m_isCancelled = true;
     }
+}
 
-    PrbFunc::setValue(this, "prbconfigverify", 1);
+Error::Msg ModuleWorker::saveToFile(QByteArray ba, QString prbFuncStr, QString filename)
+{
+    PrbFunc::setRange(this, prbFuncStr, ba.size());
+
+    Error::Msg err = Files::SaveToFile(m_tempDir.path() + "/" + filename, ba);
+    if (err != Error::Msg::NoError)
+    {
+        EMessageBox::error(this, "Не удалось сохранить блок " + filename);
+        m_isCancelled = true;
+        return err;
+    }
+
+    PrbFunc::setValue(this, prbFuncStr, ba.size());
+
+    return err;
 }

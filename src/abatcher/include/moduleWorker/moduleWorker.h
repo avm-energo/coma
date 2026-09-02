@@ -74,6 +74,8 @@ private:
     void verifyConfigParams();
     void saveConfig();
 
+    Error::Msg saveToFile(QByteArray ba, QString prbFuncStr, QString filename);
+
 private slots:
     void bsiInitFinished(Error::Msg status);
 
