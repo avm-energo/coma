@@ -304,7 +304,7 @@ void SwitchJournalViewDialog::setupUI(SwjModel &swjModel, TrendViewModel *oscMod
     pb->setMinimumSize(50, 50);
     pb->setIconSize(QSize(50, 50));
     connect(pb, &QPushButton::clicked, this,
-        [&]
+        [oscModel]
         {
             if (oscModel)
             {

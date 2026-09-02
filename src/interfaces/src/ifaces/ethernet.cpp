@@ -35,7 +35,13 @@ bool Ethernet::connect()
             timedOut = true;
             loop.quit();
         });
-    loop.exec();
+    // ExcludeUserInputEvents: этот event loop крутится внутри синхронного вызова, начатого
+    // диалогом настройки соединения (см. InterfaceEthernetDialog::setInterface()). Если позволить
+    // обрабатывать клики мыши/клавиатуру здесь, пользователь успевает закрыть этот диалог
+    // (Qt::WA_DeleteOnClose) прямо во время ожидания подключения — тогда после выхода из этого
+    // цикла управление вернётся в метод уже уничтоженного объекта диалога (use-after-free).
+    // Мышь/клавиатура просто откладываются и будут доставлены как обычно после выхода отсюда.
+    loop.exec(QEventLoop::ExcludeUserInputEvents);
 
     if (m_socket->state() != QAbstractSocket::ConnectedState)
     {

@@ -242,8 +242,10 @@ void DialogCreator::createRelayDialog()
 
 void DialogCreator::createCommonDialogs()
 {
-    addDialogToList(new FWUploadDialog(m_device, m_parent), "Загрузка ВПО", "upload");
-    if (AppConfiguration::app() == AppConfiguration::Debug)
+    auto ifaceType = m_device->async()->getInterfaceType();
+    if (ifaceType != Interface::IfaceType::Ethernet)
+        addDialogToList(new FWUploadDialog(m_device, m_parent), "Загрузка ВПО", "upload");
+    if (AppConfiguration::app() == AppConfiguration::Debug && ifaceType == Interface::IfaceType::USB)
     {
         auto hiddenDialog = new HiddenDialog(m_device, m_parent);
         hiddenDialog->setModuleName(m_device->getDeviceName());
