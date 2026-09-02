@@ -1,7 +1,8 @@
 #include "interfaces/parsers/iec104/iec104_response_parser.h"
 
-#include <QDebug>
+#include <libavm-gen/std_ext.h>
 
+#include <QDebug>
 #include <algorithm>
 
 namespace Interface
@@ -256,9 +257,10 @@ void Iec104ResponseParser::handleFileTransferAsdu(const ASDU &asdu) noexcept
             return;
         const auto section = std::uint8_t(asdu.m_data[5]);
         const auto qualifier = std::uint8_t(asdu.m_data[6]);
-        if (qualifier == 0x03) // конец не последней секции - подтверждаем именно эту секцию
+        if (qualifier == std_ext::to_underlying(LastSectionQualifier::SectionTransferNoDeactivation))
             emit fileReplyNeeded(FileReplyAction::ConfirmSection, fileNum, section);
-        else if (qualifier == 0x01) // конец последней секции - файл получен целиком
+        else if (qualifier
+            == std_ext::to_underlying(LastSectionQualifier::FileTransferNoDeactivation)) // файл получен целиком
         {
             emit fileReplyNeeded(FileReplyAction::ConfirmFile, fileNum, section);
             fileReceived(m_longDataBuffer, S2::FilesEnum(fileNum), m_request.arg2.value<DataTypes::FileFormat>());
@@ -281,18 +283,18 @@ void Iec104ResponseParser::handleFileTransferAsdu(const ASDU &asdu) noexcept
         const auto select = std::uint8_t(asdu.m_data[6]) & 0x0F;
         const auto fileNum = static_cast<quint8>(m_request.arg1.value<quint32>());
         const auto payload = m_request.arg2.value<QByteArray>();
-        if (select == 0x02) // запрос файла - начинаем с первой секции
+        if (select == std_ext::to_underlying(SelectAndCallQualifier::RequestFile)) // начинаем с первой секции
         {
             m_currentWriteSection = 1;
             // Реактивный протокол записи файла не проходит через общий механизм
             // getNextDataSection/totalWritingBytes (он рассчитан на клиент-ведущую отправку кусками
             // у Modbus/Protocom) - progress bar для IEC104 ведём вручную по ходу секций.
-            emit responseParsed(
-                DataTypes::GeneralResponseStruct { DataTypes::GeneralResponseTypes::DataSize, quint64(payload.size()) });
+            emit responseParsed(DataTypes::GeneralResponseStruct {
+                DataTypes::GeneralResponseTypes::DataSize, quint64(payload.size()) });
             emit fileWriteReplyNeeded(
                 FileWriteReplyAction::SectionReady, fileNum, m_currentWriteSection, writeSectionSlice(payload));
         }
-        else if (select == 0x06) // запрос сегментов ТЕКУЩЕЙ секции
+        else if (select == std_ext::to_underlying(SelectAndCallQualifier::RequestSection)) // сегменты ТЕКУЩЕЙ секции
             emit fileWriteReplyNeeded(
                 FileWriteReplyAction::SendSegments, fileNum, m_currentWriteSection, writeSectionSlice(payload));
         break;
@@ -306,11 +308,13 @@ void Iec104ResponseParser::handleFileTransferAsdu(const ASDU &asdu) noexcept
         const auto qualifier = std::uint8_t(asdu.m_data[6]) & 0x0F;
         const auto fileNum = static_cast<quint8>(m_request.arg1.value<quint32>());
         const auto payload = m_request.arg2.value<QByteArray>();
-        if (qualifier == 0x03) // секция принята
+        if (qualifier == std_ext::to_underlying(AckFileQualifier::PositiveSection))
         {
             // Байт, реально принятых устройством к этому моменту (текущая секция уже подтверждена).
-            const auto bytesWritten = std::min(quint32(m_currentWriteSection) * writeSectionSize, quint32(payload.size()));
-            emit responseParsed(DataTypes::GeneralResponseStruct { DataTypes::GeneralResponseTypes::DataCount, bytesWritten });
+            const auto bytesWritten
+                = std::min(quint32(m_currentWriteSection) * writeSectionSize, quint32(payload.size()));
+            emit responseParsed(
+                DataTypes::GeneralResponseStruct { DataTypes::GeneralResponseTypes::DataCount, bytesWritten });
             // Есть ли ещё данные за пределами уже отправленных секций - если да, переходим
             // к следующей секции, если нет - шлём финальный F_LS (qualifier=1), секций больше нет.
             const bool hasMoreSections = quint32(m_currentWriteSection) * writeSectionSize < quint32(payload.size());
@@ -327,7 +331,7 @@ void Iec104ResponseParser::handleFileTransferAsdu(const ASDU &asdu) noexcept
                 // от остальных действий, передаём payload целиком, а не срез текущей секции.
                 emit fileWriteReplyNeeded(FileWriteReplyAction::FileFinal, fileNum, m_currentWriteSection, payload);
         }
-        else if (qualifier == 0x01) // файл принят целиком - готово
+        else if (qualifier == std_ext::to_underlying(AckFileQualifier::PositiveFile)) // файл принят целиком - готово
         {
             const auto size = static_cast<quint64>(payload.size());
             m_currentWriteSection = 1;

@@ -1,6 +1,7 @@
 #include "interfaces/parsers/iec104/iec104_request_parser.h"
 
 #include <libavm-gen/datatypes.h>
+#include <libavm-gen/std_ext.h>
 #include <libavm-gen/stdfunc.h>
 #include <s2/filestruct.h>
 
@@ -72,7 +73,7 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
         m_request = createGroupRequest(0x00);
         break;
     }
-    case Commands::C_WriteTime: 
+    case Commands::C_WriteTime:
     {
         // Commands104::CommandStruct inp { Commands104::CM104_COM51, time, 0, {} };
         break;
@@ -144,7 +145,7 @@ QByteArray Iec104RequestParser::parse(const CommandStruct &cmd)
 
 QByteArray Iec104RequestParser::getNextContinueCommand() noexcept
 {
-    return QByteArray {};
+    return QByteArray { };
 }
 
 void Iec104RequestParser::exceptionalAction(const CommandStruct &command) noexcept
@@ -240,15 +241,20 @@ QByteArray Iec104RequestParser::createFileReply(
     switch (action)
     {
     case Iec104::FileReplyAction::Select:
-        return buildFileFrame(MessageDataType::F_SC_NA_1, fileNum, 0, 0x01);
+        return buildFileFrame(
+            MessageDataType::F_SC_NA_1, fileNum, 0, std_ext::to_underlying(SelectAndCallQualifier::SelectFile));
     case Iec104::FileReplyAction::CallFile:
-        return buildFileFrame(MessageDataType::F_SC_NA_1, fileNum, 0, 0x02);
+        return buildFileFrame(
+            MessageDataType::F_SC_NA_1, fileNum, 0, std_ext::to_underlying(SelectAndCallQualifier::RequestFile));
     case Iec104::FileReplyAction::CallSection:
-        return buildFileFrame(MessageDataType::F_SC_NA_1, fileNum, section, 0x06);
+        return buildFileFrame(MessageDataType::F_SC_NA_1, fileNum, section,
+            std_ext::to_underlying(SelectAndCallQualifier::RequestSection));
     case Iec104::FileReplyAction::ConfirmSection:
-        return buildFileFrame(MessageDataType::F_AF_NA_1, fileNum, section, 0x03);
+        return buildFileFrame(
+            MessageDataType::F_AF_NA_1, fileNum, section, std_ext::to_underlying(AckFileQualifier::PositiveSection));
     case Iec104::FileReplyAction::ConfirmFile:
-        return buildFileFrame(MessageDataType::F_AF_NA_1, fileNum, section, 0x01);
+        return buildFileFrame(
+            MessageDataType::F_AF_NA_1, fileNum, section, std_ext::to_underlying(AckFileQualifier::PositiveFile));
     }
     return QByteArray();
 }
@@ -298,7 +304,8 @@ QByteArray Iec104RequestParser::buildLastSectionFrame(
     quint8 checksum = 0;
     for (const auto byte : sectionPayload)
         checksum += static_cast<quint8>(byte);
-    QByteArray lsTail(1, static_cast<char>(0x03));
+    QByteArray lsTail(
+        1, static_cast<char>(std_ext::to_underlying(LastSectionQualifier::SectionTransferNoDeactivation)));
     lsTail.append(static_cast<char>(checksum));
     return buildFileFrame(MessageDataType::F_LS_NA_1, fileNum, section, lsTail);
 }
@@ -309,7 +316,7 @@ QByteArray Iec104RequestParser::createFileFinalMessage(
     quint8 checksum = 0;
     for (const auto byte : fullFilePayload)
         checksum += static_cast<quint8>(byte);
-    QByteArray tail(1, static_cast<char>(0x01));
+    QByteArray tail(1, static_cast<char>(std_ext::to_underlying(LastSectionQualifier::FileTransferNoDeactivation)));
     tail.append(static_cast<char>(checksum));
     return buildFileFrame(MessageDataType::F_LS_NA_1, fileNum, section, tail);
 }
