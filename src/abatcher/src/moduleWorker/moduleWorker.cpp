@@ -172,7 +172,7 @@ void ModuleWorker::createCancelButton()
 {
     m_cancelButton = new QPushButton("Отмена", this);
     m_cancelButton->setEnabled(false);
-    connect(m_cancelButton, &QPushButton::clicked, this, &ModuleWorker::cancekWork);
+    connect(m_cancelButton, &QPushButton::clicked, this, &ModuleWorker::cancelWork);
 }
 
 void ModuleWorker::createProgressBars()
@@ -271,7 +271,7 @@ void ModuleWorker::startWork()
     finishWork();
 }
 
-void ModuleWorker::cancekWork()
+void ModuleWorker::cancelWork()
 {
     if (m_isCancelled)
         return;

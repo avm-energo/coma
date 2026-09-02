@@ -52,7 +52,7 @@ private:
     bool connectToUSB();
     void loadXML();
     void startWork();
-    void cancekWork();
+    void cancelWork();
     void finishWork();
     void saveBsi();
     void saveBsiExt();
