@@ -1066,7 +1066,7 @@
                 <signal-id>19</signal-id>
                 <reg-type>4</reg-type>
                 <type>float</type>
-                <desc>Углы между током пина и напряжением</desc>
+                <desc>Метрология</desc>
             </group>
             <group>
                 <signal-id>20</signal-id>
@@ -1079,12 +1079,6 @@
                 <reg-type>1</reg-type>
                 <type>bool</type>
                 <desc>alarmInfo</desc>
-            </group>
-            <group>
-                <signal-id>23</signal-id>
-                <reg-type>4</reg-type>
-                <type>float</type>
-                <desc>Токи</desc>
             </group>
         </modbus>
         <overlay desc="">
@@ -1177,14 +1171,6 @@
                 <signal-id>18</signal-id>
             </group>
             <group>
-                <block>48</block>
-                <signal-id>19</signal-id>
-            </group>
-            <group>
-                <block>49</block>
-                <signal-id>23</signal-id>
-            </group>
-            <group>
                 <block>100</block>
                 <signal-id>13</signal-id>
             </group>
@@ -1195,6 +1181,10 @@
             <group>
                 <block>250</block>
                 <signal-id>16</signal-id>
+            </group>
+            <group>
+                <block>50</block>
+                <signal-id>19</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -1218,38 +1208,6 @@
         <sections desc="Разделы">
             <section header="Метрология" order="2">
                 <sgroup header="Метрология" tab="4">
-                    <mwidget desc="Напряжение Ua, В" view="float">
-                        <start-addr>1000</start-addr>
-                        <toolTip>Напряжение Ua, В</toolTip>
-                        <decimals>2</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
-                    </mwidget>
-                    <mwidget desc="Напряжение Ub, В" view="float">
-                        <start-addr>1001</start-addr>
-                        <toolTip>Напряжение Ub, В</toolTip>
-                        <decimals>2</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
-                    </mwidget>
-                    <mwidget desc="Напряжение Uc, В" view="float">
-                        <start-addr>1002</start-addr>
-                        <toolTip>Напряжение Uc, В</toolTip>
-                        <decimals>2</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
-                    </mwidget>
-                    <mwidget desc="Частота, Гц" view="float">
-                        <start-addr>2400</start-addr>
-                        <toolTip>Частота, Гц</toolTip>
-                        <decimals>2</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
-                    </mwidget>
                     <mwidget desc="Угол между напряжением и током φA, град." view="float">
                         <start-addr>2900</start-addr>
                         <toolTip>Угол между напряжением и током φA, град.</toolTip>
@@ -1275,7 +1233,7 @@
                         </string-array>
                     </mwidget>
                     <mwidget desc="Ток Ia, А" view="float">
-                        <start-addr>2920</start-addr>
+                        <start-addr>2903</start-addr>
                         <toolTip>Ток Ia, А</toolTip>
                         <decimals>5</decimals>
                         <string-array>
@@ -1283,7 +1241,7 @@
                         </string-array>
                     </mwidget>
                     <mwidget desc="Ток Ib, А" view="float">
-                        <start-addr>2921</start-addr>
+                        <start-addr>2904</start-addr>
                         <toolTip>Ток Ib, А</toolTip>
                         <decimals>5</decimals>
                         <string-array>
@@ -1291,9 +1249,41 @@
                         </string-array>
                     </mwidget>
                     <mwidget desc="Ток Ic, А" view="float">
-                        <start-addr>2922</start-addr>
+                        <start-addr>2905</start-addr>
                         <toolTip>Ток Ic, А</toolTip>
                         <decimals>5</decimals>
+                        <string-array>
+                            <item>1</item>
+                        </string-array>
+                    </mwidget>
+                    <mwidget desc="Напряжение Ua, В" view="float">
+                        <start-addr>2906</start-addr>
+                        <toolTip>Напряжение Ua, В</toolTip>
+                        <decimals>2</decimals>
+                        <string-array>
+                            <item>0</item>
+                        </string-array>
+                    </mwidget>
+                    <mwidget desc="Напряжение Ub, В" view="float">
+                        <start-addr>2907</start-addr>
+                        <toolTip>Напряжение Ub, В</toolTip>
+                        <decimals>2</decimals>
+                        <string-array>
+                            <item>0</item>
+                        </string-array>
+                    </mwidget>
+                    <mwidget desc="Напряжение Uc, В" view="float">
+                        <start-addr>2908</start-addr>
+                        <toolTip>Напряжение Uc, В</toolTip>
+                        <decimals>2</decimals>
+                        <string-array>
+                            <item>0</item>
+                        </string-array>
+                    </mwidget>
+                    <mwidget desc="Частота, Гц" view="float">
+                        <start-addr>2909</start-addr>
+                        <toolTip>Частота, Гц</toolTip>
+                        <decimals>2</decimals>
                         <string-array>
                             <item>1</item>
                         </string-array>
@@ -1567,14 +1557,8 @@
             </signal>
             <signal>
                 <start-addr>2900</start-addr>
-                <count>3</count>
+                <count>10</count>
                 <id>19</id>
-                <type>Float</type>
-            </signal>
-            <signal>
-                <start-addr>2920</start-addr>
-                <count>3</count>
-                <id>23</id>
                 <type>Float</type>
             </signal>
             <signal>
