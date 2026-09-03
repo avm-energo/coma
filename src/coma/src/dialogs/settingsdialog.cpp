@@ -198,8 +198,8 @@ void SettingsDialog::setupConnectionTab() noexcept
     widget->setToolTip(reconnectIntervalTooltip);
     modbusLayout->addWidget(widget);
 
-    // Вкладка "МЭК 61850-104"
-    auto iec104Layout = createTabLayout(setupTabs, "МЭК 61850-104");
+    // Вкладка "МЭК 60870-104"
+    auto iec104Layout = createTabLayout(setupTabs, "МЭК 60870-104");
     iec104Layout->addWidget(
         LEFunc::newLBL(m_workspace, "Таймаут отправки запроса, мс", SettingsKeys::Iec104::iec104Timeout, true));
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));

@@ -1,4 +1,4 @@
-#include "interfaces/parsers/protocom_request_parser.h"
+#include "interfaces/parsers/protocom/protocom_request_parser.h"
 
 #include <libavm-gen/files.h>
 #include <libavm-gen/stdfunc.h>

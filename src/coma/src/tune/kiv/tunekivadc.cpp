@@ -43,7 +43,6 @@ void TuneKIVADC::setTuneFunctions()
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Отображение предупреждения...", &TuneKIVADC::showPreWarning);
     addTuneFunc("Проверка настроечных параметров...", &TuneKIVADC::checkTuneCoefs);
-    addTuneFunc("Задание режима конфигурирования модуля...", &AbstractTuneDialog::setTuneMode);
     if (m_tuneType == ADCU)
     {
         addTuneFunc("Регулировка...", &TuneKIVADC::ADCCoef1);
@@ -72,24 +71,34 @@ void TuneKIVADC::setTuneFunctions()
 Error::Msg TuneKIVADC::showPreWarning()
 {
     QWidget *w = new QWidget(this);
-    w->setFixedSize(800, 600);
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(GraphFunc::newIcon(this, ":/tunes/tunekiv1.png"));
+
+    QLabel *schema = GraphFunc::newIcon(this, ":/tunes/tunekiv1.png");
+    schema->setScaledContents(true);
+    schema->setMaximumSize(QSize(402, 582));
+    lyout->addWidget(schema, 0, Qt::AlignHCenter);
+
     lyout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(LBLFunc::New(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
-        "по напряжению 60 В, по току - 500 мА;"));
+        "по напряжению 57,75 В, по току - 500 мА;"));
+
     lyout->addWidget(LBLFunc::New(this,
         "3. Данный этап регулировки должен выполняться при температуре"
         "окружающего воздуха +20±7 °С. Если температура окружающего воздуха отличается от указанной,"
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
         "от минус 20 до +60°С. Установите нормальное значение температуры "
         "в камере 20±5°С"));
+
     w->setLayout(lyout);
 
     if (!EMessageBox::next(this, w))
+    {
         CancelTune();
+        return Error::Msg::Cancelled;
+    }
+
     return Error::Msg::NoError;
 }
 

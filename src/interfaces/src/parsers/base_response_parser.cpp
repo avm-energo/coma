@@ -16,6 +16,7 @@ BaseResponseParser::BaseResponseParser(QObject *parent)
 void BaseResponseParser::setRequest(const CommandStruct &request) noexcept
 {
     m_request = request;
+    m_isLastSectionSent = false;
 }
 
 bool BaseResponseParser::isLastSectionReceived() const noexcept

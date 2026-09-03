@@ -1,9 +1,34 @@
-#include "interfaces/parsers/protocom_response_parser.h"
+#include "interfaces/parsers/protocom/protocom_response_parser.h"
 
 #include "device/bsi.h"
 
 namespace Interface
 {
+
+namespace
+{
+// Команды, запрос для которых строится через ProtocomRequestParser::writeLongData()
+// (см. protocom_request_parser.cpp) и потому может быть разбит на несколько сегментов.
+// Для таких команд устройство присылает промежуточный ResultOk на каждый сегмент,
+// а не только на последний, поэтому наверх нужно сообщать об успехе только после
+// подтверждения последнего отправленного сегмента (m_isLastSectionSent).
+bool isLongDataWriteCommand(const Commands command) noexcept
+{
+    switch (command)
+    {
+    case Commands::C_WriteFile:
+    case Commands::C_WriteHiddenBlock:
+    case Commands::C_WriteBlkDataTech:
+    case Commands::C_SetNewConfiguration:
+    case Commands::C_WriteTuningCoef:
+    case Commands::C_WriteTypeOsc:
+    case Commands::C_WriteUserValues:
+        return true;
+    default:
+        return false;
+    }
+}
+} // namespace
 
 ProtocomResponseParser::ProtocomResponseParser(QObject *parent) : BaseResponseParser(parent) { }
 
@@ -49,7 +74,7 @@ void ProtocomResponseParser::parse()
     switch (m_receivedCommand)
     {
     case Proto::Commands::ResultOk:
-        if (m_request.command == Commands::C_WriteFile || m_request.command == Commands::C_WriteHiddenBlock)
+        if (isLongDataWriteCommand(m_request.command))
         {
             if (m_isLastSectionSent)
             {
