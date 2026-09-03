@@ -1,4 +1,4 @@
-#include "interfaces/parsers/modbus_request_parser.h"
+#include "interfaces/parsers/modbus/modbus_request_parser.h"
 
 #include <libavm-gen/utils/crc16.h>
 #include <interfaces/utils/modbus_convertations.h>

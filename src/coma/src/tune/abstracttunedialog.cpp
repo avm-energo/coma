@@ -24,7 +24,7 @@
 #include <QVBoxLayout>
 #include <coma.h>
 
-ReportData AbstractTuneDialog::s_reportData {};
+ReportData AbstractTuneDialog::s_reportData { };
 
 AbstractTuneDialog::AbstractTuneDialog(Device::CurrentDevice *device, QWidget *parent)
     : QWidget(parent)
@@ -257,7 +257,7 @@ void AbstractTuneDialog::startTune()
             return;
     }
     StdFunc::ClearCancel();
-    MsgClear();    // очистка экрана с сообщениями
+    MsgClear(); // очистка экрана с сообщениями
     setTuneMode(); // задание режима регулировки
     for (bStep = 0; bStep < m_tuneFunctions.size(); ++bStep)
     {
@@ -512,10 +512,21 @@ Error::Msg AbstractTuneDialog::checkCalibrStep()
 
 Error::Msg AbstractTuneDialog::saveWorkConfig()
 {
+    if (m_device->health().isNoConfig())
+    {
+        m_device->getS2Datamanager()->getCurrentConfiguration().setDefaultConfig();
+        Error::Msg err = m_sync->writeConfigurationSync(m_config.toByteArray());
+        if (err != Error::Msg::NoError)
+            return err;
+
+        return Files::SaveToFile(Settings::dataDir() + m_device->getUID() + ".cf", m_config.toByteArray());
+    }
+
     QByteArray ba;
     auto status = m_sync->readFileSync(S2::FilesEnum::Config, ba);
     if (status != Error::Msg::NoError)
         return Error::Msg::ReadError;
+
     return Files::SaveToFile(Settings::dataDir() + m_device->getUID() + ".cf", ba);
 }
 

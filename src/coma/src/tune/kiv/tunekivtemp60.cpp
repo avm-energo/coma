@@ -129,12 +129,17 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
 {
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(GraphFunc::newIcon(this, ":/tunes/tunekiv1.png"));
+
+    QLabel *schema = GraphFunc::newIcon(this, ":/tunes/tunekiv1.png");
+    schema->setScaledContents(true);
+    schema->setMaximumSize(QSize(402, 582));
+    lyout->addWidget(schema, 0, Qt::AlignHCenter);
+
     lyout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(LBLFunc::New(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
-        "по напряжению 60 В, по току - 2,5 А;"));
+        "по напряжению 57,75 В, по току - 2,5 А;"));
     lyout->addWidget(GraphFunc::newHLine(w));
 
     QHBoxLayout *hlyout = new QHBoxLayout;

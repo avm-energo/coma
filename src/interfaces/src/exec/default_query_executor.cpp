@@ -11,12 +11,14 @@ namespace Interface
 DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, BaseSettings *settings, QObject *parent)
     : QObject(parent)
     , m_state(ExecutorState::Starting)
+    , m_lastRequestedCommand(Commands::C_ReqStartup)
     , m_queue(std::ref(queue))
     , m_timeoutTimer(this)
     , m_requestParser(nullptr)
     , m_responseParser(nullptr)
 {
     setTimeout(settings->get(MemKeys::timeout));
+    m_log.setLogLevel(settings->get("logLevel"));
     connect(settings, &BaseSettings::settingHasBeenChanged, this, &DefaultQueryExecutor::settingsChanged);
     connect(this, &DefaultQueryExecutor::stateChanged, this, &DefaultQueryExecutor::execByState);
 }
@@ -97,6 +99,10 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
     if (opt.has_value())
     {
         const auto command(opt.value());
+        // setRequest() должен выполняться до parse(): для однопакетных команд,
+        // идущих через writeLongData(), parse() синхронно взводит m_isLastSectionSent
+        // ещё внутри себя, и обнулять его после этого нельзя.
+        m_responseParser->setRequest(command);
         auto request = m_requestParser->parse(command);
         if (m_requestParser->isExceptionalSituation())
             m_requestParser->exceptionalAction(command);
@@ -107,7 +113,6 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
             if (getState() == ExecutorState::RequestParsing)
                 setState(ExecutorState::Pending);
             m_lastRequestedCommand.store(command.command);
-            m_responseParser->setRequest(command);
             writeToInterface(request);
         }
     }
@@ -149,6 +154,8 @@ void DefaultQueryExecutor::settingsChanged(const QString &key, const QVariant &v
 {
     if (key == KeysMap.key(MemKeys::timeout))
         setTimeout(value.toInt());
+    else if (key == "logLevel")
+        m_log.setLogLevel(value.toString());
 }
 
 void DefaultQueryExecutor::start()

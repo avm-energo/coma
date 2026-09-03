@@ -46,14 +46,19 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
             // Старт
             QObject::connect(m_iface, &BaseInterface::readyRead, m_iface, &BaseInterface::poll);
             // Остановка
-            QObject::connect(m_iface, &BaseInterface::finished, parserThread, &QThread::quit);
-            QObject::connect(m_executor, &DefaultQueryExecutor::finished, parserThread, &QThread::quit);
-            QObject::connect(parserThread, &QThread::finished, m_executor, &QObject::deleteLater);
-            QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
-            // Если интерфейс успешно запустился
+            QObject::connect(m_iface, &BaseInterface::finished, m_parcerThreads, &QThread::quit);
+            QObject::connect(m_executor, &DefaultQueryExecutor::finished, m_parcerThreads, &QThread::quit);
+            QObject::connect(m_parcerThreads, &QThread::finished, m_executor, &QObject::deleteLater);
+            QObject::connect(m_parcerThreads, &QThread::finished, &QObject::deleteLater);
+            // Если интерфейс успешно запустился.
+            // Qt::SingleShotConnection - started() срабатывает и на переподключении (BaseInterface::
+            // attemptConnect эмитит и started(), и reconnected() на один и тот же успешный коннект), а
+            // executor->start() на реконнект уже отдельно и полнее вызывает ConnectionManager::
+            // interfaceReconnected (по сигналу reconnected). Без одноразовости оба обработчика
+            // сработали бы на реконнект одновременно - двойной STARTDT act/con.
             QObject::connect(iface, &BaseInterface::started, m_iface,
                 [iface = QPointer<BaseInterface>(iface), executor = QPointer<DefaultQueryExecutor>(executor),
-                    parserThread = QPointer<QThread>(parserThread)]
+                    parserThread = QPointer<QThread>(m_parcerThreads)]
                 {
                     // При неудачном подключении объекты контекста удаляются через
                     // deleteLater, но сигнал started может прийти позже их удаления.
@@ -63,7 +68,8 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
                     executor->moveToThread(parserThread);
                     parserThread->start();
                     executor->start();
-                });
+                },
+                Qt::SingleShotConnection);
         }
         else
         {
@@ -100,7 +106,8 @@ bool ConnectionContext::run(AsyncConnection *connection)
             m_iface->close();
             m_iface->deleteLater();
             m_executor->deleteLater();
-            m_parcerThreads->deleteLater();
+            if (m_parcerThreads != nullptr)
+                m_parcerThreads->deleteLater();
             return false;
         }
         return true;

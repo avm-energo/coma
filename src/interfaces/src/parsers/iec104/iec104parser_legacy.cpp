@@ -1,4 +1,4 @@
-#include "interfaces/parsers/iec104parser.h"
+#include "interfaces/parsers/iec104/iec104parser_legacy.h"
 
 #include <libavm-gen/pch.h>
 #include <libavm-gen/settings.h>

@@ -123,30 +123,23 @@ Error::Msg Tune84Temp60::showSignalsDialog()
 {
     QWidget *w = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(GraphFunc::newIcon(this, ":/tunes/tunekiv1.png"));
+
+    QLabel *schema = GraphFunc::newIcon(this, ":/tunes/tunekiv1.png");
+    schema->setScaledContents(true);
+    schema->setMaximumSize(QSize(402, 582));
+    lyout->addWidget(schema);
+
     lyout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     lyout->addWidget(LBLFunc::New(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
-        "по напряжению 60 В, по току - 2,5 А;"));
-    lyout->addWidget(GraphFunc::newHLine(w));
+        "по напряжению 57,75 В, по току - 2,5 А;"));
 
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    vlyout->addWidget(LBLFunc::New(w, "РЕТОМ-51"));
-    vlyout->addWidget(GraphFunc::newHLine(w));
-    vlyout->addWidget(LBLFunc::New(w,
+    lyout->addWidget(LBLFunc::New(w,
         "Задайте трёхфазный режим токов и напряжений (Uabc, Iabc)\n"
         "Угол между токами и напряжениями: 89.9 град.,\n"
         "Значения напряжений: 57.75 В, токов: 140 мА"));
-    hlyout->addLayout(vlyout);
-    hlyout->addWidget(GraphFunc::newVLine(w));
-    vlyout = new QVBoxLayout;
-    vlyout->addWidget(LBLFunc::New(w, "ИМИТАТОР"));
-    vlyout->addWidget(GraphFunc::newHLine(w));
-    vlyout->addWidget(LBLFunc::New(w, "Задайте tg 2 %, значения напряжений: 57.75 В, токов: 140 мА"));
-    hlyout->addLayout(vlyout);
-    lyout->addLayout(hlyout);
+
     w->setLayout(lyout);
 
     if (!EMessageBox::next(this, w))

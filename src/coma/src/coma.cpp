@@ -410,7 +410,9 @@ void Coma::connectDialog()
     }
     auto *connDialog = new ConnectDialog(this);
     connect(connDialog, &ConnectDialog::accepted, this, &Coma::initConnection);
-    connDialog->move(30, 70);
+    // Popup позиционируется в глобальных координатах экрана, а не родителя,
+    // поэтому смещение (30, 70) нужно переводить через mapToGlobal().
+    connDialog->move(mapToGlobal(QPoint(30, 70)));
     connDialog->show();
     action->setEnabled(true);
 }

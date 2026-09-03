@@ -7,6 +7,7 @@
 #include <libavm-gen/error.h>
 #include <libavm-widgets/wdfunc.h>
 
+#include <QPointer>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <coma.h>
@@ -20,6 +21,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QWidget(parent, Qt::Popup), m_id
                   " stop:0 #8A2BE2, stop:1 #000080); }");
 
     QStringList intersl { "USB", "RS485", "Ethernet" };
+
 #ifdef ENABLE_EMULATOR
     intersl.push_back("Emulator");
 #endif
@@ -27,6 +29,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QWidget(parent, Qt::Popup), m_id
     auto *lyout = new QVBoxLayout(this);
     lyout->setContentsMargins(3, 3, 3, 3);
     lyout->setSpacing(0);
+
     for (const auto &connectionType : intersl)
     {
         auto *button = new QPushButton(connectionType, this);
@@ -56,30 +59,34 @@ void ConnectDialog::setInterface(const QString &connectionType)
         return;
 
     // USB/RS485/Ethernet встраиваются прямо в главное окно вместо отдельного модального окна
-    AbstractInterfaceDialog *embedded = nullptr;
+    AbstractInterfaceDialog *ifaceDialog = nullptr;
     if (connectionType == "USB")
-        embedded = new InterfaceUSBDialog(nullptr);
+        ifaceDialog = new InterfaceUSBDialog(nullptr);
     else if (connectionType == "RS485")
-        embedded = new InterfaceSerialDialog(nullptr);
+        ifaceDialog = new InterfaceSerialDialog(nullptr);
     else if (connectionType == "Ethernet")
-        embedded = new InterfaceEthernetDialog(nullptr);
+        ifaceDialog = new InterfaceEthernetDialog(nullptr);
 
-    if (embedded == nullptr)
+    if (ifaceDialog == nullptr)
         return;
 
-    embedded->setupUI();
-    if (!embedded->updateModel())
+    ifaceDialog->setupUI();
+    if (!ifaceDialog->updateModel())
     {
-        embedded->deleteLater();
+        ifaceDialog->deleteLater();
         return;
     }
 
-    connect(embedded, &AbstractInterfaceDialog::accepted, mainWindow, &Coma::initConnection);
-    connect(embedded, &AbstractInterfaceDialog::accepted, embedded, //
-        [embedded](const ConnectionSettings &) { embedded->close(); });
+    connect(ifaceDialog, &AbstractInterfaceDialog::accepted, mainWindow, &Coma::initConnection);
+    connect(ifaceDialog, &AbstractInterfaceDialog::accepted, ifaceDialog, //
+        [dialog = QPointer<AbstractInterfaceDialog>(ifaceDialog)](const ConnectionSettings &)
+        {
+            if (dialog)
+                dialog->close();
+        });
 
     // showCentralWidget() сама подписывается на destroyed(), чтобы вернуть index 0
-    mainWindow->showCentralWidget(embedded);
+    mainWindow->showCentralWidget(ifaceDialog);
     return;
 
     // Эмулятор не работает?
