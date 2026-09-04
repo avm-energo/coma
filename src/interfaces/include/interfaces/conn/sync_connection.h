@@ -19,9 +19,11 @@ private:
     S2::S2BFile m_s2bFile;
     bool m_busy;
     Error::Msg m_responseResult;
+    QTimer m_tmr;
 
     void eventLoop() noexcept;
     void reset() noexcept;
+    void restartTimer() noexcept;
 
 public:
     explicit SyncConnection(AsyncConnection *connection) noexcept;
