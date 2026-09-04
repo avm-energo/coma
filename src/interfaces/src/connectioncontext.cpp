@@ -45,7 +45,6 @@ void ConnectionContext::init(BaseInterface *iface, DefaultQueryExecutor *executo
             m_parcerThreads = parserThread;
             // Старт
             QObject::connect(m_iface, &BaseInterface::readyRead, m_iface, &BaseInterface::poll);
-            QObject::connect(m_parcerThreads, &QThread::started, m_executor, &DefaultQueryExecutor::exec);
             // Остановка
             QObject::connect(m_iface, &BaseInterface::finished, m_parcerThreads, &QThread::quit);
             QObject::connect(m_executor, &DefaultQueryExecutor::finished, m_parcerThreads, &QThread::quit);

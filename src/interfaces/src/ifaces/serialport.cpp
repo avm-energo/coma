@@ -105,8 +105,9 @@ void SerialPort::errorOccurred(const QSerialPort::SerialPortError err)
     case QSerialPort::SerialPortError::OpenError:
         emit error(InterfaceError::OpenError);
         break;
-    // port unexpected removed
     case QSerialPort::SerialPortError::ResourceError:
+        disconnect();
+        emit error(InterfaceError::ReadError);
         break;
     default:
         qWarning() << QVariant::fromValue(err).toString();
