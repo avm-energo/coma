@@ -1,7 +1,6 @@
 #pragma once
 
 #include <libavm-gen/integers.h>
-#include <libavm-gen/singleton.h>
 #include <s2/delegate_common.h>
 
 #include <QObject>
