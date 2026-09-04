@@ -6,6 +6,8 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Concurrent REQUIRED)
 
 include(githash)
 include(better_enums)
+include(libavm-emon)
+include(libavm-retom)
 
 # Collecting sources
 set(COMA_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -39,6 +41,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   libavm-limereport
   libavm-qcustomplot
   libavm-qxlsx
+  libavm-retom
+  libavm-emon
   Qt${QT_VERSION_MAJOR}::Concurrent # Need for InterfaceEthernetDialog class
 )
 

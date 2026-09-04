@@ -259,6 +259,10 @@ void SettingsDialog::setupTuneTab() noexcept
     auto generalLayout = createTabLayout(tuneTabs, "Общие");
     generalLayout->addWidget(
         LEFunc::newLBL(m_workspace, "Степень усреднения для регулировки", SettingsKeys::tuneCount, true));
+    generalLayout->addWidget(
+        CBFunc::newLBL(m_workspace, "Связь с энергомонитором", SettingsKeys::useEnom, { "Вручную", "RS-232", "USB" }));
+    generalLayout->addWidget(
+        CBFunc::newLBL(m_workspace, "Связь с РЕТОМ", SettingsKeys::useRetom, { "Вручную", "USB" }));
     // Вкладка "МИП-02"
     auto mipLayout = createTabLayout(tuneTabs, "МИП-02");
     mipLayout->addWidget(LEFunc::newLBL(m_workspace, "IP адрес устройства", SettingsKeys::Mip::mipIp, true));
@@ -285,6 +289,8 @@ void SettingsDialog::fill()
     LEFunc::setData(this, SettingsKeys::Mip::mipIp, Settings::get(SettingsKeys::Mip::mipIp, "172.16.31.178"));
     LEFunc::setData(this, SettingsKeys::Mip::mipPort, Settings::get(SettingsKeys::Mip::mipPort, 2404));
     LEFunc::setData(this, SettingsKeys::Mip::mipBsAddress, Settings::get(SettingsKeys::Mip::mipBsAddress, 1));
+    CBFunc::setData(this, SettingsKeys::useEnom, Settings::get(SettingsKeys::useEnom, "USB"));
+    CBFunc::setData(this, SettingsKeys::useRetom, Settings::get(SettingsKeys::useRetom, "USB"));
     LEFunc::setData(this, SettingsKeys::USB::protocomTimeout, Settings::get(SettingsKeys::USB::protocomTimeout, 5000));
     LEFunc::setData(
         this, SettingsKeys::USB::protocomReconnect, Settings::get(SettingsKeys::USB::protocomReconnect, 1000));
@@ -298,8 +304,8 @@ void SettingsDialog::fill()
         this, SettingsKeys::Iec104::iec104Reconnect, Settings::get(SettingsKeys::Iec104::iec104Reconnect, 1000));
     LEFunc::setData(this, SettingsKeys::Iec104::iec104DisconnectTimeout,
         Settings::get(SettingsKeys::Iec104::iec104DisconnectTimeout, 5000));
-    LEFunc::setData(this, SettingsKeys::Iec104::iec104DefaultPort,
-        Settings::get(SettingsKeys::Iec104::iec104DefaultPort, 2404));
+    LEFunc::setData(
+        this, SettingsKeys::Iec104::iec104DefaultPort, Settings::get(SettingsKeys::Iec104::iec104DefaultPort, 2404));
     LEFunc::setData(this, SettingsKeys::Iec104::iec104DefaultBsAddress,
         Settings::get(SettingsKeys::Iec104::iec104DefaultBsAddress, 205));
     LEFunc::setData(this, SettingsKeys::Iec104::iec104ConnectTimeout,
@@ -343,6 +349,12 @@ void SettingsDialog::acceptSettings()
     set(SettingsKeys::Mip::mipIp, LEFunc::data(this, SettingsKeys::Mip::mipIp));
     set(SettingsKeys::Mip::mipPort, LEFunc::data(this, SettingsKeys::Mip::mipPort));
     set(SettingsKeys::Mip::mipBsAddress, LEFunc::data(this, SettingsKeys::Mip::mipBsAddress));
+    QString enom = CBFunc::data(this, SettingsKeys::useEnom);
+    if (!enom.isEmpty())
+        set(SettingsKeys::useEnom, enom);
+    QString retom = CBFunc::data(this, SettingsKeys::useRetom);
+    if (!retom.isEmpty())
+        set(SettingsKeys::useRetom, retom);
 
     if (ChBFunc::data(this, SettingsKeys::loggingEnabled, tmpb))
         set(SettingsKeys::loggingEnabled, tmpb);

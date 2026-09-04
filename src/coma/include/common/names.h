@@ -55,6 +55,8 @@ constexpr auto timeoutCount = "timeoutCount";
 constexpr auto silentInterval = "silentInterval";
 constexpr auto errorCount = "errorCount";
 constexpr auto tuneCount = "tuneCount";
+constexpr auto useRetom = "useRetom";
+constexpr auto useEnom = "useEnom";
 constexpr auto popupLifetime = "popupLifetime";
 }
 
