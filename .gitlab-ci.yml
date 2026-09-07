@@ -85,8 +85,4 @@ kaiten:link-mr:
 
       PAYLOAD="$(python3 -c "import json, sys; print(json.dumps({'url': sys.argv[1], 'description': sys.argv[2]}))" "$MR_URL" "MR !${CI_MERGE_REQUEST_IID}: ${CI_MERGE_REQUEST_TITLE}")"
 
-      curl --fail --silent --show-error --request POST \
-        --url "https://${KAITEN_DOMAIN}.kaiten.ru/api/latest/cards/${CARD_ID}/external-links" \
-        --header "Authorization: Bearer ${KAITEN_API_TOKEN}" \
-        --header "Content-Type: application/json" \
-        --data "$PAYLOAD"
+      python3 -c "import os, sys, urllib.request as R; url = 'https://%s.kaiten.ru/api/latest/cards/%s/external-links' % (os.environ['KAITEN_DOMAIN'], sys.argv[1]); req = R.Request(url, data=sys.argv[2].encode(), method='POST', headers={'Authorization': 'Bearer ' + os.environ['KAITEN_API_TOKEN'], 'Content-Type': 'application/json'}); print(R.urlopen(req).read().decode())" "$CARD_ID" "$PAYLOAD"
