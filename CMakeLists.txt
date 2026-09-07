@@ -56,6 +56,34 @@ else()
   include(avm-widgets)
 endif()
 
+# Compile-time type information. Pulled in explicitly because the XML parser and
+# the widget factory use it directly, not only through libavm-s2.
+find_package(libavm-ctti QUIET)
+if(${libavm-ctti_FOUND})
+  message(STATUS "Found package libavm-ctti")
+else()
+  include(ctti)
+endif()
+
+# S2 data format library (S2::Configuration, S2::DataManager, S2::Util, ...).
+# Pulled in explicitly because coma uses it directly, not only through
+# libavm-interfaces.
+find_package(libavm-s2 QUIET)
+if(${libavm-s2_FOUND})
+  message(STATUS "Found package libavm-s2")
+else()
+  include(s2)
+endif()
+
+# Transport and protocol layer (ConnectionManager, AsyncConnection, the Modbus /
+# IEC104 / Protocom parsers). Formerly src/interfaces in this repository.
+find_package(libavm-interfaces QUIET)
+if(${libavm-interfaces_FOUND})
+  message(STATUS "Found package libavm-interfaces")
+else()
+  include(interfaces)
+endif()
+
 find_package(limereport QUIET)
 if(${limereport_FOUND})
   message(STATUS "Found package limereport")
@@ -78,8 +106,6 @@ else()
 endif()
 
 add_subdirectory(src/coma)
-add_subdirectory(src/ctti)
-add_subdirectory(src/interfaces)
 
 # Step 2: Build tests
 if(BUILD_TESTING)

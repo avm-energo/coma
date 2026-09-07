@@ -22,6 +22,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Xml
   Qt${QT_VERSION_MAJOR}::Test
-  coma interfaces
+  coma libavm-interfaces
   ${gen_IMPORTED_LOCATION_${CMAKE_BUILD_TYPE}}
 )
