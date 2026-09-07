@@ -1,5 +1,6 @@
 stages:
   - build
+  - notify
 
 # Uses the pre-baked images from the dockers repo (dockers/gitlab-ci/) -
 # see that repo for what's installed in each (Qt6 base+svg+declarative,
@@ -82,10 +83,7 @@ kaiten:link-mr:
       MR_URL="${CI_MERGE_REQUEST_PROJECT_URL}/-/merge_requests/${CI_MERGE_REQUEST_IID}"
       echo "Linking MR !${CI_MERGE_REQUEST_IID} to Kaiten card ${CARD_ID}"
 
-      PAYLOAD="$(python3 -c '
-import json, sys
-print(json.dumps({"url": sys.argv[1], "description": sys.argv[2]}))
-' "$MR_URL" "MR !${CI_MERGE_REQUEST_IID}: ${CI_MERGE_REQUEST_TITLE}")"
+      PAYLOAD="$(python3 -c "import json, sys; print(json.dumps({'url': sys.argv[1], 'description': sys.argv[2]}))" "$MR_URL" "MR !${CI_MERGE_REQUEST_IID}: ${CI_MERGE_REQUEST_TITLE}")"
 
       curl --fail --silent --show-error --request POST \
         --url "https://${KAITEN_DOMAIN}.kaiten.ru/api/latest/cards/${CARD_ID}/external-links" \
