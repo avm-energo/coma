@@ -34,6 +34,8 @@ namespace Iec104
     constexpr auto iec104T3 = "iec104T3";
     constexpr auto iec104K = "iec104K";
     constexpr auto iec104W = "iec104W";
+    constexpr auto iec104DefaultPort = "iec104DefaultPort";
+    constexpr auto iec104DefaultBsAddress = "iec104DefaultBsAddress";
 }
 namespace Mip
 {

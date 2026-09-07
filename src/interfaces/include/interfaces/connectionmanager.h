@@ -30,6 +30,7 @@ private:
     ConnectionContext m_context;
     AsyncConnection *m_currentConnection;
     QTimer *m_silentTimer;
+    QTimer *m_writeCooldownTimer;
     QMetaObject::Connection m_connBSI;
     ReconnectMode m_reconnectMode;
     bool m_isReconnectOccurred, m_isInitial;

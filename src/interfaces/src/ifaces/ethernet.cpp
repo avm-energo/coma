@@ -35,7 +35,13 @@ bool Ethernet::connect()
             timedOut = true;
             loop.quit();
         });
-    loop.exec();
+    // ExcludeUserInputEvents: этот event loop крутится внутри синхронного вызова, начатого
+    // диалогом настройки соединения (см. InterfaceEthernetDialog::setInterface()). Если позволить
+    // обрабатывать клики мыши/клавиатуру здесь, пользователь успевает закрыть этот диалог
+    // (Qt::WA_DeleteOnClose) прямо во время ожидания подключения — тогда после выхода из этого
+    // цикла управление вернётся в метод уже уничтоженного объекта диалога (use-after-free).
+    // Мышь/клавиатура просто откладываются и будут доставлены как обычно после выхода отсюда.
+    loop.exec(QEventLoop::ExcludeUserInputEvents);
 
     if (m_socket->state() != QAbstractSocket::ConnectedState)
     {
@@ -151,6 +157,16 @@ void Ethernet::handleSocketError(const QAbstractSocket::SocketError err)
     {
     case QAbstractSocket::SocketError::SocketTimeoutError:
         // ignore
+        break;
+    case QAbstractSocket::SocketError::RemoteHostClosedError:
+        // Устройство разорвало УЖЕ установленное соединение (например, ушло в ResetSystem() после
+        // записи конфигурации/ВПО) - это обрыв рабочего соединения, а не ошибка его первичного
+        // открытия. OpenError вне самого первого подключения молча игнорируется в
+        // ConnectionManager::handleInterfaceErrors (см. m_isInitial) - если завести такой разрыв
+        // туда же, реконнект узнаёт о нём только через прикладные таймауты запросов, что даёт лишние
+        // секунды простоя. ReadError же корректно считается и запускает переподключение.
+        m_log.writeLog(Logger::Warning, m_socket->errorString());
+        emit error(InterfaceError::ReadError);
         break;
     default:
         m_log.writeLog(Logger::Critical, m_socket->errorString());

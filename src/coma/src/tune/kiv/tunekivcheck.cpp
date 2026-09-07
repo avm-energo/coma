@@ -33,36 +33,35 @@ Error::Msg TuneKIVCheck::showScheme()
 {
     auto widget = new QWidget(this);
     auto layout = new QVBoxLayout;
-    layout->addWidget(GraphFunc::newIcon(this, ":/tunes/tunekiv1.png"));
+
+    QLabel *schema = GraphFunc::newIcon(this, ":/tunes/tunekiv1.png");
+    schema->setScaledContents(true);
+    schema->setMaximumSize(QSize(402, 582));
+    layout->addWidget(schema);
+
     layout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
     layout->addWidget(LBLFunc::New(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока "
         "и напряжения в однофазной сети переменного тока, установите предел измерения "
-        "по напряжению 60 В, по току - 2,5 А;"));
+        "по напряжению 57,75 В, по току - 2,5 А;"));
 
     auto hLayout = new QHBoxLayout;
     auto vLayout = new QVBoxLayout;
-    vLayout->addWidget(LBLFunc::New(this, "РЕТОМ"));
-    vLayout->addWidget(GraphFunc::newHLine(this));
     vLayout->addWidget(LBLFunc::New(this,
-        "3. Включите питание источника сигналов. Задайте напряжение U1 равным 60,0 В с углом 0 град., "
+        "3. Включите питание источника сигналов. Задайте напряжение U1 равным 57,75 В с углом 0 град., "
         "ток I1 равным 2,9 А с углом 89,9 град., включите выходы РЕТОМ-51;"));
-    hLayout->addLayout(vLayout);
-    hLayout->addWidget(GraphFunc::newVLine(this));
-    vLayout = new QVBoxLayout;
-    vLayout->addWidget(LBLFunc::New(this, "ИМИТАТОР"));
-    vLayout->addWidget(GraphFunc::newHLine(this));
-    vLayout->addWidget(LBLFunc::New(this,
-        "3. Включите питание источника сигналов. Задайте напряжение U1 равным 60,0 В, "
-        "ток I1 равным 29 мА, tgδ равным +0,2 %"));
+
     hLayout->addLayout(vLayout);
     layout->addLayout(hLayout);
     layout->addWidget(LBLFunc::New(this,
         "4. По показаниям Энергомонитора убедитесь, что входное напряжение от источника "
-        "составляет 60 ± 0,25 В, ток – 0,290 ± 25 мА, частота – 51,0 ± 0,05 Гц;"));
+        "составляет 57,75 ± 0,25 В, ток – 0,290 ± 25 мА, частота – 51,0 ± 0,05 Гц;"));
+
     layout->addWidget(LBLFunc::New(
         this, "5. Убедитесь, что частота мигания светодиода «Работа»  на лицевой панели увеличилась до 1 Гц;"));
+
     layout->addWidget(LBLFunc::New(this, "6. Установите на магазине сопротивлений сопротивление 100,0 Ом."));
+
     widget->setLayout(layout);
     if (!EMessageBox::next(this, widget))
     {
@@ -100,7 +99,7 @@ Error::Msg TuneKIVCheck::check()
 
 #ifndef NO_LIMITS
     for (int i = 0; i < 3; ++i)
-        if (!WDFunc::floatIsWithinLimits("напряжения", bda->data()->Ueff_ADC[i], 2150000.0, 150000.0))
+        if (!WDFunc::floatIsWithinLimits("напряжения", bda->data()->Ueff_ADC[i], 2069375.0, 144375.0))
             goto FaultLabel;
     for (int i = 3; i < 6; ++i)
         if (!WDFunc::floatIsWithinLimits("тока", bda->data()->Ueff_ADC[i], 1220000.0, 60000.0))

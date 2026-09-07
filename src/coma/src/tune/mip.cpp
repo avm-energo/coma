@@ -9,7 +9,7 @@
 #include <libavm-widgets/wdfunc.h>
 #include <interfaces/conn/async_connection.h>
 #include <interfaces/ifaces/ethernet.h>
-#include <interfaces/parsers/iec104parser.h>
+#include <interfaces/parsers/iec104/iec104parser_legacy.h>
 #include <interfaces/types/serial_settings.h>
 
 #include <QEventLoop>

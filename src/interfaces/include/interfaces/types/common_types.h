@@ -92,6 +92,7 @@ Q_ENUM_NS(Commands)
 
 enum CommandRegisters
 {
+    FirmwareUpgrade = 802,      ///< Запуск обновления ВПО
     StartWorkingChannel = 803,  ///< Старт рабочего канала
     EraseSystemJournal = 807,   ///< Стереть системный журнал
     WriteTypeOsc = 813,         ///< Команда запуска осциллограммы

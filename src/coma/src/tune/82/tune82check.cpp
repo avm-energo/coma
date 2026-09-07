@@ -71,7 +71,7 @@ Error::Msg Tune82Check::check()
 #ifndef NO_LIMITS
     const auto inom = m_config["I2nom"].value<S2::FLOAT_6t>();
     return bda->checkValues(m_typeM, inom);
-#elif
+#else
     return Error::Msg::NoError;
 #endif
 }

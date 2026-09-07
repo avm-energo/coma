@@ -11,15 +11,16 @@ namespace Interface
 DefaultQueryExecutor::DefaultQueryExecutor(RequestQueue &queue, BaseSettings *settings, QObject *parent)
     : QObject(parent)
     , m_state(ExecutorState::Starting)
+    , m_lastRequestedCommand(Commands::C_ReqStartup)
     , m_queue(std::ref(queue))
     , m_timeoutTimer(this)
-    , m_waitMutex {}
-    , m_waiter {}
     , m_requestParser(nullptr)
     , m_responseParser(nullptr)
 {
     setTimeout(settings->get(MemKeys::timeout));
+    m_log.setLogLevel(settings->get("logLevel"));
     connect(settings, &BaseSettings::settingHasBeenChanged, this, &DefaultQueryExecutor::settingsChanged);
+    connect(this, &DefaultQueryExecutor::stateChanged, this, &DefaultQueryExecutor::execByState);
 }
 
 void DefaultQueryExecutor::initLogger(const QString &protocolName) noexcept
@@ -79,28 +80,29 @@ void DefaultQueryExecutor::setState(const ExecutorState newState) noexcept
     }
 }
 
-void DefaultQueryExecutor::waitEvent()
-{
-    std::unique_lock<std::mutex> locker { m_waitMutex };
-    m_waiter.wait(locker, [this] { return m_wakeRequested; });
-    m_wakeRequested = false;
-}
-
 void DefaultQueryExecutor::wakeUp()
 {
-    {
-        std::lock_guard<std::mutex> locker { m_waitMutex };
-        m_wakeRequested = true;
-    }
-    m_waiter.notify_one();
+    QMetaObject::invokeMethod(this, &DefaultQueryExecutor::parseFromQueue, Qt::AutoConnection);
 }
 
 void DefaultQueryExecutor::parseFromQueue() noexcept
 {
+    // wakeUp() может поставить в очередь событий несколько вызовов этой
+    // функции подряд (например, если executorWakeUp() прилетел пару раз,
+    // пока предыдущий отложенный вызов ещё не обработан). Без этой проверки
+    // второй вызов молча отправил бы следующую команду, не дождавшись ответа
+    // на первую - протокол полудуплексный, это ломает разбор ответа.
+    if (getState() != ExecutorState::RequestParsing)
+        return;
+
     auto opt = m_queue.get().getFromQueue();
     if (opt.has_value())
     {
         const auto command(opt.value());
+        // setRequest() должен выполняться до parse(): для однопакетных команд,
+        // идущих через writeLongData(), parse() синхронно взводит m_isLastSectionSent
+        // ещё внутри себя, и обнулять его после этого нельзя.
+        m_responseParser->setRequest(command);
         auto request = m_requestParser->parse(command);
         if (m_requestParser->isExceptionalSituation())
             m_requestParser->exceptionalAction(command);
@@ -111,15 +113,8 @@ void DefaultQueryExecutor::parseFromQueue() noexcept
             if (getState() == ExecutorState::RequestParsing)
                 setState(ExecutorState::Pending);
             m_lastRequestedCommand.store(command.command);
-            m_responseParser->setRequest(command);
             writeToInterface(request);
         }
-    }
-    else
-    {
-        // Если нет запросов в очереди, то ждём, пока они появятся
-        waitEvent();
-        // m_queue.get().waitFillingQueue();
     }
 }
 
@@ -159,29 +154,8 @@ void DefaultQueryExecutor::settingsChanged(const QString &key, const QVariant &v
 {
     if (key == KeysMap.key(MemKeys::timeout))
         setTimeout(value.toInt());
-}
-
-void DefaultQueryExecutor::exec()
-{
-    auto currentState = getState();
-    while (currentState != ExecutorState::Stopping)
-    {
-        switch (currentState)
-        {
-        case ExecutorState::RequestParsing:
-            parseFromQueue();
-            break;
-        case ExecutorState::Pending:
-            // Ничего не делаем, ждём изменения состояния
-            break;
-        default:
-            break;
-        }
-        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-        currentState = getState();
-    }
-    m_log.writeLog(Logger::Info, "DeviceQueryExecutor is finished\n");
-    emit finished();
+    else if (key == "logLevel")
+        m_log.setLogLevel(value.toString());
 }
 
 void DefaultQueryExecutor::start()
@@ -315,6 +289,25 @@ void DefaultQueryExecutor::reconnectEvent()
     cancelQuery();
     pause();
     m_queue.get().clear();
+}
+
+void DefaultQueryExecutor::execByState(const Interface::ExecutorState state)
+{
+    switch (state)
+    {
+    case ExecutorState::RequestParsing:
+        parseFromQueue();
+
+        break;
+    case ExecutorState::Stopping:
+        m_log.writeLog(Logger::Info, "DeviceQueryExecutor is finished\n");
+        emit finished();
+
+        break;
+    default:
+        // В остальных случаях ничего не делаем
+        break;
+    }
 }
 
 } // namespace Interface

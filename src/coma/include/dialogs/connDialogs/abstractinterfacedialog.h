@@ -1,0 +1,38 @@
+#pragma once
+
+#include <interfaces/types/connection_settings.h>
+
+#include <QDialog>
+#include <QSettings>
+#include <QTableView>
+
+// how much entries can we have for interfaces of each type in registry
+constexpr int MAXREGISTRYINTERFACECOUNT = 5;
+
+class AbstractInterfaceDialog : public QDialog
+{
+    Q_OBJECT
+public:
+    explicit AbstractInterfaceDialog(QWidget *parent = nullptr);
+    virtual void setupUI();
+
+    virtual bool updateModel() = 0;
+    /// \brief Занят ли диалог операцией, которую небезопасно прерывать удалением виджета
+    /// (например, крутит собственный цикл событий). Пока true, Coma::showCentralWidget()
+    /// не заменяет этот диалог другим.
+    virtual bool isBusy() const { return false; }
+
+protected:
+    QTableView *m_tableView;
+
+    virtual void acceptedInterface() { };
+    virtual void setInterface(QModelIndex index) = 0;
+    virtual void addInterface() { }
+
+    bool checkSize();
+
+    void apply(BaseSettings *connection);
+
+signals:
+    void accepted(const ConnectionSettings &st);
+};

@@ -1,12 +1,12 @@
 #include <common/names.h>
 #include <interfaces/exec/iec104_query_executor.h>
 #include <interfaces/exec/query_executor_fabric.h>
-#include <interfaces/parsers/iec104_request_parser.h>
-#include <interfaces/parsers/iec104_response_parser.h>
-#include <interfaces/parsers/modbus_request_parser.h>
-#include <interfaces/parsers/modbus_response_parser.h>
-#include <interfaces/parsers/protocom_request_parser.h>
-#include <interfaces/parsers/protocom_response_parser.h>
+#include <interfaces/parsers/iec104/iec104_request_parser.h>
+#include <interfaces/parsers/iec104/iec104_response_parser.h>
+#include <interfaces/parsers/modbus/modbus_request_parser.h>
+#include <interfaces/parsers/modbus/modbus_response_parser.h>
+#include <interfaces/parsers/protocom/protocom_request_parser.h>
+#include <interfaces/parsers/protocom/protocom_response_parser.h>
 
 namespace Interface
 {
@@ -57,15 +57,24 @@ DefaultQueryExecutor *QueryExecutorFabric::makeIec104Executor(RequestQueue &queu
     // Парсер запросов отправляет данные в парсер ответов для подтверждения получения
     QObject::connect(requestParser, &Iec104RequestParser::currentCommand, //
         responseParser, &Iec104ResponseParser::receiveCurrentCommand);    //
-    // Проверка контрольного блока исполнителем запросов
-    QObject::connect(responseParser, &Iec104ResponseParser::needToCheckControlBlock, //
-        executor, &Iec104QueryExecutor::checkControlBlock);                          //
+    // Обработка счетчиков пришедшего I-пакета
+    QObject::connect(responseParser, &Iec104ResponseParser::infoTransferFormatReceived, //
+        executor, &Iec104QueryExecutor::checkIPacketCounters);                           //
+    // Обработка счетчиков пришедшего S-пакета
+    QObject::connect(responseParser, &Iec104ResponseParser::supervisoryFormatReceived, //
+        executor, &Iec104QueryExecutor::checkSPacketCounters);
     // Проверка посылки U-формата исполнителем запросов
     QObject::connect(responseParser, &Iec104ResponseParser::unnumberedFormatReceived, //
         executor, &Iec104QueryExecutor::checkUnnumberedFormat);                       //
     // Обработка состояния, когда запрошенные данные получены
     QObject::connect(responseParser, &Iec104ResponseParser::requestedDataReceived, //
         executor, &Iec104QueryExecutor::requestedDataReceived);                    //
+    // Отправка следующего шага реактивного протокола передачи файла (журналов)
+    QObject::connect(responseParser, &Iec104ResponseParser::fileReplyNeeded, //
+        executor, &Iec104QueryExecutor::sendFileReply);                     //
+    // Отправка следующего шага реактивного протокола записи файла (конфигурация, прошивка)
+    QObject::connect(responseParser, &Iec104ResponseParser::fileWriteReplyNeeded, //
+        executor, &Iec104QueryExecutor::sendFileWriteReply);                      //
     executor->setParsers(requestParser, responseParser);
     return executor;
 }
