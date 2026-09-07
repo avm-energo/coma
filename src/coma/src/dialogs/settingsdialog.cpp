@@ -260,9 +260,11 @@ void SettingsDialog::setupTuneTab() noexcept
     generalLayout->addWidget(
         LEFunc::newLBL(m_workspace, "Степень усреднения для регулировки", SettingsKeys::tuneCount, true));
     generalLayout->addWidget(
-        CBFunc::newLBL(m_workspace, "Связь с энергомонитором", SettingsKeys::useEnom, { "Вручную", "RS-232", "USB" }));
+        CBFunc::newLBL(m_workspace, "Данные от энергомонитора", SettingsKeys::useEnom, { "Вручную", "RS-232", "USB" }));
     generalLayout->addWidget(
-        CBFunc::newLBL(m_workspace, "Связь с РЕТОМ", SettingsKeys::useRetom, { "Вручную", "USB" }));
+        CBFunc::newLBL(m_workspace, "Данные от РЕТОМ", SettingsKeys::useRetom, { "Вручную", "USB" }));
+    generalLayout->addWidget(
+        CBFunc::newLBL(m_workspace, "Данные от имитатора Pt100", SettingsKeys::usePt100, { "Вручную", "RS-485" }));
     // Вкладка "МИП-02"
     auto mipLayout = createTabLayout(tuneTabs, "МИП-02");
     mipLayout->addWidget(LEFunc::newLBL(m_workspace, "IP адрес устройства", SettingsKeys::Mip::mipIp, true));
@@ -291,6 +293,7 @@ void SettingsDialog::fill()
     LEFunc::setData(this, SettingsKeys::Mip::mipBsAddress, Settings::get(SettingsKeys::Mip::mipBsAddress, 1));
     CBFunc::setData(this, SettingsKeys::useEnom, Settings::get(SettingsKeys::useEnom, "USB"));
     CBFunc::setData(this, SettingsKeys::useRetom, Settings::get(SettingsKeys::useRetom, "USB"));
+    CBFunc::setData(this, SettingsKeys::usePt100, Settings::get(SettingsKeys::usePt100, "RS-485"));
     LEFunc::setData(this, SettingsKeys::USB::protocomTimeout, Settings::get(SettingsKeys::USB::protocomTimeout, 5000));
     LEFunc::setData(
         this, SettingsKeys::USB::protocomReconnect, Settings::get(SettingsKeys::USB::protocomReconnect, 1000));
@@ -355,6 +358,9 @@ void SettingsDialog::acceptSettings()
     QString retom = CBFunc::data(this, SettingsKeys::useRetom);
     if (!retom.isEmpty())
         set(SettingsKeys::useRetom, retom);
+    QString pt100 = CBFunc::data(this, SettingsKeys::usePt100);
+    if (!pt100.isEmpty())
+        set(SettingsKeys::usePt100, pt100);
 
     if (ChBFunc::data(this, SettingsKeys::loggingEnabled, tmpb))
         set(SettingsKeys::loggingEnabled, tmpb);

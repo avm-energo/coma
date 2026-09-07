@@ -57,6 +57,7 @@ constexpr auto errorCount = "errorCount";
 constexpr auto tuneCount = "tuneCount";
 constexpr auto useRetom = "useRetom";
 constexpr auto useEnom = "useEnom";
+constexpr auto usePt100 = "usePt100";
 constexpr auto popupLifetime = "popupLifetime";
 }
 
