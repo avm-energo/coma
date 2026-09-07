@@ -44,3 +44,51 @@ build:windows-mingw:
     - cmake -B build -S .
         -DCMAKE_TOOLCHAIN_FILE="$QT_MINGW_TOOLCHAIN" -DQT_HOST_PATH=/usr
     - cmake --build build -j"$(nproc)"
+
+# Links an open MR to its Kaiten card, so it shows up under the card's
+# "links" block without anyone doing it by hand in the Kaiten UI.
+#
+# The card is identified by scanning the MR title+description for either
+# a full Kaiten card URL (.../card/<id>) or a bare "#<id>" reference - a
+# dev just has to reference the card somewhere in the MR text, no branch
+# naming convention required. MRs that don't reference a card are skipped,
+# not failed.
+#
+# Needs two CI/CD variables set on this project (Settings > CI/CD >
+# Variables, masked): KAITEN_DOMAIN (the subdomain, e.g. "asu-vei" for
+# asu-vei.kaiten.ru) and KAITEN_API_TOKEN (from
+# https://<KAITEN_DOMAIN>.kaiten.ru/profile/api-key).
+kaiten:link-mr:
+  stage: notify
+  image: vm-debian:5000/debian-qt6:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    - |
+      set -eu
+      MR_TEXT="${CI_MERGE_REQUEST_TITLE:-}
+      ${CI_MERGE_REQUEST_DESCRIPTION:-}"
+
+      CARD_ID="$(printf '%s' "$MR_TEXT" | grep -oP 'kaiten\.ru/\S*/card/\K[0-9]+' | head -n1 || true)"
+      if [ -z "$CARD_ID" ]; then
+        CARD_ID="$(printf '%s' "$MR_TEXT" | grep -oP '#\K[0-9]+' | head -n1 || true)"
+      fi
+
+      if [ -z "$CARD_ID" ]; then
+        echo "No Kaiten card referenced in MR title/description, skipping"
+        exit 0
+      fi
+
+      MR_URL="${CI_MERGE_REQUEST_PROJECT_URL}/-/merge_requests/${CI_MERGE_REQUEST_IID}"
+      echo "Linking MR !${CI_MERGE_REQUEST_IID} to Kaiten card ${CARD_ID}"
+
+      PAYLOAD="$(python3 -c '
+import json, sys
+print(json.dumps({"url": sys.argv[1], "description": sys.argv[2]}))
+' "$MR_URL" "MR !${CI_MERGE_REQUEST_IID}: ${CI_MERGE_REQUEST_TITLE}")"
+
+      curl --fail --silent --show-error --request POST \
+        --url "https://${KAITEN_DOMAIN}.kaiten.ru/api/latest/cards/${CARD_ID}/external-links" \
+        --header "Authorization: Bearer ${KAITEN_API_TOKEN}" \
+        --header "Content-Type: application/json" \
+        --data "$PAYLOAD"
