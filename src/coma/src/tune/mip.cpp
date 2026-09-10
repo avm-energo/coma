@@ -8,8 +8,6 @@
 #include <libavm-widgets/waitwidget.h>
 #include <libavm-widgets/wdfunc.h>
 #include <interfaces/conn/async_connection.h>
-#include <interfaces/ifaces/ethernet.h>
-#include <interfaces/parsers/iec104/iec104parser_legacy.h>
 #include <interfaces/types/serial_settings.h>
 
 #include <QEventLoop>
@@ -20,7 +18,7 @@
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
     : QObject(parent)
-    , m_iface(nullptr)
+    , m_conn(nullptr)
     , m_mipData { 0 }
     , m_parent(parent)
     , m_withGUI(withGUI)
@@ -157,10 +155,10 @@ void Mip::stop()
 {
     m_updateTimer->stop();
     m_updater->setUpdatesEnabled(false);
-    if (m_iface != nullptr)
+    if (!m_conn.isNull())
     {
-        m_iface->close();
-        m_iface = nullptr;
+        m_conn->close();
+        m_conn = nullptr;
         StdFunc::Wait();
         emit finished();
     }
@@ -177,54 +175,27 @@ void Mip::timeoutReachedSlot()
 bool Mip::initConnection(IEC104Settings *settings)
 {
     using namespace DataTypes;
-    auto conn = new AsyncConnection(this);
+    auto connection = Interface::LegacyIec104Connection::create(settings, this);
+    if (connection == nullptr)
+        return false;
+
+    auto conn = connection->connection();
+    // Обработчик вешаем до open(), чтобы не потерять ответы, пришедшие сразу
+    // после подключения.
     conn->connection(this, //
         [this](const FloatWithTimeStruct &fs) { updateData(FloatStruct { fs.sigAdr, fs.sigVal, fs.sigQuality }); });
-    m_iface = new Ethernet(settings);
-    m_updater = new ModuleDataUpdater(conn, this);
-    auto ifaceThread = new QThread;
-    auto parserThread = new QThread;
-    auto parser = new IEC104Parser(conn->getQueue());
-    parser->setBaseAdr(settings->get("bsAddress"));
-    // Обмен данными
-    QObject::connect(m_iface, &BaseInterface::dataReceived, //
-        parser, &IEC104Parser::checkStartBytes, Qt::QueuedConnection);
-    QObject::connect(parser, &IEC104Parser::writeData,      //
-        m_iface, &BaseInterface::writeData, Qt::QueuedConnection);
-    QObject::connect(m_iface, &BaseInterface::finished,     //
-        parser, &IEC104Parser::stop, Qt::QueuedConnection);
-    QObject::connect(parser, &IEC104Parser::responseSend,   //
-        conn, &AsyncConnection::responseHandle, Qt::DirectConnection);
-    // Потоки
-    QObject::connect(ifaceThread, &QThread::started, m_iface, &BaseInterface::poll);
-    QObject::connect(parserThread, &QThread::started, parser, &IEC104Parser::run);
-    QObject::connect(m_iface, &BaseInterface::finished, ifaceThread, &QThread::quit);
-    QObject::connect(m_iface, &BaseInterface::finished, parserThread, &QThread::quit);
-    QObject::connect(ifaceThread, &QThread::finished, m_iface, &QObject::deleteLater);
-    QObject::connect(ifaceThread, &QThread::finished, m_updater, &QObject::deleteLater);
-    QObject::connect(ifaceThread, &QThread::finished, conn, &QObject::deleteLater);
-    QObject::connect(parserThread, &QThread::finished, parser, &QObject::deleteLater);
-    QObject::connect(ifaceThread, &QThread::finished, &QObject::deleteLater);
-    QObject::connect(parserThread, &QThread::finished, &QObject::deleteLater);
-    QObject::connect(m_iface, &BaseInterface::started, m_iface,
-        [=]
-        {
-            qDebug() << m_iface->metaObject()->className() << " connected";
-            m_iface->moveToThread(ifaceThread);
-            parser->moveToThread(parserThread);
-            ifaceThread->start();
-            parserThread->start();
-        });
 
-    if (!m_iface->connect())
+    if (!connection->open())
     {
-        m_iface->close();
-        m_iface->deleteLater();
-        parser->deleteLater();
-        ifaceThread->deleteLater();
-        parserThread->deleteLater();
+        delete connection;
         return false;
     }
+
+    m_conn = connection;
+    m_updater = new ModuleDataUpdater(conn, this);
+    // Соединение владеет своим стеком и удаляет себя, когда интерфейс остановлен,
+    // так что вместе с ним уходит и обновлятор, который на нём построен.
+    connect(m_conn, &Interface::LegacyIec104Connection::finished, m_updater, &QObject::deleteLater);
     return true;
 }
 

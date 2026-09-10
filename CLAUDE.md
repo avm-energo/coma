@@ -51,12 +51,12 @@ off):
 cmake -S . -B build/test -G Ninja -DBUILD_TESTING=ON
 cmake --build build/test
 ctest --test-dir build/test              # all tests
-ctest --test-dir build/test -R interfaces_tests   # single test binary
 ```
 
-Test targets (`src/tests/`, `src/interfaces/tests/`): `datablock`, `xmlParser`, `files`,
-`interfaces_tests` (IEC 60870-5-104 APCI/ASDU, C-block, file transfer; Modbus compatibility). Qt Test
-framework is used for `interfaces_tests`; others are plain executables registered via `add_test`.
+Test targets (`src/tests/`): `datablock`, `xmlParser`, `files` — plain executables registered via
+`add_test`. The transport-layer suite moved out with the library and now lives in `libavm-interfaces`
+(`tests/`), where it is off by default because it does not currently compile — see that repo's
+README.
 `src/tests/protocom` and `src/tests/xmlValidator` build standalone helper executables (not wired into
 `add_test`).
 
@@ -74,7 +74,7 @@ Style is enforced by `clang-format` (see `.clang-format`: WebKit-based, Allman b
 build dir (`CMAKE_EXPORT_COMPILE_COMMANDS` is `ON`):
 
 ```bash
-find src/coma/src src/interfaces/src src/avm-debug src/avm-service -name "*.cpp" \
+find src/coma/src src/avm-debug src/avm-service -name "*.cpp" \
   | xargs -P"$(nproc)" -I{} clazy-standalone -p build/Desktop-Debug --checks=level1 \
       --header-filter="$(pwd)/src" {}
 ```
@@ -93,8 +93,6 @@ levels, `clang-tidy` usage).
     `Interface::AsyncConnection`. `device_list.h` enumerates known base/mezzanine board types and models.
   - `xml/` — loads and parses the per-module-type XML descriptors that drive nearly everything
     module-specific (`xml/xmlparser`), plus a WYSIWYG `xmleditor/` for editing them.
-  - `s2/` — "S2" binary config/data format handling (`S2DataManager`, `S2ConfigStorage`,
-    `S2DataFactory`) — the wire format used to read/write module configuration blocks.
   - `datablocks/` — per-module data structures, one subfolder per base-board family (`21`, `82`, `85`,
     `kiv`).
   - `tune/` — module tuning/calibration dialogs, also split by board family (`21`, `82`, `84`, `85`,
@@ -105,13 +103,21 @@ levels, `clang-tidy` usage).
   - `journals/` — event/measurement/system/work journal viewers and parsers (`.jn*`, `.dat` files).
   - `alarms/`, `dialogs/`, `models/`, `comawidgets/`, `common/`, `startup/` — UI widgets, shared dialogs,
     Qt item-models, app config/versioning, and startup/splash sequencing.
-- `src/interfaces` — standalone library for the transport/protocol layer: `ifaces/` (Ethernet, serial,
-  USB HID transports), `conn/` (`AsyncConnection`/`SyncConnection`), `exec/` (query executors, including
-  an IEC104-specific one, via `query_executor_fabric`), `parsers/` (Modbus, IEC104, Protocom
-  request/response parsers), `types/` (per-protocol settings structs), `utils/request_queue`. Has its own
-  test suite under `tests/` using Qt Test. `coma` depends on `interfaces`.
-- `src/ctti` — vendored/in-tree copy of the CTTI (compile-time type introspection) library (upstream
-  project is abandoned, kept in-tree per README).
+- `libavm-interfaces` — **external package**, formerly `src/interfaces`. The transport/protocol layer:
+  `ifaces/` (Ethernet, serial, USB HID transports), `conn/` (`AsyncConnection`/`SyncConnection`),
+  `exec/` (query executors, including an IEC104-specific one, via `query_executor_fabric`), `parsers/`
+  (Modbus, IEC104, Protocom request/response parsers), `types/` (per-protocol settings structs),
+  `utils/request_queue`. Only the headers under its `include/interfaces/` are public — the parsers, the
+  query executors and the IEC104 frame types are private to that library. See its README for the full
+  public/private list before reaching for one of them. `Mip` (`tune/mip.cpp`), which needs a raw
+  IEC104 link to the measuring instrument rather than a normal device connection, goes through that
+  library's `Interface::LegacyIec104Connection` factory instead of assembling a transport by hand.
+- `libavm-s2` — **external package**, formerly `src/coma/{include,src}/s2`. The "S2" binary config/data
+  format (`S2DataManager`, `S2ConfigStorage`, `S2DataFactory`, `S2::Util`) — the wire format used to
+  read/write module configuration blocks.
+- `libavm-ctti` — **external package**, formerly `src/ctti`. The vendored CTTI (compile-time type
+  introspection) library, exported as `ctti::ctti`. Used directly by `xml/xmlparser` and
+  `comawidgets/widgetfactory`, and re-exported by `libavm-s2`.
 - `src/avm-debug`, `src/avm-service` — the two thin executable entry points described above.
 - `settings/` — XML module descriptors (`0021.xml`, `8585.xml`, `bsi.xml`, `s2files.xml`, etc.), one per
   base/mezzanine board combination, plus `module-template.xml` as a starting point and `README.md` /
@@ -123,7 +129,7 @@ levels, `clang-tidy` usage).
 
 1. `Coma::connectDialog` → `ConnectDialog` collects `ConnectionSettings`.
 2. `Coma::initConnection` → `Interface::ConnectionManager::createConnection` opens the transport
-   (`src/interfaces`).
+   (`libavm-interfaces`).
 3. `Coma::initDevice` → `Device::DeviceFabric::create` builds a `Device::CurrentDevice` and calls
    `initBSI()` to read the device's Block Startup Info (identifies board/mezzanine type, serial, etc.).
 4. On `initBSIFinished`, `Coma::initInterfaceConnection` → `Coma::loadXML` loads the matching module XML
@@ -136,7 +142,7 @@ sections/widgets) is data-driven from `settings/*.xml` rather than hardcoded per
 support for a new module variant is often primarily an XML-authoring task (see `settings/README.md`),
 with new C++ needed mainly for genuinely new widget types, protocols, or datablock structures.
 
-### Communication pipeline (`src/interfaces`)
+### Communication pipeline (`libavm-interfaces`)
 
 Documented in depth in `doc/coma_2.11.0.pdf` ("COMA Core Architecture Guidelines"); the class names below
 still match the current tree even though the doc itself predates some later changes, so treat it as a
@@ -196,5 +202,8 @@ e.g. `datablocks`/`tune` may depend on `widgets`, but not vice versa.
 - `libavm-gen`, `libavm-widgets` — AVM-Energo's own shared utility/widget libraries (settings, logging,
   error queue, common Qt widgets like `EMessageBox`, `EStatusBar`, `LBLFunc`, `WDFunc`), fetched from
   `git.avmenergo.ru`. Not part of this repo; treat their headers as external API.
+- `libavm-interfaces`, `libavm-s2`, `libavm-ctti` — split out of this repository; see the module layout
+  above. Fetched the same way as the other AVM libraries (`cmake/interfaces.cmake`, `cmake/s2.cmake`,
+  `cmake/ctti.cmake`).
 - `magic_enum`, `limereport` (reports), `qcustomplot` (plotting), `qxlsx` (Excel export) — vendored via
   CMake `FetchContent`, see `cmake/*.cmake`.

@@ -35,7 +35,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   libavm-gen
   libavm-widgets
   ctti::ctti
-  interfaces
+  libavm-s2
+  libavm-interfaces
   libavm-limereport
   libavm-qcustomplot
   libavm-qxlsx
