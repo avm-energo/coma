@@ -107,8 +107,6 @@ else()
 endif()
 
 add_subdirectory(src/coma)
-add_subdirectory(src/ctti)
-add_subdirectory(src/interfaces)
 add_subdirectory(src/abatcher)
 
 # Step 2: Build tests
