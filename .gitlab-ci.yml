@@ -1,0 +1,89 @@
+stages:
+  - build
+  - notify
+
+# Uses the pre-baked images from the dockers repo (dockers/gitlab-ci/) -
+# see that repo for what's installed in each (Qt6 base+svg+declarative,
+# plus hidapi's udev/usb deps on the Linux images).
+#
+# coma is the flagship app tying together most of this org's libavm-*
+# projects: it pulls in libavm-hidapi, libavm-gen (-> libavm-libzip ->
+# libavm-zlib), libavm-widgets, libavm-limereport, qcustomplot, libavm-qxlsx
+# and better-enums, ALL via CMake FetchContent from git.avmenergo.ru, so the
+# runner needs network access (and credentials, if that remote isn't
+# public) to that host, and builds will take noticeably longer than the
+# smaller libavm-* projects since it's compiling that whole dependency
+# tree from source.
+#
+# `if(MSVC) add_compile_options(/MP)` in the top-level CMakeLists.txt is
+# only a conditional MSVC-specific flag, not a hard MSVC requirement - it's
+# simply skipped when MSVC isn't the compiler, so a mingw build should work.
+# UNTESTED, best-effort - see libavm-gen/libavm-widgets CI for the full
+# mingw rationale.
+#
+# BUILD_SHARED_LIBS already defaults to ON in this project, so unlike the
+# smaller libavm-* libraries this only builds one configuration.
+
+build:linux-debian:
+  stage: build
+  image: vm-debian:5000/debian-qt6:latest
+  script:
+    - cmake -B build -S .
+    - cmake --build build -j"$(nproc)"
+
+build:linux-fedora:
+  stage: build
+  image: vm-debian:5000/fedora-qt6:latest
+  script:
+    - cmake -B build -S .
+    - cmake --build build -j"$(nproc)"
+
+build:windows-mingw:
+  stage: build
+  image: vm-debian:5000/fedora-mingw-qt6:latest
+  script:
+    - cmake -B build -S .
+        -DCMAKE_TOOLCHAIN_FILE="$QT_MINGW_TOOLCHAIN" -DQT_HOST_PATH=/usr
+    - cmake --build build -j"$(nproc)"
+
+# Links an open MR to its Kaiten card, so it shows up under the card's
+# "links" block without anyone doing it by hand in the Kaiten UI.
+#
+# The card is identified by scanning the MR title+description for either
+# a full Kaiten card URL (.../card/<id>) or a bare "#<id>" reference - a
+# dev just has to reference the card somewhere in the MR text, no branch
+# naming convention required. MRs that don't reference a card are skipped,
+# not failed.
+#
+# Needs two CI/CD variables set on this project (Settings > CI/CD >
+# Variables, masked): KAITEN_DOMAIN (the subdomain, e.g. "asu-vei" for
+# asu-vei.kaiten.ru) and KAITEN_API_TOKEN (from
+# https://<KAITEN_DOMAIN>.kaiten.ru/profile/api-key).
+kaiten:link-mr:
+  stage: notify
+  image: vm-debian:5000/debian-qt6:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  allow_failure: true
+  script:
+    - |
+      set -eu
+      MR_TEXT="${CI_MERGE_REQUEST_TITLE:-}
+      ${CI_MERGE_REQUEST_DESCRIPTION:-}"
+
+      CARD_ID="$(printf '%s' "$MR_TEXT" | grep -oP 'kaiten\.ru/\S*/card/\K[0-9]+' | head -n1 || true)"
+      if [ -z "$CARD_ID" ]; then
+        CARD_ID="$(printf '%s' "$MR_TEXT" | grep -oP '#\K[0-9]+' | head -n1 || true)"
+      fi
+
+      if [ -z "$CARD_ID" ]; then
+        echo "No Kaiten card referenced in MR title/description, skipping"
+        exit 0
+      fi
+
+      MR_URL="${CI_MERGE_REQUEST_PROJECT_URL}/-/merge_requests/${CI_MERGE_REQUEST_IID}"
+      echo "Linking MR !${CI_MERGE_REQUEST_IID} to Kaiten card ${CARD_ID}"
+
+      PAYLOAD="$(python3 -c "import json, sys; print(json.dumps({'url': sys.argv[1], 'description': sys.argv[2]}))" "$MR_URL" "MR !${CI_MERGE_REQUEST_IID}: ${CI_MERGE_REQUEST_TITLE}")"
+
+      python3 -c $'import json, os, sys, urllib.request as R\ndomain = os.environ["KAITEN_DOMAIN"]\ntoken = os.environ["KAITEN_API_TOKEN"]\ncard_id = sys.argv[1]\nmr_url = sys.argv[2]\npayload = sys.argv[3]\nbase = "https://%s.kaiten.ru/api/latest/cards/%s/external-links" % (domain, card_id)\nheaders = {"Authorization": "Bearer " + token, "Content-Type": "application/json"}\nexisting = json.loads(R.urlopen(R.Request(base, headers=headers, method="GET")).read().decode())\nif any(link.get("url") == mr_url for link in existing):\n    print("Link to " + mr_url + " already exists on card " + card_id + ", skipping")\n    sys.exit(0)\nprint(R.urlopen(R.Request(base, data=payload.encode(), headers=headers, method="POST")).read().decode())\n' "$CARD_ID" "$MR_URL" "$PAYLOAD"
