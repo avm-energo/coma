@@ -2,7 +2,7 @@
 
 #include <device/current_device.h>
 #include <interfaces/connectionmanager.h>
-#include <interfaces/ifaces/usbhidport.h>
+#include <interfaces/types/usbhid_settings.h>
 #include <libavm-gen/error.h>
 #include <s2/filestruct.h>
 

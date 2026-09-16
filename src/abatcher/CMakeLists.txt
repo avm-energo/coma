@@ -24,7 +24,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${limereport_SOURCE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   libavm-widgets
-  interfaces
+  coma
 )
 
 
