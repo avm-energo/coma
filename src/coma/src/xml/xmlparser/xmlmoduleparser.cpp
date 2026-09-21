@@ -270,6 +270,7 @@ void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
             resNode, tags::protocom, [&](const QDomNode &protocolNode) { parseProtocom(protocolNode); });
         break;
     case Interface::IfaceType::RS485:
+    case Interface::IfaceType::ModbusTCP:
         XmlParse::parseNode(resNode, tags::modbus, [&](const QDomNode &protocolNode) { parseModbus(protocolNode); });
         break;
     case Interface::IfaceType::Ethernet:

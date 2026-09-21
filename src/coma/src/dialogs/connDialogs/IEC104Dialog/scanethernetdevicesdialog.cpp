@@ -1,15 +1,14 @@
-#include "dialogs/connDialogs/ethernetDialog/scanethernetdevicesdialog.h"
-
-#include <common/names.h>
-#include <dialogs/connDialogs/ethernetDialog/interfaceethernetdialog.h>
-#include <libavm-gen/settings.h>
-#include <libavm-gen/stdfunc.h>
-#include <libavm-widgets/emessagebox.h>
-#include <libavm-widgets/pbfunc.h>
+#include "dialogs/connDialogs/IEC104Dialog/scanethernetdevicesdialog.h"
 
 #include <QtConcurrent/QtConcurrent>
 #include <QtConcurrent/QtConcurrentMap>
 #include <QtNetwork/QHostAddress>
+#include <common/names.h>
+#include <dialogs/connDialogs/IEC104Dialog/interfaceethernetdialog.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-widgets/emessagebox.h>
+#include <libavm-widgets/pbfunc.h>
 
 #include <QFuture>
 #include <QFutureWatcher>
@@ -97,8 +96,7 @@ QWidget *ScanEthernetDevicesDialog::createPortScanPage()
     m_portProgressBar = new QProgressBar(page);
     layout->addWidget(m_portProgressBar);
 
-    m_portCancelButton
-        = PBFunc::New(page, "portCancelButton", "Отмена", this, &ScanEthernetDevicesDialog::cancelScan);
+    m_portCancelButton = PBFunc::New(page, "portCancelButton", "Отмена", this, &ScanEthernetDevicesDialog::cancelScan);
     layout->addWidget(m_portCancelButton);
 
     return page;
@@ -209,12 +207,12 @@ void ScanEthernetDevicesDialog::createPingTask(quint32 ip)
 void ScanEthernetDevicesDialog::createPortTask()
 {
     QFutureWatcher<QList<quint32>> *watcher = new QFutureWatcher<QList<quint32>>(this);
-    quint16 port = Settings::get(SettingsKeys::Iec104::iec104DefaultPort, 2404);
+    quint16 port
+        = m_targetDialog ? m_targetDialog->defaultPort() : Settings::get(SettingsKeys::Iec104::iec104DefaultPort, 2404);
     int generation = m_scanGeneration;
 
     connect(this, &ScanEthernetDevicesDialog::cancelRequested, watcher, &QFutureWatcher<QList<quint32>>::cancel);
-    connect(
-        watcher, &QFutureWatcher<QList<quint32>>::progressValueChanged, m_portProgressBar, &QProgressBar::setValue);
+    connect(watcher, &QFutureWatcher<QList<quint32>>::progressValueChanged, m_portProgressBar, &QProgressBar::setValue);
     connect(watcher, &QFutureWatcher<QList<quint32>>::finished, this,
         [this, watcher, generation]()
         {

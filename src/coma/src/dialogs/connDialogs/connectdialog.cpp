@@ -1,9 +1,10 @@
 #include "dialogs/connDialogs/connectdialog.h"
 
+#include <dialogs/connDialogs/IEC104Dialog/interfaceethernetdialog.h>
+#include <dialogs/connDialogs/ModbusDialog/interfacemodbustcpdialog.h>
+#include <dialogs/connDialogs/ModbusDialog/interfaceserialdialog.h>
+#include <dialogs/connDialogs/ProtocomDialog/interfaceusbdialog.h>
 #include <dialogs/connDialogs/emuDialog/interfaceemudialog.h>
-#include <dialogs/connDialogs/ethernetDialog/interfaceethernetdialog.h>
-#include <dialogs/connDialogs/serialDialog/interfaceserialdialog.h>
-#include <dialogs/connDialogs/usbDialog/interfaceusbdialog.h>
 #include <libavm-gen/error.h>
 #include <libavm-widgets/wdfunc.h>
 
@@ -20,7 +21,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QWidget(parent, Qt::Popup), m_id
     setStyleSheet("ConnectDialog { background: qlineargradient(x1:0, y1:0, x2:1, y2:1,"
                   " stop:0 #8A2BE2, stop:1 #000080); }");
 
-    QStringList intersl { "USB", "RS485", "Ethernet" };
+    QStringList intersl { "Protocom", "Modbus", "Modbus TCP", "IEC-104" };
 
 #ifdef ENABLE_EMULATOR
     intersl.push_back("Emulator");
@@ -58,13 +59,15 @@ void ConnectDialog::setInterface(const QString &connectionType)
     if (mainWindow == nullptr)
         return;
 
-    // USB/RS485/Ethernet встраиваются прямо в главное окно вместо отдельного модального окна
+    // Protocom/Modbus/Ethernet встраиваются прямо в главное окно вместо отдельного модального окна
     AbstractInterfaceDialog *ifaceDialog = nullptr;
-    if (connectionType == "USB")
+    if (connectionType == "Protocom")
         ifaceDialog = new InterfaceUSBDialog(nullptr);
-    else if (connectionType == "RS485")
+    else if (connectionType == "Modbus")
         ifaceDialog = new InterfaceSerialDialog(nullptr);
-    else if (connectionType == "Ethernet")
+    else if (connectionType == "Modbus TCP")
+        ifaceDialog = new InterfaceModbusTcpDialog(nullptr);
+    else if (connectionType == "IEC-104")
         ifaceDialog = new InterfaceEthernetDialog(nullptr);
 
     if (ifaceDialog == nullptr)
