@@ -1,4 +1,4 @@
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/files/ziputil.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>

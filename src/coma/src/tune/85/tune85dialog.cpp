@@ -2,7 +2,7 @@
 
 #include <libavm-gen/colors.h>
 #include <libavm-gen/error.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/stdfunc.h>
 #include <tune/85/tune85adc.h>
 #include <tune/85/tune85check.h>

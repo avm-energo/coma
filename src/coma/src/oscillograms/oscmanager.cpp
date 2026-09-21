@@ -1,6 +1,6 @@
 #include "oscillograms/oscmanager.h"
 
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/timefunc.h>
 #include <oscillograms/parsers/parseid10001.h>
 #include <oscillograms/parsers/parseid10020.h>

@@ -1,7 +1,7 @@
 #include "tune/84/tune84check.h"
 
 #include <datablocks/84/bda.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/graphfunc.h>

@@ -2,7 +2,7 @@
 
 #include <device/current_device.h>
 #include <libavm-gen/error.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 
 #include <QDir>
 #include <QMutex>

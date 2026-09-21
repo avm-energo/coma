@@ -7,7 +7,7 @@
 #include <datablocks/kiv/bac.h>
 #include <datablocks/kiv/bac2.h>
 #include <device/device_list.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/files/ziputil.h>
 #include <libavm-gen/std_ext.h>
 #include <libavm-gen/stdfunc.h>
