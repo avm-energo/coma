@@ -59,7 +59,7 @@ void ConnectDialog::setInterface(const QString &connectionType)
     if (mainWindow == nullptr)
         return;
 
-    // Protocom/Modbus/Ethernet встраиваются прямо в главное окно вместо отдельного модального окна
+    // Protocom/Modbus/Modbus TCP/IEC-104 встраиваются прямо в главное окно вместо отдельного модального окна
     AbstractInterfaceDialog *ifaceDialog = nullptr;
     if (connectionType == "Protocom")
         ifaceDialog = new InterfaceUSBDialog(nullptr);
