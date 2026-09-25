@@ -2295,7 +2295,7 @@
                 <group>8</group>
                 <string>Задержка на формирование аварийной сигнализации, сек</string>
                 <min>0</min>
-                <max>1000</max>
+                <max>240</max>
                 <decimals>0</decimals>
             </widget>
         </record>
@@ -5777,6 +5777,224 @@
                 <toolTip>Задержка 10 сек при изменении температуры MST более, чем на ... град</toolTip>
                 <min>0</min>
                 <max>100</max>
+                <decimals>1</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1460</id>
+            <name>AlgG_S</name>
+            <type>BYTE</type>
+            <widget>
+                <type>QComboBox</type>
+                <group>3</group>
+                <string>Режим управления охлаждением</string>
+                <toolTip>Режим управления охлаждением</toolTip>
+                <count>2</count>
+                <string-array>
+                    <item>Групповой режим управления охлаждением</item>
+                    <item>Двигательный режим управления</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1461</id>
+            <name>EnFunContr</name>
+            <type>BYTE[4]</type>
+            <widget>
+                <type>CheckBoxGroup</type>
+                <group>3</group>
+                <string>Разрешение включения вентилятора</string>
+                <toolTip>Разрешение включения вентилятора</toolTip>
+                <count>4</count>
+                <string-array>
+                    <item>Первый</item>
+                    <item>Второй</item>
+                    <item>Третий</item>
+                    <item>Четвертый</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1462</id>
+            <name>EnPumpContr</name>
+            <type>BYTE[4]</type>
+            <widget>
+                <type>CheckBoxGroup</type>
+                <group>3</group>
+                <string>Разрешение включения маслонасосов</string>
+                <toolTip>Разрешение включения маслонасосов</toolTip>
+                <count>4</count>
+                <string-array>
+                    <item>Первый</item>
+                    <item>Второй</item>
+                    <item>Третий</item>
+                    <item>Четвертый</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1463</id>
+            <name>PauseOnDv
+</name>
+            <type>WORD</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>3</group>
+                <string>Время паузы между включением двигателей, сек</string>
+                <toolTip>Время паузы между включением двигателей, сек</toolTip>
+                <min>0</min>
+                <max>100</max>
+                <decimals>0</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1464</id>
+            <name>TimerOffFun</name>
+            <type>WORD[4]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>3</group>
+                <string>Время отключения вентиляторов, сек</string>
+                <toolTip>Время отключения вентиляторов, сек</toolTip>
+                <count>4</count>
+                <min>0</min>
+                <max>100</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>Первый</item>
+                    <item>Второй</item>
+                    <item>Третий</item>
+                    <item>Четвертый</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1465</id>
+            <name>TimerOffPump</name>
+            <type>WORD[4]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>3</group>
+                <string>Время отключения маслонасосов, сек
+</string>
+                <toolTip>Время отключения маслонасосов, сек
+</toolTip>
+                <count>4</count>
+                <min>0</min>
+                <max>100</max>
+                <decimals>0</decimals>
+                <string-array>
+                    <item>Первый</item>
+                    <item>Второй</item>
+                    <item>Третий</item>
+                    <item>Четвертый</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1466</id>
+            <name>ToilFun</name>
+            <type>FLOAT[4]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>3</group>
+                <string>Уставка температуры ВСМ  для вентиляторов, °С
+</string>
+                <toolTip>Уставка температуры ВСМ  для вентиляторов, °С
+</toolTip>
+                <count>4</count>
+                <min>0</min>
+                <max>200</max>
+                <decimals>1</decimals>
+                <string-array>
+                    <item>Первый</item>
+                    <item>Второй</item>
+                    <item>Третий</item>
+                    <item>Четвертый</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1467</id>
+            <name>GisToilFun</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>3</group>
+                <string>Гистерезис температуры ВСМ для вентиляторов, °С</string>
+                <toolTip>Гистерезис температуры ВСМ для вентиляторов, °С</toolTip>
+                <min>0</min>
+                <max>200</max>
+                <decimals>1</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1468</id>
+            <name>TnntPump</name>
+            <type>FLOAT[4]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>3</group>
+                <string>Уставка температуры ННТ для маслонасосов,°С</string>
+                <toolTip>Уставка температуры ННТ для маслонасосов,°С</toolTip>
+                <count>4</count>
+                <min>0</min>
+                <max>200</max>
+                <decimals>1</decimals>
+                <string-array>
+                    <item>Первый</item>
+                    <item>Второй</item>
+                    <item>Третий</item>
+                    <item>Четвертый</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1469</id>
+            <name>GisTnntPump</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>3</group>
+                <string>Гистерезис температуры ННТ для маслонасосов,°С</string>
+                <toolTip>Гистерезис температуры ННТ для маслонасосов,°С</toolTip>
+                <min>0</min>
+                <max>200</max>
+                <decimals>1</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>1470</id>
+            <name>KclPump</name>
+            <type>FLOAT[4]</type>
+            <widget>
+                <type>DoubleSpinBoxGroup</type>
+                <group>3</group>
+                <string>Уставка токовой нагрузки для маслонасосов, %</string>
+                <toolTip>Уставка токовой нагрузки для маслонасосов, %</toolTip>
+                <count>4</count>
+                <min>0</min>
+                <max>200</max>
+                <decimals>1</decimals>
+                <string-array>
+                    <item>Первый</item>
+                    <item>Второй</item>
+                    <item>Третий</item>
+                    <item>Четвертый</item>
+                </string-array>
+            </widget>
+        </record>
+        <record>
+            <id>1471</id>
+            <name>GisKclPump</name>
+            <type>FLOAT</type>
+            <widget>
+                <type>QDoubleSpinBox</type>
+                <group>3</group>
+                <string>Гистерезис токовой нагрузки по ступеням Д1, Д2, ДЦ, %</string>
+                <toolTip>Гистерезис токовой нагрузки по ступеням Д1, Д2, ДЦ, %</toolTip>
+                <min>0</min>
+                <max>200</max>
                 <decimals>1</decimals>
             </widget>
         </record>
