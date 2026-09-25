@@ -21,7 +21,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QWidget(parent, Qt::Popup), m_id
     setStyleSheet("ConnectDialog { background: qlineargradient(x1:0, y1:0, x2:1, y2:1,"
                   " stop:0 #8A2BE2, stop:1 #000080); }");
 
-    QStringList intersl { "Protocom", "Modbus", "Modbus TCP", "IEC-104" };
+    QStringList intersl { "Protocom", "Modbus RTU", "Modbus TCP", "IEC-104" };
 
 #ifdef ENABLE_EMULATOR
     intersl.push_back("Emulator");
@@ -59,11 +59,11 @@ void ConnectDialog::setInterface(const QString &connectionType)
     if (mainWindow == nullptr)
         return;
 
-    // Protocom/Modbus/Modbus TCP/IEC-104 встраиваются прямо в главное окно вместо отдельного модального окна
+    // Protocom/Modbus RTU/Modbus TCP/IEC-104 встраиваются прямо в главное окно вместо отдельного модального окна
     AbstractInterfaceDialog *ifaceDialog = nullptr;
     if (connectionType == "Protocom")
         ifaceDialog = new InterfaceUSBDialog(nullptr);
-    else if (connectionType == "Modbus")
+    else if (connectionType == "Modbus RTU")
         ifaceDialog = new InterfaceSerialDialog(nullptr);
     else if (connectionType == "Modbus TCP")
         ifaceDialog = new InterfaceModbusTcpDialog(nullptr);
