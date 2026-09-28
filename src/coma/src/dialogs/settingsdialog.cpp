@@ -217,11 +217,16 @@ void SettingsDialog::setupConnectionTab() noexcept
                        "с устройством.</font></p>");
     iec104Layout->addWidget(widget);
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
-    iec104Layout->addWidget(
-        LEFunc::newLBL(m_workspace, "Порт по умолчанию", SettingsKeys::Iec104::iec104DefaultPort, true));
+    widget = LEFunc::newLBL(m_workspace, "Порт по умолчанию", SettingsKeys::Iec104::iec104DefaultPort, true);
+    widget->setToolTip("<p><font size=\"4\">Порт, который подставляется в форму добавления соединения "
+                       "и используется сканером подсети для проверки, открыт ли МЭК 60870-104 "
+                       "на найденном хосте.</font></p>");
+    iec104Layout->addWidget(widget);
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
-    iec104Layout->addWidget(
-        LEFunc::newLBL(m_workspace, "Адрес БС по умолчанию", SettingsKeys::Iec104::iec104DefaultBsAddress, true));
+    widget = LEFunc::newLBL(m_workspace, "Адрес БС по умолчанию", SettingsKeys::Iec104::iec104DefaultBsAddress, true);
+    widget->setToolTip("<p><font size=\"4\">Адрес базовой станции, который подставляется в форму "
+                       "добавления соединения и в результаты сканирования подсети.</font></p>");
+    iec104Layout->addWidget(widget);
     iec104Layout->addWidget(GraphFunc::newHLine(m_workspace));
     widget = LEFunc::newLBL(m_workspace, "t0, с", SettingsKeys::Iec104::iec104T0, true);
     widget->setToolTip("<p><font size=\"4\">Тайм-аут при установке соединения.</font></p>");
@@ -371,6 +376,10 @@ void SettingsDialog::acceptSettings()
     set(SettingsKeys::Iec104::iec104Reconnect, LEFunc::data(this, SettingsKeys::Iec104::iec104Reconnect));
     set(SettingsKeys::Iec104::iec104DisconnectTimeout,
         LEFunc::data(this, SettingsKeys::Iec104::iec104DisconnectTimeout));
+    set(SettingsKeys::Iec104::iec104DefaultPort, LEFunc::data(this, SettingsKeys::Iec104::iec104DefaultPort));
+    set(SettingsKeys::Iec104::iec104DefaultBsAddress,
+        LEFunc::data(this, SettingsKeys::Iec104::iec104DefaultBsAddress));
+    set(SettingsKeys::Iec104::iec104ConnectTimeout, LEFunc::data(this, SettingsKeys::Iec104::iec104ConnectTimeout));
     set(SettingsKeys::Iec104::iec104T0, LEFunc::data(this, SettingsKeys::Iec104::iec104T0));
     set(SettingsKeys::Iec104::iec104T1, LEFunc::data(this, SettingsKeys::Iec104::iec104T1));
     set(SettingsKeys::Iec104::iec104T2, LEFunc::data(this, SettingsKeys::Iec104::iec104T2));

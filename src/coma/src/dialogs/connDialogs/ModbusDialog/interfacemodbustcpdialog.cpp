@@ -4,7 +4,7 @@
 #include <interfaces/types/settings_keys.h>
 #include <libavm-gen/settings.h>
 
-InterfaceModbusTcpDialog::InterfaceModbusTcpDialog(QWidget *parent) : InterfaceEthernetDialog(parent) { }
+InterfaceModbusTcpDialog::InterfaceModbusTcpDialog(QWidget *parent) : AbstractEthernetDialog(parent) { }
 
 quint16 InterfaceModbusTcpDialog::defaultPort() const
 {

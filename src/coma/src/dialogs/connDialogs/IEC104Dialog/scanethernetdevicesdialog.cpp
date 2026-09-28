@@ -4,7 +4,7 @@
 #include <QtConcurrent/QtConcurrentMap>
 #include <QtNetwork/QHostAddress>
 #include <common/names.h>
-#include <dialogs/connDialogs/IEC104Dialog/interfaceethernetdialog.h>
+#include <dialogs/connDialogs/abstractethernetdialog.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-widgets/emessagebox.h>
@@ -21,7 +21,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-ScanEthernetDevicesDialog::ScanEthernetDevicesDialog(InterfaceEthernetDialog *targetDialog, QWidget *parent)
+ScanEthernetDevicesDialog::ScanEthernetDevicesDialog(AbstractEthernetDialog *targetDialog, QWidget *parent)
     : QWidget(parent)
     , m_targetDialog(targetDialog)
 {

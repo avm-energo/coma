@@ -1,8 +1,8 @@
 #pragma once
 
-#include <dialogs/connDialogs/IEC104Dialog/interfaceethernetdialog.h>
+#include <dialogs/connDialogs/abstractethernetdialog.h>
 
-class InterfaceModbusTcpDialog final : public InterfaceEthernetDialog
+class InterfaceModbusTcpDialog final : public AbstractEthernetDialog
 {
     Q_OBJECT
 public:
