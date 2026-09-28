@@ -1086,6 +1086,7 @@
                 <record>
                     <id>1013</id>
                     <widget>
+                        <type>QDoubleSpinBox</type>
                         <group>200</group>
                         <string>Уставка порога минимального тока - % от номинального уровня</string>
                         <toolTip>Уставка порога минимального тока - % от номинального уровня</toolTip>
@@ -1094,30 +1095,35 @@
                 <record>
                     <id>1027</id>
                     <widget>
+                        <type>QDoubleSpinBox</type>
                         <group>300</group>
                     </widget>
                 </record>
                 <record>
                     <id>1028</id>
                     <widget>
+                        <type>QDoubleSpinBox</type>
                         <group>300</group>
                     </widget>
                 </record>
                 <record>
                     <id>1035</id>
                     <widget>
+                        <type>QDoubleSpinBox</type>
                         <group>200</group>
                     </widget>
                 </record>
                 <record>
                     <id>1036</id>
                     <widget>
+                        <type>QDoubleSpinBox</type>
                         <group>200</group>
                     </widget>
                 </record>
                 <record>
                     <id>1044</id>
                     <widget>
+                        <type>QDoubleSpinBox</type>
                         <group>100</group>
                         <string>Период фильтрации дискретного входа (мс)</string>
                         <toolTip>Период фильтрации дискретного входа (мс)</toolTip>
@@ -1212,89 +1218,56 @@
                         <start-addr>2900</start-addr>
                         <toolTip>Угол между напряжением и током φA, град.</toolTip>
                         <decimals>2</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φB, град." view="float">
                         <start-addr>2901</start-addr>
                         <toolTip>Угол между напряжением и током φB, град.</toolTip>
                         <decimals>2</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
                     </mwidget>
                     <mwidget desc="Угол между напряжением и током φC, град." view="float">
                         <start-addr>2902</start-addr>
                         <toolTip>Угол между напряжением и током φC, град.</toolTip>
                         <decimals>2</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
                     </mwidget>
                     <mwidget desc="Ток Ia, А" view="float">
                         <start-addr>2903</start-addr>
                         <toolTip>Ток Ia, А</toolTip>
                         <decimals>5</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
                     </mwidget>
                     <mwidget desc="Ток Ib, А" view="float">
                         <start-addr>2904</start-addr>
                         <toolTip>Ток Ib, А</toolTip>
                         <decimals>5</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
                     </mwidget>
                     <mwidget desc="Ток Ic, А" view="float">
                         <start-addr>2905</start-addr>
                         <toolTip>Ток Ic, А</toolTip>
                         <decimals>5</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
                     </mwidget>
                     <mwidget desc="Напряжение Ua, В" view="float">
                         <start-addr>2906</start-addr>
                         <toolTip>Напряжение Ua, В</toolTip>
                         <decimals>2</decimals>
-                        <string-array>
-                            <item>0</item>
-                        </string-array>
                     </mwidget>
                     <mwidget desc="Напряжение Ub, В" view="float">
                         <start-addr>2907</start-addr>
                         <toolTip>Напряжение Ub, В</toolTip>
                         <decimals>2</decimals>
-                        <string-array>
-                            <item>0</item>
-                        </string-array>
                     </mwidget>
                     <mwidget desc="Напряжение Uc, В" view="float">
                         <start-addr>2908</start-addr>
                         <toolTip>Напряжение Uc, В</toolTip>
                         <decimals>2</decimals>
-                        <string-array>
-                            <item>0</item>
-                        </string-array>
                     </mwidget>
                     <mwidget desc="Частота, Гц" view="float">
                         <start-addr>2909</start-addr>
                         <toolTip>Частота, Гц</toolTip>
                         <decimals>2</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
                     </mwidget>
                     <mwidget desc="Температура Pt100" view="float">
                         <start-addr>4503</start-addr>
                         <toolTip>Температура Pt100</toolTip>
                         <decimals>1</decimals>
-                        <string-array>
-                            <item>1</item>
-                        </string-array>
                     </mwidget>
                 </sgroup>
             </section>
