@@ -1,4 +1,4 @@
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <common/hex2binfileconverter.h>
 #include <s2/s2util.h>
 #include <libavm-widgets/emessagebox.h>

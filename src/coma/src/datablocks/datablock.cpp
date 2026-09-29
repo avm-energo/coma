@@ -26,7 +26,7 @@
 #include "datablocks/datablock.h"
 
 #include <interfaces/conn/sync_connection.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-widgets/emessagebox.h>

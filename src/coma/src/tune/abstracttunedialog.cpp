@@ -2,7 +2,7 @@
 
 #include <libavm-gen/datatypes.h>
 #include <libavm-gen/error.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-gen/timefunc.h>

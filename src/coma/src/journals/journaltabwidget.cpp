@@ -1,6 +1,6 @@
 #include "journals/journaltabwidget.h"
 
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/filefunc.h>
 

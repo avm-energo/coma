@@ -3,7 +3,7 @@
 #include <common/appconfig.h>
 #include <ctti/nameof.hpp>
 #include <device/current_device.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-gen/xml/xmlbase.h>
