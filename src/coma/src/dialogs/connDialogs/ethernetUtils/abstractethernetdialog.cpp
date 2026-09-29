@@ -1,8 +1,8 @@
-#include "dialogs/connDialogs/abstractethernetdialog.h"
+#include "dialogs/connDialogs/ethernetUtils/abstractethernetdialog.h"
 
 #include <QtNetwork/QHostAddress>
 #include <common/names.h>
-#include <dialogs/connDialogs/IEC104Dialog/scanethernetdevicesdialog.h>
+#include <dialogs/connDialogs/ethernetUtils/scanethernetdevicesdialog.h>
 #include <libavm-gen/error.h>
 #include <libavm-gen/settings.h>
 #include <libavm-widgets/emessagebox.h>

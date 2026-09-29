@@ -1,6 +1,6 @@
 #pragma once
 
-#include <dialogs/connDialogs/abstractethernetdialog.h>
+#include <dialogs/connDialogs/ethernetUtils/abstractethernetdialog.h>
 
 class InterfaceEthernetDialog final : public AbstractEthernetDialog
 {
