@@ -1,8 +1,8 @@
-#include "dialogs/connDialogs/serialDialog/interfaceserialdialog.h"
+#include "dialogs/connDialogs/ModbusDialog/interfaceserialdialog.h"
 
 #include "const.h"
 #include "interfaces/utils/utils.h"
-#include <dialogs/connDialogs/serialDialog/searchmodbusdevicesdialog.h>
+#include <dialogs/connDialogs/ModbusDialog/searchmodbusdevicesdialog.h>
 #include <interfaces/types/serial_settings.h>
 #include <libavm-gen/error.h>
 #include <libavm-gen/settings.h>

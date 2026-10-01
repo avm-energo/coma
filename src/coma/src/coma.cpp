@@ -462,10 +462,10 @@ void Coma::initInterfaceConnection()
 void Coma::connectStatusBar()
 {
     static const QMap<Interface::IfaceType, QString> images {
-        { IfaceType::USB, Constants::Resources[Constants::USBICON] },           //
-        { IfaceType::RS485, Constants::Resources[Constants::RS485ICON] },       //
-        { IfaceType::Ethernet, Constants::Resources[Constants::ETHERNETICON] }, //
-        { IfaceType::Unknown, Constants::Resources[Constants::STOPICON] }       //
+        { IfaceType::USB, Constants::Resources[Constants::USBICON] },            //
+        { IfaceType::RS485, Constants::Resources[Constants::RS485ICON] },        //
+        { IfaceType::Ethernet, Constants::Resources[Constants::ETHERNETICON] },  //
+        { IfaceType::Unknown, Constants::Resources[Constants::STOPICON] }        //
     };
     auto currentConnection = m_currentDevice->async();
 

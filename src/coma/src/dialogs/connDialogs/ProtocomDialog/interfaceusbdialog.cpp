@@ -1,4 +1,4 @@
-#include "dialogs/connDialogs/usbDialog/interfaceusbdialog.h"
+#include "dialogs/connDialogs/ProtocomDialog/interfaceusbdialog.h"
 
 #include <common/names.h>
 #include <libavm-gen/error.h>

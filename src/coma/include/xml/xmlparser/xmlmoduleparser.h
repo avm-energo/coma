@@ -20,7 +20,7 @@ class ModuleParser final : public XmlParser
 {
     Q_OBJECT
 private:
-    Interface::IfaceType m_ifaceType;
+    Protocol::ProtoType m_protoType;
 
 public:
     explicit ModuleParser(QObject *parent = nullptr);

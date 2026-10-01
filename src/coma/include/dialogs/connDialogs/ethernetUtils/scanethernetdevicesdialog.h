@@ -7,7 +7,7 @@ class QLineEdit;
 class QProgressBar;
 class QPushButton;
 class QStackedWidget;
-class InterfaceEthernetDialog;
+class AbstractEthernetDialog;
 
 class ScanEthernetDevicesDialog final : public QWidget
 {
@@ -37,7 +37,7 @@ class ScanEthernetDevicesDialog final : public QWidget
     QPushButton *m_portCancelButton { nullptr };
     // ##########
 
-    InterfaceEthernetDialog *m_targetDialog { nullptr };
+    AbstractEthernetDialog *m_targetDialog { nullptr };
 
     void setupUI();
     QWidget *createParamsPage();
@@ -55,7 +55,7 @@ class ScanEthernetDevicesDialog final : public QWidget
     void createPortTask();
 
 public:
-    explicit ScanEthernetDevicesDialog(InterfaceEthernetDialog *targetDialog, QWidget *parent = nullptr);
+    explicit ScanEthernetDevicesDialog(AbstractEthernetDialog *targetDialog, QWidget *parent = nullptr);
 
 signals:
     void pingFinished();

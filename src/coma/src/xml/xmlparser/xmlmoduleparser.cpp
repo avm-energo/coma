@@ -13,7 +13,7 @@
 #include <QFile>
 #include <QFileInfo>
 
-Xml::ModuleParser::ModuleParser(QObject *parent) : m_ifaceType(Interface::IfaceType::Unknown) { }
+Xml::ModuleParser::ModuleParser(QObject *parent) : m_protoType(Protocol::ProtoType::Unknown) { }
 
 QString Xml::ModuleParser::getFileName(const quint16 typeB, const quint16 typeM)
 {
@@ -262,17 +262,18 @@ void Xml::ModuleParser::parseMeasJournal(const QDomNode &jourNode)
 
 void Xml::ModuleParser::parseInterface(const QDomNode &resNode)
 {
-    switch (m_ifaceType)
+    switch (m_protoType)
     {
-    case Interface::IfaceType::USB:
-    case Interface::IfaceType::Emulator:
+    case Protocol::ProtoType::Protocom:
+    case Protocol::ProtoType::Emulator:
         XmlParse::parseNode(
             resNode, tags::protocom, [&](const QDomNode &protocolNode) { parseProtocom(protocolNode); });
         break;
-    case Interface::IfaceType::RS485:
+    case Protocol::ProtoType::ModbusRTU:
+    case Protocol::ProtoType::ModbusTCP:
         XmlParse::parseNode(resNode, tags::modbus, [&](const QDomNode &protocolNode) { parseModbus(protocolNode); });
         break;
-    case Interface::IfaceType::Ethernet:
+    case Protocol::ProtoType::IEC104:
         XmlParse::parseNode(resNode, tags::iec, [&](const QDomNode &protocolNode) { parseIec(protocolNode); });
         break;
     default:
@@ -725,7 +726,7 @@ void Xml::ModuleParser::parse(Device::CurrentDevice *device)
 {
     if (device)
     {
-        m_ifaceType = device->async()->getInterfaceType();
+        m_protoType = device->async()->getProtocolType();
         const auto typeB = device->getBaseType();
         const auto typeM = device->getMezzType();
         auto xmlFilename = getFileName(typeB, typeM);
