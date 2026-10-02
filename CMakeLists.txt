@@ -50,6 +50,15 @@ endif()
 # Building libraries and targets
 # Step 1: Build dependencies
 
+# Declared before libavm-widgets so that this libavm-gen branch takes precedence
+# over the one pinned by the widgets library (FetchContent uses the first declaration).
+find_package(libavm-gen QUIET)
+if(${libavm-gen_FOUND})
+  message(STATUS "Found package libavm-gen")
+else()
+  include(gen)
+endif()
+
 find_package(libavm-widgets QUIET)
 if(${libavm-widgets_FOUND})
   message(STATUS "Found package avm-widgets")

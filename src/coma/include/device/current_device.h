@@ -9,6 +9,8 @@
 #include <interfaces/conn/sync_connection.h>
 #include <s2/s2datamanager.h>
 
+#include <QTimer>
+
 namespace Device
 {
 
@@ -30,6 +32,8 @@ private:
     S2DataManager m_s2manager;
     FileProvider m_fileProvider;
     bool m_isInitStage;
+    QTimer m_unsupportedAddrTimer;
+    bool m_isOutdatedFirmwareReported;
 
     /// \brief Приватный конструктор.
     explicit CurrentDevice(AsyncConnection *conn);
@@ -89,6 +93,9 @@ public:
     void internalProtocolUpdate() noexcept;
     /// \brief Загрузка XML-файла с описанием модуля завершена
     void configFileLoadFinished();
+    /// \brief Сообщает, что устройство не поддерживает один из запрошенных сигналов/блоков.
+    /// \details После последнего такого сообщения единожды отправляется сигнал outdatedFirmwareDetected.
+    void reportUnsupportedAddr() noexcept;
 
 private slots:
     /// \brief Слот для обновления блока BSI.
@@ -107,6 +114,9 @@ signals:
     void healthChanged(const u32 health);
     /// \brief Сигнал для уведомления об изменении серийного номера устройства.
     void serialChanged(const u32 serial);
+    /// \brief Сигнал для уведомления о том, что ВПО устройства устарело
+    /// (устройство не поддерживает часть запрашиваемых сигналов/блоков).
+    void outdatedFirmwareDetected();
 };
 
 /// \brief Фабрика для создания экземпляров класса подключенного устройства.

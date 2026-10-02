@@ -30,6 +30,8 @@ void UDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &resp
     {
         QString msg {};
         auto errorCode = Error::Msg(response.data);
+        if (errorCode == Error::Msg::UnknownBlock)
+            break;
         if (errorCode == Error::Msg::FlashError && !(m_device->bsi().data(Device::BsiIndexes::Cfcrc)))
             msg = tr("Запрошенный файл отсутствует");
         else

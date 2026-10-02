@@ -447,6 +447,8 @@ void Coma::initDevice(Interface::AsyncConnection *connection)
                     /// TODO: Handle other error types?
                 }
             });
+        connect(m_currentDevice, &CurrentDevice::outdatedFirmwareDetected, this,
+            [this] { EMessageBox::warning(this, "ВПО устройства устарело. Обновите ВПО устройства"); });
         m_currentDevice->initBSI();
     }
 }

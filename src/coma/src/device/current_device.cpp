@@ -16,9 +16,19 @@ CurrentDevice::CurrentDevice(AsyncConnection *conn)
     , m_s2manager(this)
     , m_fileProvider(this)
     , m_isInitStage(true)
+    , m_isOutdatedFirmwareReported(false)
 {
     m_async->connection(this, &CurrentDevice::updateBSI);
     connect(m_async, &AsyncConnection::responseError, this, [this](Error::Msg) { initBSIEvent(Error::Msg::Timeout); });
+    // Ждём, пока перестанут приходить ошибки по другим адресам, чтобы уведомить один раз после всех
+    m_unsupportedAddrTimer.setSingleShot(true);
+    m_unsupportedAddrTimer.setInterval(3000);
+    connect(&m_unsupportedAddrTimer, &QTimer::timeout, this,
+        [this]
+        {
+            m_isOutdatedFirmwareReported = true;
+            emit outdatedFirmwareDetected();
+        });
 }
 
 CurrentDevice *DeviceFabric::create(AsyncConnection *connection)
@@ -120,6 +130,12 @@ void CurrentDevice::initBSI() noexcept
 {
     m_isInitStage = true;
     m_async->reqBSI();
+}
+
+void CurrentDevice::reportUnsupportedAddr() noexcept
+{
+    if (!m_isOutdatedFirmwareReported)
+        m_unsupportedAddrTimer.start();
 }
 
 void CurrentDevice::internalProtocolUpdate() noexcept
