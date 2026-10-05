@@ -198,6 +198,9 @@ void EDynamicTableModel::fillModel(const QVector<QVector<QVariant>> &lsl)
         else
             maindata.insert(maindata.begin() + row, item);
     }
+    // Сразу отдаём первую порцию строк, чтобы сразу после заполнения модель не выглядела пустой
+    // (например, для resizeColumnsToContents); остальные строки по-прежнему подгружаются через fetchMore
+    dataCount = std::max(dataCount, std::min(maindata.size(), Matrix::size_type(fetchStep)));
     endResetModel();
     // endInsertRows();
 }
