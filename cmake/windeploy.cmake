@@ -4,7 +4,14 @@ install(CODE "set(INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}\")")
 install(CODE "set(EXECUTABLES \"$<TARGET_FILE:${PROJECT_NAME}>\")")
 
 # Using windeployqt for installation Qt dependencies
-get_filename_component(QT_BIN_DIR ${QT_QMAKE_EXECUTABLE} DIRECTORY)
+# QT_QMAKE_EXECUTABLE isn't set by Qt6Config.cmake itself (confirmed on Linux; the CMake
+# config files are the same cross-platform) - it only ends up defined when Qt Creator injects
+# it via its Kit setup. On a plain command-line configure (e.g. a CI agent) fall back to the
+# Qt6::qmake imported target it does provide.
+if(NOT QT_QMAKE_EXECUTABLE AND TARGET Qt${QT_VERSION_MAJOR}::qmake)
+  get_target_property(QT_QMAKE_EXECUTABLE Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
+endif()
+get_filename_component(QT_BIN_DIR "${QT_QMAKE_EXECUTABLE}" DIRECTORY)
 set(DEPENDENCY_PATHS "${CMAKE_INSTALL_PREFIX}/bin" "${libavm-gen_BINARY_DIR}" "${libavm-widgets_BINARY_DIR}" "${QT_BIN_DIR}")
 
 # Transfer the values into the install script

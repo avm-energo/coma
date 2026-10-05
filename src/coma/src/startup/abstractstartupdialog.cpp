@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <limits>
 #include <tuple>
 
 AbstractStartupDialog::AbstractStartupDialog(Device::CurrentDevice *device, QWidget *parent)
@@ -122,7 +123,7 @@ void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)
     if (fl.sigAdr >= m_regMapR.firstKey() && fl.sigAdr <= m_regMapR.lastKey())
     {
         if (fl.sigQuality != DataTypes::Quality::Good)
-            FillBd(QString::number(fl.sigAdr), MAXFLOAT);
+            FillBd(QString::number(fl.sigAdr), std::numeric_limits<float>::max());
         else
             FillBd(QString::number(fl.sigAdr), fl.sigVal);
         float valueToCheck = (m_corNeedsToCheck == CheckForRegMap) ? *(m_regMapR.value(fl.sigAdr)) : 0;
