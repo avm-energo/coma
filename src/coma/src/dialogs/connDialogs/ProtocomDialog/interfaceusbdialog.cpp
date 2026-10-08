@@ -81,7 +81,8 @@ bool InterfaceUSBDialog::updateModel()
     m_tableView->setModel(mdl);
     m_tableView->resizeColumnsToContents();
     // UsbHidPortInfo::devicesFound() возвращает список без родителя - данные уже скопированы
-    // в модель выше, сами объекты больше не нужны (см. тот же фикс в Abatcher::updateUSBConnectionWindow()).
+    // в модель выше, сами объекты больше не нужны (см. тот же фикс в Abatcher::updateUSBConnectionWindow(),
+    // репозиторий autobatch).
     qDeleteAll(usbDevices);
     return true;
 }
