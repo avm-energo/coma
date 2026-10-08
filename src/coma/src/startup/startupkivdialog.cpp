@@ -1,7 +1,7 @@
 #include "startup/startupkivdialog.h"
 
 #include <libavm-gen/error.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/filefunc.h>
 #include <libavm-widgets/lblfunc.h>
@@ -175,7 +175,7 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
         connect(setTransOff, &QPushButton::clicked, this,
             [this]()
             {
-                setSuccessMsg("Начальные значения записаны успешно");
+                setSuccessMsg("Команда выполнена успешно");
                 sendCommand(Commands::C_SetTransOff, false);
             });
         layout->addWidget(setTransOff);
@@ -184,7 +184,7 @@ QWidget *StartupKIVDialog::uiCommandsTab(QWidget *parent)
         connect(setTransOn, &QPushButton::clicked, this,
             [this]()
             {
-                setSuccessMsg("Начальные значения записаны успешно");
+                setSuccessMsg("Команда выполнена успешно");
                 sendCommand(Commands::C_SetTransOff);
             });
         layout->addWidget(setTransOn);

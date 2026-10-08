@@ -1,5 +1,6 @@
 #pragma once
 
+#include "libavm-gen/datatypes.h"
 #include <interfaces/moduledataupdater.h>
 
 #include <QWidget>

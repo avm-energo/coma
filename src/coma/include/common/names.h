@@ -1,5 +1,10 @@
 #pragma once
 
+// SettingsKeys::{USB,Serial,Iec104}, MemKeys and KeysMap describe the settings
+// consumed by the transport layer itself and are defined there. This header
+// extends those namespaces with the keys that are specific to the application.
+#include <interfaces/types/settings_keys.h>
+
 #include <QMap>
 #include <QPair>
 
@@ -9,34 +14,6 @@ namespace Names
 
 namespace SettingsKeys
 {
-namespace USB
-{
-    constexpr auto prefix = "protocom";
-    constexpr auto protocomTimeout = "protocomTimeout";
-    constexpr auto protocomReconnect = "protocomReconnect";
-}
-namespace Serial
-{
-    constexpr auto prefix = "modbus";
-    constexpr auto modbusTimeout = "modbusTimeout";
-    constexpr auto modbusReconnect = "modbusReconnect";
-}
-namespace Iec104
-{
-    constexpr auto prefix = "iec104";
-    constexpr auto iec104Timeout = "iec104Timeout";
-    constexpr auto iec104Reconnect = "iec104Reconnect";
-    constexpr auto iec104DisconnectTimeout = "iec104DisconnectTimeout";
-    constexpr auto iec104ConnectTimeout = "iec104ConnectTimeout";
-    constexpr auto iec104T0 = "iec104T0";
-    constexpr auto iec104T1 = "iec104T1";
-    constexpr auto iec104T2 = "iec104T2";
-    constexpr auto iec104T3 = "iec104T3";
-    constexpr auto iec104K = "iec104K";
-    constexpr auto iec104W = "iec104W";
-    constexpr auto iec104DefaultPort = "iec104DefaultPort";
-    constexpr auto iec104DefaultBsAddress = "iec104DefaultBsAddress";
-}
 namespace Mip
 {
     constexpr auto mipIp = "mipIp";
@@ -57,30 +34,3 @@ constexpr auto errorCount = "errorCount";
 constexpr auto tuneCount = "tuneCount";
 constexpr auto popupLifetime = "popupLifetime";
 }
-
-namespace MemKeys
-{
-namespace USB
-{
-    constexpr auto vendor_id = "vendor_id";
-    constexpr auto product_id = "product_id";
-    constexpr auto serial = "serial";
-    constexpr auto path = "path";
-}
-namespace Serial
-{
-    constexpr auto address = "address";
-}
-namespace Iec104
-{
-    constexpr auto bsAddress = "bsAddress";
-}
-constexpr auto timeout = "timeout";
-constexpr auto reconnectInterval = "reconnectInterval";
-constexpr auto silentInterval = "silentInterval";
-constexpr auto maxErrors = "maxErrors";
-constexpr auto maxTimeouts = "maxTimeouts";
-}
-
-// QMap<SettingsKey, MemKey>
-const QMap<QString, QString> KeysMap { { SettingsKeys::USB::protocomTimeout, MemKeys::timeout } };

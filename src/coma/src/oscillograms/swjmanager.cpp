@@ -1,7 +1,7 @@
 #include "oscillograms/swjmanager.h"
 
 #include <libavm-gen/error.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <oscillograms/oscmanager.h>
 #include <s2/s2util.h>
 

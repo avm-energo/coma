@@ -23,7 +23,13 @@
   - LimeReport - installs from GitHub repo by CMake, building as sub-target
   - QXlsx - installs from GitHub repo by CMake, building as sub-target
   - hidapi - installs by conan automatically, using system package under Linux
-  - ctti - inside project tree because project was abandoned
+  - libavm-interfaces - transport/protocol layer, was src/interfaces in this repo; installs from
+    git.avmenergo.ru by CMake, building as sub-target
+  - libavm-s2 - S2 data format, was src/coma/{include,src}/s2 in this repo; installs from
+    git.avmenergo.ru by CMake, building as sub-target
+  - libavm-ctti - compile-time type information, was src/ctti in this repo; kept vendored there
+    because the upstream project was abandoned; installs from git.avmenergo.ru by CMake, building
+    as sub-target
   - qcustomplot - installs from GitHub repo by CMake, building as sub-target
   - protobuf - installs by conan automatically
   - zeromq - installs by conan automatically

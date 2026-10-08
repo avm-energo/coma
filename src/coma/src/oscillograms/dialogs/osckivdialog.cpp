@@ -1,5 +1,5 @@
 #include <device/current_device.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-gen/timefunc.h>
 #include <oscillograms/dialogs/osckivdialog.h>

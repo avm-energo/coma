@@ -21,8 +21,25 @@
  */
 
 #include <alarms/alarmwidget.h>
+#include <comawidgets/gasdensitywidget.h>
+#include <comawidgets/splashscreen.h>
+#include <common/appconfig.h>
+#include <common/comaversion.h>
+#include <common/constants.h>
+#include <common/hex2binfileconverter.h>
+#include <device/current_device.h>
+#include <dialogs/aboutdialog.h>
+#include <dialogs/connDialogs/abstractinterfacedialog.h>
+#include <dialogs/connDialogs/connectdialog.h>
+#include <dialogs/errordialog.h>
+#include <dialogs/keypressdialog.h>
+#include <dialogs/reconnectdialog.h>
+#include <dialogs/settingsdialog.h>
+#include <dialogs/slicegetdialog.h>
+#include <interfaces/types/serial_settings.h>
+#include <journals/journalviewer.h>
 #include <libavm-gen/errorqueue.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/logger.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>
@@ -36,23 +53,6 @@
 #include <libavm-widgets/styleloader.h>
 #include <libavm-widgets/waitwidget.h>
 #include <libavm-widgets/wdfunc.h>
-#include <comawidgets/gasdensitywidget.h>
-#include <comawidgets/splashscreen.h>
-#include <common/appconfig.h>
-#include <common/comaversion.h>
-#include <common/constants.h>
-#include <common/hex2binfileconverter.h>
-#include <device/current_device.h>
-#include <dialogs/connDialogs/abstractinterfacedialog.h>
-#include <dialogs/aboutdialog.h>
-#include <dialogs/connDialogs/connectdialog.h>
-#include <dialogs/errordialog.h>
-#include <dialogs/keypressdialog.h>
-#include <dialogs/reconnectdialog.h>
-#include <dialogs/settingsdialog.h>
-#include <dialogs/slicegetdialog.h>
-#include <interfaces/types/serial_settings.h>
-#include <journals/journalviewer.h>
 #include <oscillograms/dialogs/switchjournaldialog.h>
 #include <oscillograms/dialogs/trendviewdialog.h>
 #include <oscillograms/swjmanager.h>
@@ -410,7 +410,9 @@ void Coma::connectDialog()
     }
     auto *connDialog = new ConnectDialog(this);
     connect(connDialog, &ConnectDialog::accepted, this, &Coma::initConnection);
-    connDialog->move(30, 70);
+    // Popup позиционируется в глобальных координатах экрана, а не родителя,
+    // поэтому смещение (30, 70) нужно переводить через mapToGlobal().
+    connDialog->move(mapToGlobal(QPoint(30, 70)));
     connDialog->show();
     action->setEnabled(true);
 }
@@ -460,10 +462,10 @@ void Coma::initInterfaceConnection()
 void Coma::connectStatusBar()
 {
     static const QMap<Interface::IfaceType, QString> images {
-        { IfaceType::USB, Constants::Resources[Constants::USBICON] },           //
-        { IfaceType::RS485, Constants::Resources[Constants::RS485ICON] },       //
-        { IfaceType::Ethernet, Constants::Resources[Constants::ETHERNETICON] }, //
-        { IfaceType::Unknown, Constants::Resources[Constants::STOPICON] }       //
+        { IfaceType::USB, Constants::Resources[Constants::USBICON] },            //
+        { IfaceType::RS485, Constants::Resources[Constants::RS485ICON] },        //
+        { IfaceType::Ethernet, Constants::Resources[Constants::ETHERNETICON] },  //
+        { IfaceType::Unknown, Constants::Resources[Constants::STOPICON] }        //
     };
     auto currentConnection = m_currentDevice->async();
 

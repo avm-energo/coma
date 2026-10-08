@@ -4,7 +4,7 @@
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/filefunc.h>
 #include <libavm-widgets/pbfunc.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <journals/measjournal.h>
 #include <journals/sysjournal.h>
 #include <journals/workjournal.h>

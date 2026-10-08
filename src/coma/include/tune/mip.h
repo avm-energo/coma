@@ -4,9 +4,10 @@
 #include <libavm-gen/stdfunc.h>
 #include <comawidgets/udialog.h>
 #include <device/device_list.h>
+#include <interfaces/conn/legacy_iec104_connection.h>
 #include <interfaces/types/serial_settings.h>
 
-class BaseInterface;
+#include <QPointer>
 
 struct MipDataStruct
 {
@@ -56,7 +57,9 @@ public:
     bool takeOneMeasurement(MipDataStruct &mipData);
 
 private:
-    BaseInterface *m_iface;
+    /// \brief Прямое 104-соединение с МИП. QPointer: объект удаляет себя,
+    ///        когда его интерфейс останавливается.
+    QPointer<Interface::LegacyIec104Connection> m_conn;
     MipDataStruct m_mipData;
     MType m_moduleType;
     float m_iNom;

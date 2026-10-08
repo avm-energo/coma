@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=4.0
+Name=AVM-AutoBatcher
+Comment=Automatic batch protocol runner for AV-TUK & AVM modules
+Icon=avm-autobatcher
+Exec=avm-autobatcher
+Categories=Utility
+Terminal=false
+Type=Application

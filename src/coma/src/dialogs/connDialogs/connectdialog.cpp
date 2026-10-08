@@ -1,12 +1,14 @@
 #include "dialogs/connDialogs/connectdialog.h"
 
+#include <dialogs/connDialogs/IEC104Dialog/interfaceethernetdialog.h>
+#include <dialogs/connDialogs/ModbusDialog/interfacemodbustcpdialog.h>
+#include <dialogs/connDialogs/ModbusDialog/interfaceserialdialog.h>
+#include <dialogs/connDialogs/ProtocomDialog/interfaceusbdialog.h>
 #include <dialogs/connDialogs/emuDialog/interfaceemudialog.h>
-#include <dialogs/connDialogs/ethernetDialog/interfaceethernetdialog.h>
-#include <dialogs/connDialogs/serialDialog/interfaceserialdialog.h>
-#include <dialogs/connDialogs/usbDialog/interfaceusbdialog.h>
 #include <libavm-gen/error.h>
 #include <libavm-widgets/wdfunc.h>
 
+#include <QPointer>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <coma.h>
@@ -19,7 +21,8 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QWidget(parent, Qt::Popup), m_id
     setStyleSheet("ConnectDialog { background: qlineargradient(x1:0, y1:0, x2:1, y2:1,"
                   " stop:0 #8A2BE2, stop:1 #000080); }");
 
-    QStringList intersl { "USB", "RS485", "Ethernet" };
+    QStringList intersl { "Protocom", "Modbus RTU", "Modbus TCP", "IEC-104" };
+
 #ifdef ENABLE_EMULATOR
     intersl.push_back("Emulator");
 #endif
@@ -27,6 +30,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QWidget(parent, Qt::Popup), m_id
     auto *lyout = new QVBoxLayout(this);
     lyout->setContentsMargins(3, 3, 3, 3);
     lyout->setSpacing(0);
+
     for (const auto &connectionType : intersl)
     {
         auto *button = new QPushButton(connectionType, this);
@@ -55,31 +59,37 @@ void ConnectDialog::setInterface(const QString &connectionType)
     if (mainWindow == nullptr)
         return;
 
-    // USB/RS485/Ethernet встраиваются прямо в главное окно вместо отдельного модального окна
-    AbstractInterfaceDialog *embedded = nullptr;
-    if (connectionType == "USB")
-        embedded = new InterfaceUSBDialog(nullptr);
-    else if (connectionType == "RS485")
-        embedded = new InterfaceSerialDialog(nullptr);
-    else if (connectionType == "Ethernet")
-        embedded = new InterfaceEthernetDialog(nullptr);
+    // Protocom/Modbus RTU/Modbus TCP/IEC-104 встраиваются прямо в главное окно вместо отдельного модального окна
+    AbstractInterfaceDialog *ifaceDialog = nullptr;
+    if (connectionType == "Protocom")
+        ifaceDialog = new InterfaceUSBDialog(nullptr);
+    else if (connectionType == "Modbus RTU")
+        ifaceDialog = new InterfaceSerialDialog(nullptr);
+    else if (connectionType == "Modbus TCP")
+        ifaceDialog = new InterfaceModbusTcpDialog(nullptr);
+    else if (connectionType == "IEC-104")
+        ifaceDialog = new InterfaceEthernetDialog(nullptr);
 
-    if (embedded == nullptr)
+    if (ifaceDialog == nullptr)
         return;
 
-    embedded->setupUI();
-    if (!embedded->updateModel())
+    ifaceDialog->setupUI();
+    if (!ifaceDialog->updateModel())
     {
-        embedded->deleteLater();
+        ifaceDialog->deleteLater();
         return;
     }
 
-    connect(embedded, &AbstractInterfaceDialog::accepted, mainWindow, &Coma::initConnection);
-    connect(embedded, &AbstractInterfaceDialog::accepted, embedded, //
-        [embedded](const ConnectionSettings &) { embedded->close(); });
+    connect(ifaceDialog, &AbstractInterfaceDialog::accepted, mainWindow, &Coma::initConnection);
+    connect(ifaceDialog, &AbstractInterfaceDialog::accepted, ifaceDialog, //
+        [dialog = QPointer<AbstractInterfaceDialog>(ifaceDialog)](const ConnectionSettings &)
+        {
+            if (dialog)
+                dialog->close();
+        });
 
     // showCentralWidget() сама подписывается на destroyed(), чтобы вернуть index 0
-    mainWindow->showCentralWidget(embedded);
+    mainWindow->showCentralWidget(ifaceDialog);
     return;
 
     // Эмулятор не работает?

@@ -44,7 +44,6 @@ void Tune84ADC::setTuneFunctions()
     addTuneFunc("Сохранение текущей конфигурации...", &AbstractTuneDialog::saveWorkConfig);
     addTuneFunc("Отображение предупреждения...", &Tune84ADC::showPreWarning);
     addTuneFunc("Проверка настроечных параметров...", &Tune84ADC::checkTuneCoefs);
-    addTuneFunc("Задание режима конфигурирования модуля...", &AbstractTuneDialog::setTuneMode);
     if (m_tuneType == ADCU)
     {
         addTuneFunc("Регулировка...", &Tune84ADC::ADCCoef1);
@@ -75,22 +74,34 @@ Error::Msg Tune84ADC::showPreWarning()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QWidget *w = new QWidget(this);
-    lyout->addWidget(GraphFunc::newIcon(this, ":/tunes/tunekiv1.png"));
+
+    QLabel *schema = GraphFunc::newIcon(this, ":/tunes/tunekiv1.png");
+    schema->setScaledContents(true);
+    schema->setMaximumSize(QSize(402, 582));
+    lyout->addWidget(schema, 0, Qt::AlignHCenter);
+
     lyout->addWidget(LBLFunc::New(this, "1. Соберите схему подключения по одной из вышеприведённых картинок;"));
+
     lyout->addWidget(LBLFunc::New(this,
         "2. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
         "и напряжения в однофазной сети переменного тока, установите предел измерения"
-        "по напряжению 60 В, по току - 2,5 А;"));
+        "по напряжению 57,75 В, по току - 2,5 А;"));
+
     lyout->addWidget(LBLFunc::New(this,
         "3. Данный этап регулировки должен выполняться при температуре"
         "окружающего воздуха +20±7 °С. Если температура окружающего воздуха отличается от указанной,"
         "разместите модуль в термокамеру с диапазоном регулирования температуры "
         "от минус 20 до +60°С. Установите нормальное значение температуры "
         "в камере 20±5°С"));
+
     w->setLayout(lyout);
 
     if (!EMessageBox::next(this, w))
+    {
         CancelTune();
+        return Error::Msg::Cancelled;
+    }
+
     return Error::Msg::NoError;
 }
 
@@ -220,6 +231,7 @@ Error::Msg Tune84ADC::SendBac()
     m_bac->updateGeneralWidget();
     if (writeTuneCoefs() != Error::Msg::NoError)
         return Error::Msg::WriteError;
+
     if (loadWorkConfig() != Error::Msg::NoError)
         return Error::Msg::ReadError;
     return Error::Msg::NoError;

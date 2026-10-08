@@ -1,7 +1,7 @@
 #include "oscillograms/dialogs/switchjournaldialog.h"
 
 #include <device/current_device.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/timefunc.h>
 #include <models/etablemodel.h>
@@ -304,7 +304,7 @@ void SwitchJournalViewDialog::setupUI(SwjModel &swjModel, TrendViewModel *oscMod
     pb->setMinimumSize(50, 50);
     pb->setIconSize(QSize(50, 50));
     connect(pb, &QPushButton::clicked, this,
-        [&]
+        [oscModel]
         {
             if (oscModel)
             {
