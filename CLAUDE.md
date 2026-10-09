@@ -21,9 +21,10 @@ Primary user/UI language is Russian; comments, dialog strings, and doc files are
 ## Build
 
 Dependencies: Qt 6 (Core, Gui, Widgets, PrintSupport, Network, SerialPort, Concurrent), CMake + Ninja,
-conan (for boost header-only, hidapi, protobuf, zeromq). `libavm-widgets`, `hidapi`, `limereport`,
-`qcustomplot`, `qxlsx` are fetched automatically via `FetchContent`/conan if not already found as
-installed packages — see `cmake/*.cmake` and `CMakeLists.txt`.
+git. No conan or other package manager is used. All other dependencies (`libavm-gen`,
+`libavm-widgets`, `libavm-ctti`, `libavm-s2`, `libavm-interfaces`, `libavm-hidapi`, `limereport`,
+`libavm-qcustomplot`, `qxlsx`, `better_enums`) are fetched automatically via `FetchContent` if not already found
+as installed packages — see `cmake/*.cmake` and `CMakeLists.txt`.
 
 ```bash
 mkdir build && cd build
@@ -205,5 +206,5 @@ e.g. `datablocks`/`tune` may depend on `widgets`, but not vice versa.
 - `libavm-interfaces`, `libavm-s2`, `libavm-ctti` — split out of this repository; see the module layout
   above. Fetched the same way as the other AVM libraries (`cmake/interfaces.cmake`, `cmake/s2.cmake`,
   `cmake/ctti.cmake`).
-- `magic_enum`, `limereport` (reports), `qcustomplot` (plotting), `qxlsx` (Excel export) — vendored via
+- `better_enums`, `limereport` (reports), `qcustomplot` (plotting), `qxlsx` (Excel export) — vendored via
   CMake `FetchContent`, see `cmake/*.cmake`.

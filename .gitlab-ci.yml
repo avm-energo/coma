@@ -15,12 +15,6 @@ stages:
 # smaller libavm-* projects since it's compiling that whole dependency
 # tree from source.
 #
-# `if(MSVC) add_compile_options(/MP)` in the top-level CMakeLists.txt is
-# only a conditional MSVC-specific flag, not a hard MSVC requirement - it's
-# simply skipped when MSVC isn't the compiler, so a mingw build should work.
-# UNTESTED, best-effort - see libavm-gen/libavm-widgets CI for the full
-# mingw rationale.
-#
 # BUILD_SHARED_LIBS already defaults to ON in this project, so unlike the
 # smaller libavm-* libraries this only builds one configuration.
 
@@ -38,13 +32,36 @@ build:linux-fedora:
     - cmake -B build -S .
     - cmake --build build -j"$(nproc)"
 
-build:windows-mingw:
+# Native Windows build on the dedicated Windows runner (tag `windows`, shell
+# executor, PowerShell). Unlike the Linux jobs there's no image: the
+# toolchain is installed on that machine - VS 2022 "Desktop development with
+# C++", CMake, git and Qt6 (MSVC kit). Same runner setup as the working
+# windows job in the multitool repo.
+# QT_PREFIX_PATH can be set as a CI variable (e.g. C:\Qt\6.x.y\msvc2022_64)
+# if Qt isn't found by CMake on its own.
+# The generator is left at CMake's default (the newest Visual Studio), so no
+# vcvars/developer-prompt environment is needed, unlike with Ninja.
+build:windows:
   stage: build
-  image: vm-debian:5000/fedora-mingw-qt6:latest
+  tags:
+    - windows
+  variables:
+    # The runner service usually runs as LocalSystem, which doesn't own the
+    # checkouts FetchContent/git touch, so git refuses them as "dubious
+    # ownership". Allow it for this job's processes only (no machine-wide
+    # `git config --system` needed).
+    GIT_CONFIG_COUNT: "1"
+    GIT_CONFIG_KEY_0: "safe.directory"
+    GIT_CONFIG_VALUE_0: "*"
   script:
-    - cmake -B build -S .
-        -DCMAKE_TOOLCHAIN_FILE="$QT_MINGW_TOOLCHAIN" -DQT_HOST_PATH=/usr
-    - cmake --build build -j"$(nproc)"
+    - |
+      $ErrorActionPreference = "Stop"
+      function Check($what) { if ($LASTEXITCODE -ne 0) { throw "$what failed (exit $LASTEXITCODE)" } }
+      if (-not (Get-Command cmake -ErrorAction SilentlyContinue)) { throw "cmake not found - put it on the runner's PATH" }
+      $qt = @()
+      if ($env:QT_PREFIX_PATH) { $qt = @("-DCMAKE_PREFIX_PATH=$env:QT_PREFIX_PATH") }
+      cmake -B build -S . @qt; Check "cmake configure"
+      cmake --build build --config Release --parallel; Check "cmake build"
 
 # Links an open MR to its Kaiten card, so it shows up under the card's
 # "links" block without anyone doing it by hand in the Kaiten UI.
