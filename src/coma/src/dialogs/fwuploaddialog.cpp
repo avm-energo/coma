@@ -105,8 +105,9 @@ void FWUploadDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruc
     else if (response.type == DataTypes::GeneralResponseTypes::Error)
     {
         uploadStatus = FirmwareUploadStatus::Error;
-        EMessageBox::error(this, Error::MsgStr[Error::Msg(response.data)]);
-        qCritical() << Error::MsgStr[Error::Msg(response.data)];
+        const auto msg = Error::MsgStr.value(Error::Msg(response.data), "Неизвестная ошибка");
+        EMessageBox::error(this, msg);
+        qCritical() << msg;
     }
 }
 

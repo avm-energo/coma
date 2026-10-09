@@ -1,12 +1,12 @@
 #include "startup/abstractstartupdialog.h"
 
-#include <libavm-gen/stdfunc.h>
 #include <libavm-gen/pch.h>
+#include <libavm-gen/stdfunc.h>
+#include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/epopup.h>
 #include <libavm-widgets/spbfunc.h>
 
 #include <QDialogButtonBox>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <tuple>
@@ -32,12 +32,17 @@ QWidget *AbstractStartupDialog::buttonWidget()
 
     using VoidFunction = std::function<void()>;
     const QList<std::tuple<QString, QString, VoidFunction>> funcs {
-        { "Задать все начальные значения", ":/icons/tnapprove.svg", [this]() { SetupCor(); } }, //
-        { "Сбросить все начальные значения", ":/icons/tnreset.svg", [this]() { ResetCor(); } }, //
-        { "Получить из модуля", ":/icons/tnread.svg", [this]() { GetCorBd(); } },               //
-        { "Записать в модуль", ":/icons/tnwrite.svg", [this]() { WriteCor(); } },               //
-        { "Прочитать значения из файла", ":/icons/tnload.svg", [this]() { ReadFromFile(); } },  //
-        { "Сохранить значения в файл", ":/icons/tnsave.svg", [this]() { SaveToFile(); } }       //
+        { "Задать все начальные значения", ":/icons/tnapprove.svg", [this]() { SetupCor(); } },
+        { "Сбросить все начальные значения", ":/icons/tnreset.svg", [this]() { ResetCor(); } },
+        { "Получить из модуля", ":/icons/tnread.svg",
+            [this]()
+            {
+                GetCorBd();
+                EMessageBox::information(this, "Начальные значения получены успешно");
+            } },
+        { "Записать в модуль", ":/icons/tnwrite.svg", [this]() { WriteCor(); } },
+        { "Прочитать значения из файла", ":/icons/tnload.svg", [this]() { ReadFromFile(); } },
+        { "Сохранить значения в файл", ":/icons/tnsave.svg", [this]() { SaveToFile(); } }
     };
 
     for (auto &func : funcs)
@@ -71,6 +76,7 @@ void AbstractStartupDialog::WriteCor()
         DataTypes::FloatStruct value { it.key(), *it.value(), DataTypes::Quality::Good };
         values.push_back(QVariant::fromValue(value));
     }
+    setSuccessMsg("Значения успешно записаны в модуль");
     engine()->currentConnection()->writeCommand(Commands::C_WriteUserValues, values);
     m_corNeedsToCheck = CheckForRegMap; // we should check regs for equality at the next sigs receive
     GetCorBd();
