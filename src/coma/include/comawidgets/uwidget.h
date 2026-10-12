@@ -29,6 +29,8 @@ public:
     virtual void updateFloatData(const DataTypes::FloatStruct &fl);
     virtual void updateSPData(const DataTypes::SinglePointWithTimeStruct &sp);
     virtual void updateBitStringData(const DataTypes::BitStringStruct &bs);
+    /// \brief Вызывается, когда запрос по адресу удалён, т.к. устройство не поддерживает этот сигнал/блок.
+    virtual void queryRemoved(const quint32 addr);
     virtual void writeCommand(const DataTypes::SingleCommand &cmd);
     ModuleDataUpdater *engine();
     Device::CurrentDevice *device();
@@ -41,5 +43,5 @@ protected:
     Device::CurrentDevice *m_device;
 
 private:
-    QMetaObject::Connection m_updateSPConnection, m_updateFlConnection, m_updateBSConnection;
+    QMetaObject::Connection m_updateSPConnection, m_updateFlConnection, m_updateBSConnection, m_queryRemovedConnection;
 };

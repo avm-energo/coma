@@ -72,6 +72,13 @@ void UWidget::updateBitStringData(const DataTypes::BitStringStruct &bs)
     Q_UNUSED(bs)
 }
 
+void UWidget::queryRemoved(const quint32 addr)
+{
+    qWarning() << "Устройство не поддерживает регистр, адрес:" << addr;
+    EMessageBox::warning(this, QString("Устройство не поддерживает запрошенный регистр (адрес %1)").arg(addr));
+    m_device->reportUnsupportedAddr();
+}
+
 void UWidget::writeCommand(const DataTypes::SingleCommand &cmd)
 {
     engine()->sendCommand(cmd);
@@ -92,6 +99,7 @@ void UWidget::disableUpdating()
     QObject::disconnect(m_updateBSConnection);
     QObject::disconnect(m_updateFlConnection);
     QObject::disconnect(m_updateSPConnection);
+    QObject::disconnect(m_queryRemovedConnection);
 }
 
 void UWidget::enableUpdating()
@@ -105,6 +113,9 @@ void UWidget::enableUpdating()
     if (!m_updateBSConnection)
         m_updateBSConnection = connect(
             m_dataUpdater, &ModuleDataUpdater::itsTimeToUpdateBitStringSignal, this, &UWidget::updateBitStringData);
+    if (!m_queryRemovedConnection)
+        m_queryRemovedConnection
+            = connect(m_dataUpdater, &ModuleDataUpdater::addrIsRemoved, this, &UWidget::queryRemoved);
 }
 
 bool UWidget::updatesEnabled()
