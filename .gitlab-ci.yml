@@ -63,6 +63,58 @@ build:windows:
       cmake -B build -S . @qt; Check "cmake configure"
       cmake --build build --config Release --parallel; Check "cmake build"
 
+# Per-job status badges for the README. GitLab itself only has a per-pipeline
+# badge, so this job reads the jobs of the current pipeline from the API, and
+# writes one small SVG per build job (badges/build-windows.svg, ...). The
+# README links to the latest successful run of this job's artifacts:
+#   <project>/-/jobs/artifacts/<branch>/raw/badges/<job-name>.svg?job=badges%3Astatus
+# The job always exits 0, so a failed build still produces a "failing" badge
+# and becomes the latest artifact. Only runs on the default branch.
+# Uses CI_JOB_TOKEN for the API call; if your GitLab version doesn't allow that
+# endpoint with a job token, set a masked BADGE_API_TOKEN variable (read_api).
+badges:status:
+  stage: notify
+  image: vm-debian:5000/debian-qt6:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+  allow_failure: true
+  script:
+    - |
+      python3 - <<'PY'
+      import json, os, urllib.request as R
+      env = os.environ
+      url = "%s/projects/%s/pipelines/%s/jobs?per_page=100" % (
+          env["CI_API_V4_URL"], env["CI_PROJECT_ID"], env["CI_PIPELINE_ID"])
+      headers = {"PRIVATE-TOKEN": env["BADGE_API_TOKEN"]} if env.get("BADGE_API_TOKEN") \
+          else {"JOB-TOKEN": env["CI_JOB_TOKEN"]}
+      jobs = json.loads(R.urlopen(R.Request(url, headers=headers)).read().decode())
+      colors = {"success": ("passing", "#4c1"), "failed": ("failing", "#e05d44"),
+                "canceled": ("canceled", "#9f9f9f"), "skipped": ("skipped", "#9f9f9f")}
+      os.makedirs("badges", exist_ok=True)
+      for job in jobs:
+          if job["stage"] != "build":
+              continue
+          text, color = colors.get(job["status"], (job["status"], "#dfb317"))
+          label = job["name"]
+          lw, rw = len(label) * 7 + 10, len(text) * 7 + 10
+          svg = (
+              '<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="20">'
+              '<rect width="%d" height="20" fill="#555"/>'
+              '<rect x="%d" width="%d" height="20" fill="%s"/>'
+              '<g fill="#fff" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11" text-anchor="middle">'
+              '<text x="%d" y="14">%s</text><text x="%d" y="14">%s</text></g></svg>'
+          ) % (lw + rw, lw, lw, rw, color, lw // 2, label, lw + rw // 2, text)
+          name = "badges/%s.svg" % label.replace(":", "-")
+          with open(name, "w") as f:
+              f.write(svg)
+          print("%s: %s -> %s" % (label, job["status"], name))
+      PY
+  artifacts:
+    paths:
+      - badges/
+    expire_in: 1 week
+
 # Links an open MR to its Kaiten card, so it shows up under the card's
 # "links" block without anyone doing it by hand in the Kaiten UI.
 #

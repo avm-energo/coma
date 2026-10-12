@@ -34,7 +34,6 @@ cmake --build .
 
 Useful cmake options (see README.md for the full list):
 - `BUILD_TESTING:BOOL=ON` — enable the test suite (off by default).
-- `ENABLE_EMULATOR:BOOL=ON` — build against a dummy device interface, no real hardware needed.
 - `CMAKE_PREFIX_PATH` — path to Qt install.
 - `BUILD_WITH_ALISE:BOOL=ON` — only relevant if you know what Alise is; leave off otherwise.
 
