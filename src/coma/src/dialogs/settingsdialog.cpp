@@ -293,7 +293,7 @@ void SettingsDialog::fill()
     LEFunc::setData(
         this, SettingsKeys::Serial::modbusReconnect, Settings::get(SettingsKeys::Serial::modbusReconnect, 1000));
     LEFunc::setData(
-        this, SettingsKeys::Iec104::iec104Timeout, Settings::get(SettingsKeys::Iec104::iec104Timeout, 1000));
+        this, SettingsKeys::Iec104::iec104Timeout, Settings::get(SettingsKeys::Iec104::iec104Timeout, 5000));
     LEFunc::setData(
         this, SettingsKeys::Iec104::iec104Reconnect, Settings::get(SettingsKeys::Iec104::iec104Reconnect, 1000));
     LEFunc::setData(this, SettingsKeys::Iec104::iec104DisconnectTimeout,
