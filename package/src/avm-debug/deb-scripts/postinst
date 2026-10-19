@@ -1,4 +1,7 @@
-if [ -f "/usr/share/coma/ru.avmenergo.avm-debug.desktop" ];
-then
-    cp /usr/share/coma/ru.avmenergo.avm-debug.desktop /usr/share/applications/ru.avmenergo.avm-debug.desktop
+#!/bin/sh
+set -e
+# Подхватить udev-правило доступа к USB HID без перезагрузки
+if [ "$1" = "configure" ] && command -v udevadm >/dev/null 2>&1; then
+    udevadm control --reload-rules || true
+    udevadm trigger --action=change --subsystem-match=hidraw --subsystem-match=usb || true
 fi

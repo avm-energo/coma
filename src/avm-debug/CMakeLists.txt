@@ -65,29 +65,35 @@ if(NOT EXISTS ${DBG_CHECK_PATH})
 endif()
 
 install(TARGETS ${PROJECT_NAME}
+  COMPONENT ${PROJECT_NAME}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-# Copying XML configuration
-install(
-  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../settings"
-  DESTINATION ${CMAKE_INSTALL_PREFIX}
-  FILES_MATCHING PATTERN "*.xml"
-  PERMISSIONS OWNER_READ GROUP_READ)
-# Copying lrxml report files
-install(
-  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../reports"
-  DESTINATION ${CMAKE_INSTALL_PREFIX}
-  FILES_MATCHING PATTERN "*.lrxml"
-  PERMISSIONS OWNER_READ GROUP_READ)
+# Copying XML configuration and reports next to the binaries for the Windows
+# installer (iss); on Linux they go to share/<app>/ via linuxpackage.cmake
+if(SYSTEM_NAME STREQUAL "windows")
+  # Copying XML configuration
+  install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../settings"
+    DESTINATION ${CMAKE_INSTALL_PREFIX}
+    FILES_MATCHING PATTERN "*.xml"
+    PERMISSIONS OWNER_READ GROUP_READ)
+  # Copying lrxml report files
+  install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../reports"
+    DESTINATION ${CMAKE_INSTALL_PREFIX}
+    FILES_MATCHING PATTERN "*.lrxml"
+    PERMISSIONS OWNER_READ GROUP_READ)
+endif()
 
 # Cross-platform deploy target
 if(SYSTEM_NAME STREQUAL "windows")
   include(windeploy)
 elseif(SYSTEM_NAME STREQUAL "linux")
   set(COMPONENT_NAME "AVMDEBUG")
-#  include(LinuxDeploy)
+  set(PACKAGE_DESCRIPTION "Service software for various AV-TUK & AVM modules (debug version)")
+  include(linuxpackage)
 endif()

@@ -21,6 +21,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/scripts")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+# Standard install dirs (CMAKE_INSTALL_BINDIR, ...) for this project's own install rules
+include(GNUInstallDirs)
+
 # Getting CMake system name
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" SYSTEM_NAME)
 

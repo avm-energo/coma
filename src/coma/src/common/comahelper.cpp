@@ -1,10 +1,13 @@
 #include <common/appconfig.h>
 #include <common/comahelper.h>
 #include <common/constants.h>
-#include <oscillograms/dialogs/trendviewdialog.h>
+#include <libavm-gen/settings.h>
 #include <libavm-widgets/filefunc.h>
 #include <libavm-widgets/graphfunc.h>
+#include <oscillograms/dialogs/trendviewdialog.h>
 
+#include <QCoreApplication>
+#include <QDir>
 #include <QFile>
 #include <QFont>
 #include <QPainter>
@@ -18,6 +21,57 @@ void ComaHelper::initAppSettings()
     MessageHandler::setQueueLevel(
         (AppConfiguration::app() == AppConfiguration::Service) ? Logger::LOGLEVEL_INFO : Logger::LOGLEVEL_DEBUG);
     qInstallMessageHandler(&MessageHandler::messageHandlerWithErrorQueue);
+    deployPackagedSettings();
+}
+
+/// \brief Копирует XML-описания модулей и шаблоны отчётов из каталога пакета
+/// (<prefix>/share/<app>/) в пользовательский Settings::configDir().
+/// \details На Windows это делает установщик (iss), а Linux-пакет ставится в систему
+/// и писать в $HOME не может. При первом запуске новой версии файлы перезаписываются
+/// (как и при установке на Windows), в остальных случаях докладываются только недостающие.
+/// Если каталога пакета нет (запуск из дерева сборки, Windows) - ничего не делает.
+void ComaHelper::deployPackagedSettings()
+{
+    const QDir packageDir(QCoreApplication::applicationDirPath() + "/../share/" + QCoreApplication::applicationName());
+    if (!packageDir.exists())
+        return;
+
+    constexpr auto deployedVersionKey = "deployedSettingsVersion";
+    const QString deployedVersion = Settings::get(deployedVersionKey, "");
+    const bool overwrite = (deployedVersion != QCoreApplication::applicationVersion());
+
+    const QList<QPair<QString, QString>> dirs {
+        { "settings", Settings::configDir() },            //
+        { "reports", Settings::configDir() + "reports/" } //
+    };
+    bool ok = true;
+    for (const auto &[from, to] : dirs)
+    {
+        const QDir srcDir(packageDir.filePath(from));
+        if (!srcDir.exists())
+            continue;
+        QDir().mkpath(to);
+        for (const QString &name : srcDir.entryList(QDir::Files))
+        {
+            const QString dst = to + name;
+            if (QFile::exists(dst))
+            {
+                if (!overwrite)
+                    continue;
+                QFile::remove(dst);
+            }
+            if (!QFile::copy(srcDir.filePath(name), dst))
+            {
+                qWarning() << "Can't copy" << srcDir.filePath(name) << "to" << dst;
+                ok = false;
+                continue;
+            }
+            // Файлы пакета принадлежат root и доступны только на чтение - копия должна быть редактируемой
+            QFile::setPermissions(dst, QFile::permissions(dst) | QFileDevice::WriteOwner);
+        }
+    }
+    if (ok && overwrite)
+        Settings::set(deployedVersionKey, QCoreApplication::applicationVersion());
 }
 
 void ComaHelper::parseCommandLine()

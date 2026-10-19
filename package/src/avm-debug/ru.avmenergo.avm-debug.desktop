@@ -1,9 +1,9 @@
 [Desktop Entry]
-Version=4.0
+Version=1.5
+Type=Application
 Name=AVM-Debug
 Comment=COnfiguration Module for AV-TUK (Debug version)
-Icon=/usr/share/icons/hicolor/48x48/apps/coma.png
-Exec=AVM-Debug
-Categories=Utility
+Icon=avm-debug
+Exec=avm-debug %f
+Categories=Utility;
 Terminal=false
-Type=Application

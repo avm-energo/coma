@@ -1,0 +1,42 @@
+# Шаблон RPM для @PROJECT_NAME@, CMake кладёт результат в <build>/package/@PROJECT_NAME@.spec.
+# Как и deb, пакет собирается из уже готового дерева, rpmbuild ничего не компилирует:
+#
+#   cmake --build <build>
+#   DESTDIR=<staging> cmake --install <build> --component @PROJECT_NAME@ --prefix /usr
+#   rpmbuild -bb --define "_topdir <rpm-dir>" --define "stagedir <staging>" \
+#       <build>/package/@PROJECT_NAME@.spec
+
+Name:           @PROJECT_NAME@
+Version:        @PROJECT_VERSION@
+Release:        1%{?dist}
+Summary:        @PACKAGE_DESCRIPTION@
+License:        Proprietary
+URL:            https://www.avmenergo.ru
+Packager:       AVM-Energo <support@avmenergo.ru>
+
+# Бинарники уже собраны снаружи: отдельный debuginfo-пакет не делаем
+%global debug_package %{nil}
+
+%description
+@PACKAGE_DESCRIPTION@
+
+%prep
+%build
+
+%install
+cp -a %{stagedir}/. %{buildroot}/
+
+%files
+%{_bindir}/@PROJECT_NAME@*
+/usr/lib*/@PROJECT_NAME@/
+%{_datadir}/@PROJECT_NAME@/
+%{_datadir}/applications/ru.avmenergo.@PROJECT_NAME@.desktop
+%{_datadir}/icons/hicolor/*/apps/@PROJECT_NAME@.*
+/usr/lib/udev/rules.d/70-@PROJECT_NAME@.rules
+
+%post
+udevadm control --reload-rules >/dev/null 2>&1 || :
+udevadm trigger --action=change --subsystem-match=hidraw --subsystem-match=usb >/dev/null 2>&1 || :
+
+%postun
+udevadm control --reload-rules >/dev/null 2>&1 || :

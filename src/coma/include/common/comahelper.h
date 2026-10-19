@@ -23,4 +23,5 @@ public slots:
     void loadJournal();
 
 private:
+    void deployPackagedSettings();
 };

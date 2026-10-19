@@ -1,0 +1,6 @@
+# Доступ к USB HID-модулям АВМ-Энерго (VID 0xC251, см. HID::VID в libavm-interfaces)
+# для пользователя, сидящего за компьютером, без root и без отдельной группы.
+# Ставится каждым приложением под своим именем (70-<app>.rules), чтобы пакеты
+# avm-service и avm-debug не конфликтовали по файлам.
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="c251", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="c251", TAG+="uaccess"

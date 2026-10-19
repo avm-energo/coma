@@ -1,9 +1,9 @@
 [Desktop Entry]
-Version=4.0
+Version=1.5
+Type=Application
 Name=AVM-Service
 Comment=COnfiguration Module for AV-TUK (Service version)
-Icon=/usr/share/icons/hicolor/48x48/apps/coma.png
-Exec=AVM-Service
-Categories=Utility
+Icon=avm-service
+Exec=avm-service %f
+Categories=Utility;
 Terminal=false
-Type=Application
