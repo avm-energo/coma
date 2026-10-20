@@ -118,8 +118,8 @@ install(FILES "${CMAKE_SOURCE_DIR}/images/icons/coma.svg"
   RENAME "${PROJECT_NAME}.svg"
   COMPONENT ${PROJECT_NAME})
 
-# USB HID access for the logged-in user. Always /usr/lib/udev, never lib64/multiarch.
-install(FILES "${AVM_PACKAGE_SRC}/udev/avm-usb.rules"
+# USB HID and serial port access for the logged-in user. Always /usr/lib/udev, never lib64/multiarch.
+install(FILES "${AVM_PACKAGE_SRC}/udev/avm-devices.rules"
   DESTINATION "lib/udev/rules.d"
   RENAME "70-${PROJECT_NAME}.rules"
   COMPONENT ${PROJECT_NAME})

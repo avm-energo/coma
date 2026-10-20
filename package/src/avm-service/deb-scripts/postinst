@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
-# Подхватить udev-правило доступа к USB HID без перезагрузки
+# Подхватить udev-правило доступа к USB HID и последовательным портам без перезагрузки
 if [ "$1" = "configure" ] && command -v udevadm >/dev/null 2>&1; then
     udevadm control --reload-rules || true
-    udevadm trigger --action=change --subsystem-match=hidraw --subsystem-match=usb || true
+    udevadm trigger --action=change --subsystem-match=hidraw --subsystem-match=usb --subsystem-match=tty || true
 fi

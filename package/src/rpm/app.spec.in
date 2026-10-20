@@ -36,7 +36,7 @@ cp -a %{stagedir}/. %{buildroot}/
 
 %post
 udevadm control --reload-rules >/dev/null 2>&1 || :
-udevadm trigger --action=change --subsystem-match=hidraw --subsystem-match=usb >/dev/null 2>&1 || :
+udevadm trigger --action=change --subsystem-match=hidraw --subsystem-match=usb --subsystem-match=tty >/dev/null 2>&1 || :
 
 %postun
 udevadm control --reload-rules >/dev/null 2>&1 || :

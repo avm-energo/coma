@@ -1,0 +1,12 @@
+# Доступ к USB HID-модулям АВМ-Энерго (VID 0xC251, см. HID::VID в libavm-interfaces)
+# и к последовательным портам (RS-485) для пользователя, сидящего за компьютером,
+# без root и без отдельной группы (uucp/dialout).
+# Ставится каждым приложением под своим именем (70-<app>.rules), чтобы пакеты
+# avm-service и avm-debug не конфликтовали по файлам. Номер должен быть меньше 73,
+# иначе 73-seat-late.rules не применит тег uaccess.
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="c251", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="c251", TAG+="uaccess"
+
+# RS-485 подключается через сторонние USB-serial преобразователи (FTDI, CH340, CP210x,
+# PL2303 и т.п.) с произвольным VID, поэтому фильтруем по типу узла, а не по VID.
+SUBSYSTEM=="tty", KERNEL=="ttyUSB[0-9]*|ttyACM[0-9]*|ttyS[0-9]*", TAG+="uaccess"
