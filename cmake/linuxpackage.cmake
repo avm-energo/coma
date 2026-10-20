@@ -126,5 +126,5 @@ install(FILES "${AVM_PACKAGE_SRC}/udev/avm-usb.rules"
 
 # RPM spec for `rpmbuild -bb` over the staged tree, see the header of the template
 configure_file("${AVM_PACKAGE_SRC}/rpm/app.spec.in"
-  "${CMAKE_BINARY_DIR}/package/${PROJECT_NAME}.spec"
+  "${CMAKE_BINARY_DIR}/rpm/${PROJECT_NAME}.spec"
   @ONLY)

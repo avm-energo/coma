@@ -1,14 +1,14 @@
-# Шаблон RPM для @PROJECT_NAME@, CMake кладёт результат в <build>/package/@PROJECT_NAME@.spec.
+# Шаблон RPM для @PROJECT_NAME@, CMake кладёт результат в <build>/rpm/@PROJECT_NAME@.spec.
 # Как и deb, пакет собирается из уже готового дерева, rpmbuild ничего не компилирует:
 #
 #   cmake --build <build>
 #   DESTDIR=<staging> cmake --install <build> --component @PROJECT_NAME@ --prefix /usr
 #   rpmbuild -bb --define "_topdir <rpm-dir>" --define "stagedir <staging>" \
-#       <build>/package/@PROJECT_NAME@.spec
+#       [--define "buildnumber <N>"] <build>/rpm/@PROJECT_NAME@.spec
 
 Name:           @PROJECT_NAME@
 Version:        @PROJECT_VERSION@
-Release:        1%{?dist}
+Release:        %{?buildnumber}%{!?buildnumber:1}%{?dist}
 Summary:        @PACKAGE_DESCRIPTION@
 License:        Proprietary
 URL:            https://www.avmenergo.ru
