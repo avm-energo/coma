@@ -12,7 +12,8 @@ int main(int argc, char *argv[])
     AppConfiguration::setApp(AppConfiguration::Debug);
     Settings::initialize(PROGNAME, SOFTDEVELOPER, COMAVERSION);
     helper->initAppSettings();
-    app.setWindowIcon(QIcon(":/icons/coma.ico"));
+    app.setDesktopFileName("ru.avmenergo.avm-debug");
+    app.setWindowIcon(QIcon::fromTheme("avm-debug", QIcon(":/icons/coma.ico")));
     Coma coma;
     // Если есть аргументы запуска
     if (argc > 1)
