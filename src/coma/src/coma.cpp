@@ -22,7 +22,7 @@
 
 #include <alarms/alarmwidget.h>
 #include <libavm-gen/errorqueue.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/logger.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/stdfunc.h>

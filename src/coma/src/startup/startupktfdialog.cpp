@@ -2,7 +2,7 @@
 
 #include <libavm-gen/colors.h>
 #include <libavm-gen/error.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-gen/timefunc.h>
 #include <libavm-widgets/emessagebox.h>

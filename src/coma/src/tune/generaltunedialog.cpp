@@ -1,6 +1,6 @@
 #include "tune/generaltunedialog.h"
 
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/stdfunc.h>
 #include <tune/tunereporter.h>
 #include <tune/tunesequencefile.h>

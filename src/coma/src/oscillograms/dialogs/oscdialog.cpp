@@ -1,6 +1,6 @@
 #include <device/current_device.h>
 #include <libavm-gen/datatypes.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/settings.h>
 #include <libavm-gen/timefunc.h>
 #include <models/etablemodel.h>

@@ -7,7 +7,7 @@
 #include <device/current_device.h>
 #include <dialogs/keypressdialog.h>
 #include <libavm-gen/error.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-gen/timefunc.h>
 

@@ -1,7 +1,7 @@
 #include "startup/startupkivdialog.h"
 
 #include <libavm-gen/error.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-widgets/emessagebox.h>
 #include <libavm-widgets/filefunc.h>
 #include <libavm-widgets/lblfunc.h>

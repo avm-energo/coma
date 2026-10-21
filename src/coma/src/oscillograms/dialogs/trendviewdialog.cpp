@@ -26,7 +26,7 @@
  */
 
 #include <libavm-gen/error.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/pch.h>
 #include <libavm-gen/settings.h>
 #include <oscillograms/dialogs/trendviewdialog.h>

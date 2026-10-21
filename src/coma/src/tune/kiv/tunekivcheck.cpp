@@ -6,7 +6,7 @@
 #include <libavm-widgets/waitwidget.h>
 #include <libavm-widgets/wdfunc.h>
 #include <datablocks/kiv/bda.h>
-#include <libavm-gen/files.h>
+#include <libavm-gen/files/files.h>
 #include <libavm-gen/stdfunc.h>
 
 #include <QCoreApplication>
