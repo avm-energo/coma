@@ -13,7 +13,7 @@
 #   lib[/<multiarch>]/<app>/*.so.*            in-house shared libs, found via RPATH
 #   share/<app>/{settings,reports}/          copied to ~/.config on first run (ComaHelper)
 #   share/applications/ru.avmenergo.<app>.desktop
-#   share/icons/hicolor/{48x48,scalable}/apps/<app>.{png,svg}
+#   share/icons/hicolor/48x48/apps/<app>.png
 #   lib/udev/rules.d/70-<app>.rules
 #
 # The in-house libraries (libavm-*, limereport, qxlsx, ...) are shipped in a private
@@ -109,13 +109,8 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/reports/"
 install(FILES "${AVM_PACKAGE_SRC}/${PROJECT_NAME}/ru.avmenergo.${PROJECT_NAME}.desktop"
   DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
   COMPONENT ${PROJECT_NAME})
-install(FILES "${CMAKE_SOURCE_DIR}/images/icons/coma.png"
+install(FILES "${AVM_PACKAGE_SRC}/${PROJECT_NAME}.png"
   DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/48x48/apps"
-  RENAME "${PROJECT_NAME}.png"
-  COMPONENT ${PROJECT_NAME})
-install(FILES "${CMAKE_SOURCE_DIR}/images/icons/coma.svg"
-  DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"
-  RENAME "${PROJECT_NAME}.svg"
   COMPONENT ${PROJECT_NAME})
 
 # USB HID and serial port access for the logged-in user. Always /usr/lib/udev, never lib64/multiarch.
