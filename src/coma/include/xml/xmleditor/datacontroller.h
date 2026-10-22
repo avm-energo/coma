@@ -11,6 +11,9 @@ class XmlModel;
 class DataController : public QObject
 {
     Q_OBJECT
+    // Полные определения нужны moc для метатипов параметров слотов saveFile()
+    Q_MOC_INCLUDE("xml/xmleditor/models/mastermodel.h")
+    Q_MOC_INCLUDE("xml/xmleditor/models/xmlmodel.h")
 private:
     bool isModuleChanged;
     int changedRow;
