@@ -15,6 +15,7 @@
 #include <QSettings>
 #include <QThread>
 #include <QVBoxLayout>
+#include <limits>
 
 Mip::Mip(bool withGUI, MType moduleType, QWidget *parent)
     : QObject(parent)
@@ -210,7 +211,7 @@ Error::Msg Mip::check()
         u = 60.0;
         uthr = 0.05;
         m_iNom = 0;
-        ithr = MAXFLOAT;
+        ithr = std::numeric_limits<float>::max();
         break;
     case MType::MTM_82:
         u = 60.0;
@@ -220,7 +221,7 @@ Error::Msg Mip::check()
         break;
     case MType::MTM_83:
         u = 0;
-        uthr = MAXFLOAT;
+        uthr = std::numeric_limits<float>::max();
         ithr = 0.05;
         break;
     default:

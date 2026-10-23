@@ -104,9 +104,13 @@ void FWUploadDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruc
     }
     else if (response.type == DataTypes::GeneralResponseTypes::Error)
     {
+        // Ошибки, пришедшие вне процесса записи ПО (например, при опросе других диалогов), не относятся к нам
+        if (uploadStatus != FirmwareUploadStatus::Written && uploadStatus != FirmwareUploadStatus::Upgraded)
+            return;
         uploadStatus = FirmwareUploadStatus::Error;
-        EMessageBox::error(this, Error::MsgStr[Error::Msg(response.data)]);
-        qCritical() << Error::MsgStr[Error::Msg(response.data)];
+        const auto msg = Error::MsgStr.value(Error::Msg(response.data), "Неизвестная ошибка");
+        EMessageBox::error(this, msg);
+        qCritical() << msg;
     }
 }
 
