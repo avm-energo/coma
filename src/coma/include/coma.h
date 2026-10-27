@@ -72,6 +72,7 @@ private:
     ReconnectDialog *m_reconnectDialog;
     QMetaObject::Connection m_prbConnection;
     EStatusBar *m_bar;
+    ComaHelper *m_comaHelper;
 
     AlarmWidget *m_alarmW;
     OscManager m_oscManager;

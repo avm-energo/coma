@@ -1,5 +1,6 @@
 #pragma once
 
+#include <journals/journalviewer.h>
 #include <libavm-gen/messagehandler.h>
 
 #include <QAction>
@@ -13,7 +14,8 @@ public:
     void initAppSettings();
     void parseCommandLine();
     void loadSwj(const QString &filename);
-    void loadJournal(const QString &filename);
+    void loadJournal(const QString &filename, journals::JournalType type);
+    void loadOsc();
 
 signals:
 

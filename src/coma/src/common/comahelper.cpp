@@ -39,13 +39,14 @@ void ComaHelper::parseCommandLine()
         auto ext = fileInfo.suffix();
         if (ext == "osc")
         {
-            TrendViewDialog *dlg = new TrendViewDialog;
-            dlg->loadOsc(filepath);
+            loadOsc();
         }
         else if (ext == "swj")
             loadSwj(filepath);
         else if (ext.contains("jn"))
-            loadJournal(filepath);
+            loadJournal(filepath, journals::JournalType::Jn);
+        else if (ext.contains("DAT"))
+            loadJournal(filepath, journals::JournalType::Dat);
         // TODO
         // else if (filestail == "vrf")
         else
@@ -110,4 +111,19 @@ void ComaHelper::loadSwj(const QString &filename)
     dialog->adjustSize();
 }
 
-void ComaHelper::loadJournal(const QString &filename) { }
+void ComaHelper::loadJournal(const QString &filename, journals::JournalType type)
+{
+    // При запуске из командной строки главное окно скрыто: делаем просмотрщик самостоятельным окном,
+    // иначе его закрытие не завершит приложение
+    auto mainWindow = WDFunc::getMainWindow();
+    QWidget *parent = (mainWindow && mainWindow->isVisible()) ? mainWindow : nullptr;
+    auto jourViewer = new journals::JournalViewer(filename, type, parent);
+    jourViewer->setAttribute(Qt::WA_DeleteOnClose);
+    jourViewer->open();
+}
+
+void ComaHelper::loadOsc()
+{
+    TrendViewDialog *dlg = new TrendViewDialog;
+    dlg->loadOsc();
+}
