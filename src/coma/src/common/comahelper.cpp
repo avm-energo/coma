@@ -1,9 +1,12 @@
+#include "oscillograms/dialogs/switchjournaldialog.h"
 #include <common/appconfig.h>
 #include <common/comahelper.h>
 #include <common/constants.h>
-#include <oscillograms/dialogs/trendviewdialog.h>
 #include <libavm-widgets/filefunc.h>
 #include <libavm-widgets/graphfunc.h>
+#include <libavm-widgets/wdfunc.h>
+#include <oscillograms/dialogs/trendviewdialog.h>
+#include <oscillograms/swjmanager.h>
 
 #include <QFile>
 #include <QFont>
@@ -76,6 +79,35 @@ void ComaHelper::loadSwj() { }
 
 void ComaHelper::loadJournal() { }
 
-void ComaHelper::loadSwj(const QString &filename) { }
+void ComaHelper::loadSwj(const QString &filename)
+{
+    SwjManager swjManager;
+    OscManager oscManager;
+    File::Vector fileVector = oscManager.loadFromFile(filename);
+    auto oscVector = swjManager.loadFromFile(filename);
+    std::move(oscVector.begin(), oscVector.end(), std::back_inserter(fileVector));
+    SwjModel *swjModel = nullptr;
+    TrendViewModel *oscModel = nullptr;
+    for (auto &item : fileVector)
+    {
+        std::visit(
+            overloaded {
+                [&](S2::OscHeader &header) { oscManager.setHeader(header); }, //
+                [&](SwjModel &model) { swjModel = &model; },                  //
+                [&](TrendViewModel *model) { oscModel = model; }              //
+            },
+            item);
+    }
+    if (!swjModel || !oscModel)
+        return;
+
+    auto dialog = new SwitchJournalViewDialog(*swjModel, oscModel, oscManager);
+    dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
+    dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
+    dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
+    dialog->adjustSize();
+}
 
 void ComaHelper::loadJournal(const QString &filename) { }
