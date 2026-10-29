@@ -99,7 +99,6 @@ void JournalTabWidget::saveExcelJournal()
     auto suggestedFilename = m_currentJournal->getSuggestedFilename();
     if (!suggestedFilename.isEmpty())
     {
-        suggestedFilename += ".xlsx";
         auto filename = FileFunc::chooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", suggestedFilename);
         if (!filename.isEmpty())
         {
@@ -114,7 +113,6 @@ void JournalTabWidget::saveBinaryJournal()
     auto suggestedFilename = m_currentJournal->getSuggestedFilename();
     if (!suggestedFilename.isEmpty())
     {
-        suggestedFilename += ".jn";
         auto filename = FileFunc::chooseFileForSave(this, "Journal files (*.jn)", "jn", suggestedFilename);
         if (!filename.isEmpty())
         {

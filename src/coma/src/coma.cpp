@@ -81,6 +81,7 @@ Coma::Coma(QWidget *parent)
     , m_dlgManager(new DialogManager(this))
     , m_reconnectDialog(nullptr)
     , m_xmlEditor(nullptr)
+    , m_comaHelper(nullptr)
 {
     connect(m_connectionManager, &ConnectionManager::reconnectUI, this, &Coma::showReconnectDialog);
     connect(m_connectionManager, &ConnectionManager::connectFailed, this, //
@@ -237,38 +238,12 @@ void Coma::setupMenubar()
 
 void Coma::loadSwj(const QString &filename)
 {
-    SwjManager swjManager;
-    m_fileVector = m_oscManager.loadFromFile(filename);
-    auto oscVector = swjManager.loadFromFile(filename);
-    std::move(oscVector.begin(), oscVector.end(), std::back_inserter(m_fileVector));
-    SwjModel *swjModel = nullptr;
-    TrendViewModel *oscModel = nullptr;
-    for (auto &item : m_fileVector)
-    {
-        std::visit(
-            overloaded {
-                [&](S2::OscHeader &header) { m_oscManager.setHeader(header); }, //
-                [&](SwjModel &model) { swjModel = &model; },                    //
-                [&](TrendViewModel *model) { oscModel = model; }                //
-            },
-            item);
-    }
-    if (!swjModel || !oscModel)
-        return;
-
-    auto dialog = new SwitchJournalViewDialog(*swjModel, oscModel, m_oscManager);
-    dialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->show();
-    dialog->setMinimumHeight(WDFunc::getMainWindow()->height());
-    dialog->setMinimumWidth(WDFunc::getMainWindow()->width());
-    dialog->adjustSize();
+    m_comaHelper->loadSwj(filename);
 }
 
 void Coma::loadOsc()
 {
-    TrendViewDialog *dlg = new TrendViewDialog;
-    dlg->loadOsc();
+    m_comaHelper->loadOsc();
 }
 
 void Coma::loadSwj()
@@ -292,8 +267,7 @@ void Coma::hex2BinConverter()
 
 void Coma::loadJournal(const QString &filename, journals::JournalType type)
 {
-    auto jourViewer = new journals::JournalViewer(filename, type, this);
-    jourViewer->exec();
+    m_comaHelper->loadJournal(filename, type);
 }
 
 void Coma::createSlice()
