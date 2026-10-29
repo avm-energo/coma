@@ -1,3 +1,42 @@
+avm-debug (3.6.2) unstable; urgency=low
+
+  [#] RETOM wrong currents fix
+  [*] 104 protocol stability improved
+  [*] tune 84 & KIV stability improved
+  [+] CI/CD files for gitlab
+  [#] metrology in KIV
+  [*] reconnect fixes
+  [#] switch journals segfault
+  [*] HiddenDialog is now visible only in AVM-Debug connection by USB
+  [-] Singleton removed
+  [*] interfaces, s2 & ctti are separated into their own libraries
+  [+] firmware upload by 104 protocol
+  [-] imitator from tuneKIV
+  [*] default 104 timeout is now 5000 ms
+
+  -- AVM-Energo <support@avmenergo.ru> Thu, 29 Oct 2026 17:14:20 +0300
+
+avm-debug (3.6.1) unstable; urgency=low
+
+  [*] move from magic_enum to better_enums
+  [#] RS-485 stability
+  [+] CPUID middle and high parts are now correctly visible in InfoDialog
+  [#] the no ability to finish the tune with Enter key fixed
+  [+] new cats in wait windows
+
+  -- AVM-Energo <support@avmenergo.ru> Fri, 31 Jul 2026 13:06:43 +0300
+
+avm-debug (3.6.0) unstable; urgency=low
+
+  [+] overlays in XML to permit derivation from the base modules or s2files descriptions
+  [*] connection dialogs was refactored so only one main window is used through the connection process
+  [*] new pop-ups instead of messageboxes
+  [*] usb, serial and ethernet interfaces was made more stable
+  [+] password for AVM-KOT min and max settings
+  [+] bsi.xml & bsi-ext.xml separated to include in all modules
+
+  -- AVM-Energo <support@avmenergo.ru> Wed, 22 Jul 2026 15:05:13 +0300
+
 avm-debug (3.4.5) unstable; urgency=low
 
   [+] some HW & SW fields for 82 report
