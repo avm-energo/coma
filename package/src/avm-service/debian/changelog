@@ -1,3 +1,32 @@
+avm-service (3.6.2) unstable; urgency=low
+
+  [*] 104 protocol stability improved
+  [#] metrology in KIV
+  [*] reconnect fixes
+  [#] switch journals segfault
+  [*] default 104 timeout is now 5000 ms
+
+  -- AVM-Energo <support@avmenergo.ru> Thu, 29 Oct 2026 17:14:20 +0300
+
+avm-service (3.6.1) unstable; urgency=low
+
+  [#] RS-485 stability
+  [+] CPUID middle and high parts are now correctly visible in InfoDialog
+  [+] new cats in wait windows
+
+  -- AVM-Energo <support@avmenergo.ru> Fri, 31 Jul 2026 13:06:43 +0300
+
+avm-service (3.6.0) unstable; urgency=low
+
+  [+] overlays in XML to permit derivation from the base modules or s2files descriptions
+  [*] connection dialogs was refactored so only one main window is used through the connection process
+  [*] new pop-ups instead of messageboxes
+  [*] usb, serial and ethernet interfaces was made more stable
+  [+] password for AVM-KOT min and max settings
+  [+] bsi.xml & bsi-ext.xml separated to include in all modules
+
+  -- AVM-Energo <support@avmenergo.ru> Wed, 22 Jul 2026 15:05:13 +0300
+
 avm-service (3.4.5) unstable; urgency=low
 
   [+] some HW & SW fields for 82 report

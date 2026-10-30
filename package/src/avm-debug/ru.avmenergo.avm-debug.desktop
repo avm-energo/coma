@@ -2,7 +2,7 @@
 Version=4.0
 Name=AVM-Debug
 Comment=COnfiguration Module for AV-TUK (Debug version)
-Icon=/usr/share/icons/hicolor/48x48/apps/coma.png
+Icon=/usr/share/icons/hicolor/48x48/apps/coma-debug.png
 Exec=AVM-Debug
 Categories=Utility
 Terminal=false

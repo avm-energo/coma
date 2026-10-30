@@ -274,7 +274,10 @@ void AbstractTuneDialog::startTune()
         default:
         {
             if (StdFunc::IsCancelled())
+            {
                 res = Error::Cancelled;
+                StdFunc::ClearCancel();
+            }
             MsgSetVisible(ErMsg, bStep);
 #ifndef DEBUGISON
             WDFunc::setEnabled(this, "starttune", true);
@@ -557,6 +560,7 @@ void AbstractTuneDialog::finishTuneWidget()
     auto *mainWindow = qobject_cast<Coma *>(WDFunc::getMainWindow());
     if (mainWindow != nullptr)
         mainWindow->hideCentralWidget();
+    StdFunc::ClearCancel();
 }
 
 // ##################### PROTECTED ####################

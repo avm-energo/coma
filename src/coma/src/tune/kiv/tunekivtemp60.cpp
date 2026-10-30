@@ -145,17 +145,10 @@ Error::Msg TuneKIVTemp60::showSignalsDialog()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(LBLFunc::New(w, "РЕТОМ-51"));
-    vlyout->addWidget(GraphFunc::newHLine(w));
     vlyout->addWidget(LBLFunc::New(w,
         "Задайте трёхфазный режим токов и напряжений (Uabc, Iabc)\n"
         "Угол между токами и напряжениями: 89.9 град.,\n"
         "Значения напряжений: 57.75 В, токов: 140 мА"));
-    hlyout->addLayout(vlyout);
-    hlyout->addWidget(GraphFunc::newVLine(w));
-    vlyout = new QVBoxLayout;
-    vlyout->addWidget(LBLFunc::New(w, "ИМИТАТОР"));
-    vlyout->addWidget(GraphFunc::newHLine(w));
-    vlyout->addWidget(LBLFunc::New(w, "Задайте tg 2 %, значения напряжений: 57.75 В, токов: 140 мА"));
     hlyout->addLayout(vlyout);
     lyout->addLayout(hlyout);
     w->setLayout(lyout);

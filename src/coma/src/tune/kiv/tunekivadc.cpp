@@ -265,16 +265,7 @@ Error::Msg TuneKIVADC::showRetomDialog(int coef)
     QWidget *w = new QWidget(this);
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
-    vlyout->addWidget(LBLFunc::New(this, "РЕТОМ"));
-    vlyout->addWidget(GraphFunc::newHLine(this));
     IULayout(RegType::RETOM, coef, vlyout);
-    hlyout->addLayout(vlyout);
-    hlyout->addWidget(GraphFunc::newVLine(this));
-
-    vlyout = new QVBoxLayout;
-    vlyout->addWidget(LBLFunc::New(this, "ИМИТАТОР"));
-    vlyout->addWidget(GraphFunc::newHLine(this));
-    IULayout(RegType::IMITATOR, coef, vlyout);
     hlyout->addLayout(vlyout);
 
     w->setLayout(hlyout);
