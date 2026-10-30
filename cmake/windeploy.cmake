@@ -61,3 +61,34 @@ install(CODE [[
       --skip-plugin-types generic,iconengines,networkinformation,styles,tls,translations
       ${INSTALL_PREFIX}/bin/${PROJECT_NAME}.exe)
 ]])
+
+# App-local deployment of the MSVC C/C++ runtime (vcruntime140.dll, msvcp140.dll, ...)
+# so the portable build doesn't depend on vc_redist being installed on the target machine.
+# See: https://learn.microsoft.com/cpp/windows/deploying-native-desktop-applications-visual-cpp
+if(DEFINED ENV{VCToolsRedistDir})
+  # VCToolsRedistDir already includes the toolchain version, e.g. .../VC/Redist/MSVC/14.38.33130/
+  # the CRT folder underneath is named after the toolset (VC143 for VS2022) which is a
+  # different number, so glob for it instead of trying to compute the name.
+  # The env var uses native Windows backslashes; convert them, otherwise they end up in
+  # cmake_install.cmake as invalid escape sequences (e.g. "\P" in "\Program Files").
+  file(TO_CMAKE_PATH "$ENV{VCToolsRedistDir}" VC_TOOLS_REDIST_DIR)
+  file(GLOB VC_REDIST_CRT_DIRS "${VC_TOOLS_REDIST_DIR}/x64/Microsoft.VC*.CRT")
+  if(VC_REDIST_CRT_DIRS)
+    list(GET VC_REDIST_CRT_DIRS 0 VC_REDIST_DIR)
+  endif()
+endif()
+if(NOT VC_REDIST_DIR OR NOT EXISTS "${VC_REDIST_DIR}")
+  # Fallback: matches the path already hardcoded in iss/avm-debug.iss for this build agent
+  set(VC_REDIST_DIR "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Redist/MSVC/v143/x64/Microsoft.VC143.CRT")
+endif()
+
+install(CODE "set(VC_REDIST_DIR \"${VC_REDIST_DIR}\")")
+install(CODE [[
+  if(EXISTS "${VC_REDIST_DIR}")
+    file(GLOB VC_REDIST_DLLS "${VC_REDIST_DIR}/*.dll")
+    message("VC redist app-local deployment from: ${VC_REDIST_DIR}")
+    file(INSTALL DESTINATION "${INSTALL_PREFIX}/bin" TYPE FILE FILES ${VC_REDIST_DLLS})
+  else()
+    message(WARNING "VC_REDIST_DIR not found (${VC_REDIST_DIR}) - portable build will require vc_redist to be installed on target machine")
+  endif()
+]])
