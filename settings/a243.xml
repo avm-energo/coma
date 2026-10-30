@@ -165,6 +165,11 @@
                 <visibility>true</visibility>
             </record>
             <record>
+                <id>33</id>
+                <defaultValue>1</defaultValue>
+                <visibility>true</visibility>
+            </record>
+			<record>
                 <id>245</id>
                 <defaultValue>0,0,0</defaultValue>
                 <order>1</order>

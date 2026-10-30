@@ -378,10 +378,10 @@
         <record>
             <id>32</id>
             <name>TDispOff</name>
-            <type>DWORD</type>
+            <type>WORD</type>
             <widget>
                 <type>QDoubleSpinBox</type>
-                <group>8</group>
+                <group>300</group>
                 <string>Время подсветки экрана, сек</string>
                 <toolTip>Время подсветки экрана, сек</toolTip>
                 <min>30</min>
@@ -5996,6 +5996,18 @@
                 <min>0</min>
                 <max>200</max>
                 <decimals>1</decimals>
+            </widget>
+        </record>
+        <record>
+            <id>33</id>
+            <name>InvDisp</name>
+            <type>WORD</type>
+            <dtype>Yes</dtype>
+            <widget>
+                <type>QCheckBox</type>
+                <group>300</group>
+                <string>Инверсия дисплея</string>
+                <toolTip>Инвертировать цвета дисплея</toolTip>
             </widget>
         </record>
     </records>
