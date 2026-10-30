@@ -69,7 +69,10 @@ if(DEFINED ENV{VCToolsRedistDir})
   # VCToolsRedistDir already includes the toolchain version, e.g. .../VC/Redist/MSVC/14.38.33130/
   # the CRT folder underneath is named after the toolset (VC143 for VS2022) which is a
   # different number, so glob for it instead of trying to compute the name.
-  file(GLOB VC_REDIST_CRT_DIRS "$ENV{VCToolsRedistDir}x64/Microsoft.VC*.CRT")
+  # The env var uses native Windows backslashes; convert them, otherwise they end up in
+  # cmake_install.cmake as invalid escape sequences (e.g. "\P" in "\Program Files").
+  file(TO_CMAKE_PATH "$ENV{VCToolsRedistDir}" VC_TOOLS_REDIST_DIR)
+  file(GLOB VC_REDIST_CRT_DIRS "${VC_TOOLS_REDIST_DIR}/x64/Microsoft.VC*.CRT")
   if(VC_REDIST_CRT_DIRS)
     list(GET VC_REDIST_CRT_DIRS 0 VC_REDIST_DIR)
   endif()
