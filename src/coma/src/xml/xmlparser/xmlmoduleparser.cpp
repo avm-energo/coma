@@ -10,6 +10,7 @@
 #include <libavm-gen/xml/xmlparse.h>
 #include <xml/xmltags.h>
 
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 
@@ -18,6 +19,35 @@ Xml::ModuleParser::ModuleParser(QObject *parent) : m_protoType(Protocol::ProtoTy
 QString Xml::ModuleParser::getFileName(const quint16 typeB, const quint16 typeM)
 {
     return QString("%1%2.xml").arg(typeB, 2, 16, QChar('0')).arg(typeM, 2, 16, QChar('0'));
+}
+
+QString Xml::ModuleParser::selectFileByFirmware(const QString &filename, const Device::CurrentDevice *device)
+{
+    static const QString oldDirName("old");
+
+    if (!Files::isFileExist(filename))
+        return filename;
+    auto moduleNode = XmlBase::getXMLFirstElementFromFile(filename, tags::module);
+    // Версия проверяется только для базовой платы, как и в isCorrectDevice
+    if (moduleNode.isNull() || moduleNode.attribute(tags::mtypeb, "").toUShort(nullptr, 16) == 0
+        || isCorrectFirmwareVersion(moduleNode, device))
+        return filename;
+
+    const auto stem = QFileInfo(filename).completeBaseName();
+    const QDir oldDir(QDir(Settings::configDir()).filePath(oldDirName));
+    const auto candidates = oldDir.entryList({ stem + "*.xml" }, QDir::Files, QDir::Name);
+    for (auto it = candidates.crbegin(); it != candidates.crend(); ++it)
+    {
+        const auto candidate = oldDirName + "/" + *it;
+        const auto candidateNode = XmlBase::getXMLFirstElementFromFile(candidate, tags::module);
+        if (!candidateNode.isNull() && isCorrectFirmwareVersion(candidateNode, device))
+        {
+            qInfo() << "Для версии ВПО" << StdFunc::VerToStr(device->bsi().data(Device::BsiIndexes::Fwver))
+                    << "выбрана конфигурация" << candidate;
+            return candidate;
+        }
+    }
+    return filename;
 }
 
 bool Xml::ModuleParser::isCorrectDeviceType(const QDomElement &moduleNode, const Device::CurrentDevice *device)
@@ -731,11 +761,11 @@ void Xml::ModuleParser::parse(Device::CurrentDevice *device)
         const auto typeM = device->getMezzType();
         auto xmlFilename = getFileName(typeB, typeM);
         if (Files::isFileExist(xmlFilename))
-            parseDocument({ xmlFilename }, device);
+            parseDocument({ selectFileByFirmware(xmlFilename, device) }, device);
         else
         {
-            auto baseXmlFilename = getFileName(typeB, 0);
-            auto mezzXmlFilename = getFileName(0, typeM);
+            auto baseXmlFilename = selectFileByFirmware(getFileName(typeB, 0), device);
+            auto mezzXmlFilename = selectFileByFirmware(getFileName(0, typeM), device);
             parseDocument({ baseXmlFilename, mezzXmlFilename }, device);
         }
     }

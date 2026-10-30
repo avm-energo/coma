@@ -54,6 +54,14 @@ private:
     /// \brief Возвращает имя файла по типам базовой и мезонинной плат.
     QString getFileName(const quint16 typeB, const quint16 typeM);
 
+    /// \brief Подбирает конфигурацию, подходящую под версию ВПО устройства.
+    /// \details Если версия в \a filename не выше версии ВПО устройства (или проверка версии не требуется),
+    /// возвращает \a filename. Иначе в каталоге old рядом с конфигурациями ищет файлы, имя которых начинается
+    /// с имени \a filename (без расширения), и берёт последний (по имени) из тех, версия которых не выше версии ВПО.
+    /// Если подходящего файла нет, возвращает \a filename (ошибка об устаревшем ВПО будет выдана при разборе).
+    /// \return Имя файла относительно каталога конфигураций.
+    QString selectFileByFirmware(const QString &filename, const Device::CurrentDevice *device);
+
     /// \brief Коплексная проверка на корректность подключённого устройства.
     /// \see isCorrectModuleVersion, isCorrectModuleType.
     bool isCorrectDevice(const QDomElement &moduleNode, const Device::CurrentDevice *device);

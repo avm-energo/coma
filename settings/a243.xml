@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module mtypeb="A2" mtypem="43">
     <name>AVM-KOT</name>
-    <version>0.0-0005</version>
+    <version>0.9-0009</version>
     <features>
         <isBoxModule>1</isBoxModule>
         <isRTCExist>1</isRTCExist>

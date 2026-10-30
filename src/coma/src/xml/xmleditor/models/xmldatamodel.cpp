@@ -160,6 +160,11 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
                 makeElement(doc, item, tags::id, data(index(row, 0)));
                 makeElement(doc, item, tags::name, data(index(row, 1)));
             } };
+    case ModelType::Firmwares:
+        // Имя тега элемента зависит от модуля (fw_a243), поэтому задаётся в toNode
+        return { tags::firmwares, "", //
+            [this](auto &doc, auto &item, auto &row)
+            { item.appendChild(doc.createTextNode(data(index(row, 1)).toString().trimmed())); } };
     case ModelType::Includes:
         return { tags::includes, tags::include, //
             [this](auto &doc, auto &item, auto &row) { setAttribute(doc, item, tags::src, data(index(row, 0))); } };
@@ -282,6 +287,10 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
         parseTag(node, tags::id, row, 0, "", true);           // ID
         parseTag(node, tags::name, row, 1);                   // Наименование
         break;                                                //
+    case ModelType::Firmwares:                                //
+        setData(index(row, 0), node.nodeName().mid(QString(tags::fw_prefix).size())); // Модуль
+        setData(index(row, 1), node.toElement().text().trimmed());                    // Версия ВПО
+        break;                                                //
     case ModelType::Includes:                                 //
         parseAttribute(node, tags::src, row, 0);              // Путь к файлу
         break;                                                //
@@ -329,7 +338,10 @@ QDomElement XmlDataModel::toNode(QDomDocument &doc)
         if (data(index(row, 0)).value<QString>() == "..")
             continue;
 
-        auto item = makeElement(doc, std::get<1>(prefs));
+        auto itemName = std::get<1>(prefs);
+        if (m_type == ModelType::Firmwares)
+            itemName = tags::fw_prefix + data(index(row, 0)).toString().trimmed().toLower();
+        auto item = makeElement(doc, itemName);
         auto fillNode = std::get<2>(prefs);
         fillNode(doc, item, row);
         node.appendChild(item);

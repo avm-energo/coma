@@ -31,6 +31,7 @@ enum class ModelType : quint16
     BsiExt,
     S2Files,
     S2Tabs,
+    Firmwares,
     S2Records,
     Includes,
     Overlay,

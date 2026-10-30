@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s2files>
+    <firmwares desc="Минимальные версии ВПО модулей">
+        <fw_a243>0.9-0009</fw_a243>
+    </firmwares>
     <config-tabs desc="Вкладки конфигурации">
         <tab>
             <id>0</id>
