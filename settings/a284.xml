@@ -1086,7 +1086,6 @@
                 <record>
                     <id>1013</id>
                     <widget>
-                        <type>QDoubleSpinBox</type>
                         <group>200</group>
                         <string>Уставка порога минимального тока - % от номинального уровня</string>
                         <toolTip>Уставка порога минимального тока - % от номинального уровня</toolTip>
@@ -1095,35 +1094,30 @@
                 <record>
                     <id>1027</id>
                     <widget>
-                        <type>QDoubleSpinBox</type>
                         <group>300</group>
                     </widget>
                 </record>
                 <record>
                     <id>1028</id>
                     <widget>
-                        <type>QDoubleSpinBox</type>
                         <group>300</group>
                     </widget>
                 </record>
                 <record>
                     <id>1035</id>
                     <widget>
-                        <type>QDoubleSpinBox</type>
                         <group>200</group>
                     </widget>
                 </record>
                 <record>
                     <id>1036</id>
                     <widget>
-                        <type>QDoubleSpinBox</type>
                         <group>200</group>
                     </widget>
                 </record>
                 <record>
                     <id>1044</id>
                     <widget>
-                        <type>QDoubleSpinBox</type>
                         <group>100</group>
                         <string>Период фильтрации дискретного входа (мс)</string>
                         <toolTip>Период фильтрации дискретного входа (мс)</toolTip>
@@ -1138,7 +1132,7 @@
             </group>
             <group>
                 <block>1</block>
-                <signal-id>7</signal-id>
+                <signal-id>23</signal-id>
             </group>
             <group>
                 <block>2</block>
@@ -1177,6 +1171,10 @@
                 <signal-id>18</signal-id>
             </group>
             <group>
+                <block>50</block>
+                <signal-id>19</signal-id>
+            </group>
+            <group>
                 <block>100</block>
                 <signal-id>13</signal-id>
             </group>
@@ -1187,10 +1185,6 @@
             <group>
                 <block>250</block>
                 <signal-id>16</signal-id>
-            </group>
-            <group>
-                <block>50</block>
-                <signal-id>19</signal-id>
             </group>
         </protocom>
         <section-tabs desc="Вкладки">
@@ -1210,8 +1204,49 @@
                 <id>4</id>
                 <name>Метрология</name>
             </tab>
+            <tab>
+                <id>5</id>
+                <name>Данные без обработки</name>
+                <dtype>Yes</dtype>
+            </tab>
         </section-tabs>
         <sections desc="Разделы">
+            <section header="Данные без обработки">
+                <sgroup header="Данные без обработки" tab="5">
+                    <mwidget desc="Frequency" view="float">
+                        <start-addr>12000</start-addr>
+                        <decimals>5</decimals>
+                    </mwidget>
+                    <mwidget desc="IUefNat_filt" view="float">
+                        <start-addr>12001</start-addr>
+                        <count>6</count>
+                        <decimals>0</decimals>
+                    </mwidget>
+                    <mwidget desc="IUeff_filtered" view="float">
+                        <start-addr>12007</start-addr>
+                        <count>6</count>
+                        <decimals>4</decimals>
+                    </mwidget>
+                    <mwidget desc="phi_next_f" view="float">
+                        <start-addr>12013</start-addr>
+                        <count>6</count>
+                        <decimals>5</decimals>
+                    </mwidget>
+                    <mwidget desc="Cbush" view="float">
+                        <start-addr>12019</start-addr>
+                        <count>3</count>
+                    </mwidget>
+                    <mwidget desc="Tg_d" view="float">
+                        <start-addr>12022</start-addr>
+                        <count>3</count>
+                        <decimals>4</decimals>
+                    </mwidget>
+                    <mwidget desc="Pt100_R" view="float">
+                        <start-addr>12025</start-addr>
+                        <toolTip>Pt100_R</toolTip>
+                    </mwidget>
+                </sgroup>
+            </section>
             <section header="Метрология" order="2">
                 <sgroup header="Метрология" tab="4">
                     <mwidget desc="Угол между напряжением и током φA, град." view="float">
@@ -1587,6 +1622,12 @@
                 <count>1</count>
                 <id>18</id>
                 <type>BitString</type>
+            </signal>
+            <signal>
+                <start-addr>12000</start-addr>
+                <count>26</count>
+                <id>23</id>
+                <type>Float</type>
             </signal>
         </signals>
     </resources>
