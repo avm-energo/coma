@@ -2,8 +2,8 @@
 
 // #include "../../module/board.h"
 // #include "testdata.h"
-#include <avm-gen/settings.h>
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/settings.h>
+#include <libavm-gen/stdfunc.h>
 #include <device/bsi.h>
 #include <interfaces/types/modbus_types.h>
 #include <interfaces/types/protocom_types.h>

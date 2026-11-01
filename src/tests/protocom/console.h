@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avm-gen/helper.h>
+#include <libavm-gen/helper.h>
 #include <interfaces/types/usbhid_settings.h>
 #include <s2/filestruct.h>
 #include <s2/s2datatypes.h>
