@@ -319,7 +319,7 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1114</id>
+                <id>1284</id>
                 <defaultValue>210,2200,2200</defaultValue>
                 <order>9</order>
                 <visibility>true</visibility>
@@ -530,7 +530,7 @@
                 <visibility>true</visibility>
             </record>
             <record>
-                <id>1113</id>
+                <id>1297</id>
                 <defaultValue>110,10,0</defaultValue>
                 <order>1</order>
                 <visibility>true</visibility>
