@@ -48,7 +48,7 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 [Files]
 Source: "{#OUTPUT_DIR}\bin\*"; DestDir: "{app}"; Excludes: "*.xml"; Flags: ignoreversion recursesubdirs 
 Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
-Source: "{#OUTPUT_DIR}\settings\*.xml"; DestDir: "{userappdata}\{#Publisher}\{#EngName}"
+Source: "{#OUTPUT_DIR}\settings\*.xml"; DestDir: "{userappdata}\{#Publisher}\{#EngName}"; Flags: recursesubdirs
 Source: "{#OUTPUT_DIR}\reports\*.lrxml"; DestDir: "{userappdata}\{#Publisher}\{#EngName}\reports"
 
 [Icons]
