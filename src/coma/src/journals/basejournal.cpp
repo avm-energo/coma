@@ -6,6 +6,7 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QHeaderView>
 #include <xlsxdocument.h>
 
 namespace journals
@@ -56,6 +57,23 @@ void BaseJournal::setUserTimezone(QStringList &data)
 QTableView *BaseJournal::createModelView(QWidget *parent) const
 {
     auto modelView = TVFunc::New(parent, m_viewName, m_proxyModel.get());
+    auto header = modelView->horizontalHeader();
+    // Прокси сортирует только уже подгруженные (fetchMore) строки, поэтому перед сортировкой подгружаем все.
+    // Соединение должно идти до setSortingEnabled, чтобы сработать раньше сортировки в QTableView
+    connect(header, &QHeaderView::sortIndicatorChanged, modelView,
+        [model = m_proxyModel.get()](int section)
+        {
+            if (section < 0)
+                return;
+            while (model->canFetchMore({}))
+                model->fetchMore({});
+        });
+    header->setSortIndicatorClearable(true);          // третий клик возвращает исходный порядок записей
+    header->setSortIndicator(-1, Qt::AscendingOrder); // при открытии журнал не сортируется
+    modelView->setSortingEnabled(true);
+    // Подгоняем колонки под содержимое один раз, после заполнения модели (fill);
+    // done после сохранения в Excel не должен сбрасывать ширины, выставленные пользователем
+    connect(this, &BaseJournal::done, modelView, &QTableView::resizeColumnsToContents, Qt::SingleShotConnection);
     return modelView;
 }
 
