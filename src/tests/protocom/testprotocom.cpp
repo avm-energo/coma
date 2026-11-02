@@ -1,6 +1,6 @@
 #include "testprotocom.h"
 
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/stdfunc.h>
 
 #include <QSignalSpy>
 

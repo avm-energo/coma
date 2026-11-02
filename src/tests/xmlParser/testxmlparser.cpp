@@ -1,6 +1,6 @@
 #include "testdata.h"
 #include "testmodule.h"
-#include <avm-gen/stdfunc.h>
+#include <libavm-gen/stdfunc.h>
 #include <device/bsi.h>
 
 // void printModuleSettings(const ModuleSettings &mSettings)
@@ -17,10 +17,10 @@
 
 void TestModule::TestS2Parsing()
 {
-    Device::BlockStartupInfo bsi;
-    bsi.MTypeB = 0x11;
-    bsi.MTypeM = 0x11;
-    bsi.Fwver = StdFunc::StrToVer(a284::version);
+    // Device::BlockStartupInfo bsi;
+    // bsi.MTypeB = 0x11;
+    // bsi.MTypeM = 0x11;
+    // bsi.Fwver = StdFunc::StrToVer(a284::version);
     // auto mModule = new Module(true, bsi, this);
     // auto state = mModule->loadSettings(storage, *s2Manager);
     // const auto &mSettings = storage.getModuleSettings();
