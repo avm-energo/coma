@@ -108,12 +108,6 @@ endif()
 
 add_subdirectory(src/coma)
 
-# When coma is pulled in as a subproject (e.g. via FetchContent from autobatch),
-# only the coma library above is needed - skip tests and executables.
-if(NOT PROJECT_IS_TOP_LEVEL)
-  return()
-endif()
-
 # Step 2: Build tests
 if(BUILD_TESTING)
   message(STATUS "Will build tests")

@@ -1,10 +1,10 @@
 #include "dialogs/connDialogs/ProtocomDialog/interfaceusbdialog.h"
 
 #include <common/names.h>
-#include <libavm-gen/error.h>
-#include <libavm-gen/settings.h>
 #include <interfaces/types/serial_settings.h>
 #include <interfaces/types/usbhidportinfo.h>
+#include <libavm-gen/error.h>
+#include <libavm-gen/settings.h>
 #include <libavm-widgets/tvfunc.h>
 
 #include <QMessageBox>
@@ -69,11 +69,11 @@ bool InterfaceUSBDialog::updateModel()
     for (auto row : usbDevices)
     {
         QList<QStandardItem *> device {
-            new QStandardItem(QString::number(row->get<u16>(MemKeys::USB::vendor_id), 16)),  //
-            new QStandardItem(QString::number(row->get<u16>(MemKeys::USB::product_id), 16)), //
-            new QStandardItem(row->get<QString>(MemKeys::USB::serial)),                      //
+            new QStandardItem(QString::number(row->get<u16>(MemKeys::USB::vendor_id), 16)),
+            new QStandardItem(QString::number(row->get<u16>(MemKeys::USB::product_id), 16)),
+            new QStandardItem(row->get<QString>(MemKeys::USB::serial)),
 #ifdef QT_DEBUG
-            new QStandardItem(row->get<QString>(MemKeys::USB::path))                         //
+            new QStandardItem(row->get<QString>(MemKeys::USB::path)) //
 #endif
         };
         mdl->appendRow(device);
@@ -81,8 +81,7 @@ bool InterfaceUSBDialog::updateModel()
     m_tableView->setModel(mdl);
     m_tableView->resizeColumnsToContents();
     // UsbHidPortInfo::devicesFound() возвращает список без родителя - данные уже скопированы
-    // в модель выше, сами объекты больше не нужны (см. тот же фикс в Abatcher::updateUSBConnectionWindow(),
-    // репозиторий autobatch).
+    // в модель выше, сами объекты больше не нужны
     qDeleteAll(usbDevices);
     return true;
 }
