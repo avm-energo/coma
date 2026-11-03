@@ -27,7 +27,7 @@ void ConfigLoader::loadS2Data() noexcept
 {
     // Если ещё не парсили s2files.xml
     auto &s2storage = m_device->getS2Datamanager()->getStorage();
-    auto mXmlParser = new Xml::XmlS2Parser(this);
+    auto mXmlParser = new Xml::XmlS2Parser(m_device, this);
     QObject::connect(mXmlParser, &Xml::XmlParser::nameDataSending,      //
         &s2storage, &S2::ConfigStorage::nameDataReceive);
     QObject::connect(mXmlParser, &Xml::XmlParser::typeDataSending,      //

@@ -27,6 +27,7 @@ const std::map<QString, ModelType> XmlModel::s_types {
     { tags::bsi_ext, ModelType::BsiExt },          //
     { tags::s2files, ModelType::S2Files },         //
     { tags::conf_tabs, ModelType::S2Tabs },        //
+    { tags::firmwares, ModelType::Firmwares },     //
     { tags::records, ModelType::S2Records },       //
     { tags::includes, ModelType::Includes },       //
     { tags::overlay, ModelType::Overlay },         //
@@ -62,6 +63,7 @@ const std::map<ModelType, QStringList> XmlModel::s_headers {
     { ModelType::HiddenTab, { "Индекс", "Название", "Виджет", "Тип", "Данные", "Адрес", "Видимость" } },           //
     { ModelType::BsiExt, { "Адрес", "Описание", "Тип", "Видимость" } },                                            //
     { ModelType::S2Files, { "XML", "Описание" } },                                                                 //
+    { ModelType::Firmwares, { "Модуль", "Мин. версия ВПО" } },                                                     //
     { ModelType::S2Tabs, { "ID вкладки", "Название" } },                                                           //
     { ModelType::S2Records, { "ID элемента", "Название", "Тип", "Для наладки" } },                                 //
     { ModelType::Includes, { "Путь к файлу" } },                                                                    //

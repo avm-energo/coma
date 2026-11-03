@@ -10,6 +10,7 @@
 #include <xml/xmleditor/dialogs/xmlconfigdialog.h>
 #include <xml/xmleditor/dialogs/xmlhiddentabdialog.h>
 #include <xml/xmleditor/dialogs/xmlhiddenwidgetdialog.h>
+#include <xml/xmleditor/dialogs/xmlfirmwaredialog.h>
 #include <xml/xmleditor/dialogs/xmlincludedialog.h>
 #include <xml/xmleditor/dialogs/xmloverlayrecorddialog.h>
 #include <xml/xmleditor/dialogs/xmlmeasjourdialog.h>
@@ -57,6 +58,7 @@ const std::map<ModelType, QString> XmlDialogFabric::s_dialogTitles {
     { ModelType::BsiRecords, "записи BSI" },                            //
     { ModelType::BsiExtRecords, "записи BSI Ext" },                     //
     { ModelType::S2Tabs, "вкладки" },                                   //
+    { ModelType::Firmwares, "версии ВПО модуля" },                      //
     { ModelType::S2Records, "описания S2 записи" },          //
     { ModelType::Includes, "ссылки на внешний XML-файл" },   //
     { ModelType::Overlay, "оверлея" },                       //
@@ -149,6 +151,9 @@ void XmlDialogFabric::createOrEditDialog(BaseEditorModel *model, int row, QWidge
             break;
         case ModelType::S2Records:
             dialog = new XmlS2RecordDialog(parent);
+            break;
+        case ModelType::Firmwares:
+            dialog = new XmlFirmwareDialog(parent);
             break;
         case ModelType::Includes:
             dialog = new XmlIncludeDialog(parent);
