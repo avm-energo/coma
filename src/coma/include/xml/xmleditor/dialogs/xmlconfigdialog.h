@@ -18,4 +18,8 @@ public:
 
     /// \brief Создаёт и настраивает UI диалога.
     void setupUI(QVBoxLayout *mainLayout) override;
+
+protected:
+    /// \brief Rejects free text that is not a record from the list.
+    bool checkDataBeforeSaving(const QStringList &savedData) override;
 };

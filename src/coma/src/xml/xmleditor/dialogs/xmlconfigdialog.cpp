@@ -1,8 +1,10 @@
 #include "xml/xmleditor/dialogs/xmlconfigdialog.h"
 
+#include <libavm-widgets/emessagebox.h>
 #include <xml/xmleditor/models/xmldatamodel.h>
 
 #include <QComboBox>
+#include <QCompleter>
 
 XmlConfigDialog::XmlConfigDialog(QWidget *parent) : XmlDialog(parent) { }
 
@@ -10,7 +12,26 @@ void XmlConfigDialog::loadS2RecordsData(QComboBox *combo)
 {
     const auto &names = XmlDataModel::s2RecordsNameMap();
     for (auto it = names.cbegin(); it != names.cend(); ++it)
-        combo->addItem(it.value());
+        combo->addItem(XmlDataModel::s2RecordLabel(it.key()));
+
+    // Поиск по имени или id: вводимый текст ищется в любом месте надписи "Имя [id]"
+    combo->setEditable(true);
+    combo->setInsertPolicy(QComboBox::NoInsert);
+    auto completer = new QCompleter(combo->model(), combo);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);
+    completer->setFilterMode(Qt::MatchContains);
+    completer->setCompletionMode(QCompleter::PopupCompletion);
+    combo->setCompleter(completer);
+}
+
+bool XmlConfigDialog::checkDataBeforeSaving(const QStringList &savedData)
+{
+    if (savedData.isEmpty() || XmlDataModel::s2RecordIdFromLabel(savedData.first()) < 0)
+    {
+        EMessageBox::warning(this, "Выберите параметр из списка");
+        return false;
+    }
+    return true;
 }
 
 void XmlConfigDialog::setupUI(QVBoxLayout *mainLayout)

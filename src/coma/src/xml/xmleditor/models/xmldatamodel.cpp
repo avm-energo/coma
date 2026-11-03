@@ -9,6 +9,7 @@
 #include <QDomDocument>
 #include <QFile>
 #include <QMap>
+#include <QRegularExpression>
 
 XmlDataModel::XmlDataModel(int rows, int cols, ModelType type, QObject *parent) : XmlModel(rows, cols, type, parent) { }
 
@@ -116,13 +117,12 @@ std::tuple<QString, QString, std::function<void(QDomDocument &, QDomElement &, i
         return { tags::config, tags::record, //
             [this](auto &doc, auto &item, auto &row)
             {
-                const auto &names = s2RecordsNameMap();
-                auto nameOrId = data(index(row, 0)).toString();
-                auto id = names.key(nameOrId, -1);
+                auto label = data(index(row, 0)).toString();
+                auto id = s2RecordIdFromLabel(label);
                 if (id >= 0)
                     makeElement(doc, item, tags::id, id);
                 else
-                    makeElement(doc, item, tags::id, nameOrId); // fallback: numeric id stored as string
+                    makeElement(doc, item, tags::id, label); // fallback: keep as is
                 makeElement(doc, item, tags::def_val, data(index(row, 1)));
                 QVariant countData(data(index(row, 2)));
                 if ((!countData.value<QString>().isEmpty()) && (countData.value<int>() > 1))
@@ -252,11 +252,10 @@ void XmlDataModel::parseNode(QDomNode &node, int &row)
     case ModelType::Config:                                       //
         parseTag(node, tags::id, row, 0, "", true);               // ID (stored temporarily as int)
         {
-            const auto &names = s2RecordsNameMap();
-            auto id = data(index(row, 0)).toInt();
-            auto nameIt = names.find(id);
-            if (nameIt != names.cend())
-                setData(index(row, 0), nameIt.value());       // replace id with human-readable name
+            bool ok = false;
+            auto id = data(index(row, 0)).toInt(&ok);
+            if (ok)
+                setData(index(row, 0), s2RecordLabel(id));    // replace id with human-readable "name [id]"
         }
         parseTag(node, tags::def_val, row, 1);                // Значение по умолчанию
         parseTag(node, tags::count, row, 2, "");              // new count
@@ -341,6 +340,25 @@ QDomElement XmlDataModel::toNode(QDomDocument &doc)
         return fragment;
     }
     return node;
+}
+
+QString XmlDataModel::s2RecordLabel(int id)
+{
+    const auto &names = s2RecordsNameMap();
+    auto it = names.constFind(id);
+    if (it == names.cend())
+        return QString::number(id);
+    return QString("%1 [%2]").arg(it.value()).arg(id);
+}
+
+int XmlDataModel::s2RecordIdFromLabel(const QString &label)
+{
+    static const QRegularExpression bracketed(R"(\[(\d+)\]\s*$)");
+    auto match = bracketed.match(label);
+    const auto idStr = match.hasMatch() ? match.captured(1) : label.trimmed();
+    bool ok = false;
+    auto id = idStr.toInt(&ok);
+    return (ok && id >= 0) ? id : -1;
 }
 
 const QMap<int, QString> &XmlDataModel::s2RecordsNameMap()
