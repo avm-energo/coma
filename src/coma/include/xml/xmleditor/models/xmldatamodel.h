@@ -25,4 +25,10 @@ public:
     /// \brief Lazily loads and caches the id→name map from s2files.xml <records>.
     /// Reloads automatically when Settings::configDir() changes.
     static const QMap<int, QString>& s2RecordsNameMap();
+
+    /// \brief Returns "Name [id]" label for the s2files.xml record (just "id" if it is unknown).
+    static QString s2RecordLabel(int id);
+    /// \brief Extracts record id from a label made by s2RecordLabel() or from a plain number.
+    /// \return -1 if \a label is neither.
+    static int s2RecordIdFromLabel(const QString &label);
 };

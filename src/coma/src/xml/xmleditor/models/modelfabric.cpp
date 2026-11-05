@@ -42,6 +42,7 @@ void ModelFabric::createChildModel(ChildModelNode &mNode, QDomNode &root, QObjec
         case ModelType::HiddenTab:
         case ModelType::BsiExt:
         case ModelType::S2Tabs:
+        case ModelType::Firmwares:
         case ModelType::Includes:
         case ModelType::BsiRecords:
         case ModelType::BsiExtRecords:
@@ -172,6 +173,7 @@ XmlModel *ModelFabric::createEmptyChildModel(ModelType type, QObject *parent)
     case ModelType::HiddenTab:
     case ModelType::BsiExt:
     case ModelType::S2Tabs:
+    case ModelType::Firmwares:
     case ModelType::Includes:
     case ModelType::BsiRecords:
     case ModelType::BsiExtRecords:
