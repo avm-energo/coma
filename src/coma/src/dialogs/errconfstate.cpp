@@ -4,18 +4,22 @@
 #include <QCloseEvent>
 #include <QDebug>
 #include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
 #include <vector>
 
 ErrConfState::ErrConfState(Device::CurrentDevice *device, QWidget *parent)
     : UWidget(device, parent), m_requestTimer(new QTimer(this))
 {
+    setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
+    setWindowModality(Qt::ApplicationModal);
     setupUI();
     configureRequest();
 }
 
 void ErrConfState::setupUI()
 {
-    constexpr auto defaultStyle = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
+    constexpr auto defaultStyle = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; font: bold; }";
     static const std::vector<QString> labels = {
         "Код разборки конфигурации",           //
         "ID неверного параметра конфигурации", //
@@ -24,7 +28,7 @@ void ErrConfState::setupUI()
         "Результат записи конфигурации",       //
         "Принятая CRC",                        //
         "Вычисленная  CRC",                    //
-        "Ошибка записи ВПО"                    //
+        "Результат записи ВПО"                 //
     };
 
     auto mainLayout = new QVBoxLayout(this);
@@ -34,35 +38,43 @@ void ErrConfState::setupUI()
         auto layout = new QHBoxLayout;
         auto textLabel = new QLabel(label, this);
         layout->addWidget(textLabel);
-        auto valueLabel = new QLabel("", this);
-        valueLabel->setObjectName(QString::number(index));
-        valueLabel->setStyleSheet(defaultStyle);
-        layout->addWidget(valueLabel);
+        auto valueEdit = new QLineEdit(this);
+        valueEdit->setObjectName(QString::number(index));
+        valueEdit->setReadOnly(true);
+        valueEdit->setStyleSheet(defaultStyle);
+        layout->addWidget(valueEdit);
         mainLayout->addLayout(layout);
         index++;
     }
+    auto okButton = new QPushButton("OK", this);
+    okButton->setDefault(true);
+    connect(okButton, &QPushButton::clicked, this, &QWidget::close);
+    mainLayout->addWidget(okButton, 0, Qt::AlignHCenter);
     setLayout(mainLayout);
-    setFixedSize(500, 250);
+    setFixedSize(500, 340);
     setWindowTitle("Статус конфигурирования");
 }
 
 void ErrConfState::configureRequest()
 {
-    constexpr quint32 requestInterval = 5000;
-    engine()->setUpdatesEnabled(false);
+    constexpr quint32 requestInterval = 10000;
+    engine()->setUpdatesEnabled(true);
     // TODO: Get from signals (config data storage)...
     engine()->addBs({ errConfAddr, errConfSize });
     m_requestTimer->setInterval(requestInterval);
     connect(m_requestTimer.get(), &QTimer::timeout, this, &ErrConfState::reqUpdate);
     m_requestTimer->start();
+    reqUpdate();
 }
 
 void ErrConfState::updateBitStringData(const DataTypes::BitStringStruct &bs)
 {
     if (bs.sigAdr >= errConfAddr && bs.sigAdr < (errConfAddr + errConfSize))
     {
-        auto dataLabel = this->findChild<QLabel *>(QString::number(bs.sigAdr));
-        if (dataLabel != nullptr)
+        if (bs.sigAdr == errConfAddr)
+            emit confParseCodeUpdated(bs.sigVal);
+        auto dataEdit = this->findChild<QLineEdit *>(QString::number(bs.sigAdr));
+        if (dataEdit != nullptr)
         {
             auto param = static_cast<ErrConfParam>(bs.sigAdr);
             switch (param)
@@ -70,14 +82,14 @@ void ErrConfState::updateBitStringData(const DataTypes::BitStringStruct &bs)
             case ErrConfParam::InvalidConfId:
             case ErrConfParam::SendedLength:
             case ErrConfParam::RequiredLength:
-                dataLabel->setText(QString::number(bs.sigVal));
+                dataEdit->setText(QString::number(bs.sigVal));
                 break;
             case ErrConfParam::ConfParseCode:
             case ErrConfParam::ResultWritingConf:
             case ErrConfParam::SendedCRC:
             case ErrConfParam::RequiredCRC:
             case ErrConfParam::HardwareErrorCode:
-                dataLabel->setText(createHexString(bs.sigVal));
+                dataEdit->setText(createHexString(bs.sigVal));
                 break;
             default:
                 break;
@@ -96,14 +108,12 @@ QString ErrConfState::createHexString(quint32 value) const
 
 void ErrConfState::closeEvent(QCloseEvent *event)
 {
-    engine()->setUpdatesEnabled(false);
     event->ignore();
     QWidget::hide();
 }
 
 void ErrConfState::show()
 {
-    engine()->setUpdatesEnabled(true);
     reqUpdate();
     QWidget::show();
 }

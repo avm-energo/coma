@@ -1,6 +1,5 @@
 #include "dialogs/configdialog.h"
 
-#include <common/appconfig.h>
 #include <device/current_device.h>
 #include <dialogs/keypressdialog.h>
 #include <libavm-gen/error.h>
@@ -23,7 +22,6 @@ ConfigDialog::ConfigDialog(Device::CurrentDevice *device, const S2BoardType boar
     , m_datamanager(*m_device->getS2Datamanager())
     , m_boardConfig(m_datamanager.getConfiguration(boardType))
     , m_factory(m_boardConfig.m_workingConfig, device)
-    , m_errConfState(new ErrConfState(device))
 {
     connect(&m_datamanager, &S2DataManager::parseStatus, this, &ConfigDialog::parseStatusHandle);
     connect(m_device->getFileProvider(), &Device::FileProvider::noConfigurationError, //
@@ -150,13 +148,6 @@ QWidget *ConfigDialog::ConfButtons()
     button = new QPushButton("Взять конфигурацию по умолчанию");
     connect(button, &QPushButton::clicked, this, &ConfigDialog::setDefaultConfig);
     wdgtlyout->addWidget(button, 2, 0, 1, 2);
-
-    if (AppConfiguration::app() != AppConfiguration::Service)
-    {
-        button = new QPushButton("Показать статус конфигурирования");
-        connect(button, &QPushButton::clicked, this, [this] { showConfigErrState(); });
-        wdgtlyout->addWidget(button, 3, 0, 1, 2);
-    }
 
     wdgt->setLayout(wdgtlyout);
     return wdgt;
@@ -340,11 +331,6 @@ void ConfigDialog::setDefaultConfig()
 {
     m_boardConfig.m_workingConfig = m_boardConfig.m_defaultConfig;
     fill();
-}
-
-void ConfigDialog::showConfigErrState()
-{
-    m_errConfState->show();
 }
 
 void ConfigDialog::insertWidgetIntoListByItsOrder(const u16 id, QWidget *w, WidgetList &wlist)

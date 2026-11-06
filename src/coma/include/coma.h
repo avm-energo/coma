@@ -4,6 +4,7 @@
 #include <libavm-widgets/estatusbar.h>
 #include <common/comahelper.h>
 #include <dialogs/dialogmanager.h>
+#include <dialogs/errconfstate.h>
 #include <interfaces/connectionmanager.h>
 #include <interfaces/types/connection_settings.h>
 #include <oscillograms/oscmanager.h>
@@ -11,6 +12,7 @@
 #include <QApplication>
 #include <QListWidget>
 #include <QMainWindow>
+#include <QPushButton>
 #include <QStackedWidget>
 
 class AlarmWidget;
@@ -72,6 +74,8 @@ private:
     ReconnectDialog *m_reconnectDialog;
     QMetaObject::Connection m_prbConnection;
     EStatusBar *m_bar;
+    ErrConfState *m_errConfState;
+    QPushButton *m_errConfButton;
     ComaHelper *m_comaHelper;
 
     AlarmWidget *m_alarmW;

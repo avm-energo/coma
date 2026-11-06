@@ -80,6 +80,8 @@ Coma::Coma(QWidget *parent)
     , m_currentDevice(nullptr)
     , m_dlgManager(new DialogManager(this))
     , m_reconnectDialog(nullptr)
+    , m_errConfState(nullptr)
+    , m_errConfButton(nullptr)
     , m_xmlEditor(nullptr)
     , m_comaHelper(nullptr)
 {
@@ -331,6 +333,18 @@ void Coma::go()
     splash->show();
     m_bar = new EStatusBar(this);
     setStatusBar(m_bar);
+    m_errConfButton = new QPushButton("D", m_bar);
+    m_errConfButton->setFixedSize(24, 24);
+    m_errConfButton->setToolTip(tr("Статус конфигурирования"));
+    m_errConfButton->setEnabled(false);
+    connect(m_errConfButton, &QPushButton::clicked, this,
+        [this]
+        {
+            if (m_errConfState != nullptr)
+                m_errConfState->show();
+        });
+    m_bar->addPermanentWidget(m_errConfButton);
+    m_errConfButton->setVisible(AppConfiguration::app() == AppConfiguration::Debug);
     setupUI();
     // StdFunc::Wait(10000);
     splash->finish(this);
@@ -431,6 +445,16 @@ void Coma::initInterfaceConnection()
 {
     m_prbConnection = m_currentDevice->async()->connection(this, &Coma::update);
     connectStatusBar();
+    m_errConfState = new ErrConfState(m_currentDevice, this);
+    connect(m_errConfState, &ErrConfState::confParseCodeUpdated, this,
+        [this](quint32 value)
+        {
+            if (value == 0)
+                m_errConfButton->setStyleSheet("");
+            else
+                m_errConfButton->setStyleSheet("QPushButton { background-color: red; }");
+        });
+    m_errConfButton->setEnabled(true);
     loadXML();
     prepareDialogs();
 }
@@ -493,6 +517,10 @@ void Coma::disconnectAndClear()
         m_alarmW->clear();
         clearCentralWidgets();
         m_dlgManager->clearDialogs();
+        delete m_errConfState;
+        m_errConfState = nullptr;
+        m_errConfButton->setEnabled(false);
+        m_errConfButton->setStyleSheet("");
         m_connectionManager->breakConnection();
         m_currentDevice = nullptr;
     }

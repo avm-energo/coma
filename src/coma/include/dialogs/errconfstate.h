@@ -36,12 +36,14 @@ private:
     virtual void updateBitStringData(const DataTypes::BitStringStruct &bs) override;
     /// \brief Short helper function for converting incoming number to the HEX string.
     QString createHexString(quint32 value) const;
-    /// \brief Slot for disabling updates from the device.
-    /// \details This slot will be calling when user closes window.
+    /// \brief Hides the window when the user closes it.
     virtual void closeEvent(QCloseEvent *event) override;
 
 public:
     explicit ErrConfState(Device::CurrentDevice *device, QWidget *parent = nullptr);
     /// \brief Function for showing this dialog window.
     void show();
+
+signals:
+    void confParseCodeUpdated(quint32 value);
 };

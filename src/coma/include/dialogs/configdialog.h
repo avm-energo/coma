@@ -3,7 +3,6 @@
 #include <comawidgets/udialog.h>
 #include <comawidgets/widgetfactory.h>
 #include <dialogs/dialogcreator.h>
-#include <dialogs/errconfstate.h>
 #include <s2/s2datamanager.h>
 
 #include <set>
@@ -44,12 +43,10 @@ private:
     void checkForDiff();
     bool isVisible(const u32 id) const;
     bool isDebugWidget(const u32 id) const;
-    void showConfigErrState();
     void insertWidgetIntoListByItsOrder(const u16 id, QWidget *w, WidgetList &wlist);
 
     S2DataManager &m_datamanager;
     S2BoardConfig &m_boardConfig;
     WidgetFactory m_factory;
-    ErrConfState *m_errConfState;
     QStringList m_confErrors;
 };
