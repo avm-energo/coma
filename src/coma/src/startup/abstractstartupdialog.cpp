@@ -1,5 +1,6 @@
 #include "startup/abstractstartupdialog.h"
 
+#include <libavm-gen/error.h>
 #include <libavm-gen/pch.h>
 #include <libavm-gen/stdfunc.h>
 #include <libavm-widgets/emessagebox.h>
@@ -8,6 +9,7 @@
 
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <limits>
 #include <tuple>
@@ -121,6 +123,30 @@ void AbstractStartupDialog::sendCommand(Commands cmd, bool value)
         engine()->currentConnection()->writeCommand(cmd, value);
         GetCorBd();
     }
+}
+
+void AbstractStartupDialog::updateGeneralResponse(const DataTypes::GeneralResponseStruct &response)
+{
+    if (response.type == DataTypes::Error && Error::Msg(response.data) == Error::ServerDeviceFailure)
+    {
+        auto connection = engine()->currentConnection();
+        QObject::disconnect(m_startupErrorConnection);
+        m_startupErrorConnection = connection->connection(this,
+            [this](const DataTypes::SinglePointWithTimeStruct &sp)
+            {
+                if (sp.sigAdr != 3036)
+                    return;
+                QObject::disconnect(m_startupErrorConnection);
+                m_startupErrorConnection = { };
+                if (sp.sigVal)
+                    EMessageBox::error(
+                        this, "Ошибка задания начальных значений: низкое напряжение или отсутствует ток");
+            });
+        QTimer::singleShot(100, this, [this]() { engine()->currentConnection()->reqAlarms(3011, 26); });
+        return;
+    }
+
+    UDialog::updateGeneralResponse(response);
 }
 
 void AbstractStartupDialog::updateFloatData(const DataTypes::FloatStruct &fl)

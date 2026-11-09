@@ -34,6 +34,7 @@ public:
 
 protected:
     void updateFloatData(const DataTypes::FloatStruct &fl) override;
+    void updateGeneralResponse(const DataTypes::GeneralResponseStruct &response) override;
     void uponInterfaceSetting() override;
 
     void WriteCor();
@@ -62,6 +63,7 @@ private:
     CheckStyle m_corNeedsToCheck; // flag indicating that we should check corRegs from module to be
                                   // equal to these stored in m_regMap
     int m_regCountToCheck, m_uncheckedRegCount;
+    QMetaObject::Connection m_startupErrorConnection;
 
     virtual void SetupUI() = 0;
     void FillBd(const QString &name, const QString &value);
