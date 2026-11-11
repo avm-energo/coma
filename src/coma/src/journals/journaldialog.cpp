@@ -25,21 +25,18 @@ void JournalDialog::createJournalTabs()
     using namespace journals;
     auto journalType = JournalType::System;
     auto sysJourTab = new JournalTabWidget(journalType, m_device->async(), this);
-    connect(sysJourTab, &JournalTabWidget::showOnceSuccessMsg, this, &JournalDialog::enableOnceSuccessMsg);
     m_journals.insert({ journalType, sysJourTab });
     auto &settings = m_device->getConfigStorage()->getDeviceSettings();
     if (!settings.getWorkJours().isEmpty())
     {
         journalType = JournalType::Work;
         auto workJourTab = new JournalTabWidget(journalType, m_device->async(), this);
-        connect(workJourTab, &JournalTabWidget::showOnceSuccessMsg, this, &JournalDialog::enableOnceSuccessMsg);
         m_journals.insert({ journalType, workJourTab });
     }
     if (!settings.getMeasJours().empty())
     {
         journalType = JournalType::Meas;
         auto measJourTab = new JournalTabWidget(journalType, m_device->async(), this);
-        connect(measJourTab, &JournalTabWidget::showOnceSuccessMsg, this, &JournalDialog::enableOnceSuccessMsg);
         m_journals.insert({ journalType, measJourTab });
     }
 }
@@ -96,12 +93,6 @@ void JournalDialog::createJournalAndFillModel(const S2::S2BFile &journalFile)
             journal->fill(journalFile);
         }
     }
-}
-
-void JournalDialog::enableOnceSuccessMsg(const QString &msg)
-{
-    setSuccessMsg(msg);
-    enableOnceMessage();
 }
 
 void JournalDialog::disableResponseConnections()

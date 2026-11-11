@@ -2,8 +2,8 @@
 
 #include <interfaces/conn/async_connection.h>
 #include <journals/basejournal.h>
-#include <s2/s2datatypes.h>
 #include <libavm-widgets/eprogressindicator.h>
+#include <s2/s2datatypes.h>
 
 #include <QDialog>
 #include <QProgressDialog>
@@ -28,7 +28,14 @@ private:
     QProgressDialog *m_saveProgressDialog;
     Interface::AsyncConnection *m_async;
     JournalType m_type;
-    bool isJournalOperationActive; // переменная, определяющая, какой из диалогов сейчас запрашивает файл
+
+    enum class Operation
+    {
+        None,
+        Read,
+        Erase
+    };
+    Operation m_operation;
 
     /// \brief Метод для создания виджетов, сигнализирующих
     /// пользователю состояние обмена данными и сохранения данных в файл.
@@ -71,8 +78,6 @@ public slots:
 signals:
     /// \brief Сигнал для уведомления UI о том, что журнал загружен успешно.
     void ready();
-    /// \brief Сигнал для JournalDialog о том, что нужно единожды показать сообщение
-    void showOnceSuccessMsg(const QString &msg);
 };
 
 }

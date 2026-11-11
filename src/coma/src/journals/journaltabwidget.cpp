@@ -19,7 +19,7 @@ JournalTabWidget::JournalTabWidget(const JournalType type, Interface::AsyncConne
     , m_saveProgressDialog(new QProgressDialog(this))
     , m_async(async)
     , m_type(type)
-    , isJournalOperationActive(false)
+    , m_operation(Operation::None)
 {
     setupProgressDialogs();
     setupUI();
@@ -83,15 +83,17 @@ void JournalTabWidget::getJournal()
         m_modelView->deleteLater();
     m_progressDialog->show();
     m_progressIndicator->startAnimation();
-    isJournalOperationActive = true;
+    m_operation = Operation::Read;
     m_async->reqFile(static_cast<quint16>(m_type));
 }
 
 void JournalTabWidget::eraseJournal()
 {
-    emit showOnceSuccessMsg("Журнал очищен успешно");
     if (EMessageBox::password(this))
+    {
+        m_operation = Operation::Erase;
         m_async->writeCommand(Interface::Commands::C_EraseJournals, static_cast<quint16>(m_type));
+    }
 }
 
 void JournalTabWidget::saveExcelJournal()
@@ -131,7 +133,7 @@ void JournalTabWidget::saveBinaryJournal()
 void JournalTabWidget::done(const QString &message)
 {
     emit ready();
-    isJournalOperationActive = false;
+    m_operation = Operation::None;
     stopAndHideIndicator();
     EMessageBox::information(this, message);
 }
@@ -139,26 +141,35 @@ void JournalTabWidget::done(const QString &message)
 void JournalTabWidget::error(const QString &message)
 {
     EMessageBox::error(this, message);
-    isJournalOperationActive = false;
+    m_operation = Operation::None;
     stopAndHideIndicator();
     qDebug() << message;
 }
 
 void JournalTabWidget::stopProgressIndicator(Error::Msg msg)
 {
-    if (isJournalOperationActive)
-        EMessageBox::error(this, Error::MsgStr[msg]);
-    isJournalOperationActive = false;
+    if (msg == Error::Msg::Cancelled)
+        return;
+    if (m_operation != Operation::None)
+        EMessageBox::error(this, Error::MsgStr.value(msg, tr("Неизвестная ошибка")));
+    m_operation = Operation::None;
     stopAndHideIndicator();
 }
 
 void JournalTabWidget::stopProgressIndicatorResp(const DataTypes::GeneralResponseStruct &resp)
 {
-    if (resp.data != Error::Msg::NoError)
+    if (m_operation == Operation::None)
+        return;
+
+    if (resp.type == DataTypes::GeneralResponseTypes::Error)
     {
-        isJournalOperationActive = false;
-        Error::Msg msg = static_cast<Error::Msg>(resp.data);
-        stopProgressIndicator(msg);
+        stopProgressIndicator(static_cast<Error::Msg>(resp.data));
+    }
+    else if (resp.type == DataTypes::GeneralResponseTypes::Ok && m_operation == Operation::Erase)
+    {
+        m_operation = Operation::None;
+        stopAndHideIndicator();
+        EMessageBox::information(this, tr("Журнал очищен успешно"));
     }
 }
 
