@@ -25,7 +25,7 @@
 // #define DEBUGISON
 
 // disable all limits checks
-#define NO_LIMITS
+// #define NO_LIMITS
 
 using ReportData = std::map<QString, QString>;
 
