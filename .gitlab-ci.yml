@@ -6,5 +6,7 @@ include:
   - project: avm-energo/ci-templates
     ref: main
     file:
-      - /buildcheck/check.yml
+      - /buildcheck/linux-debian.yml
+      - /buildcheck/linux-fedora.yml
+      - /buildcheck/windows-mingw-dynamic.yml      
       - /kaiten/link-mr.yml

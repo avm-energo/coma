@@ -1,5 +1,6 @@
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
+set(QT_HOST_PATH "/usr")
 
 set(TOOLCHAIN_PREFIX x86_64-w64-mingw32)
 
