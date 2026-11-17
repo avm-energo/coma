@@ -1,0 +1,78 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_FIND_NO_INSTALL_PREFIX": "ON",
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "warnings": {
+                "dev": true,
+                "deprecated": true,
+                "uninitialized": true
+            }
+        },
+        {
+            "name": "amd64-deb",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "cmake/arch/amd64.cmake"
+            }
+        },
+        {
+            "name": "arm64-deb",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "cmake/arch/arm64.cmake"
+            }
+        },
+        {
+            "name": "armhf-deb",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "cmake/arch/armhf.cmake"
+            }
+        },
+        {
+            "name": "amd64-rpm",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "cmake/arch/amd64.cmake"
+            }
+        },
+        {
+            "name": "amd64-mingw64",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "cmake/arch/mingw64.cmake"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "amd64-deb",
+            "configurePreset": "amd64-deb"
+        },
+        {
+            "name": "arm64-deb",
+            "configurePreset": "arm64-deb"
+        },
+        {
+            "name": "armhf-deb",
+            "configurePreset": "armhf-deb"
+        },
+        {
+            "name": "amd64-rpm",
+            "configurePreset": "amd64-rpm"
+        },
+        {
+            "name": "amd64-mingw64",
+            "configurePreset": "amd64-mingw64"
+        }
+    ]
+}
