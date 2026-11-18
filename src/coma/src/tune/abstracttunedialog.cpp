@@ -484,6 +484,8 @@ void AbstractTuneDialog::writeTuneCoefsSlot()
         {
             it.value()->deleteWidgetCopy();
             CancelTune();
+            emit generalEventReceived();
+            EMessageBox::error(this, "Ошибка записи блока данных!");
             return;
         }
         it.value()->deleteWidgetCopy();
